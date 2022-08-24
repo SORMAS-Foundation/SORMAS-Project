@@ -169,6 +169,7 @@ public interface Strings {
 	String confirmationUnclearExternalMessage = "confirmationUnclearExternalMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmationVaccinationStatusUpdate = "confirmationVaccinationStatusUpdate";
 	String confirmExternalMessageCorrectionThrough = "confirmExternalMessageCorrectionThrough";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
 	String date = "date";
@@ -314,6 +315,7 @@ public interface Strings {
 	String errorSormasToSormasAcceptContactsWithoutCaseShared = "errorSormasToSormasAcceptContactsWithoutCaseShared";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasDataMissing = "errorSormasToSormasDataMissing";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasDeleteFromExternalSurveillanceTool = "errorSormasToSormasDeleteFromExternalSurveillanceTool";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
@@ -391,7 +393,6 @@ public interface Strings {
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
-	String headingCasesSentToExternalSurveillanceTool = "headingCasesSentToExternalSurveillanceTool";
 	String headingCaseStatusMap = "headingCaseStatusMap";
 	String headingcasesWithReferenceDefinitionFulfilled = "headingcasesWithReferenceDefinitionFulfilled";
 	String headingCaution = "headingCaution";
@@ -519,7 +520,6 @@ public interface Strings {
 	String headingEventsArchived = "headingEventsArchived";
 	String headingEventsDearchived = "headingEventsDearchived";
 	String headingEventsDeleted = "headingEventsDeleted";
-	String headingEventsSentToExternalSurveillanceTool = "headingEventsSentToExternalSurveillanceTool";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
 	String headingExportFailed = "headingExportFailed";
 	String headingExportUserRightsFailed = "headingExportUserRightsFailed";
@@ -903,6 +903,7 @@ public interface Strings {
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregatedReportEpiWeekFilterNotFilled = "messageAggregatedReportEpiWeekFilterNotFilled";
 	String messageAggregateReportDelete = "messageAggregateReportDelete";
+	String messageAggregateReportExpiredAgeGroups = "messageAggregateReportExpiredAgeGroups";
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAllCampaignFormsValid = "messageAllCampaignFormsValid";
 	String messageAllCasesAlreadyInEvent = "messageAllCasesAlreadyInEvent";
@@ -947,7 +948,6 @@ public interface Strings {
 	String messageCasesEditedExceptArchived = "messageCasesEditedExceptArchived";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
-	String messageCasesSentToExternalSurveillanceTool = "messageCasesSentToExternalSurveillanceTool";
 	String messageCaseTransfered = "messageCaseTransfered";
 	String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	String messageCheckInputData = "messageCheckInputData";
@@ -1054,7 +1054,6 @@ public interface Strings {
 	String messageEventsEditedExceptArchived = "messageEventsEditedExceptArchived";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
-	String messageEventsSentToExternalSurveillanceTool = "messageEventsSentToExternalSurveillanceTool";
 	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
 	String messageEventSuperordinateEventUnlinked = "messageEventSuperordinateEventUnlinked";

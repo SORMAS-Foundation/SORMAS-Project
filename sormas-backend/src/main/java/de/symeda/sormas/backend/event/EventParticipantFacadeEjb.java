@@ -126,7 +126,9 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -169,11 +171,14 @@ public class EventParticipantFacadeEjb
 	@EJB
 	private NotificationService notificationService;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private VaccinationService vaccinationService;
+
+	@EJB
+	private SampleService sampleService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -524,6 +529,11 @@ public class EventParticipantFacadeEjb
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
+
+		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
+		Predicate latestSamplePredicate =
+			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
+		filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -947,7 +957,7 @@ public class EventParticipantFacadeEjb
 		target.setVaccinationStatus(source.getVaccinationStatus());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
 		}
 
 		target.setDeleted(source.isDeleted());

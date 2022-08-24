@@ -31,8 +31,6 @@ public interface SormasToSormasShareInfoFacade {
 
 	List<SormasToSormasShareInfoDto> getIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 
-	SormasToSormasShareInfoDto getShareInfoByUuid(String uuid);
-
 	SormasToSormasShareInfoDto getCaseShareInfoByOrganization(CaseReferenceDto caze, String organizationId);
 
 	SormasToSormasShareInfoDto getContactShareInfoByOrganization(ContactReferenceDto contact, String organizationId);

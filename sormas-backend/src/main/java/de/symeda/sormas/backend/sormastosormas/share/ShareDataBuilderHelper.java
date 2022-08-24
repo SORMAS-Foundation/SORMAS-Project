@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +24,6 @@ import javax.ejb.Stateless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
@@ -76,32 +75,18 @@ public class ShareDataBuilderHelper {
 	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, ShareRequestInfo requestInfo) {
 		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
 
-		pseudonymiePerson(personDto, requestInfo);
+		pseudonymizePerson(personDto, requestInfo);
 
 		clearIgnoredProperties(personDto);
 
 		return personDto;
 	}
 
-	public void pseudonymiePerson(PersonDto personDto, ShareRequestInfo requestInfo) {
+	public void pseudonymizePerson(PersonDto personDto, ShareRequestInfo requestInfo) {
 		if (requestInfo.isPseudonymizedPersonalData() || requestInfo.isPseudonymizedSensitiveData()) {
 			personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
 			personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
 		}
-	}
-
-	public ContactDto getContactDto(Contact contact, Pseudonymizer pseudonymizer) {
-		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
-
-		// reporting user is not set to null here as it would not pass the validation
-		// the receiver appears to set it to SORMAS2SORMAS Client anyway in the UI
-		contactDto.setContactOfficer(null);
-		contactDto.setResultingCaseUser(null);
-		contactDto.setSormasToSormasOriginInfo(null);
-
-		clearIgnoredProperties(contactDto);
-
-		return contactDto;
 	}
 
 	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, ShareRequestInfo requestInfo) {

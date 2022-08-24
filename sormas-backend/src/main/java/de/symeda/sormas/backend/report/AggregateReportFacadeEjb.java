@@ -622,22 +622,49 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		Set<AggregateReportDto> userList = new HashSet<>();
 		diseaseList.forEach(disease -> {
-			List<String> diseaseAgeGroups = diseaseConfigurationFacade.getAgeGroups(disease);
+			List<String> currentDiseaseAgeGroups = diseaseConfigurationFacade.getAgeGroups(disease);
 
-			if (diseaseAgeGroups != null) {
-				diseaseAgeGroups.forEach(ageGroup -> {
+			Set<String> expiredDiseaseAgeGroups = reports.stream()
+				.filter(
+					aggregateReportDto1 -> disease.equals(aggregateReportDto1.getDisease())
+						&& (currentDiseaseAgeGroups == null || !currentDiseaseAgeGroups.contains(aggregateReportDto1.getAgeGroup())))
+				.map(AggregateReportDto::getAgeGroup)
+				.collect(Collectors.toSet());
+
+			if (currentDiseaseAgeGroups != null) {
+				currentDiseaseAgeGroups.forEach(ageGroup -> {
 					reports.stream()
 						.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()) && ageGroup.equals(aggregateReport.getAgeGroup()))
 						.max(Comparator.comparing(AggregateReportDto::getChangeDate))
 						.ifPresent(userList::add);
 
 				});
-			} else {
-				reports.stream()
-					.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()))
-					.max(Comparator.comparing(AggregateReportDto::getChangeDate))
-					.ifPresent(userList::add);
 			}
+
+			if (!expiredDiseaseAgeGroups.isEmpty()) {
+				expiredDiseaseAgeGroups.forEach(
+					expiredDiseaseAgeGroup -> reports.stream()
+						.filter(
+							aggregateReportDto1 -> disease.equals(aggregateReportDto1.getDisease())
+								&& expiredDiseaseAgeGroup != null
+								&& expiredDiseaseAgeGroup.equals(aggregateReportDto1.getAgeGroup()))
+						.max(Comparator.comparing(AggregateReportDto::getChangeDate))
+						.ifPresent(e -> {
+							e.setExpiredAgeGroup(true);
+							userList.add(e);
+						}));
+			}
+
+			reports.stream()
+				.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()) && aggregateReport.getAgeGroup() == null)
+				.max(Comparator.comparing(AggregateReportDto::getChangeDate))
+				.ifPresent(e -> {
+					if (currentDiseaseAgeGroups != null && !currentDiseaseAgeGroups.isEmpty()) {
+						e.setExpiredAgeGroup(true);
+					}
+					userList.add(e);
+				});
+
 		});
 
 		return new ArrayList<>(userList);

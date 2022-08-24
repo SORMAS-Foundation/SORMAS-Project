@@ -64,9 +64,23 @@ public class ContactShareDataBuilder
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		PersonDto personDto = dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo);
-		ContactDto contactDto = dataBuilderHelper.getContactDto(contact, pseudonymizer);
+		ContactDto contactDto = getDto(contact, pseudonymizer);
 
 		return new SormasToSormasContactDto(personDto, contactDto);
+	}
+
+	@Override
+	protected ContactDto getDto(Contact contact, Pseudonymizer pseudonymizer) {
+
+		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
+		contactDto.setContactOfficer(null);
+		contactDto.setResultingCaseUser(null);
+		contactDto.setSormasToSormasOriginInfo(null);
+		dataBuilderHelper.clearIgnoredProperties(contactDto);
+
+		return contactDto;
 	}
 
 	@Override

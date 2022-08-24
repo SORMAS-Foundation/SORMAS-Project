@@ -177,6 +177,7 @@ public interface Captions {
 	String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
 	String aggregateReportEditReport = "aggregateReportEditReport";
+	String aggregateReportExpiredAgeGroups = "aggregateReportExpiredAgeGroups";
 	String aggregateReportLabConfirmationsShort = "aggregateReportLabConfirmationsShort";
 	String aggregateReportLastWeek = "aggregateReportLastWeek";
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
@@ -429,6 +430,7 @@ public interface Captions {
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccinationStatus = "CaseData.vaccinationStatus";
+	String CaseData_vaccinationStatusUpdate = "CaseData.vaccinationStatusUpdate";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDataEnterHomeAddressNow = "caseDataEnterHomeAddressNow";

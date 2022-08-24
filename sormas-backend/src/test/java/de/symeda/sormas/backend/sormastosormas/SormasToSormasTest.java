@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.user.DefaultUserRole;
+import org.junit.After;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -83,6 +85,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 	public static final String SECOND_SERVER_ID = "2.sormas.id.sormas_b";
 	private ObjectMapper objectMapper;
 	protected TestDataCreator.RDCF rdcf;
+	protected UserDto s2sClientUser;
 
 	@Override
 	public void init() {
@@ -100,8 +103,22 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		// in S2S we use external IDs
 		rdcf = createRDCF(true).centralRdcf;
 
+		s2sClientUser = creator.createUser(
+			rdcf,
+			"S2S",
+			"Client",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
+			creator.getUserRoleReference(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT));
+
 		getFacilityService().createConstantFacilities();
 		getPointOfEntryService().createConstantPointsOfEntry();
+	}
+
+	@After
+	public void teardown() {
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
 	}
 
 	protected boolean isAcceptRejectFeatureEnabled() {
@@ -115,6 +132,24 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		source.setOwnershipHandedOver(ownershipHandedOver);
 
 		return source;
+	}
+
+	protected SormasToSormasOriginInfoDto createAndSaveSormasToSormasOriginInfo(
+		String serverId,
+		boolean ownershipHandedOver,
+		Consumer<SormasToSormasOriginInfoDto> extraConfig) {
+		SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setSenderName("Test Name");
+		originInfo.setSenderEmail("test@email.com");
+		originInfo.setOrganizationId(serverId);
+		originInfo.setOwnershipHandedOver(ownershipHandedOver);
+
+		if (extraConfig != null) {
+			extraConfig.accept(originInfo);
+		}
+
+		return getSormasToSormasOriginInfoFacade().saveOriginInfo(originInfo);
 	}
 
 	protected PersonDto createPersonDto(TestDataCreator.RDCF rdcf) {
@@ -280,6 +315,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_TRUSTSTORE_NAME, "sormas2sormas.truststore.p12");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_TRUSTSTORE_PASS, "password");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_ROOT_CA_ALIAS, "S2SCA");
+
 	}
 
 	protected MappableRdcf createRDCF(boolean withExternalId) {

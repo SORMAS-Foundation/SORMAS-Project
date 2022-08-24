@@ -942,6 +942,19 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		super.delete(sample, deletionDetails);
 	}
 
+	public void unlinkFromEventParticipant(Sample sample) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Sample> cu = cb.createCriteriaUpdate(Sample.class);
+		Root<Sample> root = cu.from(Sample.class);
+
+		cu.set(Sample.ASSOCIATED_EVENT_PARTICIPANT, null);
+
+		cu.where(cb.equal(root.get(Sample.UUID), sample.getUuid()));
+
+		em.createQuery(cu).executeUpdate();
+
+	}
+
 	private void deleteSampleLinks(Sample sample) {
 
 		// Remove the reference from another sample to this sample if existing
@@ -1104,6 +1117,17 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	private <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
 		Set<Object> seen = ConcurrentHashMap.newKeySet();
 		return t -> seen.add(keyExtractor.apply(t));
+	}
+
+	public Subquery createSubqueryLatestSample(CriteriaQuery cq, CriteriaBuilder cb, Root<EventParticipant> eventParticipant) {
+		final Subquery subquery = cq.subquery(Date.class);
+		final Root<Sample> subRoot = subquery.from(Sample.class);
+
+		subquery.select(cb.max(subRoot.get(Sample.SAMPLE_DATE_TIME)));
+		subquery.where(
+			cb.and(cb.isFalse(subRoot.get(Sample.DELETED))),
+			cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(AbstractDomainObject.ID)));
+		return subquery;
 	}
 
 }

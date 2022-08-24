@@ -29,6 +29,7 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 
@@ -42,9 +43,17 @@ public class ProcessedEventDataPersister extends ProcessedDataPersister<EventDto
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
 		return shareInfoService;
+	}
+
+	@Override
+	protected SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade() {
+		return originInfoFacade;
 	}
 
 	@Override

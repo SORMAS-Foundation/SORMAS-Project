@@ -160,6 +160,8 @@ Feature: Dashboard counters
       Then I get Confirmed Contact labels and value from Contact Dashboard with Deutsch language
       And I compare English and German confirmed counter
       And I compare English and German confirmed contacts counter
+      Then I click on the User Settings button from navbar
+      And I select "English" language from Combobox in User settings
 
   @env_de @tmsLink=SORDEV-6137
   Scenario: Test if "not a case" is excluded from the total case count
@@ -262,4 +264,3 @@ Feature: Dashboard counters
     And I click on the Contacts button from navbar
     And I click on first created contact in Contact directory page by UUID
     And I delete the contact
-

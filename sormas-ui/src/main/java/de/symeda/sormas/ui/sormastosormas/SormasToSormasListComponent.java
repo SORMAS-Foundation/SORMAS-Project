@@ -76,7 +76,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			caze.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync));
+			shareEnabled ? (i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync) : null);
 
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
@@ -114,7 +114,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			event.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasEventNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync));
+			shareEnabled ? (i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync) : null);
 
 		initLayout(
 			event.getSormasToSormasOriginInfo(),
@@ -122,7 +122,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event) : null);
 	}
 
-	public SormasToSormasListComponent(EventParticipantDto eventParticipant, boolean shareEnabled) {
+	public SormasToSormasListComponent(EventParticipantDto eventParticipant) {
 		sormasToSormasList =
 			new SormasToSormasList(eventParticipant.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasEventParticipantNotShared, null);
 

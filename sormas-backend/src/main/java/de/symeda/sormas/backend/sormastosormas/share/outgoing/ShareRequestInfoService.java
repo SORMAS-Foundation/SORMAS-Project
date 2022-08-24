@@ -18,11 +18,15 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -57,5 +61,23 @@ public class ShareRequestInfoService extends AdoServiceWithUserFilter<ShareReque
 		}
 
 		return filter;
+	}
+
+	public List<String> getAllNonReferencedShareRequestInfo() {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<ShareRequestInfo> from = cq.from(getElementClass());
+
+		Join<ShareRequestInfo, SormasToSormasShareInfo> shareRequestJoin = from.join(ShareRequestInfo.SHARES, JoinType.LEFT);
+		cq.select(from.get(ShareRequestInfo.UUID));
+		cq.groupBy(from.get(ShareRequestInfo.ID));
+		cq.having(cb.equal(cb.count(shareRequestJoin), 0));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public void executePermanentDeletion() {
+
 	}
 }
