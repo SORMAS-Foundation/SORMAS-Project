@@ -224,6 +224,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public Page<ShareRequestIndexDto> getIndexPage(ShareRequestCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		List<ShareRequestIndexDto> shareRequestIndexList = getIndexList(criteria, first, max, sortProperties);
 		long totalElementCount = count(criteria);
@@ -241,6 +243,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public ShareRequestDetailsDto getShareRequestDetails(String uuid) {
 		SormasToSormasShareRequest request = shareRequestService.getByUuid(uuid);
 

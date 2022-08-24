@@ -43,6 +43,7 @@ import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.ShareRequestInfoFacade;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.CaseShareDataBuilder;
@@ -56,8 +57,10 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ShareRequestInfoFacade")
+@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)

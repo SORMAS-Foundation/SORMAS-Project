@@ -212,6 +212,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public void revokeShareRequest(String requestUuid) throws SormasToSormasException {
 		ShareRequestInfo request = shareRequestInfoService.getByUuid(requestUuid);
 
