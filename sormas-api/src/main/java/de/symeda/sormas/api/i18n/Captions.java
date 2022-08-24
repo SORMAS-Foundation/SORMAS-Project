@@ -177,6 +177,7 @@ public interface Captions {
 	String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
 	String aggregateReportEditReport = "aggregateReportEditReport";
+	String aggregateReportExpiredAgeGroups = "aggregateReportExpiredAgeGroups";
 	String aggregateReportLabConfirmationsShort = "aggregateReportLabConfirmationsShort";
 	String aggregateReportLastWeek = "aggregateReportLastWeek";
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
