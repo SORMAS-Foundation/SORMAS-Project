@@ -62,8 +62,8 @@ import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasCo
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;

@@ -110,32 +110,6 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return target;
 	}
 
-	@Override
-	@RightsAllowed({
-			UserRight._SORMAS_TO_SORMAS_SHARE })
-	public List<SormasToSormasShareRequestIndexDto> getIndexList(
-		ShareRequestCriteria criteria,
-		Integer first,
-		Integer max,
-		List<SortProperty> sortProperties) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<SormasToSormasShareRequest> requestRoot = cq.from(SormasToSormasShareRequest.class);
-
-		Predicate filter = null;
-		if (criteria != null) {
-			filter = shareRequestService.buildCriteriaFilter(criteria, cb, requestRoot);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(requestRoot));
-
-		return em.createQuery(cq).getSingleResult();
-	}
-
 	public static ShareRequestDetailsDto toDetailsDto(SormasToSormasShareRequest source) {
 		if (source == null) {
 			return null;
@@ -154,14 +128,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	}
 
 	@Override
-	public List<SormasToSormasShareRequestDto> getShareRequestsForCase(CaseReferenceDto caze) {
-		return shareRequestService.getShareRequestsForCase(caze)
-			.stream()
-			.map(SormasToSormasShareRequestFacadeEJB::toDto)
-			.collect(Collectors.toList());
-	}
-
-	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public List<ShareRequestIndexDto> getIndexList(ShareRequestCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ShareRequestIndexDto> cq = cb.createQuery(ShareRequestIndexDto.class);
@@ -236,7 +204,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 	@Override
 	@RightsAllowed({
-			UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public long count(ShareRequestCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -264,27 +232,17 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 	@Override
 	@RightsAllowed({
-			UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public List<SormasToSormasShareRequestDto> getShareRequestsForCase(CaseReferenceDto caze) {
 		return shareRequestService.getShareRequestsForCase(caze)
-				.stream()
-				.map(SormasToSormasShareRequestFacadeEJB::toDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(SormasToSormasShareRequestFacadeEJB::toDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public ShareRequestDetailsDto getShareRequestDetails(String uuid) {
 		SormasToSormasShareRequest request = shareRequestService.getByUuid(uuid);
-
-		return toDetailsDto(request);
-	}
-
-	public static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
-		if (source == null) {
-			return null;
-		}
-		SormasToSormasShareRequestDto target = new SormasToSormasShareRequestDto();
-		DtoHelper.fillDto(target, source);
 
 		return toDetailsDto(request);
 	}

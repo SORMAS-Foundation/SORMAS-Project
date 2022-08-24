@@ -89,13 +89,14 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		Path<SormasToSormasShareInfo> sharesJoin = requestRoot.join(ShareRequestInfo.SHARES);
 		Join<ShareRequestInfo, User> senderJoin = requestRoot.join(ShareRequestInfo.SENDER, JoinType.LEFT);
 
+		Expression<String> senderName = cb.concat(cb.concat(senderJoin.get(User.FIRST_NAME), " "), senderJoin.get(User.LAST_NAME));
 		cq.multiselect(
 			requestRoot.get(ShareRequestInfo.UUID),
 			requestRoot.get(ShareRequestInfo.CREATION_DATE),
 			requestRoot.get(ShareRequestInfo.DATA_TYPE),
 			requestRoot.get(ShareRequestInfo.REQUEST_STATUS),
 			sharesJoin.get(SormasToSormasShareInfo.ORGANIZATION_ID),
-			cb.concat(cb.concat(senderJoin.get(User.FIRST_NAME), " "), senderJoin.get(User.LAST_NAME)),
+			senderName,
 			sharesJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER),
 			requestRoot.get(ShareRequestInfo.COMMENT));
 
@@ -130,7 +131,7 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 					expression = requestRoot.get(ShareRequestInfo.REQUEST_STATUS);
 					break;
 				case ShareRequestIndexDto.SENDER_NAME:
-					expression = cb.concat(senderJoin.get(User.FIRST_NAME), senderJoin.get(User.LAST_NAME));
+					expression = senderName;
 					break;
 				case ShareRequestIndexDto.ORGANIZATION_ID:
 				case ShareRequestIndexDto.OWNERSHIP_HANDED_OVER:
