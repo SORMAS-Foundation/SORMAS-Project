@@ -38,12 +38,14 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.PathogenTestResultTypeRenderer;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto, EventParticipantCriteria> {
@@ -56,15 +58,15 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		super(EventParticipantIndexDto.class);
 		setSizeFull();
 
-		setInEagerMode(true);
-		setCriteria(criteria);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
-			setSelectionMode(SelectionMode.MULTI);
+			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
-			setSelectionMode(SelectionMode.NONE);
 			setLazyDataProvider();
+			setCriteria(criteria);
 		}
 
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
@@ -162,6 +164,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		ListDataProvider<EventParticipantIndexDto> dataProvider =
 			DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
 	}
 
 	public void reload() {
