@@ -857,7 +857,7 @@ public class StartupShutdownService {
 					customizableEnumValueService.ensurePersisted(entry);
 				});
 				break;
-			case 487:
+			case 488:
 				userRoleService.getAll().forEach(ur -> {
 					if (ur.getLinkedDefaultUserRole() == null) {
 						ur.setLinkedDefaultUserRole(DefaultUserRole.getByCaption(ur.getCaption()));
