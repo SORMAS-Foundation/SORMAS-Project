@@ -857,11 +857,17 @@ public class StartupShutdownService {
 					customizableEnumValueService.ensurePersisted(entry);
 				});
 				break;
-			case 487:
+			case 488:
 				userRoleService.getAll().forEach(ur -> {
 					if (ur.getLinkedDefaultUserRole() == null) {
-						ur.setLinkedDefaultUserRole(DefaultUserRole.getByCaption(ur.getCaption()));
-						userRoleService.ensurePersisted(ur);
+						final String caption = ur.getCaption();
+						final DefaultUserRole defaultUserRole = DefaultUserRole.getByCaption(caption);
+						if (defaultUserRole != null) {
+							ur.setLinkedDefaultUserRole(defaultUserRole);
+							userRoleService.ensurePersisted(ur);
+						} else {
+							logger.warn("Could not find DefaultUserRole with caption: " + caption);
+						}
 					}
 				});
 				break;
