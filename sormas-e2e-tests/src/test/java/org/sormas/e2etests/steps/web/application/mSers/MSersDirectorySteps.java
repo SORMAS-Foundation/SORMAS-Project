@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.get
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.Assert;
@@ -172,6 +173,21 @@ public class MSersDirectorySteps implements En {
               FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_AGGREGATED_REPORT_HEADER);
+        });
+
+    And(
+        "^I check that first row contains \"([^\"]*)\" in column (\\d+)$",
+        (String expectedResult, Integer columnNumber) -> {
+          String actualResult =
+              webDriverHelpers.getTextFromWebElement(
+                  By.xpath("//tbody//tr[" + 1 + "]//td[" + columnNumber + "]"));
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      actualResult,
+                      expectedResult,
+                      "Text from the column is different than expected"),
+              10);
         });
   }
 }

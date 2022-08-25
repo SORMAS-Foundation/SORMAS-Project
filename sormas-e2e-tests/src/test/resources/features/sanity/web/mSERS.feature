@@ -235,6 +235,9 @@ Feature: mSERS functionalities
     When I close popup message window
     And I set District combobox to "LK Ansbach" in Create New Aggregate Report popup
     And I click to save aggregated report
+    And I filter reports by "Bayern" region and "LK Ansbach" district
+    And I check that first row contains "Bayern" in column 3
+    And I check that first row contains "Snake Bite" in column 1
     And I navigate to Report data tab
     And I filter reports by "Bayern" region and "LK Ansbach" district
     And I click on edit first aggregated report from grid from mSERS
