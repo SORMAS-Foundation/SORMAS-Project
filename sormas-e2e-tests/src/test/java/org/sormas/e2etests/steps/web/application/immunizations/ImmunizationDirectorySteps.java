@@ -200,7 +200,7 @@ public class ImmunizationDirectorySteps implements En {
                   Assert.assertEquals(
                       actualResult,
                       expectedResult,
-                      "Number of results visible in grid different than expected"),
+                      "Visible text different than expected"),
               10);
         });
 
