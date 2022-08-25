@@ -73,7 +73,7 @@ public class EditImmunizationPage {
   public static final By VALID_UNTIL_INPUT = By.cssSelector("#validUntil input");
   public static final By ALERT_MESSAGE = By.xpath("//div[@role='alert']");
   public static final By REPORTING_USER_INPUT = By.cssSelector("#reportingUser");
-  public static final By PREVIOUS_INFECTION_COMBOBOX = By.cssSelector("#previousInfection");
+  public static final By PREVIOUS_INFECTION_RADIOBUTTON = By.cssSelector("#previousInfection");
   public static final By PREVIOUS_INFECTION_LABEL = By.cssSelector("#previousInfection label");
   public static final By LAST_INFECTION_DATE_INPUT = By.cssSelector("#lastInfectionDate input");
   public static final By VACCINATION_HEADER = By.cssSelector("[location='vaccinationHeadingLoc']");

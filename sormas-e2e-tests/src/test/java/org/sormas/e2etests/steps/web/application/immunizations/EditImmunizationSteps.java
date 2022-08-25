@@ -488,7 +488,7 @@ public class EditImmunizationSteps implements En {
         (String element) -> {
           switch (element) {
             case "Previous infection with this disease combobox":
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(PREVIOUS_INFECTION_COMBOBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(PREVIOUS_INFECTION_RADIOBUTTON);
               break;
             case "Date of last infection field":
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAST_INFECTION_DATE_INPUT);
