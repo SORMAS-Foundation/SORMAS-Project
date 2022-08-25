@@ -225,3 +225,17 @@ Feature: mSERS functionalities
     Given I log in as a Admin User
     When I click on the mSERS button from navbar
     And I click on the NEW AGGREGATE REPORT button
+    And I set 3 as the quantity for Snake Bite suspected cases in Create a new aggregated report
+    And I click to save aggregated report
+    Then I check if popup message is "You have to specify a valid region"
+    When I close popup message window
+    And I set Region combobox to "Bayern" in Create New Aggregate Report popup
+    And I click to save aggregated report
+    Then I check if popup message is "You have to specify a valid district"
+    When I close popup message window
+    And I set District combobox to "LK Ansbach" in Create New Aggregate Report popup
+    And I click to save aggregated report
+    And I navigate to Report data tab
+    And I filter reports by "Bayern" region and "LK Ansbach" district
+    And I click on edit first aggregated report from grid from mSERS
+    And I click to delete aggregated report

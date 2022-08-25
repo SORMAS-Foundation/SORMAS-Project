@@ -258,6 +258,8 @@ public class TaskManagementSteps implements En {
     When(
         "I check if popup message is {string}",
         (String expectedText) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              By.cssSelector(".v-Notification-description"));
           softly.assertEquals(
               webDriverHelpers.getTextFromPresentWebElement(
                   By.cssSelector(".v-Notification-description")),

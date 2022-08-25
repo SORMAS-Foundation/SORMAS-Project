@@ -43,4 +43,8 @@ public class CreateNewAggreagateReportPage {
   public static final By WEEK_RADIOBUTTON =
       By.cssSelector("[class='v-radiobutton v-select-option']");
   public static final By DELETE_AGGREGATED_REPORT_BUTTON = By.id("actionDelete");
+  public static final By SNAKE_BITE_SUSPECTED_CASES_INPUT =
+      By.xpath("(//div[text()=\"Snake Bite\"]/..//following-sibling::div//input)[1]");
+  public static final By EDIT_AGGREGATED_REPORT_HEADER =
+      By.xpath("//div[text()='Edit aggregated report']");
 }

@@ -25,4 +25,10 @@ public class MSersDirectoryPage {
             "(//tr[contains(@class,'v-grid-row-has-data')]//span[@class=\"v-button-wrap\"])[%x]",
             idx));
   }
+  public static final By REGION_FILTER_COMBOBOX = By.cssSelector("#region div");
+  public static final By DISTRICT_FILTER_COMBOBOX = By.cssSelector("#district div");
+  public static final By AGGREGATED_REPORT_APPLY_FILTER_BUTTON =
+      By.cssSelector("[id='actionApplyFilters']");
+  public static final By FIRST_AGGREGATED_REPORT_EDIT_BUTTON =
+      By.cssSelector(".v-grid-row-has-data div");
 }
