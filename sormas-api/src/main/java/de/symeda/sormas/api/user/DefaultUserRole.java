@@ -1684,8 +1684,7 @@ public enum DefaultUserRole {
 			Arrays.stream(values()).filter(dur -> dur.name().equals(caption) || I18nProperties.getEnumCaption(dur).equals(caption)).findAny();
 		if (defaultUserRole.isPresent()) {
 			return defaultUserRole.get();
-		} else {
-			throw new IllegalArgumentException("Could not find DefaultUserRole with caption: " + caption);
 		}
+		return null;
 	}
 }
