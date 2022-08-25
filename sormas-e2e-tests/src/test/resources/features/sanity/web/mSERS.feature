@@ -219,3 +219,9 @@ Feature: mSERS functionalities
     And I set report period to "SPECIFY" on Create a new aggregated report form
     And I check if Epi week filed is enabled on Create a new aggregated report form
     Then I check if last listed week from Epi week combobox is the current week of the year
+
+  @tmsLink=SORDEV-12443 @env_main
+  Scenario: Check that region and district are required for aggregate reports
+    Given I log in as a Admin User
+    When I click on the mSERS button from navbar
+    And I click on the NEW AGGREGATE REPORT button
