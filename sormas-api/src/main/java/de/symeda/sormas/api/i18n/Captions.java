@@ -183,6 +183,7 @@ public interface Captions {
 	String aggregateReportLastWeek = "aggregateReportLastWeek";
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
 	String aggregateReportNewCasesShort = "aggregateReportNewCasesShort";
+	String aggregateReportNoAgeGroup = "aggregateReportNoAgeGroup";
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportShowOnlyDuplicateReports = "aggregateReportShowOnlyDuplicateReports";
 	String aggregateReportShowZeroRows = "aggregateReportShowZeroRows";

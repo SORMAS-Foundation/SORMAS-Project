@@ -35,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.report.AggregateCaseCountDto;
@@ -131,8 +132,11 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@RightsAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
 
-		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
+		if (dto.getAgeGroup() != null && !dto.getAgeGroup().isEmpty()) {
 			AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
+			if (dto.getAgeGroup().equals(I18nProperties.getCaption(Captions.aggregateReportNoAgeGroup))) {
+				dto.setAgeGroup(null);
+			}
 		}
 
 		validate(dto);
@@ -661,6 +665,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				.ifPresent(e -> {
 					if (currentDiseaseAgeGroups != null && !currentDiseaseAgeGroups.isEmpty()) {
 						e.setExpiredAgeGroup(true);
+						e.setAgeGroup(I18nProperties.getCaption(Captions.aggregateReportNoAgeGroup));
 					}
 					userList.add(e);
 				});
