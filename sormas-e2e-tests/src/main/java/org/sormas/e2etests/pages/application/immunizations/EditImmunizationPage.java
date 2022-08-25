@@ -10,6 +10,8 @@ public class EditImmunizationPage {
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
   public static final By MEANS_OF_IMMUNIZATIONS_INPUT =
       By.cssSelector("#meansOfImmunization input");
+  public static final By MEANS_OF_IMMUNIZATION_COMBOBOX =
+      By.cssSelector("#meansOfImmunization div");
   public static final By RESPONSIBLE_REGION_INPUT = By.cssSelector("#responsibleRegion input");
   public static final By RESPONSIBLE_DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
   public static final By RESPONSIBLE_COMMUNITY_INPUT =
@@ -18,6 +20,7 @@ public class EditImmunizationPage {
   public static final By FACILITY_CATEGORY_INPUT = By.cssSelector("#typeGroup input");
   public static final By FACILITY_TYPE_INPUT = By.cssSelector("#facilityType input");
   public static final By IMMUNIZATION_PERSON_TAB = By.cssSelector("div#tab-immunizations-person");
+  public static final By IMMUNIZATION_DATA_TAB = By.cssSelector("div#tab-immunizations-data");
   public static final By IMMUNIZATION_MANAGEMENT_STATUS_INPUT =
       By.cssSelector("#immunizationManagementStatus input");
   public static final By IMMUNIZATION_STATUS_INPUT = By.cssSelector("#immunizationStatus input");
@@ -69,4 +72,15 @@ public class EditImmunizationPage {
   public static final By VALID_FROM_INPUT = By.cssSelector("#validFrom input");
   public static final By VALID_UNTIL_INPUT = By.cssSelector("#validUntil input");
   public static final By ALERT_MESSAGE = By.xpath("//div[@role='alert']");
+  public static final By REPORTING_USER_INPUT = By.cssSelector("#reportingUser");
+  public static final By PREVIOUS_INFECTION_COMBOBOX = By.cssSelector("#previousInfection");
+  public static final By PREVIOUS_INFECTION_LABEL = By.cssSelector("#previousInfection label");
+  public static final By LAST_INFECTION_DATE_INPUT = By.cssSelector("#lastInfectionDate input");
+  public static final By VACCINATION_HEADER = By.cssSelector("[location='vaccinationHeadingLoc']");
+  public static final By COULD_NOT_CONVERT_TO_INTEGER_POPUP_ALERT =
+      By.xpath("//*[contains(text(),'Could not convert value to Integer')]");
+  public static final By RECOVERY_HEADER = By.cssSelector("[location='recoveryHeadingLoc']");
+  public static final By POSITIVE_TEST_RESULT_DATE_INPUT =
+      By.cssSelector("#positiveTestResultDate input");
+  public static final By RECOVERY_DATE_INPUT = By.cssSelector("#recoveryDate input");
 }

@@ -459,6 +459,89 @@ public class EditImmunizationSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(ALERT_MESSAGE);
           webDriverHelpers.clickOnWebElementBySelector(ALERT_MESSAGE);
         });
+
+    And(
+        "I check that {string} tab is available",
+        (String tabOption) -> {
+          switch (tabOption) {
+            case "IMMUNIZATION":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMMUNIZATION_DATA_TAB);
+              break;
+            case "PERSON":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMMUNIZATION_PERSON_TAB);
+              break;
+          }
+        });
+
+    And(
+        "^I check if Reporting user field is available and read only$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_USER_INPUT);
+          softly.assertTrue(
+              webDriverHelpers.isElementEnabled(REPORTING_USER_INPUT),
+              "Reporting user field is not read only!");
+          softly.assertAll();
+        });
+
+    And(
+        "I check if {string} is available",
+        (String element) -> {
+          switch (element) {
+            case "Previous infection with this disease combobox":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(PREVIOUS_INFECTION_COMBOBOX);
+              break;
+            case "Date of last infection field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAST_INFECTION_DATE_INPUT);
+              break;
+            case "Additional details text area":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(ADDITIONAL_DETAILS);
+              break;
+            case "Vaccination header":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(VACCINATION_HEADER);
+              break;
+            case "Number of doses field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(NUMBER_OF_DOSES);
+              break;
+            case "Recovery header":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(RECOVERY_HEADER);
+              break;
+            case "Positive test result date field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(POSITIVE_TEST_RESULT_DATE_INPUT);
+              break;
+            case "Recovery date field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(RECOVERY_DATE_INPUT);
+              break;
+          }
+        });
+
+    And(
+        "^I set Previous infection with this disease combobox to \"([^\"]*)\" on Edit Immunization page$",
+        (String option) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PREVIOUS_INFECTION_LABEL);
+          webDriverHelpers.clickWebElementByText(PREVIOUS_INFECTION_LABEL, option);
+        });
+
+    And(
+        "^I set Means of immunization to \"([^\"]*)\" on Edit Immunization page$",
+        (String option) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MEANS_OF_IMMUNIZATION_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(MEANS_OF_IMMUNIZATION_COMBOBOX, option);
+        });
+
+    When(
+        "^I set Number of doses to value different than Integer on Edit Immunization Page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NUMBER_OF_DOSES);
+          webDriverHelpers.fillInWebElement(NUMBER_OF_DOSES, "random text");
+        });
+
+    Then(
+        "^I confirm alert popup window informing that could not convert value to integer$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              COULD_NOT_CONVERT_TO_INTEGER_POPUP_ALERT);
+          webDriverHelpers.clickOnWebElementBySelector(COULD_NOT_CONVERT_TO_INTEGER_POPUP_ALERT);
+        });
   }
 
   private Immunization collectImmunizationDataWithImmunizationPeriod() {

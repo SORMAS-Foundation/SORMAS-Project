@@ -181,8 +181,12 @@ public class CreateNewImmunizationSteps implements En {
 
     And(
         "I check if Management status is set to {string} on Create new immunization form",
-        (String option) -> {
-          webDriverHelpers.getValueFromWebElement(MANAGEMENT_STATUS_INPUT);
+        (String expected) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(MANAGEMENT_STATUS_INPUT),
+              expected,
+              "Management status is different than expected");
+          softly.assertAll();
         });
 
     And(

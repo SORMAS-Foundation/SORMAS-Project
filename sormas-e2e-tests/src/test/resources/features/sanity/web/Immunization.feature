@@ -518,7 +518,7 @@ Feature: Immunization end to end tests
     When I click on the Immunizations button from navbar
     And I click on the NEW IMMUNIZATION button
     And I check that required fields are marked as mandatory on Create new immunization form
-    And I check if Management status is set to "read only" on Create new immunization form
+    And I check if Management status is "read only" on Create new immunization form
     And I check if Management status is set to "Scheduled" on Create new immunization form
     And I check if Immunization status is set to "Pending" on Create new immunization form
     And I check if "MEANS OF IMMUNIZATION combobox" is available on Create new immunization form
@@ -528,7 +528,7 @@ Feature: Immunization end to end tests
     And I check if Management status is set to "Completed" on Create new immunization form
     And I check if "OVERWRITE IMMUNIZATION MANAGEMENT STATUS checkbox" is available on Create new immunization form
     And I check Overwrite immunization management status option
-    And I check if Management status is set to "editable" on Create new immunization form
+    And I check if Management status is "editable" on Create new immunization form
     And I select "Ongoing" management status on Create new immunization form
     And I check if Immunization status is set to "Pending" on Create new immunization form
     And I select "Completed" management status on Create new immunization form
@@ -545,3 +545,34 @@ Feature: Immunization end to end tests
     And I fill a new immunization form with specific data
     And I click on SAVE new immunization button
     And I check the created data is correctly displayed on Edit immunization page
+
+  @tmsLink=SORDEV-6775 @env_main
+  Scenario: Test Edit Immunization page
+    Given I log in as a National User
+    When I click on the Immunizations button from navbar
+    And I open first immunization from grid from Immunization tab
+    Then I check that "IMMUNIZATION" tab is available
+    And I check that "PERSON" tab is available
+    And I check if Reporting user field is available and read only
+    And I check if "Previous infection with this disease combobox" is available
+    When I set Previous infection with this disease combobox to "YES" on Edit Immunization page
+    Then I check if "Date of last infection field" is available
+    When I set Previous infection with this disease combobox to "NO" on Edit Immunization page
+    And I set Previous infection with this disease combobox to "UNKNOWN" on Edit Immunization page
+    Then I check if "Additional details text area" is available
+    And I set Means of immunization to "Vaccination" on Edit Immunization page
+    Then I check if "Vaccination header" is available
+    When I set Means of immunization to "Vaccination/Recovery" on Edit Immunization page
+    Then I check if "Vaccination header" is available
+    And I check if "Number of doses field" is available
+    When I set Number of doses to value different than Integer on Edit Immunization Page
+    And I click SAVE button on Edit Immunization Page
+    Then I confirm alert popup window informing that could not convert value to integer
+    When I set Means of immunization to "Recovery" on Edit Immunization page
+    Then I check if "Recovery header" is available
+    And I check if "Positive test result date field" is available
+    And I check if "Recovery date field" is available
+    When I set Means of immunization to "Vaccination/Recovery" on Edit Immunization page
+    Then I check if "Recovery header" is available
+    And I check if "Positive test result date field" is available
+    And I check if "Recovery date field" is available
