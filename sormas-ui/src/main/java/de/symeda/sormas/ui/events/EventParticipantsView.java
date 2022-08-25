@@ -107,6 +107,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		viewConfiguration.setInEagerMode(false);
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -216,7 +217,7 @@ public class EventParticipantsView extends AbstractEventView {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 					grid.bulkActionHandler(items -> {
-						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
+						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> grid.reload());
 					}, true);
 				}));
 			}
@@ -270,12 +271,14 @@ public class EventParticipantsView extends AbstractEventView {
 				ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
+				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
 				ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
 			});
 
 		}
@@ -317,8 +320,6 @@ public class EventParticipantsView extends AbstractEventView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-
-		grid.reload();
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
