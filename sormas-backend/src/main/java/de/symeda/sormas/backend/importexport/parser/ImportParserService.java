@@ -158,7 +158,7 @@ public class ImportParserService {
 					DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 		} else {
 			try {
-				return DateHelper.parseDateWithException(v, I18nProperties.getUserLanguage().getDateFormat());
+				return DateHelper.parseDateWithException(v, I18nProperties.getUserLanguage());
 			} catch (ParseException e) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(
@@ -179,7 +179,7 @@ public class ImportParserService {
 					DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 		} else {
 			try {
-				return DateHelper.parseDateTimeWithException(v, I18nProperties.getUserLanguage().getDateTimeFormat());
+				return DateHelper.parseDateTimeWithException(v, I18nProperties.getUserLanguage());
 			} catch (ParseException e) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(

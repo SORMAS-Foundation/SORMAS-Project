@@ -39,7 +39,6 @@ import java.util.List;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class DateHelperTest {
 
@@ -233,22 +232,22 @@ public class DateHelperTest {
 
 		Date date = DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy"));
 
-		Date parsed = DateHelper.parseDateWithException("4/21/2021", Language.EN.getDateFormat());
+		Date parsed = DateHelper.parseDateWithException("4/21/2021", Language.EN);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateWithException("4.21.2021", Language.EN.getDateFormat());
+		parsed = DateHelper.parseDateWithException("4.21.2021", Language.EN);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateWithException("4-21-2021", Language.EN.getDateFormat());
+		parsed = DateHelper.parseDateWithException("4-21-2021", Language.EN);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateWithException("4/21/21", Language.EN.getDateFormat());
+		parsed = DateHelper.parseDateWithException("4/21/21", Language.EN);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateWithException("4.21.21", Language.EN.getDateFormat());
+		parsed = DateHelper.parseDateWithException("4.21.21", Language.EN);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateWithException("4-21-21", Language.EN.getDateFormat());
+		parsed = DateHelper.parseDateWithException("4-21-21", Language.EN);
 		assertEquals(date, parsed);
 	}
 
@@ -257,30 +256,23 @@ public class DateHelperTest {
 
 		Date date = DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy"));
 
-		I18nProperties.setUserLanguage(Language.DE);
-		try {
-			Date parsed = DateHelper.parseDateWithException("21/04/2021", Language.DE.getDateFormat());
-			assertEquals(date, parsed);
+		Date parsed = DateHelper.parseDateWithException("21/04/2021", Language.DE);
+		assertEquals(date, parsed);
 
-			parsed = DateHelper.parseDateWithException("21.04.2021", Language.DE.getDateFormat());
-			assertEquals(date, parsed);
+		parsed = DateHelper.parseDateWithException("21.04.2021", Language.DE);
+		assertEquals(date, parsed);
 
-			parsed = DateHelper.parseDateWithException("21-04-2021", Language.DE.getDateFormat());
-			assertEquals(date, parsed);
+		parsed = DateHelper.parseDateWithException("21-04-2021", Language.DE);
+		assertEquals(date, parsed);
 
-			parsed = DateHelper.parseDateWithException("21/04/21", Language.DE.getDateFormat());
-			assertEquals(date, parsed);
+		parsed = DateHelper.parseDateWithException("21/04/21", Language.DE);
+		assertEquals(date, parsed);
 
-			parsed = DateHelper.parseDateWithException("21.04.21", Language.DE.getDateFormat());
-			assertEquals(date, parsed);
+		parsed = DateHelper.parseDateWithException("21.04.21", Language.DE);
+		assertEquals(date, parsed);
 
-			parsed = DateHelper.parseDateWithException("21-04-21", Language.DE.getDateFormat());
-			assertEquals(date, parsed);
-
-			I18nProperties.setUserLanguage(null);
-		} finally {
-			I18nProperties.setUserLanguage(null);
-		}
+		parsed = DateHelper.parseDateWithException("21-04-21", Language.DE);
+		assertEquals(date, parsed);
 	}
 
 	@Test
@@ -288,19 +280,19 @@ public class DateHelperTest {
 
 		Date date = DateHelper.parseDate("4/21/2021 13:30", new SimpleDateFormat("M/dd/yyy HH:mm"));
 
-		Date parsed = DateHelper.parseDateTimeWithException("4/21/2021 13:30", Language.EN.getDateTimeFormat());
+		Date parsed = DateHelper.parseDateTimeWithException("4/21/2021 13:30", Language.EN);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateTimeWithException("4.21.2021 1:30 pm", Language.EN.getDateTimeFormat());
+		parsed = DateHelper.parseDateTimeWithException("4.21.2021 1:30 pm", Language.EN);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateTimeWithException("4-21-2021 13.30", Language.EN.getDateTimeFormat());
+		parsed = DateHelper.parseDateTimeWithException("4-21-2021 13.30", Language.EN);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateTimeWithException("4-21-2021 1.30 pm", Language.EN.getDateTimeFormat());
+		parsed = DateHelper.parseDateTimeWithException("4-21-2021 1.30 pm", Language.EN);
 		assertEquals(date, parsed);
 
-		Date parsedNoTime = DateHelper.parseDateTimeWithException("4/21/2021", Language.EN.getDateTimeFormat());
+		Date parsedNoTime = DateHelper.parseDateTimeWithException("4/21/2021", Language.EN);
 		assertEquals(parsedNoTime, DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy")));
 	}
 
@@ -309,27 +301,20 @@ public class DateHelperTest {
 
 		Date date = DateHelper.parseDate("4/21/2021 13:30", new SimpleDateFormat("M/dd/yyy HH:mm"));
 
-		I18nProperties.setUserLanguage(Language.DE);
-		try {
-			Date parsed = DateHelper.parseDateTimeWithException("21/04/2021 13:30", Language.DE.getDateTimeFormat());
-			assertEquals(date, parsed);
+		Date parsed = DateHelper.parseDateTimeWithException("21/04/2021 13:30", Language.DE);
+		assertEquals(date, parsed);
 
-			// TODO: #6700: Does not work: Is this format legit with Locale = DE?
-//			parsed = DateHelper.parseDateTimeWithException("21.04.2021 1:30 pm", Language.DE.getDateTimeFormat());
-//			assertEquals(date, parsed);
+		parsed = DateHelper.parseDateTimeWithException("21.04.2021 1:30 nachm.", Language.DE);
+		assertEquals(date, parsed);
 
-			parsed = DateHelper.parseDateTimeWithException("21-04-2021 13.30", Language.DE.getDateTimeFormat());
-			assertEquals(date, parsed);
+		parsed = DateHelper.parseDateTimeWithException("21-04-2021 13.30", Language.DE);
+		assertEquals(date, parsed);
 
-			// TODO: #6700: Does not work: Is this format legit with Locale = DE?
-//			parsed = DateHelper.parseDateTimeWithException("21-04-2021 1.30 pm", Language.DE.getDateTimeFormat());
-//			assertEquals(date, parsed);
+		parsed = DateHelper.parseDateTimeWithException("21-04-2021 1.30 nachm.", Language.DE);
+		assertEquals(date, parsed);
 
-			Date parsedNoTime = DateHelper.parseDateTimeWithException("21/04/2021", Language.DE.getDateTimeFormat());
-			assertEquals(UtilDate.of(2021, Month.APRIL, 21), parsedNoTime);
-		} finally {
-			I18nProperties.setUserLanguage(null);
-		}
+		Date parsedNoTime = DateHelper.parseDateTimeWithException("21/04/2021", Language.DE);
+		assertEquals(UtilDate.of(2021, Month.APRIL, 21), parsedNoTime);
 	}
 
 	@Test

@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -178,20 +179,26 @@ public final class DateHelper {
 		}
 	}
 
-	public static Date parseDateWithException(String date, String dateFormat) throws ParseException {
-		return parseDateWithException(date, getAllowedDateFormats(dateFormat));
+	public static Date parseDateWithException(String date, Language language) throws ParseException {
+
+		return parseDateWithException(date, getAllowedDateFormats(language.getDateFormat()), language.getLocale());
 	}
 
-	public static Date parseDateTimeWithException(String date, String dateTimeFormat) throws ParseException {
+	public static Date parseDateTimeWithException(String date, Language language) throws ParseException {
+
+		final Date result;
 		if (!date.contains(TIME_SEPARATOR)) {
 			// no separator means no time
-			return parseDateWithException(date, dateTimeFormat.split(TIME_SEPARATOR)[0]);
+			String dateFormat = language.getDateTimeFormat().split(TIME_SEPARATOR)[0];
+			result = parseDateWithException(date, getAllowedDateFormats(dateFormat), language.getLocale());
+		} else {
+			result = parseDateWithException(date, getAllowedDateTimeFormats(language.getDateTimeFormat()), language.getLocale());
 		}
 
-		return parseDateWithException(date, getAllowedDateTimeFormats(dateTimeFormat));
+		return result;
 	}
 
-	private static Date parseDateWithException(String date, List<String> dateFormats) throws ParseException {
+	private static Date parseDateWithException(String date, List<String> dateFormats, Locale locale) throws ParseException {
 
 		if (date == null) {
 			return null;
@@ -200,9 +207,7 @@ public final class DateHelper {
 		Logger logger = LoggerFactory.getLogger(DateHelper.class);
 		for (String format : dateFormats) {
 			try {
-				DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive()
-					.appendPattern(format)
-					.toFormatter(I18nProperties.getUserLanguage().getLocale());
+				DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(format).toFormatter(locale);
 				logger.trace("Format: {}, Locale: {}", format, formatter.getLocale());
 				TemporalAccessor parsedTemporal = formatter.parse(date);
 
