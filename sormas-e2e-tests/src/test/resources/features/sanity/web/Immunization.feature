@@ -1,7 +1,7 @@
 @UI @Sanity @Immunization
 Feature: Immunization end to end tests
 
-  @issue=SORDEV-8705 @env_main
+  @tmsLink=SORDEV-8705 @env_main
   Scenario:Check a new immunization data
     Given I log in as a Surveillance Officer
     And I click on the Immunizations button from navbar
@@ -11,7 +11,7 @@ Feature: Immunization end to end tests
     And I click on Person tab from Immunization page
     Then I check the created data is correctly displayed on Edit immunization person page
 
-  @issue=SORDEV-9312 @env_main
+  @tmsLink=SORDEV-9312 @env_main
   Scenario: Reset the 'Overwrite immunization management status' by Discard button
     Given I log in as a Surveillance Officer
     And I click on the Immunizations button from navbar
@@ -20,7 +20,7 @@ Feature: Immunization end to end tests
     Then I click on discard button from immunization tab
     And I check if Overwrite immunization management status is unchecked by Management Status
 
-  @issue=SORDEV-7038 @env_main
+  @tmsLink=SORDEV-7038 @env_main
   Scenario:Test Immunizations III: Vaccination lists and forms
     Given I log in as a Admin User
     And I click on the Immunizations button from navbar
@@ -82,11 +82,11 @@ Feature: Immunization end to end tests
     Then I navigate to last created immunization by API via URL
     Then I click on archive button from immunization tab
     Then I click on logout button from navbar
-    Then I log in with National User
+    Then I log in as a National User
     Then I navigate to last created immunization by API via URL
     Then I check if editable fields are read only for an archived immunization
 
-  @issue=SORDEV-7041 @env_main
+  @tmsLink=SORDEV-7041 @env_main
   Scenario:Test Immunizations III: Immunization list for person forms
     Given I log in as a Admin User
     And I click on the Immunizations button from navbar
@@ -102,7 +102,7 @@ Feature: Immunization end to end tests
     Then I click on first person in person directory
     And I check if data of created immunization is in Immunization tab on Edit Person Page
 
-  @issue=SORDEV-11454 @env_main
+  @tmsLink=SORDEV-11454 @env_main
   Scenario: Add reason for deletion to confirmation dialogue
     Given I log in as a Admin User
     And I click on the Immunizations button from navbar
@@ -136,7 +136,7 @@ Feature: Immunization end to end tests
     And I check if External ID input on immunization edit page is disabled
     And I check if Additional details text area on immunization edit page is disabled
 
-  @issue=SORDEV-8059 @env_main
+  @tmsLink=SORDEV-8059 @env_main
   Scenario: Check the extension of the case form, contact form and event participant form with immunization list
     Given I log in as a National user
     And I click on the Cases button from navbar
@@ -199,9 +199,9 @@ Feature: Immunization end to end tests
     And I validate means of immunization is present on immunization card
     And I validate immunization UUID is present on immunization card
 
-  @issue=SORDEV-8061 @env_main
+  @tmsLink=SORDEV-8061 @env_main
   Scenario: Immunizations V: Link recovery immunizations to recovered cases
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -226,7 +226,7 @@ Feature: Immunization end to end tests
     Then I click on Open Case button in Edit immunization
     Then I check if collected case UUID is equal with current
 
-  @issue=SORDEV-8536 @env_main
+  @tmsLink=SORDEV-8536 @env_main
   Scenario: Test pseudonymization in immunization
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -246,7 +246,7 @@ Feature: Immunization end to end tests
     And I navigate to linked immunization on Edit case page
     Then I check that Immunization data is displayed as read-only on Edit immunization page
 
-  @issue=SORDEV-8759 @env_de
+  @tmsLink=SORDEV-8759 @env_de
   Scenario: Test Reduced entry option for vaccinations
     Given I log in as a National User
     And I click on the Cases button from navbar

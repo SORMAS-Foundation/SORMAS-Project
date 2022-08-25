@@ -7,6 +7,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -16,6 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -48,6 +51,11 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 		super.deletePermanent(externalMessage);
 	}
 
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void ensurePersistedInNewTransaction(ExternalMessage externalMessage) {
+		ensurePersisted(externalMessage);
+	}
+
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ExternalMessage> from) {
 		return null;
@@ -67,6 +75,10 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 		if (criteria.getSample() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.SAMPLE).get(Sample.UUID), criteria.getSample().getUuid()));
+		}
+		if (criteria.getCaze() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.CAZE).get(Case.UUID), criteria.getCaze().getUuid()));
 		}
 		if (criteria.getSearchFieldLike() != null) {
 			String[] textFilters = criteria.getSearchFieldLike().split("\\s+");
@@ -156,6 +168,24 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 
 		ExternalMessageCriteria criteria = new ExternalMessageCriteria();
 		criteria.setSample(sample);
+
+		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
+
+		cq.where(filter);
+		cq.distinct(true);
+
+		cq.orderBy(cb.desc(labMessageRoot.get(ExternalMessage.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<ExternalMessage> getForCase(CaseReferenceDto caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalMessage> cq = cb.createQuery(ExternalMessage.class);
+		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
+
+		ExternalMessageCriteria criteria = new ExternalMessageCriteria();
+		criteria.setCaze(caze);
 
 		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
 

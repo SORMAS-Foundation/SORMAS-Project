@@ -114,7 +114,7 @@ import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
@@ -142,7 +142,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
@@ -161,6 +161,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -338,6 +340,19 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			});
 		}
 		return deletedEventUuids;
+	}
+
+	@RightsAllowed({
+		UserRight._CASE_DELETE,
+		UserRight._SYSTEM })
+	public void deleteEventInExternalSurveillanceTool(Event event) throws ExternalSurveillanceToolException {
+
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && StringUtils.isNotBlank(event.getExternalId())) {
+			List<Event> eventsWithSameExternalId = service.getByExternalId(event.getExternalId());
+			if (eventsWithSameExternalId != null && eventsWithSameExternalId.size() == 1) {
+				externalSurveillanceToolGatewayFacade.deleteEvents(Collections.singletonList(toDto(event)));
+			}
+		}
 	}
 
 	@Override
@@ -976,7 +991,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public void validate(EventDto event) throws ValidationRuntimeException {
+	public void validate(@Valid EventDto event) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty
@@ -1221,7 +1236,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
 		}
 
 		target.setDeleted(source.isDeleted());

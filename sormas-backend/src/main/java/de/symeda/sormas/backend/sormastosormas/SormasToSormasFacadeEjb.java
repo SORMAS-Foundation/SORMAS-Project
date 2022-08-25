@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -69,6 +71,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SormasToSormasFacade")
 public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
@@ -110,16 +113,20 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private ExternalMessageService externalMessageService;
 
 	@Override
+	@PermitAll
 	public String getOrganizationId() {
 		return configFacadeEjb.getS2SConfig().getId();
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public List<SormasServerDescriptor> getAllAvailableServers() {
 		return sormasToSormasDiscoveryService.getAllAvailableServers();
 	}
 
 	@Override
+	@PermitAll
 	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
 		return sormasToSormasDiscoveryService.getSormasServerDescriptorById(id);
 	}
@@ -127,6 +134,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public void rejectRequest(ShareRequestDataType dataType, String uuid, String comment) throws SormasToSormasException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 
@@ -146,6 +155,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public void requestRejected(SormasToSormasEncryptedDataDto encryptedRejectData) throws SormasToSormasException {
 		RequestResponseDataDto rejectData = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedRejectData, RequestResponseDataDto.class);
 		ShareRequestInfo requestInfo = shareRequestInfoService.getByUuid(rejectData.getRequestUuid());
@@ -162,12 +173,16 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException {
 		getEntityInterface(dataType).acceptShareRequest(uuid);
 	}
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public void revokeShare(String shareInfoUuid) throws SormasToSormasException {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByUuid(shareInfoUuid);
 
@@ -195,6 +210,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	 *             in case of failure
 	 */
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public void requestsRevoked(SormasToSormasEncryptedDataDto encryptedRequestUuids) throws SormasToSormasException {
 		String[] requestUuids = encryptionService.decryptAndVerify(encryptedRequestUuids, String[].class);
 		List<SormasToSormasShareRequestDto> shareRequests = shareRequestFacade.getShareRequestsByUuids(Arrays.asList(requestUuids));
@@ -221,6 +238,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public void requestAccepted(SormasToSormasEncryptedDataDto encryptedAcceptData) throws SormasToSormasException {
 		ShareRequestAcceptData acceptData = encryptionService.decryptAndVerify(encryptedAcceptData, ShareRequestAcceptData.class);
 
@@ -246,7 +265,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw SormasToSormasException.fromStringProperty(Strings.unexpectedErrorSormasToSormasAccept);
+			throw SormasToSormasException.fromStringProperty(
+				Strings.unexpectedErrorSormasToSormasAccept,
+				I18nProperties.getString(Strings.errorNotifyingExternalSurveillanceTool) + ": " + e.getMessage());
 		}
 	}
 
@@ -283,27 +304,37 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
+	@PermitAll
 	public boolean isFeatureEnabledForUser() {
 		return userService.hasRight(UserRight.SORMAS_TO_SORMAS_SHARE) && isFeatureConfigured();
 	}
 
 	@Override
+	@PermitAll
 	public boolean isFeatureConfigured() {
 		return configFacadeEjb.isS2SConfigured();
 	}
 
 	@Override
-	public boolean isSharingCasesContactsAndSamplesEnabledForUser() {
-		return isFeatureEnabledForUser()
-			&& featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES);
+	@PermitAll
+	public boolean isSharingCasesEnabledForUser() {
+		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES);
 	}
 
 	@Override
+	@PermitAll
+	public boolean isSharingContactsEnabledForUser() {
+		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
+	}
+
+	@Override
+	@PermitAll
 	public boolean isSharingEventsEnabledForUser() {
 		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EVENTS);
 	}
 
 	@Override
+	@PermitAll
 	public boolean isSharingExternalMessagesEnabledForUser() {
 		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES);
 	}

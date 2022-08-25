@@ -11,8 +11,6 @@ Feature: Login with different type of users
     Then I check that English language is selected in User Settings
     And I click on logout button
 
-
-
     Examples:
       | user                      |
       | National User             |
@@ -35,7 +33,6 @@ Feature: Login with different type of users
     And I check that Deutsch language is selected in User Settings
     And I click on logout button
 
-
     Examples:
       | user                      |
       | National User             |
@@ -47,7 +44,25 @@ Feature: Login with different type of users
       | Point of Entry Supervisor |
       | Admin User                |
       | Rest AUTOMATION           |
-  @issue=SORQA-69 @env_de
-  Scenario: Check German language setting
-    Given I log in with National User
-    Then I check that German word for Configuration is present in the left main menu
+
+  @env_keycloak @LoginKeycloak
+  Scenario Outline: Login with <user> user on Keycloak Environment
+    Given I navigate to SORMAS login page
+    Then I log in as <user> in Keycloak enabled environment
+    Then I am logged in with name <user>
+    And I check that German word for User Settings is present in the left main menu
+    Then I click on the User Settings button from navbar
+    And I check that Deutsch language is selected in User Settings
+    And I click on logout button on Keycloak enabled environment
+
+    Examples:
+      | user                      |
+      | Admin User                |
+      | National User             |
+
+  @env_keycloak @LoginKeycloak
+  Scenario: Login on Keycloak Administrator Console
+    Given I navigate to Keycloak Administrator Console Login page
+    Then I log in as Keycloak Admin to Keycloak Administrator Console
+    Then I am logged in with Admin Keycloak in Keycloak Administrator Page
+    And I click on logout button on Keycloak Administrator Console Page

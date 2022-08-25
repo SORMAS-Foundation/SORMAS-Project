@@ -76,6 +76,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class EventParticipantsView extends AbstractEventView {
 
@@ -85,9 +86,12 @@ public class EventParticipantsView extends AbstractEventView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/" + EVENTPARTICIPANTS;
 
 	private final EventParticipantCriteria criteria;
+	private ViewConfiguration viewConfiguration;
 
 	private EventParticipantsGrid grid;
 	private Button addButton;
+	private Button btnEnterBulkEditMode;
+	private MenuBar bulkOperationsDropdown;
 	private DetailSubComponentWrapper gridLayout;
 	private Button activeStatusButton;
 	private EventParticipantsFilterForm filterForm;
@@ -102,10 +106,7 @@ public class EventParticipantsView extends AbstractEventView {
 		addStyleName("crud-view");
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
-
-		if (criteria.getRelevanceStatus() == null) {
-			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-		}
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -247,10 +248,36 @@ public class EventParticipantsView extends AbstractEventView {
 					}));
 			}
 
-			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
+			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
+			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
+
+			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+
+			addHeaderComponent(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+			});
+
 		}
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
@@ -281,7 +308,8 @@ public class EventParticipantsView extends AbstractEventView {
 			gridLayout.setStyleName("crud-main-layout");
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
-			gridLayout.setEnabled(isEventEditAllowed() || UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
+			gridLayout
+				.setEnabled(!isEventDeleted() && isEventEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
 		}
 
 		if (params.startsWith("?")) {
@@ -388,7 +416,13 @@ public class EventParticipantsView extends AbstractEventView {
 		updateStatusButtons();
 
 		if (eventParticipantRelevanceStatusFilter != null) {
-			eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+			if (criteria.getRelevanceStatus() == null) {
+				criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+				boolean archived = FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
+				eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ALL : criteria.getRelevanceStatus());
+			} else {
+				eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+			}
 		}
 
 		filterForm.setValue(criteria);

@@ -40,6 +40,7 @@ public interface Captions {
 	String Action_title = "Action.title";
 	String actionAccept = "actionAccept";
 	String actionAdjustChanges = "actionAdjustChanges";
+	String actionApply = "actionApply";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchiveCoreEntity = "actionArchiveCoreEntity";
@@ -90,6 +91,7 @@ public interface Captions {
 	String actionNext = "actionNext";
 	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
+	String actionNoAll = "actionNoAll";
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
@@ -115,6 +117,7 @@ public interface Captions {
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
 	String actionYes = "actionYes";
+	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";
 	String actionYesForSome = "actionYesForSome";
 	String ActivityAsCase = "ActivityAsCase";
@@ -175,6 +178,7 @@ public interface Captions {
 	String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
 	String aggregateReportEditReport = "aggregateReportEditReport";
+	String aggregateReportExpiredAgeGroups = "aggregateReportExpiredAgeGroups";
 	String aggregateReportLabConfirmationsShort = "aggregateReportLabConfirmationsShort";
 	String aggregateReportLastWeek = "aggregateReportLastWeek";
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
@@ -259,6 +263,7 @@ public interface Captions {
 	String campaignValidateForms = "campaignValidateForms";
 	String cancelExternalFollowUpButton = "cancelExternalFollowUpButton";
 	String cancelExternalFollowUpPopupTitle = "cancelExternalFollowUpPopupTitle";
+	String captionDefault = "captionDefault";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
 	String caseArchivedCases = "caseArchivedCases";
@@ -426,6 +431,7 @@ public interface Captions {
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccinationStatus = "CaseData.vaccinationStatus";
+	String CaseData_vaccinationStatusUpdate = "CaseData.vaccinationStatusUpdate";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDataEnterHomeAddressNow = "caseDataEnterHomeAddressNow";
@@ -1378,7 +1384,6 @@ public interface Captions {
 	String FollowUp_followUpUntil = "FollowUp.followUpUntil";
 	String FollowUp_person = "FollowUp.person";
 	String FollowUp_reportDate = "FollowUp.reportDate";
-	String FollowUp_uuid = "FollowUp.uuid";
 	String formatNumberOfVisitsFormat = "formatNumberOfVisitsFormat";
 	String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";
 	String formatSimpleNumberFormat = "formatSimpleNumberFormat";
@@ -1658,7 +1663,6 @@ public interface Captions {
 	String Person_burialConductor = "Person.burialConductor";
 	String Person_burialDate = "Person.burialDate";
 	String Person_burialPlaceDescription = "Person.burialPlaceDescription";
-	String Person_business_occupationDetails = "Person.business.occupationDetails";
 	String Person_causeOfDeath = "Person.causeOfDeath";
 	String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	String Person_causeOfDeathDisease = "Person.causeOfDeathDisease";
@@ -1678,7 +1682,6 @@ public interface Captions {
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
 	String Person_hasCovidApp = "Person.hasCovidApp";
-	String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	String Person_internalToken = "Person.internalToken";
 	String Person_lastDisease = "Person.lastDisease";
 	String Person_matchingCase = "Person.matchingCase";
@@ -1695,7 +1698,6 @@ public interface Captions {
 	String Person_occupationFacilityType = "Person.occupationFacilityType";
 	String Person_occupationRegion = "Person.occupationRegion";
 	String Person_occupationType = "Person.occupationType";
-	String Person_other_occupationDetails = "Person.other.occupationDetails";
 	String Person_otherContactDetails = "Person.otherContactDetails";
 	String Person_otherSalutation = "Person.otherSalutation";
 	String Person_passportNumber = "Person.passportNumber";
@@ -1711,7 +1713,6 @@ public interface Captions {
 	String Person_salutation = "Person.salutation";
 	String Person_sex = "Person.sex";
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
-	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
 	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String PersonContactDetail = "PersonContactDetail";
@@ -1987,8 +1988,7 @@ public interface Captions {
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SormasToSormasOptions_handOverOwnership = "SormasToSormasOptions.handOverOwnership";
 	String SormasToSormasOptions_organization = "SormasToSormasOptions.organization";
-	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
-	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
+	String SormasToSormasOptions_pseudonymizeData = "SormasToSormasOptions.pseudonymizeData";
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withImmunizations = "SormasToSormasOptions.withImmunizations";
@@ -2422,7 +2422,8 @@ public interface Captions {
 	String UserRight_jurisdiction = "UserRight.jurisdiction";
 	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
 	String userRights = "userRights";
-	String userRole = "userRole";
+	String UserRole = "UserRole";
+	String userrole_applyUserRoleTemplate = "userrole.applyUserRoleTemplate";
 	String UserRole_caption = "UserRole.caption";
 	String UserRole_description = "UserRole.description";
 	String UserRole_emailNotificationTypes = "UserRole.emailNotificationTypes";
@@ -2430,11 +2431,19 @@ public interface Captions {
 	String UserRole_hasAssociatedDistrictUser = "UserRole.hasAssociatedDistrictUser";
 	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
 	String UserRole_jurisdictionLevel = "UserRole.jurisdictionLevel";
+	String UserRole_linkedDefaultUserRole = "UserRole.linkedDefaultUserRole";
+	String userrole_main = "userrole.main";
+	String userrole_notifications = "userrole.notifications";
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
 	String UserRole_smsNotificationTypes = "UserRole.smsNotificationTypes";
+	String UserRole_templateUserRole = "UserRole.templateUserRole";
 	String UserRole_userRights = "UserRole.userRights";
 	String UserRole_uuid = "UserRole.uuid";
 	String userRoleNewUserRole = "userRoleNewUserRole";
+	String userRoleNotifications = "userRoleNotifications";
+	String userRoleNotificationTypeEmail = "userRoleNotificationTypeEmail";
+	String userRoleNotificationTypeSms = "userRoleNotificationTypeSms";
+	String userRoleUserrolesView = "userRoleUserrolesView";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";
 	String Vaccination_otherVaccineManufacturer = "Vaccination.otherVaccineManufacturer";

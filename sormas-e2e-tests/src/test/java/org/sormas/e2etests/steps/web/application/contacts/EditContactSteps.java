@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
@@ -39,6 +40,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
@@ -50,6 +52,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
@@ -88,6 +91,7 @@ import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.enums.TaskTypeValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
@@ -155,6 +159,10 @@ public class EditContactSteps implements En {
     And(
         "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX));
+    And(
+        "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory for DE",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
     When(
         "I check if generated document based on {string} appeared in Documents tab for UI created contact in Edit Contact directory",
         (String name) -> {
@@ -167,19 +175,22 @@ public class EditContactSteps implements En {
               120);
         });
     When(
+        "I check if generated document based on {string} appeared in Documents tab for UI created contact in Edit Contact directory for DE",
+        (String name) -> {
+          String uuid = collectedContact.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              10);
+        });
+    When(
         "I check if generated document for Contact based on {string} was downloaded properly",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          String pathToFile =
-              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
-          Path path = Paths.get(pathToFile);
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Contact document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              120);
+          String pathToFile = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.waitForFileToDownload(pathToFile, 50);
         });
     When(
         "I check if generated document for contact based on {string} contains all required fields",
@@ -699,21 +710,14 @@ public class EditContactSteps implements En {
         "I select {string} Quarantine Order in Create Quarantine Order form in Edit Contact directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
+          TimeUnit.SECONDS.sleep(3);
         });
     When(
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Contact directory",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          Path path =
-              Paths.get(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Quarantine order document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              120);
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.waitForFileToDownload(filePath, 50);
         });
     When(
         "I check if generated document based on {string} appeared in Documents tab in Edit Contact directory",
@@ -727,13 +731,22 @@ public class EditContactSteps implements En {
               120);
         });
     When(
+        "I check if generated document based on {string} appeared in Documents tab in Edit Contact directory for DE",
+        (String name) -> {
+          String uuid = apiState.getCreatedContact().getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              10);
+        });
+    When(
         "I delete downloaded file created from {string} Document Template for Contact",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          String toDelete =
-              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
-          Path path = Paths.get(toDelete);
-          Files.delete(path);
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.deleteFile(filePath);
         });
     When(
         "I select {string} template in Document Template form",
@@ -806,7 +819,6 @@ public class EditContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ALL_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     When(
         "^I check if there are entities assigned to new created case from contact$",
@@ -960,11 +972,9 @@ public class EditContactSteps implements En {
     When(
         "I check if ([^\"]*) file for contact is downloaded correctly",
         (String fileType) -> {
-          String file = "./downloads/testContact_" + fileType + "." + fileType;
-          Path path = Paths.get(file);
-          softly.assertTrue(Files.exists(path));
-          softly.assertAll();
-          Files.delete(path); // clean
+          String filePath = "testContact_" + fileType + "." + fileType;
+          FilesHelper.waitForFileToDownload(filePath, 50);
+          FilesHelper.deleteFile(filePath);
         });
 
     When(
@@ -1124,6 +1134,13 @@ public class EditContactSteps implements En {
         });
 
     And(
+        "I set contact vaccination status to ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+        });
+
+    And(
         "^I click on the NEW IMMUNIZATION button in Edit contact$",
         () -> {
           webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);
@@ -1145,7 +1162,7 @@ public class EditContactSteps implements En {
               webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
           softly.assertEquals(
               endOfProcessingDate,
-              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
+              LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
               "End of processing date is invalid");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
@@ -1179,10 +1196,10 @@ public class EditContactSteps implements En {
     When(
         "I filter with last created contact using contact UUID",
         () -> {
-          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUUID);
-          TimeUnit.SECONDS.sleep(2); // wait for the system
+          TimeUnit.SECONDS.sleep(1); // long system reaction
+          webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUUID);
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          TimeUnit.SECONDS.sleep(5); // wait for the system
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 

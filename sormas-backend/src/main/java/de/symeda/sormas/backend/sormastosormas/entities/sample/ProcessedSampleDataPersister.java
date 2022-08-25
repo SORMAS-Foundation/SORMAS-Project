@@ -38,6 +38,7 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
@@ -55,10 +56,17 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 	private ExternalMessageFacadeEjbLocal externalMessageFacade;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
 		return shareInfoService;
+	}
+
+	@Override
+	protected SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade() {
+		return originInfoFacade;
 	}
 
 	public void persistSharedData(SormasToSormasSampleDto processedData, Sample existingSample) throws SormasToSormasValidationException {
@@ -90,7 +98,7 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 			ExternalMessageDto externalMessage = s2sExternalMessage.getEntity();
 
 			handleValidationError(
-				() -> externalMessageFacade.save(externalMessage, false),
+				() -> externalMessageFacade.save(externalMessage, false, false),
 				Captions.ExternalMessage,
 				buildValidationGroupName(Captions.ExternalMessage, externalMessage),
 				externalMessage);

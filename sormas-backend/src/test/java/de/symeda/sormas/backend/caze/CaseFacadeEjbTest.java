@@ -1179,6 +1179,60 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(exportDto.isTraveled());
 	}
 
+	@Test
+	public void testGeRelevantCasesForVaccination() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = createUser(rdcfEntities);
+
+		PersonDto cazePerson1 = creator.createPerson("Case1", "Person1");
+		CaseDataDto caze1 = createCase(user, cazePerson1, rdcfEntities);
+
+		ImmunizationDto immunization = creator.createImmunization(
+			caze1.getDisease(),
+			caze1.getPerson(),
+			caze1.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+
+		VaccinationDto firstRelevantVaccinationForCase1 = creator.createVaccinationWithDetails(
+			caze1.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 7),
+			Vaccine.OXFORD_ASTRA_ZENECA,
+			VaccineManufacturer.ASTRA_ZENECA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn1",
+			"123",
+			"code123",
+			"3");
+
+		VaccinationDto notRelevantVaccinationForCase1 = creator.createVaccinationWithDetails(
+			caze1.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			new Date(),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
+
+		List<CaseDataDto> cases1 = new ArrayList<>();
+		cases1.add(caze1);
+		assertEquals(getCaseFacade().getRelevantCasesForVaccination(firstRelevantVaccinationForCase1), cases1);
+		assertTrue(getCaseFacade().getRelevantCasesForVaccination(notRelevantVaccinationForCase1).isEmpty());
+	}
+
 	/**
 	 * Test with {@link CaseExportType#CASE_MANAGEMENT} and full export columns.
 	 */
@@ -1929,6 +1983,154 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testMergeCaseWithDuplicatedVaccines() {
+		// Create leadCase
+		RDCF rdcf = creator.createRDCF();
+		UserDto leadUser = creator.createUser(rdcf, "First", "User");
+		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+
+		CaseDataDto leadCase = creator.createCase(
+			leadUser.toReference(),
+			leadPerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		ImmunizationDto immunizationDto = creator.createImmunization(leadCase.getDisease(), leadPerson.toReference(), leadUser.toReference(), rdcf);
+		HealthConditionsDto healthConditions = new HealthConditionsDto();
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2022, 6, 1);
+
+		//vaccine without duplicate
+		creator.createVaccinationWithDetails(
+			leadUser.toReference(),
+			immunizationDto.toReference(),
+			healthConditions,
+			new Date(),
+			Vaccine.OXFORD_ASTRA_ZENECA,
+			VaccineManufacturer.ASTRA_ZENECA,
+			null,
+			null,
+			null,
+			null,
+			null);
+
+		//pfizer vaccines duplicate
+		VaccinationDto duplicateLeadVacc1 = creator.createVaccinationWithDetails(
+			leadUser.toReference(),
+			immunizationDto.toReference(),
+			healthConditions,
+			calendar.getTime(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER,
+			null,
+			null,
+			null,
+			null,
+			"dose1");
+		VaccinationDto duplicateLeadVacc2 = creator.createVaccinationWithDetails(
+			leadUser.toReference(),
+			immunizationDto.toReference(),
+			healthConditions,
+			calendar.getTime(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER,
+			null,
+			null,
+			null,
+			null,
+			"dose2");
+
+		//------------------------------------------------
+		UserDto followUser = creator.createUser(rdcf, "Second", "User");
+		PersonDto followPerson = creator.createPerson("Scott", "Miller");
+
+		CaseDataDto followCase = creator.createCase(
+			followUser.toReference(),
+			followPerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		ImmunizationDto followImmunizationDto =
+			creator.createImmunization(followCase.getDisease(), followPerson.toReference(), followUser.toReference(), rdcf);
+		//vaccine without duplicate
+		creator.createVaccinationWithDetails(
+			followUser.toReference(),
+			followImmunizationDto.toReference(),
+			healthConditions,
+			new Date(),
+			Vaccine.AD26_COV2_S,
+			VaccineManufacturer.JOHNSON_JOHNSON,
+			null,
+			null,
+			null,
+			null,
+			null);
+		//set of duplicate vaccines ,also duplicate with the ones from lead case
+		creator.createVaccinationWithDetails(
+			followUser.toReference(),
+			followImmunizationDto.toReference(),
+			healthConditions,
+			calendar.getTime(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER,
+			VaccinationInfoSource.ORAL_COMMUNICATION,
+			"inn1",
+			null,
+			null,
+			null);
+		creator.createVaccinationWithDetails(
+				followUser.toReference(),
+				followImmunizationDto.toReference(),
+				healthConditions,
+				calendar.getTime(),
+				Vaccine.COMIRNATY,
+				VaccineManufacturer.BIONTECH_PFIZER,
+				VaccinationInfoSource.ORAL_COMMUNICATION,
+				null,
+				null,
+				"abc",
+				null);
+		creator.createVaccinationWithDetails(
+			followUser.toReference(),
+			followImmunizationDto.toReference(),
+			healthConditions,
+			calendar.getTime(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER,
+			VaccinationInfoSource.VACCINATION_CARD,
+			null,
+			"123",
+			null,
+			"dose99");
+
+		assertEquals(null, duplicateLeadVacc1.getVaccinationInfoSource());
+		assertEquals(null, duplicateLeadVacc2.getVaccinationInfoSource());
+
+		getCaseFacade().mergeCase(leadCase.getUuid(), followCase.getUuid());
+
+		List<VaccinationDto> mergedVaccines = getVaccinationFacade().getAllVaccinations(leadPerson.getUuid(), leadCase.getDisease());
+
+		assertEquals(4, mergedVaccines.size());
+		VaccinationDto mergedDuplciateVacc1 =
+			mergedVaccines.stream().filter(v -> v.getUuid().equals(duplicateLeadVacc1.getUuid())).findFirst().orElse(null);
+		assertEquals(null, mergedDuplciateVacc1.getVaccinationInfoSource());
+		assertEquals("dose1", mergedDuplciateVacc1.getVaccineDose());
+
+		VaccinationDto mergedDuplciateVacc2 =
+			mergedVaccines.stream().filter(v -> v.getUuid().equals(duplicateLeadVacc2.getUuid())).findFirst().orElse(null);
+		assertEquals(VaccinationInfoSource.VACCINATION_CARD, mergedDuplciateVacc2.getVaccinationInfoSource());
+		assertEquals("123", mergedDuplciateVacc2.getVaccineBatchNumber());
+		assertEquals("inn1", mergedDuplciateVacc2.getVaccineInn());
+		assertEquals("dose2", mergedDuplciateVacc2.getVaccineDose());
+		assertEquals("abc", mergedDuplciateVacc2.getVaccineAtcCode());
+	}
+
+	@Test
 	public void testCloneCaseActivityAsCaseIsCloned() {
 
 		// 1. Create
@@ -2165,7 +2367,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			creator.createUser(rdcf2, "Third", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		UserDto informant = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant.setAssociatedOfficer(survOff3);
-		getUserFacade().saveUser(informant);
+		getUserFacade().saveUser(informant, false);
 
 		// Reporting user is set as surveillance officer
 		CaseDataDto caze = creator.createCase(survOff2, creator.createPerson().toReference(), rdcf);

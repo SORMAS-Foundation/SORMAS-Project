@@ -56,6 +56,8 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -73,6 +75,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SampleService sampleService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -315,6 +319,28 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			.forEach(sample -> sampleService.delete(sample, deletionDetails));
 
 		super.delete(eventParticipant, deletionDetails);
+	}
+
+	@Override
+	public void deletePermanent(EventParticipant eventParticipant) {
+		for (Sample sample : eventParticipant.getSamples()) {
+			if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
+				sampleService.deletePermanent(sample);
+			} else {
+				sampleService.unlinkFromEventParticipant(sample);
+			}
+		}
+
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.EVENT_PARTICIPANT, eventParticipant.getUuid()).forEach(s -> {
+			s.setEventParticipant(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
+
+		super.deletePermanent(eventParticipant);
 	}
 
 	public List<String> getAllUuidsByEventUuids(List<String> eventUuids) {

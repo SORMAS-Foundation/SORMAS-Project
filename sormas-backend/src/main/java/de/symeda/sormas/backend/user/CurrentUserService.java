@@ -42,6 +42,10 @@ public class CurrentUserService {
 	public User getCurrentUser() {
 		final String currentUsername = context.getCallerPrincipal().getName();
 
+		if (currentUsername == null) {
+			return null;
+		}
+
 		User cachedUser = userCache.get(currentUsername);
 		if (cachedUser != null) {
 			return cachedUser;
@@ -66,6 +70,10 @@ public class CurrentUserService {
 		// this only works for user rights that are used in RolesAllowed or DeclareRoles annotations.
 		// return context.isCallerInRole(userRight.name());
 		// We don't want to have to do this for all the user rights, so we check against the user rights of the current user instead
+		if(getCurrentUser() == null || getCurrentUser().getUserRoles() == null) {
+			return false;
+		}
+
 		return getCurrentUser().getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight)); // TODO cache?
 	}
 

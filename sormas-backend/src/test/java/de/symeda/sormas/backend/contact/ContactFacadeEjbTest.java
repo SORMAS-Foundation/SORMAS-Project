@@ -610,7 +610,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReference(DefaultUserRole.LAB_USER));
 		FacilityReferenceDto laboratory = new FacilityReferenceDto(rdcf.facility.getUuid(), rdcf.facility.toString(), rdcf.facility.getExternalID());
 		labUser.setLaboratory(laboratory);
-		getUserFacade().saveUser(labUser);
+		getUserFacade().saveUser(labUser, false);
 
 		loginWith(labUser);
 		assertEquals(0, getContactFacade().getIndexList(null, 0, 100, null).size());

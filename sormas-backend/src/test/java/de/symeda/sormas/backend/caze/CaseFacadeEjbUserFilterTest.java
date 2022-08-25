@@ -138,7 +138,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReference(DefaultUserRole.LAB_USER));
 		labUser.setLaboratory(rdcf1.facility);
-		getUserFacade().saveUser(labUser);
+		getUserFacade().saveUser(labUser, false);
 
 	}
 

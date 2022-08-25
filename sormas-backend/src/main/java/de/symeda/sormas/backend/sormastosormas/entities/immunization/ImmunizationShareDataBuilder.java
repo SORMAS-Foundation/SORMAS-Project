@@ -52,15 +52,21 @@ public class ImmunizationShareDataBuilder
 
 	@Override
 	protected SormasToSormasImmunizationDto doBuildShareData(Immunization immunization, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		ImmunizationDto immunizationDto = getDto(immunization, pseudonymizer);
+		return new SormasToSormasImmunizationDto(immunizationDto);
+	}
+
+	@Override
+	protected ImmunizationDto getDto(Immunization immunization, Pseudonymizer pseudonymizer) {
 
 		ImmunizationDto immunizationDto = immunizationFacade.convertToDto(immunization, pseudonymizer);
-		immunizationDto.setReportingUser(null);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		immunizationDto.setSormasToSormasOriginInfo(null);
 		dataBuilderHelper.clearIgnoredProperties(immunizationDto);
 
-		return new SormasToSormasImmunizationDto(immunizationDto);
+		return immunizationDto;
 	}
 
 	@Override

@@ -91,14 +91,9 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-import static org.sormas.e2etests.steps.web.application.entries.TravelEntryDirectorySteps.userDirPath;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -116,6 +111,7 @@ import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
@@ -537,15 +533,8 @@ public class CreateNewTravelEntrySteps implements En {
         "I check if downloaded file is correct for {string} in Edit Travel Entry directory",
         (String name) -> {
           String uuid = aTravelEntry.getUuid();
-          Path path =
-              Paths.get(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          assertHelpers.assertWithPoll20Second(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Quarantine order document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()));
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.waitForFileToDownload(filePath, 30);
         });
     When(
         "I check if generated document based on {string} appeared in Documents tab in Edit Travel Entry directory",
@@ -562,10 +551,8 @@ public class CreateNewTravelEntrySteps implements En {
         "I delete downloaded file created from {string} Document Template for Travel Entry",
         (String name) -> {
           String uuid = aTravelEntry.getUuid();
-          File toDelete =
-              new File(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          toDelete.deleteOnExit();
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.deleteFile(filePath);
         });
     When(
         "I collect travel UUID from travel entry",
@@ -920,7 +907,7 @@ public class CreateNewTravelEntrySteps implements En {
               webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
           softly.assertEquals(
               endOfProcessingDate,
-              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
+              LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
               "End of processing date is invalid");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
