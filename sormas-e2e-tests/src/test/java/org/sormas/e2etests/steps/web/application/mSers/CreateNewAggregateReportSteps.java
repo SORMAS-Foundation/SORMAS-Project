@@ -74,14 +74,10 @@ public class CreateNewAggregateReportSteps implements En {
         });
     When(
         "^I fill a new aggregate report with specific data for duplicates$",
-        () -> {
-          fillFieldsForDuplicateReport(duplicateReport);
-        });
+        () -> fillFieldsForDuplicateReport(duplicateReport));
     When(
         "^I fill a new aggregate report with specific data for duplicates with different disease$",
-        () -> {
-          fillFieldsForDuplicateReportWithDifferentDisease(duplicateReport);
-        });
+        () -> fillFieldsForDuplicateReportWithDifferentDisease(duplicateReport));
     When(
         "^I fill a new aggregate report with specific data for one disease",
         () -> {
