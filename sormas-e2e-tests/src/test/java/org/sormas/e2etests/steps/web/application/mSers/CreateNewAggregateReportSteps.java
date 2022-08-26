@@ -7,6 +7,7 @@ import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateRep
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DUPLICATE_DETECTION_TEXT;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_INPUT_POPUP;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.POPUP_MESSAGE_WINDOW;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP_DIV;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.SNAKE_BITE_SUSPECTED_CASES_INPUT;
@@ -21,7 +22,6 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.temporal.IsoFields;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.AggregateReport;
 import org.sormas.e2etests.entities.services.AggregateReportService;
@@ -171,14 +171,11 @@ public class CreateNewAggregateReportSteps implements En {
           webDriverHelpers.fillInWebElement(
               SNAKE_BITE_SUSPECTED_CASES_INPUT, String.valueOf(quantity));
         });
-
     When(
         "^I close popup message window$",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-              By.cssSelector(".v-Notification-description"));
-          webDriverHelpers.clickOnWebElementBySelector(
-              By.cssSelector(".v-Notification-description"));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POPUP_MESSAGE_WINDOW);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_MESSAGE_WINDOW);
         });
   }
 

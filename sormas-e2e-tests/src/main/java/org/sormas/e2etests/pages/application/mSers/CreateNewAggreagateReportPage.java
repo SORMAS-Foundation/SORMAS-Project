@@ -47,4 +47,5 @@ public class CreateNewAggreagateReportPage {
       By.xpath("(//div[text()=\"Snake Bite\"]/..//following-sibling::div//input)[1]");
   public static final By EDIT_AGGREGATED_REPORT_HEADER =
       By.xpath("//div[text()='Edit aggregated report']");
+  public static final By POPUP_MESSAGE_WINDOW = By.cssSelector(".v-Notification-description");
 }
