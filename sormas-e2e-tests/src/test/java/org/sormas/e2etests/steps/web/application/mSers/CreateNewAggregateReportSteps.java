@@ -78,6 +78,11 @@ public class CreateNewAggregateReportSteps implements En {
           fillFieldsForDuplicateReport(duplicateReport);
         });
     When(
+        "^I fill a new aggregate report with specific data for duplicates with different disease$",
+        () -> {
+          fillFieldsForDuplicateReportWithDifferentDisease(duplicateReport);
+        });
+    When(
         "^I fill a new aggregate report with specific data for one disease",
         () -> {
           report = aggregateReportService.buildAggredateReportsForOneDisease();
@@ -210,6 +215,12 @@ public class CreateNewAggregateReportSteps implements En {
     fillYear(report.getYear());
     fillEpiWeek(report.getEpiWeek());
     fillCasesFor("Acute Viral Hepatitis", report.getAcuteViralHepatitisCases());
+  }
+
+  private void fillFieldsForDuplicateReportWithDifferentDisease(AggregateReport report) {
+    fillYear(report.getYear());
+    fillEpiWeek(report.getEpiWeek());
+    fillCasesFor("Buruli Ulcer", report.getBuruliUlcerCases());
   }
 
   private void fillFieldsForOneDisease(AggregateReport report) {
