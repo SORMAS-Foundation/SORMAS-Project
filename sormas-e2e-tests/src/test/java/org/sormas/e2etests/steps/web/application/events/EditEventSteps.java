@@ -82,6 +82,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_S
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EYE_ICON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_CATEGORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_GROUP_ID;
@@ -1785,6 +1786,13 @@ public class EditEventSteps implements En {
         (Integer daysBeforeVaccinationDate) -> {
           LocalDate eventStartDate = LocalDate.now().minusDays(21 + daysBeforeVaccinationDate);
           fillStartDataDE(eventStartDate);
+        });
+
+    Then(
+        "^I Verify The Eye Icon opening the Map is disabled in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+          webDriverHelpers.isElementGreyedOut(EYE_ICON);
         });
 
     When(

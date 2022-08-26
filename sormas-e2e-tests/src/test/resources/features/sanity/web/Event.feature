@@ -1279,3 +1279,12 @@ Feature: Create events
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"
     Then I check if Present condition of person combobox has no value "Buried"
+
+  @env_main @#7750
+  Scenario: Check the map functionality
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a National User
+    Then I am accessing the event tab using the created event via api
+    Then I Verify The Eye Icon opening the Map is disabled in the Edit Event Page
