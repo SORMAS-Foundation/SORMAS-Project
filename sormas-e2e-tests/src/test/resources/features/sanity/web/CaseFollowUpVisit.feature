@@ -64,7 +64,7 @@ Feature: Follow-up new visit functionality
     And I click on new Visit button
     Then I check if phone number is displayed in Create new visit popup
 
-  @tmsLink=SORDEV-12444 @env_main @testIt
+  @tmsLink=SORDEV-12444 @env_main
   Scenario: User name from the 'Visit Origin' column is missing when exporting visits
     Given API: I create a new person
     And API: I check that POST call body is "OK"
