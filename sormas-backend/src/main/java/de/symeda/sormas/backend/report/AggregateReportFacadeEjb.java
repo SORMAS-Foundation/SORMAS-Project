@@ -515,6 +515,14 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
 					: StringUtils.EMPTY)
 			.thenComparing(r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0)
+			.thenComparing(
+				r -> r.getAgeGroup() != null && r.getAgeGroup().split("_").length == 2
+					? r.getAgeGroup().split("_")[1].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+					: StringUtils.EMPTY)
+			.thenComparing(
+				r -> r.getAgeGroup() != null && r.getAgeGroup().split("_").length == 2
+					? Integer.parseInt(r.getAgeGroup().split("_")[1].replaceAll("[^0-9]", StringUtils.EMPTY))
+					: 0)
 			.thenComparing(AggregateReportDto::getRegion, Comparator.nullsFirst(Comparator.naturalOrder()))
 			.thenComparing(AggregateReportDto::getDistrict, Comparator.nullsFirst(Comparator.naturalOrder()))
 			.thenComparing(AggregateReportDto::getHealthFacility, Comparator.nullsFirst(Comparator.naturalOrder()))
