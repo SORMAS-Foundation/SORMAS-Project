@@ -88,6 +88,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -516,6 +517,8 @@ public class EventParticipantFacadeEjb
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			joins.getSamples().get(Sample.PATHOGEN_TEST_RESULT),
+			joins.getSamples().get(Sample.SAMPLE_DATE_TIME),
 			eventParticipant.get(EventParticipant.VACCINATION_STATUS),
 			joins.getEventParticipantReportingUser().get(User.ID),
 			joins.getEventParticipantReportingUser().get(User.UUID),
@@ -554,6 +557,14 @@ public class EventParticipantFacadeEjb
 				case EventParticipantIndexDto.APPROXIMATE_AGE:
 				case EventParticipantIndexDto.SEX:
 				case EventParticipantIndexDto.LAST_NAME:
+				case SampleIndexDto.PATHOGEN_TEST_RESULT:
+					expression = joins.getSamples().get(SampleIndexDto.PATHOGEN_TEST_RESULT);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				case SampleIndexDto.SAMPLE_DATE_TIME:
+					expression = joins.getSamples().get(SampleIndexDto.SAMPLE_DATE_TIME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
 				case EventParticipantIndexDto.FIRST_NAME:
 					expression = person.get(sortProperty.propertyName);
 					break;
