@@ -63,3 +63,21 @@ Feature: Follow-up new visit functionality
     Then I navigate to follow-up tab
     And I click on new Visit button
     Then I check if phone number is displayed in Create new visit popup
+
+  @tmsLink=SORDEV-12444 @env_main @testIt
+  Scenario: User name from the 'Visit Origin' column is missing when exporting visits
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    Then I navigate to follow-up tab
+    And I click on new Visit button
+    Then I set Person available and cooperative to UNAVAILABLE
+    And I set Date and time of visit
+    Then I save the Visit data
+    And I click on a EXPORT button in the follow-up tab
+    Then I check if downloaded file has correct data in origin record
