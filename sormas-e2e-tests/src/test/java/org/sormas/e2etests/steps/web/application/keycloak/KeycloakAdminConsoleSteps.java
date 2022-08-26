@@ -18,16 +18,20 @@
 package org.sormas.e2etests.steps.web.application.keycloak;
 
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.NEXT_PAGE_BUTTON;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.USER_DISABLED;
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.USER_ID;
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.VIEW_ALL_USERS_BUTTON;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.getUserIdByName;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.steps.web.application.users.CreateNewUserSteps;
 import org.sormas.e2etests.steps.web.application.users.UserManagementSteps;
 import org.testng.Assert;
 
@@ -50,6 +54,7 @@ public class KeycloakAdminConsoleSteps implements En {
               runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/keycloak/auth/admin/master/console/#/realms/SORMAS/users";
           webDriverHelpers.accessWebSite(KEYCLOAK_USERS_TAB);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(VIEW_ALL_USERS_BUTTON);
         });
     When(
         "^I click View all users button$",
@@ -78,5 +83,31 @@ public class KeycloakAdminConsoleSteps implements En {
                         UserManagementSteps.numberOfUsers,
                         "Number of users in Keycloak is not equal to number of users in SORMAS"),
                 5));
+
+    When(
+        "^I search for last created user from SORMAS in grid in Keycloak Admin Page$",
+        () -> {
+          while (webDriverHelpers.isElementVisibleWithTimeout(NEXT_PAGE_BUTTON, 3)) {
+            if (webDriverHelpers.isElementVisibleWithTimeout(
+                getUserIdByName(CreateNewUserSteps.userName.toLowerCase()), 3)) {
+              break;
+            } else webDriverHelpers.clickOnWebElementBySelector(NEXT_PAGE_BUTTON);
+          }
+        });
+    When(
+        "^I open last created user from SORMAS in Keycloak Admin Page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getUserIdByName(CreateNewUserSteps.userName.toLowerCase()));
+        });
+    When(
+        "^I check if user is disabled in Keycloak Admin Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(By.xpath("//label[text()='User Enabled']"));
+          //          webDriverHelpers.clickOnWebElementBySelector(USER_DISABLED);
+          webDriverHelpers.scrollToElement(USER_DISABLED);
+          boolean visible = webDriverHelpers.isElementVisibleWithTimeout(USER_DISABLED, 3);
+          assertHelpers.assertWithPoll(() -> Assert.assertTrue(visible, "User is enabled!"), 5);
+        });
   }
 }

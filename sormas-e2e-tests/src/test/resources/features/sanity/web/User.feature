@@ -133,3 +133,29 @@ Feature: Create user
     And I check if displayed user name is equal with searched "automation_admin"
     And I pick "Active" value for Active filter in User Directory
     And I pick "Inactive" value for Active filter in User Directory
+
+  @tmsLink=SORQA-457 @env_keycloak
+  Scenario: Create a new SORMAS user, check login and disable
+    Given I log in as Admin User in Keycloak enabled environment
+    And I click on the Users from navbar
+    Then I click on the NEW USER button
+    Then I create new Test user for test on DE specific
+    And I click on logout button from navbar
+    And I login first time as a new created user from keycloak instance
+    And I click on logout button from navbar
+    Then I log in as Admin User in Keycloak enabled environment
+    And I click on the Users from navbar
+    And I filter last created user
+    And I open first user from the list
+    Then I set last created user to inactive
+    And I click on logout button from navbar
+    And As a new created user on Keycloak enabled instance I log in
+    Then I check error message for disabled user is present
+    And  I navigate to Keycloak Administrator Console Login page
+    Then I log in as Keycloak Admin to Keycloak Administrator Console
+    And I navigate to Users tab in Keycloak Administrator Console
+    And I click View all users button
+    Then I search for last created user from SORMAS in grid in Keycloak Admin Page
+    And I open last created user from SORMAS in Keycloak Admin Page
+    And I check if user is disabled in Keycloak Admin Page
+
