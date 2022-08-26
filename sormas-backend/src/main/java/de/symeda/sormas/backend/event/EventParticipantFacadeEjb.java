@@ -532,6 +532,8 @@ public class EventParticipantFacadeEjb
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
 
+		cq.distinct(true);
+
 		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
 		Predicate latestSamplePredicate =
 			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
