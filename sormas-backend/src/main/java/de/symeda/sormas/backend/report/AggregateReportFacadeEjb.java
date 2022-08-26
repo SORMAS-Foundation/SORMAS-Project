@@ -32,8 +32,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -364,20 +362,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				.thenComparing(AggregateCaseCountDto::getDistrictName, Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(AggregateCaseCountDto::getHealthFacilityName, Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(AggregateCaseCountDto::getPointOfEntryName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(
-					r -> r.getAgeGroup() != null
-						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-						: StringUtils.EMPTY)
-				.thenComparing(
-					r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0)
-				.thenComparing(
-					r -> r.getAgeGroup() != null && r.getAgeGroup().split("_").length == 2
-						? r.getAgeGroup().split("_")[1].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-						: StringUtils.EMPTY)
-				.thenComparing(
-					r -> r.getAgeGroup() != null && r.getAgeGroup().split("_").length == 2
-						? Integer.parseInt(r.getAgeGroup().split("_")[1].replaceAll("[^0-9]", StringUtils.EMPTY))
-						: 0));
+				.thenComparing(AggregateCaseCountDto::getAgeGroup, Comparator.nullsFirst(AgeGroupUtils.getComparator())));
 		return resultList;
 	}
 
@@ -518,19 +503,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return Comparator.comparing(AggregateReportDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
 			.thenComparing(AggregateReportDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
 			.thenComparing(AggregateReportDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
-			.thenComparing(
-				r -> r.getAgeGroup() != null
-					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-					: StringUtils.EMPTY)
-			.thenComparing(r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0)
-			.thenComparing(
-				r -> r.getAgeGroup() != null && r.getAgeGroup().split("_").length == 2
-					? r.getAgeGroup().split("_")[1].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-					: StringUtils.EMPTY)
-			.thenComparing(
-				r -> r.getAgeGroup() != null && r.getAgeGroup().split("_").length == 2
-					? Integer.parseInt(r.getAgeGroup().split("_")[1].replaceAll("[^0-9]", StringUtils.EMPTY))
-					: 0)
+			.thenComparing(AggregateReportDto::getAgeGroup, Comparator.nullsFirst(AgeGroupUtils.getComparator()))
 			.thenComparing(AggregateReportDto::getRegion, Comparator.nullsFirst(Comparator.naturalOrder()))
 			.thenComparing(AggregateReportDto::getDistrict, Comparator.nullsFirst(Comparator.naturalOrder()))
 			.thenComparing(AggregateReportDto::getHealthFacility, Comparator.nullsFirst(Comparator.naturalOrder()))
