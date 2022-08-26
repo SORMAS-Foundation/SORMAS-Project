@@ -62,4 +62,6 @@ public class SymptomsTabPage {
   public static final By DATE_OF_SYMPTOM_INPUT = By.cssSelector("#onsetDate input");
   public static final By CASE_TAB = By.cssSelector("#tab-cases-data span");
   public static final By SAVE_BUTTON = By.cssSelector("#commit");
+  public static final By NOTIFICATION_POPUP_DESCRIPTION =
+      By.cssSelector(".v-Notification-description");
 }
