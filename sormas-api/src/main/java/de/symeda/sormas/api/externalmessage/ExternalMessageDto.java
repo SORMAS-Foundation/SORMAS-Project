@@ -16,13 +16,10 @@
 package de.symeda.sormas.api.externalmessage;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.Size;
-
-import org.springframework.util.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -328,10 +325,13 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	 * @return List containing related sample reports or a newly built sample report
 	 */
 	public List<SampleReportDto> getSampleReportsNullSave() {
-		if (CollectionUtils.isEmpty(sampleReports)) {
+		if (sampleReports == null) {
+			sampleReports = new ArrayList<>();
+		}
+		if (sampleReports.isEmpty()) {
 			SampleReportDto sampleReport = SampleReportDto.build();
 			sampleReport.setLabMessage(this.toReference());
-			this.sampleReports = Collections.singletonList(sampleReport);
+			sampleReports.add(sampleReport);
 		}
 		return sampleReports;
 	}
@@ -361,16 +361,15 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 		sampleReport.setLabMessage(this.toReference());
 		if (sampleReports == null) {
-			sampleReports = Collections.singletonList(sampleReport);
-		} else {
-			try {
-				sampleReports.add(sampleReport);
-			} catch (UnsupportedOperationException e) {
-				ArrayList<SampleReportDto> newList = new ArrayList<>(this.sampleReports);
-				newList.add(sampleReport);
-				this.sampleReports = newList;
-			}
+			sampleReports = new ArrayList<>();
+		}
 
+		try {
+			sampleReports.add(sampleReport);
+		} catch (UnsupportedOperationException e) {
+			ArrayList<SampleReportDto> newList = new ArrayList<>(this.sampleReports);
+			newList.add(sampleReport);
+			this.sampleReports = newList;
 		}
 	}
 
