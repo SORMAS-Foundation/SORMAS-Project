@@ -35,7 +35,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigns";
 
-	public static final String GRID_CONTAINER = "container-fluid";
+	public static final String GRID_CONTAINER = "grid-container";
 
 	protected CampaignDashboardFilterLayout filterLayout;
 	protected CampaignDashboardDataProvider dataProvider;
@@ -119,11 +119,20 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		tabLayout.setExpandRatio(tabSwitcherLayout, 0);
 
 		final List<String> tabs = new ArrayList<>(dataProvider.getTabIds());
-		tabs.forEach(tabId -> {
-			tabId = WordUtils.capitalizeFully(tabId);
+		tabs.forEach(tabIdc -> {
+			String tabId = WordUtils.capitalizeFully(tabIdc);
+			tabSwitcher.addItem(tabId);
+			tabSwitcher.setItemCaption(tabId, tabId);
+		});
+		/*
+		 
+	tabId = WordUtils.capitalizeFully(tabId);
 			tabSwitcher.addItem(WordUtils.capitalizeFully(tabId));
 			tabSwitcher.setItemCaption(tabId, WordUtils.capitalizeFully(tabId)); 
-		});																		 
+		});	
+		 */
+		
+		
 		if (!(tabs.size() > 1)) {
 			tabSwitcherLayout.setVisible(false);
 		}
@@ -141,7 +150,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		tabLayout.setExpandRatio(subTabLayout, 1);
 
 		tabSwitcher.addValueChangeListener(e -> {
-			final String tabId = (String) e.getProperty().getValue();
+			String tabIdx = (String) e.getProperty().getValue();
+			final String tabId = WordUtils.capitalizeFully(tabIdx);
 			subTabLayout.removeComponent(currentDiagramsWrapper);
 			subTabLayout.removeComponent(currentSubTabsWrapper);
 			lastTabIdForCampaign.put(dataProvider.getCampaign(), tabId);
@@ -267,11 +277,11 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		campaignDashboardDiagramStyles.add(s);
 		
 		 return s + "{ display: grid; grid-gap:1%; grid-auto-columns: " + (100 / columns - 1) + "%; grid-auto-rows: " + (100 / rows - 1)
-			+ "%; grid-template-areas:" + gridAreasTemplate + ";  position: relative;\r\n"
-					+ "    min-height: 1px;\r\n"
-					+ "    padding-left: 15px;\r\n"
-					+ "    padding-right: 15px;"
-					+ "	   float: left}";
+			+ "%; grid-template-areas:" + gridAreasTemplate + ";}"; // position: relative;\r\n"
+					//+ "    min-height: 1px;\r\n"
+					//+ "    padding-left: 15px;\r\n"
+				//	+ "    padding-right: 15px;"
+					//+ "	   float: left}";
 	}
 	
 	//private String createDiagramGridNewStyle(String style) {

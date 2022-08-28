@@ -67,7 +67,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
 		
 
-		setRequired(true, CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
+		setRequired(true, CommunityDto.NAME, CommunityDto.NAME,CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();

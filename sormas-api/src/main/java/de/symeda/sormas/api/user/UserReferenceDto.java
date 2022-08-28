@@ -36,6 +36,8 @@ public class UserReferenceDto extends ReferenceDto {
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	private String lastName;
+	
+	private UserType usertype;
 
 	public UserReferenceDto() {
 	}
@@ -43,15 +45,17 @@ public class UserReferenceDto extends ReferenceDto {
 	public UserReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
+	
 
-	public UserReferenceDto(String uuid, String firstName, String lastName, Set<UserRole> userRoles) {
+	public UserReferenceDto(String uuid, String firstName, String lastName, Set<UserRole> userRoles, UserType userType) {
 		setUuid(uuid);
-		setCaption(buildCaption(firstName, lastName, userRoles));
+	//	setCaption(buildCaption(firstName, lastName, userRoles, userType));
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.usertype = userType;
 	}
 
-	public static String buildCaption(String firstName, String lastName, Set<UserRole> userRoles) {
+	public static String buildCaption(String firstName, String lastName, Set<UserRole> userRoles, UserType userType) {
 
 		StringBuilder result = new StringBuilder();
 		result.append(DataHelper.toStringNullable(firstName)).append(" ").append(DataHelper.toStringNullable(lastName).toUpperCase());
@@ -67,6 +71,7 @@ public class UserReferenceDto extends ReferenceDto {
 				result.append(userRole.toString());
 			}
 		}
+		result.append(userType.toString());
 		return result.toString();
 	}
 
@@ -77,9 +82,13 @@ public class UserReferenceDto extends ReferenceDto {
 	public String getLastName() {
 		return lastName;
 	}
+	
+	public UserType getUsertype() {
+		return usertype;
+	}
 
 	@JsonIgnore
 	public String getShortCaption() {
-		return buildCaption(firstName, lastName, null);
+		return buildCaption(firstName, lastName, null, null);
 	}
 }

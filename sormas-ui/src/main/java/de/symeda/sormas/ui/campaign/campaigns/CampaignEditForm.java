@@ -32,8 +32,10 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.ui.UserProvider;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.icons.VaadinIcons;
@@ -58,6 +60,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignPhase;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -278,7 +281,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		
 		parentTab1.addComponent(layout);
 		parentTab1.setCaption("Pre-Campaign Phase");
-		tabsheetParent.addTab(parentTab1);
+		if(UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+			tabsheetParent.addTab(parentTab1);
+		}
+		
 		
 		
 
@@ -328,7 +334,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		
 		parentTab3.addComponent(layoutPost);
 		parentTab3.setCaption("Intra-Campaign Phase");
-		tabsheetParent.addTab(parentTab3);
+		if(UserProvider.getCurrent().hasUserType(UserType.EOC_USER) || UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+			tabsheetParent.addTab(parentTab3);
+		}
+		//tabsheetParent.addTab(parentTab3);
 		tabsheetParent.addSelectedTabChangeListener(event -> campaignFormsGridComponent.ListnerCampaignFilter(event));
 		//stop
 		
@@ -381,7 +390,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		
 		parentTab2.addComponent(layoutIntra);
 		parentTab2.setCaption("Post-Campaign Phase");
-		tabsheetParent.addTab(parentTab2);
+		if(UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+			tabsheetParent.addTab(parentTab2);
+		}
+		
+		
 		
 		//stop
 		

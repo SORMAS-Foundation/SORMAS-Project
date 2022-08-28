@@ -214,15 +214,20 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 		cbDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			
-			if(district != null) {
-				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid());
-			
-			for (CommunityReferenceDto item : items) {
-				item.setCaption(item.getNumber() != null ? item.getNumber().toString() : null);
+
+			if (district != null) {
+				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade()
+						.getAllActiveByDistrict(district.getUuid());
+				for (CommunityReferenceDto item : items) {
+					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
+				}
+				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
+
 			}
-			FieldHelper.updateItems(cbCommunity, district != null ? items.stream().filter(ce -> ce.getCaption() != null).collect(Collectors.toList()) : null);
-			}
+
+//			FieldHelper.updateItems(cbCommunity, district != null ? items.stream().filter(ce -> ce.getCaption() != null).collect(Collectors.toList()) : null);
+	
+
 		});
 		System.out.println(Page.getCurrent().getLocation());
 		URI location = Page.getCurrent().getLocation();

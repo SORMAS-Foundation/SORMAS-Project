@@ -53,7 +53,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRightGroup;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
@@ -104,7 +106,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 //@StyleSheet("vaadin://map/trlImplementation.css")
 public class MainScreen extends HorizontalLayout {
-	
+
 	// Add new views to this set to make sure that the right error page is shown
 	private static final Set<String> KNOWN_VIEWS = initKnownViews();
 
@@ -219,9 +221,9 @@ public class MainScreen extends HorizontalLayout {
 					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
 		}
 
-		//menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
-			//	VaadinIcons.MAP_MARKER);
-
+		// menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME,
+		// I18nProperties.getCaption("GIS"),
+		// VaadinIcons.MAP_MARKER);
 
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports),
@@ -233,22 +235,25 @@ public class MainScreen extends HorizontalLayout {
 					I18nProperties.getCaption(Captions.mainMenuStatistics), VaadinIcons.BAR_CHART);
 		}
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
-			AbstractConfigurationView.registerViews(navigator);
-			menu.addView(
-					FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
-							? OutbreaksView.class
-							: RegionsView.class,
-					AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration),
-					VaadinIcons.COG_O);
+			if (permitted(UserType.WHO_USER) ||  permitted(UserType.EOC_USER) && permitted(UserRole.ADMIN)) {
+				AbstractConfigurationView.registerViews(navigator);
+				menu.addView(
+						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
+								? OutbreaksView.class
+								: RegionsView.class,
+						AbstractConfigurationView.ROOT_VIEW_NAME,
+						I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COG_O);
+			}
 		}
 		if (permitted(UserRight.USER_VIEW)) {
+			if (permitted(UserType.WHO_USER) ||  permitted(UserType.EOC_USER) && permitted(UserRole.ADMIN)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers),
-					VaadinIcons.USERS);
+					VaadinIcons.USERS);}
 		}
 
 		menu.createViewButtonx(Captions.actionSettings, I18nProperties.getCaption(Captions.language),
 				VaadinIcons.GLOBE_WIRE);
-		
+
 		menu.createAccountViewButton(Captions.actionSettings, I18nProperties.getCaption(Captions.Account),
 				VaadinIcons.CLIPBOARD_USER);
 
@@ -262,39 +267,31 @@ public class MainScreen extends HorizontalLayout {
 		// I18nProperties.getCaption("GIS"),
 		// VaadinIcons.MAP_MARKER);
 
-		
 		menu.addView(LogoutView.class, LogoutView.VIEW_NAME,
-				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+				I18nProperties.getCaption(Captions.actionLogout) + " | " + UserProvider.getCurrent().getUserName(),
 				VaadinIcons.POWER_OFF);
 		/*
-		 * //trying to include a javascript from this method
-		 MainScreenAbstract dd = new MainScreenAbstract();
-		menu.addComponent(dd);
-		
-		UI.getCurrent().setResponsive(true);
-		
-		JavaScript.getCurrent().execute("setTimeout(myStopFunction, 4000);"
-				+ "function myStopFunction() {"
-				+ "console.log('adding transalator div');"
-				+ "		const h2 = document.getElementById('dashboard_logout');\n"
-				+ "		let html = \"<div id='google_translate_element'></div>\";\n"
-				+ "		h2.insertAdjacentHTML('afterend', html);"
-				+ "console.log('done');"
-				+ "}"
-				
-				
-				+ ""
-				+ "setTimeout(googleTranslateElementInitLer, 5000);"
-				+ "function googleTranslateElementInitLer(){"
-				+ "googleTranslateElementInit_()"
-				+ "}"
-				+ " function googleTranslateElementInit_() { \n"
-				+ "            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element'"
-				+ "            ); \n"
-				+ "        } ");
-		
-		
-*/
+		 * //trying to include a javascript from this method MainScreenAbstract dd = new
+		 * MainScreenAbstract(); menu.addComponent(dd);
+		 * 
+		 * UI.getCurrent().setResponsive(true);
+		 * 
+		 * JavaScript.getCurrent().execute("setTimeout(myStopFunction, 4000);" +
+		 * "function myStopFunction() {" + "console.log('adding transalator div');" +
+		 * "		const h2 = document.getElementById('dashboard_logout');\n" +
+		 * "		let html = \"<div id='google_translate_element'></div>\";\n" +
+		 * "		h2.insertAdjacentHTML('afterend', html);" + "console.log('done');" +
+		 * "}"
+		 * 
+		 * 
+		 * + "" + "setTimeout(googleTranslateElementInitLer, 5000);" +
+		 * "function googleTranslateElementInitLer(){" + "googleTranslateElementInit_()"
+		 * + "}" + " function googleTranslateElementInit_() { \n" +
+		 * "            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element'"
+		 * + "            ); \n" + "        } ");
+		 * 
+		 * 
+		 */
 		navigator.addViewChangeListener(viewChangeListener);
 
 		// Add GDPR window

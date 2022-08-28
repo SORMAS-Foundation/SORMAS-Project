@@ -59,9 +59,10 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 		campaignSelector = new CampaignSelector();
 		filterForm = new CampaignStatisticsFilterForm();
-		
+
 		criteria.setCampaign(campaignSelector.getValue());
-		criteria.setGroupingLevel(CampaignJurisdictionLevel.AREA);
+		// criteria.setGroupingLevel(null);
+		criteria.setGroupingLevel(CampaignJurisdictionLevel.NONE);
 		addHeaderComponent(campaignSelector);
 		grid = new CampaignStatisticsGrid(criteria);
 
@@ -74,47 +75,58 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 				exportLayout.setWidth(250, Unit.PIXELS);
 			}
 
-			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD,
+					exportLayout);
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
-				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
-				
-				
+				StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", grid,
+						ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
+				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export,
+						Strings.infoBasicExport);
+
 			}
-			
+
 			exportPopupButton.addClickListener(e -> {
 				exportLayout.removeAllComponents();
-				String formNamee = criteria.getCampaignFormMeta() == null ? "All_Forms" : criteria.getCampaignFormMeta().getCaption();
-				String camNamee = campaignSelector.getValue() == null ? "All_Campaigns" : campaignSelector.getValue().toString();
-				StreamResource streamResourcex = GridExportStreamResource.createStreamResource(camNamee+"_"+formNamee,"APMIS",grid, ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
-			//	streamResource = GridExportStreamResource.createStreamResource("", "", grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
-				addExportButton(streamResourcex, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+				String formNamee = criteria.getCampaignFormMeta() == null ? "All_Forms"
+						: criteria.getCampaignFormMeta().getCaption();
+				String camNamee = campaignSelector.getValue() == null ? "All_Campaigns"
+						: campaignSelector.getValue().toString();
+				StreamResource streamResourcex = GridExportStreamResource.createStreamResource(
+						camNamee + "_" + formNamee, "APMIS", grid, ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
+				// streamResource = GridExportStreamResource.createStreamResource("", "", grid,
+				// ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+				addExportButton(streamResourcex, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export,
+						Strings.infoBasicExport);
 			});
 		}
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		JurisdictionLevel level = null;
 		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
-		
+
 		JurisdictionSelector jurisdictionSelector = new JurisdictionSelector();
 		jurisdictionSelector.addValueChangeListener(e -> {
 			CampaignJurisdictionLevel groupingValue = null;
 			String selectorValue = e.getValue().toString();
-			switch(selectorValue) {
-					
-				case "I18nProperties.getCaption(Captions.Campaign_area)":
-					groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.AREA);
-				case "I18nProperties.getCaption(Captions.Campaign_region)":
-					groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.REGION);
-				case "I18nProperties.getCaption(Captions.Campaign_district)":
-					groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.DISTRICT);
-				case "I18nProperties.getCaption(Captions.Campaign_community)":
-					groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.COMMUNITY);
+			System.out.println("+++++++++++++++++++}}}}}}}}}}}}}}}} "+selectorValue);
+			switch (selectorValue) {
+			case "None": //This is a temporary fix, the caption should be set so the condition passes 
+				groupingValue = CampaignJurisdictionLevel.NONE;
+				System.out.println("+++++++++++++++++++"+groupingValue.toString());
+			case "I18nProperties.getCaption(Captions.Campaign_area)":
+				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.AREA);
+			case "I18nProperties.getCaption(Captions.Campaign_region)":
+				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.REGION);
+			case "I18nProperties.getCaption(Captions.Campaign_district)":
+				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.DISTRICT);
+			case "I18nProperties.getCaption(Captions.Campaign_community)":
+				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.COMMUNITY);
 			}
-			
-			//CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel) e.getValue();
+
+			// CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel)
+			// e.getValue();
 			criteria.setGroupingLevel(groupingValue);
 			grid.setColumnsVisibility(groupingValue);
 			grid.reload();
@@ -129,7 +141,8 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		filtersLayout.setSpacing(true);
 
 		filterForm = createFilterForm();
-		criteria.setCampaignFormMeta(null); //makes sure campaign form selection is set to null always on page reload [issue 120]- iyanuu
+		criteria.setCampaignFormMeta(null); // makes sure campaign form selection is set to null always on page reload
+											// [issue 120]- iyanuu
 		filtersLayout.addComponent(filterForm);
 		filtersLayout.setComponentAlignment(filterForm, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterForm, 0.8f);
@@ -146,8 +159,8 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
 			grid.setColumnsVisibility(criteria.getGroupingLevel());
-			grid.reload(); 
-			//navigateTo(criteria);
+			grid.reload();
+			// navigateTo(criteria);
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {

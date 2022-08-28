@@ -35,12 +35,14 @@ public class UserRoleConfigDto extends EntityDto {
 
 	private UserRole userRole;
 	private Set<UserRight> userRights;
+	private UserType userType;
 
-	public static UserRoleConfigDto build(UserRole userRole, UserRight... userRights) {
+	public static UserRoleConfigDto build(UserRole userRole, UserType userType, UserRight... userRights) {
 
 		UserRoleConfigDto dto = new UserRoleConfigDto();
 		dto.setUuid(DataHelper.createUuid());
 		dto.setUserRole(userRole);
+		dto.setUserType(userType);
 		Set<UserRight> userRightsSet = new HashSet<UserRight>();
 		userRightsSet.addAll(Arrays.asList(userRights));
 		dto.setUserRights(userRightsSet);
@@ -62,4 +64,14 @@ public class UserRoleConfigDto extends EntityDto {
 	public void setUserRights(Set<UserRight> userRights) {
 		this.userRights = userRights;
 	}
+
+	public UserType getUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserType userType) {
+		this.userType = userType;
+	}
+	
+	
 }

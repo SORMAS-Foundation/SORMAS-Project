@@ -45,6 +45,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -62,6 +63,7 @@ public class User extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "users";
 	public static final String TABLE_NAME_USERROLES = "users_userroles";
+	public static final String TABLE_NAME_USERTYPES = "users_usertypes";
 
 	public static final String USER_NAME = "userName";
 	public static final String PASSWORD = "password";
@@ -79,6 +81,7 @@ public class User extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String USER_ROLES = "userRoles";
+	public static final String USER_TYPE = "usertype";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
@@ -101,7 +104,10 @@ public class User extends AbstractDomainObject {
 	private Location address;
 
 	private Set<UserRole> userRoles;
-
+	//can add a user type property to the user  
+	private UserType usertype;
+	
+	
 	private Area area;
 	private Region region;
 	private District district;
@@ -256,6 +262,22 @@ public class User extends AbstractDomainObject {
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
 	}
+	
+	//@ElementCollection(fetch = FetchType.LAZY)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = TABLE_NAME_USERTYPES,
+	joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
+	uniqueConstraints = @UniqueConstraint(columnNames = {
+		"user_id",
+		"usertype" }))
+	@Column(name = "usertype", nullable = false)
+	public UserType getUsertype() {
+		return usertype;
+	}
+
+	public void setUsertype(UserType usertype) {
+		this.usertype = usertype;
+	}
 
 	@ManyToOne(cascade = {})
 	public User getAssociatedOfficer() {
@@ -268,11 +290,11 @@ public class User extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return UserReferenceDto.buildCaption(getFirstName(), getLastName(), getUserRoles());
+		return UserReferenceDto.buildCaption(getFirstName(), getLastName(), getUserRoles(), getUsertype());
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), getUsertype());
 	}
 
 	@Transient

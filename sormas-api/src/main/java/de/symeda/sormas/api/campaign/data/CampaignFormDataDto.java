@@ -182,6 +182,8 @@ public class CampaignFormDataDto extends EntityDto {
 		this.creatingUser = creatingUser;
 	}
 
+	
+	//This is the implementation of the open street map for form submission
 	/*public Double getLatitude() {
 		return latitude;
 	}

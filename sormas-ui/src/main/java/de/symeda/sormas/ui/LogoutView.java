@@ -36,6 +36,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
@@ -44,7 +45,9 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -79,33 +82,51 @@ public class LogoutView extends VerticalLayout implements View {
 		{
 			VerticalLayout infoLayout = new VerticalLayout();
 			infoLayout.setMargin(new MarginInfo(true, false, false, false));
-			//infoLayout.addComponent(showSettingsPopup());
 			infoLayout.addStyleName(CssStyles.H1);
-			
-			LoginHelper.logout();
 
-			
-
+			// display counter here to count down and run logout code on confirm and timer
+			// end
+			showConfirmPopup();
+			// LoginHelper.logout();
 			aboutLayout.addComponent(infoLayout);
 		}
 
-		
 		setSizeFull();
 		setStyleName("about-view");
 		addComponent(aboutLayout);
 		setComponentAlignment(aboutLayout, Alignment.MIDDLE_CENTER);
 	}
 
-	private void showSettingsPopup() {
+	private void showConfirmPopup() {
 
 		Window window = VaadinUiUtil.createPopupWindow();
-		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
+		// window.setCaption("Log Out");
 		window.setModal(true);
+		window.setClosable(false);
+		VerticalLayout popupContent = new VerticalLayout();
+		Label caption = new Label("Are you sure you want to logout?");
+		popupContent.addComponent(caption);
+		HorizontalLayout buttonContent = new HorizontalLayout();
+		Button button1 = new Button("Confirm");
+		button1.addStyleNames(ValoTheme.BUTTON_DANGER);
+		button1.addClickListener(clickEvent -> {
+			Page.getCurrent().getJavaScript()
+					.execute("var url = window.location.toString();\r\n"
+							+ "if (url.includes(\"dashboard_logout\")); {\r\n"
+							+ "    window.location = url.replace(/dashboard_logout/, '');}\r\n" + "");
+			LoginHelper.logout();
+		});
+		Button button2 = new Button("Cancel");
+		button2.addClickListener(clickEvent -> {
+			window.close();
+			Page.getCurrent().getJavaScript().execute("history.back();"); 
+		});
 
-		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController()
-				.getUserSettingsComponent(() -> window.close());
+		buttonContent.addComponent(button1);
+		buttonContent.addComponent(button2);
+		popupContent.addComponent(buttonContent);
 
-		window.setContent(component);
+		window.setContent(popupContent);
 		UI.getCurrent().addWindow(window);
 	}
 }

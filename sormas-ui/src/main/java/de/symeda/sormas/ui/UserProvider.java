@@ -30,12 +30,14 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserType;
 
 public class UserProvider {
 
 	private UserDto user;
 	private UserReferenceDto userReference;
 	private Set<UserRight> userRights;
+	private UserType usertype;
 
 	public UserDto getUser() {
 
@@ -56,9 +58,20 @@ public class UserProvider {
 	public Set<UserRole> getUserRoles() {
 		return getUser().getUserRoles();
 	}
+	
+//	public UserType getUsertype() {
+//		if (usertype == null) {
+//			usertype = FacadeProvider.getUserRoleConfigFacade().get;
+//		}
+//		return usertype;
+//	}
 
 	public boolean hasUserRole(UserRole userRole) {
 		return getUser().getUserRoles().contains(userRole);
+	}
+	
+	public boolean hasUserType(UserType userType) {
+		return getUser().getUsertype().equals(userType);
 	}
 
 	/**

@@ -137,9 +137,9 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.dueDate = dueDate;
 		this.suggestedStart = suggestedStart;
 		this.taskStatus = taskStatus;
-		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName, null);
+		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName, null, null);
 		this.creatorComment = creatorComment;
-		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
+		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null, null);
 		this.assigneeReply = assigneeReply;
 		this.community = community;
 		this.district = district;
