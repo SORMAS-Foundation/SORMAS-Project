@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.Disease;
@@ -38,7 +39,7 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	JournalPersonDto getPersonForJournal(String uuid);
 
-	PersonDto save(@Valid PersonDto source, boolean skipValidation);
+	PersonDto save(@Valid @NotNull PersonDto source, boolean skipValidation);
 
 	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 

@@ -419,7 +419,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
-	public PersonDto save(@Valid PersonDto source, boolean skipValidation) throws ValidationRuntimeException {
+	public PersonDto save(@Valid @NotNull PersonDto source, boolean skipValidation) throws ValidationRuntimeException {
 		return save(source, true, true, skipValidation);
 	}
 
@@ -1738,7 +1738,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	public boolean isPersonAssociatedWithNotDeletedEntities(String uuid) {
-		return personService.isPersonAssociatedWithNotDeletedEntities(uuid);
+		return service.isPersonAssociatedWithNotDeletedEntities(uuid);
 	}
 
 	@Override
