@@ -1049,9 +1049,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public Boolean isEditAllowed(String sampleUuid) {
-		Sample sample = sampleService.getByUuid(sampleUuid);
-
+	public Boolean isEditAllowed(String uuid) {
+		Sample sample = sampleService.getByUuid(uuid);
 		return sampleService.isEditAllowed(sample);
 	}
 

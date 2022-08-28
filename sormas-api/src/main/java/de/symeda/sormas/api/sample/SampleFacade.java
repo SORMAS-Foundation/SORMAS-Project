@@ -77,7 +77,7 @@ public interface SampleFacade {
 
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
 
-	Boolean isSampleEditAllowed(String sampleUuid);
+	Boolean isEditAllowed(String uuid);
 
 	List<SampleDto> getByContactUuids(List<String> contactUuids);
 
