@@ -17,22 +17,21 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.navigator.ViewChangeListener;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 
-public abstract class AbstractCampaignDataView extends AbstractDetailView<CampaignFormDataReferenceDto> {
+public abstract class AbstractCampaignDataView extends AbstractEditAllowedDetailView<CampaignFormDataReferenceDto> {
 
 	private static final long serialVersionUID = 4919695277077799182L;
 
 	public static final String ROOT_VIEW_NAME = CampaignDataView.VIEW_NAME;
 
 	protected AbstractCampaignDataView(String viewName) {
-		super(viewName);
+		super(viewName, FacadeProvider.getCampaignFacade());
 	}
 
 	@Override

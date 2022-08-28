@@ -1564,7 +1564,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<ContactJurisdictionFlagsDto> cq = cb.createQuery(ContactJurisdictionFlagsDto.class);
 		Root<Contact> root = cq.from(Contact.class);
 		cq.multiselect(getJurisdictionSelections(new ContactQueryContext(cb, cq, root)));
-		cq.where(cb.equal(root.get(AbstractDomainObject.UUID), contact.getUuid()));
+		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
 		return em.createQuery(cq).getSingleResult();
 	}
 
