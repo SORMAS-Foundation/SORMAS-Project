@@ -358,7 +358,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingSample, userService, UserRight.SAMPLE_CREATE, UserRight.SAMPLE_EDIT);
 
-		if (internal && existingSample != null && !sampleService.isSampleEditAllowed(existingSample)) {
+		if (internal && existingSample != null && !sampleService.isEditAllowed(existingSample)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
 		}
 
@@ -413,18 +413,22 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
+			.collect(
+				Collectors.toMap(
+					s -> associatedObjectFn.apply(s).getUuid(),
+					s -> s,
+					(s1, s2) -> {
 
-				// keep the positive one
-				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s1;
-				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s2;
-				}
+						// keep the positive one
+						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
 
-				// ordered by creation date by default, so always keep the first one
-				return s1;
-			}))
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
@@ -1044,10 +1048,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		return count > 0;
 	}
 
-	public Boolean isSampleEditAllowed(String sampleUuid) {
+	@Override
+	public Boolean isEditAllowed(String sampleUuid) {
 		Sample sample = sampleService.getByUuid(sampleUuid);
 
-		return sampleService.isSampleEditAllowed(sample);
+		return sampleService.isEditAllowed(sample);
 	}
 
 	@RightsAllowed({

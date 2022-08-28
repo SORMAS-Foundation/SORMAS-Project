@@ -506,7 +506,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(EventParticipant eventParticipant) {
+	public EditPermissionType getEditPermissionType(EventParticipant eventParticipant) {
 
 		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
@@ -516,7 +516,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.isEditAllowed(eventParticipant);
+		return super.getEditPermissionType(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {

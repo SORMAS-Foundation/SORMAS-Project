@@ -1522,11 +1522,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.isEditAllowed(caze);
+		return super.getEditPermissionType(caze);
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Case caze) {
+	public EditPermissionType getEditPermissionType(Case caze) {
 
 		if (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
@@ -1536,7 +1536,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.isEditAllowed(caze);
+		return super.getEditPermissionType(caze);
 
 	}
 

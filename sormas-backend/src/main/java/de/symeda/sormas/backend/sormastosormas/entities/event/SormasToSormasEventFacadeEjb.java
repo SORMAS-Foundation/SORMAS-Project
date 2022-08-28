@@ -136,7 +136,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 
 	@Override
 	protected EditPermissionType isEntityEditAllowed(Event event) {
-		return eventService.isEditAllowed(event);
+		return eventService.getEditPermissionType(event);
 	}
 
 	@Override

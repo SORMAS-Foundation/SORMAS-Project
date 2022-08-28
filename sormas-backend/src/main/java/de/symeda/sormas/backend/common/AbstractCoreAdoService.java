@@ -165,7 +165,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		});
 	}
 
-	public EditPermissionType isEditAllowed(ADO entity) {
+	public EditPermissionType getEditPermissionType(ADO entity) {
 		if (entity.isArchived()) {
 			return featureConfigurationFacade.isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
 				? EditPermissionType.ALLOWED
@@ -174,4 +174,9 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 		return EditPermissionType.ALLOWED;
 	}
+
+	public boolean isEditAllowed(ADO entity) {
+		return getEditPermissionType(entity) == EditPermissionType.ALLOWED;
+	}
+
 }

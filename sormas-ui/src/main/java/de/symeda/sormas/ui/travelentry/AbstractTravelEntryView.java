@@ -6,7 +6,6 @@ import java.util.List;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Component;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -17,15 +16,15 @@ import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
-public abstract class AbstractTravelEntryView extends AbstractDetailView<TravelEntryReferenceDto> {
+public abstract class AbstractTravelEntryView extends AbstractEditAllowedDetailView<TravelEntryReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = TravelEntriesView.VIEW_NAME;
 
 	protected AbstractTravelEntryView(String viewName) {
-		super(viewName);
+		super(viewName, FacadeProvider.getTravelEntryFacade());
 	}
 
 	@Override
@@ -59,16 +58,11 @@ public abstract class AbstractTravelEntryView extends AbstractDetailView<TravelE
 	}
 
 	public void setTravelEntryEditPermission(Component component) {
-		boolean isTravelEntryEditAllowed = isTravelEntryEditAllowed();
-
-		if (!isTravelEntryEditAllowed) {
+		if (!isEditAllowed()) {
 			component.setEnabled(false);
 		}
 	}
 
-	protected Boolean isTravelEntryEditAllowed() {
-		return FacadeProvider.getTravelEntryFacade().isEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
-	}
 
 	@Override
 	protected void setSubComponent(DirtyStateComponent newComponent) {

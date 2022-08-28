@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.events;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
@@ -29,15 +30,16 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 @SuppressWarnings("serial")
-public abstract class AbstractEventView extends AbstractDetailView<EventReferenceDto> {
+public abstract class AbstractEventView extends AbstractEditAllowedDetailView<EventReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = EventsView.VIEW_NAME;
 
 	protected AbstractEventView(String viewName) {
-		super(viewName);
+		super(viewName, FacadeProvider.getEventFacade());
 	}
 
 	@Override
@@ -90,13 +92,9 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 	}
 
 	public void setEventEditPermission(Component component) {
-		if (!isEventEditAllowed()) {
+		if (!isEditAllowed()) {
 			component.setEnabled(false);
 		}
-	}
-
-	protected boolean isEventEditAllowed() {
-		return FacadeProvider.getEventFacade().isEditAllowed(getEventRef().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
 	protected boolean isEventDeleted() {

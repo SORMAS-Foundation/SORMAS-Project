@@ -199,7 +199,7 @@ public class CaseDataView extends AbstractCaseView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), caze, documentList);
 
-		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().isEditAllowed(caze.getUuid());
+		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid());
 
 		if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

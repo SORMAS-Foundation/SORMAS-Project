@@ -46,13 +46,15 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 	void dearchive(List<String> entityUuids, String dearchiveReason);
 
 	default void setArchiveInExternalSurveillanceToolForEntity(String uuid, boolean archived) throws ExternalSurveillanceToolException {
-	};
+	}
 
 	default void setArchiveInExternalSurveillanceToolForEntities(List<String> uuid, boolean archived) throws ExternalSurveillanceToolException {
-	};
+	}
 
 	Date calculateEndOfProcessingDate(String entityUuids);
 
-	EditPermissionType isEditAllowed(String uuid);
+	EditPermissionType getEditPermissionType(String uuid);
+
+	boolean isEditAllowed(String uuid);
 
 }

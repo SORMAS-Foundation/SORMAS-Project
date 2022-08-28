@@ -1577,7 +1577,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Contact contact) {
+	public EditPermissionType getEditPermissionType(Contact contact) {
 
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
@@ -1587,7 +1587,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.isEditAllowed(contact);
+		return super.getEditPermissionType(contact);
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {

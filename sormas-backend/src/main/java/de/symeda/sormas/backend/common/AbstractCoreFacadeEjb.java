@@ -98,7 +98,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	public DTO doSave(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (existingAdo != null && !service.isEditAllowed(existingAdo).equals(EditPermissionType.ALLOWED)) {
+		if (existingAdo != null && !service.isEditAllowed(existingAdo)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}
 
@@ -259,8 +259,13 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return service.calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
 	}
 
-	public EditPermissionType isEditAllowed(String uuid) {
-		ADO ado = service.getByUuid(uuid);
-		return service.isEditAllowed(ado);
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		return service.getEditPermissionType(service.getByUuid(uuid));
+	}
+
+	@Override
+	public boolean isEditAllowed(String uuid) {
+		return service.isEditAllowed(service.getByUuid(uuid));
 	}
 }

@@ -23,6 +23,7 @@ import java.util.List;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -42,16 +43,17 @@ import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
 
 @SuppressWarnings("serial")
-public abstract class AbstractContactView extends AbstractDetailView<ContactReferenceDto> {
+public abstract class AbstractContactView extends AbstractEditAllowedDetailView<ContactReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = ContactsView.VIEW_NAME;
 
 	protected AbstractContactView(String viewName) {
-		super(viewName);
+		super(viewName, FacadeProvider.getContactFacade());
 	}
 
 	@Override
@@ -140,12 +142,8 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	}
 
 	public void setContactEditPermission(Component component) {
-		if (!isContactEditAllowed()) {
+		if (!isEditAllowed()) {
 			getComponent(getComponentIndex(component)).setEnabled(false);
 		}
-	}
-
-	protected boolean isContactEditAllowed() {
-		return FacadeProvider.getContactFacade().isEditAllowed(getContactRef().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

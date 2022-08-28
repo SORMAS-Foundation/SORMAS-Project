@@ -397,7 +397,8 @@ public class CaseContactsView extends AbstractCaseView {
 		setCaseEditPermission(gridLayout);
 	}
 
-	protected boolean isCaseEditAllowed() {
+	@Override
+	protected boolean isEditAllowed() {
 		return FacadeProvider.getCaseFacade().isEditContactAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 

@@ -1094,7 +1094,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		return cb.isFalse(root.get(Sample.DELETED));
 	}
 
-	public Boolean isSampleEditAllowed(Sample sample) {
+
+	public Boolean isEditAllowed(Sample sample) {
 		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return false;
 		}

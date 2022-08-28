@@ -337,7 +337,7 @@ public class ImmunizationFacadeEjb
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingImmunization, userService, UserRight.IMMUNIZATION_CREATE, UserRight.IMMUNIZATION_EDIT);
 
-		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
 		}
 

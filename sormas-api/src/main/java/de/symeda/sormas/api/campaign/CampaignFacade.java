@@ -21,5 +21,4 @@ public interface CampaignFacade extends CoreFacade<CampaignDto, CampaignIndexDto
 
 	void validate(CampaignReferenceDto campaignReferenceDto);
 
-	EditPermissionType isCampaignEditAllowed(String caseUuid);
 }

@@ -270,7 +270,7 @@ public class ContactDataView extends AbstractContactView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), contactDto, documentList);
 
-		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().isEditAllowed(contactDto.getUuid());
+		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
 
 		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

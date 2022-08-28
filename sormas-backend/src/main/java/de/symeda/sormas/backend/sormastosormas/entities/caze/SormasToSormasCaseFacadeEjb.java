@@ -156,7 +156,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 
 	@Override
 	protected EditPermissionType isEntityEditAllowed(Case ado) {
-		return caseService.isEditAllowed(ado);
+		return caseService.getEditPermissionType(ado);
 	}
 
 	@Override

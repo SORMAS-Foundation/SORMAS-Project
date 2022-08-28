@@ -621,6 +621,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected abstract ValidationErrorGroup buildEntityValidationGroupNameForAdo(ADO ado);
 
+	// todo all implementations only call the corresponding service.getEditAllowedType mehtod
+	//  this can be implemented here. Inject service and call service method directly. Remove case/contact/event service
+	//  from this class.
 	protected abstract EditPermissionType isEntityEditAllowed(ADO ado);
 
 	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {

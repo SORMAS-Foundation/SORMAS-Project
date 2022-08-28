@@ -68,7 +68,4 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 		return ROOT_VIEW_NAME;
 	}
 
-	protected boolean isCampaignEditAllowed() {
-		return FacadeProvider.getCampaignFacade().isCampaignEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
-	}
 }

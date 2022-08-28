@@ -196,13 +196,13 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(TravelEntry travelEntry) {
+	public EditPermissionType getEditPermissionType(TravelEntry travelEntry) {
 
 		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) || !inJurisdictionOrOwned(travelEntry)) {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.isEditAllowed(travelEntry);
+		return super.getEditPermissionType(travelEntry);
 	}
 
 	@Override

@@ -171,7 +171,7 @@ public class CampaignFacadeEjb
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
-		if (!service.isEditAllowed(campaign).equals(EditPermissionType.ALLOWED)) {
+		if (!service.isEditAllowed(campaign)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}
 		service.ensurePersisted(campaign);
@@ -413,12 +413,6 @@ public class CampaignFacadeEjb
 	@Override
 	public DeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return null; // campaigns do not support automatic deletion yet
-	}
-
-	@Override
-	public EditPermissionType isCampaignEditAllowed(String caseUuid) {
-		Campaign campaign = service.getByUuid(caseUuid);
-		return service.isEditAllowed(campaign);
 	}
 
 	@Override

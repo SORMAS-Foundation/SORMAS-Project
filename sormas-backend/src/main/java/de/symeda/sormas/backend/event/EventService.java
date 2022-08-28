@@ -999,7 +999,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Event event) {
+	public EditPermissionType getEditPermissionType(Event event) {
 
 		if (event.getSormasToSormasOriginInfo() != null && !event.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
@@ -1009,7 +1009,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.isEditAllowed(event);
+		return super.getEditPermissionType(event);
 	}
 
 	public boolean inJurisdictionOrOwned(Event event, User user) {

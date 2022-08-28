@@ -25,7 +25,6 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -47,7 +46,7 @@ import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
@@ -55,7 +54,7 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
-public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceDto> {
+public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<CaseReferenceDto> {
 
 	public static final String VIEW_MODE_URL_PREFIX = "v";
 
@@ -70,7 +69,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	private final Property.ValueChangeListener viewModeToggleListener;
 
 	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
-		super(viewName);
+		super(viewName, FacadeProvider.getCaseFacade());
 		caseFollowupEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
@@ -285,13 +284,8 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	public void setCaseEditPermission(Component component) {
-
-		if (!isCaseEditAllowed()) {
+		if (!isEditAllowed()) {
 			component.setEnabled(false);
 		}
-	}
-
-	protected boolean isCaseEditAllowed() {
-		return FacadeProvider.getCaseFacade().isEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

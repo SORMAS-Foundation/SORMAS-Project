@@ -563,7 +563,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Immunization immunization) {
+	public EditPermissionType getEditPermissionType(Immunization immunization) {
 
 		if (!userService.hasRight(UserRight.IMMUNIZATION_EDIT)) {
 			return EditPermissionType.REFUSED;
@@ -577,6 +577,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.isEditAllowed(immunization);
+		return super.getEditPermissionType(immunization);
 	}
 }

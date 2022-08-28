@@ -185,7 +185,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 
 	@Override
 	protected EditPermissionType isEntityEditAllowed(Contact contact) {
-		return contactService.isEditAllowed(contact);
+		return contactService.getEditPermissionType(contact);
 	}
 
 	@Override
