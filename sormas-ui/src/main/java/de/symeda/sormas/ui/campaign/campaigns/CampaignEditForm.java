@@ -483,14 +483,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	@Override
 	public CampaignDto getValue() {
 		final CampaignDto campaignDto = super.getValue();
-		System.out.println("+++++++@@@  getting all values from phases@@@+++++++++++");
 		 HashSet<CampaignFormMetaReferenceDto> set = new HashSet<>();
 		 set.addAll(campaignFormsGridComponent.getItems());
 		 set.addAll(campaignFormsGridComponent_1.getItems());
 		 set.addAll(campaignFormsGridComponent_2.getItems());
 		 
-		 System.out.println("+++++++@@@@@@@@@@   getting all values from phases @@@@@@@@@@@+++++++++++"+set.toString());
-		
 		campaignDto.setCampaignFormMetas(new HashSet<>(set));
 		
 		

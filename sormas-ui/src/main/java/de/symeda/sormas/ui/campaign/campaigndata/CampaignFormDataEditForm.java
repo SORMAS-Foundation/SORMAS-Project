@@ -21,6 +21,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.NoResultException;
 
@@ -201,21 +202,27 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbRegion,
 					area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
+			cbCommunity.clear();
 		});
 
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbDistrict,
 					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+			cbCommunity.clear();
 		});
 
 		cbDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid());
+			
+			if(district != null) {
+				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid());
+			
 			for (CommunityReferenceDto item : items) {
-				item.setCaption(item.getNumber().toString());
+				item.setCaption(item.getNumber() != null ? item.getNumber().toString() : null);
 			}
-			FieldHelper.updateItems(cbCommunity, district != null ? items : null);
+			FieldHelper.updateItems(cbCommunity, district != null ? items.stream().filter(ce -> ce.getCaption() != null).collect(Collectors.toList()) : null);
+			}
 		});
 		System.out.println(Page.getCurrent().getLocation());
 		URI location = Page.getCurrent().getLocation();

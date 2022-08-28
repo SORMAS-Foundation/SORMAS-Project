@@ -103,9 +103,11 @@ public class CampaignFormMeta extends AbstractDomainObject {
 					ObjectMapper mapper = new ObjectMapper();
 					campaignFormElementsList = Arrays.asList(mapper.readValue(campaignFormElements, CampaignFormElement[].class));
 				} catch (IOException e) {
+					System.out.println(e.getMessage());
 					throw new ValidationRuntimeException(
 						"Content of campaignFormElements could not be parsed to List<CampaignFormElement> - ID: " + getId());
 				}
+				
 			}
 		}
 		return campaignFormElementsList;

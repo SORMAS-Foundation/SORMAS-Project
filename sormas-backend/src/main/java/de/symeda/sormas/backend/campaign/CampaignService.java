@@ -130,7 +130,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public int cloneForm(Campaign uuidx) {
+	public int cloneForm(Campaign uuidx, String userCreatingx) {
 		
 		Random r = new Random();
 		int low = 10;
@@ -148,25 +148,28 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		
 		//String cdc = "insert into campaigns (SELECT CAST(CONCAT('-1',id,'"+result+"') AS bigint) as id, CONCAT(uuid,'-DUP') as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, creatinguser_id, deleted, archived, sys_period, dashboardelements, cluster, round FROM campaigns where name='"+uuidx+"')";
 		try{ 
-			int cds = cloneFormx1(uuidx, result, resultx);
+			String cds = cloneFormx1x(uuidx, result, resultx, userCreatingx);
 		}finally{
 			cdv = "insert into campaign_campaignformmeta (SELECT CAST(CONCAT('"+resultx+"',dc.id,'"+result+"') AS bigint) as id, cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"+uuidx+"' and deleted = false)";
 			
-			System.out.println(cdv+"+++++++++++++++++rrrrrrrrrrrrrrrrrrr++++++++++++++++++++++++++++++++++ccccccccccccccccccccccccccccc+++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println(cdv+"++++++++++++++ccccccccccc++++++6++++++++++++++++++++");
 			
 		}
 		return em.createNativeQuery(cdv).executeUpdate();
 	}
 	
 	
-	public int cloneFormx1(Campaign uuidx, int unixd, int uuiss) {
+	public String cloneFormx1x(Campaign uuidx, int unixd, int uuiss, String userCreating) {
+		
+		
 		
 		UUID uuisd = UUID.randomUUID();
 		
-		String cdc = "insert into campaigns (SELECT CAST(CONCAT('"+uuiss+"',id,'"+unixd+"') AS bigint) as id, '"+uuisd.toString().toUpperCase()+"' as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, creatinguser_id, deleted, archived, sys_period, dashboardelements, cluster, round FROM campaigns where name='"+uuidx+"' and deleted = false)";
-		System.out.println(cdc+"++++++++++++++++++tttttttttttttttttt+++++++ccccccccccccccccccccccccccccc+++++++++++++++++++++++++++++++++++++++++++++++");
+		String cdc = "insert into campaigns (SELECT CAST(CONCAT('"+uuiss+"',id,'"+unixd+"') AS bigint) as id, '"+uuisd.toString().toUpperCase()+"' as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, (select id from users where uuid = '"+userCreating+"' limit 1), deleted, archived, sys_period, dashboardelements, cluster, round, campaignyear FROM campaigns where name='"+uuidx+"' and archived = false and  deleted = false)";
+		System.out.println(cdc);
+		em.createNativeQuery(cdc).executeUpdate();
 		
-		return em.createNativeQuery(cdc).executeUpdate();
+		return uuisd.toString().toUpperCase(); 
 	}
 	
 	/*public int cloneFormx(Campaign uuidx, int unix) {

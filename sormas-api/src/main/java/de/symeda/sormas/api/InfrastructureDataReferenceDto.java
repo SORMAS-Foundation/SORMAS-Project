@@ -19,7 +19,7 @@ public abstract class InfrastructureDataReferenceDto extends ReferenceDto implem
 
 	private static final long serialVersionUID = -3451269378082767059L;
 	private transient Long externalId;
-	private Integer number;
+	private transient Integer number;
 
 	protected InfrastructureDataReferenceDto() {
 	}

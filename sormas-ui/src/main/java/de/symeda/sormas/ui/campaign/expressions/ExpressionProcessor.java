@@ -51,6 +51,7 @@ public class ExpressionProcessor {
 			.filter(formElement -> formElement.getExpression() != null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.filter(formElement -> !formElement.getType().equals("range"))
+			.filter(formElement -> !formElement.isIgnoredisable())
 			.forEach(formElement -> fields.get(formElement.getId()).setEnabled(false));
 		
 	}
@@ -99,22 +100,21 @@ public class ExpressionProcessor {
 				final Object value = expression.getValue(context, valueType); 
 				//final Object valx = Precision.round((double) value, 3);
 				final List <String> opt = null;
-				
-				System.out.println(value + "  +++ range? "+e.getType().toString().equals("range")+"++   "+ expression.getExpressionString() +"  +++++  "+expression.getValue(context));
+				System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context));
 				String valuex = value +"";
-				
-				if(!valuex.isBlank()) {
+			
+				if(!valuex.isBlank() && value != null) {
 				if(e.getType().toString().equals("range")) {
 					
-					if(value.toString().equals("0")) {
+					if(value.toString().equals("0")) { 
 
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
-								"0.0",
+								null,
 								null, null);
 						//return;
-					} else{
+					} else {
 
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
@@ -156,7 +156,7 @@ public class ExpressionProcessor {
 					
 				}
 			} catch (SpelEvaluationException evaluationException) {
-				//LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
+				//LOG.error("Error evaluating expression: {} / {}", evaluationEx0rception.getMessageCode(), evaluationException.getMessage());
 			}
 		});
 	}

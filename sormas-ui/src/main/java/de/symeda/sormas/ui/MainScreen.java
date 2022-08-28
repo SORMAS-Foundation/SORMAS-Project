@@ -102,7 +102,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  * Content of the UI when the user is logged in.
  */
 @SuppressWarnings("serial")
-@StyleSheet("vaadin://map/trlImplementation.css")
+//@StyleSheet("vaadin://map/trlImplementation.css")
 public class MainScreen extends HorizontalLayout {
 	
 	// Add new views to this set to make sure that the right error page is shown

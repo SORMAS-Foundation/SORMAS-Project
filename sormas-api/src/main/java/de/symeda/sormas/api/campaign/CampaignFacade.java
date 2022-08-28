@@ -30,7 +30,7 @@ public interface CampaignFacade { //CampaignFacadeEjb
 
 	void deleteCampaign(String uuid);
 	
-	void cloneCampaign(String uuid);
+	void cloneCampaign(String uuid, String userCreatingx);
 
 	void archiveOrDearchiveCampaign(String campaignUuid, boolean archive);
 

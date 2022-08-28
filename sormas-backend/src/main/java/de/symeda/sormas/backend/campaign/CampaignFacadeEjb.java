@@ -536,7 +536,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	
 	
 	@Override
-	public void cloneCampaign(String campaignUuid) {
+	public void cloneCampaign(String campaignUuid, String userCreating) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -546,7 +546,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
 		
-		campaignService.cloneForm(campaignService.getByUuid(campaignUuid));
+		campaignService.cloneForm(campaignService.getByUuid(campaignUuid), userCreating);
 	}
 
 	@Override

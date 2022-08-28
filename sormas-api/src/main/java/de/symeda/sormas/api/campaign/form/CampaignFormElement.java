@@ -65,6 +65,7 @@ public class CampaignFormElement implements Serializable {
 	private String[] dependingOnValues;
 	private boolean important;
 	private boolean warnonerror;
+	private boolean ignoredisable;
 	private String errormessage;
 	private String defaultvalue;
 
@@ -188,6 +189,15 @@ public class CampaignFormElement implements Serializable {
 	
 	
 
+	public boolean isIgnoredisable() {
+		return ignoredisable;
+	}
+
+	public void setIgnoredisable(boolean ignoredisable) {
+		this.ignoredisable = ignoredisable;
+	}
+	
+
 	public String getDefaultvalue() {
 		return defaultvalue;
 	}
@@ -207,7 +217,7 @@ public class CampaignFormElement implements Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		CampaignFormElement that = (CampaignFormElement) o;
-		return important == that.important && Objects.equals(type, that.type) && Objects.equals(id, that.id)
+		return important == that.important && ignoredisable == that.ignoredisable && Objects.equals(type, that.type) && Objects.equals(id, that.id)
 				&& Objects.equals(caption, that.caption) && Objects.equals(expression, that.expression)
 				&& Objects.equals(max, that.max) && Objects.equals(min, that.min)
 				&& Arrays.equals(styles, that.styles)
@@ -222,7 +232,7 @@ public class CampaignFormElement implements Serializable {
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(type, id, caption, expression, dependingOn, important, warnonerror, errormessage, defaultvalue);
+		int result = Objects.hash(type, id, caption, expression, dependingOn, important, warnonerror, errormessage, defaultvalue, ignoredisable);
 		result = 31 * result + Arrays.hashCode(styles);
 	//	result = 31 * result + Arrays.hashCode(options);
 		result = 31 * result + Arrays.hashCode(constraints);
