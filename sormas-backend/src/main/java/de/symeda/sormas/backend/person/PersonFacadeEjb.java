@@ -413,7 +413,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
-	public PersonDto save(@Valid PersonDto source) throws ValidationRuntimeException {
+	public PersonDto save(@Valid @NotNull PersonDto source) throws ValidationRuntimeException {
 		return save(source, true, true, false);
 	}
 
