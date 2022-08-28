@@ -102,7 +102,7 @@ public class LogoutView extends VerticalLayout implements View {
 		Window window = VaadinUiUtil.createPopupWindow();
 		// window.setCaption("Log Out");
 		window.setModal(true);
-
+		window.setClosable(false);
 		VerticalLayout popupContent = new VerticalLayout();
 		Label caption = new Label("Are you sure you want to logout?");
 		popupContent.addComponent(caption);
@@ -119,7 +119,7 @@ public class LogoutView extends VerticalLayout implements View {
 		Button button2 = new Button("Cancel");
 		button2.addClickListener(clickEvent -> {
 			window.close();
-			Page.getCurrent().getJavaScript().execute("history.back();"); //MainScreen
+			Page.getCurrent().getJavaScript().execute("history.back();"); 
 		});
 
 		buttonContent.addComponent(button1);
