@@ -32,7 +32,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -56,7 +55,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
@@ -119,7 +118,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected BaseAdoService<Case> getEntityService() {
+	protected AbstractCoreAdoService<Case> getEntityService() {
 		return caseService;
 	}
 
@@ -152,11 +151,6 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	@Override
 	protected ValidationErrorGroup buildEntityValidationGroupNameForAdo(Case caze) {
 		return buildCaseValidationGroupName(caze);
-	}
-
-	@Override
-	protected EditPermissionType isEntityEditAllowed(Case ado) {
-		return caseService.getEditPermissionType(ado);
 	}
 
 	@Override

@@ -31,7 +31,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -52,7 +51,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
@@ -117,7 +116,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Override
-	protected BaseAdoService<Contact> getEntityService() {
+	protected AbstractCoreAdoService<Contact> getEntityService() {
 		return contactService;
 	}
 
@@ -181,11 +180,6 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	@Override
 	protected ValidationErrorGroup buildEntityValidationGroupNameForAdo(Contact contact) {
 		return buildContactValidationGroupName(contact);
-	}
-
-	@Override
-	protected EditPermissionType isEntityEditAllowed(Contact contact) {
-		return contactService.getEditPermissionType(contact);
 	}
 
 	@Override
