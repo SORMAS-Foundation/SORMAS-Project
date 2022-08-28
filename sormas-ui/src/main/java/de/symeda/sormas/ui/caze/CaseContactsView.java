@@ -394,7 +394,7 @@ public class CaseContactsView extends AbstractCaseView {
 		updateFilterComponents();
 
 		grid.reload();
-		setCaseEditPermission(gridLayout);
+		setEditPermission(gridLayout);
 	}
 
 	@Override

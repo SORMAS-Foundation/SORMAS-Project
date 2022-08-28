@@ -125,7 +125,7 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 	}
 
 	protected Boolean isEditAllowed() {
-		// Sample is not a Core
+		// Sample is not a Core ADO, therefore, we have to duplicate this unfortunately
 		return FacadeProvider.getSampleFacade().isEditAllowed(getSampleRef().getUuid());
 	}
 

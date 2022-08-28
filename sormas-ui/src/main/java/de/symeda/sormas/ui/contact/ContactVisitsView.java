@@ -211,6 +211,6 @@ public class ContactVisitsView extends AbstractContactView {
 		grid.reload();
 //		updateActiveStatusButtonCaption();
 
-		setContactEditPermission(gridLayout);
+		setEditPermission(gridLayout);
 	}
 }

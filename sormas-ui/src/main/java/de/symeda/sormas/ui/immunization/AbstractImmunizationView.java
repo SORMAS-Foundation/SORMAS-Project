@@ -1,10 +1,7 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Component;
 
-import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -12,7 +9,6 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
@@ -64,12 +60,6 @@ public abstract class AbstractImmunizationView extends AbstractEditAllowedDetail
 		menu.addView(ImmunizationPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.PERSON), params);
 
 		setMainHeaderComponent(ControllerProvider.getImmunizationController().getImmunizationViewTitleLayout(getReference().getUuid()));
-	}
-
-	public void setImmunizationEditPermission(Component component) {
-		if (!isEditAllowed()) {
-			component.setEnabled(false);
-		}
 	}
 
 	@Override

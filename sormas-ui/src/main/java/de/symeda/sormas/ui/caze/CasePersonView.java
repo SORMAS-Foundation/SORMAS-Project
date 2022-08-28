@@ -48,6 +48,6 @@ public class CasePersonView extends AbstractCaseView {
 				getViewMode());
 
 		setSubComponent(personEditComponent);
-		setCaseEditPermission(personEditComponent);
+		setEditPermission(personEditComponent);
 	}
 }

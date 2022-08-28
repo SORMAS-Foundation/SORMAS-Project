@@ -279,6 +279,6 @@ public class TherapyView extends AbstractCaseView {
 		reloadPrescriptionGrid();
 		reloadTreatmentGrid();
 
-		setCaseEditPermission(container);
+		setEditPermission(container);
 	}
 }

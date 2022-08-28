@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
@@ -281,11 +280,5 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 		}
 
 		return viewConfiguration.getViewMode();
-	}
-
-	public void setCaseEditPermission(Component component) {
-		if (!isEditAllowed()) {
-			component.setEnabled(false);
-		}
 	}
 }

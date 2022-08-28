@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Component;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -56,13 +55,6 @@ public abstract class AbstractTravelEntryView extends AbstractEditAllowedDetailV
 	public TravelEntryReferenceDto getTravelEntryRef() {
 		return getReference();
 	}
-
-	public void setTravelEntryEditPermission(Component component) {
-		if (!isEditAllowed()) {
-			component.setEnabled(false);
-		}
-	}
-
 
 	@Override
 	protected void setSubComponent(DirtyStateComponent newComponent) {
