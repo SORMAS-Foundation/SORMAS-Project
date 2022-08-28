@@ -1,0 +1,132 @@
+body {
+    transform: scale(-1, 1) !important;
+}
+
+.sormas h1,
+.sormas .v-label-h1 {
+    transform: scale(-1, 1) !important;
+}
+
+.sormas .valo-menu .valo-menu-part {
+    transform: scale(-1, 1) !important;
+}
+
+.sormas .valo-menu .valo-menu-item {
+    text-align: right !important;
+}
+
+.sormas .v-caption {
+    transform: scale(-1, 1) !important;
+    text-align: right !important;
+}
+
+.sormas .v-filterselect {
+    transform: scale(-1, 1) !important;
+    text-align: right !important;
+}
+
+.sormas .v-filterselect [class$="button"]:before {
+    right: 0px !important;
+}
+
+.sormas .v-select-optiongroup-horizontal.v-has-width label {
+    transform: scale(-1, 1) !important;
+}
+
+.v-verticallayout .v-layout .v-vertical .v-widget .v-has-width .v-has-height .v-margin-right .v-margin-left {
+    transform: scale(-1, 1) !important;
+}
+
+.sormas .v-filterselect-suggestpopup .gwt-MenuItem {
+    transform: scale(-1, 1) !important;
+    text-align: right !important;
+}
+
+.sormas .v-button {
+    transform: scale(-1, 1);
+}
+
+.sormas .v-grid {
+    transform: scale(-1, 1) !important;
+    text-align: right !important;
+}
+
+.sormas .v-grid-column-header-content,
+.sormas .v-grid-column-footer-content {
+    text-align: right !important;
+}
+
+.sormas .v-textfield[class*="prompt"] {
+    transform: scale(-1, 1) !important;
+    text-align: right !important;
+}
+.sormas .v-textfield{
+    transform: scale(-1, 1) !important;   
+}
+
+.sormas .v-filterselect[class*="prompt"]>[class*="input"] {
+
+    text-align: right !important;
+}
+
+.sormas .v-button-nocapitalletter {
+    text-align: right !important;
+}
+
+.sormas .vspace-4 {
+    transform: scale(-1, 1) !important;
+}
+
+.sormas .v-wrapper-apmis {
+    text-align: right !important;
+    transform: scale(-1, 1);
+}
+
+.sormas .v-window .v-window-outerheader .v-window-header {
+    transform: scale(-1, 1);
+    text-align: right;
+}
+.v-app input[type="text"], .v-app .v-slot > .v-caption, .v-app .v-gridlayout-slot > .v-caption, .v-app .v-has-caption > .v-caption, .v-app .v-formlayout-captioncell > .v-caption, .v-app .v-csslayout > .v-caption{
+    text-align: right !important;
+ 
+}
+.unwrapLabel {
+    white-space: normal !important;
+    transform: scale(-1,1);
+}
+.sormas .v-filterselect.v-filterselect-with-flag-icon .v-filterselect-input{
+    transform: scale(1,1);
+}
+
+.sormas h3, .sormas .h3{
+    transform: scale(-1,1);
+}
+
+.sormas .v-label-h2 {
+    transform: scale(1,1); 
+}
+.sormas .v-label.v-label-white-space-normal, .sormas .v-label .white-space-normal{
+   
+    text-align: right;
+}
+.sormas .v-filterselect-suggestpopup [class$="status"]{
+    transform: scale(-1,1);
+}
+
+.sormas .v-link a{
+    transform: scale(-1,1);  
+}
+.sormas .v-tabsheet .v-tabsheet-tabitemcell{
+    transform: scale(-1,1);
+}
+
+.sormas .v-filterselect-suggestpopup{
+    left: 504px;
+}
+.dashgrid{
+    transform: scale(-1,1);
+}
+
+.v-generated-body{
+	overflow: hidden;
+}

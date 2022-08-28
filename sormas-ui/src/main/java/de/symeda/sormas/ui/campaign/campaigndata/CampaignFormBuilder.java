@@ -126,7 +126,6 @@ public class CampaignFormBuilder {
 		int accrd_count = 0;
 		
 		for (CampaignFormElement formElement : formElements) {
-			System.out.println("Gotint it..."+ ii++);
 			CampaignFormElementType type = CampaignFormElementType.fromString(formElement.getType());
 			
 			
@@ -152,7 +151,6 @@ public class CampaignFormBuilder {
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
 				optionsValues = formElement.getOptions().stream().collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption));  // .collect(Collectors.toList());
 				
-				System.out.println("_______________________ "+userOptTranslations);
 				if(userOptTranslations == null) {
 					campaignFormElementOptions.setOptionsListValues(optionsValues);
 					//get18nOptCaption(formElement.getId(), optionsValues));
@@ -170,12 +168,10 @@ public class CampaignFormBuilder {
 			
 			
 			if (formElement.getConstraints() != null) {
-				System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiii");
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
 				constraints = (List) Arrays.stream(formElement.getConstraints()).collect(Collectors.toList());
 				ListIterator<String> lstItemsx = constraints.listIterator();
 				int i = 1;
-				System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiii");
 				while (lstItemsx.hasNext()) {
 					String lss = lstItemsx.next().toString();
 					if (lss.toLowerCase().contains("max")) {
@@ -184,7 +180,6 @@ public class CampaignFormBuilder {
 						campaignFormElementOptions.setMin(Integer.parseInt(lss.substring(lss.lastIndexOf("=") + 1)));
 					}
 					else if (lss.toLowerCase().contains("expression")) {
-						System.out.println("iiiiiiiiiii6666666666666666666666iiiiiiiiiiiiiii");
 						campaignFormElementOptions.setExpression(true);
 					}
 				}
@@ -251,7 +246,7 @@ public class CampaignFormBuilder {
 
 				Label field = new Label(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setId(formElement.getId());
-				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles, true, null);
+				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles, true, null, null);
 
 				vertical.addComponent(field);//, (currentCol + 1), currentLayout.getRows() - 1,
 						//(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
@@ -274,9 +269,9 @@ public class CampaignFormBuilder {
 				//}
 
 				Field<?> field = createField(formElement.getId(), formElement.getCaption(), type, styles,
-						optionsValues, formElement.isWarnonerror(), formElement.getErrormessage());
+						optionsValues, formElement.isWarnonerror(), formElement.getErrormessage(), formElement.getDefaultvalue());
 
-				setFieldValue(field, type, value, optionsValues);
+				setFieldValue(field, type, value, optionsValues, formElement.getDefaultvalue());
 				field.setId(formElement.getId());
 				field.setCaption(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setSizeFull();
@@ -315,7 +310,7 @@ public class CampaignFormBuilder {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Field<?>> T createField(String fieldId, String caption, CampaignFormElementType type,
-			List<CampaignFormElementStyle> styles, Map optionz, boolean isOnError, String errormsg) {
+			List<CampaignFormElementStyle> styles, Map optionz, boolean isOnError, String errormsg, String defaultvalue) {
 		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(),
 				UiFieldAccessCheckers.getNoop());
 
@@ -365,15 +360,15 @@ public class CampaignFormBuilder {
 			field = null;
 		}
 
-		prepareComponent((AbstractComponent) field, fieldId, caption, type, styles, isOnError, errormsg);
+		prepareComponent((AbstractComponent) field, fieldId, caption, type, styles, isOnError, errormsg, defaultvalue);
 		return field;
 	}
 
 	@SuppressWarnings("deprecation")
 	private <T extends AbstractComponent> void prepareComponent(T field, String fieldId, String caption,
-			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError, String errormsg) {
+			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError, String errormsg, String defaultvalue) {
 		
-		System.out.println(fieldId+" ddddddddddddddddddddddddddddddddd "+errormsg); 
+		System.out.println(fieldId+" dddddddddd defaultvalue  ddddddddd "+defaultvalue); 
 		CampaignFormElementOptions constrainsVal = new CampaignFormElementOptions();
 
 		Styles cssStyles = Page.getCurrent().getStyles();
@@ -398,11 +393,13 @@ public class CampaignFormBuilder {
 
 			if (type == CampaignFormElementType.NUMBER) {
 
-				((TextField) field).addValueChangeListener(e -> {
+				/*((TextField) field).addValueChangeListener(e -> {
 					if (e.getProperty().getValue() != null && e.getProperty().getValue().toString().contains(".0")) {
 						e.getProperty().setValue(e.getProperty().getValue().toString().replace(".0", ""));
 					}
-				});
+				});*/
+				((TextField) field).addValidator(
+						new RegexpValidator("^[0-9]\\d*$", errormsg == null ? Validations.onlyNumbersAllowed : errormsg )); 
 
 				((TextField) field).addValidator(new NumberNumericValueValidator(
 						I18nProperties.getValidationError(errormsg == null ? Validations.onlyNumbersAllowed : errormsg, caption)));
@@ -414,6 +411,9 @@ public class CampaignFormBuilder {
 						e.getProperty().setValue(e.getProperty().getValue().toString() + ".0");
 					}
 				});*/
+				
+				((TextField) field).addValidator(
+						new RegexpValidator("^[0-9]\\d*$", errormsg == null ? Validations.onlyDecimalNumbersAllowed : errormsg )); 
 
 				((TextField) field).addValidator(new NumberNumericValueValidator(
 						I18nProperties.getValidationError(errormsg == null ? Validations.onlyDecimalNumbersAllowed : errormsg, caption), null, null,
@@ -426,7 +426,6 @@ public class CampaignFormBuilder {
 				String validationMessageTag = "";
 				Map<String, Object> validationMessageArgs = new HashMap<>();
 			
-				
 				if (constrainsVal.isExpression()) {
 /*
 					System.out.println(type + "____________________1");
@@ -460,7 +459,7 @@ public class CampaignFormBuilder {
 					
 					
 					((TextField) field).addValidator(
-							new RegexpValidator("^[1-9]\\d*$", errormsg.equals(null) ? "Number entered not in allowed range" : errormsg )); 
+							new RegexpValidator("^[0-9]\\d*$", errormsg == null ? "Number entered not in allowed range" : errormsg )); 
 					
 					
 				} else {
@@ -563,7 +562,7 @@ public class CampaignFormBuilder {
 		return Integer.parseInt(colStyle.substring(colStyle.indexOf("-") + 1)) / 12f * 100;
 	}
 
-	public <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value, Map<String,String> options) {
+	public <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value, Map<String,String> options, String defaultvalue) {
 
 		switch (type) {
 		case YES_NO:
@@ -573,7 +572,8 @@ public class CampaignFormBuilder {
 		case NUMBER:
 		case RANGE:
 
-			((TextField) field).setValue(value != null ? value.toString() : null);
+			((TextField) field).setValue(value != null ? value.toString() : defaultvalue != null ? defaultvalue : null);
+			
 			break;
 		case DECIMAL:
 			if (value != null) {
@@ -582,6 +582,7 @@ public class CampaignFormBuilder {
 			}
 			break;
 		case TEXTBOX:
+			
 			if (value != null) {
 
 				if (value.equals(true)) {
@@ -673,6 +674,7 @@ public class CampaignFormBuilder {
 
 		String dateStr = value+"";
 		DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
+		DateFormat formattercx = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 		DateFormat formatterx = new SimpleDateFormat("dd/MM/yyyy");
 		Date date;
 		System.out.println("date in question "+value);
@@ -684,7 +686,13 @@ public class CampaignFormBuilder {
 			try {
 				date = (Date) formatterx.parse(dateStr);
 			} catch (ParseException ed) {
-				 date = new Date((Long) value);
+				
+				try {
+					date = (Date) formattercx.parse(dateStr);
+				} catch (ParseException edx) {
+					
+					 date = new Date((Long) value);
+				 }
 			 }
 		}
 		

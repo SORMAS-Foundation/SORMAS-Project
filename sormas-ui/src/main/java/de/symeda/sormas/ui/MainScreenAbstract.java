@@ -18,14 +18,23 @@
 package de.symeda.sormas.ui;
 
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.annotations.StyleSheet;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.ui.HorizontalLayout;
 
-@JavaScript("trans.js")
+//@JavaScript("trans.js")
+//@CssImport("./styles/shared-styssles.css")
+@StyleSheet("https://stackpath.b/bootstrap/4.3.1/css/bootstrap.min.css")
 public class MainScreenAbstract extends HorizontalLayout implements View {
 
 public static final String NEW_ID = "afterend";
 
-public MainScreenAbstract() {}
-
+public MainScreenAbstract() {
+	
+	Page.getCurrent().getJavaScript().execute("alert('yeah!!!');");
 }
+}
+
+
+

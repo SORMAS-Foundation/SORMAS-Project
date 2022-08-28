@@ -90,7 +90,6 @@ public class ExpressionProcessor {
 	}
 
 	private void checkExpression() {
-		System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj" );
 		EvaluationContext context = refreshEvaluationContext(campaignFormBuilder.getFormValues());
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream().filter(element -> element.getExpression() != null).forEach(e -> {
@@ -102,7 +101,9 @@ public class ExpressionProcessor {
 				final List <String> opt = null;
 				
 				System.out.println(value + "  +++ range? "+e.getType().toString().equals("range")+"++   "+ expression.getExpressionString() +"  +++++  "+expression.getValue(context));
+				String valuex = value +"";
 				
+				if(!valuex.isBlank()) {
 				if(e.getType().toString().equals("range")) {
 					
 					if(value.toString().equals("0")) {
@@ -111,15 +112,15 @@ public class ExpressionProcessor {
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
 								"0.0",
-								null);
+								null, null);
 						//return;
-					} else {
+					} else{
 
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
 								value.toString().endsWith(".0") ? value.toString().replace(".0", "") : value,
-								null);
+								null, null);
 						//return;
 					}
 					
@@ -132,13 +133,13 @@ public class ExpressionProcessor {
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()),
 							!Double.isFinite((double) value) ? 0 : value.toString().endsWith(".0") ? value.toString().replace(".0", "") : Precision.round((double) value, 2),
-									null);
+									null, null);
 			//	return;
 				} else if(valueType.isAssignableFrom(Boolean.class)) {
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()), value,
-									null);
+									null, null);
 				//	return;
 				//	
 				} else {
@@ -146,7 +147,12 @@ public class ExpressionProcessor {
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()), value,
-									null);
+									null, null);
+					
+				}
+				} else if(e.getType().toString().equals("range") && valuex == null && e.getDefaultvalue() != null) {
+					
+					System.out.println("++++++++++++++++++++++++++++++++++++++++++++++============================");
 					
 				}
 			} catch (SpelEvaluationException evaluationException) {
