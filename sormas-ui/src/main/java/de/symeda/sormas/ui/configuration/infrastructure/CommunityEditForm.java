@@ -61,14 +61,13 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	protected void addFields() {
 
 		addField(CommunityDto.NAME, TextField.class);
-		addField(CommunityDto.CLUSTER_NUMBER, TextField.class).addValidator(new NumberNumericValueValidator(
-				I18nProperties.getValidationError(Validations.onlyNumbersAllowed, CommunityDto.CLUSTER_NUMBER)));
+		addField(CommunityDto.CLUSTER_NUMBER, TextField.class);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 		ComboBox region = addInfrastructureField(CommunityDto.REGION);
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
 		
 
-		setRequired(true, CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
+		setRequired(true, CommunityDto.NAME, CommunityDto.NAME,CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();

@@ -43,6 +43,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.keycloak.representations.idm.UserFederationProviderFactoryRepresentation;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -468,8 +470,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return password;
 	}
 
-	
-
 	public Predicate buildCriteriaFilter(UserCriteria userCriteria, CriteriaBuilder cb, Root<User> from) {
 
 		Predicate filter = null;
@@ -499,7 +499,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 					continue;
 				}
 
-				Predicate likeFilters = cb.or(
+				Predicate likeFilters = cb.or( //getCurrent
 						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(User.FIRST_NAME), textFilter),
 						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(User.LAST_NAME), textFilter),
 						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(User.USER_NAME), textFilter),
@@ -509,7 +509,15 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
-
+		
+		if (this.getCurrentUser().getUsertype().equals(UserType.EOC_USER)) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(from.get(User.USER_TYPE), UserType.EOC_USER)); 
+		}
+		else {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.notEqual(from.get(User.USER_TYPE), UserType.EOC_USER));
+		}
 		return filter;
 	}
 

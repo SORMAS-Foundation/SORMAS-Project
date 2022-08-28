@@ -8550,9 +8550,6 @@ ADD COLUMN userorganisation VARCHAR,
 ADD COLUMN userposition VARCHAR;
 
 INSERT INTO schema_version (version_number, comment) VALUES (422, 'adding organisation and position to user table');
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
-
-
 
 --add organisation and position to user table
 
@@ -8573,6 +8570,17 @@ ALTER TABLE community ADD column clusternumber int;
 INSERT INTO schema_version (version_number, comment) VALUES (424, 'adding cluster number to communities');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
+
+-- add usertype to user table
+ALTER TABLE users add column usertype VARCHAR;
+
+INSERT INTO schema_version (version_number, comment) VALUES (425, 'adding usertype to users table');
+
+-- Set all default/previous users to WHO_USER type
+UPDATE users SET usertype = 'WHO_USER' WHERE usertype IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (426, 'setting default user type for existing users');
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 
 

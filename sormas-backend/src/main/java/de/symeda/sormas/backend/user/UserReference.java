@@ -34,6 +34,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Immutable;
 
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 /**
@@ -51,6 +52,7 @@ public class UserReference extends AbstractDomainObject {
 	private String firstName;
 	private String lastName;
 	private Set<UserRole> userRoles;
+	private UserType userType;
 
 	public boolean isActive() {
 		return active;
@@ -90,6 +92,22 @@ public class UserReference extends AbstractDomainObject {
 
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
+	}
+
+	@Enumerated(EnumType.STRING)
+	//@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = User.TABLE_NAME_USERTYPES,
+		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"user_id",
+			"usertype" }))
+	@Column(name = "usertype", nullable = false)
+	public UserType getUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserType userType) {
+		this.userType = userType;
 	}
 
 	@Transient

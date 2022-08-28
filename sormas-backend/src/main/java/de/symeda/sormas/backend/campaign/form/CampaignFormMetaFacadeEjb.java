@@ -36,11 +36,13 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+
 
 @Stateless(name = "CampaignFormMetaFacade")
 public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
@@ -56,9 +58,9 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source, boolean checkChangeDate) {
 		CampaignFormMeta target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()),
 				CampaignFormMeta::new, checkChangeDate);
-		
-System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +service.getByUuid(source.getUuid()));
 
+		System.out.println(
+				"dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " + service.getByUuid(source.getUuid()));
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());
@@ -120,20 +122,26 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 		return service.getAll().stream().map(CampaignFormMetaFacadeEjb::toReferenceDto)
 				.sorted(Comparator.comparing(ReferenceDto::toString)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
 		return service.getCampaignFormMetasAsReferencesByCampaign(uuid);
 	}
-	
+
+	@Override
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(String uuid) {
+		return service.getCampaignFormMetasAsReferencesByCampaignIntraCampaign(uuid);
+	}
+
 	@Override
 	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRound(String round) {
-		return service.getByRound(round).stream().map(CampaignFormMetaFacadeEjb::toReferenceDto) 
+		return service.getByRound(round).stream().map(CampaignFormMetaFacadeEjb::toReferenceDto)
 				.sorted(Comparator.comparing(ReferenceDto::toString)).collect(Collectors.toList());
 	}
-	
+
 	@Override
-	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRoundandCampaign(String round, String campaignUUID) {
+	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRoundandCampaign(String round,
+			String campaignUUID) {
 		return service.getCampaignFormMetasAsReferencesByCampaignandRound(round, campaignUUID);
 	}
 
@@ -141,17 +149,16 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 	public CampaignFormMetaDto getCampaignFormMetaByUuid(String campaignFormUuid) {
 		return toDto(service.getByUuid(campaignFormUuid));
 	}
-	
+
 	@Override
 	public CampaignFormMetaReferenceDto getCampaignFormMetaReferenceByUuid(String campaignFormUuid) {
 		return toReferenceDto(service.getByUuid(campaignFormUuid));
 	}
-	
-	
-	/*@Override
-	public CampaignReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(campaignService.getByUuid(uuid));
-	}*/
+
+	/*
+	 * @Override public CampaignReferenceDto getReferenceByUuid(String uuid) {
+	 * return toReferenceDto(campaignService.getByUuid(uuid)); }
+	 */
 
 	@Override
 	public List<CampaignFormMetaDto> getAllAfter(Date date) {
@@ -335,24 +342,24 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 				return false;
 			}
 		}
-		
+
 		if (type.equals(CampaignFormElementType.DATE.toString())) {
-			 SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss:ms");
-		        dateFormat.setLenient(false);
-			
-			        try {
-			            dateFormat.parse(value.trim());
-			            System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE been checked >>" +value);
-			     
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss:ms");
+			dateFormat.setLenient(false);
+
+			try {
+				dateFormat.parse(value.trim());
+				System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE been checked >>" + value);
+
 			} catch (java.text.ParseException e) {
-						// TODO Auto-generated catch block
+				// TODO Auto-generated catch block
 				return false;
-					}
+			}
 		}
-		
+
 		if (type.equals(CampaignFormElementType.DECIMAL.toString())) {
 			try {
-				
+
 				if (value.contains(".")) {
 					if (value.length() - value.indexOf(".") - 1 == 2) {
 
@@ -369,7 +376,8 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 		}
 
 		if (type.equals(CampaignFormElementType.YES_NO.toString())) {
-			return StringUtils.equalsAnyIgnoreCase(value.replaceAll("!", ""), CampaignFormElementType.YES_NO.getAllowedValues());
+			return StringUtils.equalsAnyIgnoreCase(value.replaceAll("!", ""),
+					CampaignFormElementType.YES_NO.getAllowedValues());
 		}
 
 		return true;
@@ -379,7 +387,7 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 		if (entity == null) {
 			return null;
 		}
-		
+
 		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.toString(), entity.getFormType());
 	}
 

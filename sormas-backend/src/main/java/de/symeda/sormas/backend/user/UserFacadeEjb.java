@@ -63,6 +63,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 import de.symeda.sormas.api.user.UserSyncResult;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -170,6 +171,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		source.getUserRoles().size();
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		target.setUsertype(source.getUsertype());
 		return target;
 	}
 
@@ -179,7 +181,7 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles(), entity.getUsertype());
 		return dto;
 	}
 
@@ -189,7 +191,7 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles(), entity.getUserType());
 		return dto;
 	}
 
@@ -418,7 +420,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		try {
 			UserRole.validate(user.getUserRoles());
-		} catch (UserRoleValidationException e) {
+		} catch (UserRoleValidationException e) { //POST
 			throw new ValidationException(e);
 		}
 
@@ -449,9 +451,10 @@ public class UserFacadeEjb implements UserFacade {
 		// but not those of others
 
 		Predicate filter = null;
-
+		
+		
 		if (userCriteria != null) {
-			System.out.println("DEBUGGER: 45fffffffiiilibraryii = "+userCriteria);
+			System.out.println("DEBUGGER: 45fffffffiiilibraryii = "+ userCriteria);
 			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
 		}
 
@@ -459,11 +462,13 @@ public class UserFacadeEjb implements UserFacade {
 			System.out.println("DEBUGGER: 45fffffffiiilibraryiiddddddddddddddd = "+filter);
 			/*
 			 * No preemptive distinct because this does collide with
-			 * ORDER BY User.location.address (which is not part of the SELECT clause).
+			 * ORDER BY User.location.address (which is not part of the SELECT clause). UserType
 			 */
 			cq.where(filter);
 		}
-
+		
+		
+		
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
@@ -570,6 +575,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
+		target.setUsertype(source.getUsertype());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
@@ -722,8 +728,6 @@ public class UserFacadeEjb implements UserFacade {
 //			logger.warn("resetPassword() for unknown user '{}'", realmUserUuid);
 			return "not changed";
 		}
-
-		
 		user.setSeed(PasswordHelper.createPass(16));
 		user.setPassword(PasswordHelper.encodePassword(pass, user.getSeed()));
 		return "Changed";

@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
@@ -62,27 +63,48 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFo
 		CriteriaQuery<CampaignFormMetaReferenceDto> cq = cb.createQuery(CampaignFormMetaReferenceDto.class);
 		Root<Campaign> campaignRoot = cq.from(Campaign.class);
 		Join<Campaign, CampaignFormMeta> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
+
 		Predicate filter = cb.equal(campaignRoot.get(Campaign.UUID), uuid);
-		//TODO: post campaign implementations
+		//Predicate typefilter = cb.notEqual(campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), "intra-campaign"); //
+
 		cq = cq.where(filter);
-		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID), campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
-	//	System.out.println("SSSSSSSSSSSSSSSSSQLSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
+		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
+
 		return em.createQuery(cq).getResultList();
 	}
-	
-	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaignandRound(String round, String uuid) {
+
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaignIntraCampaign(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormMetaReferenceDto> cq = cb.createQuery(CampaignFormMetaReferenceDto.class);
+		Root<Campaign> campaignRoot = cq.from(Campaign.class);
+		Join<Campaign, CampaignFormMeta> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
+
+		Predicate filter = cb.equal(campaignRoot.get(Campaign.UUID), uuid);
+		Predicate typefilter = cb.equal(campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), "intra-campaign");// cb.and
+
+		cq = cq.where(filter, typefilter);
+		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaignandRound(String round,
+			String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormMetaReferenceDto> cq = cb.createQuery(CampaignFormMetaReferenceDto.class);
 		Root<Campaign> campaignRoot = cq.from(Campaign.class);
 		Join<Campaign, CampaignFormMeta> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
 		Predicate filterc = cb.equal(campaignRoot.get(Campaign.UUID), uuid);
 		Predicate filterx = cb.equal(campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), round);
-		
+
 		Predicate filter = cb.and(filterc, filterx);
-		//TODO: post campaign implementations
+		// TODO: post campaign implementations
 		cq = cq.where(filter);
-		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID), campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
-	//	System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
+		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
+		// System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 }

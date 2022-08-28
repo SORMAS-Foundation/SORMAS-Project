@@ -42,6 +42,7 @@ public class UserDto extends EntityDto {
 
 	public static final String COLUMN_NAME_USERROLE = "userrole";
 	public static final String COLUMN_NAME_USER_ID = "user_id";
+	public static final String TABLE_NAME_USERTYPES = "users_usertypes";
 
 	public static final String I18N_PREFIX = "User";
 
@@ -91,7 +92,9 @@ public class UserDto extends EntityDto {
 	private LocationDto address;
 
 	private Set<UserRole> userRoles;
-
+	//can add a user type property to the user  
+	private UserType usertype;	
+		
 	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -203,9 +206,17 @@ public class UserDto extends EntityDto {
 		this.userRoles = userRoles;
 	}
 
+	public UserType getUsertype() {
+		return usertype;
+	}
+
+	public void setUsertype(UserType usertype) {
+		this.usertype = usertype;
+	}
+
 	@Override
 	public String toString() {
-		return UserReferenceDto.buildCaption(firstName, lastName, userRoles);
+		return UserReferenceDto.buildCaption(firstName, lastName, userRoles, usertype);
 	}
 
 	public UserReferenceDto getAssociatedOfficer() {
@@ -274,7 +285,7 @@ public class UserDto extends EntityDto {
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), usertype);
 	}
 
 	public Disease getLimitedDisease() {

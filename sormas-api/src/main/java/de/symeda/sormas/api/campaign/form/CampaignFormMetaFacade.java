@@ -35,6 +35,8 @@ public interface CampaignFormMetaFacade {
 	CampaignFormMetaReferenceDto getCampaignFormMetaReferenceByUuid(String campaignFormUuid);
 
 	List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid);
+	
+	List<CampaignFormMetaReferenceDto> getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(String uuid);
 
     List<CampaignFormMetaDto> getAllAfter(Date campaignFormMetaChangeDate);
 

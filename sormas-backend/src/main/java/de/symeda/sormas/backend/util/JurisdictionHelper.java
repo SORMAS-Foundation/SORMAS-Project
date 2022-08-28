@@ -33,6 +33,8 @@ public class JurisdictionHelper {
 
 	public static JurisdictionLevel getSuperordinateJurisdiction(JurisdictionLevel jurisdition) {
 		switch (jurisdition) {
+		case NONE:
+			return JurisdictionLevel.NONE;
 		case NATION:
 			return JurisdictionLevel.NONE;
 		case REGION:

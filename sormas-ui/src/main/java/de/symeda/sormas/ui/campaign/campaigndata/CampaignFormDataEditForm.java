@@ -201,21 +201,26 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbRegion,
 					area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
+			cbCommunity.clear();
 		});
 
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbDistrict,
 					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+			cbCommunity.clear();
 		});
 
 		cbDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid());
-			for (CommunityReferenceDto item : items) {
-				item.setCaption(item.getNumber().toString());
+			if (district != null) {
+				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade()
+						.getAllActiveByDistrict(district.getUuid());
+				for (CommunityReferenceDto item : items) {
+					item.setCaption(item.getNumber().toString());
+				}
+				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
 			}
-			FieldHelper.updateItems(cbCommunity, district != null ? items : null);
 		});
 		System.out.println(Page.getCurrent().getLocation());
 		URI location = Page.getCurrent().getLocation();
