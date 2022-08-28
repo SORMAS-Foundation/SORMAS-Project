@@ -97,9 +97,9 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		Root<ADO> from = cq.from(getElementClass());
 
 		Expression aggregatedChangeDateExpression = addChangeDates(new AggregatedChangeDateExpressionBuilder(cb), from, true).build();
-		cq.multiselect(from.get(AbstractDomainObject.UUID), cb.max(aggregatedChangeDateExpression));
-		cq.where(from.get(AbstractDomainObject.UUID).in(entityuuids));
-		cq.groupBy(from.get(AbstractDomainObject.UUID));
+		cq.multiselect(from.get(CoreAdo.UUID), cb.max(aggregatedChangeDateExpression));
+		cq.where(from.get(CoreAdo.UUID).in(entityuuids));
+		cq.groupBy(from.get(CoreAdo.UUID));
 
 		Map<String, Date> collect = em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(r -> (String) r[0], r -> (Date) r[1]));
 		return collect;

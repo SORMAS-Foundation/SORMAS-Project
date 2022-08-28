@@ -20,19 +20,19 @@ import java.io.Serializable;
 
 public class ContactJurisdictionFlagsDto implements Serializable {
 
-    private final boolean isInJurisdiction;
-    private final boolean isCaseInJurisdiction;
+    private Boolean isInJurisdiction;
+    private Boolean isCaseInJurisdiction;
 
-    public ContactJurisdictionFlagsDto(boolean isInJurisdiction, boolean isCaseInJurisdiction) {
+    public ContactJurisdictionFlagsDto(Boolean isInJurisdiction, Boolean isCaseInJurisdiction) {
         this.isInJurisdiction = isInJurisdiction;
         this.isCaseInJurisdiction = isCaseInJurisdiction;
     }
 
-    public boolean getInJurisdiction() {
+    public Boolean getInJurisdiction() {
         return isInJurisdiction;
     }
 
-    public boolean getCaseInJurisdiction() {
+    public Boolean getCaseInJurisdiction() {
         return isCaseInJurisdiction;
     }
 }
