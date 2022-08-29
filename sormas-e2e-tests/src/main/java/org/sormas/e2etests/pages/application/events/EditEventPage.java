@@ -70,6 +70,9 @@ public class EditEventPage {
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
   public static final By EVENT_HANDOUT_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By GPS_LATITUDE_INPUT_EDIT_EVENT = By.id("latitude");
+  public static final By GPS_LONGITUDE_INPUT_EDIT_EVENT = By.id("longitude");
+  public static final By MAP_CONTAINER = By.cssSelector("[class*='leaflet-container']");
   public static final By EVENT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By CREATE_EVENT_HANDOUT_BUTTON =
       By.cssSelector(".popupContent [id='Create']");

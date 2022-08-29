@@ -965,6 +965,20 @@ public class WebDriverHelpers {
     }
   }
 
+  public void assertElementIsDisabled(By elementLocator) {
+    assertHelpers.assertWithPoll20Second(
+        () ->
+            Assert.assertTrue(
+                getAttributeFromWebElement(elementLocator, "class").contains("disabled")));
+  }
+
+  public void assertElementIsEnabled(By elementLocator) {
+    assertHelpers.assertWithPoll20Second(
+        () ->
+            Assert.assertFalse(
+                getAttributeFromWebElement(elementLocator, "class").contains("disabled")));
+  }
+
   @SneakyThrows
   public void sendFile(By selector, String filePath) {
     try {

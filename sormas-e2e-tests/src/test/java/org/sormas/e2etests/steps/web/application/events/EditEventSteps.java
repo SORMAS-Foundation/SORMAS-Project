@@ -86,11 +86,14 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EYE_ICO
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_CATEGORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_GROUP_ID;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.GPS_LATITUDE_INPUT_EDIT_EVENT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.GPS_LONGITUDE_INPUT_EDIT_EVENT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_NAME_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_UUID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.IMPRESSION_TEST_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LABORATORY_DIAGNOSTIC_EVIDENCE_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LINK_EVENT_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.MAP_CONTAINER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_GROUP_BUTTON;
@@ -212,6 +215,7 @@ import org.sormas.e2etests.entities.pojo.web.EventGroup;
 import org.sormas.e2etests.entities.pojo.web.EventHandout;
 import org.sormas.e2etests.entities.pojo.web.EventParticipant;
 import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.EventDocumentService;
 import org.sormas.e2etests.entities.services.EventGroupService;
 import org.sormas.e2etests.entities.services.EventParticipantService;
@@ -1792,7 +1796,47 @@ public class EditEventSteps implements En {
         "^I Verify The Eye Icon opening the Map is disabled in the Edit Event Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
-          webDriverHelpers.isElementGreyedOut(EYE_ICON);
+          webDriverHelpers.assertElementIsDisabled(EYE_ICON);
+        });
+
+    Then(
+        "^I Verify The Eye Icon opening the Map is enabled in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+          webDriverHelpers.assertElementIsEnabled(EYE_ICON);
+        });
+
+    And(
+        "^I Add the GPS Latitude Values in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LATITUDE_INPUT_EDIT_EVENT);
+          webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT, "54.34555677");
+          webDriverHelpers.submitInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT);
+        });
+
+    And(
+        "^I Add the GPS Longitude Values in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LONGITUDE_INPUT_EDIT_EVENT);
+          webDriverHelpers.fillInWebElement(GPS_LONGITUDE_INPUT_EDIT_EVENT, "23.34555677");
+          webDriverHelpers.submitInWebElement(GPS_LONGITUDE_INPUT_EDIT_EVENT);
+        });
+
+    And(
+        "^I click on the The Eye Icon located in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+          webDriverHelpers.clickOnWebElementBySelector(EYE_ICON);
+        });
+
+    Then(
+        "^I verify that the Map Container is now Visible in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+          softly.assertTrue(
+              webDriverHelpers.isElementEnabled(MAP_CONTAINER),
+              "Map Container is not displayed/enabled in edit Event Page");
+          softly.assertAll();
         });
 
     When(

@@ -1288,3 +1288,8 @@ Feature: Create events
     Then I log in as a National User
     Then I am accessing the event tab using the created event via api
     Then I Verify The Eye Icon opening the Map is disabled in the Edit Event Page
+    And I Add the GPS Latitude Values in the Edit Event Page
+    And I Add the GPS Longitude Values in the Edit Event Page
+    Then I Verify The Eye Icon opening the Map is enabled in the Edit Event Page
+    And I click on the The Eye Icon located in the Edit Event Page
+    Then I verify that the Map Container is now Visible in the Edit Event Page
