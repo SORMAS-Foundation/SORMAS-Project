@@ -26,6 +26,9 @@ import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
@@ -39,9 +42,18 @@ public class StepsLogger implements StepLifecycleListener {
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
   private static boolean takeScreenshotAfterStep = false;
+  private static List<StepResult> stepResultList;
 
   public static void setRemoteWebDriver(RemoteWebDriver remoteWebDriver) {
     driver = remoteWebDriver;
+  }
+
+  public static void initStepsResultList(){
+    stepResultList = new ArrayList<>();
+  }
+
+  public static List<StepResult> getStepsResultList(){
+    return stepResultList;
   }
 
   public static void setIsScreenshotEnabled(boolean isScreenshotEnabled) {
@@ -54,18 +66,18 @@ public class StepsLogger implements StepLifecycleListener {
   }
 
   @Override
-  public void afterStepUpdate(final StepResult result) {
+  public void afterStepUpdate(final StepResult stepResult) {
     if (takeScreenshotAfterStep) {
       takeScreenshot();
     }
     if (isScreenshotEnabled && driver != null) {
-      if (!result.getStatus().value().contains("pass")) {
+      if (!stepResult.getStatus().value().contains("pass")) {
         attachConsoleLog();
       }
     }
     isScreenshotEnabled = true;
-    log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, result.getName());
-    log.info("** Step [ {} ] has status {}",result.getName(), result.getStatus());
+    log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, stepResult.getName());
+    stepResultList.add(stepResult);
   }
 
   @SneakyThrows

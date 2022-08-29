@@ -1,10 +1,10 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static recorders.StepsLogger.PROCESS_ID_STRING;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_DATA_TITLE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_INFORMATION_TITLE;
+import static recorders.StepsLogger.PROCESS_ID_STRING;
 
 import cucumber.api.java8.En;
 import java.text.DateFormat;

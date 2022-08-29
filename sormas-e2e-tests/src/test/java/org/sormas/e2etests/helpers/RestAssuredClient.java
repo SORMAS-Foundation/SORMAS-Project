@@ -17,8 +17,8 @@
  */
 package org.sormas.e2etests.helpers;
 
-import static recorders.StepsLogger.setIsScreenshotEnabled;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static recorders.StepsLogger.setIsScreenshotEnabled;
 
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
