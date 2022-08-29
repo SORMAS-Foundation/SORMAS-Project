@@ -20,10 +20,6 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVE
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -38,17 +34,19 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -62,6 +60,8 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SormasToSormasEventFacade")
 public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto>
@@ -83,6 +83,8 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	private ImmunizationService immunizationService;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private UserService userService;
 
 	public SormasToSormasEventFacadeEjb() {
 		super(
@@ -93,6 +95,19 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 			EVENT_SHARES_ENDPOINT,
 			Captions.Event,
 			ShareRequestDataType.EVENT);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	public void share(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+		if (!userService.hasRight(UserRight.EVENT_EDIT)
+			|| (options.isWithEventParticipants() && !userService.hasRight(UserRight.EVENTPARTICIPANT_EDIT))
+			|| (options.isWithSamples() && !userService.hasRight(UserRight.SAMPLE_EDIT))
+			|| (options.isWithImmunizations() && !userService.hasRight(UserRight.IMMUNIZATION_EDIT))) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+
+		super.share(entityUuids, options);
 	}
 
 	@Override
@@ -125,7 +140,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	public Event extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
+	protected Event extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
 		return shareInfo.getEvent();
 	}
 

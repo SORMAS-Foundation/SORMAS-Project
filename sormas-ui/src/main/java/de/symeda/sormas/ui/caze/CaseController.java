@@ -720,9 +720,7 @@ public class CaseController {
 						if (updatedContact.getResultingCase() == null && updatedContact.getDisease() == dto.getDisease()) {
 							updatedContact.setResultingCase(dto.toReference());
 						}
-						updatedContact = FacadeProvider.getContactFacade().save(updatedContact);
-						// when the contact is converted to a case, the same followup comment should be put in case as well
-						dto.setFollowUpComment(updatedContact.getFollowUpComment());
+						FacadeProvider.getContactFacade().save(updatedContact);
 						FacadeProvider.getCaseFacade().updateFollowUpComment(dto);
 					}
 					FacadeProvider.getCaseFacade().setSampleAssociations(convertedContact.toReference(), dto.toReference());

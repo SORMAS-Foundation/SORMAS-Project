@@ -58,6 +58,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DEFAULT_COMBOBOX_VALUE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_BUTTON_DISABLED;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
@@ -1504,8 +1505,8 @@ public class EditEventSteps implements En {
         "I set Country combobox to empty value from Edit Event Page",
         () -> {
           webDriverHelpers.clearComboboxInput(COUNTRY_COMBOBOX_INPUT);
-          //      TimeUnit.MILLISECONDS.sleep(500);
-          //      webDriverHelpers.clickOnWebElementBySelector(DEFAULT_COMBOBOX_VALUE);
+          TimeUnit.MILLISECONDS.sleep(500);
+          webDriverHelpers.clickOnWebElementBySelector(DEFAULT_COMBOBOX_VALUE);
         });
     When(
         "I clear Region and District fields from Edit Event Directory",

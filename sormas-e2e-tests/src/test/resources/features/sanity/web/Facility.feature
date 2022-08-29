@@ -21,7 +21,7 @@ Feature: Facility end to end tests
 
   @tmsLink=SORDEV-9206 @env_main
   Scenario: Checking availability of new categories and types of facility in Edit Case and Edit Case Person directories
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I fill new case form with specific data

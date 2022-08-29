@@ -3,7 +3,7 @@ Feature: Contacts end to end tests
 
   @env_main
   Scenario: Create simple contact
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
@@ -20,7 +20,7 @@ Feature: Contacts end to end tests
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by name and uuid then open
     Then I delete the contact
@@ -34,7 +34,7 @@ Feature: Contacts end to end tests
     And API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by UUID and open
     And I change all contact fields and save
@@ -49,7 +49,7 @@ Feature: Contacts end to end tests
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then I log in with National User
+    Then I log in as a National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
@@ -78,7 +78,7 @@ Feature: Contacts end to end tests
     And API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I navigate to the last created contact via the url
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
@@ -102,7 +102,7 @@ Feature: Contacts end to end tests
     And API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I navigate to the last created contact via the url
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
@@ -135,7 +135,7 @@ Feature: Contacts end to end tests
       Then API: I create a new contact
       Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
-      When I log in with National User
+      When I log in as a National User
       Then I click on the Contacts button from navbar
       And I click on the DETAILED radiobutton from Contact directory
       And I filter by Contact uuid
@@ -149,7 +149,7 @@ Feature: Contacts end to end tests
     When API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the Follow-up visits tab using of created contact via api
     Then I click on New visit button from Follow-up visits tab
     And I create a new Follow-up visit
@@ -165,7 +165,7 @@ Feature: Contacts end to end tests
 
   @tmsLink=SORDEV-5490 @env_main
   Scenario: Create a contact and create a case for contact person
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
@@ -178,7 +178,7 @@ Feature: Contacts end to end tests
 
   @tmsLink=SORDEV-5496 @env_main
   Scenario: Generate and download Contact document
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I open the first contact from contacts list
     And I click on the Create button from Contact Document Templates
@@ -193,7 +193,7 @@ Feature: Contacts end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
@@ -214,7 +214,7 @@ Feature: Contacts end to end tests
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by UUID and open
     And I click on the Epidemiological Data button tab in Contact form
@@ -239,7 +239,7 @@ Feature: Contacts end to end tests
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I am accessing the Follow-up visits tab using of created contact via api
     And I click on new Visit button
     Then I set Person available and cooperative to UNAVAILABLE
@@ -315,7 +315,7 @@ Feature: Contacts end to end tests
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I open the last created contact
     Then I click on the Epidemiological Data button tab in Contact form
@@ -337,7 +337,7 @@ Feature: Contacts end to end tests
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then I log in with National User
+    Then I log in as a National User
     When I click on the Contacts button from navbar
     Then I open the last created contact
     And I click on the Epidemiological Data navbar field
@@ -375,7 +375,7 @@ Feature: Contacts end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then I log in with National User
+    Then I log in as a National User
     When I click on the Contacts button from navbar
     Then I click on Line Listing button
     Then I click Choose Case button from Contact Directory Line Listing popup window
@@ -393,7 +393,7 @@ Feature: Contacts end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then I log in with National User
+    Then I log in as a National User
     When I click on the Contacts button from navbar
     Then I click on Line Listing button
     Then I click Choose Case button from Contact Directory Line Listing popup window
@@ -457,7 +457,7 @@ Feature: Contacts end to end tests
 
   @tmsLink=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server for Contacts
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I click on the NEW CONTACT button
     And I check if default disease value is set for COVID-19
@@ -473,7 +473,7 @@ Feature: Contacts end to end tests
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     Then I click on the Contacts button from navbar
     And  I click on the NEW CONTACT button
     And I fill a new contact form with chosen data without personal data on Contact directory page
@@ -495,7 +495,7 @@ Feature: Contacts end to end tests
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I click on the NEW CONTACT button
     And I fill a new contact form with specific person data
@@ -527,7 +527,7 @@ Feature: Contacts end to end tests
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I click on the NEW CONTACT button
     And I fill a new contact form with specific person data
@@ -558,7 +558,7 @@ Feature: Contacts end to end tests
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I click on the NEW CONTACT button
     And I fill a new contact form with specific person data
@@ -667,7 +667,7 @@ Feature: Contacts end to end tests
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I open the last created contact
     Then I click on the Epidemiological Data button tab in Contact form
@@ -687,7 +687,7 @@ Feature: Contacts end to end tests
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by name and uuid then open
     Then I click on START DATA IMPORT button from New document in contact tab
@@ -737,7 +737,7 @@ Feature: Contacts end to end tests
 
   @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Contact directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     When I click on the NEW CONTACT button
     And I click on the person search button in create new contact form
@@ -760,7 +760,7 @@ Feature: Contacts end to end tests
 
   @tmsLink=SORDEV-6434 @env_main
   Scenario: Check if username shows up in visit origin
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
@@ -811,7 +811,7 @@ Feature: Contacts end to end tests
     Then I open last edited contact by API via URL navigation
     Then I click on the Archive contact button and confirm popup
     Then I click on logout button from navbar
-    Then I log in with National User
+    Then I log in as a National User
     Then I open last edited contact by API via URL navigation
     Then I check if editable fields are read only for an archived contact
 
@@ -974,7 +974,7 @@ Feature: Contacts end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form

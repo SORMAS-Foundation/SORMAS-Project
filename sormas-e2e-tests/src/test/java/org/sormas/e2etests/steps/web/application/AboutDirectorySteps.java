@@ -1,16 +1,14 @@
 package org.sormas.e2etests.steps.web.application;
 
 import static org.sormas.e2etests.pages.application.AboutPage.*;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
 
-import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +19,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.sormas.e2etests.helpers.strings.LanguageDetectorHelper;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class AboutDirectorySteps implements En {
   public static final List<String> xlsxFileContentList = new ArrayList<>();
-  public static String language;
   public static final String DATA_PROTECTION_DICTIONARY_FILE_PATH =
       String.format("sormas_data_protection_dictionary_%s_.xlsx", LocalDate.now());
   public static final String DATA_DICTIONARY_FILE_PATH =
@@ -48,44 +45,9 @@ public class AboutDirectorySteps implements En {
     When(
         "I select {string} language from Combobox in User settings",
         (String chosenLanguage) -> {
-          language = chosenLanguage;
           webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, chosenLanguage);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-        });
-
-    When(
-        "I set on default language as English in User settings",
-        () -> {
-          String languageDerivedFromUserChoose = language;
-          String defaultLanguage = "";
-          switch (languageDerivedFromUserChoose) {
-            case "Fran\u00E7ais":
-              defaultLanguage = "Anglais";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Fran\u00E7ais (Suisse)":
-              defaultLanguage = "Anglais";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Deutsch":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Deutsch (Schweiz)":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Espa\u00F1ol (Ecuador)":
-              defaultLanguage = "Ingl\u00E9s";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Espa\u00F1ol (Cuba)":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-          }
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(5);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
@@ -155,20 +117,13 @@ public class AboutDirectorySteps implements En {
         });
 
     When(
-        "I detect and check language that was defined in User Settings for XLSX file content",
-        () -> {
-          DetectLanguage.apiKey = "5e184341083ac27cad1fd06d6e208302";
+        "^I check if last downloaded XLSX from About Directory content is translated into ([^\"]*)$",
+        (String language) -> {
           String[] receivedWordsFromArray = {
-            xlsxFileContentList.get(16), xlsxFileContentList.get(17)
+            xlsxFileContentList.get(3), xlsxFileContentList.get(17)
           };
           for (String word : receivedWordsFromArray) {
-            String chosenUserLanguage = language.toLowerCase().substring(0, 2);
-            String detectedLanguage = DetectLanguage.simpleDetect(word);
-            softly.assertEquals(
-                chosenUserLanguage,
-                detectedLanguage,
-                "Language in xlsx file is different then chosen bu User");
-            softly.assertAll();
+            LanguageDetectorHelper.checkLanguage(word, language);
           }
         });
 
@@ -262,11 +217,13 @@ public class AboutDirectorySteps implements En {
         });
 
     Then(
-        "^I check that Surveillance Dashboard header is correctly displayed in Urdu language$",
-        () -> {
+        "^I check that Surveillance Dashboard header is correctly displayed in ([^\"]*) language$",
+        (String language) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.isElementVisibleWithTimeout(
-              SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME_URDU, 5);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SURVEILLANCE_DASHBOARD_NAME, 30);
+          LanguageDetectorHelper.checkLanguage(
+              webDriverHelpers.getTextFromWebElement(SURVEILLANCE_DASHBOARD_NAME), language);
         });
   }
 

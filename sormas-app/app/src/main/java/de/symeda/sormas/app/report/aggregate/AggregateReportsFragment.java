@@ -20,6 +20,8 @@ import android.view.LayoutInflater;
 import androidx.databinding.DataBindingUtil;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.report.DiseaseAgeGroup;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -217,6 +219,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		Date latestLocalChangeDate = null;
 		User user = ConfigProvider.getUser();
 		boolean triggerDuplicateWarning = false;
+		boolean triggerExpiredWarning = false;
 
 		final Map<Disease, List<AggregateReport>> reportsByDisease = new HashMap<>();
 		final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
@@ -314,6 +317,13 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportDeaths.setEnabled(enabled);
 					binding.aggregateReportLabConfirmations.setEnabled(enabled);
 					binding.aggregateReportNewCases.setEnabled(enabled);
+					if (!DatabaseHelper.getAggregateReportDao().isCurrentAgeGroup(disease, report.getAgeGroup())) {
+						binding.expired.setText(I18nProperties.getCaption(Captions.aggregateReportExpiredAgeGroups));
+						if (report.getAgeGroup() == null) {
+							report.setAgeGroup(I18nProperties.getCaption(Captions.aggregateReportNoAgeGroup));
+						}
+						triggerExpiredWarning = true;
+					}
 					contentBinding.submitReport.setEnabled(enabled);
 					String ageGroup = report.getAgeGroup();
 					if (ageGroup != null) {
@@ -363,6 +373,10 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportDeaths.setEnabled(enabled);
 					binding.aggregateReportLabConfirmations.setEnabled(enabled);
 					binding.aggregateReportNewCases.setEnabled(enabled);
+					if (!DatabaseHelper.getAggregateReportDao().isCurrentAgeGroup(disease, ageGroup)) {
+						binding.expired.setText(I18nProperties.getCaption(Captions.aggregateReportExpiredAgeGroups));
+						triggerExpiredWarning = true;
+					}
 					contentBinding.submitReport.setEnabled(enabled);
 					AggregateReport data = DatabaseHelper.getAggregateReportDao().build(disease, epiWeek, selectedInfrastructure);
 					data.setAgeGroup(ageGroup);
@@ -382,6 +396,18 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 		if (triggerDuplicateWarning) {
 			NotificationHelper.showNotification((NotificationContext) getActivity(), WARNING, getString(R.string.message_aggregate_report_found));
+		}
+
+		if (triggerExpiredWarning) {
+			if (triggerDuplicateWarning) {
+				NotificationHelper.showNotification(
+					(NotificationContext) getActivity(),
+					WARNING,
+					getString(R.string.message_aggregate_report_found) + "<br>" + getString(R.string.message_aggregate_report_expired_age_groups));
+			} else {
+				NotificationHelper
+					.showNotification((NotificationContext) getActivity(), WARNING, getString(R.string.message_aggregate_report_expired_age_groups));
+			}
 		}
 	}
 
@@ -438,6 +464,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 						}
 						if (report.getDeaths() == null) {
 							report.setDeaths(0);
+						}
+
+						if (report.getAgeGroup() != null
+							&& report.getAgeGroup().equals(I18nProperties.getCaption(Captions.aggregateReportNoAgeGroup))) {
+							report.setAgeGroup(null);
 						}
 
 						DatabaseHelper.getAggregateReportDao().saveAndSnapshot(report);

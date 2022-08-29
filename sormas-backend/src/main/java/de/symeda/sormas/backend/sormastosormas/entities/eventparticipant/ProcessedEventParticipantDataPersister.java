@@ -31,6 +31,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
@@ -48,9 +49,17 @@ public class ProcessedEventParticipantDataPersister
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
 		return shareInfoService;
+	}
+
+	@Override
+	protected SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade() {
+		return originInfoFacade;
 	}
 
 	@Override

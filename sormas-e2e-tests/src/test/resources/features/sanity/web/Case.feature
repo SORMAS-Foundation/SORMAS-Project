@@ -3,7 +3,7 @@ Feature: Case end to end tests
 
   @env_main
   Scenario: Check a new case data
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -12,7 +12,7 @@ Feature: Case end to end tests
 
   @env_main
   Scenario: Check that double clicking NEW CASE button does not cause a redundant action
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I fill new case form with specific data
@@ -21,9 +21,9 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
-  @env_main @ignore #un-ignore this when dataReceived fields are fixed in test-auto
+  @env_main
   Scenario: Edit, save and check all fields of a new case
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -34,7 +34,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-7868 @env_main
   Scenario: Fill the case tab
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -86,7 +86,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-5517 @env_de
   Scenario: Fill the case tab (DE specific)
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -153,7 +153,7 @@ Feature: Case end to end tests
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I open the last created Case via API
     And I delete the case
@@ -167,7 +167,7 @@ Feature: Case end to end tests
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I open the Case Contacts tab of the created case via api
     Then I click on new contact button from Case Contacts tab
     Then I create a new contact from Cases Contacts tab
@@ -182,7 +182,7 @@ Feature: Case end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the Symptoms tab using of created case via api
     And I change all symptoms fields and save
     And I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -191,7 +191,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-5496 @env_main
   Scenario: Generate and download Case document
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I open last created case
     And I click on the Create button from Case Document Templates
@@ -246,7 +246,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-5518 @env_main
   Scenario: Fill the case person tab
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with disease "ACUTE FLACCID PARALYSIS"
@@ -350,7 +350,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-9033 @env_main
   Scenario: Create case with directly entered home address
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I fill new case form with specific data
@@ -419,7 +419,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and case filters
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
@@ -493,7 +493,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and person death date
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
@@ -532,7 +532,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and person other cause date
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
@@ -578,7 +578,7 @@ Feature: Case end to end tests
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on INFO button on Case Edit page
@@ -665,7 +665,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server for Cases
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the Cases button from navbar
     When I click on the NEW CASE button
     Then I check if default disease value is set for COVID-19
@@ -674,7 +674,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-9353 @env_main
   Scenario: Deselecting the "Enter home address of the case person now" test regression
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I fill new case form with specific data
@@ -687,7 +687,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-7466 @env_de
   Scenario: Check reference definition for cases
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with only the required data for DE version
@@ -758,7 +758,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-7456 @env_de
   Scenario: Check different facility types depending on type of place in Epidemiological Tab
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -819,7 +819,7 @@ Feature: Case end to end tests
     And API: I create a new case
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I click on the Cases button from navbar
     And I open the last created Case via API
     And I navigate to Epidemiological Data tab on Edit Case Page
@@ -830,7 +830,6 @@ Feature: Case end to end tests
     When I select YES from Contacts With Source Case Known
     Then I check if Contacts of Source filed is available
     When I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page
-    And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
     And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
     And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
@@ -907,7 +906,7 @@ Feature: Case end to end tests
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I fill new case form with chosen data without personal data on Case directory page
@@ -946,7 +945,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-9088 @env_main
   Scenario: Check if all sexes have pregnancy attributes
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with specific data and new person
@@ -1083,7 +1082,7 @@ Feature: Case end to end tests
 
      @tmsLink=SORDEV-5613 @env_main
       Scenario: Option to attach document like pdf, word, jpeg to cases
-      Given I log in with National User
+      Given I log in as a National User
       When I click on the Cases button from navbar
       Then I click on the NEW CASE button
       And I create a new case with specific data
@@ -1111,7 +1110,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-9151 @env_de
   Scenario: Check if specific Case fields are hidden (DE specific)
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I open last created case
     And I navigate to case person tab
@@ -1126,7 +1125,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     Then I click on the NEW CASE button
     And I click on the person search button in new case form
@@ -1136,7 +1135,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I open last created case
     And I open the Case Contacts tab
@@ -1170,7 +1169,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-8413 @env_main
   Scenario: Test Hide specific enum values based on the related disease
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Cases button from navbar
     Then I click on the NEW CASE button
     And I create a new case with specific data
@@ -1214,7 +1213,7 @@ Feature: Case end to end tests
     And API: I create a new case
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the Cases button from navbar
     When I open the last created Case via API
     Then I navigate to Epidemiological Data tab on Edit Case Page
@@ -1242,7 +1241,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-5623 @env_de
   Scenario: Show date and responsible user of last follow-up status change
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with only the required data for DE version
@@ -1299,7 +1298,7 @@ Feature: Case end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     Then I navigate to the last created case via the url
     Then I click on New Sample
     Then I create a new Sample with positive test result with Guinea Worm as disease
@@ -1326,7 +1325,7 @@ Feature: Case end to end tests
     Then I open last edited case by API via URL navigation
     Then I click on the Archive case button and confirm popup
     Then I click on logout button from navbar
-    Then I log in with National User
+    Then I log in as a National User
     Then I open last edited case by API via URL navigation
     Then I check if editable fields are read only for an archived case
 
@@ -1469,7 +1468,7 @@ Feature: Case end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     Then I navigate to the last created case via the url
     And I check elements order on page before General comment field in DE
 
@@ -1644,7 +1643,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-5141 @env_main
   Scenario: Check extended disease properties classification
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with disease "MEASLES"
@@ -1743,3 +1742,20 @@ Feature: Case end to end tests
     Then I create a new case with specific data and Bayern region
     And I click on New Task from Case page
     And I check that there is only user with Bayern region for task
+
+   @8558 @env_main
+   Scenario: Verify that Page can not be saved if a future date is set for Date of symptom onset
+     Given API: I create a new person
+     And API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given API: I create a new case
+     Then API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given I log in as a National User
+     Then I navigate to the last created case via the url
+     And I navigate to symptoms tab
+     Then I set Fever Symptoms to YES
+     And I set First Symptom as Fever
+     And I set Date of symptom onset to 7 days into the future
+     When I click on save case button in Symptoms tab
+     Then I Verify popup message from Symptoms Tab Contains "Date of symptom onset cannot be in the future"

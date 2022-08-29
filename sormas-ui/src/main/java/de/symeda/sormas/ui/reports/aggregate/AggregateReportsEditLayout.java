@@ -80,6 +80,8 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	private List<DiseaseAgeGroup> diseaseAgeGroupsWithoutReport = new ArrayList<>();
 	private List<AggregateReportDto> reports;
 	private Label duplicateMessage;
+	private boolean existsExpiredAgeGroups = false;
+	private Label expiredAgeGroupsMessage;
 
 	public AggregateReportsEditLayout(Window window, boolean edit, AggregateReportDto selectedAggregateReport) {
 
@@ -233,7 +235,12 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 				boolean isFirstAgeGroup = report.getAgeGroup() != null && report.getAgeGroup().equals(firstAgeGroup);
 
-				AggregateReportEditForm editForm = new AggregateReportEditForm(report.getDisease(), report.getAgeGroup(), isFirstAgeGroup);
+				if (report.isExpiredAgeGroup()) {
+					existsExpiredAgeGroups = true;
+				}
+
+				AggregateReportEditForm editForm =
+					new AggregateReportEditForm(report.getDisease(), report.getAgeGroup(), isFirstAgeGroup, report.isExpiredAgeGroup());
 				editForm.setNewCases(report.getNewCases());
 				editForm.setLabConfirmations(report.getLabConfirmations());
 				editForm.setDeaths(report.getDeaths());
@@ -249,11 +256,11 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(disease);
 			if (ageGroups == null || ageGroups.isEmpty()) {
-				editForms.add(new AggregateReportEditForm(disease, null, false));
+				editForms.add(new AggregateReportEditForm(disease, null, false, false));
 			} else {
 				int i = 0;
 				for (String ageGroup : ageGroups) {
-					editForms.add(new AggregateReportEditForm(disease, ageGroup, i == 0));
+					editForms.add(new AggregateReportEditForm(disease, ageGroup, i == 0, false));
 					i++;
 				}
 			}
@@ -266,7 +273,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 				int i = 0;
 				for (String ageGroup : ageGroups) {
 					if (!diseasesWithReports.get(disease).contains(ageGroup)) {
-						editForms.add(new AggregateReportEditForm(disease, ageGroup, i == 0));
+						editForms.add(new AggregateReportEditForm(disease, ageGroup, i == 0, false));
 					}
 					i++;
 				}
@@ -288,6 +295,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		editForms = editForms.stream()
 			.sorted(
 				Comparator.comparing(AggregateReportEditForm::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
+					.thenComparing(AggregateReportEditForm::isExpiredAgeGroup)
 					.thenComparing(AggregateReportEditForm::getAgeGroup, AgeGroupUtils.getComparator()))
 			.collect(Collectors.toList());
 
@@ -295,6 +303,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		if (!editForms.isEmpty()) {
 			editForms.get(0).addStyleName(CssStyles.VSPACE_TOP_1);
+		}
+
+		if (existsExpiredAgeGroups) {
+			expiredAgeGroupsMessage = new Label(I18nProperties.getString(Strings.messageAggregateReportExpiredAgeGroups));
+			expiredAgeGroupsMessage.addStyleNames(CssStyles.LABEL_WHITE_SPACE_NORMAL, CssStyles.LABEL_CRITICAL);
+			expiredAgeGroupsMessage.setVisible(true);
+			addComponent(new HorizontalLayout(expiredAgeGroupsMessage));
 		}
 
 		HorizontalLayout buttonsPanel = new HorizontalLayout();
@@ -352,14 +367,16 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			}
 
 			//reset previous marked edit form
-			editForms.stream().filter(editForm -> editForm.isFirstGroup() || editForm.getAgeGroup() == null).forEach(editForm -> {
-				editForm.getContent().getComponent(AggregateReportEditForm.DISEASE_LOC).removeStyleName(CssStyles.LABEL_CRITICAL);
-			});
+			editForms.stream()
+				.filter(editForm -> editForm.isFirstGroup() || (editForm.getAgeGroup() == null && !editForm.isExpiredAgeGroup()))
+				.forEach(editForm -> {
+					editForm.getContent().getComponent(AggregateReportEditForm.DISEASE_LOC).removeStyleName(CssStyles.LABEL_CRITICAL);
+				});
 
 			//mark duplicate diseases red
 			if (!duplicateReports.isEmpty()) {
 				editForms.stream().forEach(editForm -> {
-					if (editForm.isFirstGroup() || editForm.getAgeGroup() == null) {
+					if (editForm.isFirstGroup() || (editForm.getAgeGroup() == null && !editForm.isExpiredAgeGroup())) {
 						if (duplicateReports.stream()
 							.anyMatch(aggregateReportDto -> (aggregateReportDto.getDisease().equals(editForm.getDisease())))) {
 							editForm.getContent().getComponent(AggregateReportEditForm.DISEASE_LOC).addStyleName(CssStyles.LABEL_CRITICAL);

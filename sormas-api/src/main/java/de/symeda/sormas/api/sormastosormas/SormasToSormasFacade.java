@@ -49,7 +49,7 @@ public interface SormasToSormasFacade {
 
 	boolean isSharingCasesEnabledForUser();
 
-	public boolean isSharingContactsEnabledForUser();
+	boolean isSharingContactsEnabledForUser();
 
 	boolean isSharingEventsEnabledForUser();
 

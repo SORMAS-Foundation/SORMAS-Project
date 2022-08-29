@@ -23,14 +23,26 @@ import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage
 import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.BLUE_ERROR_EXCLAMATION_MARK_TEXT;
 
 import com.github.javafaker.Faker;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
 import cucumber.api.java8.En;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.csv.FollowUpCSV;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.FollowUpVisit;
 import org.sormas.e2etests.entities.pojo.web.Visit;
@@ -38,6 +50,7 @@ import org.sormas.e2etests.entities.services.FollowUpVisitService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class FollowUpStep implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -47,6 +60,7 @@ public class FollowUpStep implements En {
   public static FollowUpVisit followUpVisit;
   public static FollowUpVisit expectedVisitResults;
   public static Faker faker;
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   @Inject
   public FollowUpStep(
@@ -357,6 +371,67 @@ public class FollowUpStep implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
+
+    When(
+        "I click on a EXPORT button in the follow-up tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EXPORT_FOLLOW_UP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // wait for download
+        });
+
+    When(
+        "I check if downloaded file has correct data in origin record",
+        () -> {
+          String file =
+              "./downloads/sormas_case_visits_" + LocalDate.now().format(formatter) + "_.csv";
+          FollowUpCSV reader = parseBasicFollowUpCSV(file);
+          Path path = Paths.get(file);
+          Files.delete(path);
+          softly.assertEquals(reader.getOrigin(), "Created by user", "Origins are not equal");
+          softly.assertEquals(reader.getVisitUserName(), "Nat User", "Users are not equal");
+          softly.assertAll();
+        });
+  }
+
+  public FollowUpCSV parseBasicFollowUpCSV(String fileName) {
+    List<String[]> r = null;
+    String[] values = new String[] {};
+    FollowUpCSV builder = null;
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
+    try (CSVReader reader =
+        new CSVReaderBuilder(new FileReader(fileName))
+            .withCSVParser(csvParser)
+            .withSkipLines(2) // parse only data
+            .build()) {
+      r = reader.readAll();
+    } catch (IOException e) {
+      log.error("IOException parseCustomCaseExport: {}", e.getCause());
+    } catch (CsvException e) {
+      log.error("CsvException parseCustomCaseExport: {}", e.getCause());
+    }
+    try {
+      for (int i = 0; i < r.size(); i++) {
+        values = r.get(i);
+      }
+      builder =
+          FollowUpCSV.builder()
+              .firstName(values[0])
+              .lastName(values[1])
+              .disease(values[2])
+              .visitDateTime(values[3])
+              .visitStatus(values[4])
+              .visitRemarks(values[5])
+              .reportLat(values[6])
+              .reportLon(values[7])
+              .origin(values[8])
+              .visitUserName(values[9])
+              .visitUserRoles(values[10])
+              .build();
+
+    } catch (NullPointerException e) {
+      log.error("Null pointer exception parseBasicEventExport: {}", e.getCause());
+    }
+    return builder;
   }
 
   private void selectPersonAvailable(String availableAndCooperative, By element) {

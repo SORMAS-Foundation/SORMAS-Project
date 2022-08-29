@@ -204,6 +204,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -305,7 +306,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToS
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -444,7 +445,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@EJB
 	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
 	@EJB
@@ -1386,6 +1387,34 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		pseudonymizer.pseudonymizeDtoCollection(CaseSelectionDto.class, entries, CaseSelectionDto::isInJurisdiction, null);
 
 		return entries;
+	}
+
+	@Override
+	public List<CaseDataDto> getRelevantCasesForVaccination(VaccinationDto vaccinationDto) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		final Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins joins = caseQueryContext.getJoins();
+
+		Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+		Join<Case, Person> person = joins.getPerson();
+		Join<Person, Immunization> immunizationJoin = person.join(Person.IMMUNIZATIONS, JoinType.LEFT);
+		Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
+
+		Predicate predicate = cb.in(vaccinationsJoin).value(vaccination);
+		cq.where(predicate);
+		cq.select(caze);
+
+		List<Case> cases = em.createQuery(cq).getResultList();
+		return cases.stream().filter(c -> vaccinationService.isVaccinationRelevant(c, vaccination)).map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid) {
+		List<VaccinationDto> relevantVaccinationsForCase = vaccinationFacade.getRelevantVaccinationsForCase(caze);
+		//checking if the vaccination selected for delete is in the relevant vaccinations of the case
+		return relevantVaccinationsForCase.stream().anyMatch(v -> !v.getUuid().equals(vaccinationUuid));
 	}
 
 	@Override
@@ -3047,7 +3076,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
 		}
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented

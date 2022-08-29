@@ -6,7 +6,7 @@ Feature: Case filter functionality
     Given API: I create 10 new cases
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I click on the Cases button from navbar
     When I search for cases created with the API using Person's name
     Then I apply Outcome of case filter "No Outcome Yet" on Case directory page
@@ -23,7 +23,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     Then I apply uuid filter for last created via API Person in Case directory page
     And I filter by CaseID on Case directory page
@@ -63,7 +63,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I apply Case origin "In-Country" on Case directory page
     And I filter by CaseID on Case directory page
@@ -106,7 +106,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
@@ -147,7 +147,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I click APPLY BUTTON in Case Directory Page
@@ -194,7 +194,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I check that number of displayed cases results is 1
@@ -218,7 +218,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
@@ -240,7 +240,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
@@ -266,7 +266,7 @@ Feature: Case filter functionality
 
   @tmsLink=SORQA-83 @env_de
   Scenario: German Case Directory filters
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -303,7 +303,7 @@ Feature: Case filter functionality
 
   @tmsLink=SORQA-83 @env_de
   Scenario: Check Case basic filters on Case directory page for DE version
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -378,7 +378,7 @@ Feature: Case filter functionality
 
   @tmsLink=SORQA-83 @env_de
   Scenario: Check Case report date filters on Case directory page for De specific
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -397,7 +397,7 @@ Feature: Case filter functionality
 
   @tmsLink=SORDEV-8629 @env_main
   Scenario Outline: Check option <option> in Outcome of case filter
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I fill new case form with specific data
@@ -435,7 +435,7 @@ Feature: Case filter functionality
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I open the last created Case via API
     And I set case vaccination status to <status>

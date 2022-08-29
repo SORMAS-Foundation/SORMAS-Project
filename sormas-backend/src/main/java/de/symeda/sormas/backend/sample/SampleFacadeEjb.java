@@ -107,7 +107,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -168,7 +168,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+	private SormasToSormasOriginInfoService originInfoService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -432,7 +432,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public void validate(SampleDto sample, boolean checkAssociatedEntities) throws ValidationRuntimeException {
+	public void validate(@Valid SampleDto sample, boolean checkAssociatedEntities) throws ValidationRuntimeException {
 
 		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
@@ -803,7 +803,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
 		}
 
 		target.setDeleted(source.isDeleted());
