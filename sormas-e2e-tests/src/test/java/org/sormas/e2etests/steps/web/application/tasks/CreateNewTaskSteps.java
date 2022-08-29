@@ -184,6 +184,12 @@ public class CreateNewTaskSteps implements En {
                 }
               });
         });
+    And(
+        "I check that Pending button exist on task edit page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PENDING_TASK_STATUS_OPTION);
+          Assert.assertTrue(webDriverHelpers.isElementEnabled(PENDING_TASK_STATUS_OPTION));
+        });
   }
 
   private void fillAllFields(Task task) {

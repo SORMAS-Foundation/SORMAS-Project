@@ -51,6 +51,8 @@ public class CreateNewTaskPage {
   public static final By SELECTED_OBSERVER_USER =
       By.xpath("//*[@id='observerUsers']//div[@class='v-label v-widget v-has-width']");
   public static final By DISCARD_BUTTON = By.id("discard");
+  public static final By PENDING_TASK_STATUS_OPTION =
+      By.xpath("//*[@id='taskStatus']/span[contains(label, 'pending')]");
 
   public static By getDeleteIconByUser(String user) {
     return By.xpath(
