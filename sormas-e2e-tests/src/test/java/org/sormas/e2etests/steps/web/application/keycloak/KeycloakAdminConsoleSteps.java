@@ -95,10 +95,8 @@ public class KeycloakAdminConsoleSteps implements En {
         });
     When(
         "^I open last created user from SORMAS in Keycloak Admin Page$",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(
-              getUserIdByName(CreateNewUserSteps.userName.toLowerCase()));
-        });
+        () -> webDriverHelpers.clickOnWebElementBySelector(
+            getUserIdByName(CreateNewUserSteps.userName.toLowerCase())));
     When(
         "^I check if user is disabled in Keycloak Admin Page$",
         () -> {
@@ -107,7 +105,7 @@ public class KeycloakAdminConsoleSteps implements En {
               () ->
                   Assert.assertTrue(
                       visible,
-                      "Number of users in Keycloak is not equal to number of users in SORMAS"),
+                      "User is enabled!"),
               5);
         });
   }
