@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.api.campaign.CampaignDto;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -104,8 +104,8 @@ public class DtoViewAndEditRights {
 		viewRights.put(CampaignDto.class.getSimpleName(), UserRight.CAMPAIGN_VIEW);
 		editRights.put(CampaignDto.class.getSimpleName(), UserRight.CAMPAIGN_EDIT);
 
-		viewRights.put(CampaignFormDataDto.class.getSimpleName(), UserRight.CAMPAIGN_VIEW);
-		editRights.put(CampaignFormDataDto.class.getSimpleName(), UserRight.CAMPAIGN_EDIT);
+		viewRights.put(CampaignFormDataDto.class.getSimpleName(), UserRight.CAMPAIGN_FORM_DATA_VIEW);
+		editRights.put(CampaignFormDataDto.class.getSimpleName(), UserRight.CAMPAIGN_FORM_DATA_EDIT);
 	}
 
 	public static UserRight getUserRightView(Class clazz) {
