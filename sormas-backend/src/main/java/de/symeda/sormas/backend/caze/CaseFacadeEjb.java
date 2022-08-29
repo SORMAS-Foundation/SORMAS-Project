@@ -3738,8 +3738,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RightsAllowed(UserRight._CASE_CREATE)
 	public CaseDataDto cloneCase(CaseDataDto existingCaseDto) {
-
 		CaseDataDto newCase = CaseDataDto.build(existingCaseDto.getPerson(), existingCaseDto.getDisease());
+		newCase.setReportingUser(userService.getCurrentUser().toReference());
 		mergeCase(newCase, existingCaseDto, true);
 		return getCaseDataByUuid(newCase.getUuid());
 	}
