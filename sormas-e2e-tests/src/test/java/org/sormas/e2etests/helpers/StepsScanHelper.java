@@ -29,8 +29,9 @@ import java.util.stream.Collectors;
 public abstract class StepsScanHelper {
 
     public static void getLastLanguageSetByUser(List<StepResult> testSteps) {
+        log.info("Found {} steps in this test", testSteps.size());
         List<StepResult> steps = testSteps
-                .stream().filter(step -> step.getName().startsWith("I select") && step.getName().endsWith("language from Combobox in User settings")).collect(Collectors.toList());
+                .stream().filter(step -> step.getName().endsWith("language from Combobox in User settings")).collect(Collectors.toList());
         log.info("log-> found {} steps which are changing language in a test", steps.size());
         for(StepResult stepResult : steps){
             log.info("[ {} ] ==== {}", stepResult.getName(), stepResult.getStatus());
