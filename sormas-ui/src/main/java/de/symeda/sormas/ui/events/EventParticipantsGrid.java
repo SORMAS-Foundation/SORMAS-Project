@@ -121,6 +121,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		getColumn(SampleIndexDto.SAMPLE_DATE_TIME)
 			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.SAMPLE_DATE_TIME));
 
+		getColumn(EventParticipantIndexDto.CONTACT_COUNT).setSortable(false);
+
 		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
 			if (e.getCaseUuid() != null) {
 				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
