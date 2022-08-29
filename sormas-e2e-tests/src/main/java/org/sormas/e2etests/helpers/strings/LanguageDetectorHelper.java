@@ -17,12 +17,13 @@ public abstract class LanguageDetectorHelper {
   public static void checkLanguage(String textToScan, String expectedLanguage) {
     String langCode = getLanguageCode(expectedLanguage);
     detector = LanguageDetector.getDefaultLanguageDetector().loadModels();
-    if (isConfidenceHigh(textToScan)) {
+    if (isConfidenceStrong(textToScan)) {
       log.info("Check if text {} language is {}", textToScan, expectedLanguage);
       Assert.assertEquals(
           detector.detect(textToScan).getLanguage(), langCode, "Language is not as expected");
     } else {
-      throw new LanguageDetectorException("LanguageDetectorHelper confidence is not HIGH");
+      throw new LanguageDetectorException(
+          "LanguageDetectorHelper confidence is not at least MEDIUM");
     }
   }
 
@@ -42,11 +43,8 @@ public abstract class LanguageDetectorHelper {
     return lang.substring(0, lang.indexOf("_"));
   }
 
-  private static boolean isConfidenceHigh(String textToScan) {
-    return detector
-        .detect(textToScan.replaceAll("[^A-Za-z]", ""))
-        .getConfidence()
-        .toString()
-        .equalsIgnoreCase("HIGH");
+  private static boolean isConfidenceStrong(String textToScan) {
+    String confidence = detector.detect(textToScan).getConfidence().toString();
+    return confidence.equalsIgnoreCase("MEDIUM") || confidence.equalsIgnoreCase("HIGH");
   }
 }

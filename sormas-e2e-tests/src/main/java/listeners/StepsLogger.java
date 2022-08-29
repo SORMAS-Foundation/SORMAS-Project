@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package recorders;
+package listeners;
 
 import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
@@ -65,6 +65,7 @@ public class StepsLogger implements StepLifecycleListener {
     }
     isScreenshotEnabled = true;
     log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, result.getName());
+    log.info("** Step [ {} ] has status {}",result.getName(), result.getStatus());
   }
 
   @SneakyThrows

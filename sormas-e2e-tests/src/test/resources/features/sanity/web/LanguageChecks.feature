@@ -1,7 +1,7 @@
 @UI @Sanity @LanguageChecks
 Feature: Application language checks
 
-  @tmsLink=SORDEV-12126 @env_main
+  @tmsLink=SORDEV-12126 @env_main @LanguageRisk
   Scenario: Test language Urdu-Pk
     Given I log in as a Admin User
     When I click on the User Settings button from navbar

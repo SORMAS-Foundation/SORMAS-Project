@@ -19,7 +19,7 @@
 package org.sormas.e2etests.steps;
 
 import com.google.inject.Inject;
-import cucumber.api.Scenario;
+import cucumber.api.*;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import customreport.chartbuilder.ReportChartBuilder;
@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
+import listeners.StepsLogger;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -43,7 +44,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.sormas.e2etests.webdriver.DriverManager;
-import recorders.StepsLogger;
 
 @Slf4j
 public class BaseSteps implements StepLifecycleListener {
@@ -90,6 +90,9 @@ public class BaseSteps implements StepLifecycleListener {
   @SneakyThrows
   @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
+    if (isLanguageRiskScenario(scenario)) {
+      // BackupSteps.setAppLanguageToDefault(locale);
+    }
     if (isNonApiScenario(scenario)) {
       if (scenario.isFailed()) {
         takeScreenshot();
@@ -121,6 +124,10 @@ public class BaseSteps implements StepLifecycleListener {
 
   private static boolean isNonApiScenario(Scenario scenario) {
     return !scenario.getSourceTagNames().contains("@API");
+  }
+
+  private static boolean isLanguageRiskScenario(Scenario scenario) {
+    return scenario.getSourceTagNames().contains("@LanguageRisk");
   }
 
   private void setLocale(Scenario scenario) {
