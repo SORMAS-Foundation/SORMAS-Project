@@ -71,7 +71,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 	@Override
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_PROCESS,
 		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto) {
 		SormasToSormasShareRequest request = fromDto(dto, true);
@@ -83,7 +83,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 	@Override
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public SormasToSormasShareRequestDto getShareRequestByUuid(String uuid) {
 		SormasToSormasShareRequest request = shareRequestService.getByUuid(uuid);
 
@@ -92,7 +92,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 	@Override
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public List<SormasToSormasShareRequestIndexDto> getIndexList(
 		ShareRequestCriteria criteria,
 		Integer first,
@@ -168,7 +168,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 	@Override
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public long count(ShareRequestCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -189,7 +189,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	}
 
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public Page<SormasToSormasShareRequestIndexDto> getIndexPage(
 		ShareRequestCriteria criteria,
 		Integer first,
@@ -202,7 +202,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 	@Override
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public List<SormasToSormasShareRequestDto> getShareRequestsForCase(CaseReferenceDto caze) {
 		return shareRequestService.getShareRequestsForCase(caze)
 			.stream()

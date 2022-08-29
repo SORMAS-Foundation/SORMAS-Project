@@ -11927,4 +11927,10 @@ END $$;
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (488, 'User roles should have optional link to default user role #9645', true);
 
+-- 2022-08-11 S2S_New Right_ S2S_Process #10084
+
+DELETE FROM userroles_userrights where userright = 'SORMAS_TO_SORMAS_SHARE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (489, 'S2S_New Right_ S2S_Process #10084');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

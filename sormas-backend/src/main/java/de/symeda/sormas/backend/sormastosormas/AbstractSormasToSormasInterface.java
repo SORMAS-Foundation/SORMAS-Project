@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import ca.uhn.fhir.rest.gclient.IFetchConformanceTyped;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -274,7 +273,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_PROCESS)
 	public void acceptShareRequest(String requestUuid) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(requestUuid);
 
@@ -377,12 +376,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_CLIENT)
 	public SormasToSormasEncryptedDataDto saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData)
 		throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(
-			encryptedData,
-			(data, existingData) -> {
-				originInfoFacade.saveOriginInfo(data.getOriginInfo());
-				processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData);
-			});
+		decryptAndPersist(encryptedData, (data, existingData) -> {
+			originInfoFacade.saveOriginInfo(data.getOriginInfo());
+			processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData);
+		});
 
 		return sormasToSormasEncryptionEjb
 			.signAndEncrypt(new ShareRequestAcceptData(null, configFacadeEjb.getS2SConfig().getDistrictExternalId()), encryptedData.getSenderId());
@@ -438,7 +435,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	 * @return list of share trees (shares and shares of shares)
 	 */
 	@Override
-	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@PermitAll
 	public List<SormasToSormasShareTree> getAllShares(String uuid) {
 		return getShareTrees(new ShareTreeCriteria(uuid), true);
 	}
