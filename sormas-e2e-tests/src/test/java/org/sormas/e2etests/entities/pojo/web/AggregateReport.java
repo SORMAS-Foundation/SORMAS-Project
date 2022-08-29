@@ -18,9 +18,15 @@ public class AggregateReport {
   int acuteViralHepatitisCases;
   int acuteViralHepatitisLabConfirmations;
   int acuteViralHepatitisDeaths;
+  int acuteRespiratoryInfectionsCases;
+  int acuteRespiratoryInfectionsLabConfirmations;
+  int acuteRespiratoryInfectionsDeaths;
   int buruliUlcerCases;
   int buruliUlcerLabConfirmations;
   int buruliUlcerDeaths;
+  int chikungunyaCases;
+  int chikungunyaLabConfirmations;
+  int chikungunyaDeaths;
   int diarrheaBloodCases;
   int diarrheaBloodLabConfirmations;
   int diarrheaBloodDeaths;
@@ -30,6 +36,9 @@ public class AggregateReport {
   int diphteriaCases;
   int diphteriaLabConfirmations;
   int diphteriaDeaths;
+  int functionalHypothalamicAmenorrheaCases;
+  int functionalHypothalamicAmenorrheaLabConfirmations;
+  int functionalHypothalamicAmenorrheaDeaths;
   int hivCases;
   int hivLabConfirmations;
   int hivDeaths;
@@ -60,6 +69,12 @@ public class AggregateReport {
   int pertussisCases;
   int pertussisLabConfirmations;
   int pertussisDeaths;
+  int postImmunizationAdverseEventsMildCases;
+  int postImmunizationAdverseEventsMildLabConfirmations;
+  int postImmunizationAdverseEventsMildDeaths;
+  int postImmunizationAdverseEventsSevereCases;
+  int postImmunizationAdverseEventsSevereLabConfirmations;
+  int postImmunizationAdverseEventsSevereDeaths;
   int rubellaCases;
   int rubellaLabConfirmations;
   int rubellaDeaths;
