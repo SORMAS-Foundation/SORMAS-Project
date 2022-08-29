@@ -27,7 +27,6 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -103,11 +102,13 @@ public class KeycloakAdminConsoleSteps implements En {
     When(
         "^I check if user is disabled in Keycloak Admin Page$",
         () -> {
-          webDriverHelpers.scrollToElement(By.xpath("//label[text()='User Enabled']"));
-          //          webDriverHelpers.clickOnWebElementBySelector(USER_DISABLED);
-          webDriverHelpers.scrollToElement(USER_DISABLED);
-          boolean visible = webDriverHelpers.isElementVisibleWithTimeout(USER_DISABLED, 3);
-          assertHelpers.assertWithPoll(() -> Assert.assertTrue(visible, "User is enabled!"), 5);
+          boolean visible = webDriverHelpers.isElementEnabled(USER_DISABLED);
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      visible,
+                      "Number of users in Keycloak is not equal to number of users in SORMAS"),
+              5);
         });
   }
 }
