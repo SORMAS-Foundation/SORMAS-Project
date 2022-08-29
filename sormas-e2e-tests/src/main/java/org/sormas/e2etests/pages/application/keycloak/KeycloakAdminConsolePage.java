@@ -15,20 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.sormas.e2etests.pages.application.users;
+package org.sormas.e2etests.pages.application.keycloak;
 
 import org.openqa.selenium.By;
 
-public class UserManagementPage {
-  public static final By NEW_USER_BUTTON = By.id("userNewUser");
-  public static final By SEARCH_USER_INPUT = By.id("search");
-  public static final By FIRST_EDIT_BUTTON_FROM_LIST =
-      By.cssSelector(".v-grid-body tr:nth-child(1) .v-icon.v-icon-edit");
-  public static final By ACTIVE_INACTIVE_COMBOBOX = By.cssSelector("#active div");
-  public static final By USER_NUMBER =
-      By.xpath("(//div[contains(@class,'v-label v-widget bold')])[2]");
-  public static final By SYNC_USERS_BUTTON = By.id("syncUsers");
-  public static final By SYNC_POPUP_BUTTON = By.id("import-step-1");
-  public static final By SYNC_SUCCESS_DE = By.xpath("//*[text()='Synchronisation erfolgreich!']");
+public class KeycloakAdminConsolePage {
+  public static final By VIEW_ALL_USERS_BUTTON = By.id("viewAllUsers");
+  public static final By USER_ID = By.cssSelector("td.clip a");
+  public static final By NEXT_PAGE_BUTTON = By.cssSelector("button.next.ng-binding");
 }
