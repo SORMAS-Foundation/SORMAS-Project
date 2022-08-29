@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.events;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -35,7 +36,12 @@ public abstract class AbstractEventView extends AbstractEditAllowedDetailView<Ev
 	public static final String ROOT_VIEW_NAME = EventsView.VIEW_NAME;
 
 	protected AbstractEventView(String viewName) {
-		super(viewName, FacadeProvider.getEventFacade());
+		super(viewName);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getEventFacade();
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import java.util.List;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -49,7 +50,12 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 	public static final String ROOT_VIEW_NAME = ContactsView.VIEW_NAME;
 
 	protected AbstractContactView(String viewName) {
-		super(viewName, FacadeProvider.getContactFacade());
+		super(viewName);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getContactFacade();
 	}
 
 	@Override

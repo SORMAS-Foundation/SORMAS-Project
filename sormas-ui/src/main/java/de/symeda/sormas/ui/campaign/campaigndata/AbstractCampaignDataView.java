@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.navigator.ViewChangeListener;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -31,7 +32,12 @@ public abstract class AbstractCampaignDataView extends AbstractEditAllowedDetail
 	public static final String ROOT_VIEW_NAME = CampaignDataView.VIEW_NAME;
 
 	protected AbstractCampaignDataView(String viewName) {
-		super(viewName, FacadeProvider.getCampaignFacade());
+		super(viewName);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getCampaignFacade();
 	}
 
 	@Override

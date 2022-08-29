@@ -118,13 +118,12 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 
 	public void setSampleEditPermission(Component component) {
 
-		Boolean isSampleEditAllowed = isEditAllowed();
-		if (Boolean.FALSE.equals(isSampleEditAllowed)) {
+		if (isEditAllowed()) {
 			component.setEnabled(false);
 		}
 	}
 
-	protected Boolean isEditAllowed() {
+	protected boolean isEditAllowed() {
 		// Sample is not a Core ADO, therefore, we have to duplicate this unfortunately
 		return FacadeProvider.getSampleFacade().isEditAllowed(getSampleRef().getUuid());
 	}

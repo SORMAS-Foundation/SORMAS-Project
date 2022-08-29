@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -23,7 +24,12 @@ public abstract class AbstractTravelEntryView extends AbstractEditAllowedDetailV
 	public static final String ROOT_VIEW_NAME = TravelEntriesView.VIEW_NAME;
 
 	protected AbstractTravelEntryView(String viewName) {
-		super(viewName, FacadeProvider.getTravelEntryFacade());
+		super(viewName);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getTravelEntryFacade();
 	}
 
 	@Override

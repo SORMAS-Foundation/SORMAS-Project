@@ -14,16 +14,17 @@ import de.symeda.sormas.api.ReferenceDto;
  */
 public abstract class AbstractEditAllowedDetailView<R extends ReferenceDto> extends AbstractDetailView<R> {
 
-	private CoreFacade coreFacade;
 
-	protected AbstractEditAllowedDetailView(String viewName, CoreFacade coreFacade) {
+	protected AbstractEditAllowedDetailView(String viewName) {
 		super(viewName);
-		this.coreFacade = coreFacade;
+
 	}
+
+	protected abstract CoreFacade getCoreFacade();
 
 	protected boolean isEditAllowed() {
 		String uuid = getReference().getUuid();
-		return coreFacade.isEditAllowed(uuid);
+		return getCoreFacade().isEditAllowed(uuid);
 	}
 
 	protected void setEditPermission(Component component){

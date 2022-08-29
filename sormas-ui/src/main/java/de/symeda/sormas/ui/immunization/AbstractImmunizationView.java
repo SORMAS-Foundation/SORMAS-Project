@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.ViewChangeListener;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -17,7 +18,12 @@ public abstract class AbstractImmunizationView extends AbstractEditAllowedDetail
 	public static final String ROOT_VIEW_NAME = ImmunizationsView.VIEW_NAME;
 
 	protected AbstractImmunizationView(String viewName) {
-		super(viewName, FacadeProvider.getImmunizationFacade());
+		super(viewName);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getImmunizationFacade();
 	}
 
 	@Override

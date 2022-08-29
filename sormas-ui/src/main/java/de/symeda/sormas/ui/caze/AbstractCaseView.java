@@ -23,6 +23,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -68,7 +69,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 	private final Property.ValueChangeListener viewModeToggleListener;
 
 	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
-		super(viewName, FacadeProvider.getCaseFacade());
+		super(viewName);
 		caseFollowupEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
@@ -98,6 +99,11 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getCaseFacade();
 	}
 
 	@Override

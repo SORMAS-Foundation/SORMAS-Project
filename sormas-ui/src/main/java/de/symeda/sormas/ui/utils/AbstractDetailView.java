@@ -115,5 +115,4 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 	 *            The URL parameters String
 	 */
 	protected abstract void initView(String params);
-
 }
