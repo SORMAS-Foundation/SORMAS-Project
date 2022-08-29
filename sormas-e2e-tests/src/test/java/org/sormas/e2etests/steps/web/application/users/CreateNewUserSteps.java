@@ -411,13 +411,11 @@ public class CreateNewUserSteps implements En {
 
     When(
         "I set user role to {string}",
-        (String userRole) ->
-          webDriverHelpers.selectFromCombobox(USER_ROLE_COMBOBOX, userRole));
+        (String userRole) -> webDriverHelpers.selectFromCombobox(USER_ROLE_COMBOBOX, userRole));
 
     When(
         "I set region filter to {string}",
-        (String region) ->
-          webDriverHelpers.selectFromCombobox(REGION_FILTER_COMBOBOX, region));
+        (String region) -> webDriverHelpers.selectFromCombobox(REGION_FILTER_COMBOBOX, region));
 
     When(
         "I search user {string}",
