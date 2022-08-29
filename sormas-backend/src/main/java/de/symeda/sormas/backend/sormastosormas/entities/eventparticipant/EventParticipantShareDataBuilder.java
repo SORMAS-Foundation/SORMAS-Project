@@ -22,14 +22,14 @@ import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -85,6 +85,10 @@ public class EventParticipantShareDataBuilder
 	public SormasToSormasEventParticipantPreview doBuildShareDataPreview(EventParticipant eventParticipant, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
+		return getEventParticipantPreview(eventParticipant, pseudonymizer);
+	}
+
+	public SormasToSormasEventParticipantPreview getEventParticipantPreview(EventParticipant eventParticipant, Pseudonymizer pseudonymizer) {
 		SormasToSormasEventParticipantPreview preview = new SormasToSormasEventParticipantPreview();
 
 		preview.setUuid(eventParticipant.getUuid());
@@ -94,6 +98,5 @@ public class EventParticipantShareDataBuilder
 		pseudonymizer.pseudonymizeDto(SormasToSormasEventParticipantPreview.class, preview, false, null);
 
 		return preview;
-
 	}
 }
