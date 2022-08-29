@@ -19,6 +19,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Collections;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
@@ -40,8 +42,7 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 	private static final String TEMPLATE_INFO_LOC = "templateInfo";
 	private static final String TEMPLATE_USER_ROLE = "templateUserRole";
 
-	private static final String HTML_LAYOUT = fluidRowLocs(TEMPLATE_INFO_LOC)
-		+ fluidRowLocs(TEMPLATE_USER_ROLE, "")
+	private static final String HTML_LAYOUT = fluidRowLocs(TEMPLATE_USER_ROLE, TEMPLATE_INFO_LOC)
 		+ fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
 		+ fluidRowLocs(UserRoleDto.DESCRIPTION)
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
@@ -59,9 +60,11 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 
 	@Override
 	protected void addFields() {
-		getContent().addComponent(
-			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML),
-			TEMPLATE_INFO_LOC);
+		Label infoLabel =
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML);
+		infoLabel.setWidthFull();
+		infoLabel.setCaption(StringUtils.EMPTY);
+		getContent().addComponent(infoLabel, TEMPLATE_INFO_LOC);
 
 		ComboBox templateRoleCombo = addCustomField(TEMPLATE_USER_ROLE, UserRoleDto.class, ComboBox.class);
 		setSoftRequired(true, TEMPLATE_USER_ROLE);
@@ -88,6 +91,7 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 			userRole.setEmailNotificationTypes(Collections.emptySet());
 			userRole.setSmsNotificationTypes(Collections.emptySet());
 		} else {
+			userRole.setLinkedDefaultUserRole(templateRole.getLinkedDefaultUserRole());
 			userRole.setUserRights(templateRole.getUserRights());
 			userRole.setEmailNotificationTypes(templateRole.getEmailNotificationTypes());
 			userRole.setSmsNotificationTypes(templateRole.getSmsNotificationTypes());

@@ -344,7 +344,7 @@ public class StartupShutdownService {
 
 			// Create Admin
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.ADMIN),
 				"ad",
 				"min",
 				DefaultEntityHelper.ADMIN_USERNAME_AND_PASSWORD,
@@ -370,7 +370,7 @@ public class StartupShutdownService {
 
 			// Create Surveillance Supervisor
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SURVEILLANCE_SUPERVISOR)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
 				"Surveillance",
 				"Supervisor",
 				DefaultEntityHelper.SURV_SUP_USERNAME_AND_PASSWORD,
@@ -378,7 +378,7 @@ public class StartupShutdownService {
 
 			// Create Case Supervisor
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.CASE_SUPERVISOR)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.CASE_SUPERVISOR),
 				"Case",
 				"Supervisor",
 				DefaultEntityHelper.CASE_SUP_USERNAME_AND_PASSWORD,
@@ -386,7 +386,7 @@ public class StartupShutdownService {
 
 			// Create Contact Supervisor
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.CONTACT_SUPERVISOR)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.CONTACT_SUPERVISOR),
 				"Contact",
 				"Supervisor",
 				DefaultEntityHelper.CONT_SUP_USERNAME_AND_PASSWORD,
@@ -394,7 +394,7 @@ public class StartupShutdownService {
 
 			// Create Point of Entry Supervisor
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.POE_SUPERVISOR)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.POE_SUPERVISOR),
 				"Point of Entry",
 				"Supervisor",
 				DefaultEntityHelper.POE_SUP_USERNAME_AND_PASSWORD,
@@ -402,7 +402,7 @@ public class StartupShutdownService {
 
 			// Create Laboratory Officer
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.LAB_USER)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.LAB_USER),
 				"Laboratory",
 				"Officer",
 				DefaultEntityHelper.LAB_OFF_USERNAME_AND_PASSWORD,
@@ -410,7 +410,7 @@ public class StartupShutdownService {
 
 			// Create Event Officer
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.EVENT_OFFICER)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.EVENT_OFFICER),
 				"Event",
 				"Officer",
 				DefaultEntityHelper.EVE_OFF_USERNAME_AND_PASSWORD,
@@ -418,7 +418,7 @@ public class StartupShutdownService {
 
 			// Create National User
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.NATIONAL_USER)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.NATIONAL_USER),
 				"National",
 				"User",
 				DefaultEntityHelper.NAT_USER_USERNAME_AND_PASSWORD,
@@ -427,7 +427,7 @@ public class StartupShutdownService {
 
 			// Create National Clinician
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.NATIONAL_CLINICIAN)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.NATIONAL_CLINICIAN),
 				"National",
 				"Clinician",
 				DefaultEntityHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
@@ -436,7 +436,7 @@ public class StartupShutdownService {
 
 			// Create Surveillance Officer
 			User surveillanceOfficer = createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SURVEILLANCE_OFFICER)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.SURVEILLANCE_OFFICER),
 				"Surveillance",
 				"Officer",
 				DefaultEntityHelper.SURV_OFF_USERNAME_AND_PASSWORD,
@@ -447,7 +447,7 @@ public class StartupShutdownService {
 
 			// Create Hospital Informant
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.HOSPITAL_INFORMANT)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.HOSPITAL_INFORMANT),
 				"Hospital",
 				"Informant",
 				DefaultEntityHelper.HOSP_INF_USERNAME_AND_PASSWORD,
@@ -460,7 +460,7 @@ public class StartupShutdownService {
 
 			// Create Community Officer
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.COMMUNITY_OFFICER)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.COMMUNITY_OFFICER),
 				"Community",
 				"Officer",
 				DefaultEntityHelper.COMM_OFF_USERNAME_AND_PASSWORD,
@@ -472,7 +472,7 @@ public class StartupShutdownService {
 
 			// Create Poe Informant
 			createAndPersistDefaultUser(
-				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.POE_INFORMANT)),
+				userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.POE_INFORMANT),
 				"Poe",
 				"Informant",
 				DefaultEntityHelper.POE_INF_USERNAME_AND_PASSWORD,
@@ -518,8 +518,8 @@ public class StartupShutdownService {
 			HashSet<UserRole> userRoles = new HashSet<>();
 			userRoles.addAll(
 				Arrays.asList(
-					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT)),
-					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.NATIONAL_USER))));
+					userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT),
+					userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.NATIONAL_USER)));
 
 			createOrUpdateDefaultUser(userRoles, DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME, new String(pwd), "Sormas to Sormas", "Client");
 		}
@@ -534,7 +534,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			new HashSet<>(Arrays.asList(userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_EXTERNAL_VISITS_USER)))),
+			new HashSet<>(Arrays.asList(userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.REST_EXTERNAL_VISITS_USER))),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
@@ -550,7 +550,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			new HashSet<>(Arrays.asList(userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_EXTERNAL_VISITS_USER)))),
+			new HashSet<>(Arrays.asList(userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.REST_EXTERNAL_VISITS_USER))),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Patient",
@@ -792,7 +792,7 @@ public class StartupShutdownService {
 				List<User> usersWithoutUserRoles =
 					userService.getAll().stream().filter(user -> user.getUserRoles().isEmpty()).collect(Collectors.toList());
 				if (!usersWithoutUserRoles.isEmpty()) {
-					UserRole importuserUserRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.IMPORT_USER));
+					UserRole importuserUserRole = userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.IMPORT_USER);
 					if (importuserUserRole == null) {
 						throw new IllegalArgumentException(
 							"Could not find default IMPORT_USER role in the database; Please ensure that the database contains no user without a user role and redeploy the server.");
@@ -805,7 +805,7 @@ public class StartupShutdownService {
 				}
 				break;
 			case 469:
-				UserRole userRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.COMMUNITY_INFORMANT));
+				UserRole userRole = userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.COMMUNITY_INFORMANT);
 				if (userRole != null) {
 					userRole.getUserRights().removeIf(userRight -> userRight == UserRight.DASHBOARD_CAMPAIGNS_VIEW);
 					userRoleService.ensurePersisted(userRole);
@@ -814,7 +814,7 @@ public class StartupShutdownService {
 			case 471:
 				// Hacky solution because it's possible that the user role has been re-configured in the meantime; #9645 will make sure that
 				// default user roles are not changed.
-				userRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.EXTERNAL_LAB_USER));
+				userRole = userRoleService.getByLinkedDefaultUserRole(DefaultUserRole.EXTERNAL_LAB_USER);
 				if (userRole != null) {
 					userRole.getUserRights().add(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION);
 					userRoleService.ensurePersisted(userRole);
@@ -857,6 +857,20 @@ public class StartupShutdownService {
 					customizableEnumValueService.ensurePersisted(entry);
 				});
 				break;
+			case 488:
+				userRoleService.getAll().forEach(ur -> {
+					if (ur.getLinkedDefaultUserRole() == null) {
+						final String caption = ur.getCaption();
+						final DefaultUserRole defaultUserRole = DefaultUserRole.getByCaption(caption);
+						if (defaultUserRole != null) {
+							ur.setLinkedDefaultUserRole(defaultUserRole);
+							userRoleService.ensurePersisted(ur);
+						} else {
+							logger.warn("Could not find DefaultUserRole with caption: " + caption);
+						}
+					}
+				});
+				break;
 
 			default:
 				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade));
@@ -876,8 +890,9 @@ public class StartupShutdownService {
 	 */
 	private void fillDefaultUserRoles() {
 		Arrays.stream(DefaultUserRole.values()).forEach(role -> {
-			UserRole userRole = userRoleService.getByCaption(role.name());
+			UserRole userRole = userRoleService.getByLinkedDefaultUserRole(role);
 			userRole.setCaption(I18nProperties.getEnumCaption(role));
+			userRole.setLinkedDefaultUserRole(role);
 			userRole.setPortHealthUser(role.isPortHealthUser());
 			userRole.setHasAssociatedDistrictUser(role.hasAssociatedDistrictUser());
 			userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(role)));
