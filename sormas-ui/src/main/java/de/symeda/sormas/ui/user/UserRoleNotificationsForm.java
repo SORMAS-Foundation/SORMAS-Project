@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.user;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRoleDto;
 
 public class UserRoleNotificationsForm extends AbstractUserRoleForm {
@@ -44,5 +45,10 @@ public class UserRoleNotificationsForm extends AbstractUserRoleForm {
 		if (templateRole != null) {
 			notificationTypesCbSet.setInternalValue(templateRole.getNotificationTypes());
 		}
+	}
+
+	@Override
+	DefaultUserRole getDefaultUserRole() {
+		return null;
 	}
 }
