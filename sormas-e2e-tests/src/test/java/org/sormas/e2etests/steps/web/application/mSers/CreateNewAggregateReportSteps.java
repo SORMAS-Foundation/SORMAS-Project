@@ -17,11 +17,14 @@ import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateRep
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getLabConfirmationsInputByDisease;
 
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.temporal.IsoFields;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.AggregateReport;
 import org.sormas.e2etests.entities.services.AggregateReportService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class CreateNewAggregateReportSteps implements En {
@@ -123,6 +126,40 @@ public class CreateNewAggregateReportSteps implements En {
           collectedReport = collectEditedAggregateReport();
           AggregateReport createdReport = CreateNewAggregateReportSteps.report;
           ComparisonHelper.compareEqualEntities(collectedReport, createdReport);
+        });
+    And(
+        "^I set report period to \"([^\"]*)\" on Create a new aggregated report form$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(WEEK_RADIOBUTTON, buttonName);
+        });
+    And(
+        "^I check if Epi week filed is enabled on Create a new aggregated report form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EPI_WEEK_INPUT_POPUP);
+          Assert.assertTrue(
+              webDriverHelpers.isElementEnabled(EPI_WEEK_INPUT_POPUP), "Year field is not enabled");
+        });
+    Then(
+        "^I check if last listed week from Epi week combobox is the current week of the year$",
+        () -> {
+          int currentWeek = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1;
+          int nextYear = LocalDate.now().getYear() + 1;
+
+          if (currentWeek < 52) {
+            int nextWeek = currentWeek + 1;
+            String nextEpiWeek = "Wk " + nextWeek + "-" + LocalDate.now().getYear();
+            Assert.assertFalse(
+                webDriverHelpers.checkIfElementExistsInCombobox(
+                    EPI_WEEK_COMBOBOX_POPUP, nextEpiWeek));
+          } else if (currentWeek == 52) {
+            int nextWeek = 1;
+            String nextEpiWeek = "Wk " + nextWeek + "-" + nextYear;
+            Assert.assertFalse(
+                webDriverHelpers.checkIfElementExistsInCombobox(
+                    EPI_WEEK_COMBOBOX_POPUP, nextEpiWeek));
+          }
+          String currentEpiWeek = "Wk " + currentWeek + "-" + LocalDate.now().getYear();
+          webDriverHelpers.selectFromCombobox(EPI_WEEK_COMBOBOX_POPUP, currentEpiWeek);
         });
   }
 
