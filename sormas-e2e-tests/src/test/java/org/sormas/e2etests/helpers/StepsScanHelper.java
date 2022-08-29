@@ -35,8 +35,8 @@ public abstract class StepsScanHelper {
         log.info("log-> found {} steps which are changing language in a test", steps.size());
         for(StepResult stepResult : steps){
             log.info("[ {} ] ==== {}", stepResult.getName(), stepResult.getStatus());
-            log.info("This test changed language to: {}", stepResult.getParameters().get(0).getName());
-            log.info("This test changed language to: {}", stepResult.getParameters().get(0).getValue());
+            log.info("1.This test changed language to: {}", stepResult.getParameters());
+            log.info("2.This test changed language to: {}", stepResult.getParameters().toString());
         }
     }
 
