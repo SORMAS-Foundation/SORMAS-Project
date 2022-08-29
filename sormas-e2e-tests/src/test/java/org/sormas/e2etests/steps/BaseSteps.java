@@ -35,9 +35,7 @@ import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +43,7 @@ import org.junit.Assert;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.sormas.e2etests.helpers.StepsScanHelper;
 import org.sormas.e2etests.webdriver.DriverManager;
 import recorders.StepsLogger;
 
@@ -57,7 +56,8 @@ public class BaseSteps implements StepLifecycleListener {
   public static String locale;
   private final DriverManager driverManager;
   private final String imageType = "image/png";
-  private final String pngValue = "png";;
+  private final String pngValue = "png";
+  ;
 
   @Inject
   public BaseSteps(DriverManager driverManager) {
@@ -94,10 +94,8 @@ public class BaseSteps implements StepLifecycleListener {
   @SneakyThrows
   @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
-    for (StepResult result : StepsLogger.getStepsResultList()){
-     log.info("Step {} -> has status: {}", result.getName(), result.getStatus());
-    }
-    if (isLanguageRiskScenario(scenario)) {
+    StepsScanHelper.getLastLanguageSetByUser(StepsLogger.getStepsResultList());
+    if (isLanguageRiskScenario(scenario) && scenario.isFailed()) {
       // BackupSteps.setAppLanguageToDefault(locale);
     }
     if (isNonApiScenario(scenario)) {

@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
@@ -48,11 +47,11 @@ public class StepsLogger implements StepLifecycleListener {
     driver = remoteWebDriver;
   }
 
-  public static void initStepsResultList(){
+  public static void initStepsResultList() {
     stepResultList = new ArrayList<>();
   }
 
-  public static List<StepResult> getStepsResultList(){
+  public static List<StepResult> getStepsResultList() {
     return stepResultList;
   }
 
