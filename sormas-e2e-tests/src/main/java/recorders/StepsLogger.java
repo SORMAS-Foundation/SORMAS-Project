@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package listeners;
+package recorders;
 
 import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;

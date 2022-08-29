@@ -1,6 +1,6 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static listeners.StepsLogger.PROCESS_ID_STRING;
+import static recorders.StepsLogger.PROCESS_ID_STRING;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_DATA_TITLE;
