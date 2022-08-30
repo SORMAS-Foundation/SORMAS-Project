@@ -35,6 +35,7 @@ import com.vaadin.v7.ui.TextArea;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -134,5 +135,10 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 			this.<Field<Boolean>> getField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).setValue(templateRole.getHasAssociatedDistrictUser());
 			this.<Field<Boolean>> getField(UserRoleDto.PORT_HEALTH_USER).setValue(templateRole.isPortHealthUser());
 		}
+	}
+
+	@Override
+	DefaultUserRole getDefaultUserRole() {
+		return (DefaultUserRole) getField(UserRoleDto.LINKED_DEFAULT_USER_ROLE).getValue();
 	}
 }

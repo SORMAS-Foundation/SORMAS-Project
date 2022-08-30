@@ -62,8 +62,9 @@ import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasCo
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
@@ -86,12 +87,10 @@ public class ArchitectureTest {
 	 * @RolesAllowed annotation was replaced by @RightsAllowed for performance reasons
 	 */
 	@ArchTest
-	public static final ArchRule dontUseRolesAllowedClassAnnotationRule =
-		classes().should().notBeAnnotatedWith(RolesAllowed.class);
+	public static final ArchRule dontUseRolesAllowedClassAnnotationRule = classes().should().notBeAnnotatedWith(RolesAllowed.class);
 
 	@ArchTest
-	public static final ArchRule dontUseRolesAllowedMethodAnnotationRule =
-		methods().should().notBeAnnotatedWith(RolesAllowed.class);
+	public static final ArchRule dontUseRolesAllowedMethodAnnotationRule = methods().should().notBeAnnotatedWith(RolesAllowed.class);
 
 	private static final DescribedPredicate<JavaClass> classesInDataDictionary =
 		new DescribedPredicate<JavaClass>("are used as data dictionary entity") {
@@ -327,6 +326,11 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(SormasToSormasFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
 	}
 
+	@ArchTest
+	public void testShareRequestInfoFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ShareRequestInfoFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
+	}
+
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
 		assertFacadeEjbAnnotated(facadeEjbClass, AuthMode.CLASS_AND_METHODS, Collections.emptyList(), classes);
 	}
@@ -340,7 +344,7 @@ public class ArchitectureTest {
 			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RightsAllowed.class).check(classes);
 		}
 
-		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
+		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic().and().areNotStatic();
 		String exceptedMethodsMatcher = "^(" + String.join("|", exceptedMethods) + ")$";
 
 		if (authMode == AuthMode.CLASS_ONLY) {

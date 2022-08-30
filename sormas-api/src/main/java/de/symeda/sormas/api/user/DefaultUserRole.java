@@ -1652,6 +1652,7 @@ public enum DefaultUserRole {
 
 		userRole.setCaption(I18nProperties.getEnumCaption(this));
 		userRole.setPortHealthUser(isPortHealthUser());
+		userRole.setLinkedDefaultUserRole(this);
 		userRole.setHasAssociatedDistrictUser(hasAssociatedDistrictUser());
 		userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(this)));
 		userRole.setEnabled(true);

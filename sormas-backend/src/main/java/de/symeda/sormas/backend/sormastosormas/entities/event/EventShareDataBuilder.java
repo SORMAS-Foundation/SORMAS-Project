@@ -22,14 +22,14 @@ import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -79,7 +79,7 @@ public class EventShareDataBuilder
 		return eventDto;
 	}
 
-	private SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
+	public SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
 		SormasToSormasEventPreview preview = new SormasToSormasEventPreview();
 
 		preview.setUuid(event.getUuid());

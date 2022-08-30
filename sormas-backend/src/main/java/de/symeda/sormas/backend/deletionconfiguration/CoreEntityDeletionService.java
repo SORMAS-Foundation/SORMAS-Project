@@ -8,9 +8,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +20,9 @@ import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.util.IterableHelper;
 
@@ -106,7 +106,7 @@ public class CoreEntityDeletionService {
 		List<String> nonReferencedShareRequestInfoUuids = shareRequestInfoService.getAllNonReferencedShareRequestInfo();
 		logger.debug("executeAutomaticDeletion(): Detected non referenced ShareRequestInfo: n={}", nonReferencedShareRequestInfoUuids.size());
 		IterableHelper.executeBatched(
-				nonReferencedShareRequestInfoUuids,
+			nonReferencedShareRequestInfoUuids,
 			DELETE_BATCH_SIZE,
 			batchedUuids -> shareRequestInfoService.deletePermanentByUuids(nonReferencedShareRequestInfoUuids));
 
