@@ -20,7 +20,6 @@ import com.vaadin.ui.Button;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
@@ -44,11 +43,7 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 			userRoleTemplateSelectionField = new UserRoleTemplateSelectionField();
 
 			applyUserRoleTemplate = ButtonHelper.createButton(Captions.userrole_applyUserRoleTemplate, e -> {
-				final DefaultUserRole defaultUserRole = getForm().getDefaultUserRole();
-				userRoleTemplateSelectionField.setDefaultUserRole(
-					defaultUserRole != null
-						? defaultUserRole
-						: FacadeProvider.getUserRoleFacade().getByUuid(getReference().getUuid()).getLinkedDefaultUserRole());
+				userRoleTemplateSelectionField.setDefaultUserRole(getForm().getDefaultUserRole());
 				VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getCaption(Captions.userrole_applyUserRoleTemplate),
 					userRoleTemplateSelectionField,

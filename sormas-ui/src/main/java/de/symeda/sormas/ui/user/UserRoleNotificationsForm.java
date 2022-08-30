@@ -25,9 +25,15 @@ public class UserRoleNotificationsForm extends AbstractUserRoleForm {
 	private static final String HTML_LAYOUT = fluidRowLocs(UserRoleDto.NOTIFICATION_TYPES);
 
 	private UserRoleNotificationCheckboxSet notificationTypesCbSet;
+	private DefaultUserRole defaultUserRole;
 
 	protected UserRoleNotificationsForm() {
 		super(UserRoleDto.class, UserRoleDto.I18N_PREFIX);
+	}
+
+	public UserRoleNotificationsForm(DefaultUserRole linkedDefaultUserRole) {
+		this();
+		this.defaultUserRole = linkedDefaultUserRole;
 	}
 
 	@Override
@@ -49,6 +55,6 @@ public class UserRoleNotificationsForm extends AbstractUserRoleForm {
 
 	@Override
 	DefaultUserRole getDefaultUserRole() {
-		return null;
+		return defaultUserRole;
 	}
 }
