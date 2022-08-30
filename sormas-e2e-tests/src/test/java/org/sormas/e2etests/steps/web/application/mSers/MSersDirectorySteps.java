@@ -172,6 +172,7 @@ public class MSersDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_AGGREGATED_REPORT_HEADER);
         });
 
