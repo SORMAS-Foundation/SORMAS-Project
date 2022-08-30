@@ -137,7 +137,7 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
-    implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.6'
+    implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.8'
     implementation 'org.slf4j:slf4j-api:1.7.36'
 }
 

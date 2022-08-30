@@ -1,7 +1,15 @@
 package de.symeda.sormas.app;
 
+import static org.hzi.sormas.lbds.messaging.Constants.HTTP_CONTAINER;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.hzi.sormas.lbds.core.http.HttpContainer;
 import org.hzi.sormas.lbds.core.http.HttpMethod;
@@ -18,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -46,7 +55,9 @@ public class LbdsRecevierComponent extends BroadcastReceiver {
 			case HTTP_RESPONSE_INTENT:
 				// HTTP responses received from the LBDS service app
 				LbdsResponseIntent responseIntent = (LbdsResponseIntent) IntentTypeCarrying.toStrongTypedIntent(intent);
-				HttpContainer httpContainerResponse = responseIntent.getHttpContainer(ConfigProvider.getLbdsAesSecret());
+				String lbdsAesSecret = ConfigProvider.getLbdsAesSecret();
+				HttpContainer httpContainerResponse = responseIntent.getHttpContainer(lbdsAesSecret);
+				logIntentHttpContainer(responseIntent, lbdsAesSecret);
 
 				HttpMethod methodFromResponse = httpContainerResponse.getMethod();
 				if (methodFromResponse == null || methodFromResponse.url == null) {
@@ -84,6 +95,38 @@ public class LbdsRecevierComponent extends BroadcastReceiver {
 			}
 		}
 		Log.i("SORMAS_LBDS", "==========================");
+	}
+
+	private void logIntentHttpContainer(LbdsResponseIntent responseIntent, String lbdsAesSecret) {
+
+		String encryptedContainer = responseIntent.getStringExtra(HTTP_CONTAINER);
+		String decryptedContainer = decryptContainer(lbdsAesSecret, encryptedContainer);
+
+		Log.i("SORMAS_LBDS", "encrypted HttpContainer: " + encryptedContainer);
+		Log.i("SORMAS_LBDS", "decrypted HttpContainer: " + decryptedContainer);
+		HttpContainer deserializedHttpContainer = new Gson().fromJson(decryptedContainer, HttpContainer.class);
+		Log.i("SORMAS_LBDS", "deserialized HttpContainer: " + deserializedHttpContainer);
+		Log.i("SORMAS_LBDS", "deserialized HttpContainer (json): " + new Gson().toJson(deserializedHttpContainer));
+
+		HttpContainer httpContainerResponse = responseIntent.getHttpContainer(lbdsAesSecret);
+		Log.i("SORMAS_LBDS", "HttpContainer (json): " + new Gson().toJson(httpContainerResponse));
+		Log.i("SORMAS_LBDS", "HttpResult (json): " + new Gson().toJson(httpContainerResponse.getResult()));
+	}
+
+	private String decryptContainer(String secret, String encryptedString) {
+		try {
+			byte[] key = secret.getBytes(StandardCharsets.UTF_8);
+			final byte[] bytes = Base64.decode(encryptedString.getBytes(StandardCharsets.UTF_8), 0);
+			MessageDigest sha = MessageDigest.getInstance("SHA-1");
+			key = sha.digest(key);
+			key = Arrays.copyOf(key, 16);
+			SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+			Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+			cipher.init(Cipher.DECRYPT_MODE, secretKey);
+			return new String(cipher.doFinal(bytes), StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void processLbdsResponsePersons(Context context, HttpContainer httpContainerResponse) {
