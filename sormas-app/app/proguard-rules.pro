@@ -21,3 +21,8 @@
 -keep public class de.symeda.sormas.** {
   *;
 }
+
+# exclude LBDS libs - their usage via reflection isn't properly detected
+-keep public class org.hzi.sormas.** {
+  *;
+}
