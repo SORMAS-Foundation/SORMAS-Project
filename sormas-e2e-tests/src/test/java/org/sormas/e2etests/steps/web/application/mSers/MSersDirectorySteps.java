@@ -3,7 +3,6 @@ package org.sormas.e2etests.steps.web.application.mSers;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_INPUT;
-import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EDIT_AGGREGATED_REPORT_HEADER;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.AGGREGATED_REPORT_APPLY_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DELETE_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISEASE_COMBOBOX;
@@ -173,7 +172,8 @@ public class MSersDirectorySteps implements En {
               FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_AGGREGATED_REPORT_HEADER);
+          //
+          // webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_AGGREGATED_REPORT_HEADER);
         });
 
     And(
