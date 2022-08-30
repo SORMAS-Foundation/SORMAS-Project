@@ -479,7 +479,7 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
 		Join<EventParticipant, Event> event = joins.getEvent();
-		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
+		final Join<EventParticipant, Sample> samples = joins.getSamples();
 		samples.on(
 			cb.and(
 				cb.isFalse(samples.get(DeletableAdo.DELETED)),
@@ -533,8 +533,6 @@ public class EventParticipantFacadeEjb
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
 
-		cq.distinct(true);
-
 		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
 		Predicate latestSamplePredicate =
 			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
@@ -562,16 +560,17 @@ public class EventParticipantFacadeEjb
 				case EventParticipantIndexDto.LAST_NAME:
 				case SampleIndexDto.PATHOGEN_TEST_RESULT:
 					expression = joins.getSamples().get(SampleIndexDto.PATHOGEN_TEST_RESULT);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
 				case SampleIndexDto.SAMPLE_DATE_TIME:
 					expression = joins.getSamples().get(SampleIndexDto.SAMPLE_DATE_TIME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
 				case EventParticipantIndexDto.FIRST_NAME:
 					expression = person.get(sortProperty.propertyName);
 					break;
 				case EventParticipantIndexDto.CASE_UUID:
+					expression = resultingCase.get(Case.UUID);
+					break;
+				case EventParticipantIndexDto.CONTACT_COUNT:
 					expression = resultingCase.get(Case.UUID);
 					break;
 				default:
