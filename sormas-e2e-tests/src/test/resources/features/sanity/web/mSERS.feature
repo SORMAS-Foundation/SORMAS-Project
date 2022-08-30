@@ -211,3 +211,11 @@ Feature: mSERS functionalities
     And I click on the APPLY FILTERS button
     Then I check if there number of results in grid in mSers directory is 0
 
+  @tmsLink=SORDEV-12442 @env_main
+  Scenario: Test Prevent submission of future aggregate reports
+    Given I log in as a Admin User
+    When I click on the mSERS button from navbar
+    And I click on the NEW AGGREGATE REPORT button
+    And I set report period to "SPECIFY" on Create a new aggregated report form
+    And I check if Epi week filed is enabled on Create a new aggregated report form
+    Then I check if last listed week from Epi week combobox is the current week of the year

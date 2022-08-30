@@ -3,7 +3,7 @@ Feature: Application language checks
 
   @tmsLink=SORDEV-12126 @env_main
   Scenario: Test language Urdu-Pk
-    Given I log in as a Admin User
+    Given I log in as a National Language User
     When I click on the User Settings button from navbar
     And I select "Urdu" language from Combobox in User settings
     Then I check that Surveillance Dashboard header is correctly displayed in Urdu language

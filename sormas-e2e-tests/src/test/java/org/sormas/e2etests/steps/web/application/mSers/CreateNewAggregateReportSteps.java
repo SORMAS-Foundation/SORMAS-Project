@@ -17,11 +17,14 @@ import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateRep
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getLabConfirmationsInputByDisease;
 
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.temporal.IsoFields;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.AggregateReport;
 import org.sormas.e2etests.entities.services.AggregateReportService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class CreateNewAggregateReportSteps implements En {
@@ -123,6 +126,40 @@ public class CreateNewAggregateReportSteps implements En {
           collectedReport = collectEditedAggregateReport();
           AggregateReport createdReport = CreateNewAggregateReportSteps.report;
           ComparisonHelper.compareEqualEntities(collectedReport, createdReport);
+        });
+    And(
+        "^I set report period to \"([^\"]*)\" on Create a new aggregated report form$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(WEEK_RADIOBUTTON, buttonName);
+        });
+    And(
+        "^I check if Epi week filed is enabled on Create a new aggregated report form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EPI_WEEK_INPUT_POPUP);
+          Assert.assertTrue(
+              webDriverHelpers.isElementEnabled(EPI_WEEK_INPUT_POPUP), "Year field is not enabled");
+        });
+    Then(
+        "^I check if last listed week from Epi week combobox is the current week of the year$",
+        () -> {
+          int currentWeek = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1;
+          int nextYear = LocalDate.now().getYear() + 1;
+
+          if (currentWeek < 52) {
+            int nextWeek = currentWeek + 1;
+            String nextEpiWeek = "Wk " + nextWeek + "-" + LocalDate.now().getYear();
+            Assert.assertFalse(
+                webDriverHelpers.checkIfElementExistsInCombobox(
+                    EPI_WEEK_COMBOBOX_POPUP, nextEpiWeek));
+          } else if (currentWeek == 52) {
+            int nextWeek = 1;
+            String nextEpiWeek = "Wk " + nextWeek + "-" + nextYear;
+            Assert.assertFalse(
+                webDriverHelpers.checkIfElementExistsInCombobox(
+                    EPI_WEEK_COMBOBOX_POPUP, nextEpiWeek));
+          }
+          String currentEpiWeek = "Wk " + currentWeek + "-" + LocalDate.now().getYear();
+          webDriverHelpers.selectFromCombobox(EPI_WEEK_COMBOBOX_POPUP, currentEpiWeek);
         });
   }
 
@@ -226,6 +263,12 @@ public class CreateNewAggregateReportSteps implements En {
   private void fillAllFieldsForAggregateReport(AggregateReport report) {
     fillYear(report.getYear());
     fillEpiWeek(report.getEpiWeek());
+    fillCasesFor("ARI (Acute Respiratory Infections)", report.getAcuteRespiratoryInfectionsCases());
+    fillLabConfirmationsFor(
+        "ARI (Acute Respiratory Infections)",
+        report.getAcuteRespiratoryInfectionsLabConfirmations());
+    fillDeathsFor(
+        "ARI (Acute Respiratory Infections)", report.getAcuteRespiratoryInfectionsDeaths());
     fillCasesFor("Acute Viral Hepatitis", report.getAcuteViralHepatitisCases());
     fillLabConfirmationsFor(
         "Acute Viral Hepatitis", report.getAcuteViralHepatitisLabConfirmations());
@@ -233,6 +276,9 @@ public class CreateNewAggregateReportSteps implements En {
     fillCasesFor("Buruli Ulcer", report.getBuruliUlcerCases());
     fillLabConfirmationsFor("Buruli Ulcer", report.getBuruliUlcerLabConfirmations());
     fillDeathsFor("Buruli Ulcer", report.getBuruliUlcerDeaths());
+    fillCasesFor("Chikungunya", report.getChikungunyaCases());
+    fillLabConfirmationsFor("Chikungunya", report.getChikungunyaLabConfirmations());
+    fillDeathsFor("Chikungunya", report.getChikungunyaDeaths());
     fillCasesFor("Diarrhea w/ Blood (Shigella)", report.getDiarrheaBloodCases());
     fillLabConfirmationsFor(
         "Diarrhea w/ Blood (Shigella)", report.getDiarrheaBloodLabConfirmations());
@@ -244,6 +290,15 @@ public class CreateNewAggregateReportSteps implements En {
     fillCasesFor("Diphteria", report.getDiphteriaCases());
     fillLabConfirmationsFor("Diphteria", report.getDiphteriaLabConfirmations());
     fillDeathsFor("Diphteria", report.getDiphteriaDeaths());
+    fillCasesFor(
+        "FHA (Functional Hypothalamic Amenorrhea)",
+        report.getFunctionalHypothalamicAmenorrheaCases());
+    fillLabConfirmationsFor(
+        "FHA (Functional Hypothalamic Amenorrhea)",
+        report.getFunctionalHypothalamicAmenorrheaLabConfirmations());
+    fillDeathsFor(
+        "FHA (Functional Hypothalamic Amenorrhea)",
+        report.getFunctionalHypothalamicAmenorrheaDeaths());
     fillCasesFor("HIV", report.getHivCases());
     fillLabConfirmationsFor("HIV", report.getHivLabConfirmations());
     fillDeathsFor("HIV", report.getHivDeaths());
@@ -275,6 +330,24 @@ public class CreateNewAggregateReportSteps implements En {
     fillCasesFor("Pertussis", report.getPertussisCases());
     fillLabConfirmationsFor("Pertussis", report.getPertussisLabConfirmations());
     fillDeathsFor("Pertussis", report.getPertussisDeaths());
+    fillCasesFor(
+        "Post-immunization adverse events mild",
+        report.getPostImmunizationAdverseEventsMildCases());
+    fillLabConfirmationsFor(
+        "Post-immunization adverse events mild",
+        report.getPostImmunizationAdverseEventsMildLabConfirmations());
+    fillDeathsFor(
+        "Post-immunization adverse events mild",
+        report.getPostImmunizationAdverseEventsMildDeaths());
+    fillCasesFor(
+        "Post-immunization adverse events severe",
+        report.getPostImmunizationAdverseEventsSevereCases());
+    fillLabConfirmationsFor(
+        "Post-immunization adverse events severe",
+        report.getPostImmunizationAdverseEventsSevereLabConfirmations());
+    fillDeathsFor(
+        "Post-immunization adverse events severe",
+        report.getPostImmunizationAdverseEventsSevereDeaths());
     fillCasesFor("Rubella", report.getRubellaCases());
     fillLabConfirmationsFor("Rubella", report.getRubellaLabConfirmations());
     fillDeathsFor("Rubella", report.getRubellaDeaths());
@@ -572,6 +645,18 @@ public class CreateNewAggregateReportSteps implements En {
     return AggregateReport.builder()
         .year(webDriverHelpers.getValueFromWebElement(YEAR_INPUT_POPUP))
         .epiWeek(webDriverHelpers.getValueFromWebElement(EPI_WEEK_INPUT_POPUP))
+        .acuteRespiratoryInfectionsCases(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getCasesInputByDisease("ARI (Acute Respiratory Infections)"))))
+        .acuteRespiratoryInfectionsLabConfirmations(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getLabConfirmationsInputByDisease("ARI (Acute Respiratory Infections)"))))
+        .acuteRespiratoryInfectionsDeaths(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getDeathInputByDisease("ARI (Acute Respiratory Infections)"))))
         .acuteViralHepatitisCases(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(
@@ -594,6 +679,16 @@ public class CreateNewAggregateReportSteps implements En {
         .buruliUlcerDeaths(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(getDeathInputByDisease("Buruli Ulcer"))))
+        .chikungunyaCases(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(getCasesInputByDisease("Chikungunya"))))
+        .chikungunyaLabConfirmations(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getLabConfirmationsInputByDisease("Chikungunya"))))
+        .chikungunyaDeaths(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(getDeathInputByDisease("Chikungunya"))))
         .diarrheaBloodCases(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(
@@ -628,6 +723,18 @@ public class CreateNewAggregateReportSteps implements En {
         .diphteriaDeaths(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(getDeathInputByDisease("Diphteria"))))
+        .functionalHypothalamicAmenorrheaCases(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getCasesInputByDisease("FHA (Functional Hypothalamic Amenorrhea)"))))
+        .functionalHypothalamicAmenorrheaLabConfirmations(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getLabConfirmationsInputByDisease("FHA (Functional Hypothalamic Amenorrhea)"))))
+        .functionalHypothalamicAmenorrheaDeaths(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getDeathInputByDisease("FHA (Functional Hypothalamic Amenorrhea)"))))
         .hivCases(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(getCasesInputByDisease("HIV"))))
@@ -735,6 +842,30 @@ public class CreateNewAggregateReportSteps implements En {
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(
                     getLabConfirmationsInputByDisease("Pertussis"))))
+        .postImmunizationAdverseEventsMildCases(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getCasesInputByDisease("Post-immunization adverse events mild"))))
+        .postImmunizationAdverseEventsMildLabConfirmations(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getLabConfirmationsInputByDisease("Post-immunization adverse events mild"))))
+        .postImmunizationAdverseEventsMildDeaths(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getDeathInputByDisease("Post-immunization adverse events mild"))))
+        .postImmunizationAdverseEventsSevereCases(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getCasesInputByDisease("Post-immunization adverse events severe"))))
+        .postImmunizationAdverseEventsSevereLabConfirmations(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getLabConfirmationsInputByDisease("Post-immunization adverse events severe"))))
+        .postImmunizationAdverseEventsSevereDeaths(
+            Integer.parseInt(
+                webDriverHelpers.getValueFromWebElement(
+                    getDeathInputByDisease("Post-immunization adverse events severe"))))
         .rubellaCases(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(getCasesInputByDisease("Rubella"))))

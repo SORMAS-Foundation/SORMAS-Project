@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_COLUMN_HEADERS;
@@ -26,6 +27,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
+import static org.sormas.e2etests.pages.application.users.UserManagementPage.FIRST_EDIT_BUTTON_FROM_LIST;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.NEW_USER_BUTTON;
 
 import cucumber.api.java8.En;
@@ -342,6 +344,23 @@ public class CreateNewUserSteps implements En {
         });
 
     When(
+        "I create new ([^\"]*) user for test on DE specific",
+        (String role) -> {
+          user = userService.buildGeneratedUserWithRole(role);
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+          selectUserRole(role);
+          userName = user.getUserName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          userPass = webDriverHelpers.getTextFromWebElement(PASSWORD_FIELD);
+          closeNewPasswordPopUp();
+        });
+
+    When(
         "As a new created user I log in",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
@@ -350,6 +369,31 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
+        });
+    When(
+        "I login first time as a new created user from keycloak instance",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          userPass = userPass + "3!";
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.fillInWebElement(LoginPage.PASSWORD_NEW_INPUT, userPass);
+          webDriverHelpers.fillInWebElement(LoginPage.PASSWORD_CONFIRM_INPUT, userPass);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.SUBMIT_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP_DE);
+        });
+
+    When(
+        "As a new created user on Keycloak enabled instance I log in",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
         });
 
     And(
@@ -423,6 +467,28 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(USER_INPUT_SEARCH, uName);
           TimeUnit.SECONDS.sleep(2); // wait for system reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I filter last created user",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(USER_INPUT_SEARCH, userName);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I open first user from the list",
+        () -> {
+          selectFirstElementFromList();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAVE_BUTTON);
+        });
+    When(
+        "I set last created user to inactive",
+        () -> {
+          webDriverHelpers.scrollToElement(ACTIVE_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CHECKBOX);
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
@@ -620,5 +686,10 @@ public class CreateNewUserSteps implements En {
               headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
             });
     return headerHashmap;
+  }
+
+  private void selectFirstElementFromList() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_EDIT_BUTTON_FROM_LIST);
+    webDriverHelpers.clickOnWebElementBySelector(FIRST_EDIT_BUTTON_FROM_LIST);
   }
 }
