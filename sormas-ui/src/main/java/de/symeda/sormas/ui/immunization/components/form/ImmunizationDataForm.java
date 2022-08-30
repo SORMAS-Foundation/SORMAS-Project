@@ -369,6 +369,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			recoveryHeadingLabel.setVisible(isRecoveryVisible);
 			positiveTestResultDate.setVisible(isRecoveryVisible);
 			recoveryDate.setVisible(isRecoveryVisible);
+
+			if (!isRecoveryVisible) {
+				positiveTestResultDate.clear();
+				recoveryDate.clear();
+			}
 		});
 
 		managementStatusField.addValueChangeListener(valueChangeEvent -> {
