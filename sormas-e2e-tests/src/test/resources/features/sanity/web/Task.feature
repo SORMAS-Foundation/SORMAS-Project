@@ -246,4 +246,3 @@ Feature: Tasks functionalities
     And I click on the Tasks button from navbar
     Then I click on the NEW TASK button
     And I check that Pending button exist on task edit page
-
