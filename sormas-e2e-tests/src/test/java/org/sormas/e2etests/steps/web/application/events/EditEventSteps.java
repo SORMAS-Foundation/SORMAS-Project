@@ -1793,33 +1793,38 @@ public class EditEventSteps implements En {
         });
 
     Then(
-        "^I Verify The Eye Icon opening the Map is disabled in the Edit Event Page",
-        () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
-          webDriverHelpers.assertElementIsDisabled(EYE_ICON);
-        });
-
-    Then(
-        "^I Verify The Eye Icon opening the Map is enabled in the Edit Event Page",
-        () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
-          webDriverHelpers.assertElementIsEnabled(EYE_ICON);
+        "^I Verify The Eye Icon opening the Map is ([^\"]*) in the Edit Event Page",
+        (String elementStatus) -> {
+          switch (elementStatus) {
+            case "disabled":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+              softly.assertFalse(
+                  webDriverHelpers.isElementEnabledAtAttributeLevel(EYE_ICON),
+                  "Eye Icon is not disabled in the Edit Event Page");
+              softly.assertAll();
+              break;
+            case "enabled":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+              softly.assertTrue(
+                  webDriverHelpers.isElementEnabledAtAttributeLevel(EYE_ICON),
+                  "Eye Icon is not Enabled in the Edit Event Page");
+              softly.assertAll();
+              break;
+          }
         });
 
     And(
-        "^I Add the GPS Latitude Values in the Edit Event Page",
+        "^I Add the GPS Latitude and Longitude Values in the Edit Event Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LATITUDE_INPUT_EDIT_EVENT);
-          webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT, "54.34555677");
-          webDriverHelpers.submitInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT);
-        });
-
-    And(
-        "^I Add the GPS Longitude Values in the Edit Event Page",
-        () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LONGITUDE_INPUT_EDIT_EVENT);
-          webDriverHelpers.fillInWebElement(GPS_LONGITUDE_INPUT_EDIT_EVENT, "23.34555677");
-          webDriverHelpers.submitInWebElement(GPS_LONGITUDE_INPUT_EDIT_EVENT);
+          webDriverHelpers.fillInWebElement(
+              GPS_LATITUDE_INPUT_EDIT_EVENT,
+              String.valueOf(faker.number().randomDouble(7, 10, 99)));
+          webDriverHelpers.fillInWebElement(
+              GPS_LONGITUDE_INPUT_EDIT_EVENT,
+              String.valueOf(faker.number().randomDouble(7, 10, 99)));
+          webDriverHelpers.submitInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT);
         });
 
     And(
