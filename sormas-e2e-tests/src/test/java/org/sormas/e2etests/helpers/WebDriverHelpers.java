@@ -463,6 +463,15 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(selector).isEnabled();
   }
 
+  public boolean isElementEnabledAtAttributeLevel(By elementLocator) {
+    scrollToElement(elementLocator);
+    boolean isDisabled = getAttributeFromWebElement(elementLocator, "class").contains("disabled");
+    if (isDisabled) {
+      return false;
+    }
+    return true;
+  }
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info(PID + "Clicking on element: {}", byObject);
@@ -963,20 +972,6 @@ public class WebDriverHelpers {
         throw new TimeoutException(
             String.format("The element: %s is not greyed out", elementLocator));
     }
-  }
-
-  public void assertElementIsDisabled(By elementLocator) {
-    assertHelpers.assertWithPoll20Second(
-        () ->
-            Assert.assertTrue(
-                getAttributeFromWebElement(elementLocator, "class").contains("disabled")));
-  }
-
-  public void assertElementIsEnabled(By elementLocator) {
-    assertHelpers.assertWithPoll20Second(
-        () ->
-            Assert.assertFalse(
-                getAttributeFromWebElement(elementLocator, "class").contains("disabled")));
   }
 
   @SneakyThrows
