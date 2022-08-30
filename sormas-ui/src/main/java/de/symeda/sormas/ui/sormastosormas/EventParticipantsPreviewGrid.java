@@ -16,54 +16,48 @@
 package de.symeda.sormas.ui.sormastosormas;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Grid;
-
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
-public class EventParticipantsPreviewGrid extends Grid<SormasToSormasEventParticipantPreview> {
+public class EventParticipantsPreviewGrid extends BasePreviewGrid<SormasToSormasEventParticipantPreview> {
 
 	private static final long serialVersionUID = -6160313129696297694L;
 
-	public EventParticipantsPreviewGrid() {
-		super(SormasToSormasEventParticipantPreview.class);
-		setHeightByRows(1);
+	public EventParticipantsPreviewGrid(boolean isPendingRequest) {
+		super(
+			SormasToSormasEventParticipantPreview.class,
+			Captions.EventParticipant,
+			uuid -> FacadeProvider.getEventParticipantFacade().exists(uuid),
+			uuid -> ControllerProvider.getEventParticipantController().navigateToData(uuid),
+			isPendingRequest);
 
-		buildGrid();
+		setHeightByRows(1);
 	}
 
-	private void buildGrid() {
-
-		setSizeFull();
-		setSelectionMode(SelectionMode.SINGLE);
-		setHeightMode(HeightMode.ROW);
+	@Override
+	protected void buildGrid() {
 
 		List<String> columnConfig = new ArrayList<>();
 		columnConfig.addAll(Collections.singletonList(SormasToSormasEventParticipantPreview.UUID));
-		columnConfig.addAll(PreviewGridHelper.createPersonColumns(this, SormasToSormasEventParticipantPreview::getPerson));
+		columnConfig.addAll(createPersonColumns(SormasToSormasEventParticipantPreview::getPerson));
 
 		setColumns(columnConfig);
 
-		((Column<SormasToSormasEventParticipantPreview, String>) getColumn(SormasToSormasContactPreview.UUID)).setRenderer(new UuidRenderer());
+		((Column<SormasToSormasEventParticipantPreview, String>) getColumn(SormasToSormasEventParticipantPreview.UUID))
+			.setRenderer(new UuidRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(
 				I18nProperties
 					.findPrefixCaption(column.getId(), SormasToSormasEventParticipantPreview.I18N_PREFIX, SormasToSormasPersonPreview.I18N_PREFIX));
 		}
-	}
-
-	@Override
-	public void setItems(Collection<SormasToSormasEventParticipantPreview> items) {
-		super.setItems(items);
-		setHeightByRows(items.size() > 0 ? (Math.min(items.size(), 10)) : 1);
 	}
 }
