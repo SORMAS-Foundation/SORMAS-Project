@@ -28,7 +28,6 @@ import customreport.reportbuilder.CustomReportBuilder;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
-import io.qameta.allure.model.StepResult;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import java.lang.management.ManagementFactory;
@@ -43,7 +42,7 @@ import org.junit.Assert;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.sormas.e2etests.helpers.StepsScanHelper;
+import org.sormas.e2etests.steps.nonBDDactions.BackupSteps;
 import org.sormas.e2etests.webdriver.DriverManager;
 import recorders.StepsLogger;
 
@@ -57,7 +56,6 @@ public class BaseSteps implements StepLifecycleListener {
   private final DriverManager driverManager;
   private final String imageType = "image/png";
   private final String pngValue = "png";
-  ;
 
   @Inject
   public BaseSteps(DriverManager driverManager) {
@@ -78,7 +76,6 @@ public class BaseSteps implements StepLifecycleListener {
     if (isNonApiScenario(scenario)) {
       driver = driverManager.borrowRemoteWebDriver(scenario.getName());
       StepsLogger.setRemoteWebDriver(driver);
-      StepsLogger.initStepsResultList();
       WebDriver.Options options = driver.manage();
       options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
@@ -94,9 +91,10 @@ public class BaseSteps implements StepLifecycleListener {
   @SneakyThrows
   @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
-    StepsScanHelper.getLastLanguageSetByUser(StepsLogger.getStepsResultList());
     if (isLanguageRiskScenario(scenario) && scenario.isFailed()) {
-      // BackupSteps.setAppLanguageToDefault(locale);
+      log.info("Refreshing page to close any popups");
+      driver.navigate().refresh();
+      BackupSteps.setAppLanguageToDefault(locale);
     }
     if (isNonApiScenario(scenario)) {
       if (scenario.isFailed()) {
