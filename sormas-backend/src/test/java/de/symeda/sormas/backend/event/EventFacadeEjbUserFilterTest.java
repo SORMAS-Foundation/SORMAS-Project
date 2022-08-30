@@ -99,7 +99,7 @@ public class EventFacadeEjbUserFilterTest extends AbstractBeanTest {
 			nationalUser.toReference(),
 			nationalUser.toReference(),
 			Disease.EVD,
-			rdcf1.district);
+			rdcf1);
 
 		EventDto event2 = creator.createEvent(
 			EventStatus.EVENT,
@@ -115,7 +115,7 @@ public class EventFacadeEjbUserFilterTest extends AbstractBeanTest {
 			nationalUser.toReference(),
 			nationalUser.toReference(),
 			Disease.EVD,
-			rdcf2.district);
+			rdcf2);
 
 		loginWith(districtUser1);
 		EventCriteria eventCriteria = new EventCriteria();

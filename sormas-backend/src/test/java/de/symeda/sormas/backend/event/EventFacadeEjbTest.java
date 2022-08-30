@@ -129,7 +129,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description", user.toReference());
 		ActionDto action = creator.createAction(event.toReference());
@@ -175,7 +175,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		final String testDescription = "testDescription";
 		final Date startDate = DateHelper.subtractDays(new Date(), 1);
@@ -212,7 +212,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		creator.createEvent(
 			EventStatus.EVENT,
@@ -228,7 +228,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		EventCriteria eventCriteria = new EventCriteria();
 		List<EventIndexDto> results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
@@ -266,7 +266,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.setDisease(Disease.EVD);
@@ -300,7 +300,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		creator.createEventParticipant(eventDto.toReference(), eventPerson, "Description", user.toReference());
 		Date testStartDate = new Date();
@@ -364,7 +364,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user,
 			user,
 			Disease.ANTHRAX,
-			rdcf.district);
+			rdcf);
 
 		Event event1 = getEventService().getByUuid(eventDto1.getUuid());
 		getExternalShareInfoService().createAndPersistShareInfo(event1, ExternalShareStatus.SHARED);
@@ -392,7 +392,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user,
 			user,
 			Disease.DENGUE,
-			rdcf.district);
+			rdcf);
 
 		assertTrue(cut.isArchived(eventDto1.getUuid()));
 		assertFalse(cut.isArchived(eventDto2.getUuid()));
@@ -424,8 +424,11 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setReportDateTime(new Date());
 		event.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		event.setEventTitle("Test event");
-		event.setEventLocation(new LocationDto());
-
+		LocationDto eventLocation = new LocationDto();
+		eventLocation.setRegion(rdcf.region);
+		eventLocation.setDistrict(rdcf.district);
+		event.setEventLocation(eventLocation);
+		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
 		EventDto savedEvent = getEventFacade().save(event);
 
 		MatcherAssert.assertThat(savedEvent.getUuid(), not(isEmptyOrNullString()));
@@ -551,16 +554,16 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		EventDto event1 = creator.createEvent(reportingUser.toReference());
 		EventDto event2 = creator.createEvent(reportingUser.toReference());
-		EventDto subordinateEvent_1_1 =
-			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.1", null, reportingUser.toReference(), (e) -> {
+		EventDto subordinateEvent_1_1 = creator
+			.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.1", null, reportingUser.toReference(), null, (e) -> {
 				e.setSuperordinateEvent(event1.toReference());
 			});
-		EventDto subordinateEvent_1_2 =
-			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.2", null, reportingUser.toReference(), (e) -> {
+		EventDto subordinateEvent_1_2 = creator
+			.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.2", null, reportingUser.toReference(), null, (e) -> {
 				e.setSuperordinateEvent(event1.toReference());
 			});
-		EventDto subordinateEvent_2_1 =
-			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 2.1", null, reportingUser.toReference(), (e) -> {
+		EventDto subordinateEvent_2_1 = creator
+			.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 2.1", null, reportingUser.toReference(), null, (e) -> {
 				e.setSuperordinateEvent(event2.toReference());
 			});
 
