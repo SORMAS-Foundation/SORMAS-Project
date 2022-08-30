@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -1667,6 +1668,7 @@ public enum DefaultUserRole {
 
 		userRole.setCaption(I18nProperties.getEnumCaption(this));
 		userRole.setPortHealthUser(isPortHealthUser());
+		userRole.setLinkedDefaultUserRole(this);
 		userRole.setHasAssociatedDistrictUser(hasAssociatedDistrictUser());
 		userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(this)));
 		userRole.setEnabled(true);
@@ -1676,5 +1678,14 @@ public enum DefaultUserRole {
 		userRole.setUserRights(getDefaultUserRights());
 
 		return userRole;
+	}
+	
+	public static DefaultUserRole getByCaption(String caption) {
+		Optional<DefaultUserRole> defaultUserRole =
+			Arrays.stream(values()).filter(dur -> dur.name().equals(caption) || I18nProperties.getEnumCaption(dur).equals(caption)).findAny();
+		if (defaultUserRole.isPresent()) {
+			return defaultUserRole.get();
+		}
+		return null;
 	}
 }

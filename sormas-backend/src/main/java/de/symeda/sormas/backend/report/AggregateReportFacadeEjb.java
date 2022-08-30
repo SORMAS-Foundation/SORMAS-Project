@@ -32,9 +32,8 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.report.AggregateCaseCountDto;
@@ -131,8 +130,11 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@RightsAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
 
-		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
+		if (dto.getAgeGroup() != null && !dto.getAgeGroup().isEmpty()) {
 			AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
+			if (dto.getAgeGroup().equals(I18nProperties.getCaption(Captions.aggregateReportNoAgeGroup))) {
+				dto.setAgeGroup(null);
+			}
 		}
 
 		validate(dto);
@@ -360,12 +362,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				.thenComparing(AggregateCaseCountDto::getDistrictName, Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(AggregateCaseCountDto::getHealthFacilityName, Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(AggregateCaseCountDto::getPointOfEntryName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(
-					r -> r.getAgeGroup() != null
-						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-						: StringUtils.EMPTY)
-				.thenComparing(
-					r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0));
+				.thenComparing(AggregateCaseCountDto::getAgeGroup, Comparator.nullsFirst(AgeGroupUtils.getComparator())));
 		return resultList;
 	}
 
@@ -506,11 +503,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return Comparator.comparing(AggregateReportDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
 			.thenComparing(AggregateReportDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
 			.thenComparing(AggregateReportDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
-			.thenComparing(
-				r -> r.getAgeGroup() != null
-					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-					: StringUtils.EMPTY)
-			.thenComparing(r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0)
+			.thenComparing(AggregateReportDto::getAgeGroup, Comparator.nullsFirst(AgeGroupUtils.getComparator()))
 			.thenComparing(AggregateReportDto::getRegion, Comparator.nullsFirst(Comparator.naturalOrder()))
 			.thenComparing(AggregateReportDto::getDistrict, Comparator.nullsFirst(Comparator.naturalOrder()))
 			.thenComparing(AggregateReportDto::getHealthFacility, Comparator.nullsFirst(Comparator.naturalOrder()))
@@ -622,22 +615,50 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		Set<AggregateReportDto> userList = new HashSet<>();
 		diseaseList.forEach(disease -> {
-			List<String> diseaseAgeGroups = diseaseConfigurationFacade.getAgeGroups(disease);
+			List<String> currentDiseaseAgeGroups = diseaseConfigurationFacade.getAgeGroups(disease);
 
-			if (diseaseAgeGroups != null) {
-				diseaseAgeGroups.forEach(ageGroup -> {
+			Set<String> expiredDiseaseAgeGroups = reports.stream()
+				.filter(
+					aggregateReportDto1 -> disease.equals(aggregateReportDto1.getDisease())
+						&& (currentDiseaseAgeGroups == null || !currentDiseaseAgeGroups.contains(aggregateReportDto1.getAgeGroup())))
+				.map(AggregateReportDto::getAgeGroup)
+				.collect(Collectors.toSet());
+
+			if (currentDiseaseAgeGroups != null) {
+				currentDiseaseAgeGroups.forEach(ageGroup -> {
 					reports.stream()
 						.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()) && ageGroup.equals(aggregateReport.getAgeGroup()))
 						.max(Comparator.comparing(AggregateReportDto::getChangeDate))
 						.ifPresent(userList::add);
 
 				});
-			} else {
-				reports.stream()
-					.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()))
-					.max(Comparator.comparing(AggregateReportDto::getChangeDate))
-					.ifPresent(userList::add);
 			}
+
+			if (!expiredDiseaseAgeGroups.isEmpty()) {
+				expiredDiseaseAgeGroups.forEach(
+					expiredDiseaseAgeGroup -> reports.stream()
+						.filter(
+							aggregateReportDto1 -> disease.equals(aggregateReportDto1.getDisease())
+								&& expiredDiseaseAgeGroup != null
+								&& expiredDiseaseAgeGroup.equals(aggregateReportDto1.getAgeGroup()))
+						.max(Comparator.comparing(AggregateReportDto::getChangeDate))
+						.ifPresent(e -> {
+							e.setExpiredAgeGroup(true);
+							userList.add(e);
+						}));
+			}
+
+			reports.stream()
+				.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()) && aggregateReport.getAgeGroup() == null)
+				.max(Comparator.comparing(AggregateReportDto::getChangeDate))
+				.ifPresent(e -> {
+					if (currentDiseaseAgeGroups != null && !currentDiseaseAgeGroups.isEmpty()) {
+						e.setExpiredAgeGroup(true);
+						e.setAgeGroup(I18nProperties.getCaption(Captions.aggregateReportNoAgeGroup));
+					}
+					userList.add(e);
+				});
+
 		});
 
 		return new ArrayList<>(userList);

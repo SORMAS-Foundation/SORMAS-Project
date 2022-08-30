@@ -29,34 +29,31 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
-import de.symeda.sormas.api.user.UserRoleReferenceDto;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 
-public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
+public class UserRoleEditForm extends AbstractUserRoleForm {
 
 	private static final long serialVersionUID = 8099247063020818190L;
 
 	private static final String USER_RIGHTS_LABEL_LOC = "userRightsLabel";
-	private static final String TEMPLATE_INFO_LOC = "templateInfo";
-	private static final String TEMPLATE_USER_ROLE = "templateUserRole";
+	private static final String VERSION_UPDATE_INFO_LOC = "versionUpdateInfoLoc";
 
 	private final static List<String> defaultRightsOrder = Arrays.asList("_VIEW", "_EDIT", "_CREATE");
 
-	private static final String HTML_LAYOUT = fluidRowLocs(TEMPLATE_INFO_LOC)
-		+ fluidRowLocs(TEMPLATE_USER_ROLE, "")
-		+ fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
+	private static final String HTML_LAYOUT =
+		 fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
+		+ fluidRowLocs(UserRoleDto.LINKED_DEFAULT_USER_ROLE, VERSION_UPDATE_INFO_LOC)
 		+ fluidRowLocs(UserRoleDto.DESCRIPTION)
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
 		+ fluidRowLocs(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER)
@@ -77,13 +74,10 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 
 	@Override
 	protected void addFields() {
-		ComboBox templateRoleCombo = addCustomField(TEMPLATE_USER_ROLE, UserRoleReferenceDto.class, ComboBox.class);
-		setSoftRequired(true, TEMPLATE_USER_ROLE);
-		UserRoleFormHelper.setTemplateRoleItems(templateRoleCombo);
-		templateRoleCombo.addValueChangeListener(e -> applyTemplateData((UserRoleDto) e.getProperty().getValue()));
-
 		addField(UserRoleDto.CAPTION).setRequired(true);
 		addField(UserRoleDto.JURISDICTION_LEVEL).setRequired(true);
+
+		addField(UserRoleDto.LINKED_DEFAULT_USER_ROLE);
 
 		addField(UserRoleDto.DESCRIPTION, TextArea.class);
 
@@ -95,9 +89,10 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 		userRightsLabel.addStyleNames(CssStyles.H2);
 		getContent().addComponent(userRightsLabel, USER_RIGHTS_LABEL_LOC);
 
-		Label templateInfoLabel =
-			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML);
-		getContent().addComponent(templateInfoLabel, TEMPLATE_INFO_LOC);
+		Label versionUpdateInfoLabel =
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleVersionUpdate), ContentMode.HTML);
+		versionUpdateInfoLabel.setWidthFull();
+		getContent().addComponent(versionUpdateInfoLabel, VERSION_UPDATE_INFO_LOC);
 
 		userRightCbSet = addField(UserRoleDto.USER_RIGHTS, CheckboxSet.class);
 		userRightCbSet.setCaption(null);
@@ -131,7 +126,7 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 		}).collect(Collectors.toList());
 	}
 
-	private void applyTemplateData(UserRoleDto templateRole) {
+	void applyTemplateData(UserRoleDto templateRole) {
 		if (templateRole != null) {
 			userRightCbSet.setValue(templateRole.getUserRights());
 			getValue().setEmailNotificationTypes(templateRole.getEmailNotificationTypes());
@@ -141,5 +136,10 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 			this.<Field<Boolean>> getField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).setValue(templateRole.getHasAssociatedDistrictUser());
 			this.<Field<Boolean>> getField(UserRoleDto.PORT_HEALTH_USER).setValue(templateRole.isPortHealthUser());
 		}
+	}
+
+	@Override
+	DefaultUserRole getDefaultUserRole() {
+		return (DefaultUserRole) getField(UserRoleDto.LINKED_DEFAULT_USER_ROLE).getValue();
 	}
 }

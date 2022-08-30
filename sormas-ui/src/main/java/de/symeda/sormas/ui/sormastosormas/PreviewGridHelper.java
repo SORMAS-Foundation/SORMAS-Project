@@ -24,7 +24,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
