@@ -27,4 +27,8 @@ public class LoginPage {
   public static final By FAILED_LOGIN_ERROR_MESSAGE =
       By.xpath("//div[contains(@class, 'v-Notification-warning')]");
   public static final By LOGIN_KEYCLOAK_BUTTON = By.id("kc-login");
+  public static final By PASSWORD_CONFIRM_INPUT = By.id("password-confirm");
+  public static final By PASSWORD_NEW_INPUT = By.id("password-new");
+  public static final By SUBMIT_BUTTON = By.cssSelector("div #kc-form-buttons input");
+  public static final By ERROR_MESSAGE = By.cssSelector("div .alert-error");
 }
