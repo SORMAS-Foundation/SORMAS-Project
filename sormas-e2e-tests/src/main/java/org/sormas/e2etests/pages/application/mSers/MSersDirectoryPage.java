@@ -32,4 +32,8 @@ public class MSersDirectoryPage {
       By.cssSelector("[id='actionApplyFilters']");
   public static final By FIRST_AGGREGATED_REPORT_EDIT_BUTTON =
       By.cssSelector(".v-grid-row-has-data div");
+
+  public static By getElementFromFirstRowAndSpecificColumnByColumnNumber(int column) {
+    return By.xpath(String.format("//tbody//tr[" + 1 + "]//td[" + column + "]"));
+  }
 }

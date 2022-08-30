@@ -26,9 +26,9 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.get
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -180,7 +180,8 @@ public class MSersDirectorySteps implements En {
         (String expectedResult, Integer columnNumber) -> {
           String actualResult =
               webDriverHelpers.getTextFromWebElement(
-                  By.xpath("//tbody//tr[" + 1 + "]//td[" + columnNumber + "]"));
+                  MSersDirectoryPage.getElementFromFirstRowAndSpecificColumnByColumnNumber(
+                      columnNumber));
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertEquals(

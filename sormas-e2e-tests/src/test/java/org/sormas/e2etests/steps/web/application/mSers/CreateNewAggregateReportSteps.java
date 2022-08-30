@@ -172,7 +172,7 @@ public class CreateNewAggregateReportSteps implements En {
               SNAKE_BITE_SUSPECTED_CASES_INPUT, String.valueOf(quantity));
         });
     When(
-        "^I close popup message window$",
+        "^I close popup message window in Create New Aggregate Report popup$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(POPUP_MESSAGE_WINDOW);
           webDriverHelpers.clickOnWebElementBySelector(POPUP_MESSAGE_WINDOW);
