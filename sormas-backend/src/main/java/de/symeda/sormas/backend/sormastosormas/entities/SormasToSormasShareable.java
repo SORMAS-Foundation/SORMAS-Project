@@ -19,7 +19,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public interface SormasToSormasShareable extends HasUuid {

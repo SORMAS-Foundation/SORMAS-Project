@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 
 public class ShareRequestFilterForm extends AbstractFilterForm<ShareRequestCriteria> {
@@ -29,11 +29,12 @@ public class ShareRequestFilterForm extends AbstractFilterForm<ShareRequestCrite
 
 	@Override
 	protected String[] getMainFilterLocators() {
-		return new String[0];
+		return new String[] {
+			ShareRequestCriteria.STATUS };
 	}
 
 	@Override
 	protected void addFields() {
-
+		addField(ShareRequestCriteria.STATUS);
 	}
 }

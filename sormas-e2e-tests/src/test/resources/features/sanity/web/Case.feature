@@ -1742,3 +1742,20 @@ Feature: Case end to end tests
     Then I create a new case with specific data and Bayern region
     And I click on New Task from Case page
     And I check that there is only user with Bayern region for task
+
+   @8558 @env_main
+   Scenario: Verify that Page can not be saved if a future date is set for Date of symptom onset
+     Given API: I create a new person
+     And API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given API: I create a new case
+     Then API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given I log in as a National User
+     Then I navigate to the last created case via the url
+     And I navigate to symptoms tab
+     Then I set Fever Symptoms to YES
+     And I set First Symptom as Fever
+     And I set Date of symptom onset to 7 days into the future
+     When I click on save case button in Symptoms tab
+     Then I Verify popup message from Symptoms Tab Contains "Date of symptom onset cannot be in the future"

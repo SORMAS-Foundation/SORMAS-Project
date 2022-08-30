@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
@@ -71,6 +72,19 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
 		Root<UserRole> from = cq.from(UserRole.class);
 		cq.where(cb.equal(from.get(UserRole.CAPTION), caption));
+
+		UserRole entity = em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+
+		return entity;
+	}
+
+	public UserRole getByLinkedDefaultUserRole(DefaultUserRole linkedDefaultUserRole) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
+		Root<UserRole> from = cq.from(UserRole.class);
+		cq.where(cb.equal(from.get(UserRole.LINKED_DEFAULT_USER_ROLE), linkedDefaultUserRole));
+		cq.orderBy(cb.asc(from.get(UserRole.CREATION_DATE)));
 
 		UserRole entity = em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 

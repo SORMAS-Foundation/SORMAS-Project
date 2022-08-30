@@ -173,6 +173,7 @@ public class AggregateReportService {
         .year("2004")
         .epiWeek("Wk 1-2004 (12/29 - 1/4)")
         .acuteViralHepatitisCases(faker.number().numberBetween(2, 12))
+        .buruliUlcerCases(faker.number().numberBetween(2, 12))
         .build();
   }
 

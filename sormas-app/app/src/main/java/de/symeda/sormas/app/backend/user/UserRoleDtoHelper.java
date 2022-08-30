@@ -61,6 +61,7 @@ public class UserRoleDtoHelper extends AdoDtoHelper<UserRole, UserRoleDto> {
 		target.setHasAssociatedDistrictUser(source.getHasAssociatedDistrictUser());
 		target.setHasOptionalHealthFacility(source.getHasOptionalHealthFacility());
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
+		target.setLinkedDefaultUserRole(source.getLinkedDefaultUserRole());
 	}
 
 	@Override
@@ -73,6 +74,7 @@ public class UserRoleDtoHelper extends AdoDtoHelper<UserRole, UserRoleDto> {
 		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
+		target.setLinkedDefaultUserRole(source.getLinkedDefaultUserRole());
 	}
 
 	@Override
