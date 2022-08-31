@@ -570,9 +570,6 @@ public class EventParticipantFacadeEjb
 				case EventParticipantIndexDto.CASE_UUID:
 					expression = resultingCase.get(Case.UUID);
 					break;
-				case EventParticipantIndexDto.CONTACT_COUNT:
-					expression = resultingCase.get(Case.UUID);
-					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
