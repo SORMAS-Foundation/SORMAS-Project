@@ -7,7 +7,6 @@ import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateRep
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DUPLICATE_DETECTION_TEXT;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_INPUT_POPUP;
-import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.POPUP_MESSAGE_WINDOW;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP_DIV;
@@ -179,10 +178,12 @@ public class CreateNewAggregateReportSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(POPUP_MESSAGE_WINDOW);
         });
     And(
-        "^I check if Create New Aggregate Report popup appears$",
+        "^I check that District combobox is disabled in Create New Aggregate Report popup$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POPUP_HEADER);
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(DISTRICT_COMBOBOX_POPUP),
+              "District combobox is enabled");
+          softly.assertAll();
         });
   }
 

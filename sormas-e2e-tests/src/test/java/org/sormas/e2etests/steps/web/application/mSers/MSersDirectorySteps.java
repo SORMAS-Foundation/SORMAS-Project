@@ -3,17 +3,14 @@ package org.sormas.e2etests.steps.web.application.mSers;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_INPUT;
-import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.AGGREGATED_REPORT_APPLY_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DELETE_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISPLAY_ONLY_DUPLICATE_REPORTS_CHECKBOX;
-import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISTRICT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EDIT_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_FROM_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_TO_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.FIRST_AGGREGATED_REPORT_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.NEW_AGGREGATE_REPORT_BUTTON;
-import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.REGION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.REPORT_DATA_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.RESULT_IN_GRID;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_FROM_COMOBOX;
@@ -27,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -156,15 +152,6 @@ public class MSersDirectorySteps implements En {
         });
 
     And(
-        "^I filter reports by \"([^\"]*)\" region and \"([^\"]*)\" district$",
-        (String region, String district) -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REGION_FILTER_COMBOBOX);
-          webDriverHelpers.selectFromCombobox(REGION_FILTER_COMBOBOX, region);
-          webDriverHelpers.selectFromCombobox(DISTRICT_FILTER_COMBOBOX, district);
-          webDriverHelpers.clickOnWebElementBySelector(AGGREGATED_REPORT_APPLY_FILTER_BUTTON);
-        });
-
-    And(
         "^I click on edit first aggregated report from grid from mSERS$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
@@ -172,22 +159,6 @@ public class MSersDirectorySteps implements En {
               FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-        });
-
-    And(
-        "^I check that first row contains \"([^\"]*)\" in column (\\d+)$",
-        (String expectedResult, Integer columnNumber) -> {
-          String actualResult =
-              webDriverHelpers.getTextFromWebElement(
-                  MSersDirectoryPage.getElementFromFirstRowAndSpecificColumnByColumnNumber(
-                      columnNumber));
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertEquals(
-                      actualResult,
-                      expectedResult,
-                      "Text from the column is different than expected"),
-              10);
         });
   }
 }

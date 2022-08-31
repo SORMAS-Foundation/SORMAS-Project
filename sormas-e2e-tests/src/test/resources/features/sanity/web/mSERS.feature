@@ -226,6 +226,7 @@ Feature: mSERS functionalities
     When I click on the mSERS button from navbar
     And I click on the NEW AGGREGATE REPORT button
     And I set 3 as the quantity for Snake Bite suspected cases in Create a new aggregated report
+    And I check that District combobox is disabled in Create New Aggregate Report popup
     And I click to save aggregated report
     Then I check if popup message is "You have to specify a valid region"
     When I close popup message window in Create New Aggregate Report popup
@@ -234,12 +235,3 @@ Feature: mSERS functionalities
     Then I check if popup message is "You have to specify a valid district"
     When I close popup message window in Create New Aggregate Report popup
     And I set District combobox to "LK Ansbach" in Create New Aggregate Report popup
-    And I click to save aggregated report
-    And I filter reports by "Bayern" region and "LK Ansbach" district
-    And I check that first row contains "Bayern" in column 3
-    And I check that first row contains "Snake Bite" in column 1
-    And I navigate to Report data tab
-    And I filter reports by "Bayern" region and "LK Ansbach" district
-    And I click on edit first aggregated report from grid from mSERS
-    And I check if Create New Aggregate Report popup appears
-    And I click to delete aggregated report
