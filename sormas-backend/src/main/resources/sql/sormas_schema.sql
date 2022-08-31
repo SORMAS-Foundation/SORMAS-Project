@@ -11929,7 +11929,7 @@ INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (488,
 
 -- 2022-08-11 S2S_New Right_ S2S_Process #10084
 
-DELETE FROM userroles_userrights where userright = 'SORMAS_TO_SORMAS_SHARE';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'SORMAS_TO_SORMAS_PROCESS' FROM userroles_userrights WHERE userright = 'SORMAS_TO_SORMAS_SHARE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (489, 'S2S_New Right_ S2S_Process #10084');
 
