@@ -1279,3 +1279,25 @@ Feature: Create events
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"
     Then I check if Present condition of person combobox has no value "Buried"
+
+  @tmsLink=SORDEV-12439 @env_main
+  Scenario: Test set 'All Event Participants' as the default value when an event is active
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I am accessing the event tab using the created event via api
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I check event participant filter dropdown on event participant page when event is active
+
+  @tmsLink=SORDEV-12439 @env_main
+  Scenario: Test set 'Active event participants' as the default value when an event is archived
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I am accessing the event tab using the created event via api
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I check event participant filter dropdown on event participant page when event is archived

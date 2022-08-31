@@ -80,8 +80,8 @@ public class EditEventPage {
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON = By.id("tab-events");
   public static final By NAVIGATE_TO_EVENT_GROUP_BUTTON = By.id("tab-events-data");
-  public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON =
-      By.id("tab-events-eventparticipants");
+  public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON = By.id("tab-events-eventparticipants");
+  public static final By NAVIGATE_TO_EVENT_DATA_BUTTON = By.id("tab-events-data");
   public static final By EVENT_PARTICIPANT_HEADER =
       By.xpath(
           "//div[@class='v-label v-widget h2 v-label-h2 primary v-label-primary vspace-none v-label-vspace-none vspace-top-none v-label-vspace-top-none caption-truncated v-label-caption-truncated v-label-undef-w']");
@@ -176,6 +176,8 @@ public class EditEventPage {
   public static final By VACCINATION_STATUS_COMBOBOX =
       By.xpath("//div[@id='vaccinationStatus']/div");
   public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+  public static final By EVENT_PARTICIPANT_STATUS =
+      By.xpath("//*[@id='relevanceStatusFilter']/div");
 
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
