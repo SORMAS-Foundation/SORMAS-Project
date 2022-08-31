@@ -152,7 +152,7 @@ public class SynchronizationDialog extends AbstractDialog {
 
 	private void loadNext() {
 
-		waitForUiThread();
+		waitForProgressItemBindings();
 
 		currentBinding.setActive(false);
 		currentBinding.setDone(true);
@@ -164,26 +164,28 @@ public class SynchronizationDialog extends AbstractDialog {
 	}
 
 	private void updatePulls(int pulled) {
-		waitForUiThread();
+		waitForProgressItemBindings();
 		currentBinding.setPulls(currentBinding.getPulls() + pulled);
 	}
 
 	private void updatePushes(int pushed) {
-		waitForUiThread();
+		waitForProgressItemBindings();
 		currentBinding.setPushes(currentBinding.getPushes() + pushed);
 	}
 
 	private void updatePushTotal(int pushTotal) {
-		waitForUiThread();
+		waitForProgressItemBindings();
 		currentBinding.setPushTotal(pushTotal);
 	}
 
 	private void updateDeletions(int deleted) {
-		waitForUiThread();
+		waitForProgressItemBindings();
 		currentBinding.setDeletions(currentBinding.getDeletions() + deleted);
 	}
 
 	private void showNextCleanupItems() {
+
+		currentBinding = null;
 
 		if (currentSyncStep == SynchronizationStep.CLEAR_UP_INFRASTRUCTURE) {
 			showClearUpInfrastructureProgressItems(false);
@@ -202,15 +204,19 @@ public class SynchronizationDialog extends AbstractDialog {
 	private void showProgressItems(boolean showPulls, boolean showPushes, boolean showDeletions, List<String> captions) {
 
 		getActivity().runOnUiThread(() -> {
-			clearBindings();
+			assert (currentBinding == null);
+
+			progressItemBindings.clear();
+			progressItemBindingsIndex = 0;
+			contentBinding.syncProgressLayout.removeAllViews();
+
 			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 			captions.forEach(caption -> progressItemBindings.add(createBinding(inflater, caption, showPulls, showPushes, showDeletions)));
 
-			currentBinding = progressItemBindings.get(0);
-			currentBinding.setActive(true);
-
 			synchronized (BINDING_LOCK) {
+				currentBinding = progressItemBindings.get(0);
+				currentBinding.setActive(true);
 				BINDING_LOCK.notify();
 			}
 		});
@@ -456,17 +462,7 @@ public class SynchronizationDialog extends AbstractDialog {
 		return binding;
 	}
 
-	private void clearBindings() {
-
-		getActivity().runOnUiThread(() -> {
-			progressItemBindings.clear();
-			progressItemBindingsIndex = 0;
-			contentBinding.syncProgressLayout.removeAllViews();
-			currentBinding = null;
-		});
-	}
-
-	private void waitForUiThread() {
+	private void waitForProgressItemBindings() {
 
 		if (currentBinding != null) {
 			return;
