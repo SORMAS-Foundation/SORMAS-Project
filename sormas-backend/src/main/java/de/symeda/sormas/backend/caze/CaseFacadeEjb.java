@@ -2154,7 +2154,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		// Update completeness value
-		newCase.setCompleteness(null);
+		service.clearCompleteness(newCase);
 
 		// Send an email to all responsible supervisors when the case classification has
 		// changed

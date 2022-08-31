@@ -1991,6 +1991,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		em.createQuery(cu).executeUpdate();
 	}
 
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void clearCompleteness(Case caze) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+		cu.set(root.get(Case.COMPLETENESS), (Float) null);
+		cu.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		em.createQuery(cu).executeUpdate();
+	}
+
 	public PreviousCaseDto getMostRecentPreviousCase(String personUuid, Disease disease, Date startDate) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
