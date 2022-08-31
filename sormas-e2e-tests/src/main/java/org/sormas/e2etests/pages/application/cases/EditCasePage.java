@@ -351,4 +351,10 @@ public class EditCasePage {
       By.xpath("//div[text()='Change case disease']");
   public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
   public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
+
+  public static final By SHARE_SORMAS_2_SORMAS_BUTTON = By.cssSelector("#sormasToSormasShare");
+  public static final By SHARE_ORGANIZATION_POPUP_COMBOBOX =
+      By.cssSelector(".popupContent #organization div");
+  public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
+      By.cssSelector(".popupContent #commit");
 }

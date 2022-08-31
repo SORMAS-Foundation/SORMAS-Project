@@ -2441,6 +2441,25 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
+
+    When(
+        "I click on share case button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
+
+    When(
+        "I select {string} as a organization",
+        (String organization) -> {
+          String org = runningConfiguration.getEnvironmentUrlForMarket(organization);
+          webDriverHelpers.selectFromCombobox(
+              SHARE_ORGANIZATION_POPUP_COMBOBOX, org.replace("https://", ""));
+        });
+
+    When(
+        "I click on share button in s2s share popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // wait for reaction
+        });
   }
 
   private Vaccination collectVaccinationData() {
