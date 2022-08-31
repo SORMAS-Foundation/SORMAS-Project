@@ -898,6 +898,7 @@ public interface Strings {
 	String listOf = "listOf";
 	String mapOf = "mapOf";
 	String max = "max";
+	String messageAcceptRequestToNavigate = "messageAcceptRequestToNavigate";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
@@ -1021,6 +1022,7 @@ public interface Strings {
 	String messageDistrictsDearchivingNotPossible = "messageDistrictsDearchivingNotPossible";
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
+	String messageEntityNotFound = "messageEntityNotFound";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";

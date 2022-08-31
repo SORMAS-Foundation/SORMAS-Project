@@ -353,7 +353,8 @@ public class SormasToSormasController {
 		shareRequestLayout.setWidth(900, Sizeable.Unit.PIXELS);
 		shareRequestLayout.setMargin(true);
 
-		VaadinUiUtil.showPopupWindow(shareRequestLayout, I18nProperties.getString(Strings.headingShareRequestDetails));
+		Window window = VaadinUiUtil.showPopupWindow(shareRequestLayout, I18nProperties.getString(Strings.headingShareRequestDetails));
+		shareRequestLayout.setNavigateCallback(window::close);
 	}
 
 	private interface HandleShareWithOptions {
