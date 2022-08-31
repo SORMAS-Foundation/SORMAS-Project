@@ -241,4 +241,5 @@ Feature: mSERS functionalities
     And I navigate to Report data tab
     And I filter reports by "Bayern" region and "LK Ansbach" district
     And I click on edit first aggregated report from grid from mSERS
+    And I check if Create New Aggregate Report popup appears
     And I click to delete aggregated report

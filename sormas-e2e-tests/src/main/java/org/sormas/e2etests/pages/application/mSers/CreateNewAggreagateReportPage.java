@@ -45,7 +45,6 @@ public class CreateNewAggreagateReportPage {
   public static final By DELETE_AGGREGATED_REPORT_BUTTON = By.id("actionDelete");
   public static final By SNAKE_BITE_SUSPECTED_CASES_INPUT =
       By.xpath("(//div[text()=\"Snake Bite\"]/..//following-sibling::div//input)[1]");
-  public static final By EDIT_AGGREGATED_REPORT_HEADER =
-      By.xpath("//div[text()='Edit aggregated report']");
+  public static final By POPUP_HEADER = By.cssSelector(".popupContent .v-window-outerheader");
   public static final By POPUP_MESSAGE_WINDOW = By.cssSelector(".v-Notification-description");
 }
