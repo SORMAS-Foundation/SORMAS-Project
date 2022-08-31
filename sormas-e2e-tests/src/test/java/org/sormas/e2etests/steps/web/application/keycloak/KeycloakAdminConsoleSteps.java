@@ -95,18 +95,14 @@ public class KeycloakAdminConsoleSteps implements En {
         });
     When(
         "^I open last created user from SORMAS in Keycloak Admin Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(
-            getUserIdByName(CreateNewUserSteps.userName.toLowerCase())));
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                getUserIdByName(CreateNewUserSteps.userName.toLowerCase())));
     When(
         "^I check if user is disabled in Keycloak Admin Page$",
         () -> {
           boolean visible = webDriverHelpers.isElementEnabled(USER_DISABLED);
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      visible,
-                      "User is enabled!"),
-              5);
+          assertHelpers.assertWithPoll(() -> Assert.assertTrue(visible, "User is enabled!"), 5);
         });
   }
 }

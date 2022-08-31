@@ -44,7 +44,20 @@ public abstract class LanguageDetectorHelper {
   }
 
   private static boolean isConfidenceStrong(String textToScan) {
-    String confidence = detector.detect(textToScan).getConfidence().toString();
+    scanTextForNumbers(textToScan);
+    String confidence = detector.detect(sanitizeCharacters(textToScan)).getConfidence().toString();
     return confidence.equalsIgnoreCase("MEDIUM") || confidence.equalsIgnoreCase("HIGH");
+  }
+
+  @SneakyThrows
+  private static void scanTextForNumbers(String textToScan) {
+    if (textToScan.matches(".*[0-9].*")) {
+      throw new LanguageDetectorException(
+          "Provided text contains numbers. Please remove them before scanning it.");
+    }
+  }
+
+  private static String sanitizeCharacters(String textToClean) {
+    return textToClean.replaceAll("[!@#$%^&*()-_=+{[}];:'\"<>,.?/~`|]", "");
   }
 }
