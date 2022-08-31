@@ -234,4 +234,3 @@ Feature: mSERS functionalities
     And I click to save aggregated report
     Then I check if popup message is "You have to specify a valid district"
     When I close popup message window in Create New Aggregate Report popup
-    And I set District combobox to "LK Ansbach" in Create New Aggregate Report popup
