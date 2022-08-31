@@ -1759,3 +1759,24 @@ Feature: Case end to end tests
      And I set Date of symptom onset to 7 days into the future
      When I click on save case button in Symptoms tab
      Then I Verify popup message from Symptoms Tab Contains "Date of symptom onset cannot be in the future"
+
+   @testIt @env_s2s_1
+     Scenario: s2s test
+     Given API: I create a new person
+     And API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given API: I create a new case
+     Then API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given I log in as Admin User in Keycloak enabled environment
+     Then I navigate to the last created case via the url
+     Then I click on share case button
+     And I select "s2s_2" as a organization
+     Then I click on share button in s2s share popup
+     Then I navigate to "s2s_2" environment
+     Given I log in as Admin User in Keycloak enabled environment
+
+
+#     Then I check the address of s2s_1
+#     Then I check the address of s2s_2
+#     Then I check the address of s2s_3
