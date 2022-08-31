@@ -1762,19 +1762,21 @@ Feature: Case end to end tests
 
    @testIt @env_s2s_1
      Scenario: s2s test
-     Given API: I create a new person
+     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
      And API: I check that POST call body is "OK"
      And API: I check that POST call status code is 200
-     Given API: I create a new case
+     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
      Then API: I check that POST call body is "OK"
      And API: I check that POST call status code is 200
      Given I log in as Admin User in Keycloak enabled environment
      Then I navigate to the last created case via the url
+     And I collect uuid of the case
      Then I click on share case button
      And I select "s2s_2" as a organization
      Then I click on share button in s2s share popup
      Then I navigate to "s2s_2" environment
      Given I log in as Admin User in Keycloak enabled environment
+     And I click on the Share requests button from navbar
 
 
 #     Then I check the address of s2s_1
