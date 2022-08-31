@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
 @Remote
@@ -38,6 +38,8 @@ public interface SormasToSormasFacade {
 	void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException;
 
 	void revokeShare(String shareInfoUuid) throws SormasToSormasException;
+
+	void revokeShareRequest(String requestUuid) throws SormasToSormasException;
 
 	void requestsRevoked(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 

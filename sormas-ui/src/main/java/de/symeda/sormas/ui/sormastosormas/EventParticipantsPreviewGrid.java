@@ -24,9 +24,9 @@ import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class EventParticipantsPreviewGrid extends Grid<SormasToSormasEventParticipantPreview> {

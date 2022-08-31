@@ -187,3 +187,35 @@ Feature: mSERS functionalities
     And I check if there number of results in grid in mSers directory is 1
     Then I click to edit 1 result in mSers directory page
     And I click to delete aggregated report
+
+  @tmsLink=SORDEV-12440 @env_main
+  Scenario:Add a duplicate warning when creating and editing aggregate reports
+    Given I log in as a Surveillance Officer
+    When I click on the mSERS button from navbar
+    When I click on the NEW AGGREGATE REPORT button
+    Then I click on SPECIFY Radiobutton in Create Aggregated Report form
+    And I fill a new aggregate report with specific data for duplicates
+    And I click to save aggregated report
+    When I click on the NEW AGGREGATE REPORT button
+    Then I click on SPECIFY Radiobutton in Create Aggregated Report form
+    And I fill a new aggregate report with specific data for duplicates with different disease
+    Then I check if message about duplicated reports is visible
+    And I click to save aggregated report
+    And I navigate to Report data tab
+    And I set Epi Year from filter to "2004"
+    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)"
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 2
+    Then I click to edit 1 result in mSers directory page
+    And I click to delete aggregated report
+    And I click on the APPLY FILTERS button
+    Then I check if there number of results in grid in mSers directory is 0
+
+  @tmsLink=SORDEV-12442 @env_main
+  Scenario: Test Prevent submission of future aggregate reports
+    Given I log in as a Admin User
+    When I click on the mSERS button from navbar
+    And I click on the NEW AGGREGATE REPORT button
+    And I set report period to "SPECIFY" on Create a new aggregated report form
+    And I check if Epi week filed is enabled on Create a new aggregated report form
+    Then I check if last listed week from Epi week combobox is the current week of the year

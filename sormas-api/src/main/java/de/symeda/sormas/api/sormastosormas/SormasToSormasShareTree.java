@@ -18,7 +18,7 @@ package de.symeda.sormas.api.sormastosormas;
 import java.io.Serializable;
 import java.util.List;
 
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 
 public class SormasToSormasShareTree implements Serializable {
 

@@ -52,8 +52,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -195,7 +195,39 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			true,
 			Arrays.asList(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
 			FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS,
-			null);
+			(form) -> {
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_SAMPLES)) {
+					FieldHelper.setEnabledWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.FALSE,
+						SormasToSormasOptionsDto.WITH_SAMPLES,
+						false);
+
+					FieldHelper.setValueWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.TRUE,
+						SormasToSormasOptionsDto.WITH_SAMPLES,
+						Boolean.TRUE);
+				}
+
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)) {
+					FieldHelper.setEnabledWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.FALSE,
+						SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+						false);
+
+					FieldHelper.setValueWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.TRUE,
+						SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+						Boolean.TRUE);
+				}
+			});
 
 		if (contact != null) {
 			// in case of bulk send, only backend validation is possible

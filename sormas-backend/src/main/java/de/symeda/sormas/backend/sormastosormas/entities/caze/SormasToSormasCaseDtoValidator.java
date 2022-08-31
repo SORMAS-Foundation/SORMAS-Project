@@ -11,7 +11,7 @@ import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;

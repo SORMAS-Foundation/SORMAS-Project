@@ -71,7 +71,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
