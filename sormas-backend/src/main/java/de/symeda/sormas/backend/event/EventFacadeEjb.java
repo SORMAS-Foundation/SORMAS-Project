@@ -991,9 +991,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	public void validate(@Valid EventDto event) throws ValidationRuntimeException {
 
 		LocationDto location = event.getEventLocation();
-		if (location == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validLocation));
-		}
+
 		if (location.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
