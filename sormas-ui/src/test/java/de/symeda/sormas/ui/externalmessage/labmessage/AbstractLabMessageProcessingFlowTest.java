@@ -30,9 +30,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -85,10 +82,13 @@ import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMess
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
@@ -997,7 +997,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
 		EventIndexDto selectedEvent = new EventIndexDto();
 		selectedEvent.setUuid(event.getUuid());
@@ -1041,7 +1041,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
 		EventIndexDto selectedEvent = new EventIndexDto();
 		selectedEvent.setUuid(event.getUuid());
@@ -1077,7 +1077,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		doAnswer((invocation) -> {
 			// pick event
 			PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
@@ -1117,7 +1117,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		doAnswer((invocation) -> {
 			// pick event for the  first time
 			PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
@@ -1164,7 +1164,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
 		EventIndexDto selectedEvent = new EventIndexDto();
 		selectedEvent.setUuid(event.getUuid());
@@ -1545,7 +1545,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 		doAnswer(invocation -> {
 			List<SimilarEventParticipantDto> eventParticipants = invocation.getArgument(2);
@@ -1586,7 +1586,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 		doAnswer(invocation -> {
 			List<SimilarEventParticipantDto> eventParticipants = invocation.getArgument(2);
