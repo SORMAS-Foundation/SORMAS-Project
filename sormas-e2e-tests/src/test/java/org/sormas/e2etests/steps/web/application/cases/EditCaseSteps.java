@@ -2447,7 +2447,7 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
 
     When(
-        "I select {string} as a organization",
+        "I select {string} as an organization",
         (String organization) -> {
           String org = runningConfiguration.getEnvironmentUrlForMarket(organization);
           webDriverHelpers.selectFromCombobox(
