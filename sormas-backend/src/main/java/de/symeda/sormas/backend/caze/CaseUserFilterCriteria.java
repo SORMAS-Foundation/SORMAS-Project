@@ -7,6 +7,7 @@ public class CaseUserFilterCriteria {
 	 */
 	private boolean excludeCasesFromContacts;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
+	private boolean excludeLimitedSyncRestrictions;
 
 	public boolean isExcludeCasesFromContacts() {
 		return excludeCasesFromContacts;
@@ -23,5 +24,19 @@ public class CaseUserFilterCriteria {
 
 	public void setIncludeCasesFromOtherJurisdictions(Boolean includeCasesFromOtherJurisdictions) {
 		this.includeCasesFromOtherJurisdictions = includeCasesFromOtherJurisdictions;
+	}
+
+	/**
+	 * Ignore user filter restrictions that would otherwise be applied by the limited synchronization feature.
+	 * Necessary e.g. when retrieving UUIDs of cases that are supposed to be removed from the
+	 * mobile app, because otherwise the user filter would exclude those cases.
+	 */
+	public boolean isExcludeLimitedSyncRestrictions() {
+		return excludeLimitedSyncRestrictions;
+	}
+
+	public CaseUserFilterCriteria excludeLimitedSyncRestrictions(boolean excludeLimitedSyncRestrictions) {
+		this.excludeLimitedSyncRestrictions = excludeLimitedSyncRestrictions;
+		return this;
 	}
 }

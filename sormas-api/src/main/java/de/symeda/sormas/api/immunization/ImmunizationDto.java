@@ -15,11 +15,15 @@
 
 package de.symeda.sormas.api.immunization;
 
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -46,6 +50,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
+@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT)
 public class ImmunizationDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6538566879882613529L;
@@ -85,6 +90,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
 	public static final String VACCINATIONS = "vaccinations";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Outbreaks
 	@Required
@@ -97,6 +104,7 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private PersonReferenceDto person;
 	@Required
 	private Date reportDate;
+	@NotNull(message = Validations.validReportingUser)
 	private UserReferenceDto reportingUser;
 	private boolean archived;
 	@Required
@@ -153,6 +161,11 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private Date validUntil;
 
 	private CaseReferenceDto relatedCase;
+
+	private boolean deleted;
+	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String otherDeletionReason;
 
 	@Valid
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
@@ -422,4 +435,27 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 		this.vaccinations = vaccinations;
 	}
 
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
+	}
 }

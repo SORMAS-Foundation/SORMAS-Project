@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.app.core;
 
+import java.util.Date;
+import java.util.List;
+
+import org.joda.time.DateTime;
+
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,16 +27,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.IBinder;
 import android.text.Html;
 import android.text.TextUtils;
 
 import androidx.core.app.NotificationCompat;
-
-import org.joda.time.DateTime;
-
-import java.util.Date;
-import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
@@ -96,10 +97,10 @@ public class TaskNotificationService extends Service {
 
 	public static void doTaskNotification(Context context) {
 
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_GENERAL) ||
-				!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE) ||
-				!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CONTACT_TRACING) ||
-				!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE)) {
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_GENERAL)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CONTACT_TRACING)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE)) {
 
 			Date notificationRangeStart = ConfigProvider.getLastNotificationDate();
 			if (notificationRangeStart == null) {
@@ -120,28 +121,31 @@ public class TaskNotificationService extends Service {
 				Event event = null;
 				StringBuilder content = new StringBuilder();
 				switch (task.getTaskContext()) {
-					case CASE:
-						if (task.getCaze() != null && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE)) {
-							caze = caseDAO.queryForId(task.getCaze().getId());
-							content.append("<b>").append(caze.toString()).append("</b><br/>");
-						}
-						break;
-					case CONTACT:
-						if (task.getContact() != null && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CONTACT_TRACING)) {
-							contact = contactDAO.queryForId(task.getContact().getId());
-							content.append("<b>").append(contact.toString()).append("</b><br/>");
-						}
-						break;
-					case EVENT:
-						if (task.getEvent() != null && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE)) {
-							event = eventDAO.queryForId(task.getEvent().getId());
-							content.append("<b>").append(event.toString()).append("</b><br/>");
-						}
-						break;
-					case GENERAL:
-						break;
-					default:
-						continue;
+				case CASE:
+					if (task.getCaze() != null
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE)) {
+						caze = caseDAO.queryForId(task.getCaze().getId());
+						content.append("<b>").append(caze.toString()).append("</b><br/>");
+					}
+					break;
+				case CONTACT:
+					if (task.getContact() != null
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CONTACT_TRACING)) {
+						contact = contactDAO.queryForId(task.getContact().getId());
+						content.append("<b>").append(contact.toString()).append("</b><br/>");
+					}
+					break;
+				case EVENT:
+					if (task.getEvent() != null
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE)) {
+						event = eventDAO.queryForId(task.getEvent().getId());
+						content.append("<b>").append(event.toString()).append("</b><br/>");
+					}
+					break;
+				case GENERAL:
+					break;
+				default:
+					continue;
 				}
 
 				Intent notificationIntent = new Intent(context, TaskEditActivity.class);
@@ -149,21 +153,26 @@ public class TaskNotificationService extends Service {
 				// Just for your information: The issue here was that the second argument of the getActivity call
 				// was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
 				// makes sure that a new intent with the right task behind it is created
-				PendingIntent pi = PendingIntent.getActivity(context, task.getId().intValue(), notificationIntent, 0);
+				PendingIntent pi = PendingIntent.getActivity(
+					context,
+					task.getId().intValue(),
+					notificationIntent,
+					Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_ONE_SHOT);
 				Resources r = context.getResources();
 
 				if (!TextUtils.isEmpty(task.getCreatorComment())) {
 					content.append(task.getCreatorComment());
 				}
 
-				NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NotificationHelper.NOTIFICATION_CHANNEL_TASKS_ID)
+				NotificationCompat.Builder notificationBuilder =
+					new NotificationCompat.Builder(context, NotificationHelper.NOTIFICATION_CHANNEL_TASKS_ID)
 						.setTicker(r.getString(R.string.heading_task_notification))
 						.setSmallIcon(R.mipmap.ic_launcher_foreground)
 						.setContentTitle(
-								task.getTaskType().toString()
-										+ (caze != null
-										? " (" + caze.getDisease().toShortString() + ")"
-										: contact != null ? " (" + contact.getDisease().toShortString() + ")" : ""))
+							task.getTaskType().toString()
+								+ (caze != null
+									? " (" + caze.getDisease().toShortString() + ")"
+									: contact != null ? " (" + contact.getDisease().toShortString() + ")" : ""))
 						.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
 						.setContentIntent(pi)
 						.setAutoCancel(true)
@@ -184,7 +193,7 @@ public class TaskNotificationService extends Service {
 
 	private static void doWeeklyReportNotification(Context context, Date notificationRangeStart, Date notificationRangeEnd) {
 		if (ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)
-				&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.WEEKLY_REPORTING)) {
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.WEEKLY_REPORTING)) {
 			// notify at 6:00
 			Date notificationPoint = DateHelper.addSeconds(DateHelper.getStartOfDay(new Date()), 60 * 60 * 6);
 			if (DateHelper.isBetween(notificationPoint, notificationRangeStart, notificationRangeEnd)) {
@@ -194,7 +203,11 @@ public class TaskNotificationService extends Service {
 
 					int notificationId = (int) notificationPoint.getTime();
 					Intent notificationIntent = new Intent(context, ReportActivity.class);
-					PendingIntent pi = PendingIntent.getActivity(context, notificationId, notificationIntent, 0);
+					PendingIntent pi = PendingIntent.getActivity(
+						context,
+						notificationId,
+						notificationIntent,
+						Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_ONE_SHOT);
 
 					String title = context.getResources().getString(R.string.action_submit_report);
 
@@ -218,7 +231,11 @@ public class TaskNotificationService extends Service {
 		AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
 		Intent intent = new Intent(context, TaskNotificationService.class);
-		PendingIntent alarmIntent = PendingIntent.getService(context, 1414, intent, 0);
+		PendingIntent alarmIntent = PendingIntent.getService(
+			context,
+			1414,
+			intent,
+			Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_ONE_SHOT);
 
 		// setRepeating() lets you specify a precise custom interval--in this case, 5 minutes.
 		Date now = new Date();

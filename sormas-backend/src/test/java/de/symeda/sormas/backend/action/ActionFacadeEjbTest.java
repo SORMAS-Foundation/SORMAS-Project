@@ -31,8 +31,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -42,7 +42,7 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllUuidsEmpty() {
-		List<String> allUuids = getActionFacade().getAllUuids();
+		List<String> allUuids = getActionFacade().getAllActiveUuids();
 		assertTrue(allUuids.isEmpty());
 	}
 
@@ -50,8 +50,13 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 	public void testGetAllUuids() throws ParseException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		EventDto eventDto = creator.createEvent(
 			EventStatus.SIGNAL,
@@ -93,7 +98,7 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 
 		getActionFacade().saveAction(actionDto2);
 
-		List<String> allUuids = getActionFacade().getAllUuids();
+		List<String> allUuids = getActionFacade().getAllActiveUuids();
 		assertEquals(2, allUuids.size());
 		assertTrue(allUuids.contains(uuid1));
 		assertTrue(allUuids.contains(uuid2));

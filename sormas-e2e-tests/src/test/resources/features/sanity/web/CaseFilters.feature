@@ -6,7 +6,7 @@ Feature: Case filter functionality
     Given API: I create 10 new cases
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I click on the Cases button from navbar
     When I search for cases created with the API using Person's name
     Then I apply Outcome of case filter "No Outcome Yet" on Case directory page
@@ -15,7 +15,7 @@ Feature: Case filter functionality
     Then I apply Disease filter "COVID-19" on Case directory page
     And I check that all displayed cases have "COVID-19" in grid Disease column
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check Person related fields filter in Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -23,7 +23,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     Then I apply uuid filter for last created via API Person in Case directory page
     And I filter by CaseID on Case directory page
@@ -55,7 +55,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I apply Present Condition filter on Case directory page to condition of last created person
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check Case basic filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -63,7 +63,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I apply Case origin "In-Country" on Case directory page
     And I filter by CaseID on Case directory page
@@ -98,7 +98,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I filter by CaseID on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check Case region and facility related filters
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -106,7 +106,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
@@ -139,7 +139,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I apply Facility filter to "Standard Einrichtung" on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check checkboxes filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -147,7 +147,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I click APPLY BUTTON in Case Directory Page
@@ -181,20 +181,12 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I click "Only cases from other instances" checkbox on Case directory page
-    And I click "Only cases with reinfection" checkbox on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 1
-    And I click "Only cases with reinfection" checkbox on Case directory page
-    And I click "Only cases with fulfilled reference definition" checkbox on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I click "Only cases with fulfilled reference definition" checkbox on Case directory page
     And I click "Only port health cases without a facility" checkbox on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I click "Only port health cases without a facility" checkbox on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check aggregation buttons on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -202,7 +194,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I check that number of displayed cases results is 1
@@ -218,7 +210,7 @@ Feature: Case filter functionality
     And I apply "Archived cases" to combobox on Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check Case report date filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -226,7 +218,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
@@ -240,30 +232,29 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I fill Cases from input to 1 days before mocked Case created on Case directory page
 
-  @issue=SORQA-30 @env_main
-  Scenario: Check complex filters regarding responsibilities, vaccination, reinfection adn quarantine
+  @tmsLink=SORQA-30 @env_main
+  Scenario: Check complex filters regarding responsibilities, vaccination and quarantine
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
     And I apply Region filter "Voreingestellte Bundesländer" on Case directory page
-    And I apply Surveillance Officer filter "Surveillance OFFICER - Surveillance Officer" on Case directory page
-    And I apply Reporting User filter "Rest AUTOMATION" on Case directory page
+    And I apply Surveillance Officer filter "Surv OFFI" on Case directory page
+    And I apply Reporting User filter "Rest AUTO" on Case directory page
     And I apply Vaccination Status filter to "Vaccinated" on Case directory page
     And I apply Quarantine filter to "Home" on Case directory page
-    And I apply Reinfection filter to "Confirmed reinfection" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 1
-    And I apply Reporting User filter "Surveillance OFFICER" on Case directory page
+    And I apply Reporting User filter "Surv OFFI" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
-    And I apply Reporting User filter "Rest AUTOMATION" on Case directory page
+    And I apply Reporting User filter "Rest AUTOM" on Case directory page
     And I apply Quarantine filter to "Institutional" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
@@ -272,14 +263,10 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I apply Vaccination Status filter to "Vaccinated" on Case directory page
-    And I apply Reinfection filter to "Probable reinfection" on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I apply Reinfection filter to "Confirmed reinfection" on Case directory page
 
-  @issue=SORQA-83 @env_de
+  @tmsLink=SORQA-83 @env_de
   Scenario: German Case Directory filters
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -314,9 +301,9 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORQA-83 @env_de
+  @tmsLink=SORQA-83 @env_de
   Scenario: Check Case basic filters on Case directory page for DE version
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -336,9 +323,9 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORQA-83 @env_de
+  @tmsLink=SORQA-83 @env_de
   Scenario: Check checkboxes filters on Case directory page for DE specific
-    Given I log in with National User
+    Given I log in as a Surveillance Officer
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -352,10 +339,10 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 1
     And I click "Nur Fälle ohne Geo-Koordinaten" checkbox on Case directory page
-    And I click "Nur Fälle ohne verantwortlichen Beauftragten" checkbox on Case directory page
+    And I click "Nur Fälle ohne verantwortlichen Benutzer" checkbox on Case directory page
     And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I click "Nur Fälle ohne verantwortlichen Beauftragten" checkbox on Case directory page
+    And I check that number of displayed cases results is 1
+    And I click "Nur Fälle ohne verantwortlichen Benutzer" checkbox on Case directory page
     And I click "Nur Fälle mit verlängerter Isolation" checkbox on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
@@ -389,9 +376,9 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
 
-  @issue=SORQA-83 @env_de
+  @tmsLink=SORQA-83 @env_de
   Scenario: Check Case report date filters on Case directory page for De specific
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -408,4 +395,79 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
-    
+  @tmsLink=SORDEV-8629 @env_main
+  Scenario Outline: Check option <option> in Outcome of case filter
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case form with specific data
+    Then I click on save case button
+    And I check the created data is correctly displayed on Edit case page
+    And I select <option> as Outcome of Case in Edit case page
+    And I confirm changes in selected Case
+    And I back to the cases list from edit case
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I apply Outcome of case filter "No Outcome Yet" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result1>
+    And I apply Outcome of case filter "Deceased" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result2>
+    And I apply Outcome of case filter "Recovered" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result3>
+    And I apply Outcome of case filter "Unknown" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result4>
+
+    Examples:
+      | option           | result1 | result2 | result3 | result4 |
+      | "No Outcome Yet" | 1       | 0       | 0       | 0       |
+      | "Deceased"       | 0       | 1       | 0       | 0       |
+      | "Recovered"      | 0       | 0       | 1       | 0       |
+      | "Unknown"        | 0       | 0       | 0       | 1       |
+
+  @tmsLink=SORQA-5969 @env_de
+  Scenario Outline: Test vaccination status filter <status> and columns to case
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I set case vaccination status to <status>
+    And I click on the Cases button from navbar
+    And I set case vaccination status filter to <status>
+    And I apply case filters
+    Then I check that created Case is visible with <status> status
+
+    Examples:
+      | status    |
+      | Geimpft   |
+      | Ungeimpft |
+      | Unbekannt |
+
+  @tmsLink=SORDEV-5568 @env_main
+  Scenario Outline: Test text search filed handling with special characters
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill only mandatory fields for a new case form and set "<lastname>" as a last name
+    And I save a new case
+    And I back to the cases list from edit case
+    And I filter by "<lastname>" as a Person's full name on Case Directory Page
+    And I click on the first Case ID from Case Directory
+    And I navigate to case person tab
+    And I check if person last name for case person tab is "<lastname>"
+    And I navigate to case tab
+    And I delete the case
+
+    Examples:
+    | lastname |
+    | Bärbel |
+    | Beauséjour |
+    | Świątek |
+    | قادر    |

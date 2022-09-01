@@ -32,16 +32,19 @@ public class ContactDirectoryPage {
       By.cssSelector("div#contactsViewSwitcher span:nth-child(2) > label");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
       By.cssSelector("input#contactOrCaseLike");
+  public static final By ACTION_MERGE_CONTACT_DIRECTORY = By.cssSelector("#actionMerge");
   public static final By CONTACTS_DETAILED_COLUMN_HEADERS =
+      By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By CONTACTS_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CONTACTS_DETAILED_FIRST_TABLE_ROW =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By CONTACTS_DETAILED_TABLE_DATA = By.cssSelector("[role=gridcell]");
-  public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(5)");
-  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
-  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(10)");
+  public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(3)");
+  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
+  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(8)");
   public static final By TYPE_OF_CONTACT_COLUMNS =
-      By.cssSelector("[role=rowgroup] tr>td:nth-child(12)");
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
   public static final By FOLLOW_UP_VISITS_BUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FROM_INPUT = By.cssSelector("#fromReferenceDateField input");
@@ -63,6 +66,8 @@ public class ContactDirectoryPage {
       By.cssSelector("[id='followUpStatus'] [class='v-filterselect-button']");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
+  public static final By CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON =
+      By.cssSelector("div#actionConfirmFilters");
   public static final By GRID_RESULTS_COUNTER_CONTACT_DIRECTORY = By.cssSelector(".badge");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
       By.id("quarantineOrderedVerbally");
@@ -85,14 +90,29 @@ public class ContactDirectoryPage {
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
   public static final By CONTACT_DATA_TAB = By.cssSelector("#tab-contacts-data");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
-  public static final By FIRST_PERSON_ID = By.xpath("//td[8]//a");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[6]//a");
   public static final By FIRST_CONTACT_ID = By.xpath("//td[1]//a");
   public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-8");
+  public static final By CONTACT_MERGE_DUPLICATES = By.id("contactMergeDuplicates");
+  public static final By CONTACT_DISPLAY_FILTER_COMBOBOX =
+      By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By RELATIONSHIP_WITH_CASE_COMBOBOX = By.cssSelector("#relationToCase div");
+  public static final By CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("[id='vaccinationStatus'] [class='v-filterselect-button']");
+  public static final By FIRST_CONTACT_ID_FROM_CASE = By.xpath("(//td//a)[1]");
 
   public static By getCheckboxByUUID(String uuid) {
     return By.xpath(
         String.format(
             "//td//a[text()=\"%s\"]/../preceding-sibling::td//input[@type=\"checkbox\"]",
             uuid.substring(0, 6).toUpperCase()));
+  }
+
+  public static By getVaccinationStatusContactsByText(String status) {
+    return By.xpath(String.format("//td[contains(text(), '%s')]", status));
+  }
+
+  public static By getContactsByUUID(String uuid) {
+    return By.xpath(String.format("//a[@title='%s']", uuid));
   }
 }

@@ -37,6 +37,8 @@ import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
@@ -537,6 +539,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return config;
 	}
 
+	@Override
+	public Boolean isS2SConfigured() {
+		return !StringUtils.isEmpty(getS2SConfig().getPath());
+	}
+
 	private Map<String, Boolean> getS2SIgnoreProperties() {
 		return props.stringPropertyNames()
 			.stream()
@@ -548,6 +555,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getExternalSurveillanceToolGatewayUrl() {
 		return getProperty(EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL, null);
+	}
+
+	@Override
+	public boolean isExternalSurveillanceToolGatewayConfigured() {
+		return StringUtils.isNoneBlank(getExternalSurveillanceToolGatewayUrl());
 	}
 
 	@Override
@@ -756,6 +768,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public long getImportFileSizeLimitMb() {
 		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
+	}
+
+	@Override public void setRequestContext(RequestContextTO requestContext) {
+		RequestContextHolder.setRequestContext(requestContext);
+	}
+
+	@Override public void resetRequestContext() {
+		RequestContextHolder.reset();
 	}
 
 	@LocalBean

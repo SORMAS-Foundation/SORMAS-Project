@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.infrastructure.country;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 
@@ -77,5 +79,15 @@ public class CountryIndexDto extends EntityDto {
 
 	public void setSubcontinent(SubcontinentReferenceDto subcontinent) {
 		this.subcontinent = subcontinent;
+	}
+
+	@Override
+	public String buildCaption() {
+		return getDefaultName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

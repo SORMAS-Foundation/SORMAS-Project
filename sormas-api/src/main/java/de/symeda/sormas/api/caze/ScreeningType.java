@@ -14,6 +14,7 @@ public enum ScreeningType {
 	SELF_CONDUCTED_TEST,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

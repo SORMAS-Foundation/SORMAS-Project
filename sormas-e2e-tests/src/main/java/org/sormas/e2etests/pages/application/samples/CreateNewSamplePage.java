@@ -45,6 +45,10 @@ public class CreateNewSamplePage {
       By.cssSelector(".popupContent [id='labDetails']");
   public static final By RECEIVED_OPTION_BUTTON = By.cssSelector("[id='received'] label");
   public static final By DATE_SAMPLE_RECEIVED = By.cssSelector("[id='receivedDate'] input");
+  public static final By DATE_SAMPLE_SEND_INPUT_FIELD =
+      By.xpath("//div[@id='shipmentDate' and not(contains(@class, 'v-required'))]");
+  public static final By DATE_SAMPLE_RECEIVED_INPUT_FIELD =
+      By.xpath("//div[@id='receivedDate' and not(contains(@class, 'v-required'))]");
   public static final By SPECIMEN_CONDITION_COMBOBOX =
       By.cssSelector("[id='specimenCondition'] [class='v-filterselect-button']");
   public static final By SPECIMEN_CONDITION_INPUT =
@@ -70,6 +74,7 @@ public class CreateNewSamplePage {
   public static final By TEST_RESULTS_COMMENT_AREA_INPUT = By.cssSelector("[id='testResultText']");
   public static final By SAVE_SAMPLE_BUTTON =
       By.cssSelector("[class='popupContent'] [id='commit']");
+  public static final By SAVE_EDIT_SAMPLE_BUTTON = By.cssSelector("[id='commit']");
   public static final By PATHOGEN_TEST_RESULT_COMBOBOX =
       By.cssSelector("[id='testResult'] [class='v-filterselect-button']");
   public static final By PATHOGEN_TEST_RESULT_INPUT = By.cssSelector("[id='testResult'] input");
@@ -116,4 +121,31 @@ public class CreateNewSamplePage {
   public static final By PROTHROMBIN_INPUT = By.cssSelector("[id='prothrombinTime']");
   public static final By HAEMOGLOBIN_INPUT = By.cssSelector("[id='haemoglobin']");
   public static final By OTHER_TESTS_INPUT = By.cssSelector("[id='otherTestResults']");
+  public static final By PATHOGEN_CARD_TYPE_OF_TEST =
+      By.xpath(
+          "//div[@class='v-slot v-slot-side-component']//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase v-label-undef-w']");
+  public static final By PATHOGEN_CARD_TEST_RESULT_COMMENT =
+      By.xpath(
+          "//div[@class='v-slot v-slot-side-component']//div[@class='v-label v-widget v-has-width']");
+  public static final By PATHOGEN_CARD_DISEASE =
+      By.xpath(
+          "//div[@class='v-slot v-slot-side-component']//div[@class='v-label v-widget v-label-undef-w']");
+  public static final By PATHOGEN_CARD_DATE_OF_RESULT =
+      By.xpath(
+          "//div[@class='v-slot v-slot-side-component']//div[@class='v-label v-widget align-right v-label-align-right v-label-undef-w']");
+  public static final By PATHOGEN_CARD_TEST_RESULT =
+      By.xpath(
+          "//div[@class='v-slot v-slot-side-component']//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase critical v-label-critical v-label-undef-w']");
+  public static final By NEW_TEST_RESULTS_BUTTON_FOR_PATHOGEN_TESTS =
+      By.cssSelector("[id='New test result']");
+  public static final By ADD_PATHOGEN_TEST =
+      By.cssSelector(".v-window-contents .v-slot:nth-of-type(1) .v-button");
+  public static final By DATE_AND_TIME_OF_RESULTS =
+      By.xpath("//div[contains(text(),'Date and time of result:')]");
+  public static final By UPDATE_CASE_DISEASE_VARIANT =
+      By.xpath("//*[text()='Update case disease variant']");
+  public static final By DATE_AND_TIME_OF_RESULTS_INPUT_FIELD =
+      By.xpath("//*[@id='testDateTime_date' and not(contains(@class, 'v-required'))]");
+  public static final By GENERIC_ERROR_POPUP =
+      By.xpath("//div[@class='v-Notification error v-Notification-error']");
 }

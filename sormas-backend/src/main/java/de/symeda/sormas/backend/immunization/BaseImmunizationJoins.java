@@ -12,6 +12,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
 
 public class BaseImmunizationJoins<S extends BaseImmunization> extends QueryJoins<S> {
 
@@ -20,6 +21,8 @@ public class BaseImmunizationJoins<S extends BaseImmunization> extends QueryJoin
 	private Join<S, District> responsibleDistrict;
 	private Join<S, Community> responsibleCommunity;
 	private Join<S, Facility> healthFacility;
+
+	private PersonJoins personJoins;
 
 	public BaseImmunizationJoins(From<?, S> root) {
 		super(root);
@@ -31,6 +34,14 @@ public class BaseImmunizationJoins<S extends BaseImmunization> extends QueryJoin
 
 	public void setPerson(Join<S, Person> person) {
 		this.person = person;
+	}
+
+	public PersonJoins getPersonJoins() {
+		return getOrCreate(personJoins, () -> new PersonJoins(getPerson()), this::setPersonJoins);
+	}
+
+	private void setPersonJoins(PersonJoins personJoins) {
+		this.personJoins = personJoins;
 	}
 
 	public Join<S, Region> getResponsibleRegion() {

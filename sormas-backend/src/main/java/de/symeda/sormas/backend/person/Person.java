@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -53,7 +54,6 @@ import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContactDetailType;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
@@ -456,7 +456,8 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.educationDetails = educationDetails;
 	}
 
-	@Enumerated(EnumType.STRING)
+	@Column
+	@Convert(converter = OccupationTypeConverter.class)
 	public OccupationType getOccupationType() {
 		return occupationType;
 	}
@@ -809,10 +810,4 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public boolean isEnrolledInExternalJournal() {
 		return SymptomJournalStatus.ACCEPTED.equals(symptomJournalStatus) || SymptomJournalStatus.REGISTERED.equals(symptomJournalStatus);
 	}
-
-	@Override
-	public String toString() {
-		return PersonDto.buildCaption(firstName, lastName);
-	}
-
 }

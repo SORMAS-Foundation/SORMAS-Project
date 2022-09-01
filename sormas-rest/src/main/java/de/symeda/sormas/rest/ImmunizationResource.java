@@ -34,6 +34,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -102,6 +104,12 @@ public class ImmunizationResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getImmunizationFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
+	@GET
 	@Path("/{uuid}")
 	public ImmunizationDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
@@ -120,7 +128,8 @@ public class ImmunizationResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getImmunizationFacade().deleteImmunizations(uuids);
+		return FacadeProvider.getImmunizationFacade()
+			.deleteImmunizations(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@POST

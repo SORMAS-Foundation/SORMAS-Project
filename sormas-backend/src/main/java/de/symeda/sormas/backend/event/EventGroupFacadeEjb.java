@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -67,6 +66,7 @@ import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.NotificationService;
@@ -81,9 +81,10 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "EventGroupFacade")
-@RolesAllowed(UserRight._EVENT_VIEW)
+@RightsAllowed(UserRight._EVENT_VIEW)
 public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -171,7 +172,10 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		Root<EventGroup> eventGroupSubQuery = eventCountSubquery.from(EventGroup.class);
 		Join<EventGroup, Event> eventSubQueryJoin = eventGroupSubQuery.join(EventGroup.EVENTS, JoinType.LEFT);
 		eventCountSubquery.select(cb.countDistinct(eventSubQueryJoin.get(Event.ID)));
-		eventCountSubquery.where(cb.equal(eventGroupSubQuery.get(EventGroup.ID), eventGroup.get(EventGroup.ID)));
+		eventCountSubquery.where(
+			cb.and(
+				cb.equal(eventGroupSubQuery.get(EventGroup.ID), eventGroup.get(EventGroup.ID)),
+				eventService.createDefaultFilter(cb, eventSubQueryJoin)));
 		eventCountSubquery.groupBy(eventGroupSubQuery.get(EventGroup.ID));
 
 		cq.multiselect(
@@ -256,18 +260,21 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._EVENTGROUP_CREATE,
 		UserRight._EVENTGROUP_EDIT })
 	public EventGroupDto saveEventGroup(@Valid @NotNull EventGroupDto dto) {
 		return saveEventGroup(dto, true);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._EVENTGROUP_CREATE,
 		UserRight._EVENTGROUP_EDIT })
 	public EventGroupDto saveEventGroup(@Valid @NotNull EventGroupDto dto, boolean checkChangeDate) {
 		User currentUser = userService.getCurrentUser();
+
+		EventGroup existingEventGroup = eventGroupService.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingEventGroup, userService, UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_EDIT);
 
 		EventGroup eventGroup = fromDto(dto, checkChangeDate);
 
@@ -288,25 +295,25 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_LINK)
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventToGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference) {
 		linkEventsToGroup(Collections.singletonList(eventReference), eventGroupReference);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_LINK)
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference) {
 		linkEventsToGroups(eventReferences, Collections.singletonList(eventGroupReference));
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_LINK)
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventToGroups(EventReferenceDto eventReference, List<EventGroupReferenceDto> eventGroupReferences) {
 		linkEventsToGroups(Collections.singletonList(eventReference), eventGroupReferences);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_LINK)
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventsToGroups(List<EventReferenceDto> eventReferences, List<EventGroupReferenceDto> eventGroupReferences) {
 		User currentUser = userService.getCurrentUser();
 
@@ -322,7 +329,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		for (Event event : events) {
 			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-			if (jurisdictionLevel != JurisdictionLevel.NATION) {
+			if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
 				Region region = event.getEventLocation().getRegion();
 				if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
 					throw new UnsupportedOperationException(
@@ -359,14 +366,14 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_LINK)
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference) {
 		User currentUser = userService.getCurrentUser();
 
 		Event event = eventService.getByUuid(eventReference.getUuid());
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
 			Region region = event.getEventLocation().getRegion();
 			if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
 				throw new UnsupportedOperationException(
@@ -394,14 +401,14 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_DELETE)
+	@RightsAllowed(UserRight._EVENTGROUP_DELETE)
 	public void deleteEventGroup(String uuid) {
 		User currentUser = userService.getCurrentUser();
 
 		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
 			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
 			for (RegionReferenceDto region : regions) {
 				if (!userService.hasRegion(region)) {
@@ -420,14 +427,14 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_ARCHIVE)
+	@RightsAllowed(UserRight._EVENTGROUP_ARCHIVE)
 	public void archiveOrDearchiveEventGroup(String uuid, boolean archive) {
 		User currentUser = userService.getCurrentUser();
 
 		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
 			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
 			for (RegionReferenceDto region : regions) {
 				if (!userService.hasRegion(region)) {
@@ -456,7 +463,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_CREATE)
+	@RightsAllowed(UserRight._EVENTGROUP_CREATE)
 	public void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference) {
 		notifyModificationOfEventGroup(
 			eventGroupReference,
@@ -467,7 +474,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_LINK)
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void notifyEventAddedToEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences) {
 		notifyModificationOfEventGroup(
 			eventGroupReference,
@@ -478,7 +485,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTGROUP_LINK)
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences) {
 		notifyModificationOfEventGroup(
 			eventGroupReference,

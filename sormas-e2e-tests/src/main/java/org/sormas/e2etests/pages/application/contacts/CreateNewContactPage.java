@@ -63,7 +63,8 @@ public class CreateNewContactPage {
       By.cssSelector(".popupContent #contactCategory> span label");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By MULTI_DAY_CONTACT_LABEL = By.xpath("//*[@id='multiDayContact']/label");
-  public static final By FIRST_DAY_CONTACT_DATE = By.cssSelector("#firstContactDate input");
+  public static final By FIRST_DAY_CONTACT_DATE =
+      By.cssSelector(".popupContent #firstContactDate input");
   public static final By CHOOSE_CASE_BUTTON = By.id("contactChooseCase");
   public static final By SOURCE_CASE_WINDOW_CONTACT_DE =
       By.xpath("//div[contains(@class, 'popupContent')]//input[@placeholder='Suche...']");
@@ -77,4 +78,8 @@ public class CreateNewContactPage {
   public static final By SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON_DE =
       By.xpath(
           "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Best\u00E4tigen')]//ancestor::div[@id='commit']");
+  public static final By TYPE_OF_CONTACT_MEDICAL_PERSONEL_SAME_ROOM_CHECKBOX =
+      By.xpath("(//div[@id='contactProximity']/span)[9]");
+  public static final By TYPE_OF_CONTACT_MEDICAL_PERSONEL_WITHOUT_DIRECT_CONTACT_CHECKBOX =
+      By.xpath("(//div[@id='contactProximity']/span)[10]");
 }

@@ -26,16 +26,16 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.CaseShareDataBuilder;
@@ -45,9 +45,9 @@ import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.EventPa
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.ImmunizationShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SampleShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.ShareRequestPreviews;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.ShareRequestPreviews;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -93,7 +93,7 @@ public class ShareDataBuilder {
 		shares.forEach(s -> {
 			if (s.getCaze() != null) {
 				try {
-					cases.add(caseShareDataBuilder.buildShareData(s.getCaze(), requestInfo));
+					cases.add(caseShareDataBuilder.buildShareData(s.getCaze(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -101,7 +101,7 @@ public class ShareDataBuilder {
 
 			if (s.getContact() != null) {
 				try {
-					contacts.add(contactShareDataBuilder.buildShareData(s.getContact(), requestInfo));
+					contacts.add(contactShareDataBuilder.buildShareData(s.getContact(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -109,7 +109,7 @@ public class ShareDataBuilder {
 			}
 			if (s.getSample() != null) {
 				try {
-					samples.add(sampleShareDataBuilder.buildShareData(s.getSample(), requestInfo));
+					samples.add(sampleShareDataBuilder.buildShareData(s.getSample(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -117,7 +117,7 @@ public class ShareDataBuilder {
 
 			if (s.getEvent() != null) {
 				try {
-					events.add(eventShareDataBuilder.buildShareData(s.getEvent(), requestInfo));
+					events.add(eventShareDataBuilder.buildShareData(s.getEvent(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -125,7 +125,8 @@ public class ShareDataBuilder {
 
 			if (s.getEventParticipant() != null) {
 				try {
-					eventParticipants.add(eventParticipantShareDataBuilder.buildShareData(s.getEventParticipant(), requestInfo));
+					eventParticipants
+						.add(eventParticipantShareDataBuilder.buildShareData(s.getEventParticipant(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -133,7 +134,7 @@ public class ShareDataBuilder {
 
 			if (s.getImmunization() != null) {
 				try {
-					immunizations.add(immunizationShareDataBuilder.buildShareData(s.getImmunization(), requestInfo));
+					immunizations.add(immunizationShareDataBuilder.buildShareData(s.getImmunization(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}

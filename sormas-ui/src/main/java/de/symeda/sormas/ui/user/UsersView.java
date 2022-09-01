@@ -17,24 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Collections;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.Page;
-import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -52,17 +40,14 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -73,11 +58,12 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
  * See also {@link UserController} for fetching the data, the actual CRUD
  * operations and controlling the view based on events from outside.
  */
-public class UsersView extends AbstractView {
+public class UsersView extends AbstractUserView {
 
 	private static final long serialVersionUID = -3533557348144005469L;
 
-	public static final String VIEW_NAME = "users";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/users";
+
 	public static final String ACTIVE_FILTER = I18nProperties.getString(Strings.active);
 	public static final String INACTIVE_FILTER = I18nProperties.getString(Strings.inactive);
 
@@ -132,26 +118,6 @@ public class UsersView extends AbstractView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
-
-			Button exportUserRightsButton =
-				ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
-
-			new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
-				try {
-					String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument(true);
-					IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
-				} catch (IOException e) {
-					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
-					new Notification(
-						I18nProperties.getString(Strings.headingExportUserRightsFailed),
-						I18nProperties.getString(Strings.messageUserRightsExportFailed),
-						Notification.Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
-				}
-			}, (e) -> {
-			}), createFileNameWithCurrentDate(ExportEntityName.USER_ROLES, ".xlsx"))).extend(exportUserRightsButton);
-
-			addHeaderComponent(exportUserRightsButton);
 		}
 
 		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()) {
@@ -214,9 +180,9 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(Collections.emptySet()));
+		userRolesFilter.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
 		userRolesFilter.addValueChangeListener(e -> {
-			criteria.userRole((UserRole) e.getProperty().getValue());
+			criteria.userRole((UserRoleReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
 		filterLayout.addComponent(userRolesFilter);
@@ -318,6 +284,7 @@ public class UsersView extends AbstractView {
 			updateFilterComponents();
 		}
 		grid.reload();
+		super.enter(event);
 	}
 
 	public void updateFilterComponents() {

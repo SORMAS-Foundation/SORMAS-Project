@@ -162,6 +162,12 @@ public interface Descriptions {
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Task_taskType = "Task.taskType";
 	String User_limitedDisease = "User.limitedDisease";
+	String UserRole_hasAssociatedDistrictUser = "UserRole.hasAssociatedDistrictUser";
+	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
+	String UserRole_portHealthUser = "UserRole.portHealthUser";
+	String userRoleNotifications = "userRoleNotifications";
+	String userRoleTemplate = "userRoleTemplate";
+	String userRoleVersionUpdate = "userRoleVersionUpdate";
 	String Visit_visitDateTime = "Visit.visitDateTime";
 	String Visit_visitRemarks = "Visit.visitRemarks";
 	String Visit_visitStatus = "Visit.visitStatus";

@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -79,6 +78,7 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -99,15 +99,18 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserReference;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "VisitFacade")
-@RolesAllowed({
+@RightsAllowed({
 	UserRight._CONTACT_VIEW,
 	UserRight._CASE_VIEW })
 public class VisitFacadeEjb implements VisitFacade {
@@ -212,12 +215,15 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._VISIT_CREATE,
 		UserRight._VISIT_EDIT })
 	public VisitDto saveVisit(@Valid VisitDto dto) {
 		final String visitUuid = dto.getUuid();
 		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
+
+		FacadeHelper.checkCreateAndEditRights(existingVisit, userService, UserRight.VISIT_CREATE, UserRight.VISIT_EDIT);
+
 		final VisitDto existingDto = toDto(existingVisit);
 
 		restorePseudonymizedDto(dto, existingVisit, existingDto);
@@ -239,7 +245,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EXTERNAL_VISITS)
+	@RightsAllowed(UserRight._EXTERNAL_VISITS)
 	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
 
 		final String personUuid = dto.getPersonUuid();
@@ -293,7 +299,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._VISIT_DELETE)
+	@RightsAllowed(UserRight._VISIT_DELETE)
 	public void deleteVisit(String visitUuid) {
 
 		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
@@ -313,9 +319,9 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
-		
+
 		Root<Visit> visit = cq.from(Visit.class);
-		
+
 		VisitJoins visitJoins = new VisitJoins(visit, JoinType.LEFT);
 		Join<Visit, Symptoms> symptoms = visitJoins.getSymptoms();
 		Join<Visit, User> visitUser = visitJoins.getUser();
@@ -458,8 +464,19 @@ public class VisitFacadeEjb implements VisitFacade {
 			if (resultList.size() > 0) {
 
 				Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+				Set<Long> userIds = resultList.stream().map(VisitExportDto::getVisitUserId).filter(Objects::nonNull).collect(Collectors.toSet());
+				Map<Long, UserReference> visitUsers = userIds.isEmpty()
+					? null
+					: userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
 				for (VisitExportDto exportDto : resultList) {
 					boolean inJurisdiction = exportDto.getInJurisdiction();
+
+					UserReference user = visitUsers != null ? visitUsers.get(exportDto.getVisitUserId()) : null;
+
+					if (user != null) {
+						exportDto.setVisitUserName(user.getName());
+						exportDto.setVisitUserRoles(user.getUserRoles().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+					}
 
 					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
 						if (v.getSymptoms() != null) {
@@ -478,10 +495,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(
-		CriteriaQuery cq,
-		CriteriaBuilder cb,
-		VisitJoins visitJoins) {
+	private Expression<Object> jurisdictionSelector(CriteriaQuery cq, CriteriaBuilder cb, VisitJoins visitJoins) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(

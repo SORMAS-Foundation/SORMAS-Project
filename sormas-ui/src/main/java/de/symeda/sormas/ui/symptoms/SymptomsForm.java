@@ -162,6 +162,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			.sorted(Comparator.comparing(fieldName -> I18nProperties.getPrefixCaption(I18N_PREFIX, fieldName)))
 			.collect(Collectors.toList());
 
+		if (symptomGroup == SymptomGroup.SKIN) {
+			symptomLocations.add(symptomLocations.indexOf(LESIONS_RESEMBLE_IMG1) + 1, MONKEYPOX_LESIONS_IMG1);
+			symptomLocations.add(symptomLocations.indexOf(LESIONS_RESEMBLE_IMG2) + 1, MONKEYPOX_LESIONS_IMG2);
+			symptomLocations.add(symptomLocations.indexOf(LESIONS_RESEMBLE_IMG3) + 1, MONKEYPOX_LESIONS_IMG3);
+			symptomLocations.add(symptomLocations.indexOf(LESIONS_RESEMBLE_IMG4) + 1, MONKEYPOX_LESIONS_IMG4);
+		}
+
 		symptomGroupMap.put(loc, symptomLocations);
 
 		return loc(loc)
@@ -465,7 +472,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		addField(LESIONS_ONSET_DATE, DateField.class);
 
 		// complications
-		addFields(
+		String[] complicationsFieldIds = {
 			ALTERED_CONSCIOUSNESS,
 			CONFUSED_DISORIENTED,
 			OTHER_COMPLICATIONS,
@@ -476,7 +483,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MENINGEAL_SIGNS,
 			SEIZURES,
 			SEPSIS,
-			SHOCK);
+			SHOCK };
+
+		addFields(complicationsFieldIds);
 
 		monkeypoxImageFieldIds = Arrays.asList(LESIONS_RESEMBLE_IMG1, LESIONS_RESEMBLE_IMG2, LESIONS_RESEMBLE_IMG3, LESIONS_RESEMBLE_IMG4);
 		for (String propertyId : monkeypoxImageFieldIds) {
@@ -739,7 +748,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		symptomGroupMap.forEach((location, strings) -> {
 			final Component groupLabel = getContent().getComponent(location);
-			final Optional<String> groupHasVisibleSymptom = strings.stream().filter(s -> getFieldGroup().getField(s).isVisible()).findAny();
+			final Optional<String> groupHasVisibleSymptom =
+				strings.stream().filter(s -> getFieldGroup().getField(s) != null && getFieldGroup().getField(s).isVisible()).findAny();
 			if (!groupHasVisibleSymptom.isPresent()) {
 				groupLabel.setVisible(false);
 			}
@@ -798,12 +808,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		Button setEmptyToUnknownButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToUnknown, SymptomState.UNKNOWN);
 
-		// Complications heading - not displayed for Rubella (dirty, should be made generic)
 		Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
 		CssStyles.style(complicationsHeading, CssStyles.H3);
-		if (disease != Disease.CONGENITAL_RUBELLA && !isConfiguredServer("de")) {
-			getContent().addComponent(complicationsHeading, COMPLICATIONS_HEADING);
-		}
+		getContent().addComponent(complicationsHeading, COMPLICATIONS_HEADING);
 
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.addComponent(clearAllButton);
@@ -822,6 +829,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				toggleFeverComponentError(feverField, temperature);
 			});
 		}
+
+		boolean isComplicationsHeadingVisible = false;
+		for (String complicationField : complicationsFieldIds) {
+			if (getFieldGroup().getField(complicationField).isVisible()) {
+				isComplicationsHeadingVisible = true;
+			}
+		}
+		complicationsHeading.setVisible(isComplicationsHeadingVisible);
 	}
 
 	private void toggleFeverComponentError(NullableOptionGroup feverField, ComboBox temperatureField) {
@@ -1103,18 +1118,26 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 			for (Object symptomId : lesionsFieldIds) {
 				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
-					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
-					value.add(symptomState);
-					symptom.setValue(value);
+				if (symptom.isVisible()) {
+					if (symptom.isRequired() && symptom.getValue() == null) {
+						symptom.setValue(symptomState);
+					} else if (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0) {
+						Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+						value.add(symptomState);
+						symptom.setValue(value);
+					}
 				}
 			}
 			for (Object symptomId : monkeypoxImageFieldIds) {
 				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
-					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
-					value.add(symptomState);
-					symptom.setValue(value);
+				if (symptom.isVisible()) {
+					if (symptom.isRequired() && symptom.getValue() == null) {
+						symptom.setValue(symptomState);
+					} else if (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0) {
+						Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+						value.add(symptomState);
+						symptom.setValue(value);
+					}
 				}
 			}
 		}, ValoTheme.BUTTON_LINK);

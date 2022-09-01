@@ -9,11 +9,9 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface PointOfEntryFacade
-	extends InfrastructureFacade<PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryCriteria> {
+public interface PointOfEntryFacade extends InfrastructureFacade<PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryCriteria> {
 
 	/**
 	 * @param includeOthers

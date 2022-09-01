@@ -24,7 +24,9 @@ import javax.validation.Valid;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -59,7 +61,11 @@ public interface VaccinationFacade {
 
 	List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease);
 
+	List<VaccinationDto> getVaccinationsByCriteria(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto);
 
 	List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		CaseReferenceDto caseReferenceDto,
@@ -87,9 +93,11 @@ public interface VaccinationFacade {
 	 * Deletes the vaccination with the specified UUID, and also deletes the associated immunization if it
 	 * is not associated with any other vaccination in the database.
 	 */
-	void deleteWithImmunization(String uuid);
+	void deleteWithImmunization(String uuid, DeletionDetails deletionDetails);
 
 	VaccinationDto getByUuid(String uuid);
 
 	VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson);
+
+	boolean isVaccinationRelevant(CaseDataDto caze, VaccinationDto vaccination);
 }

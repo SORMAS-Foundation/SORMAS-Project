@@ -15,15 +15,19 @@
 
 package de.symeda.sormas.app.backend.disease;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 @Entity(name = DiseaseConfiguration.TABLE_NAME)
@@ -47,7 +51,10 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean primaryDisease;
 
 	@DatabaseField
-	private Boolean caseBased;
+	private Boolean caseSurveillanceEnabled;
+
+	@DatabaseField
+	private Boolean aggregateReportingEnabled;
 
 	@DatabaseField
 	private Boolean followUpEnabled;
@@ -66,6 +73,11 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	@Column
 	private Boolean extendedClassificationMulti;
+
+	@Column
+	private String ageGroupsString;
+
+	private List<String> ageGroups;
 
 	public Disease getDisease() {
 		return disease;
@@ -91,12 +103,20 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.primaryDisease = primaryDisease;
 	}
 
-	public Boolean getCaseBased() {
-		return caseBased;
+	public Boolean getCaseSurveillanceEnabled() {
+		return caseSurveillanceEnabled;
 	}
 
-	public void setCaseBased(Boolean caseBased) {
-		this.caseBased = caseBased;
+	public void setCaseSurveillanceEnabled(Boolean caseSurveillanceEnabled) {
+		this.caseSurveillanceEnabled = caseSurveillanceEnabled;
+	}
+
+	public Boolean getAggregateReportingEnabled() {
+		return aggregateReportingEnabled;
+	}
+
+	public void setAggregateReportingEnabled(Boolean aggregateReportingEnabled) {
+		this.aggregateReportingEnabled = aggregateReportingEnabled;
 	}
 
 	public Boolean getFollowUpEnabled() {
@@ -145,6 +165,27 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setExtendedClassificationMulti(Boolean extendedClassificationMulti) {
 		this.extendedClassificationMulti = extendedClassificationMulti;
+	}
+
+	public String getAgeGroupsString() {
+		return ageGroupsString;
+	}
+
+	public void setAgeGroupsString(String ageGroupsString) {
+		this.ageGroupsString = ageGroupsString;
+	}
+
+	@Transient
+	public List<String> getAgeGroups() {
+		if (ageGroups == null) {
+			ageGroups = AgeGroupUtils.convertToList(ageGroupsString);
+		}
+		return ageGroups;
+	}
+
+	public void setAgeGroups(List<String> ageGroups) {
+		this.ageGroups = ageGroups;
+		this.ageGroupsString = AgeGroupUtils.convertToString(ageGroups);
 	}
 
 	@Override

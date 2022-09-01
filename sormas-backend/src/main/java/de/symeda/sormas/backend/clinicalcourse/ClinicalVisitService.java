@@ -9,7 +9,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -19,6 +18,8 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
@@ -49,27 +50,6 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 			cq.where(filter);
 		}
 		cq.orderBy(cb.asc(from.get(ClinicalVisit.CREATION_DATE)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Object[]> getClinicalVisitCountByCases(List<Long> caseIds) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<ClinicalVisit> clinicalVisitRoot = cq.from(getElementClass());
-		Join<ClinicalVisit, ClinicalCourse> clinicalCourseJoin = clinicalVisitRoot.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
-		Root<Case> caseRoot = cq.from(Case.class);
-		Join<Case, ClinicalCourse> caseClinicalCourseJoin = caseRoot.join(Case.CLINICAL_COURSE, JoinType.LEFT);
-
-		cq.multiselect(caseRoot.get(Case.ID), cb.count(clinicalVisitRoot));
-
-		Expression<String> caseIdsExpression = caseRoot.get(Case.ID);
-		cq.where(
-			cb.and(
-				caseIdsExpression.in(caseIds),
-				cb.equal(clinicalCourseJoin.get(ClinicalCourse.ID), caseClinicalCourseJoin.get(ClinicalCourse.ID))));
-		cq.groupBy(caseRoot.get(Case.ID));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -153,6 +133,6 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
-		return caseService.createUserFilter(cb, cq, clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT));
+		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT))));
 	}
 }

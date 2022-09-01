@@ -1,17 +1,16 @@
 /*
- *  SORMAS® - Surveillance Outbreak Response Management & Analysis System
- *  Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.sample;
@@ -42,18 +41,18 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 		SampleJoins joins,
 		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
-        super(cb, user, null, associatedJurisdictionValidators);
-        this.joins = joins;
-    }
+		super(cb, user, null, associatedJurisdictionValidators);
+		this.joins = joins;
+	}
 
 	private SampleJurisdictionPredicateValidator(
 		CriteriaBuilder cb,
 		SampleJoins joins,
 		Path userPath,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
-        super(cb, null, userPath, associatedJurisdictionValidators);
-        this.joins = joins;
-    }
+		super(cb, null, userPath, associatedJurisdictionValidators);
+		this.joins = joins;
+	}
 
 	public static SampleJurisdictionPredicateValidator of(SampleQueryContext qc, User user) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
@@ -83,52 +82,52 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(joins.getReportingUser()),
+			cb.isNotNull(joins.getRoot().get(Sample.REPORTING_USER)),
 			user != null
-				? cb.equal(joins.getReportingUser().get(User.ID), user.getId())
-				: cb.equal(joins.getReportingUser().get(User.ID), userPath.get(User.ID)));
+				? cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), user.getId())
+				: cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
-    @Override
-    protected Predicate whenNotAllowed() {
-        return cb.disjunction();
-    }
+	@Override
+	protected Predicate whenNotAllowed() {
+		return cb.disjunction();
+	}
 
-    @Override
-    protected Predicate whenNationalLevel() {
-        return cb.conjunction();
-    }
+	@Override
+	protected Predicate whenNationalLevel() {
+		return cb.conjunction();
+	}
 
-    @Override
-    protected Predicate whenRegionalLevel() {
-        return cb.disjunction();
-    }
+	@Override
+	protected Predicate whenRegionalLevel() {
+		return cb.disjunction();
+	}
 
-    @Override
-    protected Predicate whenDistrictLevel() {
-        return cb.disjunction();
-    }
+	@Override
+	protected Predicate whenDistrictLevel() {
+		return cb.disjunction();
+	}
 
-    @Override
-    protected Predicate whenCommunityLevel() {
-        return cb.disjunction();
-    }
+	@Override
+	protected Predicate whenCommunityLevel() {
+		return cb.disjunction();
+	}
 
-    @Override
-    protected Predicate whenFacilityLevel() {
-        return cb.disjunction();
-    }
+	@Override
+	protected Predicate whenFacilityLevel() {
+		return cb.disjunction();
+	}
 
-    @Override
-    protected Predicate whenPointOfEntryLevel() {
-        return cb.disjunction();
-    }
+	@Override
+	protected Predicate whenPointOfEntryLevel() {
+		return cb.disjunction();
+	}
 
 	@Override
 	protected Predicate whenLaboratoryLevel() {
 		return user != null
-			? cb.equal(joins.getLab().get(Facility.ID), user.getLaboratory().getId())
-			: cb.equal(joins.getLab().get(Facility.ID), userPath.get(User.LABORATORY).get(Facility.ID));
+			? cb.equal(joins.getRoot().get(Sample.LAB).get(Facility.ID), user.getLaboratory().getId())
+			: cb.equal(joins.getRoot().get(Sample.LAB).get(Facility.ID), userPath.get(User.LABORATORY).get(Facility.ID));
 	}
 }

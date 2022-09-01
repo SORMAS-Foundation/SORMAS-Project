@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
@@ -122,7 +123,7 @@ public class EditCasePersonSteps implements En {
               webDriverHelpers.getValueFromWebElement(CASE_CLASSIFICATION_INPUT);
           Assert.assertEquals(
               caseClassificationValue,
-              CaseClassification.getUIValueFor(expectedCaseClassification),
+              CaseClassification.getDeUIValueFor(expectedCaseClassification),
               "Case classification value is wrong");
         });
 
@@ -178,7 +179,10 @@ public class EditCasePersonSteps implements En {
 
     When(
         "I click on Geocode button to get GPS coordinates in Case Person Tab",
-        () -> webDriverHelpers.clickOnWebElementBySelector(GEOCODE_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(GEOCODE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     When(
         "I click on save button to Save Person data in Case Person Tab",
@@ -215,6 +219,122 @@ public class EditCasePersonSteps implements En {
         (String facilityCategory, String facilityType) -> {
           selectFacilityCategory(facilityCategory);
           selectFacilityType(facilityType);
+        });
+
+    When(
+        "I set Region to {string} and District to {string}",
+        (String aRegion, String aDistrict) -> {
+          selectRegion(aRegion);
+          selectDistrict(aDistrict);
+        });
+
+    When(
+        "^I set case person's sex as ([^\"]*)$",
+        (String sex) -> {
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
+        });
+    When(
+        "I check that Type of Contacts details with ([^\"]*) as a option is visible on Edit Case Person Page",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Primary telephone":
+              selector = TELEPHONE_PRIMARY;
+              break;
+            case "Primary email address":
+              selector = EMAIL_PRIMARY;
+              break;
+          }
+          webDriverHelpers.isElementVisibleWithTimeout(selector, 5);
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that ([^\"]*) is not visible",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Passport Number":
+              selector = PASSPORT_NUMBER_INPUT;
+              break;
+            case "National Health ID":
+              selector = NATIONAL_HEALTH_ID_INPUT;
+              break;
+            case "Education":
+              selector = EDUCATION_COMBOBOX;
+              break;
+            case "Community Contact Person":
+              selector = COMMUNITY_CONTACT_PERSON_INPUT;
+              break;
+            case "Nickname":
+              selector = NICKNAME_INPUT;
+              break;
+            case "Mother's Maiden Name":
+              selector = MOTHERS_MAIDEN_NAME_INPUT;
+              break;
+            case "Mother's Name":
+              selector = MOTHERS_NAME_INPUT;
+              break;
+            case "Father's Name":
+              selector = FATHERS_NAME_INPUT;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, option + " is visible!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Present condition of person combobox has value {string}",
+        (String option) -> {
+          softly.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(PRESENT_CONDITION_COMBOBOX, option));
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Present condition of person combobox has no value {string}",
+        (String option) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(PRESENT_CONDITION_COMBOBOX, option));
+          softly.assertAll();
+        });
+
+    When(
+        "I check if {string} field is present in case person",
+        (String option) -> {
+          By selector = null;
+          switch (option) {
+            case "Date of burial":
+              selector = DATE_OF_BURIAL_INPUT;
+              break;
+            case "Cause of death":
+              selector = CASE_OF_DEATH_COMBOBOX;
+              break;
+          }
+        });
+
+    When(
+        "I set Present condition of person to {string}",
+        (String option) -> webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, option));
+
+    And(
+        "^I check if person last name for case person tab is \"([^\"]*)\"$",
+        (String lastName) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT),
+              lastName,
+              "Last names is incorrect!");
+          softly.assertAll();
         });
   }
 

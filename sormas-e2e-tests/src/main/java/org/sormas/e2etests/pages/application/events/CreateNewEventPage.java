@@ -26,13 +26,20 @@ public class CreateNewEventPage {
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By EVENT_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventStatus .v-select-option label");
+  public static final By EVENT_IDENTIFICATION_SOURCE_COMBOBOX =
+      By.xpath(".//div[@id='eventIdentificationSource']//label");
   public static final By RISK_LEVEL_COMBOBOX = By.cssSelector(".popupContent #riskLevel div");
   public static final By EVENT_MANAGEMENT_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventManagementStatus .v-select-option label");
   public static final By START_DATA_INPUT = By.cssSelector(".popupContent #startDate input");
+  public static final By START_DATA_TIME = By.xpath(".//div[@id='startDate_time']/div");
+  public static final By END_DATA_INPUT = By.cssSelector(".popupContent #endDate input");
+  public static final By END_DATA_TIME = By.xpath(".//div[@id='endDate_time']/div");
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventInvestigationStatus label");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".popupContent #disease div");
+  public static final By DISEASE_VARIANT_COMBOBOX =
+      By.cssSelector(".popupContent #diseaseVariant div");
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector(".popupContent #srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(".popupContent #typeOfPlace div");
   public static final By PRIMARY_MODE_OF_TRANSMISSION_INPUT =
@@ -77,4 +84,7 @@ public class CreateNewEventPage {
   public static final By EVENT_REGION = By.cssSelector(".v-window #region div");
   public static final By EVENT_DISTRICT = By.cssSelector(".v-window #district div");
   public static final By EVENT_COMMUNITY = By.cssSelector(".v-window #community div");
+  public static final By MULTI_DAY_EVENT_CHECKBOX = By.cssSelector("[id='multiDayEvent'] label");
+  public static final By START_DATA_EVENT = By.xpath("//div[@id='startDate_date']/input");
+  public static final By END_DATA_EVENT = By.xpath("//div[@id='endDate_date']/input");
 }

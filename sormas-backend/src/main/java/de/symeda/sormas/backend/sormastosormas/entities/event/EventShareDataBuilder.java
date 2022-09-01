@@ -22,13 +22,14 @@ import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -50,35 +51,35 @@ public class EventShareDataBuilder
 	}
 
 	@Override
-	protected SormasToSormasEventDto doBuildShareData(Event data, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
-
-		EventDto eventDto = getEventDto(data, pseudonymizer);
-
+	protected SormasToSormasEventDto doBuildShareData(Event data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		EventDto eventDto = getDto(data, pseudonymizer);
 		return new SormasToSormasEventDto(eventDto);
 	}
 
 	@Override
-	public SormasToSormasEventPreview doBuildShareDataPreview(Event event, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+	public void doBusinessValidation(SormasToSormasEventDto sormasToSormasEventDto) throws ValidationRuntimeException {
+		eventFacade.validate(sormasToSormasEventDto.getEntity());
+	}
 
+	@Override
+	public SormasToSormasEventPreview doBuildShareDataPreview(Event event, ShareRequestInfo requestInfo) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		return getEventPreview(event, pseudonymizer);
 	}
 
-	private EventDto getEventDto(Event event, Pseudonymizer pseudonymizer) {
+	@Override
+	protected EventDto getDto(Event event, Pseudonymizer pseudonymizer) {
+
 		EventDto eventDto = eventFacade.convertToDto(event, pseudonymizer);
-
-		eventDto.setReportingUser(null);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		eventDto.setSormasToSormasOriginInfo(null);
-
 		dataBuilderHelper.clearIgnoredProperties(eventDto);
-
 		return eventDto;
 	}
 
-	private SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
+	public SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
 		SormasToSormasEventPreview preview = new SormasToSormasEventPreview();
 
 		preview.setUuid(event.getUuid());

@@ -79,6 +79,7 @@ public enum ContactProximity {
 					MEDICAL_SAME_ROOM,
 					MEDICAL_SAFE,
 					MEDICAL_DISTANT };
+			//$CASES-OMITTED$
 			default:
 				break;
 			}
@@ -92,6 +93,7 @@ public enum ContactProximity {
 			SAME_ROOM };
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

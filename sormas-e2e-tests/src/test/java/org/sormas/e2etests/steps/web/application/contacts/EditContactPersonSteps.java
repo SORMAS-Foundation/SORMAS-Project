@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.EMAIL_PRIMARY;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.TELEPHONE_PRIMARY;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.*;
 import static org.sormas.e2etests.pages.application.contacts.PersonContactDetailsPage.PERSON_CONTACT_DETAILS_POPUP;
 
@@ -29,6 +31,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
@@ -111,18 +114,21 @@ public class EditContactPersonSteps implements En {
         () -> {
           newGeneratedPerson = personService.buildGeneratedPerson();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          fillSalutation(newGeneratedPerson.getSalutation());
+          // field no longer available
+          // fillSalutation(newGeneratedPerson.getSalutation());
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillExternalId(newGeneratedPerson.getExternalId());
-          fillExternalToken(newGeneratedPerson.getExternalToken());
-          fillExternalToken(newGeneratedPerson.getExternalToken());
+          // field no longer available
+          //          fillExternalId(newGeneratedPerson.getExternalId());
+          // field no longer available
+          //          fillExternalToken(newGeneratedPerson.getExternalToken());
+          //          fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
 
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-
-          selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
+          // field no longer available
+          //          selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -138,8 +144,10 @@ public class EditContactPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillBirthName(newGeneratedPerson.getBirthName());
-          fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
+          // field no longer available
+          //          fillBirthName(newGeneratedPerson.getBirthName());
+          // field no longer available
+          //          fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
 
     Then(
@@ -163,6 +171,24 @@ public class EditContactPersonSteps implements En {
                   contactInfo.getUuid(),
                   CreateNewContactSteps.contact.getPrimaryEmailAddress(),
                   CreateNewContactSteps.contact.getPrimaryPhoneNumber());
+        });
+    When(
+        "I check that Type of Contact details with ([^\"]*) as an option is visible on Edit Contact Person Page",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Primary telephone":
+              selector = TELEPHONE_PRIMARY;
+              break;
+            case "Primary email address":
+              selector = EMAIL_PRIMARY;
+              break;
+          }
+          webDriverHelpers.isElementVisibleWithTimeout(selector, 5);
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
         });
   }
 

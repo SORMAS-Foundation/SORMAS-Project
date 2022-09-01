@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -59,7 +59,7 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
-	List<String> deleteContacts(List<String> contactUuids);
+	List<String> deleteContacts(List<String> contactUuids, DeletionDetails deletionDetails);
 
 	FollowUpPeriodDto getCalculatedFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
 
@@ -136,11 +136,7 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 	 */
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 
-	void validate(ContactDto contact);
-
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
-
-	EditPermissionType isContactEditAllowed(String contactUuid);
 
 	boolean doesExternalTokenExist(String externalToken, String contactUuid);
 

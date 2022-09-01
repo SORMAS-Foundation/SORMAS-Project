@@ -36,7 +36,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -46,6 +45,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserRole;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonValidator;
@@ -323,6 +323,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.personBirthdateDD.setEnabled(false);
 			contentBinding.caseDataDisease.setEnabled(false);
 			contentBinding.caseDataDiseaseDetails.setEnabled(false);
+			contentBinding.caseDataDiseaseVariant.setEnabled(false);
+			contentBinding.caseDataDiseaseVariantDetails.setEnabled(false);
 			contentBinding.caseDataPlagueType.setEnabled(false);
 			contentBinding.caseDataDengueFeverType.setEnabled(false);
 			contentBinding.caseDataHumanRabiesType.setEnabled(false);
@@ -332,6 +334,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
 			contentBinding.caseDataDisease.setVisibility(GONE);
+			contentBinding.caseDataDiseaseDetails.setVisibility(GONE);
+			contentBinding.caseDataDiseaseVariant.setVisibility(GONE);
+			contentBinding.caseDataDiseaseVariantDetails.setVisibility(GONE);
 			contentBinding.facilityOrHome.setVisibility(GONE);
 			contentBinding.caseDataCommunity.setVisibility(GONE);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
@@ -353,10 +358,13 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 					contentBinding.caseDataPointOfEntry.setRequired(false);
 					contentBinding.caseDataPointOfEntry.setValue(null);
 					contentBinding.caseDataHealthFacility.setRequired(true);
+					contentBinding.facilityOrHome.setRequired(true);
 				} else {
 					contentBinding.caseDataPointOfEntry.setVisibility(VISIBLE);
 					contentBinding.caseDataHealthFacility.setRequired(false);
 					contentBinding.caseDataPointOfEntry.setRequired(true);
+					contentBinding.facilityOrHome.setRequired(false);
+					contentBinding.facilityOrHome.setValue(null);
 				}
 			});
 		} else {

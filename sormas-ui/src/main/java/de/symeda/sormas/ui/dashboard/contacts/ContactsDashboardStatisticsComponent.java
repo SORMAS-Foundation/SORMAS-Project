@@ -492,7 +492,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 	@Override
 	protected int getFullHeight() {
-		return 430;
+		return -1;
 	}
 
 	@Override

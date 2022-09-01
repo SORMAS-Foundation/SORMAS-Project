@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>1.71.0-SNAPSHOT</version>
+        <version>1.76.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -61,10 +61,6 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -147,6 +143,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Fix invalid relative system path. This dependency is not part of the serverlibs, though
+		<dependency>
+			<groupId>info.novatec</groupId>
+			<artifactId>bean-test</artifactId>
+			<systemPath>${project.basedir}/bean-test-0.2.Final.jar</systemPath>
+		</dependency> -->
 	</dependencies>
 
 	<build>

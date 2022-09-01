@@ -19,32 +19,43 @@
 package org.sormas.e2etests.steps;
 
 import com.google.inject.Inject;
-import cucumber.api.Scenario;
+import cucumber.api.*;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import customreport.chartbuilder.ReportChartBuilder;
 import customreport.data.TableDataManager;
 import customreport.reportbuilder.CustomReportBuilder;
+import io.qameta.allure.Allure;
+import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
+import java.lang.management.ManagementFactory;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.sormas.e2etests.steps.nonBDDactions.BackupSteps;
 import org.sormas.e2etests.webdriver.DriverManager;
 import recorders.StepsLogger;
 
 @Slf4j
 public class BaseSteps implements StepLifecycleListener {
 
+  public static final String PROCESS_ID =
+      String.valueOf(ManagementFactory.getRuntimeMXBean().getPid());
   public static RemoteWebDriver driver;
   public static String locale;
   private final DriverManager driverManager;
+  private final String imageType = "image/png";
+  private final String pngValue = "png";
 
   @Inject
   public BaseSteps(DriverManager driverManager) {
@@ -68,7 +79,7 @@ public class BaseSteps implements StepLifecycleListener {
       WebDriver.Options options = driver.manage();
       options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
-      log.info("Starting test: {}", scenario.getName());
+      log.info("Starting test: {} with process ID [ {} ]", scenario.getName(), PROCESS_ID);
     }
   }
 
@@ -80,7 +91,16 @@ public class BaseSteps implements StepLifecycleListener {
   @SneakyThrows
   @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
+    if (isLanguageRiskScenario(scenario) && scenario.isFailed()) {
+      //TODO replace it with API call when implemented
+      log.info("Refreshing page to close any popups");
+      driver.navigate().refresh();
+      BackupSteps.setAppLanguageToDefault(locale);
+    }
     if (isNonApiScenario(scenario)) {
+      if (scenario.isFailed()) {
+        takeScreenshot();
+      }
       driverManager.releaseRemoteWebDriver(scenario.getName());
     }
     log.info("Finished test: {}", scenario.getName());
@@ -110,6 +130,10 @@ public class BaseSteps implements StepLifecycleListener {
     return !scenario.getSourceTagNames().contains("@API");
   }
 
+  private static boolean isLanguageRiskScenario(Scenario scenario) {
+    return scenario.getSourceTagNames().contains("@LanguageRisk");
+  }
+
   private void setLocale(Scenario scenario) {
     Collection<String> tags = scenario.getSourceTagNames();
     checkDeclaredEnvironment(tags);
@@ -130,5 +154,17 @@ public class BaseSteps implements StepLifecycleListener {
                 foundEnvironment.set(true);
               }
             });
+  }
+
+  @Attachment(value = "After failed test screenshot", type = imageType)
+  private void takeScreenshot() {
+    byte[] screenShot = driver.getScreenshotAs(OutputType.BYTES);
+    Allure.getLifecycle()
+        .addAttachment(
+            "Screenshot at :"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
+            imageType,
+            pngValue,
+            screenShot);
   }
 }

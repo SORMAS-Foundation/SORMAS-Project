@@ -2,12 +2,20 @@ package de.symeda.sormas.api.infrastructure.subcontinent;
 
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.EVENT_SURVEILLANCE,
+	FeatureType.AGGREGATE_REPORTING })
 public class SubcontinentDto extends InfrastructureDto {
 
 	public static final String I18N_PREFIX = "Subcontinent";
@@ -61,7 +69,12 @@ public class SubcontinentDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getDefaultName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

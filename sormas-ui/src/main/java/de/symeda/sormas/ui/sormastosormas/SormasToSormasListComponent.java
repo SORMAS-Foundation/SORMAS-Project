@@ -50,9 +50,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -76,7 +76,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			caze.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadList));
+			shareEnabled ? (i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync) : null);
 
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
@@ -88,7 +88,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			contact.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasContactNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadList));
+			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync));
 
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
@@ -114,7 +114,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			event.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasEventNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadList));
+			shareEnabled ? (i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync) : null);
 
 		initLayout(
 			event.getSormasToSormasOriginInfo(),
@@ -122,7 +122,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event) : null);
 	}
 
-	public SormasToSormasListComponent(EventParticipantDto eventParticipant, boolean shareEnabled) {
+	public SormasToSormasListComponent(EventParticipantDto eventParticipant) {
 		sormasToSormasList =
 			new SormasToSormasList(eventParticipant.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasEventParticipantNotShared, null);
 
@@ -178,131 +178,20 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 	public void reloadList() {
 		UI currentUI = UI.getCurrent();
-		UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
 
 		sormasToSormasList.showPlaceholder(I18nProperties.getString(Strings.sormasToSormasLoadingShares));
 
 		Thread loadSharesThread = new Thread(() -> {
 			try {
-				I18nProperties.setUserLanguage(currentUser.getLanguage());
-				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
-
 				currentUI.setPollInterval(300);
 
-				List<SormasToSormasShareTree> shareInfos = loadShares.load();
-				String currentServerOrgId = FacadeProvider.getSormasToSormasFacade().getOrganizationId();
-
-				List<SormasToSormasShareInfoDto> shareInfoList = getShareInfoList(shareInfos);
-				SormasToSormasShareInfoDto ownerShare = getOwnerShare(shareInfos);
-				SormasToSormasOriginInfoDto rootOrigin = findRootOriginInfo(shareInfos);
-				List<String> directShareUuids = getDirectShares(shareInfos).stream().map(s -> s.getShare().getUuid()).collect(Collectors.toList());
-
-				String ownerOrganizationId = getOwnerOrganizationId(ownerShare, rootOrigin, currentServerOrgId);
-				boolean isOwnedByCurrentOrg = currentServerOrgId.equals(ownerOrganizationId);
-				boolean isOwnedByOrigin = originInfo != null && originInfo.getOrganizationId().equals(ownerOrganizationId);
-				boolean isOwnedByRootOrg = rootOrigin != null && rootOrigin.getOrganizationId().equals(ownerOrganizationId);
-
-				currentUI.access(() -> {
-					try {
-						// render origin
-						if (originInfo != null) {
-							HorizontalLayout originLayout = buildSormasOriginInfo(originInfo, isOwnedByOrigin);
-							originLayout.addStyleName(CssStyles.VSPACE_3);
-							addComponent(originLayout, getComponentIndex(sormasToSormasList));
-						}
-
-						// render the owner of the entity
-						if (!isOwnedByCurrentOrg && !isOwnedByOrigin) {
-							AbstractOrderedLayout ownerLayout = null;
-							if (isOwnedByRootOrg) {
-								ownerLayout = buildSormasOriginInfo(rootOrigin, true);
-							} else if (ownerShare != null && !ownerShare.getTargetDescriptor().getId().equals(currentServerOrgId)) {
-								ownerLayout = buildOwnerShareLayout(ownerShare);
-							}
-
-							if (ownerLayout != null) {
-								ownerLayout.addStyleName(CssStyles.VSPACE_3);
-								addComponent(ownerLayout, getComponentIndex(sormasToSormasList));
-							}
-						}
-
-						// show shares to other systems then owner and current one
-						List<SormasToSormasShareListEntryData> listData = shareInfoList.stream().filter(s -> {
-							String shareOrganizationId = s.getTargetDescriptor().getId();
-
-							if (ownerShare != null && shareOrganizationId.equals(ownerShare.getTargetDescriptor().getId())) {
-								return false;
-							}
-
-							if (originInfo != null && shareOrganizationId.equals(originInfo.getOrganizationId())
-							// show return share
-								&& !(s.getRequestStatus() == ShareRequestStatus.PENDING && directShareUuids.contains(s.getUuid()))) {
-								return false;
-							}
-
-							if (isOwnedByRootOrg && shareOrganizationId.equals(rootOrigin.getOrganizationId())) {
-								return false;
-							}
-
-							return !shareOrganizationId.equals(currentServerOrgId);
-						}).map(s -> {
-							SormasToSormasShareListEntryData entryData = new SormasToSormasShareListEntryData();
-							entryData.shareUuid = s.getUuid();
-							entryData.target = s.getTargetDescriptor().getName();
-							entryData.sender = s.getSender().getShortCaption();
-							entryData.status = s.getRequestStatus();
-							entryData.creationDate = s.getCreationDate();
-							entryData.comment = s.getComment();
-							entryData.ownershipHandedOver = s.isOwnershipHandedOver();
-							entryData.responseComment = s.getResponseComment();
-							entryData.isDirectShare = directShareUuids.contains(s.getUuid());
-
-							return entryData;
-						}).collect(Collectors.toList());
-
-						// add the creator of the entity as a share
-						if (!isOwnedByRootOrg
-							&& rootOrigin != null
-							&& originInfo != null
-							&& !rootOrigin.getOrganizationId().equals(currentServerOrgId)
-							&& !rootOrigin.getOrganizationId().equals(originInfo.getOrganizationId())) {
-							SormasServerDescriptor serverDescriptor =
-								FacadeProvider.getSormasToSormasFacade().getSormasServerDescriptorById(rootOrigin.getOrganizationId());
-
-							SormasToSormasShareListEntryData entryData = new SormasToSormasShareListEntryData();
-							entryData.shareUuid = null;
-							entryData.target = serverDescriptor.getName();
-							entryData.sender = rootOrigin.getSenderName();
-							entryData.status = ShareRequestStatus.ACCEPTED;
-							entryData.creationDate = rootOrigin.getCreationDate();
-							entryData.comment = rootOrigin.getComment();
-							entryData.ownershipHandedOver = rootOrigin.isOwnershipHandedOver();
-
-							listData.add(entryData);
-						}
-
-						if (shareInfoList.size() > 0) {
-							if (listData.size() > 0) {
-								Label shareListLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith));
-								shareListLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
-								addComponent(shareListLabel, getComponentIndex(sormasToSormasList));
-
-								sormasToSormasList.setData(listData);
-							} else {
-								sormasToSormasList.setVisible(false);
-							}
-						} else {
-							sormasToSormasList.showPlaceholder(null);
-						}
-					} catch (Exception e) {
-						logger.error("Failed to load shares", e);
-						sormasToSormasList.showPlaceholder(I18nProperties.getString(Strings.errorSormasToSormasLoadShares));
-					} finally {
-						currentUI.setPollInterval(-1);
-					}
-
-				});
+				try {
+					reloadListWithWrapper(currentUI::access);
+				} finally {
+					currentUI.setPollInterval(-1);
+				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.error(e.getMessage(), e);
 
 				currentUI.setPollInterval(-1);
@@ -313,6 +202,128 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		});
 
 		loadSharesThread.start();
+	}
+
+	private void reloadListSync() {
+		reloadListWithWrapper(Runnable::run);
+	}
+
+	private void reloadListWithWrapper(Consumer<Runnable> wrapUiChanges) {
+		UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
+
+		I18nProperties.setUserLanguage(currentUser.getLanguage());
+		FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
+
+		List<SormasToSormasShareTree> shareInfos = loadShares.load();
+		String currentServerOrgId = FacadeProvider.getSormasToSormasFacade().getOrganizationId();
+
+		List<SormasToSormasShareInfoDto> shareInfoList = getShareInfoList(shareInfos);
+		SormasToSormasShareInfoDto ownerShare = getOwnerShare(shareInfos);
+		SormasToSormasOriginInfoDto rootOrigin = findRootOriginInfo(shareInfos);
+		List<String> directShareUuids = getDirectShares(shareInfos).stream().map(s -> s.getShare().getUuid()).collect(Collectors.toList());
+
+		String ownerOrganizationId = getOwnerOrganizationId(ownerShare, rootOrigin, currentServerOrgId);
+		boolean isOwnedByCurrentOrg = currentServerOrgId.equals(ownerOrganizationId);
+		boolean isOwnedByOrigin = originInfo != null && originInfo.getOrganizationId().equals(ownerOrganizationId);
+		boolean isOwnedByRootOrg = rootOrigin != null && rootOrigin.getOrganizationId().equals(ownerOrganizationId);
+
+		wrapUiChanges.accept(() -> {
+			try {
+				// render origin
+				if (originInfo != null) {
+					HorizontalLayout originLayout = buildSormasOriginInfo(originInfo, isOwnedByOrigin);
+					originLayout.addStyleName(CssStyles.VSPACE_3);
+					addComponent(originLayout, getComponentIndex(sormasToSormasList));
+				}
+
+				// render the owner of the entity
+				if (!isOwnedByCurrentOrg && !isOwnedByOrigin) {
+					AbstractOrderedLayout ownerLayout = null;
+					if (isOwnedByRootOrg) {
+						ownerLayout = buildSormasOriginInfo(rootOrigin, true);
+					} else if (ownerShare != null && !ownerShare.getTargetDescriptor().getId().equals(currentServerOrgId)) {
+						ownerLayout = buildOwnerShareLayout(ownerShare);
+					}
+
+					if (ownerLayout != null) {
+						ownerLayout.addStyleName(CssStyles.VSPACE_3);
+						addComponent(ownerLayout, getComponentIndex(sormasToSormasList));
+					}
+				}
+
+				// show shares to other systems then owner and current one
+				List<SormasToSormasShareListEntryData> listData = shareInfoList.stream().filter(s -> {
+					String shareOrganizationId = s.getTargetDescriptor().getId();
+
+					if (ownerShare != null && shareOrganizationId.equals(ownerShare.getTargetDescriptor().getId())) {
+						return false;
+					}
+
+					if (originInfo != null && shareOrganizationId.equals(originInfo.getOrganizationId())
+					// show return share
+						&& !(s.getRequestStatus() == ShareRequestStatus.PENDING && directShareUuids.contains(s.getUuid()))) {
+						return false;
+					}
+
+					if (isOwnedByRootOrg && shareOrganizationId.equals(rootOrigin.getOrganizationId())) {
+						return false;
+					}
+
+					return !shareOrganizationId.equals(currentServerOrgId);
+				}).map(s -> {
+					SormasToSormasShareListEntryData entryData = new SormasToSormasShareListEntryData();
+					entryData.shareUuid = s.getUuid();
+					entryData.target = s.getTargetDescriptor().getName();
+					entryData.sender = s.getSender().getShortCaption();
+					entryData.status = s.getRequestStatus();
+					entryData.creationDate = s.getCreationDate();
+					entryData.comment = s.getComment();
+					entryData.ownershipHandedOver = s.isOwnershipHandedOver();
+					entryData.responseComment = s.getResponseComment();
+					entryData.isDirectShare = directShareUuids.contains(s.getUuid());
+
+					return entryData;
+				}).collect(Collectors.toList());
+
+				// add the creator of the entity as a share
+				if (!isOwnedByRootOrg
+					&& rootOrigin != null
+					&& originInfo != null
+					&& !rootOrigin.getOrganizationId().equals(currentServerOrgId)
+					&& !rootOrigin.getOrganizationId().equals(originInfo.getOrganizationId())) {
+					SormasServerDescriptor serverDescriptor =
+						FacadeProvider.getSormasToSormasFacade().getSormasServerDescriptorById(rootOrigin.getOrganizationId());
+
+					SormasToSormasShareListEntryData entryData = new SormasToSormasShareListEntryData();
+					entryData.shareUuid = null;
+					entryData.target = serverDescriptor.getName();
+					entryData.sender = rootOrigin.getSenderName();
+					entryData.status = ShareRequestStatus.ACCEPTED;
+					entryData.creationDate = rootOrigin.getCreationDate();
+					entryData.comment = rootOrigin.getComment();
+					entryData.ownershipHandedOver = rootOrigin.isOwnershipHandedOver();
+
+					listData.add(entryData);
+				}
+
+				if (shareInfoList.size() > 0) {
+					if (listData.size() > 0) {
+						Label shareListLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith));
+						shareListLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
+						addComponent(shareListLabel, getComponentIndex(sormasToSormasList));
+
+						sormasToSormasList.setData(listData);
+					} else {
+						sormasToSormasList.setVisible(false);
+					}
+				} else {
+					sormasToSormasList.showPlaceholder(null);
+				}
+			} catch (Exception e) {
+				logger.error("Failed to load shares", e);
+				sormasToSormasList.showPlaceholder(I18nProperties.getString(Strings.errorSormasToSormasLoadShares));
+			}
+		});
 	}
 
 	private String getOwnerOrganizationId(SormasToSormasShareInfoDto ownerShare, SormasToSormasOriginInfoDto rootOrigin, String ownOrganizationId) {
@@ -408,7 +419,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		targetLabel.addStyleName(CssStyles.LABEL_BOLD);
 		infoLayout.addComponent(targetLabel);
 
-		Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getShortCaption());
+		Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
 		infoLayout.addComponent(senderLabel);
 
 		Label shareDateLabel =
@@ -465,7 +476,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 	private interface ShareDataLoader {
 
-		List<SormasToSormasShareTree> load() throws Exception;
+		List<SormasToSormasShareTree> load();
 
 	}
 	private static class SormasToSormasList extends PaginationList<SormasToSormasShareListEntryData> {

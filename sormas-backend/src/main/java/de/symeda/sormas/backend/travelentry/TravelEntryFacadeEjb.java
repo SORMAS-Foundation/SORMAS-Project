@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -18,8 +17,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
@@ -36,6 +35,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
@@ -55,9 +55,10 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "TravelEntryFacade")
-@RolesAllowed(UserRight._TRAVEL_ENTRY_VIEW)
+@RightsAllowed(UserRight._TRAVEL_ENTRY_VIEW)
 public class TravelEntryFacadeEjb
 	extends AbstractCoreFacadeEjb<TravelEntry, TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryService, TravelEntryCriteria>
 	implements TravelEntryFacade {
@@ -78,6 +79,8 @@ public class TravelEntryFacadeEjb
 	private CaseService caseService;
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private TravelEntryService travelEntryService;
 
 	public TravelEntryFacadeEjb() {
 	}
@@ -105,16 +108,10 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public EditPermissionType isTravelEntryEditAllowed(String travelEntryUuid) {
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
-		return service.isTravelEntryEditAllowed(travelEntry);
-	}
-
-	@Override
-	@RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
-	public void delete(String travelEntryUuid) {
-		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
-		service.delete(travelEntry);
+		service.delete(travelEntry, deletionDetails);
 
 		if (travelEntry.getResultingCase() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
@@ -187,7 +184,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
@@ -236,7 +233,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public void validate(TravelEntryDto travelEntryDto) {
+	public void validate(@Valid TravelEntryDto travelEntryDto) {
 		if (travelEntryDto.getPerson() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
 		}
@@ -310,6 +307,9 @@ public class TravelEntryFacadeEjb
 		dto.setQuarantineOfficialOrderSentDate(entity.getQuarantineOfficialOrderSentDate());
 		dto.setDateOfArrival(entity.getDateOfArrival());
 
+		dto.setDeletionReason(entity.getDeletionReason());
+		dto.setOtherDeletionReason(entity.getOtherDeletionReason());
+
 		return dto;
 	}
 
@@ -371,6 +371,9 @@ public class TravelEntryFacadeEjb
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setDateOfArrival(source.getDateOfArrival());
 
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -383,26 +386,30 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
 	public void archive(List<String> entityUuids) {
 		super.archive(entityUuids);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TRAVEL_ENTRY_EDIT)
+	@RightsAllowed({
+		UserRight._TRAVEL_ENTRY_CREATE,
+		UserRight._TRAVEL_ENTRY_EDIT })
 	public TravelEntryDto save(@Valid @NotNull TravelEntryDto travelEntryDto) {
+		TravelEntry existingTravelEntry = travelEntryService.getByUuid(travelEntryDto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingTravelEntry, userService, UserRight.TRAVEL_ENTRY_CREATE, UserRight.TRAVEL_ENTRY_EDIT);
 		return doSave(travelEntryDto);
 	}
 

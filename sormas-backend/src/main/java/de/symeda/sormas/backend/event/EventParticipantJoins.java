@@ -15,6 +15,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
 public class EventParticipantJoins extends QueryJoins<EventParticipant> {
@@ -25,6 +26,7 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 	private Join<EventParticipant, District> eventParticipantResponsibleDistrict;
 	private Join<EventParticipant, Case> resultingCase;
 	private Join<EventParticipant, Event> event;
+	private Join<EventParticipant, Sample> samples;
 
 	private CaseJoins caseJoins;
 	private PersonJoins personJoins;
@@ -146,6 +148,14 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 		this.event = event;
 	}
 
+	public Join<EventParticipant, Sample> getSamples() {
+		return getOrCreate(samples, EventParticipant.SAMPLES, JoinType.LEFT, this::setSamples);
+	}
+
+	public void setSamples(Join<EventParticipant, Sample> samples) {
+		this.samples = samples;
+	}
+
 	public Join<Event, Location> getEventAddress() {
 		return getEventJoins().getLocation();
 	}
@@ -179,7 +189,7 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 	}
 
 	public EventJoins getEventJoins() {
-		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
+		return getOrCreate(eventJoins, () -> new EventJoins(getRoot(), getEvent()), this::setEventJoins);
 	}
 
 	private void setEventJoins(EventJoins eventJoins) {

@@ -14,10 +14,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
-import javax.ejb.SessionContext;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -29,7 +27,6 @@ import de.symeda.sormas.backend.i18n.I18nFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 public class AuditLoggerInterceptor {
@@ -108,15 +105,15 @@ public class AuditLoggerInterceptor {
 		// start auditing
 
 		// AuditContextProducer
-		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		List<String> parameters = getParameters(context);
 
 		// do the actual call
+		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		Object result = context.proceed();
-
+		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		String returnValue = printObject(result);
 
-		auditLogger.logBackendCall(calledMethod, parameters, returnValue, start);
+		auditLogger.logBackendCall(calledMethod, parameters, returnValue, start, end);
 
 		return result;
 	}

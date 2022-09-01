@@ -32,6 +32,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.opencsv.CSVWriter;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
@@ -68,6 +70,15 @@ public class GridExportStreamResource {
 		String... excludePropertyIds) {
 		return new GridExportStreamResource(grid, getSelectedRows, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList())
 			.getStreamResource();
+	}
+
+	public static StreamResource createStreamResourceWithSelectedItems(
+		Grid<?> grid,
+		Supplier<Set<?>> getSelectedRows,
+		ExportEntityName entityName,
+		List<String> excludePropertyIds,
+		List<String> includePropertyIds) {
+		return new GridExportStreamResource(grid, getSelectedRows, entityName, excludePropertyIds, includePropertyIds).getStreamResource();
 	}
 
 	public static StreamResource createStreamResource(
@@ -128,6 +139,10 @@ public class GridExportStreamResource {
 				String[] rowValues = new String[columnValueProviders.length];
 
 				Set<?> selectedRows = getSelectedRows != null ? getSelectedRows.get() : Collections.emptySet();
+
+				if (CollectionUtils.isEmpty(selectedRows)) {
+					selectedRows = Collections.emptySet();
+				}
 
 				if (selectedRows.isEmpty()) {
 					int totalRowCount = dataProvider.size(new Query());

@@ -23,11 +23,18 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -38,6 +45,12 @@ public class ContactShareDataBuilder
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
+	@EJB
+	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
+
+	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+
 	@Inject
 	public ContactShareDataBuilder(SormasToSormasContactDtoValidator validator) {
 		super(validator);
@@ -47,23 +60,65 @@ public class ContactShareDataBuilder
 	}
 
 	@Override
-	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		PersonDto personDto = dataBuilderHelper
-			.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
-		ContactDto contactDto = dataBuilderHelper.getContactDto(contact, pseudonymizer);
+		PersonDto personDto = dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo);
+		ContactDto contactDto = getDto(contact, pseudonymizer);
 
 		return new SormasToSormasContactDto(personDto, contactDto);
 	}
 
 	@Override
+	protected ContactDto getDto(Contact contact, Pseudonymizer pseudonymizer) {
+
+		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
+		contactDto.setContactOfficer(null);
+		contactDto.setResultingCaseUser(null);
+		contactDto.setSormasToSormasOriginInfo(null);
+		dataBuilderHelper.clearIgnoredProperties(contactDto);
+
+		return contactDto;
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasContactDto dto) throws ValidationRuntimeException {
+		personFacade.validate(dto.getPerson());
+		contactFacade.validate(dto.getEntity());
+	}
+
+	@Override
 	public SormasToSormasContactPreview doBuildShareDataPreview(Contact contact, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		return dataBuilderHelper.getContactPreview(contact, pseudonymizer);
+		return getContactPreview(contact, pseudonymizer);
 
+	}
+
+	public SormasToSormasContactPreview getContactPreview(Contact contact, Pseudonymizer pseudonymizer) {
+		SormasToSormasContactPreview contactPreview = new SormasToSormasContactPreview();
+
+		contactPreview.setUuid(contact.getUuid());
+		contactPreview.setReportDateTime(contact.getReportDateTime());
+		contactPreview.setDisease(contact.getDisease());
+		contactPreview.setDiseaseDetails(contact.getDiseaseDetails());
+		contactPreview.setLastContactDate(contact.getLastContactDate());
+		contactPreview.setContactClassification(contact.getContactClassification());
+		contactPreview.setContactCategory(contact.getContactCategory());
+		contactPreview.setContactStatus(contact.getContactStatus());
+
+		contactPreview.setRegion(RegionFacadeEjb.toReferenceDto(contact.getRegion()));
+		contactPreview.setDistrict(DistrictFacadeEjb.toReferenceDto(contact.getDistrict()));
+		contactPreview.setCommunity(CommunityFacadeEjb.toReferenceDto(contact.getCommunity()));
+
+		contactPreview.setPerson(dataBuilderHelper.getPersonPreview(contact.getPerson()));
+
+		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
+
+		pseudonymizer.pseudonymizeDto(SormasToSormasContactPreview.class, contactPreview, false, null);
+
+		return contactPreview;
 	}
 }

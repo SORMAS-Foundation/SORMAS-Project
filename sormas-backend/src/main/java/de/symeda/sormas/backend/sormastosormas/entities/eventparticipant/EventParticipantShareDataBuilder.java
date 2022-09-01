@@ -22,13 +22,14 @@ import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -51,29 +52,43 @@ public class EventParticipantShareDataBuilder
 	}
 
 	@Override
-	public SormasToSormasEventParticipantDto doBuildShareData(EventParticipant data, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+	public SormasToSormasEventParticipantDto doBuildShareData(
+		EventParticipant eventParticipant,
+		ShareRequestInfo requestInfo,
+		boolean ownerShipHandedOver) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		EventParticipantDto eventParticipantDto = eventParticipantFacade.convertToDto(data, pseudonymizer);
-
-		eventParticipantDto.setReportingUser(null);
-		eventParticipantDto.setSormasToSormasOriginInfo(null);
-		dataBuilderHelper.clearIgnoredProperties(eventParticipantDto.getPerson());
-
-		dataBuilderHelper.pseudonymiePerson(
-			eventParticipantDto.getPerson(),
-			requestInfo.isPseudonymizedPersonalData(),
-			requestInfo.isPseudonymizedSensitiveData());
+		EventParticipantDto eventParticipantDto = getDto(eventParticipant, pseudonymizer);
+		dataBuilderHelper.pseudonymizePerson(eventParticipantDto.getPerson(), requestInfo);
 
 		return new SormasToSormasEventParticipantDto(eventParticipantDto);
 	}
 
 	@Override
-	public SormasToSormasEventParticipantPreview doBuildShareDataPreview(EventParticipant eventParticipant, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+	protected EventParticipantDto getDto(EventParticipant eventParticipant, Pseudonymizer pseudonymizer) {
 
+		EventParticipantDto eventParticipantDto = eventParticipantFacade.convertToDto(eventParticipant, pseudonymizer);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
+		eventParticipantDto.setSormasToSormasOriginInfo(null);
+		dataBuilderHelper.clearIgnoredProperties(eventParticipantDto.getPerson());
+
+		return eventParticipantDto;
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasEventParticipantDto sormasToSormasEventParticipantDto) throws ValidationRuntimeException {
+		eventParticipantFacade.validate(sormasToSormasEventParticipantDto.getEntity());
+	}
+
+	@Override
+	public SormasToSormasEventParticipantPreview doBuildShareDataPreview(EventParticipant eventParticipant, ShareRequestInfo requestInfo) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+
+		return getEventParticipantPreview(eventParticipant, pseudonymizer);
+	}
+
+	public SormasToSormasEventParticipantPreview getEventParticipantPreview(EventParticipant eventParticipant, Pseudonymizer pseudonymizer) {
 		SormasToSormasEventParticipantPreview preview = new SormasToSormasEventParticipantPreview();
 
 		preview.setUuid(eventParticipant.getUuid());
@@ -83,6 +98,5 @@ public class EventParticipantShareDataBuilder
 		pseudonymizer.pseudonymizeDto(SormasToSormasEventParticipantPreview.class, preview, false, null);
 
 		return preview;
-
 	}
 }

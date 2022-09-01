@@ -22,7 +22,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 	public static final String TESTED_NEGATIVE = "testedNegative";
 	public static final String QUARANTINE_TO = "quarantineTo";
 
-	private String uuid;
 	private String externalId;
 	@PersonalData
 	@SensitiveData
@@ -53,7 +52,7 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		boolean testedNegative,
 		Date quarantineTo,
 		boolean isInJurisdiction) {
-		this.uuid = uuid;
+		super(uuid);
 		this.externalId = externalId;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
@@ -64,14 +63,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		this.testedNegative = testedNegative;
 		this.quarantineTo = quarantineTo;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getExternalId() {

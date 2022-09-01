@@ -21,14 +21,14 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.immunization.ImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -51,16 +51,27 @@ public class ImmunizationShareDataBuilder
 	}
 
 	@Override
-	protected SormasToSormasImmunizationDto doBuildShareData(Immunization immunization, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+	protected SormasToSormasImmunizationDto doBuildShareData(Immunization immunization, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		ImmunizationDto immunizationDto = getDto(immunization, pseudonymizer);
+		return new SormasToSormasImmunizationDto(immunizationDto);
+	}
+
+	@Override
+	protected ImmunizationDto getDto(Immunization immunization, Pseudonymizer pseudonymizer) {
 
 		ImmunizationDto immunizationDto = immunizationFacade.convertToDto(immunization, pseudonymizer);
-		immunizationDto.setReportingUser(null);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		immunizationDto.setSormasToSormasOriginInfo(null);
 		dataBuilderHelper.clearIgnoredProperties(immunizationDto);
 
-		return new SormasToSormasImmunizationDto(immunizationDto);
+		return immunizationDto;
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasImmunizationDto sormasToSormasImmunizationDto) throws ValidationRuntimeException {
+		immunizationFacade.validate(sormasToSormasImmunizationDto.getEntity());
 	}
 
 	@Override

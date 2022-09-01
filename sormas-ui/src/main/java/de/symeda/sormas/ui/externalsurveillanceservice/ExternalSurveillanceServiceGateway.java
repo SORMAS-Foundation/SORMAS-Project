@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -48,7 +47,7 @@ public class ExternalSurveillanceServiceGateway {
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCase),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteCase),
 			caze.isDontShareWithReportingTool() ? null : () -> {
-				FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()));
+				FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()), false);
 			},
 			() -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteCases(Collections.singletonList(caze));
@@ -67,7 +66,7 @@ public class ExternalSurveillanceServiceGateway {
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvent),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteEvent),
 			() -> {
-				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()));
+				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()), false);
 			},
 			() -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteEvents(Collections.singletonList(event));
@@ -105,25 +104,13 @@ public class ExternalSurveillanceServiceGateway {
 
 	public static void sendCasesToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCases), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids);
-			new Notification(
-					I18nProperties.getString(Strings.headingCasesSentToExternalSurveillanceTool),
-					I18nProperties.getString(Strings.messageCasesSentToExternalSurveillanceTool),
-					Notification.Type.HUMANIZED_MESSAGE,
-					false).show(Page.getCurrent());
-
+			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids, false);
 		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
 	}
 
 	public static void sendEventsToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvents), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids);
-			new Notification(
-				I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
-				I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),
-				Notification.Type.HUMANIZED_MESSAGE,
-				false).show(Page.getCurrent());
-
+			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids, false);
 		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
 	}
 

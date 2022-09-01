@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.*;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -31,7 +32,7 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.entities.services.SampleService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 
@@ -45,7 +46,7 @@ public class EditSampleSteps implements En {
   @Inject
   public EditSampleSteps(
       WebDriverHelpers webDriverHelpers,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       SampleService sampleService,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -54,7 +55,7 @@ public class EditSampleSteps implements En {
         "I open the last created sample via API",
         () -> {
           String LAST_CREATED_SAMPLE_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!samples/data/"
                   + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_SAMPLE_URL);
@@ -65,7 +66,8 @@ public class EditSampleSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_SAMPLE_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_DELETION_POPUP);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_SEARCH_INPUT);
         });
@@ -161,8 +163,48 @@ public class EditSampleSteps implements En {
         "I delete the Pathogen test",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_PATHOGEN_TEST_RESULT);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
         });
+
+    When(
+        "I set type of sample to {string} on Sample Edit page",
+        (String sampleType) -> selectSampleType(sampleType));
+
+    When(
+        "I set date sample was collected to yesterday on Sample Edit page",
+        () -> fillDateOfCollection(LocalDate.now().minusDays(1)));
+
+    When(
+        "I click on Received checkbox in Sample Edit page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(RECEIVED_OPTION_BUTTON));
+
+    Then(
+        "I check if {string} combobox is available",
+        (String option) -> {
+          switch (option) {
+            case ("Specimen condition"):
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SPECIMEN_CONDITION_INPUT);
+              break;
+            case ("Date sample received at lab"):
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_SAMPLE_RECEIVED);
+              break;
+            case ("Lab sample ID"):
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(LAB_SAMPLE_ID_INPUT);
+              break;
+          }
+        });
+
+    Then(
+        "I check if Specimen condition combobox is not mandatory",
+        () ->
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                SPECIMEN_CONDITION_NOT_MANDATORY_COMBOBOX));
+
+    When(
+        "I click on Save Button in Sample Edit page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_SAMPLE_BUTTON));
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {

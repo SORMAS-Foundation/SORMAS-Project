@@ -163,6 +163,7 @@
     <string name="caption_drawer_open">Apri il pannello di navigazione</string>
     <string name="caption_dropped">Scartato</string>
     <string name="caption_epi_week">Settimana Epi</string>
+    <string name="caption_report">Report</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>
@@ -272,6 +273,7 @@
     <string name="description_sormas_logo">SORMAS Logo</string>
     <string name="description_username">Nome utente</string>
     <string name="description_year">Anno</string>
+    <string name="description_report">Report</string>
     <string name="entity_case">Caso</string>
     <string name="entity_contact">Contatto</string>
     <string name="entity_event">Evento</string>
@@ -444,6 +446,7 @@
     <string name="hint_select_month">Seleziona Mese</string>
     <string name="hint_select_epi_week">Seleziona Settimana Epi</string>
     <string name="hint_select_year">Seleziona Anno</string>
+    <string name="hint_select_report">Select Report</string>
     <string name="hint_settings_server_url">es. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Devi confermare il rapporto per la settimana scorsa.</string>
     <string name="hint_weekly_report_no_data">Nessun dato disponibile per questa settimana epi.</string>
@@ -492,6 +495,7 @@
     <string name="main_menu_tasks">Attività</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Già in fase salvataggio..</string>
+    <string name="message_aggregate_report_found">Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.</string>
     <string name="message_case_infrastructure_data_changed">Hai cambiato la struttura dati di questo caso. Vuoi trasferire il caso alla nuova struttura sanitaria (I dati relativi alla ospedalizzazione verranno aggiornati) o vuoi solo modificare i dati per correggere un errore?</string>
     <string name="message_download_app_failed">Il download della nuova versione di SORMAS non è riuscito. Si prega di assicurarsi di avere la migliore connessione internet possibile e riprovare o informare un supervisore se si continua a ottenere questo errore nonostante una buona connessione internet.</string>
     <string name="message_empty_password">Inserisci una password.</string>

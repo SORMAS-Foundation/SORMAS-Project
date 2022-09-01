@@ -163,6 +163,7 @@
     <string name="caption_drawer_open">Abrir panel de navegación</string>
     <string name="caption_dropped">Descartado</string>
     <string name="caption_epi_week">Semana EPI</string>
+    <string name="caption_report">Report</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>
@@ -272,6 +273,7 @@
     <string name="description_sormas_logo">Logo de SORMAS</string>
     <string name="description_username">Usuario</string>
     <string name="description_year">Año</string>
+    <string name="description_report">Report</string>
     <string name="entity_case">Caso</string>
     <string name="entity_contact">Contacto</string>
     <string name="entity_event">Evento</string>
@@ -444,6 +446,7 @@
     <string name="hint_select_month">Seleccionar mes</string>
     <string name="hint_select_epi_week">Seleccionar Semana Epi</string>
     <string name="hint_select_year">Elige un año</string>
+    <string name="hint_select_report">Select Report</string>
     <string name="hint_settings_server_url">ej. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Necesitas confirmar el informe de la semana pasada.</string>
     <string name="hint_weekly_report_no_data">No hay datos disponibles para esta semana epi.</string>
@@ -492,6 +495,7 @@
     <string name="main_menu_tasks">Tareas</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Guardando..</string>
+    <string name="message_aggregate_report_found">Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.</string>
     <string name="message_case_infrastructure_data_changed">Ha cambiado el centro médico de este caso. ¿Desea transferir el caso al nuevo centro médico (se actualizará la hospitalización) o solo desea editar los datos para corregir un error?</string>
     <string name="message_download_app_failed">La descarga de la nueva versión de SORMAS falló. Por favor, asegúrese de tener la mejor conexión a Internet posible e inténtelo de nuevo o informe a un supervisor si sigue obteniendo este error a pesar de una buena conexión a Internet.</string>
     <string name="message_empty_password">Por favor, introduzca una contraseña.</string>

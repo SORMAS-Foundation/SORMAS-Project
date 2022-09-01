@@ -11,7 +11,8 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -33,7 +34,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -60,7 +61,11 @@ public class ImmunizationController {
 	}
 
 	public void navigateToImmunization(String uuid) {
-		final String navigationState = ImmunizationDataView.VIEW_NAME + "/" + uuid;
+		navigateToView(ImmunizationDataView.VIEW_NAME, uuid);
+	}
+
+	public void navigateToView(String viewName, String uuid) {
+		final String navigationState = viewName + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
@@ -130,9 +135,12 @@ public class ImmunizationController {
 		return null;
 	}
 
-	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(ImmunizationDto immunizationDto) {
+	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(
+		ImmunizationDto immunizationDto,
+		Consumer<Runnable> actionCallback) {
 
-		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase());
+		ImmunizationDataForm immunizationDataForm =
+			new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase(), actionCallback);
 		immunizationDataForm.setValue(immunizationDto);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
@@ -148,10 +156,18 @@ public class ImmunizationController {
 			}
 		};
 
-		AutomaticDeletionInfoDto automaticDeletionInfoDto =
-			FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
-		if (automaticDeletionInfoDto != null) {
-			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getImmunizationFacade().getManuallyDeletionInfo(immunizationDto.getUuid());
+
+		editComponent.getButtonsPanel()
+			.addComponentAsFirst(
+				new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, immunizationDto.isDeleted(), ImmunizationDto.I18N_PREFIX));
+
+		if (immunizationDto.isDeleted()) {
+			editComponent.getWrappedComponent().getField(ImmunizationDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(ImmunizationDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(ImmunizationDto.OTHER_DELETION_REASON).setVisible(true);
+			}
 		}
 
 		editComponent.addCommitListener(() -> {
@@ -177,8 +193,8 @@ public class ImmunizationController {
 
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid());
+			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(ImmunizationsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityImmunization));
 		}

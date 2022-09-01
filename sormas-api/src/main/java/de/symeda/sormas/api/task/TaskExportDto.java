@@ -58,8 +58,6 @@ public class TaskExportDto extends PseudonymizableIndexDto implements Serializab
 	private static final String PERSON_EMAIL_ADDRESS = "personEmailAddress";
 	private static final String PERSON_OTHER_CONTACT_DETAILS = "personOtherContactDetails";
 
-	private final String uuid;
-
 	private final TaskContext taskContext;
 
 	private final String cazeUuid;
@@ -151,7 +149,7 @@ public class TaskExportDto extends PseudonymizableIndexDto implements Serializab
 						 String personPhone, String personPhoneOwner, String personEmailAddress, String personOtherContactDetails,
 						 boolean inJurisdiction) {
 		//@formatter:on
-		this.uuid = uuid;
+		super(uuid);
 		this.taskContext = taskContext;
 		this.cazeUuid = cazeUuid;
 		this.contactUuid = contactUuid;
@@ -161,9 +159,9 @@ public class TaskExportDto extends PseudonymizableIndexDto implements Serializab
 		this.dueDate = dueDate;
 		this.suggestedStart = suggestedStart;
 		this.taskStatus = taskStatus;
-		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName, null);
+		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName);
 		this.creatorComment = creatorComment;
-		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
+		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName);
 		this.assigneeReply = assigneeReply;
 		this.region = region;
 		this.district = district;
@@ -192,7 +190,7 @@ public class TaskExportDto extends PseudonymizableIndexDto implements Serializab
 	@ExportProperty(TaskDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getUuid() {
-		return uuid;
+		return super.getUuid();
 	}
 
 	@Order(1)

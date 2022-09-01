@@ -2,7 +2,6 @@ package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_DATA_TITLE;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.util.ArrayList;
@@ -16,8 +15,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.ContactOutcome;
-import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -35,7 +33,7 @@ public class ContactsDetailedTableViewSteps implements En {
       ApiState apiState,
       DataOperations dataOperations,
       SoftAssert softly,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -105,7 +103,7 @@ public class ContactsDetailedTableViewSteps implements En {
           softly.assertEquals(
               detailedContactDTableRow.get(
                   ContactsDetailedTableViewHeaders.REPORTING_USER.toString()),
-              environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
+              "Rest AUTO",
               "Reporting user is not correct");
           softly.assertAll();
         });
@@ -145,6 +143,10 @@ public class ContactsDetailedTableViewSteps implements En {
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID);
         });
+
+    Then(
+        "I click on the first Contact ID from Contacts Directory in Contacts in Case",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID_FROM_CASE));
   }
 
   private List<Map<String, String>> getTableRowsData() {

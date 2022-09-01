@@ -19,8 +19,8 @@ package de.symeda.sormas.ui;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.AbstractComponent;
@@ -86,7 +86,7 @@ public class SubMenu extends CssLayout {
 		viewMenuItemMap.put(name, tabItem);
 	}
 
-	public void addView(final String name, String caption, LayoutClickListener onClick) {
+	public void addView(final String name, String caption, Supplier<Boolean> onClick) {
 
 		CssLayout tabItemCell = new CssLayout();
 		tabItemCell.setSizeUndefined();
@@ -101,9 +101,10 @@ public class SubMenu extends CssLayout {
 		link.addStyleName("v-caption");
 
 		tabItem.addComponent(link);
-		tabItem.addLayoutClickListener(onClick);
 		tabItem.addLayoutClickListener((e) -> {
-			this.setActiveView(name);
+			if (Boolean.TRUE.equals(onClick.get())) {
+				this.setActiveView(name);
+			}
 		});
 
 		menuItemsLayout.addComponent(tabItemCell);

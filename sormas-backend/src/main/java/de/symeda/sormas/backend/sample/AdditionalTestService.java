@@ -24,8 +24,8 @@ import de.symeda.sormas.api.sample.AdditionalTestCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
-import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
@@ -197,7 +197,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 
 		// whoever created the sample the additional test is associated with is allowed to access it
 		Join<Sample, Sample> sampleJoin = additionalTestPath.join(AdditionalTest.SAMPLE);
-		Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin);
+		Predicate filter = sampleService.createUserFilter(new SampleQueryContext(cb, cq, sampleJoin), null);
 
 		return filter;
 	}

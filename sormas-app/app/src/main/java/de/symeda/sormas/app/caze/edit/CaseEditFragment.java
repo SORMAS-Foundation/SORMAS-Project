@@ -21,12 +21,12 @@ import static de.symeda.sormas.api.caze.CaseConfirmationBasis.CLINICAL_CONFIRMAT
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION;
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION;
 
-import java.util.Date;
-import java.util.List;
-
 import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
+
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -55,7 +55,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -70,6 +69,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserRole;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -197,6 +197,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		updateCaseConfirmationVisibility(contentBinding);
+		updateCaseConfirmationBasis(contentBinding);
 
 		contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
 		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
@@ -206,6 +207,62 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			// Hospital Informants are not allowed to change place of stay
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
+		}
+	}
+
+	private void updateCaseConfirmationBasis(FragmentCaseEditLayoutBinding contentBinding) {
+
+		boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(record.getDisease());
+		boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(record.getDisease());
+
+		if (extendedClassification) {
+			if (extendedClassificationMulti) {
+				if (contentBinding.caseDataClinicalConfirmation.getValue() == YesNoUnknown.YES) {
+					contentBinding.caseDataCaseConfirmationBasis.setValue(CLINICAL_CONFIRMATION);
+				} else if (contentBinding.caseDataEpidemiologicalConfirmation.getValue() == YesNoUnknown.YES) {
+					contentBinding.caseDataCaseConfirmationBasis.setValue(EPIDEMIOLOGICAL_CONFIRMATION);
+				} else if (contentBinding.caseDataLaboratoryDiagnosticConfirmation.getValue() == YesNoUnknown.YES) {
+					contentBinding.caseDataCaseConfirmationBasis.setValue(LABORATORY_DIAGNOSTIC_CONFIRMATION);
+				}
+			} else {
+				contentBinding.caseDataClinicalConfirmation.setValue(null);
+				contentBinding.caseDataEpidemiologicalConfirmation.setValue(null);
+				contentBinding.caseDataLaboratoryDiagnosticConfirmation.setValue(null);
+
+				if (contentBinding.caseDataCaseConfirmationBasis.getValue() == CaseConfirmationBasis.CLINICAL_CONFIRMATION) {
+					contentBinding.caseDataClinicalConfirmation.setValue(YesNoUnknown.YES);
+				} else if (contentBinding.caseDataCaseConfirmationBasis.getValue() == CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION) {
+					contentBinding.caseDataEpidemiologicalConfirmation.setValue(YesNoUnknown.YES);
+				} else if (contentBinding.caseDataCaseConfirmationBasis.getValue() == CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION) {
+					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setValue(YesNoUnknown.YES);
+				}
+
+				contentBinding.caseDataClinicalConfirmation.setValue(null);
+				contentBinding.caseDataEpidemiologicalConfirmation.setValue(null);
+				contentBinding.caseDataLaboratoryDiagnosticConfirmation.setValue(null);
+
+				final CaseConfirmationBasis confirmedCaseClassification =
+					(CaseConfirmationBasis) contentBinding.caseDataCaseConfirmationBasis.getValue();
+
+				if (confirmedCaseClassification != null) {
+					switch (confirmedCaseClassification) {
+					case CLINICAL_CONFIRMATION:
+						contentBinding.caseDataClinicalConfirmation.setValue(YesNoUnknown.YES);
+						break;
+					case EPIDEMIOLOGICAL_CONFIRMATION:
+						contentBinding.caseDataEpidemiologicalConfirmation.setValue(YesNoUnknown.YES);
+						break;
+					case LABORATORY_DIAGNOSTIC_CONFIRMATION:
+						contentBinding.caseDataLaboratoryDiagnosticConfirmation.setValue(YesNoUnknown.YES);
+						break;
+					}
+				}
+			}
+		} else {
+			contentBinding.caseDataClinicalConfirmation.setValue(null);
+			contentBinding.caseDataEpidemiologicalConfirmation.setValue(null);
+			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setValue(null);
+			contentBinding.caseDataCaseConfirmationBasis.setValue(null);
 		}
 	}
 
@@ -338,52 +395,23 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 				updateCaseConfirmationVisibility(getContentBinding());
 
-				if (caseClassification == CaseClassification.CONFIRMED) {
-					boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(record.getDisease());
-					if (extendedClassification) {
-						boolean extendedClassificationMulti =
-							DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(record.getDisease());
-						if (!extendedClassificationMulti) {
-							if (getContentBinding().caseDataClinicalConfirmation.getValue() == YesNoUnknown.YES) {
-								getContentBinding().caseDataCaseConfirmationBasis.setValue(CLINICAL_CONFIRMATION);
-							} else if (getContentBinding().caseDataEpidemiologicalConfirmation.getValue() == YesNoUnknown.YES) {
-								getContentBinding().caseDataCaseConfirmationBasis.setValue(EPIDEMIOLOGICAL_CONFIRMATION);
-							} else if (getContentBinding().caseDataLaboratoryDiagnosticConfirmation.getValue() == YesNoUnknown.YES) {
-								getContentBinding().caseDataCaseConfirmationBasis.setValue(LABORATORY_DIAGNOSTIC_CONFIRMATION);
-							}
-						}
-					}
-				} else {
-					getContentBinding().caseDataClinicalConfirmation.setValue(null);
-					getContentBinding().caseDataEpidemiologicalConfirmation.setValue(null);
-					getContentBinding().caseDataLaboratoryDiagnosticConfirmation.setValue(null);
-					getContentBinding().caseDataCaseConfirmationBasis.setValue(null);
-				}
-
 				CaseValidator.initializeGermanCaseClassificationValidation(record, caseClassification, getContentBinding());
 			});
 
-			contentBinding.caseDataCaseConfirmationBasis.addValueChangedListener(field -> {
-				final CaseConfirmationBasis confirmedCaseClassification = (CaseConfirmationBasis) field.getValue();
+			boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(record.getDisease());
+			boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(record.getDisease());
 
-				getContentBinding().caseDataClinicalConfirmation.setValue(null);
-				getContentBinding().caseDataEpidemiologicalConfirmation.setValue(null);
-				getContentBinding().caseDataLaboratoryDiagnosticConfirmation.setValue(null);
-
-				if (confirmedCaseClassification != null) {
-					switch (confirmedCaseClassification) {
-					case CLINICAL_CONFIRMATION:
-						getContentBinding().caseDataClinicalConfirmation.setValue(YesNoUnknown.YES);
-						break;
-					case EPIDEMIOLOGICAL_CONFIRMATION:
-						getContentBinding().caseDataEpidemiologicalConfirmation.setValue(YesNoUnknown.YES);
-						break;
-					case LABORATORY_DIAGNOSTIC_CONFIRMATION:
-						getContentBinding().caseDataLaboratoryDiagnosticConfirmation.setValue(YesNoUnknown.YES);
-						break;
-					}
+			if (extendedClassification) {
+				if (extendedClassificationMulti) {
+					contentBinding.caseDataClinicalConfirmation.addValueChangedListener(field -> updateCaseConfirmationBasis(getContentBinding()));
+					contentBinding.caseDataEpidemiologicalConfirmation
+						.addValueChangedListener(field -> updateCaseConfirmationBasis(getContentBinding()));
+					contentBinding.caseDataLaboratoryDiagnosticConfirmation
+						.addValueChangedListener(field -> updateCaseConfirmationBasis(getContentBinding()));
+				} else {
+					contentBinding.caseDataCaseConfirmationBasis.addValueChangedListener(field -> updateCaseConfirmationBasis(getContentBinding()));
 				}
-			});
+			}
 		}
 
 		FragmentActivity thisActivity = this.getActivity();
@@ -640,7 +668,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
 		}
 
-		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);

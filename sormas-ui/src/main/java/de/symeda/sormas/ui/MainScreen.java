@@ -75,10 +75,11 @@ import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
+import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
-import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
+import de.symeda.sormas.ui.reports.aggregate.AbstractAggregateReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
@@ -86,6 +87,8 @@ import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.travelentry.TravelEntriesView;
+import de.symeda.sormas.ui.user.AbstractUserView;
+import de.symeda.sormas.ui.user.UserRolesView;
 import de.symeda.sormas.ui.user.UsersView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -158,6 +161,16 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
+
+		if (permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			ControllerProvider.getExternalMessageController().registerViews(navigator);
+			menu.addView(
+				ExternalMessagesView.class,
+				ExternalMessagesView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuExternalMessages),
+				VaadinIcons.NOTEBOOK);
+		}
+
 		if (permitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW)) {
 			ControllerProvider.getPersonController().registerViews(navigator);
 			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
@@ -167,9 +180,10 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
 		}
 		if (permitted(FeatureType.AGGREGATE_REPORTING, UserRight.AGGREGATE_REPORT_VIEW)) {
+			AbstractAggregateReportsView.registerViews(navigator);
 			menu.addView(
 				AggregateReportsView.class,
-				AggregateReportsView.VIEW_NAME,
+				AbstractAggregateReportsView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuAggregateReports),
 				VaadinIcons.GRID_SMALL);
 		}
@@ -211,7 +225,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
-			&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+			&& FacadeProvider.getSormasToSormasFacade().isProcessingShareEnabledForUser()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
 			menu.addView(
 				ShareRequestsView.class,
@@ -239,9 +253,13 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuStatistics),
 				VaadinIcons.BAR_CHART);
 		}
-		if (permitted(UserRight.USER_VIEW)) {
-			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
+
+		if (UserProvider.getCurrent().hasUserAccess()) {
+			AbstractUserView.registerViews(navigator);
+
+			menu.addView(UsersView.class, AbstractUserView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
+
 		if (UserProvider.getCurrent().hasConfigurationAccess()) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
@@ -281,7 +299,7 @@ public class MainScreen extends HorizontalLayout {
 			Button buttonGdpr = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionConfirm), event -> {
 				if (checkBoxGdpr.getValue()) {
 					user.setHasConsentedToGdpr(true);
-					FacadeProvider.getUserFacade().saveUser(user);
+					FacadeProvider.getUserFacade().saveUser(user, true);
 					navigator.getUI().removeWindow(subWindowGdpR);
 				}
 				navigator.getUI().removeWindow(subWindowGdpR);
@@ -326,6 +344,7 @@ public class MainScreen extends HorizontalLayout {
 				StatisticsView.VIEW_NAME,
 				PersonsView.VIEW_NAME,
 				UsersView.VIEW_NAME,
+				UserRolesView.VIEW_NAME,
 				OutbreaksView.VIEW_NAME,
 				RegionsView.VIEW_NAME,
 				DistrictsView.VIEW_NAME,
@@ -335,7 +354,7 @@ public class MainScreen extends HorizontalLayout {
 				ContinentsView.VIEW_NAME,
 				SubcontinentsView.VIEW_NAME,
 				CountriesView.VIEW_NAME,
-				LabMessagesView.VIEW_NAME,
+				ExternalMessagesView.VIEW_NAME,
 				TravelEntriesView.VIEW_NAME,
 				ImmunizationsView.VIEW_NAME));
 

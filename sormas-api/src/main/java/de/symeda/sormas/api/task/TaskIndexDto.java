@@ -29,6 +29,11 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -62,9 +67,10 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String FACILITY = "facility";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String DISEASE = "disease";
 
-	private String uuid;
 	private TaskContext taskContext;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
@@ -82,9 +88,11 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	@EmbeddedSensitiveData
 	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private TravelEntryReferenceDto travelEntry;
-	private String region;
-	private String district;
-	private String community;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
+	private FacilityReferenceDto facility;
+	private PointOfEntryReferenceDto pointOfEntry;
 
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -107,7 +115,9 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			String travelEntryUuid, String travelEntryExternalId, String travelEntryFirstName, String travelEntryLastName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus, Disease disease,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
-			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply, String region, String district, String community,
+			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply, 
+			String regionUuid, String regionName, String districtUuid, String districtName, String communityUuid, String communityName,
+			String facilityUuid, String facilityName, String pointOfEntryUuid, String pointOfEntryName,
 			boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventInJurisdiction, boolean isTravelEntryInJurisdiction) {
 	//@formatter:on
 
@@ -140,13 +150,26 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.suggestedStart = suggestedStart;
 		this.taskStatus = taskStatus;
 		this.disease = disease;
-		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName, null);
+		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName);
 		this.creatorComment = creatorComment;
-		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
+		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName);
 		this.assigneeReply = assigneeReply;
-		this.community = community;
-		this.district = district;
-		this.region = region;
+
+		if (regionUuid != null) {
+			this.region = new RegionReferenceDto(regionUuid, regionName, null);
+		}
+		if (districtUuid != null) {
+			this.district = new DistrictReferenceDto(districtUuid, districtName, null);
+		}
+		if (communityUuid != null) {
+			this.community = new CommunityReferenceDto(communityUuid, communityName, null);
+		}
+		if (facilityUuid != null) {
+			this.facility = new FacilityReferenceDto(facilityUuid, facilityName, null);
+		}
+		if (pointOfEntryUuid != null) {
+			this.pointOfEntry = new PointOfEntryReferenceDto(pointOfEntryUuid, pointOfEntryName, null, null);
+		}
 
 		this.taskJurisdictionFlagsDto = new TaskJurisdictionFlagsDto(
 			isInJurisdiction,
@@ -286,36 +309,44 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		}
 	}
 
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-
-	public String getRegion() {
+	public RegionReferenceDto getRegion() {
 		return region;
 	}
 
-	public void setRegion(String region) {
+	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
 
-	public String getDistrict() {
+	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
 
-	public void setDistrict(String district) {
+	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
 
-	public String getCommunity() {
+	public CommunityReferenceDto getCommunity() {
 		return community;
 	}
 
-	public void setCommunity(String community) {
+	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
+	}
+
+	public FacilityReferenceDto getFacility() {
+		return facility;
+	}
+
+	public void setFacility(FacilityReferenceDto facility) {
+		this.facility = facility;
+	}
+
+	public PointOfEntryReferenceDto getPointOfEntry() {
+		return pointOfEntry;
+	}
+
+	public void setPointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
 	}
 
 	public TaskJurisdictionFlagsDto getTaskJurisdictionFlagsDto() {

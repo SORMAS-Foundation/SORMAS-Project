@@ -3,6 +3,7 @@ import com.github.sherter.googlejavaformatgradleplugin.GoogleJavaFormat
 plugins {
 	id "com.github.sherter.google-java-format" version "0.9"
 	id "com.diffplug.spotless" version "5.12.4"
+	id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
 }
 
 apply plugin: "java"
@@ -73,6 +74,14 @@ dependencies {
 	implementation 'org.apache.poi:poi-ooxml:4.0.0'
 	compile 'com.detectlanguage:detectlanguage:1.1.0'
 
+	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '1.2.4'
+
+	implementation group: 'com.github.cafdataprocessing', name: 'language-detection', version: '3.5.2-1079'
+	implementation group: 'org.apache.tika', name: 'tika-langdetect-optimaize', version: '2.3.0'
+	implementation group: 'org.apache.tika', name: 'tika-langdetect', version: '2.3.0', ext: 'pom'
+	implementation group: 'org.apache.tika', name: 'tika-core', version: '2.3.0'
+
 }
 
 task format(type: GoogleJavaFormat) {
@@ -96,7 +105,12 @@ task createReportFolderIfNotExist() {
 	delete("logs/file.log")
 }
 
-task startTests {}
+task startTests{}
+
+//task printConfiguration(type: Exec) {
+//	// enable this to print on jenkins existing environment json configuration
+//	// commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
+//}
 
 task copyToGeneratedReport(type: Copy) {
 	dependsOn "createReportFolderIfNotExist"
@@ -138,6 +152,7 @@ test {
 }
 
 compileJava.dependsOn format
+//startTests.dependsOn printConfiguration
 startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
 test.finalizedBy copyAllureFiles

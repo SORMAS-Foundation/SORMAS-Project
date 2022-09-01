@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
@@ -71,19 +71,24 @@ public class ValidationHelper {
 		return buildValidationGroupName(Captions.Immunization_uuid, immunization);
 	}
 
-	public static ValidationErrorGroup buildLabMessageValidationGroupName(LabMessageDto labMessageDto) {
-		return buildValidationGroupName(Captions.LabMessage, labMessageDto);
+	public static ValidationErrorGroup buildExternalMessageValidationGroupName(ExternalMessageDto externalMessageDto) {
+		return buildValidationGroupName(Captions.ExternalMessage, externalMessageDto);
 	}
 
-	public static <T> T handleValidationError(Supplier<T> saveOperation, String validationGroupCaption, ValidationErrorGroup parentValidationGroup)
-		throws SormasToSormasValidationException {
+	public static <T> T handleValidationError(
+			Supplier<T> saveOperation,
+			String validationGroupCaption,
+			ValidationErrorGroup parentValidationGroup,
+			HasUuid context)
+			throws SormasToSormasValidationException {
 		try {
 			return saveOperation.get();
 		} catch (ValidationRuntimeException exception) {
 			List<ValidationErrors> errors = new ArrayList<>();
-
 			ValidationErrors validationErrors = new ValidationErrors(parentValidationGroup);
-			validationErrors.add(new ValidationErrorGroup(validationGroupCaption), new ValidationErrorMessage(Validations.sormasToSormasSaveException, exception.getMessage()));
+			validationErrors.add(
+					new ValidationErrorGroup(validationGroupCaption),
+					new ValidationErrorMessage(Validations.sormasToSormasSaveException, String.format("%s (UUID: %s)", validationGroupCaption, context.getUuid()), exception.getMessage()));
 			errors.add(validationErrors);
 
 			throw new SormasToSormasValidationException(errors, exception);

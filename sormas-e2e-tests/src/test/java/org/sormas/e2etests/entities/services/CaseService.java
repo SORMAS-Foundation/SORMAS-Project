@@ -87,6 +87,7 @@ public class CaseService {
         .caseOrigin("IN-COUNTRY")
         .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
+        .epidNumber(UUID.randomUUID().toString())
         .disease("COVID-19")
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
@@ -107,7 +108,8 @@ public class CaseService {
         .build();
   }
 
-  public Case buildCaseWithDisease(String diseaseValue) {
+  public Case buildGeneratedCaseWithCovidVariant(String covidVariant) {
+
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
 
@@ -117,6 +119,132 @@ public class CaseService {
         .caseOrigin("IN-COUNTRY")
         .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
+        .epidNumber(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .diseaseVariant(covidVariant)
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("HOME")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .presentConditionOfPerson("Alive")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
+  public Case buildGeneratedCaseWithFacility() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IN-COUNTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .epidNumber(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("FACILITY")
+        .facility("Other facility")
+        .facilityNameAndDescription("MagicHospital")
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .presentConditionOfPerson("Alive")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
+  public Case buildGeneratedCaseWithCreatedFacilityDE(
+      String facilityCategory, String facilityType, String facility) {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IN-COUNTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .epidNumber(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("EINRICHTUNG")
+        .facilityCategory(facilityCategory)
+        .facilityType(facilityType)
+        .facility(facility)
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGenderDE())
+        .presentConditionOfPerson("Alive")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
+  public Case buildCaseWithFacilityAndDifferentPlaceOfStay() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IN-COUNTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion("Region1")
+        .responsibleDistrict("District11")
+        .placeOfStay("FACILITY")
+        .placeOfStayRegion("Region2")
+        .placeOfStayDistrict("District21")
+        .facilityCategory("Medical facility")
+        .facilityType("Hospital")
+        .facility("Community212")
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .build();
+  }
+
+  public Case buildCaseWithDisease(String diseaseValue) {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IN-COUNTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        //  .externalId(UUID.randomUUID().toString())
         .disease(DiseasesValues.getCaptionFor(diseaseValue))
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
@@ -134,6 +262,88 @@ public class CaseService {
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .primaryEmailAddress(
             ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
+  public Case buildGeneratedCaseWithPointOfEntryDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("EINREISEORT")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .disease("COVID-19")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .pointOfEntryRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .pointOfEntryDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .pointOfEntry("Anderer Flughafen")
+        .pointOfEntryDetails("Narita")
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGenderDE())
+        .build();
+  }
+
+  public Case buildGeneratedCaseWithDifferentPlaceOfStay() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IN-COUNTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("HOME")
+        .placeOfStayRegion("Berlin")
+        .placeOfStayDistrict("SK Berlin Mitte")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .presentConditionOfPerson("Alive")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
+  public Case buildCaseWithPointOfEntryAndDifferentPlaceOfStay() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("POINT OF ENTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion("Berlin")
+        .responsibleDistrict("SK Berlin Mitte")
+        .placeOfStayRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .placeOfStayDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .pointOfEntry("Voreingestellter Flughafen")
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
         .build();
   }
 
@@ -162,6 +372,38 @@ public class CaseService {
         .sex(GenderValues.getRandomGenderDE())
         .presentConditionOfPerson("Lebendig")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .outcomeOfCase("VERSTORBEN")
+        .build();
+  }
+
+  public Case buildGeneratedCaseDEDaysAgo(int daysAgo) {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IM LAND")
+        .dateOfReport(LocalDate.now().minusDays(daysAgo))
+        .externalId(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .diseaseVariant("B.1.617.1")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("ZUHAUSE")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGenderDE())
+        .presentConditionOfPerson("Lebendig")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(daysAgo))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .primaryEmailAddress(
             ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
@@ -202,7 +444,7 @@ public class CaseService {
   public Case buildEditGeneratedCase() {
     return Case.builder()
         .dateOfReport(LocalDate.now().minusDays(3))
-        .caseClassification("Confirmed case with unknown symptoms")
+        .caseClassification("CONFIRMED CASE")
         .clinicalConfirmation("Yes")
         .epidemiologicalConfirmation("Yes")
         .laboratoryDiagnosticConfirmation("Yes")
@@ -230,7 +472,7 @@ public class CaseService {
         .sequelae("NO")
         .bloodOrganTissueDonationInTheLast6Months("NO")
         .vaccinationStatusForThisDisease("Unvaccinated")
-        .responsibleSurveillanceOfficer("Surveillance OFFICER - Surveillance Officer")
+        .responsibleSurveillanceOfficer("Surveillance SUPERVISOR")
         .dateReceivedAtDistrictLevel(LocalDate.now().minusDays(1))
         .dateReceivedAtRegionLevel(LocalDate.now().minusDays(2))
         .dateReceivedAtNationalLevel(LocalDate.now().minusDays(3))

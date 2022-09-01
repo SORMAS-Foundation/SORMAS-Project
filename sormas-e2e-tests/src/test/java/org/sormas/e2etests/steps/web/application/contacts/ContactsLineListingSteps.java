@@ -43,6 +43,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactsLineListing
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_TYPE_OF_CONTACT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.getLineListingDateReportInputByIndex;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_SAVED_POPUP;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -63,6 +64,8 @@ public class ContactsLineListingSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static ContactsLineListing contactsLineListing;
+  public static ContactsLineListing duplicatedContactLineListing;
+  public static ContactsLineListing duplicatedContactLineListingDE;
 
   @Inject
   public ContactsLineListingSteps(
@@ -71,7 +74,9 @@ public class ContactsLineListingSteps implements En {
       SoftAssert softly,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
-
+    duplicatedContactLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
+    duplicatedContactLineListingDE =
+        contactsLineListingService.buildGeneratedLineListingContactsDE();
     When(
         "^I create a new Contact with specific data for DE version through Line Listing$",
         () -> {
@@ -84,8 +89,44 @@ public class ContactsLineListingSteps implements En {
           selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
           fillFirstName(contactsLineListing.getFirstName());
           fillLastName(contactsLineListing.getLastName());
-          filldateOfBirth(contactsLineListing.getDateOfBirth(), Locale.GERMAN);
+          selectBirthYear(contactsLineListing.getBirthYear());
+          selectBirthMonth(contactsLineListing.getBirthMonth());
+          selectBirthDay(contactsLineListing.getBirthDay());
           selectSex(contactsLineListing.getSex());
+        });
+    When(
+        "^I create a new Contact with specific data through Line Listing with duplicated data$",
+        () -> {
+          selectRegion(duplicatedContactLineListing.getRegion());
+          selectDistrict(duplicatedContactLineListing.getDistrict());
+          fillDateOfReport(duplicatedContactLineListing.getDateOfReport(), Locale.ENGLISH);
+          fillDateOfLastContact(
+              duplicatedContactLineListing.getDateOfLastContact(), Locale.ENGLISH);
+          selectTypeOfContact(duplicatedContactLineListing.getTypeOfContact());
+          selectRelationshipWithCase(duplicatedContactLineListing.getRelationshipWithCase());
+          fillFirstName(duplicatedContactLineListing.getFirstName());
+          fillLastName(duplicatedContactLineListing.getLastName());
+          selectBirthYear(duplicatedContactLineListing.getBirthYear());
+          selectBirthMonth(duplicatedContactLineListing.getBirthMonth());
+          selectBirthDay(duplicatedContactLineListing.getBirthDay());
+          selectSex(duplicatedContactLineListing.getSex());
+        });
+    When(
+        "^I create a new Contact with specific data through Line Listing with duplicated data for De$",
+        () -> {
+          selectRegion(duplicatedContactLineListingDE.getRegion());
+          selectDistrict(duplicatedContactLineListingDE.getDistrict());
+          fillDateOfReport(duplicatedContactLineListingDE.getDateOfReport(), Locale.GERMAN);
+          fillDateOfLastContact(
+              duplicatedContactLineListingDE.getDateOfLastContact(), Locale.GERMAN);
+          selectTypeOfContact(duplicatedContactLineListingDE.getTypeOfContact());
+          selectRelationshipWithCase(duplicatedContactLineListingDE.getRelationshipWithCase());
+          fillFirstName(duplicatedContactLineListingDE.getFirstName());
+          fillLastName(duplicatedContactLineListingDE.getLastName());
+          selectBirthYear(duplicatedContactLineListingDE.getBirthYear());
+          selectBirthMonth(duplicatedContactLineListingDE.getBirthMonth());
+          selectBirthDay(duplicatedContactLineListingDE.getBirthDay());
+          selectSex(duplicatedContactLineListingDE.getSex());
         });
 
     When(
@@ -115,6 +156,11 @@ public class ContactsLineListingSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
+          if (webDriverHelpers.isElementVisibleWithTimeout(CONTACT_SAVED_POPUP, 5)) {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACT_SAVED_POPUP);
+            webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
+          }
+          TimeUnit.SECONDS.sleep(2);
         });
     When(
         "I save the new contacts from Event Participants using line listing feature in Event Participant tab",
@@ -132,6 +178,7 @@ public class ContactsLineListingSteps implements En {
               contactsLineListing.getFirstName() + " " + contactsLineListing.getLastName();
           webDriverHelpers.fillInWebElement(PERSON_LIKE_SEARCH_INPUT, caseName);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CONTACT_ID_BUTTON);
 

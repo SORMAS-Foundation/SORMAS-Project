@@ -17,77 +17,24 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class SampleSelectionField extends CustomField<SampleDto> {
 
 	public static final String CREATE_SAMPLE = "createSample";
-	public static final String SELECT_SAMPLE = "selectSample";
+	public static final String SELECT_SIMILAR_SAMPLE = "selectSimilarSample";
+	public static final String SELECT_OTHER_SAMPLE = "selectOtherSample";
 
-	private final List<SampleDto> samples;
+	private final List<SampleDto> similarSamples;
+	private final List<SampleDto> otherSamples;
 	private final String infoText;
 	private VerticalLayout mainLayout;
-	private SampleSelectionGrid sampleSelectionGrid;
-	private RadioButtonGroup<String> rbSelectSample;
+	private SampleSelectionGrid similarSampleGrid;
+	private SampleSelectionGrid otherSampleGrid;
+	private RadioButtonGroup<String> rbSelectSimilarSample;
+	private RadioButtonGroup<String> rbSelectOtherSample;
 	private RadioButtonGroup<String> rbCreateSample;
 	private Consumer<Boolean> selectionChangeCallback;
 
-	public SampleSelectionField(List<SampleDto> samples, String infoText) {
-		this.samples = samples;
+	public SampleSelectionField(List<SampleDto> similarSamples, List<SampleDto> otherSamples, String infoText) {
+		this.similarSamples = similarSamples;
+		this.otherSamples = otherSamples;
 		this.infoText = infoText;
-
-		initializeGrid();
-	}
-
-	private void addInfoComponent() {
-		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(infoText));
-	}
-
-	private void initializeGrid() {
-		sampleSelectionGrid = new SampleSelectionGrid(samples);
-
-		sampleSelectionGrid.addSelectionListener(e -> {
-			if (e.getSelected().size() > 0) {
-				rbCreateSample.setValue(null);
-			}
-
-			if (selectionChangeCallback != null) {
-				selectionChangeCallback.accept(!e.getSelected().isEmpty());
-			}
-		});
-	}
-
-	private void addSelectSelectRadioGroup() {
-
-		rbSelectSample = new RadioButtonGroup<>();
-		rbSelectSample.setItems(SELECT_SAMPLE);
-		rbSelectSample.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.sampleSelect));
-		CssStyles.style(rbSelectSample, CssStyles.VSPACE_NONE);
-		rbSelectSample.addValueChangeListener(e -> {
-			if (e.getValue() != null) {
-				rbCreateSample.setValue(null);
-				sampleSelectionGrid.setEnabled(true);
-				if (selectionChangeCallback != null) {
-					selectionChangeCallback.accept(sampleSelectionGrid.getSelectedRow() != null);
-				}
-			}
-		});
-
-		mainLayout.addComponent(rbSelectSample);
-	}
-
-	private void addCreateSampleRadioGroup() {
-
-		rbCreateSample = new RadioButtonGroup<>();
-		rbCreateSample.setItems(CREATE_SAMPLE);
-		rbCreateSample.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.sampleCreateNew));
-		rbCreateSample.addValueChangeListener(e -> {
-			if (e.getValue() != null) {
-				rbSelectSample.setValue(null);
-				sampleSelectionGrid.deselectAll();
-				sampleSelectionGrid.setEnabled(false);
-				if (selectionChangeCallback != null) {
-					selectionChangeCallback.accept(true);
-				}
-			}
-		});
-
-		mainLayout.addComponent(rbCreateSample);
 	}
 
 	/**
@@ -95,6 +42,45 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 	 */
 	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
 		this.selectionChangeCallback = callback;
+	}
+
+	private static RadioButtonGroup<String> createSelectSelectRadioGroup(String value, String captionTag) {
+
+		RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>();
+		radioGroup.setItems(value);
+		radioGroup.setItemCaptionGenerator(item -> I18nProperties.getCaption(captionTag));
+		CssStyles.style(radioGroup, CssStyles.VSPACE_NONE);
+
+		return radioGroup;
+	}
+
+	private static RadioButtonGroup<String> createSampleCreateRadioGroup() {
+
+		RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>();
+		radioGroup.setItems(CREATE_SAMPLE);
+		radioGroup.setItemCaptionGenerator(item -> I18nProperties.getCaption(Captions.sampleCreateNew));
+
+		return radioGroup;
+	}
+
+	@SafeVarargs
+	private static void addRadioListener(RadioButtonGroup<String> radio, SampleSelectionGrid sampleGrid, RadioButtonGroup<String>... otherRadios) {
+		radio.addValueChangeListener(e -> {
+			if (e.getValue() == null) {
+				if (sampleGrid != null) {
+					sampleGrid.deselectAll();
+					sampleGrid.setEnabled(false);
+				}
+			} else {
+				for (RadioButtonGroup<String> otherRadio : otherRadios) {
+					otherRadio.setValue(null);
+				}
+
+				if (sampleGrid != null) {
+					sampleGrid.setEnabled(true);
+				}
+			}
+		});
 	}
 
 	@Override
@@ -106,31 +92,98 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
 		addInfoComponent();
-		addSelectSelectRadioGroup();
-		mainLayout.addComponent(sampleSelectionGrid);
-		addCreateSampleRadioGroup();
 
-		rbSelectSample.setValue(SELECT_SAMPLE);
+		similarSampleGrid = createSampleGrid(similarSamples);
+		rbSelectSimilarSample = createSelectSelectRadioGroup(SELECT_SIMILAR_SAMPLE, Captions.selectSimilarSample);
+		mainLayout.addComponent(rbSelectSimilarSample);
+		if (similarSamples.isEmpty()) {
+			rbSelectSimilarSample.setEnabled(false);
+		} else {
+			mainLayout.addComponent(similarSampleGrid);
+		}
+
+		otherSampleGrid = createSampleGrid(otherSamples);
+		rbSelectOtherSample = createSelectSelectRadioGroup(SELECT_OTHER_SAMPLE, Captions.selectOtherSample);
+		mainLayout.addComponent(rbSelectOtherSample);
+		if (otherSamples.isEmpty()) {
+			rbSelectOtherSample.setEnabled(false);
+		} else {
+			mainLayout.addComponent(otherSampleGrid);
+		}
+
+		rbCreateSample = createSampleCreateRadioGroup();
+		mainLayout.addComponent(rbCreateSample);
+
+		addRadioListeners();
+
+		if (!similarSamples.isEmpty()) {
+			rbSelectSimilarSample.setValue(SELECT_SIMILAR_SAMPLE);
+		} else if (!otherSamples.isEmpty()) {
+			rbSelectOtherSample.setValue(SELECT_OTHER_SAMPLE);
+		} else {
+			rbCreateSample.setValue(CREATE_SAMPLE);
+		}
 
 		return mainLayout;
 	}
 
 	@Override
 	protected void doSetValue(SampleDto sampleDto) {
-		rbSelectSample.setValue(SELECT_SAMPLE);
-
-		if (sampleDto != null) {
-			sampleSelectionGrid.select(sampleDto);
+		if (similarSamples.contains(sampleDto)) {
+			rbSelectSimilarSample.setValue(SELECT_SIMILAR_SAMPLE);
+			similarSampleGrid.select(sampleDto);
+		} else if (otherSamples.contains(sampleDto)) {
+			rbSelectOtherSample.setValue(SELECT_OTHER_SAMPLE);
+			otherSampleGrid.select(sampleDto);
+		} else if (!similarSamples.isEmpty()) {
+			rbSelectSimilarSample.setValue(SELECT_SIMILAR_SAMPLE);
+		} else if (!otherSamples.isEmpty()) {
+			rbSelectOtherSample.setValue(SELECT_OTHER_SAMPLE);
+		} else {
+			rbCreateSample.setValue(CREATE_SAMPLE);
 		}
 	}
 
 	@Override
 	public SampleDto getValue() {
-		if (sampleSelectionGrid != null) {
-			SampleDto value = (SampleDto) sampleSelectionGrid.getSelectedRow();
-			return value;
+		if (similarSampleGrid != null && similarSampleGrid.isEnabled()) {
+			return (SampleDto) similarSampleGrid.getSelectedRow();
+		}
+
+		if (otherSampleGrid != null && otherSampleGrid.isEnabled()) {
+			return (SampleDto) otherSampleGrid.getSelectedRow();
 		}
 
 		return null;
+	}
+
+	private void addInfoComponent() {
+		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(infoText));
+	}
+
+	private SampleSelectionGrid createSampleGrid(List<SampleDto> samples) {
+		SampleSelectionGrid grid = new SampleSelectionGrid(samples);
+
+		grid.addSelectionListener(e -> {
+			if (selectionChangeCallback != null) {
+				selectionChangeCallback.accept(!e.getSelected().isEmpty());
+			}
+		});
+
+		grid.setEnabled(false);
+
+		return grid;
+	}
+
+	private void addRadioListeners() {
+		addRadioListener(rbSelectSimilarSample, similarSampleGrid, rbSelectOtherSample, rbCreateSample);
+		addRadioListener(rbSelectOtherSample, otherSampleGrid, rbSelectSimilarSample, rbCreateSample);
+		addRadioListener(rbCreateSample, null, rbSelectSimilarSample, rbSelectOtherSample);
+
+		if (selectionChangeCallback != null) {
+			rbCreateSample.addValueChangeListener(e -> {
+				selectionChangeCallback.accept(e.getValue() != null);
+			});
+		}
 	}
 }

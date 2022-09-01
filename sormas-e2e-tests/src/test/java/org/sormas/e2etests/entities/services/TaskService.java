@@ -42,7 +42,24 @@ public class TaskService {
         .suggestedStartTime(LocalTime.of(11, 30))
         .dueDateDate(LocalDate.now().plusDays(1))
         .dueDateTime(LocalTime.of(11, 30))
-        .assignedTo("Case SUPERVISOR - Clinician")
+        .assignedTo("Case SUPERVISOR")
+        .priority("Normal")
+        .commentsOnTask("Task comment-" + timeStamp)
+        .commentsOnExecution("Execution comment-" + timeStamp)
+        .taskStatus(StatusValues.PENDING.getValue())
+        .build();
+  }
+
+  public Task buildGeneratedTaskDE() {
+    long timeStamp = System.currentTimeMillis();
+    return Task.builder()
+        .taskContext("GENERAL")
+        .taskType("Andere Aufgabe (siehe Kommentar)")
+        .suggestedStartDate(LocalDate.now())
+        .suggestedStartTime(LocalTime.of(11, 30))
+        .dueDateDate(LocalDate.now().plusDays(1))
+        .dueDateTime(LocalTime.of(11, 30))
+        .assignedTo("Ad MIN")
         .priority("Normal")
         .commentsOnTask("Task comment-" + timeStamp)
         .commentsOnExecution("Execution comment-" + timeStamp)
@@ -59,7 +76,7 @@ public class TaskService {
         .suggestedStartTime(LocalTime.of(12, 30))
         .dueDateDate(LocalDate.now().plusDays(2))
         .dueDateTime(LocalTime.of(13, 30))
-        .assignedTo("Surveillance OFFICER - Surveillance Officer")
+        .assignedTo("Surveillance SUPERVISOR")
         .priority("High")
         .commentsOnTask("Task comment-" + timeStamp)
         .commentsOnExecution("Execution comment-" + timeStamp)
@@ -71,7 +88,7 @@ public class TaskService {
     return buildGeneratedTask().toBuilder()
         .taskContext("EVENT")
         .taskType("vaccination activities")
-        .assignedTo("National USER - National User")
+        .assignedTo("Nat USER")
         .build();
   }
 }

@@ -25,6 +25,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJoins;
@@ -66,9 +68,10 @@ public class DashboardService {
 
 	@EJB
 	private CaseService caseService;
-
 	@EJB
 	private EventService eventService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public List<DashboardCaseDto> getCases(DashboardCriteria dashboardCriteria) {
 
@@ -80,7 +83,7 @@ public class DashboardService {
 		final CaseJoins joins = caseQueryContext.getJoins();
 		Join<Case, Person> person = joins.getPerson();
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
@@ -159,7 +162,7 @@ public class DashboardService {
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
@@ -169,11 +172,35 @@ public class DashboardService {
 			cq.where(filter);
 			cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
 
-			result = em.createQuery(cq)
-				.getResultStream()
-				.collect(Collectors.toMap(tuple -> (CaseClassification) tuple[0], tuple -> ((Number) tuple[1]).intValue()));
+			List<Object[]> resultList = em.createQuery(cq).getResultList();
+			boolean aggregateConfirmed = !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
+			result = getCasesCountByClassification(resultList, aggregateConfirmed);
 		} else {
 			result = Collections.emptyMap();
+		}
+
+		return result;
+	}
+
+	static Map<CaseClassification, Integer> getCasesCountByClassification(List<Object[]> classificationCountList, boolean aggregateConfirmed) {
+
+		Map<CaseClassification, Integer> result = classificationCountList.stream()
+			.collect(Collectors.toMap(tuple -> (CaseClassification) tuple[0], tuple -> ((Number) tuple[1]).intValue()));
+
+		if (aggregateConfirmed) {
+			CaseClassification confirmedKey = CaseClassification.CONFIRMED;
+			int confirmedSum = result.entrySet()
+				.stream()
+				.filter(e -> CaseClassification.getConfirmedClassifications().contains(e.getKey()))
+				.mapToInt(e -> e.getValue())
+				.sum();
+			for (CaseClassification caseClassification : CaseClassification.getConfirmedClassifications()) {
+				if (caseClassification == confirmedKey && confirmedSum > 0) {
+					result.put(confirmedKey, confirmedSum);
+				} else {
+					result.remove(caseClassification);
+				}
+			}
 		}
 
 		return result;
@@ -186,7 +213,7 @@ public class DashboardService {
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
@@ -212,7 +239,7 @@ public class DashboardService {
 		final CaseJoins joins = caseQueryContext.getJoins();
 		Join<Case, District> district = joins.getResponsibleDistrict();
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
@@ -238,7 +265,7 @@ public class DashboardService {
 		final CaseJoins joins = caseQueryContext.getJoins();
 		Join<Case, District> districtJoin = joins.getResponsibleDistrict();
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
@@ -280,7 +307,7 @@ public class DashboardService {
 		CaseJoins joins = caseQueryContext.getJoins();
 		Join<Case, Person> person = joins.getPerson();
 
-		Predicate filter = caseService.createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
@@ -305,7 +332,7 @@ public class DashboardService {
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
@@ -329,7 +356,7 @@ public class DashboardService {
 
 		Join<Case, Person> person = joins.getPerson();
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
@@ -362,7 +389,7 @@ public class DashboardService {
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
 		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(eventQueryContext));
 
 		List<DashboardEventDto> result;
 
@@ -407,7 +434,7 @@ public class DashboardService {
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
 		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(eventQueryContext));
 
 		if (filter != null)
 			cq.where(filter);
@@ -423,7 +450,6 @@ public class DashboardService {
 
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
-		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Join<Case, Region> responsibleRegion = joins.getResponsibleRegion();
@@ -445,9 +471,7 @@ public class DashboardService {
 				cb,
 				filter,
 				caseService.createNewCaseFilter(
-					cq,
-					cb,
-					from,
+					caseQueryContext,
 					DateHelper.getStartOfDay(dashboardCriteria.getDateFrom()),
 					DateHelper.getEndOfDay(dashboardCriteria.getDateTo()),
 					dashboardCriteria.getNewCaseDateType()));

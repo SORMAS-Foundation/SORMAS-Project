@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 
 import de.symeda.sormas.api.utils.DateHelper;
@@ -29,7 +30,11 @@ public class FeatureConfigurationService extends Service {
 		AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
 		Intent intent = new Intent(context, FeatureConfigurationService.class);
-		PendingIntent alarmIntent = PendingIntent.getService(context, 1515, intent, 0);
+		PendingIntent alarmIntent = PendingIntent.getService(
+			context,
+			1515,
+			intent,
+			Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_ONE_SHOT);
 
 		Date date = DateHelper.getEndOfDay(new Date());
 		alarmMgr.setInexactRepeating(

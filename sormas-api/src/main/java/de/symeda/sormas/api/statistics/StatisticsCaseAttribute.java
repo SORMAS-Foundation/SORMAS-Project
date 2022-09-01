@@ -139,6 +139,7 @@ public enum StatisticsCaseAttribute {
 		return subAttributes;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

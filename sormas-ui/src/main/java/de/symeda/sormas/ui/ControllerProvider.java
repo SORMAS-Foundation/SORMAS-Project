@@ -32,8 +32,8 @@ import de.symeda.sormas.ui.docgeneration.DocGenerationController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
+import de.symeda.sormas.ui.externalmessage.ExternalMessageController;
 import de.symeda.sormas.ui.immunization.ImmunizationController;
-import de.symeda.sormas.ui.labmessage.LabMessageController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
@@ -45,6 +45,7 @@ import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.travelentry.TravelEntryController;
 import de.symeda.sormas.ui.user.UserController;
+import de.symeda.sormas.ui.user.UserRoleController;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
@@ -61,6 +62,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final VisitController visitController;
 	private final PersonController personController;
 	private final UserController userController;
+	private final UserRoleController userRoleController;
 	private final TaskController taskController;
 	private final ActionController actionController;
 	private final SampleController sampleController;
@@ -75,7 +77,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final CampaignController campaignController;
 	private final SormasToSormasController sormasToSormasController;
 	private final CustomExportController customExportController;
-	private final LabMessageController labMessageController;
+	private final ExternalMessageController externalMessageController;
 	private final SurveillanceReportController surveillanceReportController;
 	private final DocGenerationController docGenerationController;
 	private final TravelEntryController travelEntryController;
@@ -96,6 +98,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		visitController = new VisitController();
 		personController = new PersonController();
 		userController = new UserController();
+		userRoleController = new UserRoleController();
 		taskController = new TaskController();
 		actionController = new ActionController();
 		sampleController = new SampleController();
@@ -110,7 +113,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		campaignController = new CampaignController();
 		sormasToSormasController = new SormasToSormasController();
 		customExportController = new CustomExportController();
-		labMessageController = new LabMessageController();
+		externalMessageController = new ExternalMessageController();
 		surveillanceReportController = new SurveillanceReportController();
 		docGenerationController = new DocGenerationController();
 		travelEntryController = new TravelEntryController();
@@ -158,6 +161,10 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static UserController getUserController() {
 		return get().userController;
+	}
+
+	public static UserRoleController getUserRoleController() {
+		return get().userRoleController;
 	}
 
 	public static TaskController getTaskController() {
@@ -216,8 +223,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().customExportController;
 	}
 
-	public static LabMessageController getLabMessageController() {
-		return get().labMessageController;
+	public static ExternalMessageController getExternalMessageController() {
+		return get().externalMessageController;
 	}
 
 	public static SurveillanceReportController getSurveillanceReportController() {

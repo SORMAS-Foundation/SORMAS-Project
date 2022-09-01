@@ -35,8 +35,10 @@ import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
@@ -55,7 +57,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
-	private UserDto observerUser;
+	private UserDto nationalVisitUser;
 	private PersonDto person;
 
 	@Override
@@ -63,14 +65,27 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		user1 = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.CONTACT_OFFICER),
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
-		user2 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		user2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.CONTACT_OFFICER),
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
+		nationalVisitUser =
+			creator.createUser(null, null, null, "National", "Visit User", "National Visit User", JurisdictionLevel.NATION, UserRight.VISIT_EDIT);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 
@@ -138,7 +153,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdatePseudonymized() {
 		VisitDto visit = createVisit(user2, person).visit;
 
-		loginWith(observerUser);
+		loginWith(nationalVisitUser);
 
 		visit.setReportLat(null);
 		visit.setReportLon(null);
@@ -192,12 +207,12 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 				v.setReportLon(23.234);
 				v.setReportLatLonAccuracy(10f);
 
-			v.getSymptoms().setPatientIllLocation("Test ill location");
-			v.getSymptoms().setOtherHemorrhagicSymptoms(SymptomState.YES);
-			v.getSymptoms().setOtherHemorrhagicSymptomsText("OtherHemorrhagic");
+				v.getSymptoms().setPatientIllLocation("Test ill location");
+				v.getSymptoms().setOtherHemorrhagicSymptoms(SymptomState.YES);
+				v.getSymptoms().setOtherHemorrhagicSymptomsText("OtherHemorrhagic");
 
-			v.setVisitRemarks("Test remarks");
-		});
+				v.setVisitRemarks("Test remarks");
+			});
 
 		return new ContactVisit(contact, visit);
 	}

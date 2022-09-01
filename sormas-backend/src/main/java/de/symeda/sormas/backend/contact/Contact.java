@@ -71,7 +71,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -503,17 +503,6 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 
 	public void setResultingCase(Case resultingCase) {
 		this.resultingCase = resultingCase;
-	}
-
-	@Override
-	public String toString() {
-		Person contactPerson = getPerson();
-		return ContactReferenceDto.buildCaption(
-			contactPerson.getFirstName(),
-			contactPerson.getLastName(),
-			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
-			getCaze() != null ? getCaze().getPerson().getLastName() : null,
-			getUuid());
 	}
 
 	public ContactReferenceDto toReference() {

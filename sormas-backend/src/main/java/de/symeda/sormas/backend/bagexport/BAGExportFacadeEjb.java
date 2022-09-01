@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.bagexport;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -47,6 +45,7 @@ import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
@@ -61,9 +60,10 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "BAGExportFacade")
-@RolesAllowed(UserRight._BAG_EXPORT)
+@RightsAllowed(UserRight._BAG_EXPORT)
 public class BAGExportFacadeEjb implements BAGExportFacade {
 
 	private static final String TODO_VALUE = "";
@@ -80,7 +80,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		CaseJoins caseJoins = new CaseJoins(caseRoot);
 
 		Join<Case, Person> person = caseJoins.getPerson();
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, caseJoins.getPersonJoins());
 
 		Join<Person, Location> homeAddress = caseJoins.getPersonAddress();
 
@@ -244,7 +244,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		Join<Person, Location> homeAddress = contactJoins.getAddress();
 		Join<Contact, Case> caze = contactJoins.getCaze();
 
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, contactJoins.getPersonJoins());
 
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
 		Expression<Date> caseLinkContactDate = cb.nullLiteral(Date.class);

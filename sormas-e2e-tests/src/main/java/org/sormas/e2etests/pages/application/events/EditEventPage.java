@@ -23,7 +23,10 @@ import org.openqa.selenium.By;
 public class EditEventPage {
   public static final By EVENT_PARTICIPANTS_TAB =
       By.cssSelector("#tab-events-eventparticipants span");
+  public static final By UUID_EDIT_EVENT = By.cssSelector("div[location='uuid']");
   public static final By FIRST_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[1]//a");
+  public static final By FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE = By.xpath("//td//a");
+  public static final By FIRST_ARCHIVED_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By EVENT_ACTIONS_TAB = By.cssSelector("#tab-events-eventactions span");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By TITLE_INPUT = By.cssSelector("#eventTitle");
@@ -52,6 +55,8 @@ public class EditEventPage {
   public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");
   public static final By NEW_TASK_BUTTON = By.id("taskNewTask");
   public static final By EDIT_FIRST_TASK = By.cssSelector("#edit-task-0");
+  public static final By DELETE_BUTTON_DISABLED =
+      By.xpath("//div[@id='delete' and @aria-disabled='true']");
   public static final By LINK_EVENT_GROUP_BUTTON = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");
@@ -65,6 +70,9 @@ public class EditEventPage {
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
   public static final By EVENT_HANDOUT_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By GPS_LATITUDE_INPUT_EDIT_EVENT = By.id("latitude");
+  public static final By GPS_LONGITUDE_INPUT_EDIT_EVENT = By.id("longitude");
+  public static final By MAP_CONTAINER = By.cssSelector("[class*='leaflet-container']");
   public static final By EVENT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By CREATE_EVENT_HANDOUT_BUTTON =
       By.cssSelector(".popupContent [id='Create']");
@@ -74,15 +82,19 @@ public class EditEventPage {
   public static final By EDIT_EVENT_GROUP_BUTTON = By.id("add-event-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON = By.id("tab-events");
+  public static final By NAVIGATE_TO_EVENT_GROUP_BUTTON = By.id("tab-events-data");
   public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON =
       By.id("tab-events-eventparticipants");
+  public static final By EVENT_PARTICIPANT_HEADER =
+      By.xpath(
+          "//div[@class='v-label v-widget h2 v-label-h2 primary v-label-primary vspace-none v-label-vspace-none vspace-top-none v-label-vspace-top-none caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By SAVE_BUTTON_FOR_EDIT_EVENT_GROUP = By.id("commit");
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
+  public static final By CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT = By.id("bulkActions-5");
   public static final By EVENT_MANAGEMENT_STATUS_CHECK =
       By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");
-
   public static final By EVENT_CLUSTER_EDIT = By.xpath("//span[.='Cluster']");
   public static final By PRIMARY_MODE_OF_TRANSMISSION_COMBOBOX =
       By.cssSelector("[id='diseaseTransmissionMode'] [class='v-filterselect-button']");
@@ -134,12 +146,53 @@ public class EditEventPage {
       By.xpath("//label[text()='Wasserprobe']");
   public static final By OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE =
       By.xpath("//label[text()='Sonstiges']");
+  public static final By COUNTRY_INFO_POPUP_TEXT = By.xpath("//div[@class='v-tooltip-text']");
+  public static final By COUNTRY_INFO_ICON =
+      By.xpath("//span[contains(@class, 'v-icon-info_circle')]");
+  public static final By COUNTRY_COMBOBOX =
+      By.cssSelector("[id='country'] [class='v-filterselect-button']");
+  public static final By DEFAULT_COMBOBOX_VALUE = By.cssSelector(".v-filterselect-suggestmenu td");
+  public static final By COUNTRY_COMBOBOX_INPUT = By.cssSelector("#country input");
+  public static final By COUNTRY_COMBOBOX_DIABLED =
+      By.xpath("//div[@id=\"country\" and contains(@class, 'v-disabled')]");
+  public static final By REASON_FOR_DELETION_MARK =
+      By.cssSelector(".popupContent span[class='v-errorindicator v-errorindicator-error']");
+  public static By REASON_FOR_DELETION_INPUT = By.cssSelector("#deletionReason input");
+  public static final By REASON_FOR_DELETION_MESSAGE =
+      By.xpath("//div[@class='v-errormessage v-errormessage-error']");
   public static final By
       PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE =
           By.xpath(
               "//label[text()='Erreger-Feintypisierung stimmt mit der der F\u00E4lle \u00FCberein']");
+  public static final By EVENT_DATE_OF_REPORT_EXCLAMATION_MARK =
+      By.xpath("//span[@class='v-errorindicator v-errorindicator-error']");
+  public static final By EVENT_DATE_OF_REPORT_EXCLAMATION_MARK_MESSAGE =
+      By.xpath("//div[@class='v-errormessage v-errormessage-error']");
+  public static final By EVENT_ERROR_POPUP_MESSAGE_WITH_INPUT_DATA_TITLE =
+      By.cssSelector(".popupContent h1");
+  public static final By EVENT_ERROR_POPUP_FIRST_MESSAGE =
+      By.xpath(
+          "//div[@class='popupContent']//li[text()='Date of report has to be after or on the same day as Start date']");
+  public static final By EVENT_ERROR_POPUP_SECOND_MESSAGE =
+      By.xpath(
+          "//div[@class='popupContent']//li[text()='Start date has to be before or on the same day as Date of report']");
+  public static final By VACCINATION_STATUS_COMBOBOX =
+      By.xpath("//div[@id='vaccinationStatus']/div");
+  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+  public static final By EYE_ICON =
+      By.cssSelector("[class*='v-caption-on-top']>[class*='v-popupview']");
 
   public static By getGroupEventName(String groupEventName) {
-    return By.xpath("//*[contains(text(),'" + groupEventName + "')]");
+    return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
   }
+
+  public static By getEventParticipantUUIDbyIndex(int index) {
+    return By.xpath(
+        String.format(
+            "(//input[@type=\"checkbox\"])[%x]/../../following-sibling::td/a", index + 2));
+  }
+
+  public static final By FIRST_EVENT_PARTICIPANT_FROM_LIST = By.cssSelector("tr td a");
+  public static final By CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON =
+      By.xpath("(//tr//td//a)[3]");
 }

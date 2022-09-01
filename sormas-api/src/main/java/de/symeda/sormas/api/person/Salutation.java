@@ -26,6 +26,7 @@ public enum Salutation {
 	GUARDIAN_OF_MINOR,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

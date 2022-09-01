@@ -25,11 +25,14 @@ import de.symeda.sormas.api.utils.DependingOnUserRight;
 
 public enum TaskContext {
 
+	@DependingOnUserRight(UserRight.CASE_VIEW)
 	CASE(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE, "cases", Strings.notificationTaskAssociatedCaseLink),
 	@DependingOnUserRight(UserRight.CONTACT_VIEW)
 	CONTACT(FeatureType.TASK_GENERATION_CONTACT_TRACING, "contacts", Strings.notificationTaskAssociatedContactLink),
+	@DependingOnUserRight(UserRight.EVENT_VIEW)
 	EVENT(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE, "events", Strings.notificationTaskAssociatedEventLink),
 	GENERAL(FeatureType.TASK_GENERATION_GENERAL, null, null),
+	@DependingOnUserRight(UserRight.TRAVEL_ENTRY_VIEW)
 	TRAVEL_ENTRY(FeatureType.TRAVEL_ENTRIES, "travelEntries", Strings.notificationTaskAssociatedTravelEntryLink);
 
 	private final FeatureType featureType;
@@ -54,8 +57,8 @@ public enum TaskContext {
 		return associatedEntityLinkMessage;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

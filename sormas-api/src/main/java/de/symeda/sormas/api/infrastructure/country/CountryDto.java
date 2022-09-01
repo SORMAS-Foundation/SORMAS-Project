@@ -4,12 +4,20 @@ import java.util.Date;
 
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.EVENT_SURVEILLANCE,
+	FeatureType.AGGREGATE_REPORTING })
 public class CountryDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = 8309822957203823162L;
@@ -109,8 +117,13 @@ public class CountryDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getDefaultName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public static CountryDto build() {

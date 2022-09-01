@@ -30,6 +30,7 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -113,6 +114,19 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 	public void testAuditSchemaVersions() throws IOException {
 		assertContinuousSchemaVersions(StartupShutdownService.AUDIT_SCHEMA);
 	}
+
+	/**
+	 * Test that the *_history tables have the same columns as the corresponding production tables
+	 *
+	 * TROUBLESHOOTING
+	 * - In case the container can't be started:
+	 * https://github.com/hzi-braunschweig/SORMAS-Project/issues/9177#issuecomment-1125130020
+	 *
+	 * @throws IOException
+	 *             if the resource(s) used in the test can't be read
+	 * @throws URISyntaxException
+	 *             if the path to a resource is not syntactically correct
+	 */
 
 	@Test
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {

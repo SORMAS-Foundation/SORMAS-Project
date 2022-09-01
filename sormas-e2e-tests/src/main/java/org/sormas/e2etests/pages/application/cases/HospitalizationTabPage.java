@@ -44,7 +44,8 @@ public class HospitalizationTabPage {
   public static final By NEW_ENTRY_LINK = By.id("actionNewEntry");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By FIRST_PREVIOUS_HOSPITALIZATION_ENTRY =
-      By.xpath("//div[contains(@id, 'de.symeda.sormas.api.hospitalization')]");
+      By.xpath(
+          "//div[contains(@id, 'previousHospitalizations')]//div[@class='v-scrollable v-table-body-wrapper v-table-body']//td[1]");
   public static final By SUCCESSFUL_SAVE_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By BLUE_ERROR_EXCLAMATION_MARK =
       By.xpath("//span[@class='v-errorindicator v-errorindicator-info']");
@@ -55,4 +56,12 @@ public class HospitalizationTabPage {
       By.cssSelector(".v-window-contents #healthFacility div");
   public static final By PLACE_OF_STAY_IN_HOSPITAL_POPUP_SAVE_BUTTON =
       By.cssSelector(".v-window-contents #commit");
+  public static final By DESCRIPTION_INPUT = By.cssSelector("#description");
+  public static final By PREVIOUS_HOSPITALIZATION_POPUP =
+      By.xpath(
+          "//*[contains(@class, 'v-window-header') and contains(text(),'Previous hospitalization')]");
+  public static final By CURRENT_HOSPITALIZATION_HEADING =
+      By.xpath("//*[contains(text(),'Current Hospitalization')]");
+  public static final By PREVIOUS_HOSPITALIZATION_HEADING =
+      By.xpath("//*[contains(text(),'Previous Hospitalizations')]");
 }

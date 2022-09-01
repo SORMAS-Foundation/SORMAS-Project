@@ -1,4 +1,4 @@
-@Sanity @API
+@Sanity @API @precon
 Feature: Check basic POSTs RestApi endpoints
 
   @env_main
@@ -87,7 +87,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_de @ignore
+  @env_de
   Scenario: Create new case on DE market
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -105,7 +105,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_de @ignore
+  @env_de
   Scenario: Create a new contact linked to a case on DE market
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -123,7 +123,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_de @ignore
+  @env_de
   Scenario: Create a new sample on DE market
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

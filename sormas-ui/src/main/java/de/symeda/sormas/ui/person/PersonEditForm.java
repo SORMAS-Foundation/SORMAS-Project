@@ -35,12 +35,12 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.Property;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -52,6 +52,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -307,12 +308,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		personContactDetailsField.setCaption(null);
 		personContactDetailsField.setPseudonymized(isPseudonymized);
 
-		addFields(
-			PersonDto.OCCUPATION_TYPE,
-			PersonDto.OCCUPATION_DETAILS,
-			PersonDto.ARMED_FORCES_RELATION_TYPE,
-			PersonDto.EDUCATION_TYPE,
-			PersonDto.EDUCATION_DETAILS);
+		ComboBox occupationTypeField = addField(PersonDto.OCCUPATION_TYPE, ComboBox.class);
+		TextField occupationTypeDetailsField = addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
+		occupationTypeDetailsField.setVisible(false);
+		FieldHelper
+			.updateItems(occupationTypeField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null));
+		occupationTypeField.addValueChangeListener(e -> {
+			OccupationType occupationType = (OccupationType) e.getProperty().getValue();
+			occupationTypeDetailsField.setVisible(occupationType != null && occupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
+		});
+
+		addFields(PersonDto.ARMED_FORCES_RELATION_TYPE, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
@@ -357,7 +363,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 		setVisible(
 			false,
-			PersonDto.OCCUPATION_DETAILS,
 			PersonDto.DEATH_DATE,
 			PersonDto.DEATH_PLACE_TYPE,
 			PersonDto.DEATH_PLACE_DESCRIPTION,
@@ -430,10 +435,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		});
 
 		addFieldListeners(PersonDto.DEATH_DATE, e -> updateApproximateAge());
-		addFieldListeners(PersonDto.OCCUPATION_TYPE, e -> {
-			updateOccupationFieldCaptions();
-			toggleOccupationMetaFields();
-		});
 
 		addListenersToInfrastructureFields(
 			cbPlaceOfBirthRegion,
@@ -457,8 +458,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		causeOfDeathDiseaseField.addValueChangeListener(e -> {
 			boolean causeOfDeathVisible = presentCondition.getValue() != PresentCondition.ALIVE
-					&& presentCondition.getValue() != PresentCondition.UNKNOWN
-					&& presentCondition.getValue() != null;
+				&& presentCondition.getValue() != PresentCondition.UNKNOWN
+				&& presentCondition.getValue() != null;
 			toggleCauseOfDeathFields(causeOfDeathVisible);
 		});
 
@@ -546,6 +547,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 	}
 
+	@Override
 	public void setValue(PersonDto newFieldValue) {
 		super.setValue(newFieldValue);
 		initializePresentConditionField();
@@ -587,9 +589,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
-			if (facilityField.equals(cbPlaceOfBirthFacility)) {
-				this.getValue().setPlaceOfBirthFacilityType((FacilityType) typeField.getValue());
-			}
 		});
 		// Set initial visibility
 		updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) facilityField.getValue());
@@ -728,27 +727,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		approximateAgeTypeSelect.setReadOnly(true);
 	}
 
-	private void toggleOccupationMetaFields() {
-		OccupationType type = (OccupationType) ((AbstractSelect) getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
-		if (type != null) {
-			switch (type) {
-			case BUSINESSMAN_WOMAN:
-			case TRANSPORTER:
-			case OTHER:
-				setVisible(true, PersonDto.OCCUPATION_DETAILS);
-				break;
-			case HEALTHCARE_WORKER:
-				setVisible(true, PersonDto.OCCUPATION_DETAILS);
-				break;
-			default:
-				setVisible(false, PersonDto.OCCUPATION_DETAILS);
-				break;
-			}
-		} else {
-			setVisible(false, PersonDto.OCCUPATION_DETAILS);
-		}
-	}
-
 	private void updateFacilityDetailsVisibility(TextField detailsField, FacilityReferenceDto facility) {
 		if (facility == null) {
 			detailsField.setVisible(false);
@@ -822,30 +800,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 
-	private void updateOccupationFieldCaptions() {
-		OccupationType type = (OccupationType) ((AbstractSelect) getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
-		if (type != null) {
-			Field<?> od = getFieldGroup().getField(PersonDto.OCCUPATION_DETAILS);
-			switch (type) {
-			case BUSINESSMAN_WOMAN:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + ".business." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case TRANSPORTER:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + ".transporter." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case OTHER:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + ".other." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case HEALTHCARE_WORKER:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + ".healthcare." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			default:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + "." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			}
-		}
-	}
-
 	private void setItemCaptionsForMonths(AbstractSelect months) {
 		months.setItemCaption(1, I18nProperties.getEnumCaption(Month.JANUARY));
 		months.setItemCaption(2, I18nProperties.getEnumCaption(Month.FEBRUARY));
@@ -865,12 +819,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
 			if (deathPlaceDesc.isVisible() && StringUtils.isBlank(deathPlaceDesc.getValue())) {
-				deathPlaceDesc.setValue(getValue().getAddress().toString());
+				deathPlaceDesc.setValue(getValue().getAddress().buildCaption());
 			}
 		}
 
 		if (burialPlaceDesc.isVisible() && StringUtils.isBlank(burialPlaceDesc.getValue())) {
-			burialPlaceDesc.setValue(getValue().getAddress().toString());
+			burialPlaceDesc.setValue(getValue().getAddress().buildCaption());
 		}
 	}
 
@@ -889,6 +843,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		return super.addFieldToLayout(layout, propertyId, field);
 	}
 
+	@Override
 	public void setHeading(String heading) {
 		personInformationHeadingLabel.setValue(heading);
 	}
@@ -900,13 +855,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PresentCondition type = (PresentCondition) ((AbstractSelect) getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
 			if (type == null) {
 				setVisible(
-						false,
-						PersonDto.DEATH_DATE,
-						PersonDto.DEATH_PLACE_TYPE,
-						PersonDto.DEATH_PLACE_DESCRIPTION,
-						PersonDto.BURIAL_DATE,
-						PersonDto.BURIAL_PLACE_DESCRIPTION,
-						PersonDto.BURIAL_CONDUCTOR);
+					false,
+					PersonDto.DEATH_DATE,
+					PersonDto.DEATH_PLACE_TYPE,
+					PersonDto.DEATH_PLACE_DESCRIPTION,
+					PersonDto.BURIAL_DATE,
+					PersonDto.BURIAL_PLACE_DESCRIPTION,
+					PersonDto.BURIAL_CONDUCTOR);
 				getField(PersonDto.DEATH_DATE).setValue(null);
 				getField(PersonDto.BURIAL_DATE).setValue(null);
 				getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
@@ -914,49 +869,49 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				toggleCauseOfDeathFields(false);
 			} else {
 				switch (type) {
-					case DEAD:
-						setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
-						causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
-						toggleCauseOfDeathFields(true);
-						setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
+				case DEAD:
+					setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
+					causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+					toggleCauseOfDeathFields(true);
+					setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
 
-						getField(PersonDto.BURIAL_DATE).setValue(null);
-						getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
-						getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+					getField(PersonDto.BURIAL_DATE).setValue(null);
+					getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+					getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
 
-						break;
-					case BURIED:
-						setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
-						causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
-						//@formatter:off
+					break;
+				case BURIED:
+					setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
+					causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+					//@formatter:off
 						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_DATE), PersonDto.BURIAL_DATE);
 						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_PLACE_DESCRIPTION), PersonDto.BURIAL_PLACE_DESCRIPTION);
 						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_CONDUCTOR), PersonDto.BURIAL_CONDUCTOR);
 						//@formatter:on
-						toggleCauseOfDeathFields(true);
-						break;
-					default:
-						setVisible(
-								false,
-								PersonDto.DEATH_DATE,
-								PersonDto.DEATH_PLACE_TYPE,
-								PersonDto.DEATH_PLACE_DESCRIPTION,
-								PersonDto.BURIAL_DATE,
-								PersonDto.BURIAL_PLACE_DESCRIPTION,
-								PersonDto.BURIAL_CONDUCTOR);
-						getField(PersonDto.DEATH_DATE).setValue(null);
-						getField(PersonDto.BURIAL_DATE).setValue(null);
-						getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
-						getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
-						toggleCauseOfDeathFields(false);
-						break;
+					toggleCauseOfDeathFields(true);
+					break;
+				default:
+					setVisible(
+						false,
+						PersonDto.DEATH_DATE,
+						PersonDto.DEATH_PLACE_TYPE,
+						PersonDto.DEATH_PLACE_DESCRIPTION,
+						PersonDto.BURIAL_DATE,
+						PersonDto.BURIAL_PLACE_DESCRIPTION,
+						PersonDto.BURIAL_CONDUCTOR);
+					getField(PersonDto.DEATH_DATE).setValue(null);
+					getField(PersonDto.BURIAL_DATE).setValue(null);
+					getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+					getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+					toggleCauseOfDeathFields(false);
+					break;
 				}
 			}
 
 			fillDeathAndBurialFields(
-					getField(PersonDto.DEATH_PLACE_TYPE),
-					getField(PersonDto.DEATH_PLACE_DESCRIPTION),
-					getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
+				getField(PersonDto.DEATH_PLACE_TYPE),
+				getField(PersonDto.DEATH_PLACE_DESCRIPTION),
+				getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
 		}
 	}
 }

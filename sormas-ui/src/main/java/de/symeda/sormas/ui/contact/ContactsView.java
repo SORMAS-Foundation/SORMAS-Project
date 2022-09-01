@@ -27,15 +27,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.vaadin.shared.ui.ContentMode;
-import de.symeda.sormas.api.common.CoreEntityType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
@@ -54,11 +52,13 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.bagexport.BAGExportContactDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -445,13 +445,12 @@ public class ContactsView extends AbstractView {
 
 				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT)) {
 					int daysAfterContactGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
-							.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+						.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 					if (daysAfterContactGetsArchived > 0) {
 						relevanceStatusInfoLabel = new Label(
-								VaadinIcons.INFO_CIRCLE.getHtml() + " "
-										+ String
-										.format(I18nProperties.getString(Strings.infoArchivedContacts), daysAfterContactGetsArchived),
-								ContentMode.HTML);
+							VaadinIcons.INFO_CIRCLE.getHtml() + " "
+								+ String.format(I18nProperties.getString(Strings.infoArchivedContacts), daysAfterContactGetsArchived),
+							ContentMode.HTML);
 						relevanceStatusInfoLabel.setVisible(false);
 						relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
 						actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
@@ -517,7 +516,9 @@ public class ContactsView extends AbstractView {
 							VaadinIcons.SHARE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getSormasToSormasController().shareSelectedContacts(items, () -> navigateTo(criteria))),
-							FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser())));
+							FacadeProvider.getFeatureConfigurationFacade()
+								.isPropertyValueTrue(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS, FeatureTypeProperty.S2S_SHARING)
+								&& FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser())));
 
 				if (isDocGenerationAllowed() && grid instanceof AbstractContactGrid) {
 					bulkActions.add(
@@ -655,9 +656,10 @@ public class ContactsView extends AbstractView {
 	}
 
 	private boolean isBulkEditAllowed() {
-		return viewConfiguration.getViewType().isContactOverview()
+		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
+			&& viewConfiguration.getViewType().isContactOverview()
 			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
-				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser());
+				|| FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser());
 	}
 
 	private HorizontalLayout dateRangeFollowUpVisitsFilterLayout() {

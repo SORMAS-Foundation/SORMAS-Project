@@ -42,6 +42,8 @@ public class EditSamplePage {
   public static final By SAMPLE_TYPE_INPUT = By.cssSelector("[id='sampleMaterial'] input");
   public static final By SPECIMEN_CONDITION_INPUT =
       By.cssSelector("[id='specimenCondition'] input");
+  public static final By SPECIMEN_CONDITION_NOT_MANDATORY_COMBOBOX =
+      By.xpath("//div[@id='specimenCondition' and not(contains(@class, 'v-required'))]");
   public static final By LABORATORY_NAME_INPUT = By.cssSelector("[id='labDetails']");
   public static final By RECEIVED_OPTION_BUTTON = By.cssSelector("[id='received'] label");
   public static final By LAB_SAMPLE_ID_INPUT = By.cssSelector("[id='labSampleID']");
@@ -57,6 +59,8 @@ public class EditSamplePage {
       By.cssSelector("[class='popupContent'] [id='cqValue']");
   public static final By PCR_TEST_SPECIFICATION_COMBOBOX =
       By.cssSelector("[class='popupContent'] [id='pcrTestSpecification']");
+  public static final By PCR_TEST_SPECIFICATION_COMBOBOX_DIV =
+      By.cssSelector("[class='popupContent'] [id='pcrTestSpecification'] div");
   public static final By SPECIFY_TEST_DETAILS_INPUT =
       By.cssSelector("[class='popupContent'] [id='testTypeText']");
   public static final By TYPING_ID_INPUT = By.cssSelector("[class='popupContent'] [id='typingId']");
@@ -66,4 +70,11 @@ public class EditSamplePage {
   public static final By SAMPLE_DELETION_POPUP = By.cssSelector(".v-window .popupContent");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SAVE_SAMPLE_BUTTON = By.id("commit");
+  public static final By DELETE_SAMPLE_REASON_POPUP =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Reason for deletion']/../following-sibling::div//div");
+  public static final By EDIT_PATHOGEN_TEST =
+      By.cssSelector(".v-align-right.v-slot.v-slot-compact.v-slot-link > div[role='button']");
+  public static final By TESTED_DISEASE_VARIANT =
+      By.cssSelector(".popupContent [id='testedDiseaseVariant'] div");
 }

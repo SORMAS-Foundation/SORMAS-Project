@@ -18,6 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_LAST_NAME_INPUT;
@@ -33,6 +36,8 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.COMMU
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DESCRIPTION_IN_TRAVEL_ENTRY_TAB;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISEASE_IN_TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EDIT_CASES_BUTTON;
@@ -49,10 +54,18 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACIL
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.GENERAL_COMMENT_FIELD;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_DISEASE_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_ID_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_PERIOD_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_STATUS_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MANAGEMENT_STATUS_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MEANS_OF_IMMUNIZATION_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NO_TRAVEL_ENTRY_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PHONE_FIELD;
@@ -62,20 +75,20 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PRESE
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SALUTATION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SALUTATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CASES_FOR_PERSON_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CONTACTS_FOR_PERSON_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEX_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STAFF_OF_ARMED_FORCES_COMBOBOX;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STAFF_OF_ARMED_FORCES_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STREET_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.TRAVEL_ENTRY_ID_IN_TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.TYPE_OF_OCCUPATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.TYPE_OF_OCCUPATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.getByImmunizationUuid;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.aTravelEntry;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -89,14 +102,16 @@ import org.openqa.selenium.ElementClickInterceptedException;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
+import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class EditPersonSteps implements En {
 
@@ -112,7 +127,8 @@ public class EditPersonSteps implements En {
       BaseSteps baseSteps,
       AssertHelpers assertHelpers,
       ApiState apiState,
-      EnvironmentManager environmentManager) {
+      SoftAssert softly,
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -121,13 +137,26 @@ public class EditPersonSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           previousCreatedPerson = EditContactPersonSteps.fullyDetailedPerson;
           collectedPerson = collectPersonData();
-          ComparisonHelper.compareEqualEntities(previousCreatedPerson, collectedPerson);
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              previousCreatedPerson,
+              collectedPerson,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "street",
+                  "houseNumber",
+                  "city",
+                  "postalCode",
+                  "contactPersonFirstName",
+                  "contactPersonLastName"));
         });
 
     When(
         "I check that previous edited person is correctly displayed in Edit Person page",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PRESENT_CONDITION_INPUT);
           collectedPerson = collectPersonData();
           ComparisonHelper.compareDifferentFieldsOfEntities(
               previousCreatedPerson,
@@ -135,16 +164,18 @@ public class EditPersonSteps implements En {
               List.of(
                   "firstName",
                   "lastName",
-                  "externalId",
-                  "externalToken",
+                  "dateOfBirth",
+                  "sex",
                   "street",
                   "houseNumber",
                   "city",
                   "postalCode",
                   "contactPersonFirstName",
                   "contactPersonLastName",
-                  "birthName",
-                  "nameOfGuardians"));
+                  "emailAddress",
+                  "phoneNumber",
+                  "facilityNameAndDescription",
+                  "additionalInformation"));
         });
 
     Then(
@@ -154,16 +185,19 @@ public class EditPersonSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillFirstName(newGeneratedPerson.getFirstName());
           fillLastName(newGeneratedPerson.getLastName());
-          fillSalutation(newGeneratedPerson.getSalutation());
+          // field no longer available
+          //          fillSalutation(newGeneratedPerson.getSalutation());
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillExternalId(newGeneratedPerson.getExternalId());
-          fillExternalToken(newGeneratedPerson.getExternalToken());
+          // field no longer available
+          //          fillExternalId(newGeneratedPerson.getExternalId());
+          //          fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
           TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
+          // field no longer available
+          //          selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -182,8 +216,9 @@ public class EditPersonSteps implements En {
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          fillBirthName(newGeneratedPerson.getBirthName());
-          fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
+          // field no longer available
+          //          fillBirthName(newGeneratedPerson.getBirthName());
+          //          fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
     Then(
         "I click on See Cases for this Person button from Edit Person page",
@@ -192,6 +227,72 @@ public class EditPersonSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
           //          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
           //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I check if data of created immunization is in Immunization tab on Edit Person Page",
+        () -> {
+          String textFromLabel;
+          String[] values;
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_ID_LABEL),
+              EditImmunizationSteps.collectedImmunization.getUuid().substring(0, 6).toUpperCase(),
+              "Immunization Id label is different than expected");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_DISEASE_LABEL),
+              EditImmunizationSteps.collectedImmunization.getDisease().toUpperCase(),
+              "Immunization Disease label is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(MEANS_OF_IMMUNIZATION_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Means of immunization",
+              "Means of immunization label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getMeansOfImmunization(),
+              "Means of immunization value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(IMMUNIZATION_STATUS_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Immunization status",
+              "Immunization status label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getImmunizationStatus(),
+              "Immunization status value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(MANAGEMENT_STATUS_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0], "Management status", "Management status label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getManagementStatus(),
+              "Management status value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(IMMUNIZATION_PERIOD_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Immunization period",
+              "Immunization period label is different than expected");
+          softly.assertAll();
+        });
+    Then(
+        "I check if data of created Travel Entry is in Travel Entry tab on Edit Person Page for De specific",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(TRAVEL_ENTRY_ID_IN_TRAVEL_ENTRY_TAB),
+              aTravelEntry.getUuid().substring(0, 6),
+              "Travel Entry ID is different than expected");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(DISEASE_IN_TRAVEL_ENTRY_TAB),
+              aTravelEntry.getDisease().toUpperCase(),
+              "Travel Entry Disease is different than expected");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(DESCRIPTION_IN_TRAVEL_ENTRY_TAB),
+              aTravelEntry.getPointOfEntryDetails(),
+              "Travel Entry Point of entry details is different than expected");
+          softly.assertAll();
         });
 
     Then(
@@ -250,6 +351,11 @@ public class EditPersonSteps implements En {
         });
 
     When(
+        "I check if there is no travel entry assigned to Person",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NO_TRAVEL_ENTRY_LABEL_DE);
+        });
+    When(
         "I check if event is available at person information",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_EVENTS_FOR_PERSON);
@@ -263,7 +369,7 @@ public class EditPersonSteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!persons/data/"
                   + personUuid);
         });
@@ -316,6 +422,32 @@ public class EditPersonSteps implements En {
                   Assert.assertTrue(
                       webDriverHelpers.isElementVisibleWithTimeout(ERROR_INDICATOR, 10),
                       "Facility highlight error message wasn't displayed"));
+        });
+    Then(
+        "I click on new entry button on Edit Person Page for DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+        });
+    When(
+        "I check if added travel Entry appeared on Edit Person Page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(EDIT_TRAVEL_ENTRY_BUTTON);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Travel Entry isn't visible");
+          softly.assertAll();
+        });
+    And(
+        "I check General comment field is enabled on Edit Person page",
+        () -> {
+          Assert.assertTrue(
+              webDriverHelpers.isElementEnabled(GENERAL_COMMENT_FIELD),
+              "There is no resizable General comment field on page");
         });
   }
 
@@ -446,13 +578,8 @@ public class EditPersonSteps implements En {
         .lastName(contactInfo.getLastName())
         .dateOfBirth(contactInfo.getDateOfBirth())
         .uuid(contactInfo.getUuid())
-        .salutation(webDriverHelpers.getValueFromWebElement(SALUTATION_INPUT))
-        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
-        .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
         .typeOfOccupation(webDriverHelpers.getValueFromWebElement(TYPE_OF_OCCUPATION_INPUT))
-        .staffOfArmedForces(webDriverHelpers.getValueFromWebElement(STAFF_OF_ARMED_FORCES_INPUT))
         .region(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .district(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
         .community(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
@@ -472,8 +599,6 @@ public class EditPersonSteps implements En {
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_FIRST_NAME_INPUT))
         .contactPersonLastName(
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_LAST_NAME_INPUT))
-        .birthName(webDriverHelpers.getValueFromWebElement(BIRTH_NAME_INPUT))
-        .nameOfGuardians(webDriverHelpers.getValueFromWebElement(NAMES_OF_GUARDIANS_INPUT))
         .personContactDetailsContactInformation(
             webDriverHelpers.getTextFromPresentWebElement(
                 PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT))
@@ -483,6 +608,7 @@ public class EditPersonSteps implements En {
                 .trim())
         .phoneNumber(webDriverHelpers.getTextFromWebElement(PHONE_FIELD))
         .emailAddress(webDriverHelpers.getTextFromWebElement(EMAIL_FIELD))
+        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .build();
   }
 

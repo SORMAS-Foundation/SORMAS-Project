@@ -95,7 +95,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -113,6 +113,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
+	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String SCREENING_TYPE = "screeningType";
 	public static final String CLINICAL_CONFIRMATION = "clinicalConfirmation";
 	public static final String EPIDEMIOLOGICAL_CONFIRMATION = "epidemiologicalConfirmation";
@@ -241,6 +242,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 	public static final String DUPLICATE_OF = "duplicateOf";
+	public static final String CREATION_VERSION = "creationVersion";
 
 	private Person person;
 	private String description;
@@ -943,12 +945,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setEpidNumber(String epidNumber) {
 		this.epidNumber = epidNumber;
-	}
-
-	@Override
-	public String toString() {
-		//TODO lga how to pseudonymize
-		return CaseReferenceDto.buildCaption(getUuid(), person.getFirstName(), person.getLastName());
 	}
 
 	public CaseReferenceDto toReference() {

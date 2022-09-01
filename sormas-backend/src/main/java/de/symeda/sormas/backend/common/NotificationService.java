@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.common;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,28 +29,37 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
+import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "NotificationService")
 @LocalBean
 public class NotificationService {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private MessagingService messagingService;
 
 	@EJB
 	private UserService userService;
+
+	@EJB
+	private UserRoleService userRoleService;
 
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
@@ -119,32 +127,50 @@ public class NotificationService {
 
 		if (!allowedNotificationTypes.isEmpty()) {
 			messagingService.sendEmail(
-				filterUserMessagesByRoles(emailUserMessagesSupplier.get(), UserRole.getWithNotificationTypes(NotificationProtocol.EMAIL, allowedNotificationTypes)),
+				filterUserMessagesByRoles(
+					emailUserMessagesSupplier.get(),
+					userRoleService.getActiveByNotificationTypes(NotificationProtocol.EMAIL, allowedNotificationTypes)),
 				subject,
 				subjectParams);
 			messagingService.sendSms(
-				filterUserMessagesByRoles(smsUserMessagesSupplier.get(), UserRole.getWithNotificationTypes(NotificationProtocol.SMS, allowedNotificationTypes)),
+				filterUserMessagesByRoles(
+					smsUserMessagesSupplier.get(),
+					userRoleService.getActiveByNotificationTypes(NotificationProtocol.SMS, allowedNotificationTypes)),
 				subject,
 				subjectParams);
 		}
 	}
 
-	private Map<User, String> buildUserMessages(List<Region> regions, List<User> additionalUsers, String message, NotificationProtocol notificationProtocol, Collection<NotificationType> notificationTypes) {
+	private Map<User, String> buildUserMessages(
+		List<Region> regions,
+		List<User> additionalUsers,
+		String message,
+		NotificationProtocol notificationProtocol,
+		Collection<NotificationType> notificationTypes) {
 		List<User> recipients = new ArrayList<>();
 		if (regions != null) {
-			recipients.addAll(userService.getAllByRegionsAndNotificationTypes(regions, notificationProtocol, notificationTypes));
+			// fetch notification types, because the filterUserMessagesByRoles logic will need it anyway
+			recipients.addAll(userService.getAllByRegionsAndNotificationTypes(regions, notificationProtocol, notificationTypes, true));
 		}
 
 		if (additionalUsers != null) {
-			UserRole[] userRoles = UserRole.getWithNotificationTypes(notificationProtocol, notificationTypes);
-			recipients
-				.addAll(additionalUsers.stream().filter(u -> !recipients.contains(u) && u.hasAnyUserRole(userRoles)).collect(Collectors.toList()));
+			additionalUsers.stream().forEach(user -> {
+				if (user.getUserRoles()
+					.stream()
+					.flatMap(
+						userRole -> NotificationProtocol.EMAIL.equals(notificationProtocol)
+							? userRole.getEmailNotificationTypes().stream()
+							: userRole.getSmsNotificationTypes().stream())
+					.anyMatch(type -> notificationTypes.contains(type))) {
+					recipients.add(user);
+				}
+			});
 		}
 
 		return recipients.stream().collect(Collectors.toMap(Function.identity(), (u) -> message));
 	}
 
-	private Map<User, String> filterUserMessagesByRoles(Map<User, String> userStringMap, UserRole[] userRoles) {
+	private Map<User, String> filterUserMessagesByRoles(Map<User, String> userStringMap, Collection<UserRole> userRoles) {
 		return userStringMap.entrySet()
 			.stream()
 			.filter(e -> e.getKey().hasAnyUserRole(userRoles))

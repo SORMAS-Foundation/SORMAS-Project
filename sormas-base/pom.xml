@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.71.0-SNAPSHOT</version>
+	<version>1.76.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -33,7 +33,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.13</swagger.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
-		<keycloak.version>16.1.1</keycloak.version>
+		<keycloak.version>18.0.1</keycloak.version>
 		<resteasy.version>3.15.3.Final</resteasy.version>
 		<xdocreport.version>2.0.3</xdocreport.version>
 		<docx4j.version>8.3.2</docx4j.version>
@@ -377,7 +377,6 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.15</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -556,7 +555,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.3.3</version>
+				<version>42.4.1</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -794,14 +793,34 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.16.3</version>
+				<version>1.17.1</version>
 				<scope>test</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>info.novatec</groupId>
 				<artifactId>bean-test</artifactId>
-				<version>0.2.Final</version>
+				<version>0.2.Final_Local</version>
+				<scope>system</scope>
+				<systemPath>${project.basedir}/../sormas-base/dependencies/bean-test-0.2.Final.jar</systemPath>
+				<!-- Changed scope "test" to "system" as workaround for currently no publicly available maven artifact -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.weld.se</groupId>
+				<artifactId>weld-se</artifactId>
+				<version>2.1.2.Final</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.deltaspike.core</groupId>
+				<artifactId>deltaspike-core-impl</artifactId>
+				<version>1.2.1</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.deltaspike.cdictrl</groupId>
+				<artifactId>deltaspike-cdictrl-weld</artifactId>
+				<version>1.2.1</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -912,7 +931,7 @@
 			<dependency>
 				<groupId>com.google.oauth-client</groupId>
 				<artifactId>google-oauth-client</artifactId>
-				<version>1.33.1</version>
+				<version>1.33.3</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.http-client</groupId>
@@ -1291,11 +1310,6 @@
 			<releases>
 				<enabled>false</enabled>
 			</releases>
-		</repository>
-		<repository>
-			<id>Novatec</id>
-			<name>Novatec Repository</name>
-			<url>https://repository.novatec-gmbh.de/content/repositories/novatec</url>
 		</repository>
 		<repository>
 			<id>osgeo</id>

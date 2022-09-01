@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.lang.annotation.Annotation;
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -48,6 +52,8 @@ import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
+import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -66,9 +72,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
-import de.symeda.sormas.api.labmessage.LabMessageFacade;
-import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
+import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
@@ -78,8 +83,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
-import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageFacade;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
+import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageFacade;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -87,11 +92,9 @@ import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserFacade;
-import de.symeda.sormas.api.user.UserRightsFacade;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.user.UserRoleConfigFacade;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.action.ActionFacadeEjb;
@@ -112,11 +115,13 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
+import de.symeda.sormas.backend.dashboard.DashboardService;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
@@ -134,6 +139,10 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.TestReportService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.geo.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
@@ -163,13 +172,10 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFaca
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
-import de.symeda.sormas.backend.labmessage.LabMessageService;
-import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
-import de.symeda.sormas.backend.labmessage.TestReportService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestService;
@@ -191,22 +197,24 @@ import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProce
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.SormasToSormasEventParticipantDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacadeEjb.SormasToSormasExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImmunizationProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
-import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageDtoValidator;
-import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageFacadeEjb.SormasToSormasLabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SormasToSormasSampleDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestService;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb.PrescriptionFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
@@ -215,9 +223,11 @@ import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRole;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
@@ -242,8 +252,18 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
-		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
-		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+		UserDto user = creator.createTestUser();
+
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+
+		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
+			String role = invocationOnMock.getArgument(0);
+			UserRight userRight = UserRight.valueOf(role);
+			return getCurrentUserService().getCurrentUser()
+				.getUserRoles()
+				.stream()
+				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+		});
 
 		I18nProperties.setUserLanguage(Language.EN);
 
@@ -265,6 +285,11 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
+		nativeQuery.executeUpdate();
+		nativeQuery =
+			em.createNativeQuery("CREATE ALIAS timestamp_subtract_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_days\"");
+		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
 		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -297,6 +322,31 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			entity.getClass(),
 			AbstractDomainObject.UUID,
 			entity.getUuid());
+	}
+
+	public UserRole getEagerUserRole(String uuid) {
+
+		UserRole userRole = getEntityAttached(getUserRoleService().getByUuid(uuid));
+		initUserRole(userRole);
+		return userRole;
+	}
+
+	public User getEagerUser(String uuid) {
+
+		User user = getEntityAttached(getUserService().getByUuid(uuid));
+		for (UserRole userRole : user.getUserRoles()) {
+			initUserRole(userRole);
+		}
+		return user;
+	}
+
+	/**
+	 * Initializes lazy references.
+	 */
+	private void initUserRole(UserRole userRole) {
+
+		userRole.getEmailNotificationTypes().size();
+		userRole.getSmsNotificationTypes().size();
 	}
 
 	protected void createDeletionConfigurations() {
@@ -379,6 +429,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(DashboardFacadeEjb.DashboardFacadeEjbLocal.class);
 	}
 
+	public DashboardService getDashboardService() {
+		return getBean(DashboardService.class);
+	}
+
 	public EventFacadeEjbLocal getEventFacade() {
 		return getBean(EventFacadeEjbLocal.class);
 	}
@@ -405,6 +459,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public ActionFacade getActionFacade() {
 		return getBean(ActionFacadeEjb.ActionFacadeEjbLocal.class);
+	}
+
+	public AggregateReportFacade getAggregateReportFacade() {
+		return getBean(AggregateReportFacadeEjb.AggregateReportFacadeEjbLocal.class);
 	}
 
 	public VisitFacade getVisitFacade() {
@@ -483,7 +541,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CommunityFacadeEjbLocal.class);
 	}
 
-	public UserFacade getUserFacade() {
+	public UserFacadeEjbLocal getUserFacade() {
 		return getBean(UserFacadeEjbLocal.class);
 	}
 
@@ -491,8 +549,12 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(UserService.class);
 	}
 
-	public UserRoleConfigFacade getUserRoleConfigFacade() {
-		return getBean(UserRoleConfigFacadeEjbLocal.class);
+	public UserRoleFacadeEjbLocal getUserRoleFacade() {
+		return getBean(UserRoleFacadeEjbLocal.class);
+	}
+
+	public UserRoleService getUserRoleService() {
+		return getBean(UserRoleService.class);
 	}
 
 	public HospitalizationFacade getHospitalizationFacade() {
@@ -611,6 +673,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
 	}
 
+	public SormasToSormasOriginInfoFacadeEjbLocal getSormasToSormasOriginInfoFacade() {
+		return getBean(SormasToSormasOriginInfoFacadeEjbLocal.class);
+	}
+
 	public SormasToSormasShareInfoFacadeEjbLocal getSormasToSormasShareInfoFacade() {
 		return getBean(SormasToSormasShareInfoFacadeEjbLocal.class);
 	}
@@ -627,16 +693,20 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasEventFacadeEjbLocal.class);
 	}
 
-	public LabMessageFacade getLabMessageFacade() {
-		return getBean(LabMessageFacadeEjbLocal.class);
+	public ExternalMessageFacade getLabMessageFacade() {
+		return getBean(ExternalMessageFacadeEjbLocal.class);
 	}
 
-	public LabMessageService getLabMessageService() {
-		return getBean(LabMessageService.class);
+	public ExternalMessageService getLabMessageService() {
+		return getBean(ExternalMessageService.class);
 	}
 
-	public SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
-		return getBean(SormasToSormasLabMessageFacadeEjbLocal.class);
+	public NotificationService getNotificationService() {
+		return getBean(NotificationService.class);
+	}
+
+	public SormasToSormasExternalMessageFacade getSormasToSormasLabMessageFacade() {
+		return getBean(SormasToSormasExternalMessageFacadeEjbLocal.class);
 	}
 
 	public SormasToSormasShareInfoService getSormasToSormasShareInfoService() {
@@ -664,7 +734,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public CustomizableEnumFacade getCustomizableEnumFacade() {
-		return getBean(CustomizableEnumFacadeEjb.class);
+		return getBean(CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal.class);
 	}
 
 	public ShareDataBuilderHelper getShareDataBuilderHelper() {
@@ -696,11 +766,33 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		}
 
-		UserDto survOff =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
+		UserDto survOff = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Off",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff");
 
 		return survOff;
+	}
+
+	protected UserDto useCaseOfficerLogin(TestDataCreator.RDCF rdcf) {
+		if (rdcf == null) {
+			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		}
+
+		UserDto caseOff = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Case",
+			"Off",
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
+		when(MockProducer.getPrincipal().getName()).thenReturn("CaseOff");
+
+		return caseOff;
 	}
 
 	public CampaignFormDataFacade getCampaignFormDataFacade() {
@@ -716,8 +808,22 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	protected UserDto useNationalUserLogin() {
-		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
+		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
+
+		return natUser;
+	}
+
+	protected UserDto useNationalAdminLogin() {
+		UserDto natUser = creator.createUser(
+			"",
+			"",
+			"",
+			"National",
+			"Admin",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		when(MockProducer.getPrincipal().getName()).thenReturn("NationalAdmin");
 
 		return natUser;
 	}
@@ -786,10 +892,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ExternalShareInfoService.class);
 	}
 
-	public UserRightsFacade getUserRightsFacade() {
-		return getBean(UserRightsFacadeEjbLocal.class);
-	}
-
 	public SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
 		return getBean(SormasToSormasShareRequestFacadeEJBLocal.class);
 	}
@@ -838,8 +940,8 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasSampleDtoValidator.class);
 	}
 
-	public SormasToSormasLabMessageDtoValidator getSormasToSormasLabMessageDtoValidator() {
-		return getBean(SormasToSormasLabMessageDtoValidator.class);
+	public SormasToSormasExternalMessageDtoValidator getSormasToSormasLabMessageDtoValidator() {
+		return getBean(SormasToSormasExternalMessageDtoValidator.class);
 	}
 
 	public DefaultEntitiesCreator getDefaultEntitiesCreator() {
@@ -856,5 +958,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public InfoFacade getInfoFacade() {
 		return getBean(InfoFacadeEjb.InfoFacadeEjbLocal.class);
+	}
+
+	public TaskService getTaskService() {
+		return getBean(TaskService.class);
 	}
 }

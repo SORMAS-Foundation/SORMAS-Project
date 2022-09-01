@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.immunization;
 
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,7 +14,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -81,8 +79,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 		final Join<DirectoryImmunization, Person> person = joins.getPerson();
 
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		final Join<Location, District> district = joins.getPersonJoins().getAddressJoins().getDistrict();
 
 		final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
@@ -106,7 +103,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 			immunization.get(Immunization.END_DATE),
 			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
 			immunization.get(Immunization.RECOVERY_DATE),
-			JurisdictionHelper.booleanSelector(cb, createUserFilter(directoryImmunizationQueryContext)),
+			JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(directoryImmunizationQueryContext)),
 			immunization.get(Immunization.CHANGE_DATE));
 
 		buildWhereCondition(criteria, cb, cq, directoryImmunizationQueryContext);
@@ -197,13 +194,13 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 	private Predicate buildCriteriaFilter(ImmunizationCriteria criteria, DirectoryImmunizationQueryContext directoryImmunizationQueryContext) {
 
-		final DirectoryImmunizationJoins joins = (DirectoryImmunizationJoins) directoryImmunizationQueryContext.getJoins();
+		final DirectoryImmunizationJoins joins = directoryImmunizationQueryContext.getJoins();
 		final CriteriaBuilder cb = directoryImmunizationQueryContext.getCriteriaBuilder();
 		final From<?, ?> from = directoryImmunizationQueryContext.getRoot();
 		final Join<DirectoryImmunization, Person> person = joins.getPerson();
 		final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Person, Location> location = joins.getPersonJoins().getAddress();
 
 		Predicate filter = null;
 		if (criteria.getDisease() != null) {
@@ -212,7 +209,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 		if (!DataHelper.isNullOrEmpty(criteria.getNameAddressPhoneEmailLike())) {
 			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
 
 			String[] textFilters = criteria.getNameAddressPhoneEmailLike().split("\\s+");
 
@@ -250,13 +247,13 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		if (criteria.getImmunizationStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_STATUS), criteria.getImmunizationStatus()));
 		}
-		filter = andEqualsReferenceDto(cb, joins.getResponsibleRegion(), filter, criteria.getRegion());
-		filter = andEqualsReferenceDto(cb, joins.getResponsibleDistrict(), filter, criteria.getDistrict());
-		filter = andEqualsReferenceDto(cb, joins.getResponsibleCommunity(), filter, criteria.getCommunity());
+		filter = andEquals(cb, () -> joins.getResponsibleRegion(), filter, criteria.getRegion());
+		filter = andEquals(cb, () -> joins.getResponsibleDistrict(), filter, criteria.getDistrict());
+		filter = andEquals(cb, () -> joins.getResponsibleCommunity(), filter, criteria.getCommunity());
 		if (criteria.getFacilityType() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.FACILITY_TYPE), criteria.getFacilityType()));
 		}
-		filter = andEqualsReferenceDto(cb, joins.getHealthFacility(), filter, criteria.getHealthFacility());
+		filter = andEquals(cb, () -> joins.getHealthFacility(), filter, criteria.getHealthFacility());
 		if (Boolean.TRUE.equals(criteria.getOnlyPersonsWithOverdueImmunization())) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), ImmunizationManagementStatus.ONGOING));
@@ -320,23 +317,28 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 
-		Predicate filter;
-
-		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			filter = DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
-		} else {
-			filter = CriteriaBuilderHelper.or(
-				qc.getCriteriaBuilder(),
-				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
-				PersonJurisdictionPredicateValidator
-					.of(qc.getQuery(), qc.getCriteriaBuilder(), new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
-					.inJurisdictionOrOwned());
-		}
+		Predicate filter = isInJurisdictionOrOwned(qc);
 
 		if (currentUser.getLimitedDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
 		}
 
+		return filter;
+	}
+
+	private Predicate isInJurisdictionOrOwned(DirectoryImmunizationQueryContext qc) {
+		final User currentUser = userService.getCurrentUser();
+		CriteriaBuilder cb = qc.getCriteriaBuilder();
+		Predicate filter;
+		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			filter = DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+		} else {
+			filter = CriteriaBuilderHelper.or(
+				cb,
+				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+				PersonJurisdictionPredicateValidator.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
+					.inJurisdictionOrOwned());
+		}
 		return filter;
 	}
 }

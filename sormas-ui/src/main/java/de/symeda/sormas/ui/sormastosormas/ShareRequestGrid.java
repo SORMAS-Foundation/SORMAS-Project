@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.sormastosormas;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -32,12 +33,13 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -47,15 +49,19 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
-public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestIndexDto, ShareRequestCriteria> {
+public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRequestCriteria> {
 
 	private static final long serialVersionUID = -7556621082342162960L;
 
 	private static final String SHOW_MESSAGE = "showRequest";
 	private static final String COLUMN_ACTIONS = "actions";
 
-	public ShareRequestGrid(boolean isInEagerMode, ShareRequestCriteria criteria) {
-		super(SormasToSormasShareRequestIndexDto.class);
+	private final ShareRequestViewType viewType;
+
+	public ShareRequestGrid(boolean isInEagerMode, ShareRequestCriteria criteria, ShareRequestViewType viewType) {
+		super(ShareRequestIndexDto.class);
+
+		this.viewType = viewType;
 
 		initGridColumns();
 
@@ -70,58 +76,65 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 
 	private void initGridColumns() {
 		addShowColumn((request) -> {
-			ControllerProvider.getSormasToSormasController().showRequestDetails(request);
+			ControllerProvider.getSormasToSormasController().showRequestDetails(request, viewType);
 		});
-		addComponentColumn(indexDto -> createActionButtons(indexDto)).setId(COLUMN_ACTIONS);
+		addComponentColumn(this::createActionButtons).setId(COLUMN_ACTIONS).setSortable(false).setMinimumWidth(260);
 
 		setColumns(
 			SHOW_MESSAGE,
-			SormasToSormasShareRequestIndexDto.UUID,
-			SormasToSormasShareRequestIndexDto.CREATION_DATE,
-			SormasToSormasShareRequestIndexDto.DATA_TYPE,
-			SormasToSormasShareRequestIndexDto.ORGANIZATION_NAME,
-			SormasToSormasShareRequestIndexDto.SENDER_NAME,
-			SormasToSormasShareRequestIndexDto.OWNERSHIP_HANDED_OVER,
-			SormasToSormasShareRequestIndexDto.STATUS,
-			SormasToSormasShareRequestIndexDto.COMMENT,
-			COLUMN_ACTIONS);
+			ShareRequestIndexDto.UUID,
+			ShareRequestIndexDto.CREATION_DATE,
+			ShareRequestIndexDto.DATA_TYPE,
+			ShareRequestIndexDto.ORGANIZATION_NAME,
+			ShareRequestIndexDto.SENDER_NAME,
+			ShareRequestIndexDto.OWNERSHIP_HANDED_OVER,
+			ShareRequestIndexDto.STATUS,
+			COLUMN_ACTIONS,
+			ShareRequestIndexDto.COMMENT);
 
-		getColumn(COLUMN_ACTIONS).setMinimumWidth(260);
-		((Column<SormasToSormasShareRequestIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<SormasToSormasShareRequestIndexDto, Date>) getColumn(SormasToSormasShareRequestIndexDto.CREATION_DATE))
+		((Column<ShareRequestIndexDto, String>) getColumn(ExternalMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<ShareRequestIndexDto, Date>) getColumn(ShareRequestIndexDto.CREATION_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
-		getColumn(SormasToSormasShareRequestIndexDto.ORGANIZATION_NAME).setSortable(false);
-		getColumn(SormasToSormasShareRequestIndexDto.OWNERSHIP_HANDED_OVER).setRenderer(new BooleanRenderer());
+		getColumn(ShareRequestIndexDto.OWNERSHIP_HANDED_OVER).setRenderer(new BooleanRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(SormasToSormasShareRequestIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			column.setCaption(
+				column.getId().equals(COLUMN_ACTIONS) || column.getId().equals(SHOW_MESSAGE)
+					? ""
+					: I18nProperties.findPrefixCaption(column.getId(), ShareRequestIndexDto.I18N_PREFIX, SormasToSormasShareRequestDto.I18N_PREFIX));
 		}
 
-		setSortOrder(
-			Collections.singletonList(new GridSortOrder<>(getColumn(SormasToSormasShareRequestIndexDto.CREATION_DATE), SortDirection.DESCENDING)));
+		setSortOrder(Collections.singletonList(new GridSortOrder<>(getColumn(ShareRequestIndexDto.CREATION_DATE), SortDirection.DESCENDING)));
 	}
 
-	private Component createActionButtons(SormasToSormasShareRequestIndexDto indexDto) {
+	private Component createActionButtons(ShareRequestIndexDto indexDto) {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setMargin(false);
 		layout.setSpacing(true);
 
 		if (indexDto.getStatus() == ShareRequestStatus.PENDING) {
-			layout.addComponent(ButtonHelper.createButton(Captions.actionAccept, (e) -> {
-				ControllerProvider.getSormasToSormasController().acceptShareRequest(indexDto, this::reload);
-			}, ValoTheme.BUTTON_SMALL));
-			layout.addComponent(ButtonHelper.createButton(Captions.actionReject, (e) -> {
-				ControllerProvider.getSormasToSormasController().rejectShareRequest(indexDto, this::reload);
-			}, ValoTheme.BUTTON_SMALL));
+			if (viewType == ShareRequestViewType.INCOMING) {
+				layout.addComponent(ButtonHelper.createButton(Captions.actionAccept, (e) -> {
+					ControllerProvider.getSormasToSormasController().acceptShareRequest(indexDto, this::reload);
+				}, ValoTheme.BUTTON_SMALL));
+				layout.addComponent(ButtonHelper.createButton(Captions.actionReject, (e) -> {
+					ControllerProvider.getSormasToSormasController().rejectShareRequest(indexDto, this::reload);
+				}, ValoTheme.BUTTON_SMALL));
+			} else {
+				layout.addComponent(ButtonHelper.createButton(Captions.sormasToSormasRevokeShare, (e) -> {
+					ControllerProvider.getSormasToSormasController().revokeShareRequest(indexDto.getUuid(), this::reload);
+				}, ValoTheme.BUTTON_SMALL));
+			}
 		}
 
 		return layout;
 	}
 
-	protected void addShowColumn(Consumer<SormasToSormasShareRequestIndexDto> handler) {
+	protected void addShowColumn(Consumer<ShareRequestIndexDto> handler) {
 
-		Column<SormasToSormasShareRequestIndexDto, String> showColumn = addColumn(entry -> VaadinIcons.EYE.getHtml(), new HtmlRenderer());
+		Column<ShareRequestIndexDto, String> showColumn = addColumn(entry -> VaadinIcons.EYE.getHtml(), new HtmlRenderer());
 		showColumn.setId(SHOW_MESSAGE);
+		showColumn.setCaption("");
 		showColumn.setSortable(false);
 		showColumn.setWidth(20);
 
@@ -137,25 +150,34 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<SormasToSormasShareRequestIndexDto, ShareRequestCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getSormasToSormasShareRequestFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getSormasToSormasShareRequestFacade().count(query.getFilter().orElse(null)));
+		DataProvider<ShareRequestIndexDto, ShareRequestCriteria> dataProvider = DataProvider.fromFilteringCallbacks(query -> {
+			List<SortProperty> sortProperties = query.getSortOrders()
+				.stream()
+				.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+				.collect(Collectors.toList());
+
+			return loadShareRequests(query.getFilter().orElse(null), query.getOffset(), query.getLimit(), sortProperties).stream();
+		},
+			query -> (int) (viewType == ShareRequestViewType.INCOMING
+				? FacadeProvider.getSormasToSormasShareRequestFacade().count(query.getFilter().orElse(null))
+				: FacadeProvider.getShareRequestInfoFacade().count(query.getFilter().orElse(null))));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 
+	private List<ShareRequestIndexDto> loadShareRequests(
+		ShareRequestCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		return viewType == ShareRequestViewType.INCOMING
+			? FacadeProvider.getSormasToSormasShareRequestFacade().getIndexList(criteria, offset, size, sortProperties)
+			: FacadeProvider.getShareRequestInfoFacade().getIndexList(criteria, offset, size, sortProperties);
+	}
+
 	public void setEagerDataProvider() {
-		ListDataProvider<SormasToSormasShareRequestIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getSormasToSormasShareRequestFacade().getIndexList(getCriteria(), null, null, null).stream());
+		List<ShareRequestIndexDto> indexList = loadShareRequests(getCriteria(), null, null, null);
+		ListDataProvider<ShareRequestIndexDto> dataProvider = DataProvider.fromStream(indexList.stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

@@ -18,13 +18,17 @@ import java.util.Date;
 
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@FeatureIndependent
 public class CommunityDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = -8833267932522978860L;
@@ -127,8 +131,13 @@ public class CommunityDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public static CommunityDto build() {

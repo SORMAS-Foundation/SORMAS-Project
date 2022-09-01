@@ -221,11 +221,6 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>CONTACT_ASSIGN</role-name>
-        <group-name>CONTACT_ASSIGN</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
         <role-name>CONTACT_EDIT</role-name>
         <group-name>CONTACT_EDIT</group-name>
     </security-role-mapping>
@@ -233,11 +228,6 @@
     <security-role-mapping>
         <role-name>CONTACT_DELETE</role-name>
         <group-name>CONTACT_DELETE</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>CONTACT_CLASSIFY</role-name>
-        <group-name>CONTACT_CLASSIFY</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -446,6 +436,21 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>USER_ROLE_EDIT</role-name>
+        <group-name>USER_ROLE_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USER_ROLE_DELETE</role-name>
+        <group-name>USER_ROLE_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USER_ROLE_VIEW</role-name>
+        <group-name>USER_ROLE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>SEND_MANUAL_EXTERNAL_MESSAGES</role-name>
         <group-name>SEND_MANUAL_EXTERNAL_MESSAGES</group-name>
     </security-role-mapping>
@@ -491,8 +496,8 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
-        <group-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</group-name>
+        <role-name>PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -736,8 +741,23 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>LAB_MESSAGES</role-name>
-        <group-name>LAB_MESSAGES</group-name>
+        <role-name>SORMAS_TO_SORMAS_PROCESS</role-name>
+        <group-name>SORMAS_TO_SORMAS_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_VIEW</role-name>
+        <group-name>EXTERNAL_MESSAGE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_PROCESS</role-name>
+        <group-name>EXTERNAL_MESSAGE_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_DELETE</role-name>
+        <group-name>EXTERNAL_MESSAGE_DELETE</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

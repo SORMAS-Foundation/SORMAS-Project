@@ -9,7 +9,7 @@ import de.symeda.sormas.backend.common.QueryContext;
 
 public class EventParticipantQueryContext extends QueryContext<EventParticipant, EventParticipantJoins> {
 
-	public EventParticipantQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, EventParticipant> root) {
+	protected EventParticipantQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, EventParticipant> root) {
 		this(cb, query, new EventParticipantJoins(root));
 	}
 

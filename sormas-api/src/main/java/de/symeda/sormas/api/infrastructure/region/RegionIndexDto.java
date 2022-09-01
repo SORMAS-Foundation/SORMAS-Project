@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.infrastructure.region;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -57,11 +59,6 @@ public class RegionIndexDto extends EntityDto {
 
 	public void setEpidCode(String epidCode) {
 		this.epidCode = epidCode;
-	}
-
-	@Override
-	public String toString() {
-		return getName();
 	}
 
 	public Integer getPopulation() {
@@ -113,5 +110,15 @@ public class RegionIndexDto extends EntityDto {
 		RegionIndexDto dto = new RegionIndexDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
+	}
+
+	@Override
+	public String buildCaption() {
+		return getName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

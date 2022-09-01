@@ -72,6 +72,7 @@ public enum FeatureType {
 	TRAVEL_ENTRIES(true, false, null, null, null),
 
 	DASHBOARD(true, true, null, null, null),
+	LIMITED_SYNCHRONIZATION(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, Boolean.FALSE)),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
@@ -111,7 +112,7 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE },
 		null,
 		null),
-	LAB_MESSAGES(true,
+	EXTERNAL_MESSAGES(true,
 		false,
 		new FeatureType[] {
 			SAMPLES_LAB },
@@ -143,24 +144,38 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE },
 		null,
 		null),
-	SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES(true,
+	SORMAS_TO_SORMAS_SHARE_CASES(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING,
 			SAMPLES_LAB },
 		null,
-		null),
+		ImmutableMap.of(
+			FeatureTypeProperty.SHARE_ASSOCIATED_CONTACTS,
+			Boolean.FALSE,
+			FeatureTypeProperty.SHARE_SAMPLES,
+			Boolean.TRUE,
+			FeatureTypeProperty.SHARE_IMMUNIZATIONS,
+			Boolean.TRUE)),
+	SORMAS_TO_SORMAS_SHARE_CONTACTS(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING,
+			SAMPLES_LAB },
+		null,
+		ImmutableMap.of(FeatureTypeProperty.SHARE_SAMPLES, Boolean.TRUE, FeatureTypeProperty.SHARE_IMMUNIZATIONS, Boolean.TRUE)),
 	SORMAS_TO_SORMAS_SHARE_EVENTS(true,
 		false,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
 		null,
-		null),
-	SORMAS_TO_SORMAS_SHARE_LAB_MESSAGES(true,
+		ImmutableMap.of(FeatureTypeProperty.SHARE_SAMPLES, Boolean.TRUE, FeatureTypeProperty.SHARE_IMMUNIZATIONS, Boolean.TRUE)),
+	SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES(true,
 		false,
 		new FeatureType[] {
-			LAB_MESSAGES },
+			EXTERNAL_MESSAGES },
 		null,
 		null),
 	IMMUNIZATION_STATUS_AUTOMATION(true,
@@ -294,7 +309,19 @@ public enum FeatureType {
 		new FeatureType[] {
 			TASK_MANAGEMENT },
 		null,
-		null);
+		null),
+	CASE_AND_CONTACT_BULK_ACTIONS(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING },
+		null,
+		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE));
+
+	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
+		FeatureType.CASE_SURVEILANCE,
+		FeatureType.EVENT_SURVEILLANCE,
+		FeatureType.AGGREGATE_REPORTING };
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

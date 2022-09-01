@@ -25,9 +25,12 @@ import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -41,11 +44,10 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless(name = "ExternalSurveillanceToolFacade")
 public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveillanceToolFacade {
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -60,21 +62,23 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	@Override
 	public boolean isFeatureEnabled() {
-		return StringUtils.isNoneBlank(configFacade.getExternalSurveillanceToolGatewayUrl());
+		return configFacade.isExternalSurveillanceToolGatewayConfigured();
 	}
 
 	@Override
-	public void sendCases(List<String> caseUuids) throws ExternalSurveillanceToolException {
+	public void sendCases(List<String> caseUuids, boolean archived) throws ExternalSurveillanceToolException {
 		ExportParameters params = new ExportParameters();
 		params.setCaseUuids(caseUuids);
+		params.setArchived(archived);
 
 		sendRequest(params);
 	}
 
 	@Override
-	public void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException {
+	public void sendEvents(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
 		ExportParameters params = new ExportParameters();
 		params.setEventUuids(eventUuids);
+		params.setArchived(archived);
 
 		sendRequest(params);
 	}
@@ -157,13 +161,17 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	private void sendDeleteRequest(DeleteParameters params) throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
-		Response response = ClientBuilder.newBuilder()
-			.connectTimeout(30, TimeUnit.SECONDS)
-			.build()
-			.target(serviceUrl)
-			.path("delete")
-			.request()
-			.post(Entity.json(params));
+
+		Invocation.Builder request =
+			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("delete").request();
+
+		Response response;
+		try {
+			response = request.post(Entity.json(params));
+		} catch (Exception e) {
+			logger.error("Failed to send delete request to external surveillance tool", e);
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorDeleting));
+		}
 
 		int statusCode = response.getStatus();
 
@@ -186,7 +194,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		try {
 			Response response =
-					ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path(versionEndpoint).request().get();
+				ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path(versionEndpoint).request().get();
 			int status = response.getStatus();
 
 			if (status != HttpServletResponse.SC_OK) {
@@ -195,7 +203,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 			ExternalSurveillanceToolResponse entity = response.readEntity(ExternalSurveillanceToolResponse.class);
 			return entity.getMessage();
-		} catch (Exception e){
+		} catch (Exception e) {
 			logger.error("Couldn't get version of external surveillance tool at {}{}", serviceUrl, versionEndpoint, e);
 			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_versionRequestError));
 		}
@@ -205,6 +213,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		private List<String> caseUuids;
 		private List<String> eventUuids;
+		private boolean archived;
 
 		public List<String> getCaseUuids() {
 			return caseUuids;
@@ -220,6 +229,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		public void setEventUuids(List<String> eventUuids) {
 			this.eventUuids = eventUuids;
+		}
+
+		public boolean isArchived() {
+			return archived;
+		}
+
+		public void setArchived(boolean archived) {
+			this.archived = archived;
 		}
 	}
 

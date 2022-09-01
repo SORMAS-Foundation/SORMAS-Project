@@ -25,8 +25,8 @@ import org.sormas.e2etests.entities.pojo.api.Contact;
 import org.sormas.e2etests.entities.pojo.api.Person;
 import org.sormas.e2etests.entities.services.api.ContactApiService;
 import org.sormas.e2etests.entities.services.api.PersonApiService;
-import org.sormas.e2etests.helpers.api.ContactHelper;
-import org.sormas.e2etests.helpers.api.PersonsHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.ContactHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.PersonsHelper;
 import org.sormas.e2etests.state.ApiState;
 
 @Slf4j

@@ -27,6 +27,7 @@ import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
@@ -130,13 +131,20 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			&& currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-				final ImmunizationListCriteria immunizationListCriteria = new ImmunizationListCriteria.Builder(getReference()).build();
 				layout.addComponent(
-					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
+					new SideComponentLayout(
+						new ImmunizationListComponent(
+							() -> new ImmunizationListCriteria.Builder(getReference()).build(),
+							this::showUnsavedChangesPopup)),
 					IMMUNIZATION_LOC);
 			} else {
-				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(getReference()).build();
-				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria)), VACCINATIONS_LOC);
+				layout.addComponent(
+					new SideComponentLayout(
+						new VaccinationListComponent(
+							() -> new VaccinationListCriteria.Builder(getReference()).build(),
+							this::showUnsavedChangesPopup,
+							false)),
+					VACCINATIONS_LOC);
 			}
 		}
 	}
@@ -159,5 +167,13 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
 		initOrRedirect(event);
+	}
+
+	@Override
+	protected void setSubComponent(DirtyStateComponent newComponent) {
+		super.setSubComponent(newComponent);
+		if (getReference() != null && !FacadeProvider.getPersonFacade().isPersonAssociatedWithNotDeletedEntities(getReference().getUuid())) {
+			newComponent.setEnabled(false);
+		}
 	}
 }

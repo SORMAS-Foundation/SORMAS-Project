@@ -25,12 +25,14 @@ import java.util.Set;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 
 public class UserProvider {
 
@@ -41,10 +43,16 @@ public class UserProvider {
 		UserRight.OUTBREAK_VIEW,
 		UserRight.POPULATION_MANAGE);
 
+	private static final List userUserRoles = Arrays.asList(UserRight.USER_VIEW, UserRight.USER_ROLE_VIEW);
+
 	private UserDto user;
 	private UserReferenceDto userReference;
+	private Set<UserRoleDto> userRoles;
 	private Set<UserRight> userRights;
 	private JurisdictionLevel jurisdictionLevel;
+	private Boolean portHealthUser;
+	private Boolean hasAssociatedDistrictUser;
+	private Boolean hasOptionalHealthFacility;
 
 	public UserDto getUser() {
 
@@ -57,18 +65,21 @@ public class UserProvider {
 	public Set<UserRight> getUserRights() {
 
 		if (userRights == null) {
-			userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(getUser().getUserRoles());
+			userRights = UserRoleDto.getUserRights(getUserRoles());
 		}
 		return userRights;
 	}
 
-	public Set<UserRole> getUserRoles() {
-		return getUser().getUserRoles();
+	public Set<UserRoleDto> getUserRoles() {
+		if (userRoles == null) {
+			userRoles = FacadeProvider.getUserFacade().getUserRoles(getUser());
+		}
+		return userRoles;
 	}
 
 	public JurisdictionLevel getJurisdictionLevel() {
 		if (jurisdictionLevel == null) {
-			jurisdictionLevel = UserRole.getJurisdictionLevel(getUser().getUserRoles());
+			jurisdictionLevel = getUser().getJurisdictionLevel();
 		}
 		return jurisdictionLevel;
 	}
@@ -76,6 +87,11 @@ public class UserProvider {
 	public boolean hasConfigurationAccess() {
 		Set<UserRight> currentUserRights = getUserRights();
 		return configurationUserRoles.stream().anyMatch(currentUserRights::contains);
+	}
+
+	public boolean hasUserAccess() {
+		Set<UserRight> currentUserRights = getUserRights();
+		return userUserRoles.stream().anyMatch(currentUserRights::contains);
 	}
 
 	public boolean hasUserRight(UserRight userRight) {
@@ -88,6 +104,10 @@ public class UserProvider {
 
 	public boolean hasNationJurisdictionLevel() {
 		return getJurisdictionLevel() == JurisdictionLevel.NATION;
+	}
+
+	public boolean isAdmin() {
+		return (user.getUserRoles().stream().filter(i -> i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
 	}
 
 	public boolean hasRegionJurisdictionLevel() {
@@ -148,6 +168,27 @@ public class UserProvider {
 			return ((HasUserProvider) currentUI).getUserProvider();
 		}
 		return null;
+	}
+
+	public boolean isPortHealthUser() {
+		if (portHealthUser == null) {
+			portHealthUser = FacadeProvider.getUserRoleFacade().isPortHealthUser(getUserRoles());
+		}
+		return portHealthUser;
+	}
+
+	public boolean hasAssociatedDistrictUser() {
+		if (hasAssociatedDistrictUser == null) {
+			hasAssociatedDistrictUser = FacadeProvider.getUserRoleFacade().hasAssociatedDistrictUser(getUserRoles());
+		}
+		return hasAssociatedDistrictUser;
+	}
+
+	public boolean hasOptionalHealthFacility() {
+		if (hasOptionalHealthFacility == null) {
+			hasOptionalHealthFacility = FacadeProvider.getUserRoleFacade().hasOptionalHealthFacility(getUserRoles());
+		}
+		return hasOptionalHealthFacility;
 	}
 
 	public interface HasUserProvider {

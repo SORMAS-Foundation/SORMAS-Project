@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -41,7 +42,7 @@ public interface UserFacade {
 
 	UserDto getByUuid(String uuid);
 
-	UserDto saveUser(@Valid UserDto dto);
+	UserDto saveUser(@Valid UserDto dto, boolean isCurrentUser);
 
 	boolean isLoginUnique(String uuid, String userName);
 
@@ -103,6 +104,12 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, Disease limitedDisease, UserRight... userRights);
 
+	List<UserReferenceDto> getUserRefsByInfrastructure(
+		InfrastructureDataReferenceDto infrastructure,
+		JurisdictionLevel jurisdictionLevel,
+		JurisdictionLevel allowedJurisdictionLevel,
+		Disease limitedDisease);
+
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
 	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRight... userRights);
@@ -136,4 +143,10 @@ public interface UserFacade {
 	List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
 
 	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndex taskContextIndex);
+
+	Set<UserRoleDto> getUserRoles(UserDto user);
+
+	long getUserCountHavingRole(UserRoleReferenceDto userRoleRef);
+
+	List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef);
 }

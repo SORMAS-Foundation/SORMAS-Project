@@ -7,36 +7,27 @@ import javax.ejb.EJB;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> {
+public abstract class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 	@EJB
 	protected UserService userService;
 
-	public BaseTravelEntryService() {
+	protected BaseTravelEntryService() {
 		super(TravelEntry.class);
-	}
-
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> travelEntryPath) {
-		return createUserFilter(new TravelEntryQueryContext(cb, cq, travelEntryPath));
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
@@ -51,7 +42,13 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
 
-	protected Predicate createUserFilter(TravelEntryQueryContext qc) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> from) {
+		return createUserFilter(new TravelEntryQueryContext(cb, cq, from));
+	}
+
+	public Predicate createUserFilter(TravelEntryQueryContext qc) {
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
@@ -70,9 +67,10 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 		Root<TravelEntry> from = cq.from(getElementClass());
 
 		Predicate filter = createDefaultFilter(cb, from);
+		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, from);
 
 		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(travelEntryQueryContext);
 			if (userFilter != null) {
 				filter = cb.and(filter, userFilter);
 			}
@@ -104,4 +102,5 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 
 		return super.addChangeDates(builder, travelEntryFrom, includeExtendedChangeDateFilters);
 	}
+
 }

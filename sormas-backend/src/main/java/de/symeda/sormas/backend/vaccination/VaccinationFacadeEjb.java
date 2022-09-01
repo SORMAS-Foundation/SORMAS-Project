@@ -23,18 +23,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -77,9 +82,10 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "VaccinationFacade")
-@RolesAllowed(UserRight._IMMUNIZATION_VIEW)
+@RightsAllowed(UserRight._IMMUNIZATION_VIEW)
 public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@EJB
@@ -101,34 +107,35 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@EJB
 	private HealthConditionsMapper healthConditionsMapper;
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._IMMUNIZATION_EDIT })
 	public VaccinationDto save(@Valid VaccinationDto dto) {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
-		Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
 
 		validate(dto, false);
 
-		existingVaccination = fillOrBuildEntity(dto, existingVaccination, true);
-		vaccinationService.ensurePersisted(existingVaccination);
+		Vaccination vaccination = fillOrBuildEntity(dto, existingVaccination, true);
+		vaccinationService.ensurePersisted(vaccination);
 
 		updateVaccinationStatuses(
-			existingVaccination.getVaccinationDate(),
-			oldVaccinationDate,
-			existingVaccination.getImmunization().getPerson().getId(),
-			existingVaccination.getImmunization().getDisease());
+			vaccination,
+			existingDto,
+			vaccination.getImmunization().getPerson().getId(),
+			vaccination.getImmunization().getDisease());
 
-		return convertToDto(existingVaccination, pseudonymizer);
+		immunizationFacade.onImmunizationChanged(vaccination.getImmunization(), true);
+
+		return convertToDto(vaccination, pseudonymizer);
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._IMMUNIZATION_CREATE })
 	public VaccinationDto createWithImmunization(
 		VaccinationDto dto,
@@ -172,12 +179,16 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		vaccinationService.ensurePersisted(vaccination);
 
-		updateVaccinationStatuses(vaccination.getVaccinationDate(), null, vaccination.getImmunization().getPerson().getId(), disease);
+		updateVaccinationStatuses(vaccination, null, vaccination.getImmunization().getPerson().getId(), disease);
+
+		if (immunizationFound) {
+			immunizationFacade.onImmunizationChanged(vaccination.getImmunization(), true);
+		}
 
 		return convertToDto(vaccination, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
-	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
+	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
 	private boolean addImmunizationToVaccination(Vaccination vaccination, String personUuid, Disease disease) {
 
 		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, true);
@@ -245,6 +256,17 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
+	public List<VaccinationDto> getVaccinationsByCriteria(
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max, sortProperties);
+
+		return vaccinationsList.stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<VaccinationListEntryDto> getEntriesList(
 		VaccinationListCriteria criteria,
 		Integer first,
@@ -267,6 +289,26 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		dto.setRelevant(relevant);
 		dto.setNonRelevantMessage(message);
 		return dto;
+	}
+
+	@Override
+	public boolean isVaccinationRelevant(CaseDataDto cazeDto, VaccinationDto vaccinationDto) {
+		Case caze = caseService.getByUuid(cazeDto.getUuid());
+		Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+		return vaccinationService.isVaccinationRelevant(caze, vaccination);
+	}
+
+	@Override
+	public List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto) {
+		Case caze = caseService.getByUuid(cazeDto.getUuid());
+		List<Vaccination> vaccinations = vaccinationService.getRelevantVaccinationsForCase(caze);
+		return convertToDtoList(vaccinations);
+	}
+
+	public List<VaccinationDto> convertToDtoList(List<Vaccination> vaccinations) {
+		Pseudonymizer defaultPseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+
+		return vaccinations.stream().map(v -> convertToDto(v, defaultPseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -376,17 +418,20 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
-	public void updateVaccinationStatuses(Date newVaccinationDate, Date oldVaccinationDate, Long personId, Disease disease) {
+	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
+	public void updateVaccinationStatuses(Vaccination newVaccination, VaccinationDto oldRelevantVaccination, Long personId, Disease disease) {
+		Date newRelevantVaccineDate = vaccinationService.getRelevantVaccineDate(newVaccination);
+		Date oldRelevantVaccineDate = oldRelevantVaccination != null ? vaccinationService.getRelevantVaccineDate(oldRelevantVaccination) : null;
 
-		if (oldVaccinationDate == null || newVaccinationDate != oldVaccinationDate) {
-			caseService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
-			contactService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
-			eventParticipantService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
+		if (newRelevantVaccineDate != oldRelevantVaccineDate) {
+			caseService.updateVaccinationStatuses(personId, disease, newVaccination);
+			contactService.updateVaccinationStatuses(personId, disease, newRelevantVaccineDate);
+			eventParticipantService.updateVaccinationStatuses(personId, disease, newRelevantVaccineDate);
 		}
+
 	}
 
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public void updateVaccinationStatuses(Case caze) {
 		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
 
@@ -401,7 +446,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	@RolesAllowed(UserRight._CONTACT_EDIT)
+	@RightsAllowed(UserRight._CONTACT_EDIT)
 	public void updateVaccinationStatuses(Contact contact) {
 		List<Immunization> contactPersonImmunizations =
 			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
@@ -417,7 +462,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	@RolesAllowed(UserRight._EVENTPARTICIPANT_EDIT)
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_EDIT)
 	public void updateVaccinationStatuses(EventParticipant eventParticipant) {
 		if (eventParticipant.getEvent().getDisease() == null) {
 			return;
@@ -438,15 +483,16 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
-	public void deleteWithImmunization(String uuid) {
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
+	public void deleteWithImmunization(String uuid, DeletionDetails deletionDetails) {
 		Vaccination vaccination = vaccinationService.getByUuid(uuid);
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);
+		immunizationService.incrementChangeDate(immunization);
 		immunizationService.ensurePersisted(immunization);
 
 		if (immunization.getVaccinations().isEmpty()) {
-			immunizationService.delete(immunization);
+			immunizationService.delete(immunization, deletionDetails);
 		}
 	}
 
@@ -455,7 +501,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return toDto(vaccinationService.getByUuid(uuid));
 	}
 
-	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
+	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
 	public VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson) {
 		VaccinationDto existingVaccinationDto = toDto(vaccinationService.getByUuid(uuid));
 		PatchHelper.postUpdate(vaccinationDtoJson, existingVaccinationDto);
@@ -525,24 +571,93 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
 	}
 
-	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
-	public void copyExistingVaccinationsToNewImmunization(ImmunizationDto immunizationDto, Immunization newImmunization) {
+	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
+	public void copyOrMergeVaccinations(ImmunizationDto immunizationDto, Immunization newImmunization, List<VaccinationDto> leadPersonVaccinations) {
+
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
-		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
-			Vaccination vaccination = new Vaccination();
-			vaccination.setUuid(DataHelper.createUuid());
-			vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
+		List<VaccinationDto> followPersonVaccinationWithoutDuplicates = getMergedVaccination(immunizationDto.getVaccinations());
 
-			HealthConditions healthConditions = new HealthConditions();
-			healthConditions.setUuid(DataHelper.createUuid());
-			healthConditions = healthConditionsMapper.fillOrBuildEntity(vaccinationDto.getHealthConditions(), healthConditions, false);
-			vaccination.setHealthConditions(healthConditions);
+		for (VaccinationDto vaccinationDto : followPersonVaccinationWithoutDuplicates) {
+			List<VaccinationDto> duplicateLeadVaccinations = leadPersonVaccinations != null
+				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).collect(Collectors.toList())
+				: new ArrayList<>();
+			duplicateLeadVaccinations.sort(Comparator.comparing(EntityDto::getChangeDate).reversed());
+			if (duplicateLeadVaccinations.size() > 0) {
+				VaccinationDto duplicateVaccination = duplicateLeadVaccinations.get(0);
+				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination, vaccinationDto, false);
+				save(updatedVaccination);
+			} else {
+				Vaccination vaccination = new Vaccination();
+				vaccination.setUuid(DataHelper.createUuid());
+				vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
 
-			vaccination.setImmunization(newImmunization);
-			vaccinationEntities.add(vaccination);
+				HealthConditions healthConditions = new HealthConditions();
+				healthConditions.setUuid(DataHelper.createUuid());
+				healthConditions = healthConditionsMapper.fillOrBuildEntity(vaccinationDto.getHealthConditions(), healthConditions, false);
+				vaccination.setHealthConditions(healthConditions);
+
+				vaccination.setImmunization(newImmunization);
+				vaccinationEntities.add(vaccination);
+			}
 		}
 		newImmunization.getVaccinations().clear();
 		newImmunization.getVaccinations().addAll(vaccinationEntities);
+	}
+
+	/**
+	 * This method will return the list with vaccination for a person and merge all duplicates.
+	 * The lead vaccine will be considered the latest vaccine changed.
+	 * !! The list of merged vaccines is not persisted in DB
+	 */
+	private List<VaccinationDto> getMergedVaccination(List<VaccinationDto> vaccinationDtos) {
+		if (vaccinationDtos == null || vaccinationDtos.isEmpty()) {
+			return new ArrayList<>();
+		}
+		List<VaccinationDto> vaccinationsWithoutDuplicates = new ArrayList<>();
+		for (VaccinationDto vaccinationDto : vaccinationDtos) {
+			int duplicateIndex = 0;
+			VaccinationDto duplicateVaccine = null;
+			for (int i = 0; i < vaccinationsWithoutDuplicates.size(); i++) {
+				if (isDuplicateOf(vaccinationDto, vaccinationsWithoutDuplicates.get(i))) {
+					duplicateVaccine = vaccinationsWithoutDuplicates.get(i);
+					duplicateIndex = i;
+					break;
+				}
+			}
+
+			if (duplicateVaccine == null) {
+				vaccinationsWithoutDuplicates.add(vaccinationDto);
+			} else {
+				VaccinationDto targetVaccine;
+				VaccinationDto sourceVaccine;
+				if (duplicateVaccine.getChangeDate().after(vaccinationDto.getChangeDate())) {
+					targetVaccine = duplicateVaccine;
+					sourceVaccine = vaccinationDto;
+				} else {
+					targetVaccine = vaccinationDto;
+					sourceVaccine = duplicateVaccine;
+				}
+
+				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(targetVaccine, sourceVaccine, false);
+				vaccinationsWithoutDuplicates.set(duplicateIndex, updatedVaccination);
+			}
+		}
+		return vaccinationsWithoutDuplicates;
+	}
+
+	private boolean isDuplicateOf(VaccinationDto vaccination1, VaccinationDto vaccination2) {
+
+		return !vaccination1.getUuid().equals(vaccination2.getUuid())
+			&& vaccination1.getVaccineName() != null
+			&& vaccination2.getVaccineName() != null
+			&& vaccination1.getVaccineName() != Vaccine.UNKNOWN
+			&& vaccination2.getVaccineName() != Vaccine.UNKNOWN
+			&& vaccination1.getVaccinationDate() != null
+			&& vaccination2.getVaccinationDate() != null
+			&& DateHelper.isSameDay(vaccination1.getVaccinationDate(), vaccination2.getVaccinationDate())
+			&& vaccination1.getVaccineName() == vaccination2.getVaccineName()
+			&& (vaccination1.getVaccineName() != Vaccine.OTHER
+				|| StringUtils.equals(vaccination1.getOtherVaccineName(), vaccination2.getOtherVaccineName()));
 	}
 
 	public Map<String, VaccinationDto> getLatestByPersons(List<PersonReferenceDto> persons, Disease disease) {

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -25,10 +24,10 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -36,12 +35,13 @@ import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -49,17 +49,16 @@ import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacade
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.api.common.CoreEntityType;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "CampaignFacade")
-@RolesAllowed(UserRight._CAMPAIGN_VIEW)
+@RightsAllowed(UserRight._CAMPAIGN_VIEW)
 public class CampaignFacadeEjb
 	extends AbstractCoreFacadeEjb<Campaign, CampaignDto, CampaignIndexDto, CampaignReferenceDto, CampaignService, CampaignCriteria>
 	implements CampaignFacade {
@@ -67,7 +66,7 @@ public class CampaignFacadeEjb
 	@EJB
 	private CampaignFormMetaService campaignFormMetaService;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
 	private CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal campaignDiagramDefinitionFacade;
 
@@ -85,13 +84,14 @@ public class CampaignFacadeEjb
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignIndexDto> cq = cb.createQuery(CampaignIndexDto.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
+		CampaignQueryContext queryContext = new CampaignQueryContext(cb, cq, campaign);
 
 		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.START_DATE), campaign.get(Campaign.END_DATE));
 
-		Predicate filter = service.createUserFilter(cb, cq, campaign);
+		Predicate filter = service.createUserFilter(queryContext);
 
 		if (campaignCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(campaignCriteria, cb, campaign);
+			Predicate criteriaFilter = service.buildCriteriaFilter(queryContext, campaignCriteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -152,11 +152,12 @@ public class CampaignFacadeEjb
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
+		CampaignQueryContext queryContext = new CampaignQueryContext(cb, cq, campaign);
 
-		Predicate filter = service.createUserFilter(cb, cq, campaign);
+		Predicate filter = service.createUserFilter(queryContext);
 
 		if (campaignCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(campaignCriteria, cb, campaign);
+			Predicate criteriaFilter = service.buildCriteriaFilter(queryContext, campaignCriteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -166,7 +167,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_EDIT)
+	@RightsAllowed(UserRight._CAMPAIGN_EDIT)
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
@@ -194,6 +195,11 @@ public class CampaignFacadeEjb
 					.collect(Collectors.toSet()));
 		}
 		target.setDashboardElements(source.getCampaignDashboardElements());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -201,7 +207,7 @@ public class CampaignFacadeEjb
 		validate(getByUuid(campaignReferenceDto.getUuid()));
 	}
 
-	public void validate(CampaignDto campaignDto) {
+	public void validate(@Valid CampaignDto campaignDto) {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
 
@@ -296,6 +302,10 @@ public class CampaignFacadeEjb
 
 		target.setCampaignDashboardElements(source.getDashboardElements());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -347,18 +357,10 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_DELETE)
-	public void delete(String campaignUuid) {
+	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
+	public void delete(String campaignUuid, DeletionDetails deletionDetails) {
 
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.CAMPAIGN_DELETE)) {
-			throw new UnsupportedOperationException(
-				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to delete "
-					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
-		}
-
-		service.delete(service.getByUuid(campaignUuid));
+		service.delete(service.getByUuid(campaignUuid), deletionDetails);
 	}
 
 	@Override
@@ -399,7 +401,7 @@ public class CampaignFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString());
+		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.getName());
 		return dto;
 	}
 
@@ -409,7 +411,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+	public DeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return null; // campaigns do not support automatic deletion yet
 	}
 
@@ -420,19 +422,19 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
 	public void archive(List<String> entityUuids) {
 		super.archive(entityUuids);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
 	}

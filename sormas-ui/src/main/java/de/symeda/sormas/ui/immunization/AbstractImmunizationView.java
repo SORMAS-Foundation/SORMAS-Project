@@ -12,6 +12,7 @@ import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 public class AbstractImmunizationView extends AbstractDetailView<ImmunizationReferenceDto> {
 
@@ -70,6 +71,16 @@ public class AbstractImmunizationView extends AbstractDetailView<ImmunizationRef
 	}
 
 	protected boolean isImmunizationEditAllowed() {
-		return FacadeProvider.getImmunizationFacade().isImmunizationEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
+		return FacadeProvider.getImmunizationFacade().isEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
+	}
+
+	@Override
+	protected void setSubComponent(DirtyStateComponent newComponent) {
+		super.setSubComponent(newComponent);
+
+		ImmunizationDto dto = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
+		if (dto.isDeleted()){
+			newComponent.setEnabled(false);
+		}
 	}
 }

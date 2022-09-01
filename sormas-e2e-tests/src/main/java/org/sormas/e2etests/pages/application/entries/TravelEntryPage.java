@@ -27,8 +27,11 @@ public class TravelEntryPage {
   public static final By COMMIT_BUTTON = By.cssSelector("div#commit");
   public static final By NEW_PERSON_RADIOBUTTON_DE =
       By.xpath("//*[text()='Eine neue Person anlegen']");
+  public static final By SELECT_ANOTHER_PERSON_DE =
+      By.xpath("//*[text()='Eine andere Person w\u00E4hlen']");
   public static final By IMPORT_SUCCESS_DE = By.xpath("//*[text()='Import erfolgreich!']");
   public static final By NEW_TRAVEL_ENTRY_BUTTON = By.cssSelector("div#travelEntryNewTravelEntry");
+  public static final By EPI_DATA_CASE_NEW_TRAVEL_ENTRY_DE_BUTTON = By.id("Neue Einreise");
   public static final By PERSON_FILTER_INPUT = By.id("nameUuidExternalIDLike");
   public static final By RECOVERED_ENTRIES = By.id("onlyRecoveredEntries");
   public static final By VACCINATED_ENTRIES = By.id("onlyVaccinatedEntries");
@@ -42,4 +45,36 @@ public class TravelEntryPage {
   public static final By TRAVEL_ENTRY_AGGREGATION_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
   public static final By TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE = By.cssSelector("[role='gridcell'] a");
+  public static final By DELETE_BULK = By.id("bulkActions-3");
+
+  public static By getCheckboxByIndex(String idx) {
+    return By.xpath(String.format("(//td//input[@type=\"checkbox\"])[%s]", idx));
+  }
+
+  public static final By CLOSE_DATA_IMPORT_POPUP_BUTTON = By.id("actionCancel");
+  public static final By CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON =
+      By.xpath("//div[@class='v-window-closebox']");
+  public static final By FIRST_NAME_IMPORTED_PERSON =
+      By.xpath("//span[text()='Vorname']/../following-sibling::div");
+  public static final By LAST_NAME_IMPORTED_PERSON =
+      By.xpath("//span[text()='Nachname']/../following-sibling::div");
+  public static final By FIRST_RESULT_ID = By.xpath("//table/tbody/tr[2]/td[1]");
+  public static final By TRAVEL_ENTRY_DATA_FILTER_OPTION_COMBOBOX =
+      By.cssSelector("[id='dateFilterOption'] [class='v-filterselect-button']");
+  public static final By WEEK_FROM_OPTION_COMBOBOX =
+      By.cssSelector("[id='weekFrom'] [class='v-filterselect-button']");
+  public static final By WEEK_TO_OPTION_COMBOBOX =
+      By.cssSelector("[id='weekTo'] [class='v-filterselect-button']");
+  public static final By DELETE_TRAVEL_ENTRY_POPUP =
+      By.xpath("//div[@class='popupContent']//div[@class='v-filterselect-button']");
+  public static final By ENTRY_DETAILED_COLUMN_HEADERS =
+      By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By ENTRY_IMPORT_TEMPLATE_LABEL =
+      By.xpath("//div[contains(text(),'Importvorlage herunterladen')]");
+  public static final By PICK_OR_CREATE_PERSON_HEADER_DE =
+      By.xpath("//*[contains(text(),'Person ausw\u00E4hlen oder erstellen')]");
+  public static final By TRAVEL_ENTRIES_IMPORT_SUCCESSFUL_HEADER_DE =
+      By.xpath("//div/b[text()='Import erfolgreich!']");
+  public static final By CLOSE_IMPORT_TRAVEL_ENTRY_POPUP =
+      By.cssSelector(".popupContent .v-window-closebox");
 }

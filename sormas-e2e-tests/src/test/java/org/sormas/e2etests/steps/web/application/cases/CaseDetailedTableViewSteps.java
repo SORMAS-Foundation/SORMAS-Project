@@ -4,7 +4,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_DATA_TITLE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_INFORMATION_TITLE;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
 import cucumber.api.java8.En;
@@ -15,6 +14,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +25,7 @@ import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -39,6 +38,7 @@ public class CaseDetailedTableViewSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private static BaseSteps baseSteps;
   static final String DATE_FORMAT_DE = "dd.MM.yyyy";
+  static Map<String, Integer> headersMap;
 
   @Inject
   public CaseDetailedTableViewSteps(
@@ -46,7 +46,7 @@ public class CaseDetailedTableViewSteps implements En {
       BaseSteps baseSteps,
       ApiState apiState,
       SoftAssert softly,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -56,7 +56,7 @@ public class CaseDetailedTableViewSteps implements En {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
           softly.assertEquals(
-              detailedCaseDTableRow.size(), 41, "Case table rows count is not correct");
+              detailedCaseDTableRow.size(), 39, "Case table rows count is not correct");
 
           softly.assertTrue(
               detailedCaseDTableRow
@@ -146,7 +146,7 @@ public class CaseDetailedTableViewSteps implements En {
           }
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()),
-              environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
+              "Rest AUTO",
               "Reporting user is not correct");
           softly.assertAll();
         });
@@ -213,6 +213,29 @@ public class CaseDetailedTableViewSteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check that the Internal Token column is present",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          headersMap = extractColumnHeadersHashMap();
+          String headers = headersMap.toString();
+          softly.assertTrue(
+              headers.contains("INTERNAL TOKEN"), "The INTERNAL TOKEN column is not displayed!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that at least one SAMPLE TOKEN is displayed in table",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
+          softly.assertTrue(
+              detailedCaseDTableRow.containsValue("SAMPLE TOKEN"), "SAMPLE TOKEN was not found!");
+          softly.assertAll();
         });
   }
 

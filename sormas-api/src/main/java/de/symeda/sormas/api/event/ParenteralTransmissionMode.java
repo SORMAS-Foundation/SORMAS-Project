@@ -26,6 +26,7 @@ public enum ParenteralTransmissionMode {
 	PEDICURE_MANICURE,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

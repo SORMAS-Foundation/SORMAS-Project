@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas.sample;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -23,40 +24,50 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto;
 
 public class SormasToSormasSampleDto extends SormasToSormasEntityDto<SampleDto> {
 
 	private static final long serialVersionUID = 5867733293483599601L;
 
 	@Valid
-	private List<PathogenTestDto> pathogenTests;
+	private final List<PathogenTestDto> pathogenTests;
 
 	@Valid
-	private List<AdditionalTestDto> additionalTests;
+	private final List<AdditionalTestDto> additionalTests;
+
+	@Valid
+	private final List<SormasToSormasExternalMessageDto> externalMessages;
 
 	public SormasToSormasSampleDto() {
+		super();
+
+		this.pathogenTests = Collections.emptyList();
+		this.additionalTests = Collections.emptyList();
+		this.externalMessages = Collections.emptyList();
 	}
 
-	public SormasToSormasSampleDto(SampleDto sample, List<PathogenTestDto> pathogenTests, List<AdditionalTestDto> additionalTests) {
+	public SormasToSormasSampleDto(
+		SampleDto sample,
+		List<PathogenTestDto> pathogenTests,
+		List<AdditionalTestDto> additionalTests,
+		List<SormasToSormasExternalMessageDto> externalMessages) {
 		super(sample);
 
 		this.pathogenTests = pathogenTests;
 		this.additionalTests = additionalTests;
+		this.externalMessages = externalMessages;
 	}
 
 	public List<PathogenTestDto> getPathogenTests() {
 		return pathogenTests;
 	}
 
-	public void setPathogenTests(List<PathogenTestDto> pathogenTests) {
-		this.pathogenTests = pathogenTests;
-	}
-
 	public List<AdditionalTestDto> getAdditionalTests() {
 		return additionalTests;
 	}
 
-	public void setAdditionalTests(List<AdditionalTestDto> additionalTests) {
-		this.additionalTests = additionalTests;
+	public List<SormasToSormasExternalMessageDto> getExternalMessages() {
+		return externalMessages;
 	}
 }

@@ -33,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.EventActionTableEntry;
-import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -74,7 +73,7 @@ public class EventActionsTableSteps implements En {
               "Event ID is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionTitle(),
-              apiState.getCreatedAction().getMeasure(),
+              apiState.getCreatedAction().getTitle(),
               "Action title is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionCreationDate().toString().substring(0, 10),
@@ -94,7 +93,7 @@ public class EventActionsTableSteps implements En {
               "Priority is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionLastModifiedBy().toUpperCase(),
-              UserRoles.NationalUser.getRole().toUpperCase(),
+              "NAT USER",
               "Last modified by user is not correct");
           softly.assertAll();
         });

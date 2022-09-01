@@ -144,34 +144,23 @@ public class ContactDataView extends AbstractContactView {
 				buttonsLayout.addComponent(removeCaseButton);
 			}
 
-			chooseCaseButton.addClickListener(e -> {
-				VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingDiscardUnsavedChanges),
-					new Label(I18nProperties.getString(Strings.confirmationContactSourceCaseDiscardUnsavedChanges)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					480,
-					confirmed -> {
-						if (confirmed) {
-							editComponent.discard();
-							Disease selectedDisease = editComponent.getWrappedComponent().getSelectedDisease();
-							ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
-								if (selectedCase != null) {
-									editComponent.getWrappedComponent().setSourceCase(selectedCase.toReference());
-									ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
-									contactToChange.setCaze(selectedCase.toReference());
-									FacadeProvider.getContactFacade().save(contactToChange);
-									layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()), CASE_LOC);
-									removeCaseButton.setVisible(true);
-									chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
-									ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
-									new Notification(null, I18nProperties.getString(Strings.messageContactCaseChanged), Type.TRAY_NOTIFICATION, false)
-										.show(Page.getCurrent());
-								}
-							});
-						}
-					});
-			});
+			chooseCaseButton.addClickListener(e -> showUnsavedChangesPopup(() -> {
+				Disease selectedDisease = editComponent.getWrappedComponent().getSelectedDisease();
+				ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
+					if (selectedCase != null) {
+						editComponent.getWrappedComponent().setSourceCase(selectedCase.toReference());
+						ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+						contactToChange.setCaze(selectedCase.toReference());
+						FacadeProvider.getContactFacade().save(contactToChange);
+						layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()), CASE_LOC);
+						removeCaseButton.setVisible(true);
+						chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
+						ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
+						new Notification(null, I18nProperties.getString(Strings.messageContactCaseChanged), Type.TRAY_NOTIFICATION, false)
+							.show(Page.getCurrent());
+					}
+				});
+			}));
 			removeCaseButton.addClickListener(e -> {
 				if (contactDto.getRegion() == null || contactDto.getDistrict() == null) {
 					// Ask user to fill in a region and district before removing the source case
@@ -238,26 +227,29 @@ public class ContactDataView extends AbstractContactView {
 			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-				final ImmunizationListCriteria immunizationListCriteria =
-					new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
-				layout.addSidePanelComponent(
-					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
-					IMMUNIZATION_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
+					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease()).build();
+				}, this::showUnsavedChangesPopup)), IMMUNIZATION_LOC);
 			} else {
-				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(contactDto.getPerson()).withDisease(contactDto.getDisease())
-					.build()
-					.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
-					.contactReference(getContactRef())
-					.region(contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion())
-					.district(contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict());
-				layout.addSidePanelComponent(
-					new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)),
-					VACCINATIONS_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
+					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+					CaseDataDto refreshedCase = null;
+					if (refreshedContact.getCaze() != null) {
+						refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
+					}
+					return new VaccinationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease())
+						.build()
+						.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
+						.contactReference(getContactRef())
+						.region(refreshedContact.getRegion() != null ? refreshedContact.getRegion() : refreshedCase.getResponsibleRegion())
+						.district(refreshedContact.getDistrict() != null ? refreshedContact.getDistrict() : refreshedCase.getResponsibleDistrict());
+				}, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
 			}
 		}
 
-		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
-		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null) {
+		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser();
+		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null || contactDto.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
@@ -278,7 +270,7 @@ public class ContactDataView extends AbstractContactView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), contactDto, documentList);
 
-		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().isContactEditAllowed(contactDto.getUuid());
+		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().isEditAllowed(contactDto.getUuid());
 
 		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

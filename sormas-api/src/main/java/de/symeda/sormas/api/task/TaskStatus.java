@@ -22,10 +22,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum TaskStatus {
 
 	PENDING,
+	IN_PROGRESS,
 	DONE,
 	REMOVED,
 	NOT_EXECUTABLE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

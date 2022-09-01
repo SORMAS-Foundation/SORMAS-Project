@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -53,7 +54,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -83,10 +84,11 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.page.title.RowLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -517,11 +519,8 @@ public class ContactController {
 	}
 
 	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
-		ContactSelectionField contactSelect = new ContactSelectionField(
-			contact,
-			I18nProperties.getString(Strings.infoSelectOrCreateContact),
-			personDto.getFirstName(),
-			personDto.getLastName());
+		ContactSelectionField contactSelect =
+			new ContactSelectionField(contact, personDto.toReference(), I18nProperties.getString(Strings.infoSelectOrCreateContact));
 		contactSelect.setWidth(1024, Unit.PIXELS);
 
 		if (contactSelect.hasMatches()) {
@@ -562,7 +561,8 @@ public class ContactController {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
-		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);
+		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getContactFacade().getManuallyDeletionInfo(contactUuid);
 
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
 		editForm.setValue(contact);
@@ -571,8 +571,14 @@ public class ContactController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
 			editForm.getFieldGroup());
 
-		if (automaticDeletionInfoDto != null) {
-			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		editComponent.getButtonsPanel()
+			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, contact.isDeleted(), ContactDto.I18N_PREFIX));
+
+		if (contact.isDeleted()) {
+			editComponent.getWrappedComponent().getField(ContactDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(ContactDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(ContactDto.OTHER_DELETION_REASON).setVisible(true);
+			}
 		}
 
 		editComponent.addCommitListener(() -> {
@@ -589,8 +595,8 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getContactFacade().delete(contact.getUuid());
+			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
 		}
@@ -693,22 +699,20 @@ public class ContactController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
+			DeletableUtils.showDeleteWithReasonPopup(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
-						for (ContactIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getContactFacade().delete(selectedRow.getUuid());
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingContactsDeleted),
-							I18nProperties.getString(Strings.messageContactsDeleted),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+				(deleteDetails) -> {
+					for (ContactIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getContactFacade().delete(selectedRow.getUuid(), deleteDetails);
 					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingContactsDeleted),
+						I18nProperties.getString(Strings.messageContactsDeleted),
+						Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
 				});
+
 		}
 	}
 
@@ -828,10 +832,10 @@ public class ContactController {
 	}
 
 	public void deleteContact(ContactIndexDto contact, Runnable callback) {
-		VaadinUiUtil.showDeleteConfirmationWindow(
+		DeletableUtils.showDeleteWithReasonPopup(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
-			() -> {
-				FacadeProvider.getContactFacade().delete(contact.getUuid());
+			(deleteDetails) -> {
+				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
 				callback.run();
 			});
 	}

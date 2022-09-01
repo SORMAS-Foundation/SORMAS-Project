@@ -49,7 +49,6 @@ import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
 import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.HumanTransmissionMode;
@@ -69,9 +68,10 @@ import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -219,6 +219,8 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	private String internalToken;
 
 	private EventIdentificationSource eventIdentificationSource;
+
+	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -685,11 +687,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.diseaseTransmissionMode = diseaseTransmissionMode;
 	}
 
-	@Override
-	public String toString() {
-		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
-	}
-
 	public Float getReportLatLonAccuracy() {
 		return reportLatLonAccuracy;
 	}
@@ -815,4 +812,14 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
 		this.eventIdentificationSource = eventIdentificationSource;
 	}
+
+	@OneToMany(mappedBy = ExternalShareInfo.EVENT, fetch = FetchType.LAZY)
+	public List<ExternalShareInfo> getExternalShares() {
+		return externalShares;
+	}
+
+	public void setExternalShares(List<ExternalShareInfo> externalShares) {
+		this.externalShares = externalShares;
+	}
+
 }

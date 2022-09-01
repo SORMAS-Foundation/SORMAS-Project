@@ -18,30 +18,41 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.*;
 
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.Assert;
 
 public class UserManagementSteps implements En {
+  public static int numberOfUsers;
   protected WebDriverHelpers webDriverHelpers;
 
   @Inject
-  public UserManagementSteps(WebDriverHelpers webDriverHelpers) {
+  public UserManagementSteps(WebDriverHelpers webDriverHelpers, AssertHelpers assertHelpers) {
     this.webDriverHelpers = webDriverHelpers;
-    When(
-        "^I click on the NEW USER button$",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT));
 
     When(
-        "^I select first user from list$",
+        "^I click on the NEW USER button$",
         () -> {
-          selectFirstElementFromList();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_USER_BUTTON);
+          webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+              NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
         });
+
+    Then(
+        "^I set active inactive filter to ([^\"]*) in User Management directory$",
+        (String activeInactive) -> {
+          webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, activeInactive);
+          TimeUnit.SECONDS.sleep(2); // needed for table to refresh
+        });
+
+    When("^I select first user from list$", () -> selectFirstElementFromList());
 
     When(
         "^I search for created user$",
@@ -56,6 +67,33 @@ public class UserManagementSteps implements En {
           searchForUser(CreateNewUserSteps.editUser.getUserName());
           selectFirstElementFromList();
         });
+
+    When(
+        "^I count the number of users displayed in User Directory$",
+        () ->
+            numberOfUsers = Integer.parseInt(webDriverHelpers.getTextFromWebElement(USER_NUMBER)));
+
+    When(
+        "^I click on Sync Users button$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SYNC_USERS_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SYNC_POPUP_BUTTON);
+        });
+    When(
+        "^I click on Sync button from Sync Users popup$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SYNC_POPUP_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ACTION_CANCEL);
+        });
+    When(
+        "^I check if sync message is correct in German$",
+        () ->
+            assertHelpers.assertWithPoll(
+                () ->
+                    Assert.assertTrue(
+                        webDriverHelpers.isElementVisibleWithTimeout(SYNC_SUCCESS_DE, 5),
+                        "Sync of users failed"),
+                10));
   }
 
   private void searchForUser(String userName) {

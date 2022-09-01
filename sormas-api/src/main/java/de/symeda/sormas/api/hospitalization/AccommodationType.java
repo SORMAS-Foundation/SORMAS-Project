@@ -24,6 +24,7 @@ public enum AccommodationType {
 	WARD,
 	ICU;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

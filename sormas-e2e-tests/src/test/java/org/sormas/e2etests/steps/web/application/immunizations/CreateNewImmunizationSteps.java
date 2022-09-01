@@ -55,7 +55,6 @@ public class CreateNewImmunizationSteps implements En {
     When(
         "I check Overwrite immunization management status option",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(
               OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS_INPUT);
         });
@@ -76,6 +75,45 @@ public class CreateNewImmunizationSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DISCARD_IMMUNIZATION_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_IMMUNIZATION_BUTTON);
+        });
+
+    When(
+        "I fill only mandatory fields in immunization popup with means of immunization as a {string}",
+        (String status) -> {
+          immunization =
+              immunizationService.buildGeneratedImmunizationWithMeansOfImmunizationFromCase(status);
+          fillDateOfReport(immunization.getDateOfReport());
+          fillMeansOfImmunization(immunization.getMeansOfImmunization());
+          selectResponsibleRegion(immunization.getResponsibleRegion());
+          selectResponsibleDistrict(immunization.getResponsibleDistrict());
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_POPUP_SAVE_BUTTON);
+        });
+
+    When(
+        "I fill a new immunization form with {string} as a responsible region and {string} as a responsible district",
+        (String region, String district) -> {
+          immunization =
+              immunizationService.buildImmunizationWithSpecificResponsibleLocation(
+                  region, district);
+          fillDateOfReport(immunization.getDateOfReport());
+          fillExternalId(immunization.getExternalId());
+          fillMeansOfImmunization(immunization.getMeansOfImmunization());
+          selectResponsibleRegion(immunization.getResponsibleRegion());
+          selectResponsibleDistrict(immunization.getResponsibleDistrict());
+        });
+
+    When(
+        "^I fill mandatory fields and immunization period in a new immunization popup$",
+        () -> {
+          immunization = immunizationService.buildGeneratedImmunization();
+          fillDateOfReport(immunization.getDateOfReport());
+          fillExternalId(immunization.getExternalId());
+          fillMeansOfImmunization(immunization.getMeansOfImmunization());
+          selectResponsibleRegion(immunization.getResponsibleRegion());
+          selectResponsibleDistrict(immunization.getResponsibleDistrict());
+          fillStartData(immunization.getStartDate());
+          fillEndData(immunization.getEndDate());
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_POPUP_SAVE_BUTTON);
         });
   }
 

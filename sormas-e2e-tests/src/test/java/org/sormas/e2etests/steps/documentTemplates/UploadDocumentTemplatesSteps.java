@@ -66,34 +66,49 @@ public class UploadDocumentTemplatesSteps implements En {
 
     When(
         "I pick the case document template file",
-        () ->
-            webDriverHelpers.sendFile(
-                FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateCases.docx"));
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateCases.docx");
+        });
 
     When(
         "I pick the contact document template file",
-        () ->
-            webDriverHelpers.sendFile(
-                FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateContacts.docx"));
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateContacts.docx");
+        });
 
     When(
         "I pick the event participant document template file",
-        () ->
-            webDriverHelpers.sendFile(
-                FILE_PICKER,
-                userDirPath + "/uploads/ExampleDocumentTemplateEventParticipant.docx"));
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateEventParticipant.docx");
+        });
+    When(
+        "I pick the {string} file",
+        (String filename) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + filename);
+        });
 
     When(
         "I pick the travel entry document template file",
-        () ->
-            webDriverHelpers.sendFile(
-                FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateTravelEntry.docx"));
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateTravelEntry.docx");
+        });
 
     When(
         "I pick the event document template file",
-        () ->
-            webDriverHelpers.sendFile(
-                FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateEventHandout.html"));
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/ExampleDocumentTemplateEventHandout.html");
+        });
 
     When(
         "I click on the UPLOAD TEMPLATE button from the popup",
@@ -105,6 +120,14 @@ public class UploadDocumentTemplatesSteps implements En {
 
     Then(
         "I check that an upload success notification appears",
-        () -> webDriverHelpers.waitUntilIdentifiedElementIsPresent(UPLOAD_SUCCESS_POPUP));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UPLOAD_SUCCESS_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(UPLOAD_SUCCESS_POPUP);
+        });
+    Then(
+        "I click to close UPLOAD TEMPLATE popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP);
+        });
   }
 }

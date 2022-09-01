@@ -18,10 +18,13 @@
 package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -45,6 +48,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.LockMode;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +59,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -79,8 +85,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return currentUserService.getCurrentUser();
 	}
 
-	public boolean hasCurrentUserRight(UserRight userRight) {
-		return currentUserService.hasUserRight(userRight);
+	public boolean hasRight(UserRight right) {
+		return currentUserService.hasUserRight(right);
 	}
 
 	protected Class<ADO> getElementClass() {
@@ -188,6 +194,19 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return createQuery(cq, 0, batchSize).getResultList();
 	}
 
+	public List<AdoAttributes> getBatchedAttributesQueryResults(
+		CriteriaBuilder cb,
+		CriteriaQuery<AdoAttributes> cq,
+		From<?, ADO> from,
+		Integer batchSize) {
+
+		// Ordering by UUID is relevant if a batch includes some, but not all objects with the same timestamp.
+		// the next batch can then resume with the same timestamp and the next UUID in lexicographical order.y
+		cq.orderBy(cb.asc(from.get(AdoAttributes.CHANGE_DATE)), cb.asc(from.get(AdoAttributes.UUID)));
+
+		return createQuery(cq, 0, batchSize).getResultList();
+	}
+
 	public long countAfter(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -201,6 +220,37 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.select(cb.count(root));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	/**
+	 * @return List of <strong>read-only</strong> entities. Sorts also by {@value AbstractDomainObject#CHANGE_DATE},
+	 *         {@value AbstractDomainObject#UUID}, {@value AbstractDomainObject#ID} ASC
+	 *         to match sorting for {@code getAllAfter} pattern (to be in sync with
+	 *         {@link #getBatchedQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)} and
+	 *         {@link #getBatchedAttributesQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)}).
+	 */
+	public List<ADO> getByIds(List<Long> ids) {
+
+		/*
+		 * Use Set here to avoid possible duplicates over several batches or within one batch.
+		 * This also avoids costly DISTINCT argument.
+		 */
+		Set<ADO> result = new LinkedHashSet<>();
+		IterableHelper.executeBatched(ids, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+			Root<ADO> from = cq.from(getElementClass());
+			cq.where(from.get(AbstractDomainObject.ID).in(batchedIds));
+			cq.orderBy(
+				cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)),
+				cb.asc(from.get(AbstractDomainObject.UUID)),
+				cb.asc(from.get(AbstractDomainObject.ID)));
+			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			result.addAll(batchResult);
+		});
+
+		return new ArrayList<>(result);
 	}
 
 	public List<ADO> getByUuids(List<String> uuids) {
@@ -353,6 +403,11 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			// h2 database entity manager throws "NoResultException" if the entity not found
 			return false;
 		}
+	}
+
+	public void incrementChangeDate(ADO ado) {
+		Session session = em.unwrap(Session.class);
+		session.lock(ado, LockMode.OPTIMISTIC_FORCE_INCREMENT);
 	}
 
 	public interface ExistsPredicateBuilder<ADO extends AbstractDomainObject> {

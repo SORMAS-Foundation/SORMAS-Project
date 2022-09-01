@@ -92,7 +92,7 @@ import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.therapy.PrescriptionDtoHelper;
 import de.symeda.sormas.app.backend.therapy.TreatmentDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
-import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
+import de.symeda.sormas.app.backend.user.UserRoleDtoHelper;
 import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
 import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -140,15 +140,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				pushNewData();
 				// Infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
 				pullInfrastructure();
-				// Pull and remove deleted entities when the last time this has been done is more than 24 hours ago
-				if (ConfigProvider.getLastDeletedSyncDate() == null
-					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastDeletedSyncDate(), new Date()) >= 1) {
-					pullAndRemoveDeletedUuidsSince(ConfigProvider.getLastDeletedSyncDate());
-				}
-				// Pull and remove archived entities when the last time this has been done is more than 24 hours ago
-				if (ConfigProvider.getLastArchivedSyncDate() == null
-					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
-					pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
+				// Pull and remove obsolete entities when the last time this has been done is more than 24 hours ago
+				if (ConfigProvider.getLastObsoleteUuidsSyncDate() == null
+					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastObsoleteUuidsSyncDate(), new Date()) >= 1) {
+					pullAndRemoveObsoleteUuidsSince(ConfigProvider.getLastObsoleteUuidsSyncDate());
 				}
 				// Pull changed data and push existing data that has been changed on the mobile device
 				synchronizeChangedData();
@@ -407,7 +402,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// order is important, due to dependencies (e.g. case & person)
 
-		new UserRoleConfigDtoHelper().repullEntities(context);
+		new UserRoleDtoHelper().repullEntities(context);
 		new DiseaseClassificationDtoHelper().repullEntities(context);
 		new UserDtoHelper().repullEntities(context);
 		new OutbreakDtoHelper().repullEntities(context);
@@ -478,29 +473,20 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new ContinentDtoHelper().pullEntities(false, context);
 		new SubcontinentDtoHelper().pullEntities(false, context);
 		new CountryDtoHelper().pullEntities(false, context);
-
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
-			new AreaDtoHelper().pullEntities(false, context);
-		}
+		new AreaDtoHelper().pullEntities(false, context);
 		new RegionDtoHelper().pullEntities(false, context);
 		new DistrictDtoHelper().pullEntities(false, context);
 		new CommunityDtoHelper().pullEntities(false, context);
 		new FacilityDtoHelper().pullEntities(false, context);
 		new PointOfEntryDtoHelper().pullEntities(false, context);
+		new UserRoleDtoHelper().pullEntities(false, context);
 		new UserDtoHelper().pullEntities(false, context);
 		new DiseaseClassificationDtoHelper().pullEntities(false, context);
 		new DiseaseConfigurationDtoHelper().pullEntities(false, context);
 		new CustomizableEnumValueDtoHelper().pullEntities(false, context);
 
-		// user role configurations may be removed, so have to pull the deleted uuids
+		// feature configurations may be removed, so have to pull the deleted uuids
 		// this may be applied to other entities later as well
-		Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
-		List<String> userRoleConfigUuids =
-			executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() : 0));
-		DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
-
-		new UserRoleConfigDtoHelper().pullEntities(false, context);
-
 		Date featureConfigurationChangeDate = DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate();
 		List<String> featureConfigurationConfigUuids = executeUuidCall(
 			RetroProvider.getFeatureConfigurationFacade()
@@ -512,14 +498,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		ConfigProvider.setInitialSyncRequired(false);
 	}
 
-	@AddTrace(name = "pullAndRemoveArchivedUuidsSinceTrace")
-	private void pullAndRemoveArchivedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
-		Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
+	@AddTrace(name = "pullAndRemoveObsoleteUuidsSinceTrace")
+	private void pullAndRemoveObsoleteUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
+		Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveObsoleteUuidsSince");
 
 		try {
 			// Cases
 			if (DtoUserRightsHelper.isViewAllowed(CaseDataDto.class)) {
-				List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+				List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String caseUuid : caseUuids) {
 					DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
 				}
@@ -528,7 +514,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			// Contacts
 			if (DtoUserRightsHelper.isViewAllowed(ContactDto.class)) {
 				List<String> contactUuids =
-					executeUuidCall(RetroProvider.getContactFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+					executeUuidCall(RetroProvider.getContactFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String contactUuid : contactUuids) {
 					DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
 				}
@@ -536,7 +522,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 			// Events
 			if (DtoUserRightsHelper.isViewAllowed(EventDto.class)) {
-				List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+				List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String eventUuid : eventUuids) {
 					DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
 				}
@@ -545,15 +531,33 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			// EventParticipant
 			if (DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class)) {
 				List<String> eventParticipantUuids =
-					executeUuidCall(RetroProvider.getEventParticipantFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+					executeUuidCall(RetroProvider.getEventParticipantFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String eventParticipantUuid : eventParticipantUuids) {
 					DatabaseHelper.getEventParticipantDao().deleteEventParticipantAndAllDependingEntities(eventParticipantUuid);
 				}
 			}
 
+			// Immunization
+			if (DtoUserRightsHelper.isViewAllowed(ImmunizationDto.class)) {
+				List<String> immunizationUuids =
+					executeUuidCall(RetroProvider.getImmunizationFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
+				for (String immunizationUuid : immunizationUuids) {
+					DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
+				}
+			}
+
+			// Samples
+			if (DtoUserRightsHelper.isViewAllowed(SampleDto.class)) {
+				List<String> sampleUuids =
+					executeUuidCall(RetroProvider.getSampleFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
+				for (String sampleUuid : sampleUuids) {
+					DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
+				}
+			}
+
 			// Tasks
 			if (DtoUserRightsHelper.isViewAllowed(TaskDto.class)) {
-				List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+				List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String taskUuid : taskUuids) {
 					DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(taskUuid);
 				}
@@ -568,72 +572,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				}
 			}
 
-			ConfigProvider.setLastArchivedSyncDate(new Date());
-		} catch (SQLException e) {
+			// Aggregate reports
+			if (DtoUserRightsHelper.isViewAllowed(AggregateReportDto.class)) {
+				List<String> aggregateReportUuids = executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids());
+				DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids);
+			}
+
+			ConfigProvider.setLastObsoleteUuidsSyncDate(new Date());
+		} catch (SQLException | DaoException e) {
 			Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveArchivedUuidsSince failed: " + e.getMessage());
-		}
-	}
-
-	@AddTrace(name = "pullAndRemoveDeletedUuidsSinceTrace")
-	private void pullAndRemoveDeletedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
-		Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullDeletedUuidsSince");
-
-		try {
-			// Cases
-			if (DtoUserRightsHelper.isViewAllowed(CaseDataDto.class)) {
-				List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-				for (String caseUuid : caseUuids) {
-					DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
-				}
-			}
-
-			// Immunization
-			if (DtoUserRightsHelper.isViewAllowed(ImmunizationDto.class)) {
-				List<String> immunizationUuids =
-					executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-				for (String immunizationUuid : immunizationUuids) {
-					DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
-				}
-			}
-
-			// Events
-			if (DtoUserRightsHelper.isViewAllowed(EventDto.class)) {
-				List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-				for (String eventUuid : eventUuids) {
-					DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
-				}
-			}
-
-			//Event participants
-			if (DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class)) {
-				List<String> eventParticipantUuids =
-					executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-				for (String eventParticipantUuid : eventParticipantUuids) {
-					DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
-				}
-			}
-
-			// Contacts
-			if (DtoUserRightsHelper.isViewAllowed(ContactDto.class)) {
-				List<String> contactUuids =
-					executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-				for (String contactUuid : contactUuids) {
-					DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
-				}
-			}
-
-			// Samples
-			if (DtoUserRightsHelper.isViewAllowed(SampleDto.class)) {
-				List<String> sampleUuids =
-					executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-				for (String sampleUuid : sampleUuids) {
-					DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
-				}
-			}
-
-			ConfigProvider.setLastDeletedSyncDate(new Date());
-		} catch (SQLException e) {
-			Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveDeletedUuidsSince failed: " + e.getMessage());
 		}
 	}
 
@@ -749,7 +696,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			// no editing of meta - campaignFormMetaDtoHelper.pushEntities(true);
 			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormMetaDto.class);
 			final List<String> campaignFormMetaUuids =
-					viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids()) : new ArrayList<>();
+				viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids()) : new ArrayList<>();
 			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
 			campaignFormMetaDtoHelper.pullMissing(campaignFormMetaUuids);
 
@@ -792,8 +739,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		List<String> featureConfigurationUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullUuids());
 		DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids);
 		// user role config
-		List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
-		DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
+		List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleFacade().pullUuids());
+		DatabaseHelper.getUserRoleDao().deleteInvalid(userRoleConfigUuids);
 		// points of entry
 		List<String> pointOfEntryUuids = executeUuidCall(RetroProvider.getPointOfEntryFacade().pullUuids());
 		DatabaseHelper.getPointOfEntryDao().deleteInvalid(pointOfEntryUuids);
@@ -827,17 +774,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new ContinentDtoHelper().pullMissing(continentUuids);
 		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
 		new CountryDtoHelper().pullMissing(countryUuids);
-
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
-			new AreaDtoHelper().pullMissing(areaUuids);
-		}
-
+		new AreaDtoHelper().pullMissing(areaUuids);
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);
 		new CommunityDtoHelper().pullMissing(communityUuids);
 		new FacilityDtoHelper().pullMissing(facilityUuids);
 		new PointOfEntryDtoHelper().pullMissing(pointOfEntryUuids);
-		new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
+		new UserRoleDtoHelper().pullMissing(userRoleConfigUuids);
 		new UserDtoHelper().pullMissing(userUuids);
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
 		new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids);

@@ -18,6 +18,8 @@ import java.util.Date;
 
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -26,8 +28,10 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@FeatureIndependent
 public class RegionDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = -1610675328037466348L;
@@ -102,11 +106,6 @@ public class RegionDto extends InfrastructureDto {
 		this.epidCode = epidCode;
 	}
 
-	@Override
-	public String toString() {
-		return getName();
-	}
-
 	public Float getGrowthRate() {
 		return growthRate;
 	}
@@ -152,11 +151,19 @@ public class RegionDto extends InfrastructureDto {
 		return new RegionReferenceDto(getUuid(), name, externalID);
 	}
 
-
-
 	public static RegionDto build() {
 		RegionDto dto = new RegionDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
+	}
+
+	@Override
+	public String buildCaption() {
+		return getName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

@@ -11,8 +11,8 @@ public enum CampaignJurisdictionLevel {
 	COMMUNITY;
 
 	public static CampaignJurisdictionLevel getByJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
-		switch (jurisdictionLevel) {
 
+		switch (jurisdictionLevel) {
 		case NATION:
 		case NONE:
 			return AREA;
@@ -22,11 +22,13 @@ public enum CampaignJurisdictionLevel {
 			return DISTRICT;
 		case COMMUNITY:
 			return COMMUNITY;
+		//$CASES-OMITTED$
 		default:
 			throw new UnsupportedOperationException();
 		}
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

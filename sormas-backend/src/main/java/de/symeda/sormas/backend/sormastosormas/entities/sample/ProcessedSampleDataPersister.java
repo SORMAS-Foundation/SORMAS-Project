@@ -24,19 +24,23 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -49,7 +53,11 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 	@EJB
 	private AdditionalTestFacadeEjbLocal additionalTestFacade;
 	@EJB
+	private ExternalMessageFacadeEjbLocal externalMessageFacade;
+	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
@@ -57,24 +65,45 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 	}
 
 	@Override
+	protected SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade() {
+		return originInfoFacade;
+	}
+
 	public void persistSharedData(SormasToSormasSampleDto processedData, Sample existingSample) throws SormasToSormasValidationException {
 		SampleDto sample = processedData.getEntity();
 
-		handleValidationError(() -> sampleFacade.saveSample(sample, true, false, false), Captions.Sample, buildSampleValidationGroupName(sample));
+		handleValidationError(
+			() -> sampleFacade.saveSample(sample, true, false, false),
+			Captions.Sample,
+			buildSampleValidationGroupName(sample),
+			sample);
 
 		for (PathogenTestDto pathogenTest : processedData.getPathogenTests()) {
 			handleValidationError(
 				() -> pathogenTestFacade.savePathogenTest(pathogenTest, false, false),
 				Captions.PathogenTest,
-				buildPathogenTestValidationGroupName(pathogenTest));
+				buildPathogenTestValidationGroupName(pathogenTest),
+				pathogenTest);
 		}
 
 		for (AdditionalTestDto additionalTest : processedData.getAdditionalTests()) {
 			handleValidationError(
 				() -> additionalTestFacade.saveAdditionalTest(additionalTest, false),
 				Captions.AdditionalTest,
-				buildValidationGroupName(Captions.AdditionalTest, additionalTest));
+				buildValidationGroupName(Captions.AdditionalTest, additionalTest),
+				additionalTest);
 		}
+
+		for (SormasToSormasExternalMessageDto s2sExternalMessage : processedData.getExternalMessages()) {
+			ExternalMessageDto externalMessage = s2sExternalMessage.getEntity();
+
+			handleValidationError(
+				() -> externalMessageFacade.save(externalMessage, false, false),
+				Captions.ExternalMessage,
+				buildValidationGroupName(Captions.ExternalMessage, externalMessage),
+				externalMessage);
+		}
+
 	}
 
 	@Override

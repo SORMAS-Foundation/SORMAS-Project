@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -40,6 +39,7 @@ import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
@@ -47,9 +47,10 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ActionFacade")
-@RolesAllowed(UserRight._EVENT_VIEW)
+@RightsAllowed(UserRight._EVENT_VIEW)
 public class ActionFacadeEjb implements ActionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -126,9 +127,13 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
-	@RolesAllowed({UserRight._ACTION_CREATE, UserRight._ACTION_EDIT})
+	@RightsAllowed({
+		UserRight._ACTION_CREATE,
+		UserRight._ACTION_EDIT })
 	public ActionDto saveAction(@Valid ActionDto dto) {
 
+		Action existingAction = actionService.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingAction, userService, UserRight.ACTION_CREATE, UserRight.ACTION_EDIT);
 		Action ado = fromDto(dto, true);
 		actionService.ensurePersisted(ado);
 		return toDto(ado);
@@ -140,32 +145,27 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._ACTION_DELETE)
+	@RightsAllowed(UserRight._ACTION_DELETE)
 	public void deleteAction(ActionDto actionDto) {
 		Action action = actionService.getByUuid(actionDto.getUuid());
 		actionService.deletePermanent(action);
 	}
 
 	@Override
-	public List<String> getAllUuids() {
+	public List<String> getAllActiveUuids() {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return actionService.getAllUuids();
+		return actionService.getAllActiveUuids();
 	}
 
 	@Override
-	public List<ActionDto> getAllActionsAfter(Date date) {
+	public List<ActionDto> getAllActiveActionsAfter(Date date) {
 
-		User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return actionService.getAllActionsAfter(date, user).stream().map(this::toDto).collect(Collectors.toList());
+		return actionService.getAllAfter(date, null, null).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

@@ -19,7 +19,6 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 	public static final String END_DATE = "endDate";
 	public static final String IMMUNIZATION_PERIOD = "immunizationPeriod";
 
-	private String uuid;
 	private Disease disease;
 	private MeansOfImmunization meansOfImmunization;
 	private ImmunizationStatus immunizationStatus;
@@ -36,21 +35,13 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 		Date startDate,
 		Date endDate) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.disease = disease;
 		this.meansOfImmunization = meansOfImmunization;
 		this.immunizationStatus = immunizationStatus;
 		this.immunizationManagementStatus = immunizationManagementStatus;
 		this.startDate = startDate;
 		this.endDate = endDate;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public Disease getDisease() {

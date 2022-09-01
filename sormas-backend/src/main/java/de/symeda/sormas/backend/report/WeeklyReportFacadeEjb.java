@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -49,7 +48,6 @@ import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportRegionSummaryDto;
 import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -75,9 +73,10 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "WeeklyReportFacade")
-@RolesAllowed(UserRight._WEEKLYREPORT_VIEW)
+@RightsAllowed(UserRight._WEEKLYREPORT_VIEW)
 public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -126,7 +125,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._WEEKLYREPORT_CREATE)
+	@RightsAllowed(UserRight._WEEKLYREPORT_CREATE)
 	public WeeklyReportDto saveWeeklyReport(@Valid WeeklyReportDto dto) {
 
 		// Don't create a new report if there already is one in the database for the user/epi week combination
@@ -155,8 +154,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
+		JurisdictionLevel jurisdictionLevel = userService.getCurrentUser().getJurisdictionLevel();
 
-		if (userService.getCurrentUser().getJurisdictionLevel() != JurisdictionLevel.NATION) {
+		if (jurisdictionLevel != JurisdictionLevel.NONE & jurisdictionLevel != JurisdictionLevel.NATION) {
 			return new ArrayList<>();
 		}
 
@@ -361,7 +361,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		return target;
 	}
 
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void generateSubmitWeeklyReportTasks() {
 
@@ -376,9 +376,12 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 				// task
 				continue;
 			} else {
-				TaskCriteria pendingUserTaskCriteria =
-					new TaskCriteria().taskType(TaskType.WEEKLY_REPORT_GENERATION).assigneeUser(user.toReference()).taskStatus(TaskStatus.PENDING);
-				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria, true);
+				List<Task> existingTasks = taskService.findByAssigneeContactTypeAndStatuses(
+					user.toReference(),
+					null,
+					TaskType.WEEKLY_REPORT_GENERATION,
+					TaskStatus.IN_PROGRESS,
+					TaskStatus.PENDING);
 
 				if (!existingTasks.isEmpty()) {
 					// There is already a task for generating the Weekly Report for last week

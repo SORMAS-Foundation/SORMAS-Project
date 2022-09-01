@@ -6,15 +6,20 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
-import org.apache.commons.lang3.StringUtils;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 
 @Stateless
 @LocalBean
@@ -24,6 +29,8 @@ public class SormasToSormasEntitiesHelper {
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private ExternalMessageService externalMessageService;
 
 	public void updateCaseResponsibleDistrict(CaseDataDto caze, String districtExternalId) {
 		if (StringUtils.isNoneBlank(districtExternalId)) {
@@ -86,6 +93,15 @@ public class SormasToSormasEntitiesHelper {
 				contact.setDistrict(district);
 				contact.setCommunity(null);
 			}
+		}
+	}
+
+	public void updateSampleOnShare(Sample sample, SormasToSormasShareInfo sareInfo) {
+		if (sareInfo.isOwnershipHandedOver()) {
+			sample.getExternalMessages().forEach(m -> {
+				m.setStatus(ExternalMessageStatus.FORWARDED);
+				externalMessageService.ensurePersisted(m);
+			});
 		}
 	}
 }

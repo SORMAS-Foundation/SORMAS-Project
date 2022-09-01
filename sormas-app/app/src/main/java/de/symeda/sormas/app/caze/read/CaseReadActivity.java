@@ -15,11 +15,11 @@
 
 package de.symeda.sormas.app.caze.read;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -27,7 +27,6 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -37,6 +36,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.UserRole;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -212,11 +212,22 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		final MenuItem editMenu = getEditMenu();
 
 		if (editMenu != null) {
-			if (CaseEditAuthorization.isCaseEditAllowed(selectedCase)
-				|| (getActiveFragment() != null && getActiveFragment() instanceof CaseReadContactListFragment)) {
-				editMenu.setVisible(true);
+			if (getActiveFragment() instanceof CaseReadPortHealthInfoFragment) {
+				if (ConfigProvider.hasUserRight(UserRight.CASE_EDIT)
+					&& ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_EDIT)
+					&& (CaseEditAuthorization.isCaseEditAllowed(selectedCase))) {
+					editMenu.setVisible(true);
+				} else {
+					editMenu.setVisible(false);
+				}
 			} else {
-				editMenu.setVisible(false);
+				if (ConfigProvider.hasUserRight(UserRight.CASE_EDIT)
+						&& (CaseEditAuthorization.isCaseEditAllowed(selectedCase)
+						|| (getActiveFragment() != null && getActiveFragment() instanceof CaseReadContactListFragment))) {
+					editMenu.setVisible(true);
+				} else {
+					editMenu.setVisible(false);
+				}
 			}
 		}
 	}

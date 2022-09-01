@@ -29,7 +29,6 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	public static final String CONTACT_COUNT = "contactCount";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
-	private String uuid;
 	private String personUuid;
 	private String caseUuid;
 	private String eventUuid;
@@ -70,7 +69,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		boolean isInJurisdiction,
 		boolean isInJurisdictionOrOwned) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.personUuid = personUuid;
 		this.caseUuid = caseUuid;
 		this.eventUuid = eventUuid;
@@ -84,14 +83,6 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.vaccinationStatus = vaccinationStatus;
 		this.isInJurisdiction = isInJurisdiction;
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getPersonUuid() {
@@ -199,6 +190,6 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	}
 
 	public EventParticipantReferenceDto toReference() {
-		return new EventParticipantReferenceDto(uuid, firstName, lastName);
+		return new EventParticipantReferenceDto(getUuid(), firstName, lastName);
 	}
 }

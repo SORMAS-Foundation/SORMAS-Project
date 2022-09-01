@@ -1,6 +1,11 @@
 package de.symeda.sormas.backend.disease;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
+
+import java.util.List;
+
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -22,13 +27,15 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Disease disease;
 	private Boolean active;
 	private Boolean primaryDisease;
-	private Boolean caseBased;
+	private Boolean caseSurveillanceEnabled;
+	private Boolean aggregateReportingEnabled;
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
 	private Integer caseFollowUpDuration;
 	private Integer eventParticipantFollowUpDuration;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
+	private List<String> ageGroups;
 
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
@@ -65,12 +72,21 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	}
 
 	@Column
-	public Boolean getCaseBased() {
-		return caseBased;
+	public Boolean getCaseSurveillanceEnabled() {
+		return caseSurveillanceEnabled;
 	}
 
-	public void setCaseBased(Boolean caseBased) {
-		this.caseBased = caseBased;
+	public void setCaseSurveillanceEnabled(Boolean caseBased) {
+		this.caseSurveillanceEnabled = caseBased;
+	}
+
+	@Column
+	public Boolean getAggregateReportingEnabled() {
+		return aggregateReportingEnabled;
+	}
+
+	public void setAggregateReportingEnabled(Boolean aggregateReportingEnabled) {
+		this.aggregateReportingEnabled = aggregateReportingEnabled;
 	}
 
 	@Column
@@ -125,5 +141,15 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setExtendedClassificationMulti(Boolean extendedClassificationMulti) {
 		this.extendedClassificationMulti = extendedClassificationMulti;
+	}
+
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	@Convert(converter = AgeGroupsConverter.class)
+	public List<String> getAgeGroups() {
+		return ageGroups;
+	}
+
+	public void setAgeGroups(List<String> ageGroups) {
+		this.ageGroups = ageGroups;
 	}
 }

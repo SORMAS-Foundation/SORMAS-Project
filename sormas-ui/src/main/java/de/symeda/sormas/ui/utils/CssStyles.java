@@ -143,6 +143,7 @@ public final class CssStyles {
 	public static final String BACKGROUND_HIGHLIGHT = "background-highlight";
 	public static final String BACKGROUND_CRITICAL = "background-critical";
 	public static final String BACKGROUND_DARKER = "background-darker";
+	public static final String BACKGROUND_DUPLICATE_AGGREGATE_REPORT = "background-duplicate-aggregate-report";
 
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
@@ -229,6 +230,8 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_NOT = "status-not";
 	public static final String GRID_ROW_STATUS_DONE = "status-done";
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
+	public static final String GRID_ROW_STATUS_PROGRESS = "status-progress";
+
 	public static final String GRID_ROW_TITLE = "row-title";
 
 	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";

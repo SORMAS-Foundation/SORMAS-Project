@@ -20,6 +20,7 @@ package org.sormas.e2etests.webdriver;
 
 import static org.openqa.selenium.remote.CapabilityType.SUPPORTS_ALERTS;
 
+import java.io.File;
 import java.util.HashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,6 +39,7 @@ public class RemoteDriverFactory implements DriverFactory {
   private final DesiredCapabilities desiredCapabilities;
   private final DriverMetaData driverMetaData;
   private final String userDirectory = System.getProperty("user.dir");
+  private final String remoteDriverPath = "/usr/lib64/chromium-browser/chromedriver";
 
   @Inject
   public RemoteDriverFactory(
@@ -52,18 +54,15 @@ public class RemoteDriverFactory implements DriverFactory {
   @SneakyThrows
   @Override
   public ChromeDriver getRemoteWebDriver() {
-    log.info("Setting Chrome Driver's path");
-    System.setProperty("webdriver.chrome.driver", "/usr/lib64/chromium-browser/chromedriver");
-    log.info("Adding all chrome preferences");
+    checkIfDriverExists();
+    System.setProperty("webdriver.chrome.driver", remoteDriverPath);
     final ChromeOptions options = new ChromeOptions();
     final HashMap<String, Object> chromePreferences = new HashMap<>();
     chromePreferences.put("download.default_directory", userDirectory + "/downloads");
     options.merge(desiredCapabilities);
-    options.addArguments("--no-default-browser-check");
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
     options.addArguments("disable-infobars");
     options.addArguments("--headless");
-    options.addArguments("enable-automation");
     options.addArguments("--no-sandbox");
     options.addArguments("--disable-browser-side-navigation");
     options.addArguments("--disable-gpu-sandbox");
@@ -81,7 +80,14 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("--window-size=1920,1080");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
-    log.info("Returning ChromeDriver instance with provided arguments");
     return new ChromeDriver(options);
+  }
+
+  @SneakyThrows
+  private void checkIfDriverExists() {
+    File driverPath = new File(remoteDriverPath);
+    if (!driverPath.exists()) {
+      throw new Exception("Unable to find chromedriver!");
+    }
   }
 }

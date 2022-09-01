@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.sample;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -24,8 +28,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -34,11 +39,6 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -61,16 +61,9 @@ public class ReceivedSampleProcessor
 
 	@Override
 	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData, SormasToSormasOriginInfoDto originInfo) {
-		Map<String, PathogenTestDto> existingPathogenTests;
-		if (existingData != null) {
-			existingPathogenTests = existingData.getPathogenTests()
-				.stream()
-				.filter(Objects::nonNull)
-				.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
-		} else {
-			existingPathogenTests = Collections.emptyMap();
-		}
 		updateReportingUser(sharedData.getEntity(), existingData);
+
+		Map<String, PathogenTestDto> existingPathogenTests = getExistingPathogenTests(existingData);
 		sharedData.getPathogenTests()
 			.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
 	}
@@ -90,4 +83,16 @@ public class ReceivedSampleProcessor
 			Validations.sormasToSormasSampleExists);
 	}
 
+	private Map<String, PathogenTestDto> getExistingPathogenTests(Sample existingData) {
+		Map<String, PathogenTestDto> existingPathogenTests;
+		if (existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests()
+				.stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
+		} else {
+			existingPathogenTests = Collections.emptyMap();
+		}
+		return existingPathogenTests;
+	}
 }

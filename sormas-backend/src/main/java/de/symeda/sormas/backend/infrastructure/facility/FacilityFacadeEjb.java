@@ -37,11 +37,9 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
-import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -54,12 +52,15 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityExportDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -69,6 +70,7 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -365,7 +367,10 @@ public class FacilityFacadeEjb
 			return null;
 		}
 
-		return new FacilityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
+		return new FacilityReferenceDto(
+			entity.getUuid(),
+			FacilityHelper.buildFacilityString(entity.getUuid(), entity.getName()),
+			entity.getExternalID());
 	}
 
 	@Override
@@ -488,7 +493,7 @@ public class FacilityFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._INFRASTRUCTURE_EXPORT)
-	public List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max) {
+	public List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Collection<String> selectedRows, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FacilityExportDto> cq = cb.createQuery(FacilityExportDto.class);
 		Root<Facility> facility = cq.from(Facility.class);
@@ -525,6 +530,8 @@ public class FacilityFacadeEjb
 			Predicate criteriaFilter = service.buildCriteriaFilter(facilityCriteria, cb, facility);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
+
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, facility.get(Facility.UUID));
 
 		cq.where(filter);
 		cq.orderBy(
@@ -590,7 +597,8 @@ public class FacilityFacadeEjb
 		// facilities are excluded from infra. data locking for now...
 	}
 
-	private void validate(FacilityDto dto) {
+	@Override
+	public void validate(@Valid FacilityDto dto) {
 		if (dto.getType() == null
 			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
 			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {
