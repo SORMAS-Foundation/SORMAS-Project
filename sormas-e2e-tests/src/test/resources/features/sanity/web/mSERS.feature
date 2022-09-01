@@ -219,3 +219,106 @@ Feature: mSERS functionalities
     And I set report period to "SPECIFY" on Create a new aggregated report form
     And I check if Epi week filed is enabled on Create a new aggregated report form
     Then I check if last listed week from Epi week combobox is the current week of the year
+
+  @tmsLink=SORDEV-11693 @env_main
+  Scenario: Test Group aggregated reporting data (mSERS) by jurisdiction and epi week
+    Given I log in as a Admin User
+    When I click on the mSERS button from navbar
+    Then I check that Grouping filter is visible in mSers directory
+    And I check that Region filter is visible in mSers directory
+    And I check that District filter is visible in mSers directory
+    And I check that Facility filter is visible in mSers directory
+    And I check that Point of Entry filter is visible in mSers directory
+    And I check that Disease filter is visible in mSers directory
+    And I check that Epi Year from filter is visible in mSers directory
+    And I check that Epi Week from filter is visible in mSers directory
+    And I check that Epi Year to filter is visible in mSers directory
+    And I check that Epi Week to filter is visible in mSers directory
+    Then I check that Disease is visible as a column header in mSers directory
+    And I check that Year is visible as a column header in mSers directory
+    And I check that Epi Week is visible as a column header in mSers directory
+    And I check that Age Group is visible as a column header in mSers directory
+    And I check that Suspected cases is visible as a column header in mSers directory
+    And I check that Lab confirmations is visible as a column header in mSers directory
+    And I check that Deaths is visible as a column header in mSers directory
+    Then I select "Region" from Grouping combobox in mSers directory
+    And I click on the APPLY FILTERS button
+    And I check that Region is visible as a column header in mSers directory
+    Then I select "District" from Grouping combobox in mSers directory
+    And I click on the APPLY FILTERS button
+    And I check that Region is visible as a column header in mSers directory
+    And I check that District is visible as a column header in mSers directory
+    Then I select "Facility" from Grouping combobox in mSers directory
+    And I click on the APPLY FILTERS button
+    And I check that Region is visible as a column header in mSers directory
+    And I check that District is visible as a column header in mSers directory
+    And I check that Health Facility Name is visible as a column header in mSers directory
+    Then I select "Point of entry" from Grouping combobox in mSers directory
+    And I click on the APPLY FILTERS button
+    And I check that Region is visible as a column header in mSers directory
+    And I check that District is visible as a column header in mSers directory
+    And I check that Point Of Entry Name is visible as a column header in mSers directory
+    Then I select "Region" from Grouping combobox in mSers directory
+    When I click on the NEW AGGREGATE REPORT button
+    And I fill a new aggregate report with "aabcöäüp" to provoke error and check error message
+    And I fill a new aggregate report with "'§?=-,." to provoke error and check error message
+    Then I set Region combobox to "Baden-Württemberg" in Create New Aggregate Report popup
+    And I set District combobox to "LK Alb-Donau-Kreis" in Create New Aggregate Report popup
+    And I fill a new aggregate report with specific data for one disease
+    And I click to save aggregated report
+    And I check if there number of results in grid in mSers directory is 0
+    Then I click Show 0-rows for grouping checkbox
+    And I click on the APPLY FILTERS button
+    And I check that number of results in grid in mSers directory greater than 1
+    Then I click Show 0-rows for grouping checkbox
+    And I select Baden-Württemberg from Region combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 1
+    And I select Bayern from Region combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    And I select Baden-Württemberg from Region combobox
+    And I select LK Alb-Donau-Kreis from District combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 1
+    And I select Baden-Württemberg from Region combobox
+    And I select LK Biberach from District combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    And I select Voreingestellte Bundesländer from Region combobox
+    And I select Voreingestellter Landkreis from District combobox
+    And I select Standard Einrichtung from Facility combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    And I click on the RESET FILTERS button from Event
+    And I select Voreingestellte Bundesländer from Region combobox
+    And I select Voreingestellter Landkreis from District combobox
+    And I select Voreingestellter Flughafen from Point Of Entry combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    And I click on the RESET FILTERS button from Event
+    Then I select Acute Viral Hepatitis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 1
+    Then I select Buruli Ulcer disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    And I click on the RESET FILTERS button from Event
+    And I set Epi Year from filter to "2000"
+    Then I set Epi week from filter to "Wk 1-2000 (12/27 - 1/2)"
+    And I set Epi Year to filter to "2000"
+    Then I set Epi week to filter to "Wk 2-2000 (1/3 - 1/9)"
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    And I click on the RESET FILTERS button from Event
+    And I click to Export aggregate report
+    And I navigate to Report data tab
+    Then I click to edit 1 result in mSers directory page
+    And I click to delete aggregated report
+    And I check if exported aggregate report for last created report is correct
+    And I delete exported report
+
+
+
+
+

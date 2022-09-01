@@ -43,4 +43,5 @@ public class CreateNewAggreagateReportPage {
   public static final By WEEK_RADIOBUTTON =
       By.cssSelector("[class='v-radiobutton v-select-option']");
   public static final By DELETE_AGGREGATED_REPORT_BUTTON = By.id("actionDelete");
+  public static final By ERROR_MESSAGE = By.cssSelector(".v-Notification-caption");
 }

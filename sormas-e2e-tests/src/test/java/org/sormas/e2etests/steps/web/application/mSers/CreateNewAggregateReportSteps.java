@@ -7,6 +7,7 @@ import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateRep
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DUPLICATE_DETECTION_TEXT;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_INPUT_POPUP;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP_DIV;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.WEEK_RADIOBUTTON;
@@ -88,6 +89,21 @@ public class CreateNewAggregateReportSteps implements En {
           fillFieldsForOneDisease(report);
         });
     When(
+        "I fill a new aggregate report with {string} to provoke error and check error message",
+        (String data) -> {
+          String expectedMessage =
+              "Please check the entered data. At least one of the fields where an integer was expected contains something else.";
+          webDriverHelpers.fillInWebElement(
+              getCasesInputByDisease("Acute Viral Hepatitis"), String.valueOf(data));
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(ERROR_MESSAGE),
+              expectedMessage,
+              "Error message is not visible");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(ERROR_MESSAGE);
+        });
+    When(
         "^I change all fields of aggregate report$",
         () -> {
           report = aggregateReportService.buildEditAggregateReport();
@@ -129,9 +145,7 @@ public class CreateNewAggregateReportSteps implements En {
         });
     And(
         "^I set report period to \"([^\"]*)\" on Create a new aggregated report form$",
-        (String buttonName) -> {
-          webDriverHelpers.clickWebElementByText(WEEK_RADIOBUTTON, buttonName);
-        });
+        (String buttonName) -> webDriverHelpers.clickWebElementByText(WEEK_RADIOBUTTON, buttonName));
     And(
         "^I check if Epi week filed is enabled on Create a new aggregated report form$",
         () -> {
