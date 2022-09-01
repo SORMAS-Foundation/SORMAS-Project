@@ -51,8 +51,7 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 
 	private final static List<String> defaultRightsOrder = Arrays.asList("_VIEW", "_EDIT", "_CREATE");
 
-	private static final String HTML_LAYOUT =
-		 fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
+	private static final String HTML_LAYOUT = fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
 		+ fluidRowLocs(UserRoleDto.LINKED_DEFAULT_USER_ROLE, VERSION_UPDATE_INFO_LOC)
 		+ fluidRowLocs(UserRoleDto.DESCRIPTION)
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
@@ -96,7 +95,7 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 
 		userRightCbSet = addField(UserRoleDto.USER_RIGHTS, CheckboxSet.class);
 		userRightCbSet.setCaption(null);
-		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString());
+		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString(), UserRight::getDescription);
 		userRightCbSet.addCheckboxValueChangeListener(e -> {
 			CheckBox checkbox = e.getCheckbox();
 			if (Boolean.TRUE.equals(checkbox.getValue())) {

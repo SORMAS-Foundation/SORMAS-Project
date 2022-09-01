@@ -215,7 +215,6 @@ import org.sormas.e2etests.entities.pojo.web.EventGroup;
 import org.sormas.e2etests.entities.pojo.web.EventHandout;
 import org.sormas.e2etests.entities.pojo.web.EventParticipant;
 import org.sormas.e2etests.entities.pojo.web.Person;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.EventDocumentService;
 import org.sormas.e2etests.entities.services.EventGroupService;
 import org.sormas.e2etests.entities.services.EventParticipantService;

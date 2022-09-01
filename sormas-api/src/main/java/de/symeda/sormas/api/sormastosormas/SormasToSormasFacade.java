@@ -45,8 +45,9 @@ public interface SormasToSormasFacade {
 
 	void requestAccepted(SormasToSormasEncryptedDataDto encryptedAcceptData) throws SormasToSormasException;
 
-	boolean isFeatureEnabledForUser();
+	boolean isShareEnabledForUser();
 
+	boolean isProcessingShareEnabledForUser();
 	boolean isFeatureConfigured();
 
 	boolean isSharingCasesEnabledForUser();

@@ -56,6 +56,7 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 	private List<T> items;
 	private Function<T, String> groupingFunction;
+	private Function<T, String> itemDescriptionProvider;
 
 	@Override
 	protected Component initContent() {
@@ -70,9 +71,10 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 		return layout;
 	}
 
-	public void setItems(List<T> items, Function<T, String> groupingFunction) {
+	public void setItems(List<T> items, Function<T, String> groupingFunction, Function<T, String> itemDescriptionProvider) {
 		this.items = items;
 		this.groupingFunction = groupingFunction;
+		this.itemDescriptionProvider = itemDescriptionProvider;
 
 		if (layout != null) {
 			layout.removeAllComponents();
@@ -155,6 +157,9 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 	private CheckBox createCheckbox(T item) {
 		CheckBox checkBox = new CheckBox(item.toString(), createDataSource(item));
 		checkBox.setData(item);
+		if (itemDescriptionProvider != null) {
+			checkBox.setDescription(itemDescriptionProvider.apply(item));
+		}
 		checkBox.addValueChangeListener(e -> fireValueChange(false));
 
 		return checkBox;
