@@ -317,8 +317,3 @@ Feature: mSERS functionalities
     And I click to delete aggregated report
     And I check if exported aggregate report for last created report is correct
     And I delete exported report
-
-
-
-
-
