@@ -274,7 +274,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_PROCESS)
 	public void acceptShareRequest(String requestUuid) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(requestUuid);
 
@@ -436,7 +436,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	 * @return list of share trees (shares and shares of shares)
 	 */
 	@Override
-	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@PermitAll
 	public List<SormasToSormasShareTree> getAllShares(String uuid) {
 		return getShareTrees(new ShareTreeCriteria(uuid), true);
 	}

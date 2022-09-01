@@ -167,7 +167,7 @@ public class CaseDataView extends AbstractCaseView {
 		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser();
-		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {
+		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null || caze.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
