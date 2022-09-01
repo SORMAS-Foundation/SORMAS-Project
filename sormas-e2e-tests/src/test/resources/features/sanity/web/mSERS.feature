@@ -219,3 +219,18 @@ Feature: mSERS functionalities
     And I set report period to "SPECIFY" on Create a new aggregated report form
     And I check if Epi week filed is enabled on Create a new aggregated report form
     Then I check if last listed week from Epi week combobox is the current week of the year
+
+  @tmsLink=SORDEV-12443 @env_main
+  Scenario: Check that region and district are required for aggregate reports
+    Given I log in as a Admin User
+    When I click on the mSERS button from navbar
+    And I click on the NEW AGGREGATE REPORT button
+    And I set 3 as the quantity for Snake Bite suspected cases in Create a new aggregated report
+    And I check that District combobox is disabled in Create New Aggregate Report popup
+    And I click to save aggregated report
+    Then I check if popup message is "You have to specify a valid region"
+    When I close popup message window in Create New Aggregate Report popup
+    And I set Region combobox to "Bayern" in Create New Aggregate Report popup
+    And I click to save aggregated report
+    Then I check if popup message is "You have to specify a valid district"
+    When I close popup message window in Create New Aggregate Report popup

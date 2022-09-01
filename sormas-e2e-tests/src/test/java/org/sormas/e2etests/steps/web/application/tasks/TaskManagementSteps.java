@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.tasks;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
@@ -258,9 +259,9 @@ public class TaskManagementSteps implements En {
     When(
         "I check if popup message is {string}",
         (String expectedText) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOTIFICATION_MESSAGE_POPUP);
           softly.assertEquals(
-              webDriverHelpers.getTextFromPresentWebElement(
-                  By.cssSelector(".v-Notification-description")),
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_MESSAGE_POPUP),
               expectedText,
               "Bulk action went wrong");
           softly.assertAll();
