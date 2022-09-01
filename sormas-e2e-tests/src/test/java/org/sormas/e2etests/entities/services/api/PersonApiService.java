@@ -139,10 +139,6 @@ public class PersonApiService {
             .subcontinent(
                 environmentManager.geSubcontinentUUID(SubcontinentUUIDs.WesternEurope.getName()))
             .district(environmentManager.getDistrictUUID(district))
-            //                    .community(
-            //                            environmentManager.getCommunityUUID(
-            //
-            // CommunityValues.VoreingestellteGemeinde.getName()))
             .city(faker.address().cityName())
             .areaType(AreaTypeValues.getRandomAreaType())
             .postalCode(faker.address().zipCode())
