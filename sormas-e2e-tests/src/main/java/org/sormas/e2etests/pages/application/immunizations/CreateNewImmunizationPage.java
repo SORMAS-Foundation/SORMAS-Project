@@ -4,11 +4,18 @@ import org.openqa.selenium.By;
 
 public class CreateNewImmunizationPage {
   public static final By DATE_OF_REPORT_INPUT = By.cssSelector(".v-window #reportDate input");
+  public static final By DATE_OF_REPORT_TITLE =
+      By.cssSelector(".popupContent [location='reportDate']");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".v-window #disease div");
+  public static final By DISEASE_TITLE = By.cssSelector(".popupContent [location='disease']");
   public static final By RESPONSIBLE_REGION_COMBOBOX =
       By.cssSelector(".v-window #responsibleRegion div");
+  public static final By RESPONSIBLE_REGION_TITLE =
+      By.cssSelector(".popupContent [location='responsibleRegion']");
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX =
       By.cssSelector(".v-window #responsibleDistrict div");
+  public static final By RESPONSIBLE_DISTRICT_TITLE =
+      By.cssSelector(".popupContent [location='responsibleDistrict']");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector(".v-window #responsibleCommunity div");
   public static final By PLACE_OF_STAY_HOME =
@@ -50,10 +57,19 @@ public class CreateNewImmunizationPage {
       By.cssSelector(".popupContent #eventManagementStatus .v-select-option label");
   public static final By MEANS_OF_IMMUNIZATIONS_COMBOBOX =
       By.cssSelector(".v-window #meansOfImmunization div");
+  public static final By MEANS_OF_IMMUNIZATION_DETAILS_INPUT =
+      By.cssSelector("#meansOfImmunizationDetails");
   public static final By END_DATA_INPUT = By.cssSelector(".popupContent #endDate input");
   public static final By OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS_INPUT =
       By.xpath("//*[@id='overwriteImmunizationManagementStatus']/label");
   public static final By DISCARD_IMMUNIZATION_BUTTON = By.cssSelector("#discard");
-  public static final By MANAGEMENT_STATUS =
-      By.xpath("//div[@id='immunizationManagementStatus']//input");
+  public static final By MANAGEMENT_STATUS_INPUT =
+      By.cssSelector(".popupContent #immunizationManagementStatus input");
+  public static final By MANAGEMENT_STATUS_COMBOBOX =
+      By.cssSelector(".popupContent #immunizationManagementStatus div");
+  public static final By CREATE_NEW_IMMUNIZATION_TITLE =
+      By.xpath("//*[contains(text(),'Create new immunization')]");
+  public static final By IMMUNIZATION_STATUS_INPUT =
+      By.cssSelector(".popupContent #immunizationStatus input");
+  public static final By START_DATE_INPUT = By.cssSelector(".popupContent #startDate input");
 }

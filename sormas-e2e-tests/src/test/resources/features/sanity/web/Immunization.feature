@@ -362,7 +362,217 @@ Feature: Immunization end to end tests
     And I check that vaccination entry is greyed out in the vaccination card
     And I check if Vaccination Status is set to "" on Edit Case page
 
+  @tmsLink=SORDEV-6775 @env_main
+  Scenario: Test sorting columns in Immunization directory page
+    Given I log in as a Admin User
+    When I click on the Immunizations button from navbar
+    And I check the grid for mandatory columns on the Immunization directory page
+    And I sort all rows by "Immunization ID" in Immunization Directory
+    And I check that column 1 is sorted alphabetically in ascending order
+    And I sort all rows by "Person ID" in Immunization Directory
+    And I check that column 2 is sorted alphabetically in ascending order
+    And I sort all rows by "First name" in Immunization Directory
+    And I check that column 3 is sorted alphabetically in ascending order
+    And I sort all rows by "Last name" in Immunization Directory
+    And I check that column 4 is sorted alphabetically in ascending order
+    And I sort all rows by "Disease" in Immunization Directory
+    And I check that column 5 is sorted alphabetically in ascending order
+    And I sort all rows by "Age and birthdate" in Immunization Directory
+    And I check that column 6 is sorted by age in ascending order
+    And I sort all rows by "Sex" in Immunization Directory
+    And I check that column 7 is sorted alphabetically in ascending order
+    And I sort all rows by "District" in Immunization Directory
+    And I check that column 8 is sorted alphabetically in ascending order
+    And I sort all rows by "Means of immunization" in Immunization Directory
+    And I check that column 9 is sorted alphabetically in ascending order
+    And I sort all rows by "Management Status" in Immunization Directory
+    And I check that column 10 is sorted alphabetically in ascending order
+    And I sort all rows by "Immunization status" in Immunization Directory
+    And I check that column 11 is sorted alphabetically in ascending order
+    And I sort all rows by "Start date" in Immunization Directory
+    And I check that column 12 is sorted by date in ascending order
+    And I sort all rows by "End date" in Immunization Directory
+    And I check that column 13 is sorted by date in ascending order
+    And I sort all rows by "Type of last vaccine" in Immunization Directory
+    And I check that column 14 is sorted alphabetically in ascending order
+    And I sort all rows by "Date of recovery" in Immunization Directory
+    And I check that column 15 is sorted by date in ascending order
 
+  @tmsLink=SORDEV-6775 @env_main
+  Scenario: Test filters in Immunization directory page
+    Given I log in as a Admin User
+    When I click on the Immunizations button from navbar
+    And I apply Disease filter "COVID-19"
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "COVID-19" in column number 5
+    And I click on the RESET FILTERS button from Immunization
+    And I filter by "Thomas Boyde" as a Person's name on general text filter
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Thomas" in column number 3
+    And I click on the RESET FILTERS button from Immunization
+    And I apply "Year" filter to "2020" on Immunization directory page
+    And I apply "Month" filter to "1" on Immunization directory page
+    And I apply "Day" filter to "1" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that row number 1 contains correct birthdate in column number 6
+    And I check that row number 1 contains correct age in column number 6
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Region" filter to "Berlin" on Immunization directory page
+    And I apply "District" filter to "SK Berlin Mitte" on Immunization directory page
+    And I apply "Community" filter to "Zentrum" on Immunization directory page
+    And I apply "Facility category" filter to "Medical facility" on Immunization directory page
+    And I apply "Facility type" filter to "Hospital" on Immunization directory page
+    And I apply "Facility" filter to "Other facility" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "SK Berlin Mitte" in column number 8
+    And I click on the RESET FILTERS button from Immunization
+    And I apply "Means of immunization" filter to "Vaccination" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Vaccination" in column number 9
+    And I click on the RESET FILTERS button from Immunization
+    And I apply "Management status" filter to "Scheduled" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Scheduled" in column number 10
+    And I click on the RESET FILTERS button from Immunization
+    And I apply "Immunization status" filter to "Pending" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Pending" in column number 11
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Immunization reference date" filter to "Date of report" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I open first immunization from grid from Immunization tab
+    And I check if "date of report" field is set for 1 day ago from today on Edit Immunization page
+    And I back to the immunization list
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Immunization reference date" filter to "End of immunization" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains 1 day ago from today date in column number 13
+    And I open first immunization from grid from Immunization tab
+    And I fill VALID FROM to 1 day ago from today
+    And I fill VALID UNTIL to 1 day ago from today
+    And I click SAVE button on Edit Immunization Page
+    And I close immunization data popup alert message in Edit Immunization page
+    And I back to the immunization list
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Immunization reference date" filter to "Valid until" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I open first immunization from grid from Immunization tab
+    And I check if "valid until" field is set for 1 day ago from today on Edit Immunization page
+    And I back to the immunization list
+    And I apply "Immunization reference date" filter to "Date of recovery" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains 1 day ago from today date in column number 15
+    And I click on the NEW IMMUNIZATION button
+    When I create a new immunization with specific data
+    Then I check the created data is correctly displayed on Edit immunization page
+    And I click on New Entry button in Vaccination tab
+    Then I fill new vaccination data in new Vaccination form
+    And I click SAVE button in new Vaccination form
+    Then I check that number of added Vaccinations is 1
+    Then I set Number of doses to 3 on Edit Immunization Page
+    And I click SAVE button on Edit Immunization Page
+    And I back to the immunization list
+    And I apply "Immunization reference date" filter to "Date of last vaccination" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Immunization reference date" filter to "Date of first vaccination" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I click on checkbox to only show persons with overdue immunization
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Ongoing" in column number 10
+    And I check that the row number 1 contains any date before current day in column 13
 
+  @tmsLink=SORDEV-6775 @env_main
+  Scenario: Test New Immunization form
+    Given I log in as a Admin User
+    When I click on the Immunizations button from navbar
+    And I click on the NEW IMMUNIZATION button
+    And I check that required fields are marked as mandatory on Create new immunization form
+    And I check if Management status is "read only" on Create new immunization form
+    And I check if Management status is set to "Scheduled" on Create new immunization form
+    And I check if Immunization status is set to "Pending" on Create new immunization form
+    And I check if "MEANS OF IMMUNIZATION combobox" is available on Create new immunization form
+    And I select "Other" means of immunization on Create new immunization form
+    And I check if "MEANS OF IMMUNIZATION DETAILS field" is available on Create new immunization form
+    And I select "Recovery" means of immunization on Create new immunization form
+    And I check if Management status is set to "Completed" on Create new immunization form
+    And I check if "OVERWRITE IMMUNIZATION MANAGEMENT STATUS checkbox" is available on Create new immunization form
+    And I check Overwrite immunization management status option
+    And I check if Management status is "editable" on Create new immunization form
+    And I select "Ongoing" management status on Create new immunization form
+    And I check if Immunization status is set to "Pending" on Create new immunization form
+    And I select "Completed" management status on Create new immunization form
+    And I check if Immunization status is set to "Acquired" on Create new immunization form
+    And I select "Canceled" management status on Create new immunization form
+    And I check if Immunization status is set to "Not acquired" on Create new immunization form
+    And I check if "EXTERNAL ID field" is available on Create new immunization form
+    And I check if "RESPONSIBLE REGION field" is available on Create new immunization form
+    And I check if "RESPONSIBLE DISTRICT field" is available on Create new immunization form
+    And I check if "RESPONSIBLE COMMUNITY field" is available on Create new immunization form
+    And I check if "FACILITY field" is available on Create new immunization form
+    And I check if "START DATE field" is available on Create new immunization form
+    And I check if "END DATE field" is available on Create new immunization form
+    And I fill a new immunization form with specific data
+    And I click on SAVE new immunization button
+    And I check the created data is correctly displayed on Edit immunization page
 
-
+  @tmsLink=SORDEV-6775 @env_main
+  Scenario: Test Edit Immunization page
+    Given I log in as a National User
+    When I click on the Immunizations button from navbar
+    And I open first immunization from grid from Immunization tab
+    Then I check that "IMMUNIZATION" tab is available
+    And I check that "PERSON" tab is available
+    And I check if Reporting user field is available and read only
+    And I check if "Previous infection with this disease combobox" is available
+    When I set Previous infection with this disease combobox to "YES" on Edit Immunization page
+    Then I check if "Date of last infection field" is available
+    When I set Previous infection with this disease combobox to "NO" on Edit Immunization page
+    And I set Previous infection with this disease combobox to "UNKNOWN" on Edit Immunization page
+    Then I check if "Additional details text area" is available
+    And I set Means of immunization to "Vaccination" on Edit Immunization page
+    Then I check if "Vaccination header" is available
+    When I set Means of immunization to "Vaccination/Recovery" on Edit Immunization page
+    Then I check if "Vaccination header" is available
+    And I check if "Number of doses field" is available
+    When I set Number of doses to value different than Integer on Edit Immunization Page
+    And I click SAVE button on Edit Immunization Page
+    Then I confirm alert popup window informing that could not convert value to integer
+    When I set Means of immunization to "Recovery" on Edit Immunization page
+    Then I check if "Recovery header" is available
+    And I check if "Positive test result date field" is available
+    And I check if "Recovery date field" is available
+    When I set Means of immunization to "Vaccination/Recovery" on Edit Immunization page
+    Then I check if "Recovery header" is available
+    And I check if "Positive test result date field" is available
+    And I check if "Recovery date field" is available
