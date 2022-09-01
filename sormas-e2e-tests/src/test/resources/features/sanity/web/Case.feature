@@ -1760,8 +1760,8 @@ Feature: Case end to end tests
      When I click on save case button in Symptoms tab
      Then I Verify popup message from Symptoms Tab Contains "Date of symptom onset cannot be in the future"
 
-   @testIt @env_s2s_1
-     Scenario: s2s test
+   @tmsLink=SORQA-478 @env_s2s_1
+     Scenario: Test send case to another instance using S2S connection
      Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
      And API: I check that POST call body is "OK"
      And API: I check that POST call status code is 200
@@ -1776,9 +1776,6 @@ Feature: Case end to end tests
      Then I click on share button in s2s share popup
      Then I navigate to "s2s_2" environment
      Given I log in as Admin User in Keycloak enabled environment
-     And I click on the Share requests button from navbar
-
-
-#     Then I check the address of s2s_1
-#     Then I check the address of s2s_2
-#     Then I check the address of s2s_3
+     And I click on the Shares button from navbar
+     Then I click on the The Eye Icon located in the Shares Page
+     And I check if received case id is equal with sent

@@ -376,7 +376,7 @@ public class NavBarSteps implements En {
         });
 
     When(
-        "I click on the Share requests button from navbar",
+        "I click on the Shares button from navbar",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SHARE_REQUESTS_BUTTON);
