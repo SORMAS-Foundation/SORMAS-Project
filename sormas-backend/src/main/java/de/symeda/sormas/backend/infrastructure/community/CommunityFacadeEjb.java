@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.backend.infrastructure.community;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -48,6 +46,7 @@ import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
@@ -62,9 +61,10 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "CommunityFacade")
-@RolesAllowed(UserRight._INFRASTRUCTURE_VIEW)
+@RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class CommunityFacadeEjb
 	extends AbstractInfrastructureFacadeEjb<Community, CommunityDto, CommunityDto, CommunityReferenceDto, CommunityService, CommunityCriteria>
 	implements CommunityFacade {
@@ -171,13 +171,13 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._STATISTICS_ACCESS)
+	@RightsAllowed(UserRight._STATISTICS_ACCESS)
 	public CommunityReferenceDto getCommunityReferenceById(long id) {
 		return toReferenceDto(service.getById(id));
 	}
 
 	@Override
-	@RolesAllowed(UserRight._STATISTICS_ACCESS)
+	@RightsAllowed(UserRight._STATISTICS_ACCESS)
 	public Map<String, String> getDistrictUuidsForCommunities(List<CommunityReferenceDto> communities) {
 
 		if (communities.isEmpty()) {

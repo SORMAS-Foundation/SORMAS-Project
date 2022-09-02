@@ -1,16 +1,5 @@
 package de.symeda.sormas.backend;
 
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
-import de.symeda.sormas.backend.user.UserFacadeEjb;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
@@ -62,6 +51,18 @@ import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.info.InfoFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.ClientInfraSyncFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
@@ -80,6 +81,7 @@ import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -345,6 +347,16 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testPointOfEntryFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(PointOfEntryFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testClientInfraSyncFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ClientInfraSyncFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testPopulationDataFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(PopulationDataFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
 	}
 
 	@ArchTest

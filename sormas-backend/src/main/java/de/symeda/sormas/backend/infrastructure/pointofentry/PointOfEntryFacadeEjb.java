@@ -1,13 +1,11 @@
 package de.symeda.sormas.backend.infrastructure.pointofentry;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -35,6 +33,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -51,9 +50,10 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "PointOfEntryFacade")
-@RolesAllowed(UserRight._INFRASTRUCTURE_VIEW)
+@RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class PointOfEntryFacadeEjb
 	extends
         AbstractInfrastructureFacadeEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
@@ -149,14 +149,16 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({UserRight._INFRASTRUCTURE_CREATE, UserRight._INFRASTRUCTURE_EDIT})
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_CREATE,
+		UserRight._INFRASTRUCTURE_EDIT })
 	public PointOfEntryDto save(PointOfEntryDto dto, boolean allowMerge) {
 		validate(dto);
 		return super.save(dto, allowMerge);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public PointOfEntryDto saveFromCentral(PointOfEntryDto dto) {
 		return save(dto);
 	}
@@ -171,7 +173,7 @@ public class PointOfEntryFacadeEjb
 		// poe are excluded from infra. data locking for now...
 	}
 
-	private void validate(@Valid PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
+	public void validate(@Valid PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
 
 		if (StringUtils.isEmpty(pointOfEntry.getName())) {
 			throw new ValidationRuntimeException(
@@ -256,7 +258,9 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({UserRight._INFRASTRUCTURE_VIEW, UserRight._SYSTEM})
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW,
+		UserRight._SYSTEM })
 	public long count(PointOfEntryCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.backend.infrastructure.district;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -49,6 +47,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
@@ -66,9 +65,10 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "DistrictFacade")
-@RolesAllowed(UserRight._INFRASTRUCTURE_VIEW)
+@RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class DistrictFacadeEjb
 	extends AbstractInfrastructureFacadeEjb<District, DistrictDto, DistrictIndexDto, DistrictReferenceDto, DistrictService, DistrictCriteria>
 	implements DistrictFacade {
@@ -187,13 +187,13 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._STATISTICS_ACCESS)
+	@RightsAllowed(UserRight._STATISTICS_ACCESS)
 	public DistrictReferenceDto getDistrictReferenceById(long id) {
 		return toReferenceDto(service.getById(id));
 	}
 
 	@Override
-	@RolesAllowed(UserRight._STATISTICS_ACCESS)
+	@RightsAllowed(UserRight._STATISTICS_ACCESS)
 	public Map<String, String> getRegionUuidsForDistricts(List<DistrictReferenceDto> districts) {
 
 		if (districts.isEmpty()) {

@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.infrastructure;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -70,6 +71,7 @@ public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	@Override
+	@PermitAll
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
 
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();

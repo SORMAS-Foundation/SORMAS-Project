@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -123,6 +122,7 @@ import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -344,6 +344,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUserRefsByInfrastructure(
 		InfrastructureDataReferenceDto infrastructure,
 		JurisdictionLevel jurisdictionLevel,
@@ -414,13 +415,14 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public Set<UserRoleDto> getUserRoles(UserDto userDto) {
 		User user = userService.getByUuid(userDto.getUuid());
 		return user != null ? user.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet()) : null;
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._WEEKLYREPORT_VIEW,
 		UserRight._WEEKLYREPORT_CREATE })
 	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRight... userRights) {
@@ -537,7 +539,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._USER_VIEW)
+	@RightsAllowed(UserRight._USER_VIEW)
 	public Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties) {
 		List<UserDto> userIndexList = getIndexList(userCriteria, offset, size, sortProperties);
 		long totalElementCount = count(userCriteria);
@@ -639,7 +641,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._USER_VIEW)
+	@RightsAllowed(UserRight._USER_VIEW)
 	public List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -707,7 +709,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._USER_VIEW)
+	@RightsAllowed(UserRight._USER_VIEW)
 	public long count(UserCriteria userCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -728,7 +730,7 @@ public class UserFacadeEjb implements UserFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public User fromDto(UserDto source, boolean checkChangeDate) {
+	private User fromDto(UserDto source, boolean checkChangeDate) {
 
 		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 
@@ -774,7 +776,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._USER_CREATE,
 		UserRight._USER_EDIT })
 	public boolean isLoginUnique(String uuid, String userName) {
@@ -782,7 +784,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._USER_EDIT })
 	public String resetPassword(String uuid) {
 		String resetPassword = userService.resetPassword(uuid);
@@ -816,7 +818,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._USER_EDIT)
+	@RightsAllowed(UserRight._USER_EDIT)
 	public void removeUserAsSurveillanceAndContactOfficer(String userUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> caseQuery = cb.createQuery(Case.class);
@@ -845,7 +847,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._USER_CREATE,
 		UserRight._USER_EDIT })
 	public UserSyncResult syncUser(String uuid) {
@@ -892,13 +894,13 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._USER_EDIT)
+	@RightsAllowed(UserRight._USER_EDIT)
 	public void enableUsers(List<String> userUuids) {
 		updateActiveState(userUuids, true);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._USER_EDIT)
+	@RightsAllowed(UserRight._USER_EDIT)
 	public void disableUsers(List<String> userUuids) {
 		updateActiveState(userUuids, false);
 	}
@@ -922,11 +924,13 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_ROLE_VIEW)
 	public long getUserCountHavingRole(UserRoleReferenceDto userRoleRef) {
 		return userService.countWithRole(userRoleRef);
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_ROLE_VIEW)
 	public List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef) {
 		return userService.getAllWithOnlyRole(userRoleRef).stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}

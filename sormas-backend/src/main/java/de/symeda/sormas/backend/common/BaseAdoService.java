@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
@@ -98,7 +97,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		throw new CloneNotSupportedException();
 	}
 
-	@RolesAllowed({UserRight._INFRASTRUCTURE_VIEW, UserRight._SYSTEM})
 	public long count() {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
