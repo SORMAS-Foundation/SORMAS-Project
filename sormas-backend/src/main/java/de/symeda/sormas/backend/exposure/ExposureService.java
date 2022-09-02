@@ -22,6 +22,7 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.contact.Contact;
 
 @Stateless
 @LocalBean
@@ -36,7 +37,7 @@ public class ExposureService extends BaseAdoService<Exposure> {
 		CriteriaUpdate<Exposure> cu = cb.createCriteriaUpdate(getElementClass());
 		Root<Exposure> root = cu.from(getElementClass());
 
-		cu.where(cb.equal(root.get(Exposure.CONTACT_TO_CASE), contactId));
+		cu.where(cb.equal(root.get(Exposure.CONTACT_TO_CASE).get(Contact.ID), contactId));
 		cu.set(Exposure.CONTACT_TO_CASE, null);
 
 		em.createQuery(cu).executeUpdate();

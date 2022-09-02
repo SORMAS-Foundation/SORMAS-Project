@@ -1499,7 +1499,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);
 
-		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF), contact.getId()));
+		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF).get(Contact.ID), contact.getId()));
 		cu.set(Contact.DUPLICATE_OF, null);
 
 		em.createQuery(cu).executeUpdate();
@@ -1663,7 +1663,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			: null;
 
 		cu.where(
-			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Contact.PERSON), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(root.get(Contact.PERSON).get(Person.ID), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}
