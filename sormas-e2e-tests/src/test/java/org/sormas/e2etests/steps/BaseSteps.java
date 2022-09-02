@@ -92,7 +92,7 @@ public class BaseSteps implements StepLifecycleListener {
   @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
     if (isLanguageRiskScenario(scenario) && scenario.isFailed()) {
-      //TODO replace it with API call when implemented
+      // TODO replace it with API call when implemented
       log.info("Refreshing page to close any popups");
       driver.navigate().refresh();
       BackupSteps.setAppLanguageToDefault(locale);

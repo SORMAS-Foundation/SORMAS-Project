@@ -1819,10 +1819,10 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LONGITUDE_INPUT_EDIT_EVENT);
           webDriverHelpers.fillInWebElement(
               GPS_LATITUDE_INPUT_EDIT_EVENT,
-              String.valueOf(faker.number().randomDouble(7, 10, 99)));
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
           webDriverHelpers.fillInWebElement(
               GPS_LONGITUDE_INPUT_EDIT_EVENT,
-              String.valueOf(faker.number().randomDouble(7, 10, 99)));
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
           webDriverHelpers.submitInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT);
         });
 

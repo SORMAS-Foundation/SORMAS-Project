@@ -2442,6 +2442,26 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
+    When(
+        "I click on share case button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
+
+    When(
+        "I select organization to share with {string}",
+        (String organization) -> {
+          String survnetOrganization = runningConfiguration.getSurvnetResponsible(organization);
+          webDriverHelpers.selectFromCombobox(
+              SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
+        });
+
+    When(
+        "I click on share button in s2s share popup and wait for share to finish",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
+        });
+
     And(
         "^I check that displayed vaccination name is equal to \"([^\"]*)\" on Edit case page$",
         (String expectedName) -> {

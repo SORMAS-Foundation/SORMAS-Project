@@ -9,6 +9,7 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DIS
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EDIT_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_FROM_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_TO_COMOBOX;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.FIRST_AGGREGATED_REPORT_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.NEW_AGGREGATE_REPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.REPORT_DATA_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.RESULT_IN_GRID;
@@ -148,6 +149,16 @@ public class MSersDirectorySteps implements En {
               webDriverHelpers.getNumberOfElements(RESULT_IN_GRID) > expected,
               "There are less results than expected");
           softly.assertAll();
+        });
+
+    And(
+        "^I click on edit first aggregated report from grid from mSERS$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }
 }

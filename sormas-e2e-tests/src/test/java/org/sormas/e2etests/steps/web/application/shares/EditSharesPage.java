@@ -15,18 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.enums;
 
-import lombok.Getter;
+package org.sormas.e2etests.steps.web.application.shares;
 
-@Getter
-public enum HealthFacilityValues {
-  StandardEinrichtung("Standard Einrichtung"),
-  OtherFacilityDE("Andere Einrichtung");
+import org.openqa.selenium.By;
 
-  private final String name;
+public class EditSharesPage {
 
-  HealthFacilityValues(String name) {
-    this.name = name;
-  }
+  public static final By SHARE_FIRST_EYE_ICON = By.xpath("(//span[@class='v-icon v-icon-eye'])[1]");
+  public static final By SHARE_UUID_CASE_TITLE =
+      By.cssSelector(".popupContent [class='v-grid-cell v-grid-cell-focused'] a");
 }

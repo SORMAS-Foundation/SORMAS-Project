@@ -116,6 +116,7 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -1317,6 +1318,16 @@ public class CreateNewCaseSteps implements En {
           fillFirstName(caze.getFirstName());
           fillLastName(caze.getLastName());
           selectSex(caze.getSex());
+        });
+
+    When(
+        "I check if received case id is equal with sent",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(SHARE_UUID_CASE_TITLE),
+              casesUUID.get(0).substring(0, 6).toUpperCase(),
+              "UUIDs are not equal");
+          softly.assertAll();
         });
   }
 

@@ -374,5 +374,12 @@ public class NavBarSteps implements En {
               break;
           }
         });
+
+    When(
+        "I click on the Shares button from navbar",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SHARE_REQUESTS_BUTTON);
+        });
   }
 }
