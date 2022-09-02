@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -170,7 +171,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 @LocalBean
 public class CaseService extends AbstractCoreAdoService<Case> {
 
-	private static final long SECONDS_30_DAYS = 30L * 24L * 60L * 60L;
+	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 
 	@EJB
 	private CaseListCriteriaBuilder listQueryBuilder;
@@ -1900,8 +1901,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
 			SECONDS_30_DAYS);
 
 		// // todo this should use PersonService.buildSimilarityCriteriaFilter
@@ -1929,8 +1930,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			cb.lessThanOrEqualTo(
 				cb.abs(
 					cb.diff(
-						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
-						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
+						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
+						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
 				SECONDS_30_DAYS));
 
 		Predicate creationDateFilter = cb.or(
@@ -2079,7 +2080,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
 		Root<Case> root = cq.from(Case.class);
 
-		cq.where(cb.equal(root.get(Case.DUPLICATE_OF), caseId));
+		cq.where(cb.equal(root.get(Case.DUPLICATE_OF).get(Case.ID), caseId));
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -2105,7 +2106,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate datePredicate = vaccinationService.getRelevantVaccinationPredicate(root, cu, cb, vaccination);
 
-		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
+		cu.where(
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(root.get(Case.PERSON).get(Person.ID), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}
