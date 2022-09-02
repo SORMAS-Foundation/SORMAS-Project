@@ -63,6 +63,7 @@ public class SynchronizationDialog extends AbstractDialog {
 	private int currentSyncStepIndex = 0;
 	private final List<DialogSynchronizationProgressItemLayoutBinding> progressItemBindings = new ArrayList<>();
 	private int progressItemBindingsIndex = 0;
+	private boolean updatingProgressItemBindings = false;
 	private DialogSynchronizationProgressItemLayoutBinding currentBinding;
 	private final SynchronizationCallbacks syncCallbacks;
 
@@ -104,6 +105,17 @@ public class SynchronizationDialog extends AbstractDialog {
 
 	private void updateSynchronizationStep(SynchronizationStep synchronizationStep) {
 
+		synchronized (BINDING_LOCK) {
+			try {
+				if (updatingProgressItemBindings) {
+					BINDING_LOCK.wait();
+				}
+			} catch (InterruptedException e) {
+				logger.error("InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.updateSynchronizationStep: " + e.getMessage());
+			}
+		}
+
+		updatingProgressItemBindings = true;
 		currentBinding = null;
 		currentSyncStep = synchronizationStep;
 
@@ -146,6 +158,24 @@ public class SynchronizationDialog extends AbstractDialog {
 		});
 	}
 
+
+	private void waitForProgressItemBindings() {
+
+		if (!updatingProgressItemBindings && currentBinding != null) {
+			return;
+		}
+
+		synchronized (BINDING_LOCK) {
+			try {
+				if (updatingProgressItemBindings || currentBinding == null) {
+					BINDING_LOCK.wait();
+				}
+			} catch (InterruptedException e) {
+				logger.error("InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.waitForProgressItemBindings: " + e.getMessage());
+			}
+		}
+	}
+
 	private void updateStepNumber(int stepNumber) {
 		getActivity().runOnUiThread(() -> contentBinding.stepsLayout.setStepNumber(stepNumber));
 	}
@@ -185,6 +215,17 @@ public class SynchronizationDialog extends AbstractDialog {
 
 	private void showNextCleanupItems() {
 
+		synchronized (BINDING_LOCK) {
+			try {
+				if (updatingProgressItemBindings) {
+					BINDING_LOCK.wait();
+				}
+			} catch (InterruptedException e) {
+				logger.error("InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.updateSynchronizationStep: " + e.getMessage());
+			}
+		}
+
+		updatingProgressItemBindings = true;
 		currentBinding = null;
 
 		if (currentSyncStep == SynchronizationStep.CLEAR_UP_INFRASTRUCTURE) {
@@ -217,6 +258,7 @@ public class SynchronizationDialog extends AbstractDialog {
 			synchronized (BINDING_LOCK) {
 				currentBinding = progressItemBindings.get(0);
 				currentBinding.setActive(true);
+				updatingProgressItemBindings = false;
 				BINDING_LOCK.notify();
 			}
 		});
@@ -460,23 +502,6 @@ public class SynchronizationDialog extends AbstractDialog {
 		binding.setPulls(0);
 		binding.setDeletions(0);
 		return binding;
-	}
-
-	private void waitForProgressItemBindings() {
-
-		if (currentBinding != null) {
-			return;
-		}
-
-		synchronized (BINDING_LOCK) {
-			try {
-				if (currentBinding == null) {
-					BINDING_LOCK.wait();
-				}
-			} catch (InterruptedException e) {
-				logger.error("InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog: " + e.getMessage());
-			}
-		}
 	}
 
 	public SynchronizationCallbacks getSyncCallbacks() {
