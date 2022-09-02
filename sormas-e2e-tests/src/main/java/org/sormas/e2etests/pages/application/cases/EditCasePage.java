@@ -357,4 +357,7 @@ public class EditCasePage {
       By.cssSelector(".popupContent #organization div");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
       By.cssSelector(".popupContent #commit");
+  public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
+      By.xpath(
+          "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
 }

@@ -2447,18 +2447,19 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
 
     When(
-        "I select {string} as an organization",
+        "I select organization to share with {string}",
         (String organization) -> {
-          String org = runningConfiguration.getEnvironmentUrlForMarket(organization);
+          String survnetOrganization = runningConfiguration.getSurvnetResponsible(organization);
           webDriverHelpers.selectFromCombobox(
-              SHARE_ORGANIZATION_POPUP_COMBOBOX, org.replace("https://", ""));
+              SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
         });
 
     When(
-        "I click on share button in s2s share popup",
+        "I click on share button in s2s share popup and wait for share to finish",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          TimeUnit.SECONDS.sleep(5); // wait for reaction
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
         });
   }
 

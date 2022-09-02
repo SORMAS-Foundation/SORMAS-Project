@@ -1772,8 +1772,8 @@ Feature: Case end to end tests
      Then I navigate to the last created case via the url
      And I collect uuid of the case
      Then I click on share case button
-     And I select "s2s_2" as an organization
-     Then I click on share button in s2s share popup
+     And I select organization to share with "s2s_2"
+     Then I click on share button in s2s share popup and wait for share to finish
      Then I navigate to "s2s_2" environment
      Given I log in as Admin User in Keycloak enabled environment
      And I click on the Shares button from navbar
