@@ -15,18 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.enums;
 
-import lombok.Getter;
+package org.sormas.e2etests.steps.web.application.shares;
 
-@Getter
-public enum HealthFacilityValues {
-  StandardEinrichtung("Standard Einrichtung"),
-  OtherFacilityDE("Andere Einrichtung");
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_FIRST_EYE_ICON;
 
-  private final String name;
+import cucumber.api.java8.En;
+import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
-  HealthFacilityValues(String name) {
-    this.name = name;
+@Slf4j
+public class SharesDirectorySteps implements En {
+
+  private final WebDriverHelpers webDriverHelpers;
+
+  @Inject
+  public SharesDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
+    this.webDriverHelpers = webDriverHelpers;
+
+    When(
+        "I click on the The Eye Icon located in the Shares Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_FIRST_EYE_ICON);
+        });
   }
 }
