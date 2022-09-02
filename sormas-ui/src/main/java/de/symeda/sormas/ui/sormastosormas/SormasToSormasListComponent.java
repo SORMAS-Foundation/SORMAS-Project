@@ -50,9 +50,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -76,7 +76,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			caze.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync));
+			shareEnabled ? (i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync) : null);
 
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
@@ -114,7 +114,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			event.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasEventNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync));
+			shareEnabled ? (i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadListSync) : null);
 
 		initLayout(
 			event.getSormasToSormasOriginInfo(),
@@ -122,7 +122,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event) : null);
 	}
 
-	public SormasToSormasListComponent(EventParticipantDto eventParticipant, boolean shareEnabled) {
+	public SormasToSormasListComponent(EventParticipantDto eventParticipant) {
 		sormasToSormasList =
 			new SormasToSormasList(eventParticipant.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasEventParticipantNotShared, null);
 

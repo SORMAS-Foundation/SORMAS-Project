@@ -27,33 +27,39 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class ShareRequestLayout extends VerticalLayout {
 
 	private static final long serialVersionUID = -2456820286350054385L;
 
-	public ShareRequestLayout(SormasToSormasShareRequestDto shareRequest) {
+	private Runnable navigateCallback;
+
+	public ShareRequestLayout(ShareRequestDetailsDto shareRequest) {
 
 		ShareRequestDataType dataType = shareRequest.getDataType();
+		boolean isPending = shareRequest.getStatus() == ShareRequestStatus.PENDING;
 
 		if (dataType == ShareRequestDataType.CASE) {
 			Label casesLabel = new Label(I18nProperties.getString(Strings.headingShareRequestCases));
 			casesLabel.addStyleName(H3);
 			addComponent(casesLabel);
 			List<SormasToSormasCasePreview> cases = shareRequest.getCases();
-			CasePreviewGrid casesGrid = new CasePreviewGrid(cases);
+			CasePreviewGrid casesGrid = new CasePreviewGrid(cases, isPending);
+			casesGrid.addNavigateListener(this::onNavigateFromGrid);
 			addComponent(casesGrid);
 
 			List<SormasToSormasContactPreview> contacts = shareRequest.getContacts();
 
 			if (CollectionUtils.isNotEmpty(contacts)) {
-				ContactsPreviewGrid contactsGrid = addContactsGrid(Collections.emptyList());
+				ContactsPreviewGrid contactsGrid = addContactsGrid(Collections.emptyList(), isPending);
+				contactsGrid.addNavigateListener(this::onNavigateFromGrid);
 				casesGrid.getSelectionModel().addSelectionListener(event -> {
 					event.getFirstSelectedItem().ifPresent(casePreview -> {
 						contactsGrid.setItems(contacts.stream().filter(c -> DataHelper.isSame(c.getCaze(), casePreview)));
@@ -67,7 +73,8 @@ public class ShareRequestLayout extends VerticalLayout {
 		}
 
 		if (dataType == ShareRequestDataType.CONTACT) {
-			addContactsGrid(shareRequest.getContacts());
+			ContactsPreviewGrid contactsGrid = addContactsGrid(shareRequest.getContacts(), isPending);
+			contactsGrid.addNavigateListener(this::onNavigateFromGrid);
 		}
 
 		if (dataType == ShareRequestDataType.EVENT) {
@@ -75,13 +82,15 @@ public class ShareRequestLayout extends VerticalLayout {
 			eventsLabel.addStyleName(H3);
 			addComponent(eventsLabel);
 			List<SormasToSormasEventPreview> events = shareRequest.getEvents();
-			EventPreviewGrid eventsGrid = new EventPreviewGrid(events);
+			EventPreviewGrid eventsGrid = new EventPreviewGrid(events, isPending);
+			eventsGrid.addNavigateListener(this::onNavigateFromGrid);
 			addComponent(eventsGrid);
 
 			Label casesLabel = new Label(I18nProperties.getString(Strings.headingShareRequestEventParticipants));
 			casesLabel.addStyleName(H3);
 			addComponent(casesLabel);
-			EventParticipantsPreviewGrid eventParticipantsGrid = new EventParticipantsPreviewGrid();
+			EventParticipantsPreviewGrid eventParticipantsGrid = new EventParticipantsPreviewGrid(isPending);
+			eventParticipantsGrid.addNavigateListener(this::onNavigateFromGrid);
 			addComponent(eventParticipantsGrid);
 
 			eventsGrid.getSelectionModel().addSelectionListener(event -> {
@@ -100,14 +109,24 @@ public class ShareRequestLayout extends VerticalLayout {
 		}
 	}
 
-	private ContactsPreviewGrid addContactsGrid(List<SormasToSormasContactPreview> contacts) {
-		ContactsPreviewGrid contactsGrid;
+	public void setNavigateCallback(Runnable navigateCallback) {
+		this.navigateCallback = navigateCallback;
+	}
+
+	private ContactsPreviewGrid addContactsGrid(List<SormasToSormasContactPreview> contacts, boolean isPending) {
 		Label casesLabel = new Label(I18nProperties.getString(Strings.headingShareRequestContacts));
 		casesLabel.addStyleName(H3);
 		addComponent(casesLabel);
 
-		contactsGrid = new ContactsPreviewGrid(contacts);
+		ContactsPreviewGrid contactsGrid = new ContactsPreviewGrid(contacts, isPending);
 		addComponent(contactsGrid);
+
 		return contactsGrid;
+	}
+
+	private void onNavigateFromGrid(BasePreviewGrid.NavigateEvent event1) {
+		if (navigateCallback != null) {
+			navigateCallback.run();
+		}
 	}
 }

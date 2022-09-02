@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -415,7 +416,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_FORM_DATA_ARCHIVE,
 					CAMPAIGN_FORM_DATA_DELETE,
 					CAMPAIGN_FORM_DATA_EXPORT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -582,7 +582,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_VIEW,
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -659,7 +658,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
 					CAMPAIGN_FORM_DATA_EXPORT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -759,7 +757,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_VIEW,
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -803,7 +800,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_VIEW,
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -869,7 +865,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
 					CAMPAIGN_FORM_DATA_EXPORT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -898,7 +893,6 @@ public enum DefaultUserRole {
 					PORT_HEALTH_INFO_VIEW,
 					AGGREGATE_REPORT_VIEW,
 					AGGREGATE_REPORT_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					OUTBREAK_VIEW,
@@ -947,7 +941,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_VIEW,
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -1134,7 +1127,6 @@ public enum DefaultUserRole {
 					AGGREGATE_REPORT_VIEW,
 					AGGREGATE_REPORT_EXPORT,
 					AGGREGATE_REPORT_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -1164,7 +1156,6 @@ public enum DefaultUserRole {
 					PORT_HEALTH_INFO_VIEW,
 					AGGREGATE_REPORT_VIEW,
 					AGGREGATE_REPORT_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					OUTBREAK_VIEW,
@@ -1274,7 +1265,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_FORM_DATA_EDIT,
 					CAMPAIGN_FORM_DATA_ARCHIVE,
 					CAMPAIGN_FORM_DATA_EXPORT,
-					SORMAS_TO_SORMAS_SHARE,
 					EXTERNAL_MESSAGE_VIEW,
 					EXTERNAL_MESSAGE_PROCESS,
 					EXTERNAL_MESSAGE_DELETE,
@@ -1351,7 +1341,6 @@ public enum DefaultUserRole {
 					AGGREGATE_REPORT_EDIT,
 					SEE_PERSONAL_DATA_IN_JURISDICTION,
 					SEE_SENSITIVE_DATA_IN_JURISDICTION,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -1399,7 +1388,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
 					CAMPAIGN_FORM_DATA_EXPORT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -1450,7 +1438,6 @@ public enum DefaultUserRole {
 					PORT_HEALTH_INFO_VIEW,
 					AGGREGATE_REPORT_VIEW,
 					AGGREGATE_REPORT_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					OUTBREAK_VIEW,
@@ -1517,7 +1504,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_VIEW,
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
-					SORMAS_TO_SORMAS_SHARE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -1605,7 +1591,6 @@ public enum DefaultUserRole {
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
 					CAMPAIGN_FORM_DATA_EXPORT,
-					SORMAS_TO_SORMAS_SHARE,
 					EXTERNAL_MESSAGE_VIEW,
 					EXTERNAL_MESSAGE_PROCESS,
 					EXTERNAL_MESSAGE_DELETE,
@@ -1667,6 +1652,7 @@ public enum DefaultUserRole {
 
 		userRole.setCaption(I18nProperties.getEnumCaption(this));
 		userRole.setPortHealthUser(isPortHealthUser());
+		userRole.setLinkedDefaultUserRole(this);
 		userRole.setHasAssociatedDistrictUser(hasAssociatedDistrictUser());
 		userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(this)));
 		userRole.setEnabled(true);
@@ -1676,5 +1662,14 @@ public enum DefaultUserRole {
 		userRole.setUserRights(getDefaultUserRights());
 
 		return userRole;
+	}
+	
+	public static DefaultUserRole getByCaption(String caption) {
+		Optional<DefaultUserRole> defaultUserRole =
+			Arrays.stream(values()).filter(dur -> dur.name().equals(caption) || I18nProperties.getEnumCaption(dur).equals(caption)).findAny();
+		if (defaultUserRole.isPresent()) {
+			return defaultUserRole.get();
+		}
+		return null;
 	}
 }

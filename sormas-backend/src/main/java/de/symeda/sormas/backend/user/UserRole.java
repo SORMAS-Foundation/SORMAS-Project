@@ -39,6 +39,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.UniqueConstraint;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
@@ -60,6 +61,7 @@ public class UserRole extends AbstractDomainObject {
 	public static final String DESCRIPTION = "description";
 	public static final String ENABLED = "enabled";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String LINKED_DEFAULT_USER_ROLE = "linkedDefaultUserRole";
 	public static final String EMAIL_NOTIFICATIONS = "emailNotificationTypes";
 	public static final String SMS_NOTIFICATIONS = "smsNotificationTypes";
 
@@ -70,6 +72,7 @@ public class UserRole extends AbstractDomainObject {
 	private boolean hasOptionalHealthFacility;
 	private boolean hasAssociatedDistrictUser;
 	private boolean portHealthUser;
+	private DefaultUserRole linkedDefaultUserRole;
 	private JurisdictionLevel jurisdictionLevel;
 	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
 	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
@@ -151,6 +154,15 @@ public class UserRole extends AbstractDomainObject {
 
 	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 		this.jurisdictionLevel = jurisdictionLevel;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DefaultUserRole getLinkedDefaultUserRole() {
+		return linkedDefaultUserRole;
+	}
+
+	public void setLinkedDefaultUserRole(DefaultUserRole linkedDefaultUserRole) {
+		this.linkedDefaultUserRole = linkedDefaultUserRole;
 	}
 
 	@ElementCollection(fetch = FetchType.LAZY)

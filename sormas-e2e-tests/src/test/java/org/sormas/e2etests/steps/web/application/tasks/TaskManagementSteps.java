@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.tasks;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
@@ -242,6 +243,8 @@ public class TaskManagementSteps implements En {
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           for (int i = 2; i <= number + 1; i++) {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                getCheckboxByIndex(String.valueOf(i)));
             webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
             webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
           }
@@ -256,19 +259,19 @@ public class TaskManagementSteps implements En {
     When(
         "I check if popup message is {string}",
         (String expectedText) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOTIFICATION_MESSAGE_POPUP);
           softly.assertEquals(
-              webDriverHelpers.getTextFromPresentWebElement(
-                  By.cssSelector(".v-Notification-description")),
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_MESSAGE_POPUP),
               expectedText,
               "Bulk action went wrong");
           softly.assertAll();
         });
-    When(
-        "I check if popup message after bulk edit is {string}",
+    And(
+        "I check if popup message from Edit Task Form after bulk edit is {string}",
         (String expectedText) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NOTIFICATION_POPUP);
           softly.assertEquals(
-              webDriverHelpers.getTextFromPresentWebElement(
-                  By.cssSelector(".v-Notification-caption")),
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_POPUP),
               expectedText,
               "Bulk edit went wrong");
           softly.assertAll();
@@ -291,6 +294,12 @@ public class TaskManagementSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CHANGE_ASSIGNEE_CHECKBOX);
           webDriverHelpers.selectFromCombobox(TASK_ASSIGNEE_COMBOBOX, "Surveillance SUPERVISOR");
+        });
+    And(
+        "I click the Change assignee Checkbox in the Edit Task Form",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CHANGE_ASSIGNEE_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(CHANGE_ASSIGNEE_CHECKBOX);
         });
     When(
         "I click to bulk change priority for selected tasks",

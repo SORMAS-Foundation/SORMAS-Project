@@ -1147,7 +1147,7 @@ Feature: Contacts end to end tests
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
 
-  @tmsLink=SORDEV-12133 @env_de
+  @tmsLink=SORDEV-12133 @env_de @LanguageRisk
   Scenario: Test spelling correction on new contact creation form
     Given I log in as a Admin User
     When I click on the User Settings button from navbar

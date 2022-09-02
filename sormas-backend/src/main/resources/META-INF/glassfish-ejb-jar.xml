@@ -748,6 +748,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>SORMAS_TO_SORMAS_PROCESS</role-name>
+        <group-name>SORMAS_TO_SORMAS_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EXTERNAL_MESSAGE_VIEW</role-name>
         <group-name>EXTERNAL_MESSAGE_VIEW</group-name>
     </security-role-mapping>

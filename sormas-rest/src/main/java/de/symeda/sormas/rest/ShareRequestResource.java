@@ -12,9 +12,9 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/sharerequests")
@@ -24,7 +24,7 @@ public class ShareRequestResource extends EntityDtoResource {
 
 	@POST
 	@Path("/indexList")
-	public Page<SormasToSormasShareRequestIndexDto> getIndexList(
+	public Page<ShareRequestIndexDto> getIndexList(
 		@RequestBody CriteriaWithSorting<ShareRequestCriteria> criteriaWithSorting,
 		@QueryParam("offset") int offset,
 		@QueryParam("size") int size) {

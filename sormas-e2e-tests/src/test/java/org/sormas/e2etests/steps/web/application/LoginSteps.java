@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.LoginPage.ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.LoginPage.FAILED_LOGIN_ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.LoginPage.LOGIN_BUTTON;
 import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP;
@@ -59,6 +60,15 @@ public class LoginSteps implements En {
               SurveillanceDashboardPage.LOGOUT_BUTTON, 60);
         });
 
+    When(
+        "I check error message for disabled user is present",
+        () ->
+            assertHelpers.assertWithPoll20Second(
+                () -> {
+                  org.testng.Assert.assertTrue(
+                      webDriverHelpers.isElementVisibleWithTimeout(ERROR_MESSAGE, 5),
+                      "Error message is not visible");
+                }));
     Given(
         "^I navigate to SORMAS login page$",
         () -> {

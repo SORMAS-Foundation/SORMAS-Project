@@ -123,7 +123,7 @@ Feature: Tasks functionalities
     And I click to bulk change priority for selected tasks
     And I click to bulk change status for selected tasks
     And I click on Save button in New Task form
-    And I check if popup message after bulk edit is "All tasks have been edited"
+    And I check if popup message from Edit Task Form after bulk edit is "All tasks have been edited"
     And I check that number of displayed tasks results is 0
 
   @tmsLink=SORDEV-9156 @env_main
@@ -211,3 +211,38 @@ Feature: Tasks functionalities
     And I add "Task context" data to export in existing Export Configuration for Custom Task Export
     And I save Export Configuration for Custom Task Export
     And I delete all created custom task export configs
+
+  @3384 @env_main
+  Scenario: Verify that Task assignee cannot be left empty via bulk edit mode
+    Given I log in as a Admin User
+    And I click on the Tasks button from navbar
+    And I click on Enter Bulk Edit Mode from Tasks Directory
+    And I select first 1 results in grid in Task Directory
+    And I click on Bulk Actions combobox in Task Directory
+    And I click on Edit button from Bulk Actions Combobox in Task Directory
+    And I click the Change assignee Checkbox in the Edit Task Form
+    And I click on Save button in New Task form
+    And I check if popup message from Edit Task Form after bulk edit is "Please check the input data"
+
+  @tmsLink=SORDEV-12438 @env_main
+  Scenario: Test add task status Progress in task edit page
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new task
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Tasks button from navbar
+    Then I open last created task by API using Contact UUID
+    And I check that Pending button exist on task edit page
+
+  @tmsLink=SORDEV-12438 @env_main
+  Scenario: Test add task status Progress in new task page
+    Given I log in as a National User
+    And I click on the Tasks button from navbar
+    Then I click on the NEW TASK button
+    And I check that Pending button exist on task edit page

@@ -20,43 +20,44 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.LocationHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
-public class EventPreviewGrid extends Grid<SormasToSormasEventPreview> {
+public class EventPreviewGrid extends BasePreviewGrid<SormasToSormasEventPreview> {
 
 	private static final long serialVersionUID = -5660374853463456219L;
 
-	public EventPreviewGrid(List<SormasToSormasEventPreview> event) {
-		super(SormasToSormasEventPreview.class);
-		setItems(event);
-		setHeightByRows(event.size() > 0 ? (Math.min(event.size(), 10)) : 1);
+	public EventPreviewGrid(List<SormasToSormasEventPreview> event, boolean isPendingRequest) {
+		super(
+			SormasToSormasEventPreview.class,
+			Captions.Event,
+			uuid -> FacadeProvider.getEventFacade().exists(uuid),
+			uuid -> ControllerProvider.getEventController().navigateToData(uuid),
+			isPendingRequest);
 
-		buildGrid();
+		setItems(event);
 	}
 
-	private void buildGrid() {
-
-		setSizeFull();
-		setSelectionMode(SelectionMode.SINGLE);
-		setHeightMode(HeightMode.ROW);
+	@Override
+	protected void buildGrid() {
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
 		removeColumn(SormasToSormasEventPreview.DISEASE);
 		addComponentColumn(casePreview -> {
 			String diseaseText;
-			if(casePreview.getDisease() == null){
+			if (casePreview.getDisease() == null) {
 				diseaseText = "";
 			} else {
 				diseaseText = casePreview.getDisease().toString();

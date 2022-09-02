@@ -50,6 +50,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -242,6 +244,25 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 			}
 		}
 		return false;
+	}
+
+	public List<Vaccination> getRelevantVaccinationsForCase(Case caze) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Vaccination> cq = cb.createQuery(Vaccination.class);
+		final Root<Case> root = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+		final CaseJoins joins = caseQueryContext.getJoins();
+
+		Join<Case, Person> person = joins.getPerson();
+		Join<Person, Immunization> immunization = person.join(Person.IMMUNIZATIONS, JoinType.LEFT);
+		Join<Immunization, Vaccination> vaccination = immunization.join(Immunization.VACCINATIONS, JoinType.LEFT);
+
+		Predicate predicate = cb.in(root).value(caze);
+		cq.where(predicate);
+		cq.select(vaccination);
+
+		List<Vaccination> vaccinations = em.createQuery(cq).getResultList();
+		return vaccinations.stream().filter(v -> isVaccinationRelevant(caze, v)).collect(Collectors.toList());
 	}
 
 	public List<Vaccination> getRelevantSortedVaccinations(List<Vaccination> vaccinations, Date... relevanceFilterDates) {

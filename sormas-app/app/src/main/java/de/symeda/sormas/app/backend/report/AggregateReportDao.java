@@ -16,6 +16,7 @@ import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -78,9 +79,23 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 
 	public void sortAggregateReports(List<AggregateReport> reports) {
 		Function<AggregateReport, String> diseaseComparator = r -> r.getDisease().toString();
-		Comparator<AggregateReport> comparator =
-			Comparator.comparing(diseaseComparator).thenComparing(AggregateReport::getAgeGroup, AgeGroupUtils.getComparator());
+
+		Function<AggregateReport, Boolean> expiredAgeGroup =
+			aggregateReport -> !isCurrentAgeGroup(aggregateReport.getDisease(), aggregateReport.getAgeGroup());
+
+		Comparator<AggregateReport> comparator = Comparator.comparing(diseaseComparator)
+			.thenComparing(expiredAgeGroup)
+			.thenComparing(AggregateReport::getAgeGroup, AgeGroupUtils.getComparator());
 		reports.sort(comparator);
+	}
+
+	public boolean isCurrentAgeGroup(Disease disease, String ageGroup) {
+		List<String> ageGroups = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(disease).getAgeGroups();
+		if (ageGroups == null) {
+			return ageGroup == null;
+		} else {
+			return ageGroups.contains(ageGroup);
+		}
 	}
 
 	public AggregateReport build(Disease disease, EpiWeek epiWeek, InfrastructureAdo infrastructure) {
