@@ -121,7 +121,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 	@Override
 	public List<CampaignFormMetaDto> getAllAfter(Date date) {
-		final List<CampaignFormMeta> allAfter = service.getAllAfter(date, userService.getCurrentUser());
+		final List<CampaignFormMeta> allAfter = service.getAllAfter(date);
 		return allAfter.stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
 	}
 
