@@ -63,7 +63,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 
 		this.removeAllComponents();
 
-		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDto.getPerson().getUuid());
+		PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(caseDto.getPerson().getUuid());
 
 		VerticalLayout leftColumnLayout = new VerticalLayout();
 		leftColumnLayout.setMargin(false);

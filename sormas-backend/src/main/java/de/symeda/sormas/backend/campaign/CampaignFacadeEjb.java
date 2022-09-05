@@ -315,11 +315,6 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public CampaignDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid) {
 		final List<CampaignDashboardElement> result = new ArrayList<>();
 		if (campaignUuid != null) {

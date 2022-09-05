@@ -116,7 +116,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		personDto.setAddress(locationDto);
 		personDto.setPhone("+49 681 1234");
 
-		getPersonFacade().savePerson(personDto);
+		getPersonFacade().save(personDto);
 
 		caseDataDto = creator.createCase(userDto.toReference(), rdcf, (c) -> {
 			c.setDisease(Disease.CORONAVIRUS);

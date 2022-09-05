@@ -205,7 +205,7 @@ public class CaseController {
 		dto.setCommunity(event.getEventLocation().getCommunity());
 		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
 
-		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(eventParticipant.getPerson().getUuid()), uuid -> {
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(eventParticipant.getPerson().getUuid()), uuid -> {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
@@ -247,7 +247,7 @@ public class CaseController {
 	}
 
 	public void createFromContact(ContactDto contact) {
-		PersonDto selectedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		PersonDto selectedPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
 		CaseDataDto dto = CaseDataDto.build(PersonDto.build().toReference(), contact.getDisease());
 
 		dto.setDiseaseDetails(contact.getDiseaseDetails());
@@ -257,7 +257,7 @@ public class CaseController {
 		dto.setCommunity(contact.getCommunity());
 		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
 
-		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
@@ -296,12 +296,12 @@ public class CaseController {
 	}
 
 	public void createFromTravelEntry(TravelEntryDto travelEntryDto) {
-		PersonDto selectedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(travelEntryDto.getPerson().getUuid());
+		PersonDto selectedPerson = FacadeProvider.getPersonFacade().getByUuid(travelEntryDto.getPerson().getUuid());
 		CaseDataDto dto = CaseDataDto.buildFromTravelEntry(travelEntryDto, selectedPerson);
 
 		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
 
-		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, travelEntryDto, null, false);
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -611,7 +611,7 @@ public class CaseController {
 			} else {
 				symptoms = null;
 			}
-			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
+			person = FacadeProvider.getPersonFacade().getByUuid(convertedContact.getPerson().getUuid());
 			if (unrelatedDisease == null) {
 				caze = CaseDataDto.buildFromContact(convertedContact);
 				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
@@ -629,7 +629,7 @@ public class CaseController {
 			}
 		} else if (convertedTravelEntry != null) {
 			symptoms = null;
-			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedTravelEntry.getPerson().getUuid());
+			person = FacadeProvider.getPersonFacade().getByUuid(convertedTravelEntry.getPerson().getUuid());
 			caze = CaseDataDto.buildFromTravelEntry(convertedTravelEntry, person);
 		} else {
 			symptoms = null;
@@ -705,7 +705,7 @@ public class CaseController {
 					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
 
 					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePerson(person);
+					FacadeProvider.getPersonFacade().save(person);
 
 					saveCase(dto);
 
@@ -730,7 +730,7 @@ public class CaseController {
 					}
 				} else if (convertedEventParticipant != null) {
 					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePerson(person);
+					FacadeProvider.getPersonFacade().save(person);
 					selectOrCreateCase(dto, person, uuid -> {
 						if (uuid == null) {
 							dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
@@ -761,7 +761,7 @@ public class CaseController {
 					});
 				} else if (convertedTravelEntry != null) {
 					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePerson(person);
+					FacadeProvider.getPersonFacade().save(person);
 
 					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 					saveCase(dto);
@@ -776,17 +776,17 @@ public class CaseController {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					}
 				} else if (createdFromLabMessage) {
-					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+					PersonDto dbPerson = FacadeProvider.getPersonFacade().getByUuid(dto.getPerson().getUuid());
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
 						transferDataToPerson(createForm, personDto);
-						FacadeProvider.getPersonFacade().savePerson(personDto);
+						FacadeProvider.getPersonFacade().save(personDto);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						dto.setPerson(personDto.toReference());
 						saveCase(dto);
 					} else {
 						transferDataToPerson(createForm, dbPerson);
-						FacadeProvider.getPersonFacade().savePerson(dbPerson);
+						FacadeProvider.getPersonFacade().save(dbPerson);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						saveCase(dto);
 					}
@@ -821,7 +821,7 @@ public class CaseController {
 	}
 
 	private void selectOrCreateCase(CaseCreateForm createForm, CaseDataDto dto, PersonReferenceDto selectedPerson) {
-		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
 				dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 				saveCase(dto);
@@ -876,7 +876,7 @@ public class CaseController {
 
 		CaseDataForm caseEditForm = new CaseDataForm(
 			caseUuid,
-			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
+			FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid()),
 			caze.getDisease(),
 			caze.getSymptoms(),
 			viewMode,
@@ -1324,7 +1324,7 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<SymptomsForm> getSymptomsEditComponent(final String caseUuid, ViewMode viewMode) {
 
 		CaseDataDto caseDataDto = findCase(caseUuid);
-		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
+		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caseDataDto.getPerson().getUuid());
 
 		SymptomsForm symptomsForm = new SymptomsForm(
 			caseDataDto,
@@ -1676,7 +1676,7 @@ public class CaseController {
 					if (selectedPerson != null) {
 						newCase.setPerson(selectedPerson);
 
-						selectOrCreateCase(newCase, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+						selectOrCreateCase(newCase, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 							if (uuid == null) {
 								FacadeProvider.getCaseFacade().save(newCase);
 								Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
@@ -1699,7 +1699,7 @@ public class CaseController {
 		titleLayout.addRow(caseData.getCaseClassification().toString());
 
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
-		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caseData.getPerson().getUuid());
 		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
 		titleLayout.addMainRow(mainRowText.toString());
