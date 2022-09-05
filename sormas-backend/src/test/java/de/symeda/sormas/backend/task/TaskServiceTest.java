@@ -2,11 +2,17 @@ package de.symeda.sormas.backend.task;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +53,32 @@ public class TaskServiceTest extends AbstractBeanTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
+	}
+
+	@Test
+	public void testGetAllAfter() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, "U", "Ser", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		loginWith(user);
+
+		List<Task> result;
+
+		// 0. Without tasks
+		assertThat(getTaskService().getAllAfter(null), is(empty()));
+
+		// 1. One task
+		TaskDto task1 = creator.createTask(user.toReference());
+		result = getTaskService().getAllAfter(null);
+		assertThat(result, hasSize(1));
+		assertThat(getTaskService().getAllAfter(result.get(0).getChangeDate()), is(empty()));
+
+		// 2. Two tasks
+		TaskDto task2 = creator.createTask(user.toReference());
+		result = getTaskService().getAllAfter(null);
+		assertThat(result.stream().map(e -> e.getUuid()).collect(Collectors.toList()), contains(task1.getUuid(), task2.getUuid()));
+		assertThat(getTaskService().getAllAfter(result.get(0).getChangeDate()), hasSize(1));
+		assertThat(getTaskService().getAllAfter(result.get(1).getChangeDate()), is(empty()));
 	}
 
 	@Test
