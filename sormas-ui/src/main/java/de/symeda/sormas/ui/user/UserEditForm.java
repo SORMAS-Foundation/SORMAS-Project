@@ -44,6 +44,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
@@ -81,7 +82,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					
                     loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
-                    fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
+                    fluidRowLocs(UserDto.USER_NAME) +
+                    fluidRowLocs(UserDto.FORM_ACCESS, UserDto.USER_ROLES) +
                     fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
                     //fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
@@ -140,6 +142,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
+        
+        addField(UserDto.FORM_ACCESS, OptionGroup.class);
+        OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
+        formAccess.setMultiSelect(true);
+        
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.setMultiSelect(true);
@@ -220,7 +227,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         System.out.println("ddddddddddddddddddddddddddddddddssssssssssssssssssssefasdfas "+FacadeProvider.getAreaFacade().getAllActiveAsReference());
         area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
-        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
+        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES, UserDto.FORM_ACCESS);
         addValidators(UserDto.USER_NAME, new UserNameValidator());
 
         addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
@@ -338,6 +345,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.removeAllItems();
         userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
+        
+        OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
+        formAccess.removeAllItems();
+        formAccess.addItems(UserUiHelper.getAssignableForms());
+
 
         super.setValue(userDto);
     }

@@ -20,6 +20,7 @@ import java.util.Set;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 
@@ -38,6 +39,14 @@ public class UserUiHelper {
 		Set<UserRole> enabledUserRoles = FacadeProvider.getUserRoleConfigFacade().getEnabledUserRoles();
 
 		allRoles.removeIf(userRole -> !enabledUserRoles.contains(userRole) && !assignedRoles.contains(userRole));
+
+		return allRoles;
+	}
+	
+	
+	public static Set<FormAccess> getAssignableForms() {
+
+		Set<FormAccess> allRoles = FormAccess.getAssignableForms();
 
 		return allRoles;
 	}

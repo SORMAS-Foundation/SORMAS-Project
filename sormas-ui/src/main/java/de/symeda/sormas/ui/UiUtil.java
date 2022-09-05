@@ -2,6 +2,7 @@ package de.symeda.sormas.ui;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserType;
@@ -19,6 +20,16 @@ public class UiUtil {
 	public static boolean permitted(UserType userType) {
 		boolean check = false;
 		if (UserProvider.getCurrent().hasUserType(userType)) {
+			check = true;
+			return check;
+		} else {
+			return check;
+		}
+	}
+	
+	public static boolean permitted(FormAccess formAccess) {
+		boolean check = false;
+		if (UserProvider.getCurrent().hasFormAccess(formAccess)) {
 			check = true;
 			return check;
 		} else {

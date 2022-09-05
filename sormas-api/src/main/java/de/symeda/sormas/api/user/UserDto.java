@@ -41,8 +41,10 @@ public class UserDto extends EntityDto {
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	public static final String COLUMN_NAME_USERROLE = "userrole";
+	public static final String COLUMN_NAME_FORMACCESS = "formaccess";
 	public static final String COLUMN_NAME_USER_ID = "user_id";
 	public static final String TABLE_NAME_USERTYPES = "users_usertypes";
+	
 
 	public static final String I18N_PREFIX = "User";
 
@@ -58,6 +60,7 @@ public class UserDto extends EntityDto {
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
 	public static final String USER_ROLES = "userRoles";
+	public static final String FORM_ACCESS = "formAccess";
 	
 	public static final String REGION = "region";
 	public static final String AREA = "area";
@@ -92,6 +95,8 @@ public class UserDto extends EntityDto {
 	private LocationDto address;
 
 	private Set<UserRole> userRoles;
+	
+	private Set<FormAccess> formAccess;
 	//can add a user type property to the user  
 	private UserType usertype;	
 		
@@ -206,6 +211,14 @@ public class UserDto extends EntityDto {
 		this.userRoles = userRoles;
 	}
 
+	public Set<FormAccess> getFormAccess() {
+		return formAccess;
+	}
+
+	public void setFormAccess(Set<FormAccess> formAccess) {
+		this.formAccess = formAccess;
+	}
+
 	public UserType getUsertype() {
 		return usertype;
 	}
@@ -285,7 +298,7 @@ public class UserDto extends EntityDto {
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), usertype);
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), getFormAccess(), usertype);
 	}
 
 	public Disease getLimitedDisease() {

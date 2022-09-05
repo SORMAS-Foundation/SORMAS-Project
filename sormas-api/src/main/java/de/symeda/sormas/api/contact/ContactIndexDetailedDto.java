@@ -93,7 +93,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = phone;
-		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null, null);
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null, null, null);
 		this.relationToCase = relationToCase;
 	}
 

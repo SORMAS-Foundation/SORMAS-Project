@@ -357,7 +357,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	public static CommunityReferenceDto toReferenceDto(Community entity) {
 
 		if (entity == null) {
-			return null;
+			return null; 
 		}
 		
 		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId(), entity.getClusterNumber());

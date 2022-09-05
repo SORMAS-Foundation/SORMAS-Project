@@ -54,6 +54,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
@@ -171,6 +172,11 @@ public class UserFacadeEjb implements UserFacade {
 
 		source.getUserRoles().size();
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		
+		source.getFormAccess().size();
+		target.setFormAccess(new HashSet<FormAccess>(source.getFormAccess()));
+		
+		
 		target.setUsertype(source.getUsertype());
 		return target;
 	}
@@ -181,7 +187,7 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles(), entity.getUsertype());
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles(), entity.getFormAccess(), entity.getUsertype());
 		return dto;
 	}
 
@@ -191,7 +197,7 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles(), entity.getUserType());
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles(), entity.getFormAccess(), entity.getUserType());
 		return dto;
 	}
 
@@ -579,6 +585,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		target.setFormAccess(new HashSet<FormAccess>(source.getFormAccess()));
 
 		return target;
 	}

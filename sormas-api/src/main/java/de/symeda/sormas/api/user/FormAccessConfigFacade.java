@@ -7,18 +7,18 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
-public interface UserTypeConfigFacade {
+public interface FormAccessConfigFacade {
 
 
 	List<String> getAllUuids();
 
 	List<String> getDeletedUuids(Date date);
 
-	UserTypeConfigDto getByUuid(String uuid);
+	FormAccessConfigDto getByUuid(String uuid);
 
-	UserTypeConfigDto saveUserTypeConfig(@Valid UserTypeConfigDto dto);
+	FormAccessConfigDto saveUserRoleConfig(@Valid FormAccessConfigDto dto);
 
-	void deleteUserTypeConfig(UserTypeConfigDto dto);
+	void deleteUserRoleConfig(FormAccessConfigDto dto);
 
 	/**
 	 * Will fallback to default user rights for each role that has no configuration defined

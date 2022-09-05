@@ -126,8 +126,8 @@ public class EventActionIndexDto implements Serializable {
 		this.eventStatus = eventStatus;
 		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
-		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null, null);
-		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null, null);
+		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null, null, null);
+		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null, null, null);
 		this.actionTitle = EventHelper.buildEventActionTitleString(actionMeasure, actionTitle);
 		this.eventEvolutionDate = eventEvolutionDate;
 		this.actionTitle = actionTitle;
@@ -136,8 +136,8 @@ public class EventActionIndexDto implements Serializable {
 		this.actionDate = actionDate;
 		this.actionStatus = actionStatus;
 		this.actionPriority = actionPriority;
-		this.actionLastModifiedBy = new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName, null, null);
-		this.actionCreatorUser = new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName, null, null);
+		this.actionLastModifiedBy = new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName,null, null, null);
+		this.actionCreatorUser = new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName, null, null, null);
 		this.eventManagementStatus = eventManagementStatus;
 	}
 
