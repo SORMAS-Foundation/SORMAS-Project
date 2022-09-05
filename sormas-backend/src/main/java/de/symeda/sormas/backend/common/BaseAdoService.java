@@ -239,6 +239,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 			Root<ADO> from = cq.from(getElementClass());
+			fetchReferences(from);
 			cq.where(from.get(AbstractDomainObject.ID).in(batchedIds));
 			cq.orderBy(
 				cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)),
@@ -249,6 +250,13 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		});
 
 		return new ArrayList<>(result);
+	}
+
+	/**
+	 * Override this method to eagerly fetch entity references in {@link #getByIds(List)}.
+	 */
+	protected void fetchReferences(From<?, ADO> from) {
+		// NOOP by default
 	}
 
 	public List<ADO> getByUuids(List<String> uuids) {

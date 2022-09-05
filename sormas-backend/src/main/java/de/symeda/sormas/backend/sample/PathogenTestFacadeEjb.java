@@ -132,7 +132,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return pathogenTestService.getAllActivePathogenTestsAfter(date, user, batchSize, lastSynchronizedUuid)
+		return pathogenTestService.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());

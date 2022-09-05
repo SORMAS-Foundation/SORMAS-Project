@@ -117,10 +117,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 			return Collections.emptyList();
 		}
 
-		return service.getAllActiveAdditionalTestsAfter(date, user, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(e -> toDto(e))
-			.collect(Collectors.toList());
+		return service.getAllAfter(date, batchSize, lastSynchronizedUuid).stream().map(e -> toDto(e)).collect(Collectors.toList());
 	}
 
 	@Override

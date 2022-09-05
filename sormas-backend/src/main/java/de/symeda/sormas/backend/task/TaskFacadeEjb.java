@@ -410,10 +410,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.getAllActiveTasksAfter(date, user, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> toDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return taskService.getAllAfter(date, batchSize, lastSynchronizedUuid).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override

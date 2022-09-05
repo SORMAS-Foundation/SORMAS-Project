@@ -83,39 +83,23 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	public List<EventParticipant> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		return getAllAfter(date, null, batchSize, lastSynchronizedUuid);
-	}
-
-	public List<EventParticipant> getAllAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
-		Root<EventParticipant> from = cq.from(getElementClass());
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> from) {
 
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, from);
-
 		Join<EventParticipant, Event> event = eventParticipantQueryContext.getJoins().getEvent();
 
-		Predicate filter = cb
-			.and(cb.or(cb.isFalse(event.get(Event.ARCHIVED)), cb.isNull(event.get(Event.ARCHIVED))), cb.isFalse(from.get(EventParticipant.ARCHIVED)));
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			createDefaultFilter(cb, from),
+			cb.or(cb.isFalse(event.get(Event.ARCHIVED)), cb.isNull(event.get(Event.ARCHIVED))),
+			cb.isFalse(from.get(EventParticipant.ARCHIVED)));
 
-		filter = cb.and(filter, createDefaultFilter(cb, from));
-
-		if (user != null) {
-			Predicate userFilter = createUserFilter(eventParticipantQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(eventParticipantQueryContext));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
-			filter = cb.and(filter, dateFilter);
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {

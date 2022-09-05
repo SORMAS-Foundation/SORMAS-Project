@@ -191,7 +191,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActiveTreatmentsAfter(date, user, batchSize, lastSynchronizedUuid)
+		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(t -> convertToDto(t, pseudonymizer))
 			.collect(Collectors.toList());

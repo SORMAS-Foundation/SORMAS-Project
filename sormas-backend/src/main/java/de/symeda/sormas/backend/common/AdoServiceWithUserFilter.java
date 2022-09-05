@@ -31,6 +31,16 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
+	/**
+	 * Default filter for {@link #getAllAfter(Date)} to data that is allowed for the user to access and relevant for sync.
+	 * If you override this method it should usually include {@link #createUserFilter(CriteriaBuilder, CriteriaQuery, From)}
+	 * within the filter.
+	 */
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
 	public List<ADO> getAllAfter(Date since) {
 		return getAllAfter(since, null, null);
 	}
@@ -49,7 +59,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		cq.multiselect(root.get(ADO.ID), root.get(ADO.UUID), root.get(ADO.CHANGE_DATE));
 
 		// FILTER
-		Predicate filter = createUserFilter(cb, cq, root);
+		Predicate filter = createRelevantDataFilter(cb, cq, root);
 		if (since != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, root, since, lastSynchronizedUuid));
 		}

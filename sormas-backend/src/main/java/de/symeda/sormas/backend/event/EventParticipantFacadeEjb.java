@@ -243,7 +243,7 @@ public class EventParticipantFacadeEjb
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllAfter(date, user, batchSize, lastSynchronizedUuid)
+		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());

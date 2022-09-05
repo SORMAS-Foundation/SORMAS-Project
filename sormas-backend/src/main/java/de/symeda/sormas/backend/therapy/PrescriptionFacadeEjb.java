@@ -143,7 +143,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActivePrescriptionsAfter(date, user, batchSize, lastSynchronizedUuid)
+		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());

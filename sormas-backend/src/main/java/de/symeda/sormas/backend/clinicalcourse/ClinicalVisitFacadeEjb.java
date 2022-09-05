@@ -287,7 +287,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActiveClinicalVisitsAfter(date, batchSize, lastSynchronizedUuid)
+		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(t -> convertToDto(t, pseudonymizer))
 			.collect(Collectors.toList());

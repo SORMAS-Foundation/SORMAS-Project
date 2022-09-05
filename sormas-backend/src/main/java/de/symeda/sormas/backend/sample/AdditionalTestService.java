@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.sample;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -42,28 +41,17 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		super(AdditionalTest.class);
 	}
 
-	public List<AdditionalTest> getAllActiveAdditionalTestsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
-		Root<AdditionalTest> from = cq.from(getElementClass());
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, AdditionalTest> from) {
 
 		Predicate filter = createActiveSamplesFilter(cb, from);
 
-		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
-			filter = cb.and(filter, dateFilter);
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	public Predicate buildCriteriaFilter(AdditionalTestCriteria additionalTestCriteria, CriteriaBuilder cb, Root<AdditionalTest> from) {
@@ -178,7 +166,8 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
 	 * {@link EventParticipant#deleted}
 	 */
-	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, Root<AdditionalTest> root) {
+	private Predicate createActiveSamplesFilter(CriteriaBuilder cb,  From<?, AdditionalTest> root) {
+
 		Join<AdditionalTest, Sample> sample = root.join(AdditionalTest.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		Join<Sample, Contact> contact = sample.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);

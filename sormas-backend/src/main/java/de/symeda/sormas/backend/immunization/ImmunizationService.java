@@ -46,7 +46,6 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -207,33 +206,15 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	@Override
-	public List<Immunization> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Immunization> cq = cb.createQuery(getElementClass());
-		Root<Immunization> from = cq.from(getElementClass());
-		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, from);
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> from) {
 
 		Predicate filter = createDefaultFilter(cb, from);
-
 		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(immunizationQueryContext);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	@Override

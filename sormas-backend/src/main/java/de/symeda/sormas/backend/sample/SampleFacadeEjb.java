@@ -193,7 +193,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return sampleService.getAllActiveSamplesAfter(date, user, batchSize, lastSynchronizedUuid)
+		return sampleService.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(e -> convertToDto(e, pseudonymizer))
 			.collect(Collectors.toList());
