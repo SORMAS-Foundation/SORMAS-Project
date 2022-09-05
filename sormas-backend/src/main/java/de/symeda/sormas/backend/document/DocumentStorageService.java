@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -85,11 +84,11 @@ public class DocumentStorageService {
 	}
 
 	private void setDocumentAttributes(Document document, Path filePath) throws IOException {
-		setAttribute(filePath, "Document UUID", document.getUuid());
-		setAttribute(filePath, "Author", userService.getCurrentUser().getUserName());
-		setAttribute(filePath, "Display Name", document.getName());
-		setAttribute(filePath, "Type", document.getMimeType());
-		setAttribute(filePath, "Upload Date", DateFormatHelper.formatDate(document.getCreationDate()));
+//		setAttribute(filePath, "Document UUID", document.getUuid());
+//		setAttribute(filePath, "Author", userService.getCurrentUser().getUserName());
+//		setAttribute(filePath, "Display Name", document.getName());
+//		setAttribute(filePath, "Type", document.getMimeType());
+//		setAttribute(filePath, "Upload Date", DateFormatHelper.formatDate(document.getCreationDate()));
 	}
 
 	private void setAttribute(Path path, String attributeKey, String attributeValue) throws IOException {

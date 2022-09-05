@@ -81,7 +81,7 @@ public class DocumentList extends VerticalLayout {
 		res.setExpandRatio(downloadButton, 0);
 
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(editRight)) {
+		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_DELETE)) {
 			Button deleteButton = buildDeleteButton(document);
 			res.addComponent(deleteButton);
 			res.setExpandRatio(deleteButton, 0);
@@ -96,7 +96,7 @@ public class DocumentList extends VerticalLayout {
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			DocumentFacade documentFacade = FacadeProvider.getDocumentFacade();
 			try {
-				return new ByteArrayInputStream(documentFacade.read(document.getUuid()));
+				return new ByteArrayInputStream(documentFacade.getContent(document.getUuid()));
 			} catch (IOException | IllegalArgumentException e) {
 				new Notification(
 					String.format(I18nProperties.getString(Strings.errorReadingDocument), document),

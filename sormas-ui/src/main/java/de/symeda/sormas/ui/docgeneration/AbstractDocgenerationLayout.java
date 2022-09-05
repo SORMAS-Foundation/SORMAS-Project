@@ -46,6 +46,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -58,7 +60,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	protected final VerticalLayout additionalParametersComponent;
 	protected FileDownloader fileDownloader;
 	protected DocumentVariables documentVariables;
-	protected CheckBox checkBoxUploadGeneratedDoc;
+	private CheckBox checkBoxUploadGeneratedDoc;
 
 	public AbstractDocgenerationLayout(String captionTemplateSelector, Function<String, String> fileNameFunction, boolean isMultiFilesMode) {
 		additionalVariablesComponent = new VerticalLayout();
@@ -72,18 +74,19 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		hideTextfields();
 		hideAdditionalParameters();
 
-		if (isMultiFilesMode) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_UPLOAD)) {
 			checkBoxUploadGeneratedDoc = new CheckBox(
-				I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.DocumentTemplate_uploadGeneratedDocumentsToEntities));
-		} else {
-			checkBoxUploadGeneratedDoc = new CheckBox(
-				I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.DocumentTemplate_uploadGeneratedDocumentToEntity));
+				I18nProperties.getPrefixCaption(
+					ExportConfigurationDto.I18N_PREFIX,
+					isMultiFilesMode
+						? Captions.DocumentTemplate_uploadGeneratedDocumentsToEntities
+						: Captions.DocumentTemplate_uploadGeneratedDocumentToEntity));
+			checkBoxUploadGeneratedDoc.setValue(false);
+			checkBoxUploadGeneratedDoc.setEnabled(true);
+			checkBoxUploadGeneratedDoc.setStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+			checkBoxUploadGeneratedDoc.setWidth(400, Unit.PIXELS);
+			addComponent(checkBoxUploadGeneratedDoc);
 		}
-		checkBoxUploadGeneratedDoc.setValue(false);
-		checkBoxUploadGeneratedDoc.setEnabled(true);
-		checkBoxUploadGeneratedDoc.setStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
-		checkBoxUploadGeneratedDoc.setWidth(400, Unit.PIXELS);
-		addComponent(checkBoxUploadGeneratedDoc);
 
 		createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCreate));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -201,6 +204,10 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 
 	protected void performTemplateUpdates() {
 		// do nothing
+	}
+
+	protected boolean shouldUploadGeneratedDocument() {
+		return checkBoxUploadGeneratedDoc != null && Boolean.TRUE.equals(checkBoxUploadGeneratedDoc.getValue());
 	}
 
 	protected abstract List<String> getAvailableTemplates();

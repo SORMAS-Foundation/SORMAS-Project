@@ -66,7 +66,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	protected StreamResource createStreamResource(String templateFile, String filename) {
 		return new StreamResource((StreamResource.StreamSource) () -> {
 			try {
-				return documentInputStreamSupplier.get(templateFile, readAdditionalVariables(), checkBoxUploadGeneratedDoc.getValue());
+				return documentInputStreamSupplier.get(templateFile, readAdditionalVariables(), shouldUploadGeneratedDocument());
 			} catch (Exception e) {
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
 					.show(Page.getCurrent());

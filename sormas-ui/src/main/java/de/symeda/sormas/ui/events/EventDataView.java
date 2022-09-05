@@ -121,8 +121,8 @@ public class EventDataView extends AbstractEventView {
 		layout.addSidePanelComponent(actionList, ACTIONS_LOC);
 
 		DocumentListComponent documentList = null;
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
-			// TODO: user rights?
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}

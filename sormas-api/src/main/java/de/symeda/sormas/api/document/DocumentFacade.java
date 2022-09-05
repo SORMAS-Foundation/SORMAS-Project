@@ -38,7 +38,7 @@ public interface DocumentFacade {
 
 	String isExistingDocument(DocumentRelatedEntityType type, String uuid, String name);
 
-	byte[] read(String uuid) throws IOException;
+	byte[] getContent(String uuid) throws IOException;
 
 	void cleanupDeletedDocuments();
 }

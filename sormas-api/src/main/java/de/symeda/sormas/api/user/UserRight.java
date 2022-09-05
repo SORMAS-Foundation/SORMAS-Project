@@ -33,7 +33,7 @@ public enum UserRight {
 	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW),
-	CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE),
+	CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
 	CASE_IMPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EXPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	/*
@@ -86,7 +86,7 @@ public enum UserRight {
 	CONTACT_CREATE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_EDIT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_ARCHIVE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
-	CONTACT_DELETE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE),
+	CONTACT_DELETE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._DOCUMENT_DELETE),
 	CONTACT_IMPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_EXPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	// users that are allowed to convert a contact to a case need to be allowed to create a case,
@@ -109,14 +109,14 @@ public enum UserRight {
 	TASK_ASSIGN(UserRightGroup.TASK, UserRight._TASK_EDIT),
 
 	ACTION_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
-	ACTION_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
+	ACTION_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._DOCUMENT_DELETE),
 	ACTION_EDIT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 
 	EVENT_VIEW(UserRightGroup.EVENT),
 	EVENT_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EDIT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
-	EVENT_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTPARTICIPANT_DELETE, UserRight._TASK_DELETE, UserRight._ACTION_DELETE),
+	EVENT_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTPARTICIPANT_DELETE, UserRight._TASK_DELETE, UserRight._ACTION_DELETE, UserRight._DOCUMENT_DELETE),
 	EVENT_IMPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EXPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	PERFORM_BULK_OPERATIONS_EVENT(UserRightGroup.EVENT, UserRight._EVENT_EDIT),
@@ -206,7 +206,11 @@ public enum UserRight {
 	TRAVEL_ENTRY_CREATE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
 	TRAVEL_ENTRY_EDIT(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
 	TRAVEL_ENTRY_ARCHIVE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
-	TRAVEL_ENTRY_DELETE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TASK_DELETE),
+	TRAVEL_ENTRY_DELETE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TASK_DELETE, UserRight._DOCUMENT_DELETE),
+
+	DOCUMENT_VIEW(UserRightGroup.DOCUMENT),
+	DOCUMENT_UPLOAD(UserRightGroup.DOCUMENT, UserRight._DOCUMENT_VIEW),
+	DOCUMENT_DELETE(UserRightGroup.DOCUMENT, UserRight._DOCUMENT_VIEW),
 
 	PERFORM_BULK_OPERATIONS(UserRightGroup.GENERAL),
 	PERFORM_BULK_OPERATIONS_PSEUDONYM(UserRightGroup.GENERAL),
@@ -404,6 +408,9 @@ public enum UserRight {
 	public static final String _TRAVEL_ENTRY_EDIT = "TRAVEL_ENTRY_EDIT";
 	public static final String _TRAVEL_ENTRY_DELETE = "TRAVEL_ENTRY_DELETE";
 	public static final String _TRAVEL_ENTRY_ARCHIVE = "TRAVEL_ENTRY_ARCHIVE";
+	public static final String _DOCUMENT_VIEW = "DOCUMENT_VIEW";
+	public static final String _DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD";
+	public static final String _DOCUMENT_DELETE = "DOCUMENT_DELETE";
 	public static final String _EXPORT_DATA_PROTECTION_DATA = "EXPORT_DATA_PROTECTION_DATA";
 	public static final String _OUTBREAK_VIEW = "OUTBREAK_VIEW";
 	public static final String _OUTBREAK_EDIT = "OUTBREAK_EDIT";

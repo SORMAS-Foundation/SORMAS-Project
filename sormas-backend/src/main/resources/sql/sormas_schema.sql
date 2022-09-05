@@ -11933,4 +11933,38 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'S
 
 INSERT INTO schema_version (version_number, comment) VALUES (489, 'S2S_New Right_ S2S_Process #10084');
 
+-- 2022-09-05 #8543 Add backend checks to access documents
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id FROM userroles
+            LOOP
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright in ('CASE_VIEW', 'CONTACT_VIEW', 'EVENT_VIEW', 'ACTION_EDIT', 'TRAVEL_ENTRY_VIEW'))) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('DOCUMENT_VIEW')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright in ('CASE_EDIT', 'CONTACT_EDIT', 'EVENT_EDIT', 'ACTION_EDIT', 'TRAVEL_ENTRY_EDIT'))) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('DOCUMENT_UPLOAD')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright in ('CASE_DELETE', 'CONTACT_DELETE', 'EVENT_DELETE', 'ACTION_DELETE', 'TRAVEL_ENTRY_DELETE'))) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('DOCUMENT_DELETE')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (490, '#8543 Add backend checks to access documents');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
