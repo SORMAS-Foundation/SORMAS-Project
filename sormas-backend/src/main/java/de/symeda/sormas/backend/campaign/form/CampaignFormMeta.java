@@ -6,7 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
 
@@ -20,6 +24,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -34,11 +39,17 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public static final String FORM_ID = "formId";
 	public static final String FORM_TYPE = "formType";
 	public static final String FORM_NAME = "formName"; 
+	public static final String FORM_CATEGORY = "formCategory"; 
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 	public static final String CAMPAIGN_FORM_TRANSLATIONS = "campaignFormTranslations";
 
 	private String formId;
 	private String formType;
+	
+	
+	private FormAccess formCategory;
+	
+	
 	private String formName;
 	private String languageCode;
 	private String campaignFormElements;
@@ -62,6 +73,16 @@ public class CampaignFormMeta extends AbstractDomainObject {
 
 	public void setFormType(String formType) {
 		this.formType = formType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Column
+	public FormAccess getFormCategory() {
+		return formCategory;
+	}
+
+	public void setFormCategory(FormAccess formCategory) {
+		this.formCategory = formCategory;
 	}
 
 	@Column
@@ -175,7 +196,7 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	}
 
 	public CampaignFormMetaReferenceDto toReference() {
-		return new CampaignFormMetaReferenceDto(getUuid(), formName, formType);
+		return new CampaignFormMetaReferenceDto(getUuid(), formName, formType, formCategory);
 	}
 
 	@Override

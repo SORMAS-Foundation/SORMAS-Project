@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.vaadin.hene.popupbutton.PopupButton;
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserType;
@@ -316,12 +318,16 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		CampaignReferenceDto campaignReferenceDtx = campaignSelector.getValue();
 		String campaignReferenceDto = campaignFormPhaseSelector.getValue();
+		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
+		
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
 
 		if (campaignReferenceDto != null && campaignReferenceDtx != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
-					.getAllCampaignFormMetasAsReferencesByRoundandCampaign(campaignReferenceDto.toLowerCase(),
-							campaignReferenceDtx.getUuid());
+					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(campaignReferenceDto.toLowerCase(),
+							campaignReferenceDtx.getUuid(), userFormAccess);
+		
+			
 			Collections.sort(campagaignFormReferences);
 
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
