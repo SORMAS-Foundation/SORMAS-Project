@@ -443,7 +443,7 @@ public class TaskManagementSteps implements En {
           TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(8); // wait for download start
-          webDriverHelpers.waitForFileExists(file_path, 90);
+          webDriverHelpers.waitForFileExists(file_path, 120);
         });
 
     When(
@@ -495,7 +495,7 @@ public class TaskManagementSteps implements En {
             Files.delete(file_path);
           }
           webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DOWNLOAD_BUTTON);
-          webDriverHelpers.waitForFileExists(file_path, 90);
+          webDriverHelpers.waitForFileExists(file_path, 120);
           Assert.assertTrue(webDriverHelpers.isFileExists(file_path));
         });
 
