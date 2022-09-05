@@ -210,7 +210,7 @@ Feature: Tasks functionalities
     Then I fill Configuration Name field in Custom Task Export popup with generated name
     And I add "Task context" data to export in existing Export Configuration for Custom Task Export
     And I save Export Configuration for Custom Task Export
-    And I delete all created custom task export configs
+    And I delete last created custom task export config
 
   @3384 @env_main
   Scenario: Verify that Task assignee cannot be left empty via bulk edit mode

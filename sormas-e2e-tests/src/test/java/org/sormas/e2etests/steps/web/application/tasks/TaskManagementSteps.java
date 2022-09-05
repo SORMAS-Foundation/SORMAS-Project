@@ -463,7 +463,7 @@ public class TaskManagementSteps implements En {
         (String customExportName) -> {
           String configurationName;
           if (customExportName.equals("generated")) {
-            configurationName = LocalDate.now().toString();
+            configurationName = String.format("generated_%s", LocalDate.now().toString());
           } else {
             configurationName = customExportName;
           }
@@ -560,14 +560,13 @@ public class TaskManagementSteps implements En {
         });
 
     And(
-        "I delete all created custom task export configs",
+        "I delete last created custom task export config",
         () -> {
-          while (webDriverHelpers.isElementVisibleWithTimeout(
-              CUSTOM_TASK_EXPORT_DELETE_BUTTON, 1)) {
-            TimeUnit.SECONDS.sleep(2);
-            webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DELETE_BUTTON);
-            TimeUnit.SECONDS.sleep(2);
-          }
+          String export_id =
+              webDriverHelpers.getAttributeFromWebElement(CUSTOM_TASK_EXPORT_DELETE_BUTTON, "id");
+          webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DELETE_BUTTON);
+          Assert.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(getCustomExportByID(export_id), 1));
         });
   }
 
