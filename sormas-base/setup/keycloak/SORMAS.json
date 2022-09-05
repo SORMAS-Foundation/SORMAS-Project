@@ -1070,7 +1070,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "${KEYCLOAK_SORMAS_STATS_SECRET}",
       "redirectUris": [
-        "/sormas-stats-shinyapp/*"
+        "/stats/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -1080,7 +1080,7 @@
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
-      "publicClient": true,
+      "publicClient": false,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
