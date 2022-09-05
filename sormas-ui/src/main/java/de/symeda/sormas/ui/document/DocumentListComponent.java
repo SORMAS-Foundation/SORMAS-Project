@@ -43,6 +43,7 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 public class DocumentListComponent extends SideComponent {
 
 	private final DocumentList documentList;
+	private PopupButton mainButton;
 
 	public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight, boolean pseudonymized) {
 		super(I18nProperties.getString(Strings.entityDocuments));
@@ -64,8 +65,7 @@ public class DocumentListComponent extends SideComponent {
 		uploadLayout.setMargin(true);
 		uploadLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 
-		PopupButton mainButton =
-			ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
+		mainButton = ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
 
 		boolean multipleUpload = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS_MULTI_UPLOAD);
 
@@ -91,5 +91,9 @@ public class DocumentListComponent extends SideComponent {
 		if (nonNull(documentList)) {
 			documentList.reload();
 		}
+	}
+
+	public PopupButton getMainButton() {
+		return mainButton;
 	}
 }
