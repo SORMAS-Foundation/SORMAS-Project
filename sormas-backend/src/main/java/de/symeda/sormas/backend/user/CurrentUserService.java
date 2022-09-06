@@ -74,7 +74,7 @@ public class CurrentUserService {
 			return false;
 		}
 
-		return getCurrentUser().getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight)); // TODO cache?
+		return UserRightsFacadeEjb.hasUserRight(getCurrentUser(), userRight); // todo cache this?
 	}
 
 	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion

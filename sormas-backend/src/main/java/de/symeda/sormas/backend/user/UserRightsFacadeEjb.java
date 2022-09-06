@@ -18,10 +18,15 @@ package de.symeda.sormas.backend.user;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRightsFacade;
 
 @Stateless(name = "UserRightsFacade")
 public class UserRightsFacadeEjb implements UserRightsFacade {
+
+	public static boolean hasUserRight(User user, UserRight userRight) {
+		return user.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+	}
 
 	@LocalBean
 	@Stateless

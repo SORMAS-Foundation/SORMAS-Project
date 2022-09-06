@@ -304,6 +304,17 @@
       "security-admin-console": [],
       "admin-cli": [],
       "sormas-app": [],
+      "sormas-stats": [
+        {
+          "id": "b068799a-2973-49f3-b8c0-ff4893f07b5a",
+          "name": "sormas-stats-access",
+          "description": "User which have been assigned this role will be able to access the SORMAS-Stats client.",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "53613ca6-aecd-403d-b152-9e4e6f86ebab",
+          "attributes": {}
+        }
+      ],
       "sormas-ui": [],
       "account-console": [],
       "broker": [
@@ -1240,11 +1251,12 @@
           "protocolMapper": "oidc-usermodel-client-role-mapper",
           "consentRequired": false,
           "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
             "user.attribute": "foo",
             "access.token.claim": "true",
             "claim.name": "resource_access.${client_id}.roles",
-            "jsonType.label": "String",
-            "multivalued": "true"
+            "jsonType.label": "String"
           }
         }
       ]
