@@ -1269,6 +1269,10 @@ public class EditContactSteps implements En {
               break;
           }
         });
+
+    And(
+        "^I click on the Edit Vaccination icon on vaccination card on Edit contact page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_VACCINATION_BUTTON));
   }
 
   private void selectContactClassification(String classification) {
