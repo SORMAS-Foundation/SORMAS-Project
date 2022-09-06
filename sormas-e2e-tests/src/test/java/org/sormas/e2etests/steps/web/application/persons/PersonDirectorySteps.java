@@ -40,13 +40,12 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
@@ -74,9 +73,11 @@ public class PersonDirectorySteps implements En {
       AssertHelpers assertHelpers,
       RunningConfiguration runningConfiguration,
       SoftAssert softly,
-      PersonService personService) {
+      PersonService personService,
+      RestAssuredClient restAssuredClient) {
     this.webDriverHelpers = webDriverHelpers;
     personSharedForAllEntities = personService.buildGeneratedPerson();
+    EnvironmentManager manager = new EnvironmentManager(restAssuredClient);
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
 
@@ -296,8 +297,7 @@ public class PersonDirectorySteps implements En {
         "I choose random value of Region in Persons for the last created person by API",
         () -> {
           String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
-          webDriverHelpers.selectFromCombobox(
-              REGIONS_COMBOBOX, RegionsValues.getNameValueForUuid(regionName));
+          webDriverHelpers.selectFromCombobox(REGIONS_COMBOBOX, manager.getRegionName(regionName));
         });
 
     Then(
@@ -305,7 +305,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
           webDriverHelpers.selectFromCombobox(
-              DISTRICTS_COMBOBOX, DistrictsValues.getNameValueForUuid(districtName));
+              DISTRICTS_COMBOBOX, manager.getDistrictName(districtName));
         });
 
     Then(
@@ -313,7 +313,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
           webDriverHelpers.selectFromCombobox(
-              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getNameValueForUuid(communityName));
+              COMMUNITY_PERSON_COMBOBOX, manager.getCommunityName(communityName));
         });
     When(
         "I filter by Person full name from Immunization on Person Directory Page",
