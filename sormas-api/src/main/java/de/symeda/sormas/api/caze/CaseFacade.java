@@ -58,11 +58,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
-	/**
-	 * Additional change dates filters for: sample, pathogenTests, patient and location.
-	 */
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters);
-
 	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
 
 	List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria);

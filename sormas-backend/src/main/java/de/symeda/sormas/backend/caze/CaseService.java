@@ -251,11 +251,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Case> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
-		Root<Case> from = cq.from(getElementClass());
+		Predicate filter = createActiveCasesFilter(cb, from);
+
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
+		}
+
+		return filter;
+	}
+
+	@Override
+	protected void fetchReferences(From<?, Case> from) {
+
 		from.fetch(Case.SYMPTOMS);
 		from.fetch(Case.THERAPY);
 		from.fetch(Case.HEALTH_CONDITIONS);
@@ -263,28 +274,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		from.fetch(Case.EPI_DATA);
 		from.fetch(Case.PORT_HEALTH_INFO);
 		from.fetch(Case.MATERNAL_HISTORY);
-
-		Predicate filter = createActiveCasesFilter(cb, from);
-
-		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
-		}
-
-		if (date != null) {
-			Predicate dateFilter =
-				createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeExtendedChangeDateFilters, lastSynchronizedUuid);
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<String> getAllActiveUuids() {

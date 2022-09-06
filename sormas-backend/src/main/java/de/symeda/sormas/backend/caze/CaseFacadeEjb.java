@@ -496,31 +496,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
-		return getAllActiveCasesAfter(date, false);
-	}
-
-	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters) {
-		return getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, null, null);
+		return getAllActiveCasesAfter(date, null, null);
 	}
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		return getAllActiveCasesAfter(date, false, batchSize, lastSynchronizedUuid);
-	}
-
-	private List<CaseDataDto> getAllActiveCasesAfter(
-		Date date,
-		boolean includeExtendedChangeDateFilters,
-		Integer batchSize,
-		String lastSynchronizedUuid) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
 		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
-		return service.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
+		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());
