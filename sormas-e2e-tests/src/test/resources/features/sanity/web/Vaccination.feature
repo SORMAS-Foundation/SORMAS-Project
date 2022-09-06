@@ -657,10 +657,31 @@ Feature: Vaccination tests
     And I fill a new Contact form with specific data for DE version with date 16 days ago
     And I click on SAVE new contact button
     And I click NEW VACCINATION button for DE
-#    change step below
-    And I change the report vaccination date for minus 17 days from today on new Vaccination form
+    And I change the report vaccination date for minus 17 day from today
     And I fill new vaccination data in new Vaccination form for DE
     And I remove the vaccination date in displayed vaccination form
     And I click SAVE button in new Vaccination form
     And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit contact page
     And I check that displayed vaccination name is "enabled" on Edit contact page
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I change the report vaccination date for minus 9 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "enabled" on Edit case page
+    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I change the report vaccination date for minus 1 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "greyed out" on Edit case page
+    And I set the last contact date for minus 5 days from today for DE version
+    And I click SAVE button on Edit Contact Page
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit contact page
+    And I check that displayed vaccination name is "enabled" on Edit contact page
+    And I set the last contact date for minus 16 days from today for DE version
+    And I click SAVE button on Edit Contact Page
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I change the report vaccination date for minus 1 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "greyed out" on Edit case page

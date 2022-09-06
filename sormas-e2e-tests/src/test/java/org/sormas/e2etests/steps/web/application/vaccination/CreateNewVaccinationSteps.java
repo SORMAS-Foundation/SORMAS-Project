@@ -272,14 +272,6 @@ public class CreateNewVaccinationSteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(
               REPORT_DATE_INPUT, formatterDE.format(LocalDate.now().minusDays(day)));
         });
-
-    And(
-        "^I change the report vaccination date for minus (\\d+) days from today on new Vaccination form$",
-        (Integer days) -> {
-          webDriverHelpers.scrollToElement(REPORT_DATE_INPUT);
-          webDriverHelpers.fillAndSubmitInWebElement(
-              REPORT_DATE_INPUT, formatterDE.format(LocalDate.now().minusDays(days)));
-        });
   }
 
   private void fillVaccinationDate(LocalDate date, Locale locale) {
