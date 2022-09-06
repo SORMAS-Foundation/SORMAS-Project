@@ -55,13 +55,13 @@ public class InfrastructureHelper {
 		new CommunityDtoHelper().handlePulledList(DatabaseHelper.getCommunityDao(), infrastructureData.getCommunities());
 		new FacilityDtoHelper().handlePulledList(DatabaseHelper.getFacilityDao(), infrastructureData.getFacilities());
 		new PointOfEntryDtoHelper().handlePulledList(DatabaseHelper.getPointOfEntryDao(), infrastructureData.getPointsOfEntry());
+		new UserRoleDtoHelper().handlePulledList(DatabaseHelper.getUserRoleDao(), infrastructureData.getUserRoles());
 		new UserDtoHelper().handlePulledList(DatabaseHelper.getUserDao(), infrastructureData.getUsers());
 		new DiseaseClassificationDtoHelper()
 			.handlePulledList(DatabaseHelper.getDiseaseClassificationCriteriaDao(), infrastructureData.getDiseaseClassifications());
 		new DiseaseConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getDiseaseConfigurationDao(), infrastructureData.getDiseaseConfigurations());
 		DatabaseHelper.getUserRoleDao().delete(infrastructureData.getDeletedUserRoleUuids());
-		new UserRoleDtoHelper().handlePulledList(DatabaseHelper.getUserRoleDao(), infrastructureData.getUserRoles());
 		DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
 		new FeatureConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations());
