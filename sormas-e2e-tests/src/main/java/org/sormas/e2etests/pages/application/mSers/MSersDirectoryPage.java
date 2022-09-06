@@ -26,7 +26,7 @@ public class MSersDirectoryPage {
   public static final By GROUPING_COMBOBOX_INPUT =
       By.xpath("(//div[@class='v-filterselect-button'])[1]/..//preceding-sibling::input");
   public static final By SHOW_ROWS_FOR_DISEASES_LABEL =
-      By.xpath("//label[text()=\"Show 0-rows for disease(s)\"]");
+      By.cssSelector("input[type='checkbox'] + label");
 
   public static By getEditButtonByIndex(int idx) {
     return By.xpath(
