@@ -35,5 +35,6 @@ public class Environment {
   String identifier;
   String url;
   DemisData demisData;
+  String survnetResponsible;
   List<EnvUser> users;
 }

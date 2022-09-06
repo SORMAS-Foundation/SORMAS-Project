@@ -111,7 +111,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			buildCriteria();
 		}
 
-		PersonDto person = personFacade.getPersonByUuid(caze.getPerson().getUuid());
+		PersonDto person = personFacade.getByUuid(caze.getPerson().getUuid());
 		List<PathogenTestDto> pathogenTests = pathogenTestService.getAllByCase(caze.getUuid())
 			.stream()
 			.map(PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal::toDto)

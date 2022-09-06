@@ -345,7 +345,7 @@ public class ContactFacadeEjb
 		ContactDto contactDto = coreAndPersonDto.getCoreData();
 		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
 		if (coreAndPersonDto.getPerson() != null) {
-			PersonDto newlyCreatedPersonDto = personFacade.savePerson(coreAndPersonDto.getPerson());
+			PersonDto newlyCreatedPersonDto = personFacade.save(coreAndPersonDto.getPerson());
 			contactDto.setPerson(newlyCreatedPersonDto.toReference());
 			savedCoreAndPersonDto.setPerson(newlyCreatedPersonDto);
 		}
@@ -1951,8 +1951,8 @@ public class ContactFacadeEjb
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!DataHelper.equal(leadContactDto.getPerson().getUuid(), otherContactDto.getPerson().getUuid())) {
-			PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
-			PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
+			PersonDto leadPerson = personFacade.getByUuid(leadContactDto.getPerson().getUuid());
+			PersonDto otherPerson = personFacade.getByUuid(otherContactDto.getPerson().getUuid());
 			personFacade.mergePerson(leadPerson, otherPerson);
 		}
 

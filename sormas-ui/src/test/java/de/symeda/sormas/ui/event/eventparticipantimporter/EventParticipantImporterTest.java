@@ -151,7 +151,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		final String EXISTING_PERSON_LAST_NAME = "Heinz";
 		PersonDto person = creator.createPerson("Günther", EXISTING_PERSON_LAST_NAME);
 		person.setPresentCondition(PresentCondition.UNKNOWN);
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 
 		creator.createCase(
 			user.toReference(),
@@ -190,7 +190,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		EventParticipantIndexDto importedEventParticipant =
 			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
-		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedEventParticipant.getPersonUuid());
+		PersonDto importedPerson = getPersonFacade().getByUuid(importedEventParticipant.getPersonUuid());
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));

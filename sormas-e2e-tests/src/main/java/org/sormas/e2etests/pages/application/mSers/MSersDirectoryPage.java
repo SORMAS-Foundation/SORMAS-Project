@@ -35,6 +35,13 @@ public class MSersDirectoryPage {
             idx));
   }
 
+  public static final By REGION_FILTER_COMBOBOX = By.cssSelector("#region div");
+  public static final By DISTRICT_FILTER_COMBOBOX = By.cssSelector("#district div");
+  public static final By AGGREGATED_REPORT_APPLY_FILTER_BUTTON =
+      By.cssSelector("[id='actionApplyFilters']");
+  public static final By FIRST_AGGREGATED_REPORT_EDIT_BUTTON =
+      By.cssSelector(".v-grid-row-has-data div");
+
   public static By getColumnSelectorByName(String name) {
     return By.xpath(String.format("//div[text()=\"%s\"]", name));
   }

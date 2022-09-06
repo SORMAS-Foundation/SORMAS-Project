@@ -60,7 +60,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ShareRequestInfoFacade")
-@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+@RightsAllowed(UserRight._SORMAS_TO_SORMAS_PROCESS)
 public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)

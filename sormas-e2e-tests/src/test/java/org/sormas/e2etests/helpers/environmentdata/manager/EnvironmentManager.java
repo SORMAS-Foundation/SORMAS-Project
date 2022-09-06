@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.Range;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.sormas.e2etests.entities.pojo.api.Request;
@@ -57,7 +58,7 @@ public class EnvironmentManager {
     return countries.stream()
         .filter(country -> country.getDefaultName().equalsIgnoreCase(countryName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find country: " + countryName))
         .getUuid();
   }
 
@@ -73,7 +74,7 @@ public class EnvironmentManager {
     return regions.stream()
         .filter(region -> region.getName().equalsIgnoreCase(regionName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find region: " + regionName))
         .getUuid();
   }
 
@@ -89,7 +90,7 @@ public class EnvironmentManager {
     return regions.stream()
         .filter(region -> region.getUuid().equalsIgnoreCase(regionUuid))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find region name for uuid: " + regionUuid))
         .getName();
   }
 
@@ -105,7 +106,7 @@ public class EnvironmentManager {
     return districts.stream()
         .filter(district -> district.getName().equalsIgnoreCase(districtName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find district: " + districtName))
         .getUuid();
   }
 
@@ -121,7 +122,7 @@ public class EnvironmentManager {
     return districts.stream()
         .filter(district -> district.getUuid().equalsIgnoreCase(districtUUID))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find district name for uuid: " + districtUUID))
         .getName();
   }
 
@@ -137,7 +138,7 @@ public class EnvironmentManager {
     return continents.stream()
         .filter(continent -> continent.getDefaultName().equalsIgnoreCase(continentName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find continent: " + continentName))
         .getUuid();
   }
 
@@ -153,7 +154,7 @@ public class EnvironmentManager {
     return subcontinents.stream()
         .filter(subcontinent -> subcontinent.getDefaultName().equalsIgnoreCase(subcontinentName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find subcontinent: " + subcontinentName))
         .getUuid();
   }
 
@@ -169,7 +170,7 @@ public class EnvironmentManager {
     return communities.stream()
         .filter(community -> community.getName().equalsIgnoreCase(communityName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find community: " + communityName))
         .getUuid();
   }
 
@@ -186,7 +187,7 @@ public class EnvironmentManager {
     return healthFacilities.stream()
         .filter(healthFacility -> healthFacility.getName().equalsIgnoreCase(healthFacilityName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find health facility: " + healthFacilityName))
         .getUuid();
   }
 
@@ -203,7 +204,7 @@ public class EnvironmentManager {
     return healthFacilities.stream()
         .filter(laboratory -> laboratory.getName().equalsIgnoreCase(laboratoryName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find health laboratory: " + laboratoryName))
         .getUuid();
   }
 
@@ -219,7 +220,7 @@ public class EnvironmentManager {
     return users.stream()
         .filter(user -> (user.getFirstName() + " " + user.getLastName()).equalsIgnoreCase(fullName))
         .findFirst()
-        .get()
+        .orElseThrow(() -> new Exception("Unable to find user: " + fullName))
         .getUuid();
   }
 
@@ -232,17 +233,22 @@ public class EnvironmentManager {
   @SneakyThrows
   private void checkResponse(Response response) {
     Document doc;
-    String responseStatus = String.valueOf(response.getStatusCode());
-    if (responseStatus.startsWith("4")) {
+    Range<Integer> clientFailRange = Range.between(400, 499);
+    Range<Integer> serverFailRange = Range.between(500, 600);
+    int responseStatus = response.getStatusCode();
+    if (clientFailRange.contains(responseStatus)) {
       log.warn("Response returned status code [ {} ]", responseStatus);
       doc = Jsoup.parse(response.getBody().asString());
       throw new Exception(
           String.format("Unable to perform API request due to: [ %s ]", doc.body().text()));
-    } else if (responseStatus.startsWith("5")) {
+    } else if (serverFailRange.contains(responseStatus)) {
       log.warn("Response returned status code [ {} ]", responseStatus);
       doc = Jsoup.parse(response.getBody().asString());
       throw new Exception(
           String.format("Unable to perform API request due to: [ %s ]", doc.body().text()));
+    }
+    if (response.getBody().asString().isEmpty()) {
+      throw new Exception("Response is empty.");
     }
   }
 }

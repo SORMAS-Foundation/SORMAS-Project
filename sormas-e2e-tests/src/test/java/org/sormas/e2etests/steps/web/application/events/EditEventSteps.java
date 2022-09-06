@@ -215,7 +215,6 @@ import org.sormas.e2etests.entities.pojo.web.EventGroup;
 import org.sormas.e2etests.entities.pojo.web.EventHandout;
 import org.sormas.e2etests.entities.pojo.web.EventParticipant;
 import org.sormas.e2etests.entities.pojo.web.Person;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.EventDocumentService;
 import org.sormas.e2etests.entities.services.EventGroupService;
 import org.sormas.e2etests.entities.services.EventParticipantService;
@@ -1820,10 +1819,10 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LONGITUDE_INPUT_EDIT_EVENT);
           webDriverHelpers.fillInWebElement(
               GPS_LATITUDE_INPUT_EDIT_EVENT,
-              String.valueOf(faker.number().randomDouble(7, 10, 99)));
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
           webDriverHelpers.fillInWebElement(
               GPS_LONGITUDE_INPUT_EDIT_EVENT,
-              String.valueOf(faker.number().randomDouble(7, 10, 99)));
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
           webDriverHelpers.submitInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT);
         });
 

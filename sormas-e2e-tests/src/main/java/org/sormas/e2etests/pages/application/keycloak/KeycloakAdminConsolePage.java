@@ -26,6 +26,7 @@ public class KeycloakAdminConsolePage {
   public static final By USER_ENABLE_DISABLE_SWITCH = By.cssSelector("#userEnabled");
   public static final By USER_DISABLED =
       By.xpath("//input[@id=\"userEnabled\" and contains(@class,\"ng-empty\")]");
+
   public static By getUserIdByName(String name) {
     return By.xpath(String.format("//td[text()=\"%s\"]/../td/a", name));
   }

@@ -44,4 +44,8 @@ public class CreateNewAggreagateReportPage {
       By.cssSelector("[class='v-radiobutton v-select-option']");
   public static final By DELETE_AGGREGATED_REPORT_BUTTON = By.id("actionDelete");
   public static final By ERROR_MESSAGE = By.cssSelector(".v-Notification-caption");
+  public static final By SNAKE_BITE_SUSPECTED_CASES_INPUT =
+      By.xpath("(//div[text()=\"Snake Bite\"]/..//following-sibling::div//input)[1]");
+  public static final By POPUP_HEADER = By.cssSelector(".popupContent .v-window-outerheader");
+  public static final By POPUP_MESSAGE_WINDOW = By.cssSelector(".v-Notification-description");
 }

@@ -184,4 +184,6 @@ public class EditContactPage {
   public static By getContactIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }
+
+  public static final By NOTIFICATION_MESSAGE_POPUP = By.cssSelector(".v-Notification-description");
 }

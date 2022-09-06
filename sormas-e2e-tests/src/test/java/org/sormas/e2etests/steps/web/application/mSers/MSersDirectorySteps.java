@@ -11,6 +11,7 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DIS
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EDIT_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_FROM_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_TO_COMOBOX;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.FIRST_AGGREGATED_REPORT_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.FACILITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.GROUPING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.GROUPING_COMBOBOX_INPUT;
@@ -300,5 +301,15 @@ public class MSersDirectorySteps implements En {
       log.error("Null pointer exception parseOneDiseaseExport: {}", e.getCause());
     }
     return builder;
+
+    And(
+        "^I click on edit first aggregated report from grid from mSERS$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
   }
 }

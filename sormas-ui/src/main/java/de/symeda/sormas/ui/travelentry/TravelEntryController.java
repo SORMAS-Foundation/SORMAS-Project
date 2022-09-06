@@ -69,11 +69,11 @@ public class TravelEntryController {
 			travelEntry.setPerson(casePersonReferenceDto);
 			travelEntry.setDisease(caseDataDto.getDisease());
 			createForm = new TravelEntryCreateForm(casePersonReferenceDto);
-			createForm.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(casePersonReferenceDto.getUuid()));
+			createForm.setPerson(FacadeProvider.getPersonFacade().getByUuid(casePersonReferenceDto.getUuid()));
 		} else if (personReferenceDto != null) {
 			travelEntry.setPerson(personReferenceDto);
 			createForm = new TravelEntryCreateForm(personReferenceDto);
-			createForm.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(personReferenceDto.getUuid()));
+			createForm.setPerson(FacadeProvider.getPersonFacade().getByUuid(personReferenceDto.getUuid()));
 		} else {
 			createForm = new TravelEntryCreateForm();
 		}
@@ -199,7 +199,7 @@ public class TravelEntryController {
 		titleLayout.addRow(travelEntryPointOfEntry);
 
 		String shortUuid = DataHelper.getShortUuid(travelEntry.getUuid());
-		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(travelEntry.getPerson().getUuid());
+		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(travelEntry.getPerson().getUuid());
 		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
 		titleLayout.addMainRow(mainRowText.toString());

@@ -49,7 +49,7 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	public PatientDiaryResult registerPatientDiaryPerson(PersonDto person) {
 		return patientDiaryClient.registerPatientDiaryPerson(person.getUuid(), () -> {
 			person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
-			personFacade.savePerson(person);
+			personFacade.save(person);
 		});
 	}
 
@@ -62,7 +62,7 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	public PatientDiaryResult cancelPatientDiaryFollowUp(PersonDto person) {
 		return patientDiaryClient.deletePatientDiaryPerson(person.getUuid(), () -> {
 			person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
-			personFacade.savePerson(person);
+			personFacade.save(person);
 		});
 	}
 

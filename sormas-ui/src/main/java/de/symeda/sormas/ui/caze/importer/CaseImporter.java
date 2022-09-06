@@ -168,7 +168,7 @@ public class CaseImporter extends DataImporter {
 						// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
 						// to allow the importer to resume
 						if (selectedPersonUuid != null) {
-							importPerson = personFacade.getPersonByUuid(selectedPersonUuid);
+							importPerson = personFacade.getByUuid(selectedPersonUuid);
 						}
 
 						handleCaseSimilarity(

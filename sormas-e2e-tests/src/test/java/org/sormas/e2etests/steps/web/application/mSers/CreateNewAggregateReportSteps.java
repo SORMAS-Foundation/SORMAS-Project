@@ -7,9 +7,11 @@ import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateRep
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DUPLICATE_DETECTION_TEXT;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_INPUT_POPUP;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.POPUP_MESSAGE_WINDOW;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP_DIV;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.SNAKE_BITE_SUSPECTED_CASES_INPUT;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.WEEK_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.YEAR_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.YEAR_INPUT_POPUP;
@@ -174,6 +176,28 @@ public class CreateNewAggregateReportSteps implements En {
           }
           String currentEpiWeek = "Wk " + currentWeek + "-" + LocalDate.now().getYear();
           webDriverHelpers.selectFromCombobox(EPI_WEEK_COMBOBOX_POPUP, currentEpiWeek);
+        });
+
+    And(
+        "^I set (\\d+) as the quantity for Snake Bite suspected cases in Create a new aggregated report$",
+        (Integer quantity) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SNAKE_BITE_SUSPECTED_CASES_INPUT);
+          webDriverHelpers.fillInWebElement(
+              SNAKE_BITE_SUSPECTED_CASES_INPUT, String.valueOf(quantity));
+        });
+    When(
+        "^I close popup message window in Create New Aggregate Report popup$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POPUP_MESSAGE_WINDOW);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_MESSAGE_WINDOW);
+        });
+    And(
+        "^I check that District combobox is disabled in Create New Aggregate Report popup$",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(DISTRICT_COMBOBOX_POPUP),
+              "District combobox is enabled");
+          softly.assertAll();
         });
   }
 

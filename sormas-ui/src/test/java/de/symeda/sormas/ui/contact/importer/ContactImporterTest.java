@@ -268,7 +268,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		boolean foundOona = false;
 
 		for (ContactDto contact : contacts) {
-			PersonDto person = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			PersonDto person = getPersonFacade().getByUuid(contact.getPerson().getUuid());
 			if ("Otto".equals(person.getFirstName())) {
 				foundOtto = true;
 				assertTrue(CollectionUtils.isEmpty(person.getAddresses()));
