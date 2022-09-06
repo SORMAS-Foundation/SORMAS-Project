@@ -367,11 +367,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
-	public List<Person> getAllAfter(Date date) {
-		return getAllAfter(date, null, null);
-	}
-
-	@Override
 	public List<Person> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		long startTime = DateHelper.startTime();
