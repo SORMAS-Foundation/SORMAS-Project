@@ -18,6 +18,15 @@ public class MSersDirectoryPage {
   public static final By DELETE_ICON = By.xpath("(//div[@class=\"component-wrap\"]//div)[1]");
   public static final By EDIT_ICON = By.xpath("(//div[@class=\"component-wrap\"]//div)[1]");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
+  public static final By POINT_OF_ENTRY_COMBOBOX = By.cssSelector("#pointOfEntry div");
+  public static final By FACILITY_COMBOBOX = By.cssSelector("#healthFacility div");
+  public static final By DISTRICT_COMBOBOX = By.cssSelector("#district div");
+  public static final By REGION_COMBOBOX = By.cssSelector("#region div");
+  public static final By GROUPING_COMBOBOX = By.xpath("(//div[@class='v-filterselect-button'])[1]");
+  public static final By GROUPING_COMBOBOX_INPUT =
+      By.xpath("(//div[@class='v-filterselect-button'])[1]/..//preceding-sibling::input");
+  public static final By SHOW_ROWS_FOR_DISEASES_LABEL =
+      By.cssSelector("input[type='checkbox'] + label");
 
   public static By getEditButtonByIndex(int idx) {
     return By.xpath(
@@ -32,4 +41,8 @@ public class MSersDirectoryPage {
       By.cssSelector("[id='actionApplyFilters']");
   public static final By FIRST_AGGREGATED_REPORT_EDIT_BUTTON =
       By.cssSelector(".v-grid-row-has-data div");
+
+  public static By getColumnSelectorByName(String name) {
+    return By.xpath(String.format("//div[text()=\"%s\"]", name));
+  }
 }
