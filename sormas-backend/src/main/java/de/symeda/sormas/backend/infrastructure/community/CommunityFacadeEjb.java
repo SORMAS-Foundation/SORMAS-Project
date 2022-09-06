@@ -19,8 +19,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -408,5 +410,14 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		protected CommunityFacadeEjbLocal(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
 			super(service, featureConfiguration);
 		}
+	}
+
+	public static Set<CommunityReferenceDto> toReferenceDto(Set<Community> community) {
+		Set<CommunityReferenceDto> dtos = new HashSet<CommunityReferenceDto>();
+		for(Community com : community) {	
+			CommunityReferenceDto dto = new CommunityReferenceDto(com.getUuid(), com.toString(), com.getExternalId(), com.getClusterNumber());	
+			dtos.add(dto);
+		}
+		return dtos;
 	}
 }

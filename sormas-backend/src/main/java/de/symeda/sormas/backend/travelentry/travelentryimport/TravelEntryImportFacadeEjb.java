@@ -175,7 +175,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		Disease userDisease = currentUser.getLimitedDisease();
 		Region userRegion = currentUser.getRegion();
 		District userDistrict = currentUser.getDistrict();
-		Community userCommunity = currentUser.getCommunity();
+		Community userCommunity = null;
 		PointOfEntry userPoe = currentUser.getPointOfEntry();
 
 		if (userDisease != null) {

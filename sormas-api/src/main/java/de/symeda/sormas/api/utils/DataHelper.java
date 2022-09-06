@@ -52,6 +52,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
 
+
 public final class DataHelper {
 
 	private DataHelper() {
@@ -60,7 +61,7 @@ public final class DataHelper {
 
 	public static String createUuid() {
 
-		//uuid = java.util.UUID.randomUUID().toString();
+		// uuid = java.util.UUID.randomUUID().toString();
 		java.util.UUID randomUuid = java.util.UUID.randomUUID();
 		byte[] bytes = longToBytes(randomUuid.getLeastSignificantBits(), randomUuid.getMostSignificantBits());
 		String uuid = Base32.encode(bytes, 6);
@@ -144,19 +145,10 @@ public final class DataHelper {
 	 */
 	public static boolean isValueType(Class<?> type) {
 
-		return (type.isPrimitive() && type != void.class)
-			|| type.isEnum()
-			|| type == Double.class
-			|| type == Float.class
-			|| type == Long.class
-			|| type == Integer.class
-			|| type == Short.class
-			|| type == Character.class
-			|| type == Byte.class
-			|| type == Boolean.class
-			|| type == String.class
-			|| type == Date.class
-			|| type.isAssignableFrom(DiseaseVariant.class);
+		return (type.isPrimitive() && type != void.class) || type.isEnum() || type == Double.class
+				|| type == Float.class || type == Long.class || type == Integer.class || type == Short.class
+				|| type == Character.class || type == Byte.class || type == Boolean.class || type == String.class
+				|| type == Date.class || type.isAssignableFrom(DiseaseVariant.class);
 	}
 
 	public static byte[] longToBytes(long x, long y) {
@@ -228,7 +220,9 @@ public final class DataHelper {
 	}
 
 	public static BigDecimal getTruncatedBigDecimal(BigDecimal number) {
-		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0, RoundingMode.HALF_UP) : number;
+		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0
+				? number.setScale(0, RoundingMode.HALF_UP)
+				: number;
 	}
 
 	public static List<Integer> buildIntegerList(int min, int max) {
@@ -258,8 +252,8 @@ public final class DataHelper {
 	}
 
 	/**
-	 * Returns a String that prints all numbers from 0 to 12 spelled out. Higher numbers
-	 * are simply transformed into a String.
+	 * Returns a String that prints all numbers from 0 to 12 spelled out. Higher
+	 * numbers are simply transformed into a String.
 	 */
 	public static String parseNumberToString(int number) {
 
@@ -399,17 +393,13 @@ public final class DataHelper {
 			return PersonHelper.buildBurialInfoString((BurialInfoDto) value, userLanguage);
 		} else if (value instanceof AgeAndBirthDateDto) {
 			AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
-			return PersonHelper.getAgeAndBirthdateString(
-				ageAndBirthDate.getAge(),
-				ageAndBirthDate.getAgeType(),
-				ageAndBirthDate.getDateOfBirthDD(),
-				ageAndBirthDate.getDateOfBirthMM(),
-				ageAndBirthDate.getDateOfBirthYYYY(),
-				userLanguage);
+			return PersonHelper.getAgeAndBirthdateString(ageAndBirthDate.getAge(), ageAndBirthDate.getAgeType(),
+					ageAndBirthDate.getDateOfBirthDD(), ageAndBirthDate.getDateOfBirthMM(),
+					ageAndBirthDate.getDateOfBirthYYYY(), userLanguage);
 		} else if (value instanceof BirthDateDto) {
 			BirthDateDto birthDate = (BirthDateDto) value;
-			return PersonHelper
-				.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY(), userLanguage);
+			return PersonHelper.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(),
+					birthDate.getDateOfBirthYYYY(), userLanguage);
 		} else {
 			return value.toString();
 		}
@@ -449,5 +439,13 @@ public final class DataHelper {
 
 	public static String getPhoneNumberValidationRegex() {
 		return ".*[a-zA-Z].*";
+	}
+
+	public static boolean isSame(Set<?> community, Set<?> community2) {
+		if (!community.containsAll(community2)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

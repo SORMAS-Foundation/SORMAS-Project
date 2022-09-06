@@ -361,7 +361,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria.setArea(user.getArea());
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
-		criteria.setCommunity(user.getCommunity());
+		criteria.setCommunity(null); //set to null for the initial filter bar
 		filterForm = new CampaignFormDataFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter() && campaignSelector == null) {

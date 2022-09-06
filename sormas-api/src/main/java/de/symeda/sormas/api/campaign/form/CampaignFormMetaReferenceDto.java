@@ -32,29 +32,29 @@ public class CampaignFormMetaReferenceDto extends ReferenceDto {
 	private FormAccess formCategory;
 
 	public CampaignFormMetaReferenceDto() {
-		 System.out.println("00000000000000000000000000000000");
+		// System.out.println("00000000000000000000000000000000");
 	}
 
 	public CampaignFormMetaReferenceDto(String uuid) {
-		 System.out.println("11111111111111");
+		// System.out.println("11111111111111");
 		setUuid(uuid);
 	}
 
 	public CampaignFormMetaReferenceDto(String uuid, String caption) {
-		 System.out.println("333333333333333333333333333333333");
+		// System.out.println("333333333333333333333333333333333");
 		setUuid(uuid);
 		setCaption(caption);
 	}
 
 	public CampaignFormMetaReferenceDto(String uuid, String caption, String type) {
-		 System.out.println("44444444444444444444444444444444444");
+		// System.out.println("44444444444444444444444444444444444");
 		setUuid(uuid);
 		setCaption(caption);
 		setFormType(type);
 	}
 	
 	public CampaignFormMetaReferenceDto(String uuid, String caption, String type, FormAccess access) {
-		 System.out.println("555555555555555555555555555555555555555");
+		// System.out.println("555555555555555555555555555555555555555");
 		setUuid(uuid);
 		setCaption(caption);
 		setFormType(type);

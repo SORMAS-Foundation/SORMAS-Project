@@ -31,6 +31,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -117,7 +118,7 @@ public class User extends AbstractDomainObject {
 	private Region region;
 	private District district;
 	// community of community informant
-	private Community community;
+	private Set<Community> community;
 	// facility of hospital informant
 	private Facility healthFacility;
 	// laboratory of lab user
@@ -338,12 +339,12 @@ public class User extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
-	public Community getCommunity() {
+	@ManyToMany(cascade = {})
+	public Set<Community> getCommunity() {
 		return community;
 	}
 
-	public void setCommunity(Community community) {
+	public void setCommunity(Set<Community> community) {
 		this.community = community;
 	}
 

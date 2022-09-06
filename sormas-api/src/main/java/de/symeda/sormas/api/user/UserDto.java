@@ -104,7 +104,7 @@ public class UserDto extends EntityDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	// community of community informant
-	private CommunityReferenceDto community;
+	private Set<CommunityReferenceDto> community;
 	// facility of informant
 	private FacilityReferenceDto healthFacility;
 	// laboratory of lab user
@@ -265,11 +265,11 @@ public class UserDto extends EntityDto {
 		this.district = district;
 	}
 
-	public CommunityReferenceDto getCommunity() {
+	public Set<CommunityReferenceDto> getCommunity() {
 		return community;
 	}
 
-	public void setCommunity(CommunityReferenceDto community) {
+	public void setCommunity(Set<CommunityReferenceDto> community) {
 		this.community = community;
 	}
 

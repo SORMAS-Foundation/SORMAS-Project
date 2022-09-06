@@ -159,7 +159,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		final AreaReferenceDto userArea = user.getArea();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
-		final CommunityReferenceDto userCommunity = user.getCommunity();
+		final CommunityReferenceDto userCommunity = null; //set to null since users can have more than one community
 		// final ReferenceDto formType;
 
 		if (userArea != null) {
