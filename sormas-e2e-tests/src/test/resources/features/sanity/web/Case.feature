@@ -1780,7 +1780,7 @@ Feature: Case end to end tests
      Then I click on the The Eye Icon located in the Shares Page
      And I check if received case id is equal with sent
 
-   @issue=SORDEV-10230 @env_main
+   @tmsLink=SORDEV-10230 @env_main
       Scenario: Test Archived entities should always be read-only
       Then I log in as a Admin User
       And I click on the Cases button from navbar
