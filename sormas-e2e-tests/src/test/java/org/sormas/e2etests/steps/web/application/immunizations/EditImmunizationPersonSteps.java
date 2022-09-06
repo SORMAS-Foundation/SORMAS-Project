@@ -68,7 +68,10 @@ public class EditImmunizationPersonSteps implements En {
 
     When(
         "I click on Search case in Search specific case popup in immunization Link Case",
-        () -> webDriverHelpers.doubleClickOnWebElementBySelector(SEARCH_SPECIFIC_CASE_BUTTON));
+        () ->{
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_SPECIFIC_CASE_BUTTON);
+            webDriverHelpers.doubleClickOnWebElementBySelector(SEARCH_SPECIFIC_CASE_BUTTON);
+        });
 
     When(
         "I check if case was found in Link Case",
