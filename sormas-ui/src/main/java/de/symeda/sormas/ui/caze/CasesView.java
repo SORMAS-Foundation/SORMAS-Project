@@ -229,7 +229,7 @@ public class CasesView extends AbstractView {
 	private CaseCriteria getDefaultCriteria() {
 		CaseCriteria criteria = new CaseCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
-		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+		if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
 			criteria.setWithOwnership(true);
 		}
 
@@ -634,7 +634,7 @@ public class CasesView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+			if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
 				ComboBox ownershipFilter = ComboBoxHelper.createComboBoxV7();
 				ownershipFilter.setId("ownershipStatus");
 				ownershipFilter.setWidth(140, Unit.PIXELS);
