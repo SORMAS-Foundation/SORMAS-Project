@@ -83,7 +83,7 @@ public class CasePopupGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseDataDto caseDataDto = (CaseDataDto) itemId;
-				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
+				PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(caseDataDto.getPerson().getUuid());
 				return personDto.getFirstName();
 			}
 
@@ -98,7 +98,7 @@ public class CasePopupGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseDataDto caseDataDto = (CaseDataDto) itemId;
-				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
+				PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(caseDataDto.getPerson().getUuid());
 				return personDto.getLastName();
 			}
 

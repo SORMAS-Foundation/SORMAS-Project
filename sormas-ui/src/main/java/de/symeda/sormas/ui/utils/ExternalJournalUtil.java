@@ -324,7 +324,7 @@ public class ExternalJournalUtil {
 			public void accept(Boolean forceDelete) {
 				if (forceDelete) {
 					person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
-					FacadeProvider.getPersonFacade().savePerson(person);
+					FacadeProvider.getPersonFacade().save(person);
 					SormasUI.refreshView();
 				}
 			}

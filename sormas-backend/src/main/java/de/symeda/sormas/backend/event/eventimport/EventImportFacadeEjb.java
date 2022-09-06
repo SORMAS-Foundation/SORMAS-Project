@@ -147,12 +147,12 @@ public class EventImportFacadeEjb implements EventImportFacade {
 			event = eventFacade.save(event);
 
 			for (EventParticipantDto eventParticipant : eventParticipants) {
-				PersonDto existingPerson = personFacade.getPersonByUuid(eventParticipant.getPerson().getUuid());
+				PersonDto existingPerson = personFacade.getByUuid(eventParticipant.getPerson().getUuid());
 				// Check if the person already exists
 				// In that case it would means that the person related to the event participant were deduped by the user
 				// So no need to persist an already existing person
 				if (existingPerson == null) {
-					personFacade.savePerson(eventParticipant.getPerson());
+					personFacade.save(eventParticipant.getPerson());
 				}
 				eventParticipantFacade.save(eventParticipant);
 			}

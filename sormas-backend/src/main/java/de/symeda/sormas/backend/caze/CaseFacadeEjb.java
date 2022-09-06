@@ -1467,7 +1467,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CaseDataDto caseDto = coreAndPersonDto.getCoreData();
 		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
 		if (coreAndPersonDto.getPerson() != null) {
-			PersonDto newlyCreatedPersonDto = personFacade.savePerson(coreAndPersonDto.getPerson());
+			PersonDto newlyCreatedPersonDto = personFacade.save(coreAndPersonDto.getPerson());
 			caseDto.setPerson(newlyCreatedPersonDto.toReference());
 			savedCoreAndPersonDto.setPerson(newlyCreatedPersonDto);
 		}
@@ -2430,7 +2430,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			if (newCase.getOutcome() == CaseOutcome.DECEASED) {
 				if (newCase.getPerson().getPresentCondition() != PresentCondition.DEAD
 					&& newCase.getPerson().getPresentCondition() != PresentCondition.BURIED) {
-					PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+					PersonDto existingPerson = PersonFacadeEjb.toPersonDto(newCase.getPerson());
 					newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
 					newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 					newCase.getPerson().setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
@@ -2442,7 +2442,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			} else if ((newCase.getOutcome() == CaseOutcome.NO_OUTCOME || newCase.getOutcome() == CaseOutcome.RECOVERED)
 				&& existingCase.getOutcome() == CaseOutcome.DECEASED) {
 				// Case was put "back alive"
-				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+				PersonDto existingPerson = PersonFacadeEjb.toPersonDto(newCase.getPerson());
 				boolean withinDateThreshold = newCase.getReportDate().before(DateHelper.addDays(existingPerson.getDeathDate(), 30))
 					&& newCase.getReportDate().after(DateHelper.subtractDays(existingPerson.getDeathDate(), 30));
 
@@ -2476,7 +2476,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			&& newCase.getPerson().getCauseOfDeathDisease() == existingCase.getDisease()) {
 			// outcomeDate of a deceased case was changed, but person is already considered dead
 			// update the deathdate of the person
-			PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+			PersonDto existingPerson = PersonFacadeEjb.toPersonDto(newCase.getPerson());
 			newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 			personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 		} else if (existingCase == null) {
@@ -2485,7 +2485,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				&& newCase.getPerson().getPresentCondition() != PresentCondition.BURIED
 				&& newCase.getPerson().getPresentCondition() != PresentCondition.DEAD) {
 				// person is alive but case has outcome deceased
-				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+				PersonDto existingPerson = PersonFacadeEjb.toPersonDto(newCase.getPerson());
 				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 				newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
 				newCase.getPerson().setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
@@ -3546,8 +3546,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
-			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
-			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
+			PersonDto leadPerson = personFacade.getByUuid(leadCaseData.getPerson().getUuid());
+			PersonDto otherPerson = personFacade.getByUuid(otherCaseData.getPerson().getUuid());
 			personFacade.mergePerson(leadPerson, otherPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
@@ -4146,7 +4146,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			.map(
 				(casePersonUuids) -> new CasePersonDto(
 					getCaseDataByUuid((String) casePersonUuids[0]),
-					personFacade.getPersonByUuid((String) casePersonUuids[1])))
+					personFacade.getByUuid((String) casePersonUuids[1])))
 			.collect(Collectors.toList());
 	}
 

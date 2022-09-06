@@ -84,6 +84,7 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.S2SOwnershipStatusFilter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
@@ -135,10 +136,7 @@ public class ContactsView extends AbstractView {
 		if (viewConfiguration.getViewType() == null) {
 			viewConfiguration.setViewType(ContactsViewType.CONTACTS_OVERVIEW);
 		}
-		criteria = ViewModelProviders.of(ContactsView.class).get(ContactCriteria.class);
-		if (criteria.getRelevanceStatus() == null) {
-			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-		}
+		criteria = ViewModelProviders.of(ContactsView.class).get(ContactCriteria.class, getDefaultCriteria());
 
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			if (criteria.getFollowUpVisitsInterval() == null) {
@@ -353,6 +351,16 @@ public class ContactsView extends AbstractView {
 		addComponent(gridLayout);
 	}
 
+	private ContactCriteria getDefaultCriteria() {
+		ContactCriteria criteria = new ContactCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE);
+
+		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+			criteria.setWithOwnership(true);
+		}
+
+		return criteria;
+	}
+
 	public VerticalLayout createFilterBar() {
 		VerticalLayout filterLayout = new VerticalLayout();
 		filterLayout.setSpacing(false);
@@ -440,6 +448,21 @@ public class ContactsView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
+			if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+				ComboBox ownershipFilter = ComboBoxHelper.createComboBoxV7();
+				ownershipFilter.setId("ownershipStatus");
+				ownershipFilter.setWidth(140, Unit.PIXELS);
+				ownershipFilter.setNullSelectionAllowed(false);
+				ownershipFilter.addItems((Object[]) S2SOwnershipStatusFilter.values());
+				ownershipFilter.setValue(S2SOwnershipStatusFilter.fromCriteriaValue(criteria.getWithOwnership()));
+				ownershipFilter.addValueChangeListener(e -> {
+					S2SOwnershipStatusFilter status = (S2SOwnershipStatusFilter) e.getProperty().getValue();
+					criteria.setWithOwnership(status.getCriteriaValue());
+					navigateTo(criteria);
+				});
+				actionButtonsLayout.addComponent(ownershipFilter);
+			}
+
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 

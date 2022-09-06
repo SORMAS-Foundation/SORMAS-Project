@@ -612,6 +612,43 @@ Feature: Vaccination tests
     And I click to edit 2 vaccination on Edit Contact page
     And I check that displayed vaccination form has empty vaccination date and name
 
+  @tmsLink=SORDEV-12127 @env_de
+  Scenario: Test Vaccinations without a "vaccination date" should also be marked as relevant and included in the status calculation (Case)
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data for DE version with date 16 days ago
+    And I click NEW VACCINATION button for DE
+    And I change the report vaccination date for minus 17 day from today
+    And I fill new vaccination data in new Vaccination form for DE
+    And I remove the vaccination date in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "enabled" on Edit case page
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I change the report vaccination date for minus 9 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "enabled" on Edit case page
+    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I change the report vaccination date for minus 1 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "greyed out" on Edit case page
+    And I navigate to symptoms tab
+    And I set Fever Symptoms to "JA" on the Symptoms tab
+    And I set Date of symptom onset to 15 days before today
+    And I save the Symptoms data
+    And I navigate to case tab
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "enabled" on Edit case page
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I change the report vaccination date for minus 0 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "enabled" on Edit case page
+
   @tmsLink=SORDEV-12286 @env_de
   Scenario: Test Vaccinations without a "vaccination date" should also be marked as relevant and included in the status calculation (Contact)
     Given I log in as a Admin User
