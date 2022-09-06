@@ -14,16 +14,16 @@ Feature: mSERS functionalities
     And I fill a new aggregate report with specific data
     And I click to save aggregated report
     And I navigate to Report data tab
-    And I set Epi Year from filter to "2000"
-    Then I set Epi week from filter to "Wk 1-2000 (12/27 - 1/2)"
-    And I set Epi Year to filter to "2000"
-    Then I set Epi week to filter to "Wk 2-2000 (1/3 - 1/9)"
+    And I set Epi Year from filter to "2000" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2000 (12/27 - 1/2)" in mSers directory page
+    And I set Epi Year to filter to "2000" in mSers directory page
+    Then I set Epi week to filter to "Wk 2-2000 (1/3 - 1/9)" in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    And I set Epi Year from filter to "2003"
-    Then I set Epi week from filter to "Wk 1-2003 (12/30 - 1/5)"
-    And I set Epi Year to filter to "2003"
-    Then I set Epi week to filter to "Wk 2-2003 (1/6 - 1/12)"
+    And I set Epi Year from filter to "2003" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2003 (12/30 - 1/5)" in mSers directory page
+    And I set Epi Year to filter to "2003" in mSers directory page
+    Then I set Epi week to filter to "Wk 2-2003 (1/6 - 1/12)" in mSers directory page
     And I click on the APPLY FILTERS button
     And I check that number of results in grid in mSers directory greater than 1
     Then I click to edit 1 result in mSers directory page
@@ -43,8 +43,8 @@ Feature: mSERS functionalities
     And I fill a new aggregate report with specific data
     And I click to save aggregated report
     And I navigate to Report data tab
-    And I set Epi Year from filter to "2003"
-    Then I set Epi week from filter to "Wk 1-2003 (12/30 - 1/5)"
+    And I set Epi Year from filter to "2003" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2003 (12/30 - 1/5)" in mSers directory page
     And I click on the APPLY FILTERS button
     And I check that number of results in grid in mSers directory greater than 1
     Then I click to edit 1 result in mSers directory page
@@ -68,8 +68,8 @@ Feature: mSERS functionalities
     Then I check if message about duplicated reports is visible
     And I click to save aggregated report
     And I navigate to Report data tab
-    And I set Epi Year from filter to "2004"
-    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)"
+    And I set Epi Year from filter to "2004" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)" in mSers directory page
     And I click on checkbox to display only duplicate reports
     And I click on the APPLY FILTERS button
     Then I check if there are delete and edit buttons for report and duplicates in the grid
@@ -89,100 +89,100 @@ Feature: mSERS functionalities
     And I fill a new aggregate report with specific data for one disease
     And I click to save aggregated report
     And I navigate to Report data tab
-    Then I select ARI (Acute Respiratory Infections) disease from Disease combobox
+    Then I select ARI (Acute Respiratory Infections) disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Buruli Ulcer disease from Disease combobox
+    Then I select Buruli Ulcer disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Chikungunya disease from Disease combobox
+    Then I select Chikungunya disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Diarrhea w/ Blood (Shigella) disease from Disease combobox
+    Then I select Diarrhea w/ Blood (Shigella) disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Diarrhea w/ Dehydration (< 5) disease from Disease combobox
+    Then I select Diarrhea w/ Dehydration (< 5) disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Diphteria disease from Disease combobox
+    Then I select Diphteria disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select FHA (Functional Hypothalamic Amenorrhea) disease from Disease combobox
+    Then I select FHA (Functional Hypothalamic Amenorrhea) disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select HIV disease from Disease combobox
+    Then I select HIV disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Leprosy disease from Disease combobox
+    Then I select Leprosy disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Leprosy disease from Disease combobox
+    Then I select Leprosy disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Lymphatic Filariasis disease from Disease combobox
+    Then I select Lymphatic Filariasis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Malaria disease from Disease combobox
+    Then I select Malaria disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Maternal Deaths disease from Disease combobox
+    Then I select Maternal Deaths disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Neonatal Tetanus disease from Disease combobox
+    Then I select Neonatal Tetanus disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Non-Neonatal Tetanus disease from Disease combobox
+    Then I select Non-Neonatal Tetanus disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Onchocerciasis disease from Disease combobox
+    Then I select Onchocerciasis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Perinatal Deaths disease from Disease combobox
+    Then I select Perinatal Deaths disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Pertussis disease from Disease combobox
+    Then I select Pertussis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Post-immunization adverse events mild disease from Disease combobox
+    Then I select Post-immunization adverse events mild disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Post-immunization adverse events severe disease from Disease combobox
+    Then I select Post-immunization adverse events severe disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Post-immunization adverse events severe disease from Disease combobox
+    Then I select Post-immunization adverse events severe disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Rubella disease from Disease combobox
+    Then I select Rubella disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Schistosomiasis disease from Disease combobox
+    Then I select Schistosomiasis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Snake Bite disease from Disease combobox
+    Then I select Snake Bite disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Soil-Transmitted Helminths disease from Disease combobox
+    Then I select Soil-Transmitted Helminths disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Trachoma disease from Disease combobox
+    Then I select Trachoma disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Trypanosomiasis disease from Disease combobox
+    Then I select Trypanosomiasis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Tuberculosis disease from Disease combobox
+    Then I select Tuberculosis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Typhoid Fever disease from Disease combobox
+    Then I select Typhoid Fever disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Yaws and Endemic Syphilis disease from Disease combobox
+    Then I select Yaws and Endemic Syphilis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Yaws and Endemic Syphilis disease from Disease combobox
+    Then I select Yaws and Endemic Syphilis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Acute Viral Hepatitis disease from Disease combobox
+    Then I select Acute Viral Hepatitis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 1
     Then I click to edit 1 result in mSers directory page
@@ -202,8 +202,8 @@ Feature: mSERS functionalities
     Then I check if message about duplicated reports is visible
     And I click to save aggregated report
     And I navigate to Report data tab
-    And I set Epi Year from filter to "2004"
-    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)"
+    And I set Epi Year from filter to "2004" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)" in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 2
     Then I click to edit 1 result in mSers directory page
@@ -271,43 +271,43 @@ Feature: mSERS functionalities
     And I click on the APPLY FILTERS button
     And I check that number of results in grid in mSers directory greater than 1
     Then I click Show 0-rows for grouping checkbox
-    And I select Baden-Württemberg from Region combobox
+    And I select Baden-Württemberg from Region combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 1
-    And I select Bayern from Region combobox
+    And I select Bayern from Region combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    And I select Baden-Württemberg from Region combobox
-    And I select LK Alb-Donau-Kreis from District combobox
+    And I select Baden-Württemberg from Region combobox in mSers directory page
+    And I select LK Alb-Donau-Kreis from District combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 1
-    And I select Baden-Württemberg from Region combobox
-    And I select LK Biberach from District combobox
+    And I select Baden-Württemberg from Region combobox in mSers directory page
+    And I select LK Biberach from District combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    And I select Voreingestellte Bundesländer from Region combobox
-    And I select Voreingestellter Landkreis from District combobox
-    And I select Standard Einrichtung from Facility combobox
+    And I select Voreingestellte Bundesländer from Region combobox in mSers directory page
+    And I select Voreingestellter Landkreis from District combobox in mSers directory page
+    And I select Standard Einrichtung from Facility combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
     And I click on the RESET FILTERS button from Event
-    And I select Voreingestellte Bundesländer from Region combobox
-    And I select Voreingestellter Landkreis from District combobox
-    And I select Voreingestellter Flughafen from Point Of Entry combobox
+    And I select Voreingestellte Bundesländer from Region combobox in mSers directory page
+    And I select Voreingestellter Landkreis from District combobox in mSers directory page
+    And I select Voreingestellter Flughafen from Point Of Entry combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
     And I click on the RESET FILTERS button from Event
-    Then I select Acute Viral Hepatitis disease from Disease combobox
+    Then I select Acute Viral Hepatitis disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 1
-    Then I select Buruli Ulcer disease from Disease combobox
+    Then I select Buruli Ulcer disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
     And I click on the RESET FILTERS button from Event
-    And I set Epi Year from filter to "2000"
-    Then I set Epi week from filter to "Wk 1-2000 (12/27 - 1/2)"
-    And I set Epi Year to filter to "2000"
-    Then I set Epi week to filter to "Wk 2-2000 (1/3 - 1/9)"
+    And I set Epi Year from filter to "2000" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2000 (12/27 - 1/2)" in mSers directory page
+    And I set Epi Year to filter to "2000" in mSers directory page
+    Then I set Epi week to filter to "Wk 2-2000 (1/3 - 1/9)" in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
     And I click on the RESET FILTERS button from Event

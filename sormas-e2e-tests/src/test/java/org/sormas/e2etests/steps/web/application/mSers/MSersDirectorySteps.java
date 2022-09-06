@@ -88,19 +88,19 @@ public class MSersDirectorySteps implements En {
         });
 
     When(
-        "I select ([^\"]*) disease from Disease combobox",
+        "I select ([^\"]*) disease from Disease combobox in mSers directory page",
         (String disease) -> webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease));
     When(
-        "I select ([^\"]*) from Region combobox",
+        "I select ([^\"]*) from Region combobox in mSers directory page",
         (String disease) -> webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, disease));
     When(
-        "I select ([^\"]*) from District combobox",
+        "I select ([^\"]*) from District combobox in mSers directory page",
         (String disease) -> webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, disease));
     When(
-        "I select ([^\"]*) from Facility combobox",
+        "I select ([^\"]*) from Facility combobox in mSers directory page",
         (String disease) -> webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, disease));
     When(
-        "I select ([^\"]*) from Point Of Entry combobox",
+        "I select ([^\"]*) from Point Of Entry combobox in mSers directory page",
         (String disease) -> webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_COMBOBOX, disease));
     When(
         "I click to Export aggregate report",
@@ -146,21 +146,21 @@ public class MSersDirectorySteps implements En {
           softly.assertAll();
         });
     When(
-        "I set Epi Year from filter to {string}",
+        "I set Epi Year from filter to {string} in mSers directory page",
         (String year) -> {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.clearComboboxInput(YEAR_FROM_INPUT);
           webDriverHelpers.selectFromCombobox(YEAR_FROM_COMOBOX, year);
         });
     When(
-        "I set Epi Year to filter to {string}",
+        "I set Epi Year to filter to {string} in mSers directory page",
         (String year) -> {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.clearComboboxInput(YEAR_TO_INPUT);
           webDriverHelpers.selectFromCombobox(YEAR_TO_COMOBOX, year);
         });
     When(
-        "I set Epi week from filter to {string}",
+        "I set Epi week from filter to {string} in mSers directory page",
         (String year) -> {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.selectFromCombobox(EPI_WEEK_FROM_COMOBOX, year);
@@ -173,7 +173,7 @@ public class MSersDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
         });
     When(
-        "I set Epi week to filter to {string}",
+        "I set Epi week to filter to {string} in mSers directory page",
         (String year) -> {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.selectFromCombobox(EPI_WEEK_TO_COMOBOX, year);
