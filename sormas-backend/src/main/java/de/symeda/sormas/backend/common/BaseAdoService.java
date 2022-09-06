@@ -143,20 +143,40 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
-		return getAll(filterBuilder, null);
-	}
+	public List<ADO> getList(FilterProvider<ADO> filterProvider, Integer batchSize) {
 
-	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder, Integer batchSize) {
+		long startTime = DateHelper.startTime();
+		logger.trace("getList started...");
 
+		// 1. Fetch ids, avoid duplicates with DISTINCT. Only fetch some attributes to avoid costly DISTINCT
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		CriteriaQuery<AdoAttributes> cq = cb.createQuery(AdoAttributes.class);
 		Root<ADO> from = cq.from(getElementClass());
-		Predicate filter = filterBuilder.apply(cb, from);
+
+		// SELECT
+		cq.multiselect(from.get(ADO.ID), from.get(ADO.UUID), from.get(ADO.CHANGE_DATE));
+
+		// FILTER
+		Predicate filter = filterProvider.provide(cb, cq, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+
+		cq.distinct(true);
+
+		List<AdoAttributes> attributes = getBatchedAttributesQueryResults(cb, cq, from, batchSize);
+		List<Long> ids = attributes.stream().map(e -> e.getId()).limit(batchSize == null ? Long.MAX_VALUE : batchSize).collect(Collectors.toList());
+		logger.trace(
+			"getList: Unique ids identified. batchSize:{}, attributes:{}, ids:{}, {} ms",
+			batchSize,
+			attributes.size(),
+			ids.size(),
+			DateHelper.durationMillies(startTime));
+
+		// 2. Fetch JPA entities by ids
+		List<ADO> adoResult = getByIds(ids);
+		logger.trace("getList finished. Fetched entities:{}, {} ms", adoResult.size(), DateHelper.durationMillies(startTime));
+		return adoResult;
 	}
 
 	public List<ADO> getAll(String orderProperty, boolean asc) {

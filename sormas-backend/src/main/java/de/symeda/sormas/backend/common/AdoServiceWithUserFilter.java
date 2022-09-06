@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.common;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,7 +13,6 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
@@ -47,41 +45,15 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 
 	public List<ADO> getAllAfter(Date since, Integer batchSize, String lastSynchronizedUuid) {
 
-		long startTime = DateHelper.startTime();
-		logger.trace("getAllAfter started...");
+		return getList((cb, cq, from) -> {
 
-		// 1. Fetch ids, avoid duplicates with DISTINCT. Only fetch some attributes to avoid costly DISTINCT
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<AdoAttributes> cq = cb.createQuery(AdoAttributes.class);
-		Root<ADO> root = cq.from(getElementClass());
+			Predicate filter = createRelevantDataFilter(cb, cq, from);
+			if (since != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, from, since, lastSynchronizedUuid));
+			}
 
-		// SELECT
-		cq.multiselect(root.get(ADO.ID), root.get(ADO.UUID), root.get(ADO.CHANGE_DATE));
-
-		// FILTER
-		Predicate filter = createRelevantDataFilter(cb, cq, root);
-		if (since != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, root, since, lastSynchronizedUuid));
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.distinct(true);
-
-		List<AdoAttributes> attributes = getBatchedAttributesQueryResults(cb, cq, root, batchSize);
-		List<Long> ids = attributes.stream().map(e -> e.getId()).limit(batchSize == null ? Long.MAX_VALUE : batchSize).collect(Collectors.toList());
-		logger.trace(
-			"getAllAfter: Unique ids identified. batchSize:{}, attributes:{}, ids:{}, {} ms",
-			batchSize,
-			attributes.size(),
-			ids.size(),
-			DateHelper.durationMillies(startTime));
-
-		// 2. Fetch JPA entities by ids
-		List<ADO> adoResult = getByIds(ids);
-		logger.trace("getAllAfter finished. Fetched entities:{}, {} ms", adoResult.size(), DateHelper.durationMillies(startTime));
-		return adoResult;
+			return filter;
+		}, batchSize);
 	}
 
 	public List<String> getAllUuids() {
