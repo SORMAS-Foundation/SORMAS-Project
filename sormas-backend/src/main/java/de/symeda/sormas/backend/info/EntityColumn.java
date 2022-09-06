@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -49,7 +51,7 @@ public enum EntityColumn {
 	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false, true, false),
 	CAPTION(256 * 30, EntityColumn::getCaption, false, true, false),
 	DESCRIPTION(256 * 60, EntityColumn::getDescription, true, true, false),
-	REQUIRED(256 * 10, EntityColumn::getRequired, false, true, false),
+	NOT_NULL(256 * 10, EntityColumn::getNotNull, false, true, false),
 	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false, true, false),
 	DISEASES(256 * 45, EntityColumn::getDiseases, true, true, false),
 	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false, true, false),
@@ -173,8 +175,13 @@ public enum EntityColumn {
 		return I18nProperties.getPrefixDescription(fieldData.getI18NPrefix(), fieldData.getField().getName(), "");
 	}
 
-	private static String getRequired(FieldData fieldData) {
+	private static String getNotNull(FieldData fieldData) {
+		// todo(@JonasCir) remove this once #4959 is implemented
 		if (fieldData.getField().getAnnotation(Required.class) == null) {
+			return null;
+		}
+
+		if (fieldData.getField().getAnnotation(NotNull.class) == null) {
 			return null;
 		}
 
