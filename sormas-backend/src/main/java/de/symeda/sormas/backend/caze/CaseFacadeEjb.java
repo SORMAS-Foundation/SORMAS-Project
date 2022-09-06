@@ -495,12 +495,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
-		return getAllActiveCasesAfter(date, null, null);
-	}
-
-	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<CaseDataDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();

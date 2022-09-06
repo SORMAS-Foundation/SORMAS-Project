@@ -230,23 +230,14 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date) {
-		return getAllActiveEventParticipantsAfter(date, null, null);
-	}
-
-	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<EventParticipantDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
 	}
 
 	@Override

@@ -56,8 +56,6 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 @Remote
 public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria> {
 
-	List<CaseDataDto> getAllActiveCasesAfter(Date date);
-
 	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
 
 	List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria);
@@ -100,8 +98,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef);
 
 	List<String> getAllActiveUuids();
-
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria);
 

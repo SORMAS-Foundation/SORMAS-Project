@@ -1549,7 +1549,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Date testStartDate = new Date();
 
 		// getAllActiveCases and getAllUuids should return length 1
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(1, getCaseFacade().getAllAfter(null).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
 		stubFor(
@@ -1562,7 +1562,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveCases and getAllUuids should return length 0
-		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(0, getCaseFacade().getAllAfter(null).size());
 		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 1
@@ -1571,7 +1571,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveCases and getAllUuids should return length 1
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(1, getCaseFacade().getAllAfter(null).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 0
@@ -1608,7 +1608,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		sample.setComment("one comment");
 		getSampleFacade().saveSample(sample);
 
-		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(0, getCaseFacade().getAllAfter(date).size());
 	}
 
 	@Test
