@@ -49,6 +49,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_ICON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_POPUP_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_VACCINATION_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
@@ -1240,6 +1241,33 @@ public class EditContactSteps implements En {
               "Diese Impfung ist f\u00FCr diesen Kontakt nicht relevant, weil das Datum der Impfung nach dem Datum des letzten Kontaktes oder dem Kontakt-Meldedatum liegt.",
               "Message is incorrect");
           softly.assertAll();
+        });
+
+    And(
+        "^I check that displayed vaccination name is equal to \"([^\"]*)\" on Edit contact page$",
+        (String expectedName) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(VACCINATION_CARD_VACCINATION_NAME);
+          String name = webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_NAME);
+          softly.assertEquals(
+              name,
+              "Impfstoffname: " + expectedName,
+              "Vaccination name is different than expected!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that displayed vaccination name is \"([^\"]*)\" on Edit contact page$",
+        (String activationState) -> {
+          switch (activationState) {
+            case "enabled":
+              Assert.assertTrue(
+                  webDriverHelpers.isElementEnabled(VACCINATION_CARD_VACCINATION_NAME),
+                  "Vaccination name is not enabled!");
+              break;
+            case "greyed out":
+              webDriverHelpers.isElementGreyedOut(VACCINATION_CARD_VACCINATION_NAME);
+              break;
+          }
         });
   }
 

@@ -199,7 +199,10 @@ public class CreateNewVaccinationSteps implements En {
 
     When(
         "I click NEW VACCINATION button for DE",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_VACCINATION_DE_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_VACCINATION_DE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(VACCINATION_DATE_INPUT);
+        });
 
     And(
         "^I fill new vaccination data in new Vaccination form with vaccination date (\\d+) days before the current day for DE$",
@@ -257,6 +260,14 @@ public class CreateNewVaccinationSteps implements En {
               vaccinationService.buildGeneratedVaccinationWithSpecificVaccinationDateDE(
                   vaccinationDate);
           fillVaccinationDate(vaccination.getVaccinationDate(), Locale.GERMAN);
+        });
+
+    And(
+        "^I change the report vaccination date for minus (\\d+) days from today on new Vaccination form$",
+        (Integer days) -> {
+          webDriverHelpers.scrollToElement(REPORT_DATE_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              REPORT_DATE_INPUT, formatterDE.format(LocalDate.now().minusDays(days)));
         });
   }
 
