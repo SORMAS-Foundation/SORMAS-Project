@@ -224,6 +224,7 @@ public enum UserRight {
 
 	SORMAS_TO_SORMAS_CLIENT(UserRightGroup.EXTERNAL),
 	SORMAS_TO_SORMAS_SHARE(UserRightGroup.EXTERNAL),
+	SORMAS_TO_SORMAS_PROCESS(UserRightGroup.EXTERNAL),
 
 	EXTERNAL_MESSAGE_VIEW(UserRightGroup.EXTERNAL),
 	EXTERNAL_MESSAGE_PROCESS(UserRightGroup.EXTERNAL, UserRight._EXTERNAL_MESSAGE_VIEW,
@@ -393,6 +394,7 @@ public enum UserRight {
 	public static final String _CAMPAIGN_FORM_DATA_EXPORT = "CAMPAIGN_FORM_DATA_EXPORT";
 	public static final String _BAG_EXPORT = "BAG_EXPORT";
 	public static final String _SORMAS_TO_SORMAS_SHARE = "SORMAS_TO_SORMAS_SHARE";
+	public static final String _SORMAS_TO_SORMAS_PROCESS = "SORMAS_TO_SORMAS_PROCESS";
 	public static final String _EXTERNAL_MESSAGE_VIEW = "EXTERNAL_MESSAGE_VIEW";
 	public static final String _EXTERNAL_MESSAGE_PROCESS = "EXTERNAL_MESSAGE_PROCESS";
 	public static final String _EXTERNAL_MESSAGE_DELETE = "EXTERNAL_MESSAGE_DELETE";

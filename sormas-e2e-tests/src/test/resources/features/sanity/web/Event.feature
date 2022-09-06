@@ -1301,3 +1301,16 @@ Feature: Create events
     Then I check the end of processing date in the archive popup
     And I navigate to EVENT PARTICIPANT from edit event page
     And I check event participant filter dropdown on event participant page when event is archived
+
+  @env_main @#7750
+  Scenario: Check the map functionality in the Edit Event Page
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a National User
+    Then I am accessing the event tab using the created event via api
+    Then I Verify The Eye Icon opening the Map is disabled in the Edit Event Page
+    And I Add the GPS Latitude and Longitude Values in the Edit Event Page
+    Then I Verify The Eye Icon opening the Map is enabled in the Edit Event Page
+    And I click on the The Eye Icon located in the Edit Event Page
+    Then I verify that the Map Container is now Visible in the Edit Event Page

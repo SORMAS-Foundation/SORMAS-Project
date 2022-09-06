@@ -35,6 +35,7 @@ import com.vaadin.v7.ui.TextArea;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -50,8 +51,7 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 
 	private final static List<String> defaultRightsOrder = Arrays.asList("_VIEW", "_EDIT", "_CREATE");
 
-	private static final String HTML_LAYOUT =
-		 fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
+	private static final String HTML_LAYOUT = fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
 		+ fluidRowLocs(UserRoleDto.LINKED_DEFAULT_USER_ROLE, VERSION_UPDATE_INFO_LOC)
 		+ fluidRowLocs(UserRoleDto.DESCRIPTION)
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
@@ -95,7 +95,7 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 
 		userRightCbSet = addField(UserRoleDto.USER_RIGHTS, CheckboxSet.class);
 		userRightCbSet.setCaption(null);
-		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString());
+		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString(), UserRight::getDescription);
 		userRightCbSet.addCheckboxValueChangeListener(e -> {
 			CheckBox checkbox = e.getCheckbox();
 			if (Boolean.TRUE.equals(checkbox.getValue())) {
@@ -135,5 +135,10 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 			this.<Field<Boolean>> getField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).setValue(templateRole.getHasAssociatedDistrictUser());
 			this.<Field<Boolean>> getField(UserRoleDto.PORT_HEALTH_USER).setValue(templateRole.isPortHealthUser());
 		}
+	}
+
+	@Override
+	DefaultUserRole getDefaultUserRole() {
+		return (DefaultUserRole) getField(UserRoleDto.LINKED_DEFAULT_USER_ROLE).getValue();
 	}
 }

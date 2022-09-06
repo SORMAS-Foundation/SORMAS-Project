@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.user;
 
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
@@ -25,4 +26,6 @@ public abstract class AbstractUserRoleForm extends AbstractEditForm<UserRoleDto>
 	}
 
 	abstract void applyTemplateData(UserRoleDto dto);
+
+	abstract DefaultUserRole getDefaultUserRole();
 }

@@ -54,17 +54,17 @@ public class StepsLogger implements StepLifecycleListener {
   }
 
   @Override
-  public void afterStepUpdate(final StepResult result) {
+  public void afterStepUpdate(final StepResult stepResult) {
     if (takeScreenshotAfterStep) {
       takeScreenshot();
     }
     if (isScreenshotEnabled && driver != null) {
-      if (!result.getStatus().value().contains("pass")) {
+      if (!stepResult.getStatus().value().contains("pass")) {
         attachConsoleLog();
       }
     }
     isScreenshotEnabled = true;
-    log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, result.getName());
+    log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, stepResult.getName());
   }
 
   @SneakyThrows

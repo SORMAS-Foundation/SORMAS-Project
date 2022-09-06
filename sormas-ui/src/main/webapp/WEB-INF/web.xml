@@ -601,6 +601,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>SORMAS_TO_SORMAS_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>EXTERNAL_MESSAGE_VIEW</role-name>
 	</security-role>
 

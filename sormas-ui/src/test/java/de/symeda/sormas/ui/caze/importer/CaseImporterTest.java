@@ -350,9 +350,9 @@ public class CaseImporterTest extends AbstractBeanTest {
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		PersonDto casePerson1 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-1").get(0).getPerson().getUuid());
-		PersonDto casePerson2 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-2").get(0).getPerson().getUuid());
-		PersonDto casePerson3 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-3").get(0).getPerson().getUuid());
+		PersonDto casePerson1 = getPersonFacade().getByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-1").get(0).getPerson().getUuid());
+		PersonDto casePerson2 = getPersonFacade().getByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-2").get(0).getPerson().getUuid());
+		PersonDto casePerson3 = getPersonFacade().getByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-3").get(0).getPerson().getUuid());
 
 		assertTrue(CollectionUtils.isEmpty(casePerson1.getAddresses()));
 		assertEquals("131", casePerson1.getAddress().getHouseNumber());

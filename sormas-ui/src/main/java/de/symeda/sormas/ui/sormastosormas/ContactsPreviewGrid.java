@@ -17,40 +17,40 @@ package de.symeda.sormas.ui.sormastosormas;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
-public class ContactsPreviewGrid extends Grid<SormasToSormasContactPreview> {
+public class ContactsPreviewGrid extends BasePreviewGrid<SormasToSormasContactPreview> {
 
 	private static final long serialVersionUID = -1209058174602542785L;
 
-	public ContactsPreviewGrid(List<SormasToSormasContactPreview> contacts) {
-		super(SormasToSormasContactPreview.class);
+	public ContactsPreviewGrid(List<SormasToSormasContactPreview> contacts, boolean isPendingRequest) {
+		super(
+			SormasToSormasContactPreview.class,
+			Captions.Contact,
+			uuid -> FacadeProvider.getContactFacade().exists(uuid),
+			uuid -> ControllerProvider.getContactController().navigateToData(uuid),
+			isPendingRequest);
 		setItems(contacts);
-
-		buildGrid();
 	}
 
-	private void buildGrid() {
-
-		setSizeFull();
-		setSelectionMode(Grid.SelectionMode.SINGLE);
-		setHeightMode(HeightMode.ROW);
+	@Override
+	protected void buildGrid() {
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
@@ -73,7 +73,7 @@ public class ContactsPreviewGrid extends Grid<SormasToSormasContactPreview> {
 				SormasToSormasContactPreview.CONTACT_STATUS,
 				SormasToSormasContactPreview.CONTACT_CLASSIFICATION,
 				SormasToSormasContactPreview.CONTACT_CATEGORY));
-		columnConfig.addAll(PreviewGridHelper.createPersonColumns(this, SormasToSormasContactPreview::getPerson));
+		columnConfig.addAll(createPersonColumns(SormasToSormasContactPreview::getPerson));
 		columnConfig.addAll(
 			Arrays.asList(
 				SormasToSormasContactPreview.REGION,
@@ -93,11 +93,5 @@ public class ContactsPreviewGrid extends Grid<SormasToSormasContactPreview> {
 			column.setCaption(
 				I18nProperties.findPrefixCaption(column.getId(), SormasToSormasContactPreview.I18N_PREFIX, SormasToSormasPersonPreview.I18N_PREFIX));
 		}
-	}
-
-	@Override
-	public void setItems(Collection<SormasToSormasContactPreview> items) {
-		super.setItems(items);
-		setHeightByRows(items.size() > 0 ? (Math.min(items.size(), 10)) : 1);
 	}
 }

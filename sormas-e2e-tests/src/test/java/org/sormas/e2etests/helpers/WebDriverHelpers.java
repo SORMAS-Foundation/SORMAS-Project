@@ -463,6 +463,15 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(selector).isEnabled();
   }
 
+  public boolean isElementEnabledAtAttributeLevel(By elementLocator) {
+    scrollToElement(elementLocator);
+    boolean isDisabled = getAttributeFromWebElement(elementLocator, "class").contains("disabled");
+    if (isDisabled) {
+      return false;
+    }
+    return true;
+  }
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info(PID + "Clicking on element: {}", byObject);

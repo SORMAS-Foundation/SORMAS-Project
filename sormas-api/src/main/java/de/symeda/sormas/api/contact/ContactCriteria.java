@@ -139,6 +139,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String reportingUserLike;
 	private String personLike;
 	private boolean excludeLimitedSyncRestrictions;
+	private Boolean withOwnership = true;
 
 	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
@@ -723,5 +724,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria excludeLimitedSyncRestrictions(boolean excludeLimitedSyncRestrictions) {
 		this.excludeLimitedSyncRestrictions = excludeLimitedSyncRestrictions;
 		return this;
+	}
+
+	@IgnoreForUrl
+	public Boolean getWithOwnership() {
+		return withOwnership;
+	}
+
+	public void setWithOwnership(Boolean withOwnership) {
+		this.withOwnership = withOwnership;
 	}
 }

@@ -51,7 +51,7 @@ public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 
 		this.removeAllComponents();
 
-		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contactDto.getPerson().getUuid());
+		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(contactDto.getPerson().getUuid());
 
 		final VerticalLayout firstColumn = new VerticalLayout();
 		firstColumn.setMargin(false);

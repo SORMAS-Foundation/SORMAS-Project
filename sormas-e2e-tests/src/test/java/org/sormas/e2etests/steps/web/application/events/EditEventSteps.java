@@ -83,14 +83,18 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_S
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EYE_ICON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_CATEGORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_GROUP_ID;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.GPS_LATITUDE_INPUT_EDIT_EVENT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.GPS_LONGITUDE_INPUT_EDIT_EVENT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_NAME_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_UUID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.IMPRESSION_TEST_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LABORATORY_DIAGNOSTIC_EVIDENCE_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LINK_EVENT_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.MAP_CONTAINER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DATA_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON;
@@ -1793,6 +1797,58 @@ public class EditEventSteps implements En {
         (Integer daysBeforeVaccinationDate) -> {
           LocalDate eventStartDate = LocalDate.now().minusDays(21 + daysBeforeVaccinationDate);
           fillStartDataDE(eventStartDate);
+        });
+
+    Then(
+        "^I Verify The Eye Icon opening the Map is ([^\"]*) in the Edit Event Page",
+        (String elementStatus) -> {
+          switch (elementStatus) {
+            case "disabled":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+              softly.assertFalse(
+                  webDriverHelpers.isElementEnabledAtAttributeLevel(EYE_ICON),
+                  "Eye Icon is not disabled in the Edit Event Page");
+              softly.assertAll();
+              break;
+            case "enabled":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+              softly.assertTrue(
+                  webDriverHelpers.isElementEnabledAtAttributeLevel(EYE_ICON),
+                  "Eye Icon is not Enabled in the Edit Event Page");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    And(
+        "^I Add the GPS Latitude and Longitude Values in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LATITUDE_INPUT_EDIT_EVENT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LONGITUDE_INPUT_EDIT_EVENT);
+          webDriverHelpers.fillInWebElement(
+              GPS_LATITUDE_INPUT_EDIT_EVENT,
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
+          webDriverHelpers.fillInWebElement(
+              GPS_LONGITUDE_INPUT_EDIT_EVENT,
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
+          webDriverHelpers.submitInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT);
+        });
+
+    And(
+        "^I click on the The Eye Icon located in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+          webDriverHelpers.clickOnWebElementBySelector(EYE_ICON);
+        });
+
+    Then(
+        "^I verify that the Map Container is now Visible in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+          softly.assertTrue(
+              webDriverHelpers.isElementEnabled(MAP_CONTAINER),
+              "Map Container is not displayed/enabled in edit Event Page");
+          softly.assertAll();
         });
 
     When(

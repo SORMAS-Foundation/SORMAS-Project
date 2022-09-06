@@ -21,7 +21,8 @@ import lombok.Getter;
 
 @Getter
 public enum HealthFacilityValues {
-  StandardEinrichtung("Standard Einrichtung");
+  StandardEinrichtung("Standard Einrichtung"),
+  OtherFacilityDE("Andere Einrichtung");
 
   private final String name;
 

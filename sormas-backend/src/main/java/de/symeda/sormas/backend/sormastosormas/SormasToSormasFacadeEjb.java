@@ -135,7 +135,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Transactional(rollbackOn = {
 		Exception.class })
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public void rejectRequest(ShareRequestDataType dataType, String uuid, String comment) throws SormasToSormasException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 
@@ -174,7 +174,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException {
 		getEntityInterface(dataType).acceptShareRequest(uuid);
 	}
@@ -182,7 +182,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	@Transactional(rollbackOn = Exception.class)
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE })
+		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public void revokeShare(String shareInfoUuid) throws SormasToSormasException {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByUuid(shareInfoUuid);
 
@@ -324,8 +325,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	@PermitAll
-	public boolean isFeatureEnabledForUser() {
+	public boolean isShareEnabledForUser() {
 		return userService.hasRight(UserRight.SORMAS_TO_SORMAS_SHARE) && isFeatureConfigured();
+	}
+
+	@Override
+	@PermitAll
+	public boolean isProcessingShareEnabledForUser() {
+		return userService.hasRight(UserRight.SORMAS_TO_SORMAS_PROCESS) && isFeatureConfigured();
 	}
 
 	@Override
@@ -337,25 +344,25 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	@PermitAll
 	public boolean isSharingCasesEnabledForUser() {
-		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES);
+		return isShareEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES);
 	}
 
 	@Override
 	@PermitAll
 	public boolean isSharingContactsEnabledForUser() {
-		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
+		return isShareEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
 	}
 
 	@Override
 	@PermitAll
 	public boolean isSharingEventsEnabledForUser() {
-		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EVENTS);
+		return isShareEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EVENTS);
 	}
 
 	@Override
 	@PermitAll
 	public boolean isSharingExternalMessagesEnabledForUser() {
-		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES);
+		return isShareEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES);
 	}
 
 	private SormasToSormasEntityInterface getEntityInterface(ShareRequestDataType dataType) {

@@ -48,8 +48,8 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 
 		container.addComponent(layout);
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser();
-		if (sormasToSormasEnabled || immunization.getSormasToSormasOriginInfo() != null) {
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser();
+		if (sormasToSormasEnabled || immunization.getSormasToSormasOriginInfo() != null || immunization.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);

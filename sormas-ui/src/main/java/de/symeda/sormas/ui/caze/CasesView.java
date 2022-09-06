@@ -100,6 +100,7 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.S2SOwnershipStatusFilter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
@@ -166,10 +167,7 @@ public class CasesView extends AbstractView {
 			viewConfiguration.setViewType(CasesViewType.DEFAULT);
 		}
 
-		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
-		if (criteria.getRelevanceStatus() == null) {
-			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-		}
+		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class, getDefaultCriteria());
 
 		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			if (criteria.getFollowUpVisitsInterval() == null) {
@@ -226,6 +224,16 @@ public class CasesView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private CaseCriteria getDefaultCriteria() {
+		CaseCriteria criteria = new CaseCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE);
+
+		if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
+			criteria.setWithOwnership(true);
+		}
+
+		return criteria;
 	}
 
 	private ExportConfigurationDto buildDetailedExportConfiguration() {
@@ -626,6 +634,21 @@ public class CasesView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
+			if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
+				ComboBox ownershipFilter = ComboBoxHelper.createComboBoxV7();
+				ownershipFilter.setId("ownershipStatus");
+				ownershipFilter.setWidth(140, Unit.PIXELS);
+				ownershipFilter.setNullSelectionAllowed(false);
+				ownershipFilter.addItems((Object[]) S2SOwnershipStatusFilter.values());
+				ownershipFilter.setValue(S2SOwnershipStatusFilter.fromCriteriaValue(criteria.getWithOwnership()));
+				ownershipFilter.addValueChangeListener(e -> {
+					S2SOwnershipStatusFilter status = (S2SOwnershipStatusFilter) e.getProperty().getValue();
+					criteria.setWithOwnership(status.getCriteriaValue());
+					navigateTo(criteria);
+				});
+				actionButtonsLayout.addComponent(ownershipFilter);
+			}
+
 			// Show active/archived/all dropdown
 			if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 

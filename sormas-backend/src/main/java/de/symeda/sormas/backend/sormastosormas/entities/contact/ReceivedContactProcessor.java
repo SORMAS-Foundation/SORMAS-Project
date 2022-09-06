@@ -67,7 +67,7 @@ public class ReceivedContactProcessor
 		handleIgnoredProperties(sharedData.getEntity(), contactFacade.toDto(existingData));
 		handleIgnoredProperties(
 			sharedData.getPerson(),
-			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
+			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toPersonDto(c.getPerson())).orElse(null));
 
 		ContactDto contact = sharedData.getEntity();
 		PersonDto person = sharedData.getPerson();

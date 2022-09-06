@@ -281,4 +281,16 @@ Feature: Edit Persons
     And I click on Travel Entry aggregation button in Person Directory for DE specific
     And I check that number of displayed Person results is 0
 
-
+  @#7751 @env_main
+  Scenario: Verify map functionality in the Edit Person Page
+    Given I log in as a National User
+    When I click on the Persons button from navbar
+    And I filter for persons who are alive
+    And I apply on the APPLY FILTERS button
+    And I click on first person in person directory
+    And I clear the GPS Latitude and Longitude Fields from the Edit Person Page
+    Then I Verify The Eye Icon opening the Map is disabled in the Edit Person Page
+    And I Add the GPS Latitude and Longitude Values in the Edit Person Page
+    Then I Verify The Eye Icon opening the Map is enabled in the Edit Person Page
+    And I click on the The Eye Icon located in the Edit Person Page
+    Then I verify that the Map Container is now Visible in the Edit Person Page
