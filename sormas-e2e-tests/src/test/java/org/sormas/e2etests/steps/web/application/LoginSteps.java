@@ -142,6 +142,21 @@ public class LoginSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
         });
+    Then(
+        "I login with last edited user on Keycloak Enabled Environment",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LoginPage.USER_NAME_INPUT, 100);
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_NAME_INPUT, EditUserSteps.collectedUser.getUserName());
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
+          log.info("Click on Login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+        });
 
     Given(
         "^I log in as ([^\"]*) in Keycloak enabled environment$",
