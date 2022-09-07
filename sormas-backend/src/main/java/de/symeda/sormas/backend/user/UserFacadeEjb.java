@@ -145,6 +145,8 @@ public class UserFacadeEjb implements UserFacade {
 		if (source == null) {
 			return null;
 		}
+		
+		System.out.println("45678765456789");
 
 		UserDto target = new UserDto();
 		DtoHelper.fillDto(target, source);
@@ -558,6 +560,8 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	private User fromDto(UserDto source, boolean checkChangeDate) {
+		
+		System.out.println("77777");
 
 		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 

@@ -413,6 +413,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	}
 
 	public static Set<CommunityReferenceDto> toReferenceDto(Set<Community> community) {
+		
 		Set<CommunityReferenceDto> dtos = new HashSet<CommunityReferenceDto>();
 		for(Community com : community) {	
 			CommunityReferenceDto dto = new CommunityReferenceDto(com.getUuid(), com.toString(), com.getExternalId(), com.getClusterNumber());	

@@ -195,10 +195,8 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 							+ com.getUuid());
 				}
 				communities.add(result);
-				return communities;
-			} else {
-				return null;
-			}
+				//return communities;
+			} 
 		}
 		return communities;
 	}
