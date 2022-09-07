@@ -475,7 +475,8 @@
       "clientRoles": {
         "realm-management": [
           "manage-realm",
-          "manage-users"
+          "manage-users",
+          "manage-clients"
         ],
         "account": [
           "manage-account",
