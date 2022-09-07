@@ -70,8 +70,16 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			"Off2",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		nationalEventUser =
-			creator.createUser(null, null, null, "National", "Event User", "National Event User", JurisdictionLevel.NATION, UserRight.EVENT_EDIT);
+		nationalEventUser = creator.createUser(
+			null,
+			null,
+			null,
+			"National",
+			"Event User",
+			"National Event User",
+			JurisdictionLevel.NATION,
+			UserRight.EVENT_VIEW,
+			UserRight.EVENT_EDIT);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}

@@ -134,7 +134,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		Function<Integer, DistrictReferenceDto> districtProvider = id -> districtFacade.getDistrictReferenceById(id);
 		Function<Integer, CommunityReferenceDto> communityProvider = id -> communityFacade.getCommunityReferenceById(id);
 		Function<Integer, FacilityReferenceDto> healthFacilityProvider = id -> facilityFacade.getFacilityReferenceById(id);
-		Function<Integer, UserRoleReferenceDto> userRoleProvider = id -> userRoleFacade.getUserRoleReferenceById(id);
+		Function<Integer, UserRoleReferenceDto> userRoleProvider = id -> userRoleFacade.getReferenceById(id);
 
 		List<StatisticsCaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream()).map(result -> {
 			Object rowKey = "".equals(result[1]) ? null : result[1];

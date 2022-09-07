@@ -18,7 +18,7 @@ public class ImmunizationListCriteria extends BaseCriteria {
 			this.personReferenceDto = personReferenceDto;
 		}
 
-		public Builder wihDisease(Disease disease) {
+		public Builder withDisease(Disease disease) {
 			this.disease = disease;
 			return this;
 		}

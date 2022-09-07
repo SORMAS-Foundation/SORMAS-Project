@@ -15,13 +15,11 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
 @Remote
@@ -41,15 +39,20 @@ public interface SormasToSormasFacade {
 
 	void revokeShare(String shareInfoUuid) throws SormasToSormasException;
 
+	void revokeShareRequest(String requestUuid) throws SormasToSormasException;
+
 	void requestsRevoked(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
 	void requestAccepted(SormasToSormasEncryptedDataDto encryptedAcceptData) throws SormasToSormasException;
 
-	boolean isFeatureEnabledForUser();
+	boolean isShareEnabledForUser();
 
+	boolean isProcessingShareEnabledForUser();
 	boolean isFeatureConfigured();
 
-	boolean isSharingCasesContactsAndSamplesEnabledForUser();
+	boolean isSharingCasesEnabledForUser();
+
+	boolean isSharingContactsEnabledForUser();
 
 	boolean isSharingEventsEnabledForUser();
 

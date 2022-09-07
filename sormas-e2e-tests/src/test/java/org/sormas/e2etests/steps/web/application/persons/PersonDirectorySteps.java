@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.persons;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -39,13 +40,13 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
@@ -61,6 +62,7 @@ public class PersonDirectorySteps implements En {
   protected Person createdPerson;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static Person personSharedForAllEntities;
+  private static String copiedPersonUUID;
 
   @Inject
   public PersonDirectorySteps(
@@ -71,9 +73,11 @@ public class PersonDirectorySteps implements En {
       AssertHelpers assertHelpers,
       RunningConfiguration runningConfiguration,
       SoftAssert softly,
-      PersonService personService) {
+      PersonService personService,
+      RestAssuredClient restAssuredClient) {
     this.webDriverHelpers = webDriverHelpers;
     personSharedForAllEntities = personService.buildGeneratedPerson();
+    EnvironmentManager manager = new EnvironmentManager(restAssuredClient);
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
 
@@ -293,8 +297,7 @@ public class PersonDirectorySteps implements En {
         "I choose random value of Region in Persons for the last created person by API",
         () -> {
           String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
-          webDriverHelpers.selectFromCombobox(
-              REGIONS_COMBOBOX, RegionsValues.getNameValueForUuid(regionName));
+          webDriverHelpers.selectFromCombobox(REGIONS_COMBOBOX, manager.getRegionName(regionName));
         });
 
     Then(
@@ -302,7 +305,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
           webDriverHelpers.selectFromCombobox(
-              DISTRICTS_COMBOBOX, DistrictsValues.getNameValueForUuid(districtName));
+              DISTRICTS_COMBOBOX, manager.getDistrictName(districtName));
         });
 
     Then(
@@ -310,7 +313,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
           webDriverHelpers.selectFromCombobox(
-              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getNameValueForUuid(communityName));
+              COMMUNITY_PERSON_COMBOBOX, manager.getCommunityName(communityName));
         });
     When(
         "I filter by Person full name from Immunization on Person Directory Page",
@@ -567,6 +570,25 @@ public class PersonDirectorySteps implements En {
               break;
           }
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, searchText);
+        });
+
+    When(
+        "I copy uuid of current person",
+        () -> {
+          webDriverHelpers.scrollToElement(EditContactPage.UUID_INPUT);
+          copiedPersonUUID = webDriverHelpers.getValueFromWebElement(EditContactPage.UUID_INPUT);
+        });
+
+    When(
+        "I search by copied uuid of the person in Person Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, copiedPersonUUID);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT);
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
         });
   }
 }

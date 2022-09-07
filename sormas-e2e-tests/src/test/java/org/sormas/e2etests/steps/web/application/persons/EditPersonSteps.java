@@ -46,6 +46,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EMAIL
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.ERROR_INDICATOR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EXTERNAL_ID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EXTERNAL_TOKEN_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EYE_ICON_EDIT_PERSON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_CATEGORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_CATEGORY_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_COMBOBOX;
@@ -55,6 +56,8 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACIL
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.GENERAL_COMMENT_FIELD;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.GPS_LATITUDE_INPUT_EDIT_PERSON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.GPS_LONGITUDE_INPUT_EDIT_PERSON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_DISEASE_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_ID_LABEL;
@@ -63,6 +66,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUN
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MANAGEMENT_STATUS_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MAP_CONTAINER_EDIT_PERSON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MEANS_OF_IMMUNIZATION_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NO_TRAVEL_ENTRY_LABEL_DE;
@@ -90,6 +94,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.getBy
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.aTravelEntry;
 
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -124,6 +129,7 @@ public class EditPersonSteps implements En {
   public EditPersonSteps(
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
+      Faker faker,
       BaseSteps baseSteps,
       AssertHelpers assertHelpers,
       ApiState apiState,
@@ -310,6 +316,27 @@ public class EditPersonSteps implements En {
         });
 
     Then(
+        "^I Verify The Eye Icon opening the Map is ([^\"]*) in the Edit Person Page",
+        (String elementStatus) -> {
+          switch (elementStatus) {
+            case "disabled":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON_EDIT_PERSON);
+              softly.assertFalse(
+                  webDriverHelpers.isElementEnabledAtAttributeLevel(EYE_ICON_EDIT_PERSON),
+                  "Eye Icon is not disabled in the Edit Event Page");
+              softly.assertAll();
+              break;
+            case "enabled":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON_EDIT_PERSON);
+              softly.assertTrue(
+                  webDriverHelpers.isElementEnabledAtAttributeLevel(EYE_ICON_EDIT_PERSON),
+                  "Eye Icon is not Enabled in the Edit Event Page");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    Then(
         "I click on See CONTACTS for this Person button from Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_PERSON_BUTTON);
@@ -380,6 +407,45 @@ public class EditPersonSteps implements En {
           webDriverHelpers.clearWebElement(FIRST_NAME_INPUT);
           webDriverHelpers.clearWebElement(LAST_NAME_INPUT);
           webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, "");
+        });
+
+    And(
+        "I clear the GPS Latitude and Longitude Fields from the Edit Person Page",
+        () -> {
+          webDriverHelpers.clearWebElement(GPS_LATITUDE_INPUT_EDIT_PERSON);
+          webDriverHelpers.clearWebElement(GPS_LONGITUDE_INPUT_EDIT_PERSON);
+          webDriverHelpers.submitInWebElement(GPS_LONGITUDE_INPUT_EDIT_PERSON);
+        });
+
+    And(
+        "I Add the GPS Latitude and Longitude Values in the Edit Person Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LATITUDE_INPUT_EDIT_PERSON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LONGITUDE_INPUT_EDIT_PERSON);
+          webDriverHelpers.fillInWebElement(
+              GPS_LATITUDE_INPUT_EDIT_PERSON,
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
+          webDriverHelpers.fillInWebElement(
+              GPS_LONGITUDE_INPUT_EDIT_PERSON,
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
+          webDriverHelpers.submitInWebElement(GPS_LONGITUDE_INPUT_EDIT_PERSON);
+        });
+
+    And(
+        "^I click on the The Eye Icon located in the Edit Person Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON_EDIT_PERSON);
+          webDriverHelpers.clickOnWebElementBySelector(EYE_ICON_EDIT_PERSON);
+        });
+
+    Then(
+        "^I verify that the Map Container is now Visible in the Edit Person Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MAP_CONTAINER_EDIT_PERSON);
+          softly.assertTrue(
+              webDriverHelpers.isElementEnabled(MAP_CONTAINER_EDIT_PERSON),
+              "Map Container is not displayed/enabled in edit Person Page");
+          softly.assertAll();
         });
 
     When(

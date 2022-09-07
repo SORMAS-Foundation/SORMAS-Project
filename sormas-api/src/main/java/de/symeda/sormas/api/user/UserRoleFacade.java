@@ -44,15 +44,15 @@ public interface UserRoleFacade {
 
 	UserRoleDto getByUuid(String uuid);
 
+	UserRoleReferenceDto getReferenceByUuid(String uuid);
+
 	UserRoleDto saveUserRole(@Valid UserRoleDto dto);
 
-	void deleteUserRole(UserRoleDto dto);
+	void deleteUserRole(UserRoleReferenceDto dto);
 
 	boolean hasUserRight(Collection<UserRoleDto> userRoles, UserRight userRight);
 
 	boolean hasAnyUserRight(Collection<UserRoleDto> userRoles, Collection<UserRight> userRights);
-
-	Set<UserRoleDto> getEnabledUserRoles();
 
 	Set<UserRoleReferenceDto> getAllAsReference();
 
@@ -66,7 +66,7 @@ public interface UserRoleFacade {
 
 	void validateUserRoleCombination(Collection<UserRoleDto> roles) throws UserRoleDto.UserRoleValidationException;
 
-	UserRoleReferenceDto getUserRoleReferenceById(long id);
+	UserRoleReferenceDto getReferenceById(long id);
 
 	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
 
@@ -75,4 +75,8 @@ public interface UserRoleFacade {
 	List<UserRoleDto> getIndexList(UserRoleCriteria userRoleCriteria, int first, int max, List<SortProperty> sortProperties);
 
 	String generateUserRolesDocument() throws IOException;
+
+	Set<UserRoleDto> getDefaultUserRolesAsDto();
+
+	Collection<UserRoleDto> getByReferences(Set<UserRoleReferenceDto> userRoles);
 }

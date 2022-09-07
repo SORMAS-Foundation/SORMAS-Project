@@ -37,6 +37,8 @@ public interface Validations {
 	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
 	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
 	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
+	String cantRemoveLastRole = "cantRemoveLastRole";
+	String captionNotUnique = "captionNotUnique";
 	String caseClassificationInvalid = "caseClassificationInvalid";
 	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
@@ -124,6 +126,7 @@ public interface Validations {
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
+	String missingRequiredUserRights = "missingRequiredUserRights";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
 	String noAddressDistrictInAddressRegion = "noAddressDistrictInAddressRegion";
@@ -162,6 +165,10 @@ public interface Validations {
 	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";
 	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
 	String phoneNumberValidation = "phoneNumberValidation";
+	String removeRolesWithEditRightFromOwnUser = "removeRolesWithEditRightFromOwnUser";
+	String removeRolesWithEditUserFromOwnUser = "removeRolesWithEditUserFromOwnUser";
+	String removeUserEditRightFromOwnUser = "removeUserEditRightFromOwnUser";
+	String removeUserRightEditRightFromOwnUser = "removeUserRightEditRightFromOwnUser";
 	String required = "required";
 	String requiredField = "requiredField";
 	String softAddEntryToList = "softAddEntryToList";
@@ -200,8 +207,10 @@ public interface Validations {
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String sormasToSormasSubcontinent = "sormasToSormasSubcontinent";
+	String specifyCaption = "specifyCaption";
 	String specifyEpiWeek = "specifyEpiWeek";
 	String specifyFirstName = "specifyFirstName";
+	String specifyJurisdictionLevel = "specifyJurisdictionLevel";
 	String specifyLastName = "specifyLastName";
 	String specifySex = "specifySex";
 	String specifyYear = "specifyYear";

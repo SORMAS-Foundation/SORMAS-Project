@@ -473,10 +473,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new ContinentDtoHelper().pullEntities(false, context);
 		new SubcontinentDtoHelper().pullEntities(false, context);
 		new CountryDtoHelper().pullEntities(false, context);
-
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
-			new AreaDtoHelper().pullEntities(false, context);
-		}
+		new AreaDtoHelper().pullEntities(false, context);
 		new RegionDtoHelper().pullEntities(false, context);
 		new DistrictDtoHelper().pullEntities(false, context);
 		new CommunityDtoHelper().pullEntities(false, context);
@@ -777,11 +774,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new ContinentDtoHelper().pullMissing(continentUuids);
 		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
 		new CountryDtoHelper().pullMissing(countryUuids);
-
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
-			new AreaDtoHelper().pullMissing(areaUuids);
-		}
-
+		new AreaDtoHelper().pullMissing(areaUuids);
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);
 		new CommunityDtoHelper().pullMissing(communityUuids);

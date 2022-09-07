@@ -89,6 +89,47 @@ public class ConfigurationContinentsSteps implements En {
               "Africa is not correctly displayed!");
           softly.assertAll();
         });
+    When(
+        "I check that continent list is correctly displayed",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          List<String> continents =
+              List.of(
+                  "EXTERNAL ID=31000005, NAME=Africa",
+                  "EXTERNAL ID=31000006, NAME=America",
+                  "EXTERNAL ID=31000004, NAME=Asia",
+                  "EXTERNAL ID=31000007, NAME=Australia (Continent)",
+                  "EXTERNAL ID=31000003, NAME=Europe",
+                  "EXTERNAL ID=31099999, NAME=Foreign Countries (Unknown)");
+          continents.forEach(
+              (temp) -> {
+                softly.assertTrue(
+                    tableRowsData.toString().contains(temp),
+                    String.format("%s is not correctly displayed!", temp));
+              });
+          softly.assertAll();
+        });
+
+    When(
+        "I check that continent list is correctly displayed in German",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          List<String> continents =
+              List.of(
+                  "EXTERNE ID=31000005, NAME=Afrika",
+                  "EXTERNE ID=31000006, NAME=Amerika",
+                  "EXTERNE ID=31000004, NAME=Asien",
+                  "EXTERNE ID=31000007, NAME=Australien (Kontinent)",
+                  "EXTERNE ID=31000003, NAME=Europa",
+                  "EXTERNE ID=31099999, NAME=Ausland (Land unbekannt)");
+          continents.forEach(
+              (temp) -> {
+                softly.assertTrue(
+                    tableRowsData.toString().contains(temp),
+                    String.format("%s is not correctly displayed!", temp));
+              });
+          softly.assertAll();
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {

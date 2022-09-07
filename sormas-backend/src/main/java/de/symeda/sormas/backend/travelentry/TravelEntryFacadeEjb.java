@@ -233,7 +233,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public void validate(TravelEntryDto travelEntryDto) {
+	public void validate(@Valid TravelEntryDto travelEntryDto) {
 		if (travelEntryDto.getPerson() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
 		}

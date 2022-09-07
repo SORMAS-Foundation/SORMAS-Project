@@ -38,11 +38,11 @@ public interface ActionFacade {
 
 	void deleteAction(ActionDto ActionDto);
 
-	List<ActionDto> getAllActionsAfter(Date date);
+	List<ActionDto> getAllActiveActionsAfter(Date date);
 
 	List<ActionDto> getByUuids(List<String> uuids);
 
-	List<String> getAllUuids();
+	List<String> getAllActiveUuids();
 
 	List<ActionStatEntry> getActionStats(ActionCriteria actionCriteria);
 

@@ -18,12 +18,13 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.visit.VisitService;
 
 @LocalBean
 @Singleton
@@ -40,9 +41,11 @@ public class CoreEntityDeletionService {
 	@EJB
 	private PersonService personService;
 	@EJB
-	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	private SormasToSormasShareRequestService sormasToSormasShareRequestService;
 	@EJB
-	private VisitService visitService;
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private ShareRequestInfoService shareRequestInfoService;
 
 	public CoreEntityDeletionService() {
 	}
@@ -91,7 +94,32 @@ public class CoreEntityDeletionService {
 		IterableHelper
 			.executeBatched(nonReferencedPersonUuids, DELETE_BATCH_SIZE, batchedUuids -> personService.deletePermanentByUuids(batchedUuids));
 
+		List<String> nonReferencedS2SShareRequestsUuids = sormasToSormasShareRequestService.getAllNonRefferencedSormasToSormasShareRequest();
+		logger.debug(
+			"executeAutomaticDeletion(): Detected non referenced sormasToSormasShareRequests: n={}",
+			nonReferencedS2SShareRequestsUuids.size());
+		IterableHelper.executeBatched(
+			nonReferencedS2SShareRequestsUuids,
+			DELETE_BATCH_SIZE,
+			batchedUuids -> sormasToSormasShareRequestService.deletePermanentByUuids(nonReferencedS2SShareRequestsUuids));
+
+		List<String> nonReferencedShareRequestInfoUuids = shareRequestInfoService.getAllNonReferencedShareRequestInfo();
+		logger.debug("executeAutomaticDeletion(): Detected non referenced ShareRequestInfo: n={}", nonReferencedShareRequestInfoUuids.size());
+		IterableHelper.executeBatched(
+			nonReferencedShareRequestInfoUuids,
+			DELETE_BATCH_SIZE,
+			batchedUuids -> shareRequestInfoService.deletePermanentByUuids(nonReferencedShareRequestInfoUuids));
+
 		logger.debug("executeAutomaticDeletion() finished. {}s", DateHelper.durationSeconds(startTime));
+	}
+
+	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {
+		return coreEntityType == CoreEntityType.IMMUNIZATION
+			|| coreEntityType == CoreEntityType.TRAVEL_ENTRY
+			|| coreEntityType == CoreEntityType.CASE
+			|| coreEntityType == CoreEntityType.CONTACT
+			|| coreEntityType == CoreEntityType.EVENT
+			|| coreEntityType == CoreEntityType.EVENT_PARTICIPANT;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -108,12 +136,5 @@ public class CoreEntityDeletionService {
 		public static EntityTypeFacadePair of(CoreEntityType coreEntityType, AbstractCoreFacadeEjb entityFacade) {
 			return new EntityTypeFacadePair(coreEntityType, entityFacade);
 		}
-	}
-
-	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {
-		return coreEntityType == CoreEntityType.IMMUNIZATION
-			|| coreEntityType == CoreEntityType.TRAVEL_ENTRY
-			|| coreEntityType == CoreEntityType.CASE
-			|| coreEntityType == CoreEntityType.CONTACT;
 	}
 }

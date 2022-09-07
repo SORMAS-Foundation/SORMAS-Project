@@ -74,6 +74,7 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -109,9 +110,11 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -1410,6 +1413,55 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getDiseaseVariant() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT), contactCriteria.getDiseaseVariant()));
 		}
+		if (contactCriteria.getWithOwnership() != null) {
+			Subquery<Boolean> sharesQuery = cqc.getQuery().subquery(Boolean.class);
+			Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
+			sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
+
+			Subquery<Number> latestRequestDateQuery = cqc.getQuery().subquery(Number.class);
+			Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+			latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+			latestRequestDateQuery.where(
+				cb.equal(
+					shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+					shareInfoFrom.get(SormasToSormasShareInfo.ID)));
+
+			Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
+			sharesQuery.where(
+				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.CONTACT), from.get(Contact.ID)),
+				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
+				cb.equal(
+					requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
+						.get(ShareRequestInfo.REQUEST_STATUS),
+					ShareRequestStatus.ACCEPTED));
+
+			if (Boolean.TRUE.equals(contactCriteria.getWithOwnership())) {
+				filter =
+					CriteriaBuilderHelper.and(
+						cb,
+						filter,
+						cb.and(
+							cb.or(
+								cb.isNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+								cb.equal(
+									from.join(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
+										.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+									true)),
+							cb.not(cb.exists(sharesQuery))));
+			} else {
+				filter =
+					CriteriaBuilderHelper
+						.and(
+							cb,
+							filter,
+							cb.or(
+								cb.equal(
+									from.join(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
+										.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+									false),
+								cb.exists(sharesQuery)));
+			}
+		}
 
 		return filter;
 	}
@@ -1499,7 +1551,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);
 
-		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF), contact.getId()));
+		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF).get(Contact.ID), contact.getId()));
 		cu.set(Contact.DUPLICATE_OF, null);
 
 		em.createQuery(cu).executeUpdate();
@@ -1663,7 +1715,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			: null;
 
 		cu.where(
-			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Contact.PERSON), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(root.get(Contact.PERSON).get(Person.ID), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}

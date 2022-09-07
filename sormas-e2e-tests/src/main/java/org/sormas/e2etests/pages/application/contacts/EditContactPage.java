@@ -185,6 +185,8 @@ public class EditContactPage {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }
 
+  public static final By NOTIFICATION_MESSAGE_POPUP = By.cssSelector(".v-Notification-description");
+
   public static final By OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK =
       By.cssSelector("[location='toCaseBtnLoc'] div");
 }

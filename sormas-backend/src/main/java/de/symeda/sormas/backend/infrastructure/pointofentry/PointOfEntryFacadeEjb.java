@@ -17,6 +17,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -162,7 +163,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
+	public void validate(@Valid PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
 
 		if (StringUtils.isEmpty(pointOfEntry.getName())) {
 			throw new ValidationRuntimeException(

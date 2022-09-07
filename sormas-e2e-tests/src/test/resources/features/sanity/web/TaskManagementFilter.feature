@@ -1,9 +1,9 @@
 @UI @Sanity @TaskManagementFilter
 Feature: Tasks filtering functionalities
 
-  @issue=SORDEV-5688 @env_main
+  @tmsLink=SORDEV-5688 @env_main
   Scenario Outline: Check the filter of tasks context
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     Then I filter Task context by <taskContext>
     And I collect the task column objects
@@ -17,9 +17,9 @@ Feature: Tasks filtering functionalities
       | Event       |
       | General     |
 
-  @issue=SORDEV-5688 @env_main
+  @tmsLink=SORDEV-5688 @env_main
   Scenario Outline: Check the filter of tasks status
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     Then I filter Task status <statusType>
     And I collect the task column objects

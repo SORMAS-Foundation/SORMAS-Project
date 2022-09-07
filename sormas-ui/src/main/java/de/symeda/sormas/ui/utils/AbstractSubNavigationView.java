@@ -55,7 +55,7 @@ public abstract class AbstractSubNavigationView<SC extends Component> extends Ab
 	@Override
 	public void enter(ViewChangeEvent event) {
 
-		String params = event.getParameters();
+		String params = event != null ? event.getParameters() : "";
 		refreshMenu(subNavigationMenu, params);
 		selectInMenu();
 	}

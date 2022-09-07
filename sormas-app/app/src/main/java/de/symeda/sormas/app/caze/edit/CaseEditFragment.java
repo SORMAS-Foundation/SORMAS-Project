@@ -21,12 +21,12 @@ import static de.symeda.sormas.api.caze.CaseConfirmationBasis.CLINICAL_CONFIRMAT
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION;
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION;
 
-import java.util.Date;
-import java.util.List;
-
 import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
+
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;

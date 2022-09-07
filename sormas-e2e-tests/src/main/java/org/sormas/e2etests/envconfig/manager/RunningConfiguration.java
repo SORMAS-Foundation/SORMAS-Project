@@ -73,6 +73,20 @@ public class RunningConfiguration {
   }
 
   @SneakyThrows
+  public String getSurvnetResponsible(String identifier) {
+    try {
+      return environments.getEnvironments().stream()
+          .filter(env -> env.getIdentifier().equalsIgnoreCase(identifier))
+          .findFirst()
+          .get()
+          .getSurvnetResponsible();
+    } catch (NullPointerException e) {
+      throw new Exception(
+          String.format("Unable to get Survnet Responsible of Environment for market: %s", identifier));
+    }
+  }
+
+  @SneakyThrows
   public EnvUser getUserByRole(String identifier, String role) {
     try {
       List<EnvUser> users = getEnvironment(identifier).getUsers();

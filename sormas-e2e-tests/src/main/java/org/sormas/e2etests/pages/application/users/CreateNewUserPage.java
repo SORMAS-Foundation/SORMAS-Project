@@ -28,6 +28,9 @@ public class CreateNewUserPage {
   public static final By PHONE_INPUT = By.id("phone");
   public static final By COUNTRY_COMBOBOX = By.cssSelector(".v-window #country div");
   public static final By REGION_COMBOBOX = By.cssSelector(".v-window #region div");
+  public static final By SECOND_REGION_COMBOBOX =
+      By.xpath(
+          "//div[@tabindex='-1']/div/div/div/div[@location='region']//div[@id='region']/div[@class='v-filterselect-button']");
   public static final By DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community div");
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
@@ -70,4 +73,7 @@ public class CreateNewUserPage {
       By.xpath("(//div[@location='region']//div[@class='v-captionwrapper'])[2]/div[2]/div");
   public static final By SURVEILLANCE_DISTRICT =
       By.xpath("(//div[@location='district']//div[@class='v-captionwrapper'])[2]/div[2]/div");
+  public static final By USER_ROLE_COMBOBOX = By.cssSelector("[id='userRoles'] div");
+  public static final By REGION_FILTER_COMBOBOX = By.cssSelector("#region div");
+  public static final By TABLE_USER_NAME = By.xpath("//table//td[5]");
 }

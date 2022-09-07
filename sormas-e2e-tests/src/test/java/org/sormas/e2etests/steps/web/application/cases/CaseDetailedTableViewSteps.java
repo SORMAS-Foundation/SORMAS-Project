@@ -213,6 +213,8 @@ public class CaseDetailedTableViewSteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(

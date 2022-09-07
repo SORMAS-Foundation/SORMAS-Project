@@ -41,12 +41,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 
 		Predicate filter = createUserFilter(cb, cq, root);
 		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since, lastSynchronizedUuid);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
+			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, root, since, lastSynchronizedUuid));
 		}
 		if (filter != null) {
 			cq.where(filter);

@@ -472,7 +472,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		addField(LESIONS_ONSET_DATE, DateField.class);
 
 		// complications
-		addFields(
+		String[] complicationsFieldIds = {
 			ALTERED_CONSCIOUSNESS,
 			CONFUSED_DISORIENTED,
 			OTHER_COMPLICATIONS,
@@ -483,7 +483,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MENINGEAL_SIGNS,
 			SEIZURES,
 			SEPSIS,
-			SHOCK);
+			SHOCK };
+
+		addFields(complicationsFieldIds);
 
 		monkeypoxImageFieldIds = Arrays.asList(LESIONS_RESEMBLE_IMG1, LESIONS_RESEMBLE_IMG2, LESIONS_RESEMBLE_IMG3, LESIONS_RESEMBLE_IMG4);
 		for (String propertyId : monkeypoxImageFieldIds) {
@@ -806,12 +808,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		Button setEmptyToUnknownButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToUnknown, SymptomState.UNKNOWN);
 
-		// Complications heading - not displayed for Rubella (dirty, should be made generic)
 		Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
 		CssStyles.style(complicationsHeading, CssStyles.H3);
-		if (disease != Disease.CONGENITAL_RUBELLA && !isConfiguredServer("de")) {
-			getContent().addComponent(complicationsHeading, COMPLICATIONS_HEADING);
-		}
+		getContent().addComponent(complicationsHeading, COMPLICATIONS_HEADING);
 
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.addComponent(clearAllButton);
@@ -830,6 +829,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				toggleFeverComponentError(feverField, temperature);
 			});
 		}
+
+		boolean isComplicationsHeadingVisible = false;
+		for (String complicationField : complicationsFieldIds) {
+			if (getFieldGroup().getField(complicationField).isVisible()) {
+				isComplicationsHeadingVisible = true;
+			}
+		}
+		complicationsHeading.setVisible(isComplicationsHeadingVisible);
 	}
 
 	private void toggleFeverComponentError(NullableOptionGroup feverField, ComboBox temperatureField) {

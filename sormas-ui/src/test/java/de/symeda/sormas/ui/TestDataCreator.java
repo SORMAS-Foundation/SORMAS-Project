@@ -141,7 +141,7 @@ public class TestDataCreator {
 			}
 		}
 		user.setLanguage(language);
-		user = FacadeProvider.getUserFacade().saveUser(user);
+		user = FacadeProvider.getUserFacade().saveUser(user, false);
 
 		return user;
 	}
@@ -160,7 +160,7 @@ public class TestDataCreator {
 		cazePerson.setFirstName(firstName);
 		cazePerson.setLastName(lastName);
 		cazePerson.setSex(sex);
-		cazePerson = FacadeProvider.getPersonFacade().savePerson(cazePerson);
+		cazePerson = FacadeProvider.getPersonFacade().save(cazePerson);
 
 		return cazePerson;
 	}

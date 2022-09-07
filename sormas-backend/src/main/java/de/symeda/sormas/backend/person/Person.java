@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -455,7 +456,8 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.educationDetails = educationDetails;
 	}
 
-	@Enumerated(EnumType.STRING)
+	@Column
+	@Convert(converter = OccupationTypeConverter.class)
 	public OccupationType getOccupationType() {
 		return occupationType;
 	}

@@ -58,18 +58,23 @@ import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class SymptomsTabSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Symptoms symptoms;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static LocalDate dateOfSymptomsForFollowUpDate;
 
   @Inject
   public SymptomsTabSteps(
       WebDriverHelpers webDriverHelpers,
       SymptomService symptomService,
       ApiState apiState,
+      SoftAssert softly,
       RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     String firstSymptom = "Sore throat/pharyngitis";
@@ -224,6 +229,17 @@ public class SymptomsTabSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL_BUTTON);
         });
+    And(
+        "I set date of symptoms to {int} day ago from Symptoms tab",
+        (Integer days) -> {
+          dateOfSymptomsForFollowUpDate = LocalDate.now().minusDays(days);
+          fillDateOfSymptomDE(LocalDate.now().minusDays(days), Locale.GERMAN);
+        });
+    And(
+        "I clear date of symptoms from Symptoms tab",
+        () -> {
+          webDriverHelpers.clearWebElement(DATE_OF_SYMPTOM_INPUT);
+        });
 
     And(
         "^I set Fever Symptoms to \"([^\"]*)\" on the Symptoms tab$",
@@ -237,6 +253,34 @@ public class SymptomsTabSteps implements En {
           webDriverHelpers.scrollToElement(DATE_OF_SYMPTOM_INPUT);
           LocalDate dateOfSymptom = LocalDate.now().minusDays(7 + numberOfDays);
           fillDateOfSymptomDE(dateOfSymptom, Locale.GERMAN);
+        });
+
+    And(
+        "^I set Date of symptom onset to (\\d+) days into the future",
+        (Integer numberOfDays) -> {
+          webDriverHelpers.scrollToElement(DATE_OF_SYMPTOM_INPUT);
+          LocalDate dateOfSymptom = LocalDate.now().plusDays(numberOfDays);
+          fillDateOfSymptom(dateOfSymptom);
+        });
+
+    Then(
+        "I Verify popup message from Symptoms Tab Contains {string}",
+        (String expectedText) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NOTIFICATION_POPUP_DESCRIPTION);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_POPUP_DESCRIPTION),
+              expectedText,
+              "Assert on notification popup went wrong");
+          softly.assertAll();
+        });
+
+    And(
+        "^I set Date of symptom onset to (\\d+) days before today$",
+        (Integer numberOfDays) -> {
+          webDriverHelpers.scrollToElement(DATE_OF_SYMPTOM_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              DATE_OF_SYMPTOM_INPUT,
+              DATE_FORMATTER_DE.format(LocalDate.now().minusDays(numberOfDays)));
         });
   }
 

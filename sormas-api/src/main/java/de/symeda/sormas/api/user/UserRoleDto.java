@@ -17,19 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.beans.Transient;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.ValidationException;
 
 public class UserRoleDto extends EntityDto {
@@ -40,23 +45,29 @@ public class UserRoleDto extends EntityDto {
 
 	public static final String USER_RIGHTS = "userRights";
 	public static final String CAPTION = "caption";
-	public static final String DESCRIPTION = "description";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String DESCRIPTION = "description";
 	public static final String ENABLED = "enabled";
 	public static final String HAS_OPTIONAL_HEALTH_FACILITY = "hasOptionalHealthFacility";
 	public static final String HAS_ASSOCIATED_DISTRICT_USER = "hasAssociatedDistrictUser";
 	public static final String PORT_HEALTH_USER = "portHealthUser";
+	public static final String NOTIFICATION_TYPES = "notificationTypes";
+	public static final String LINKED_DEFAULT_USER_ROLE = "linkedDefaultUserRole";
 
 	private Set<UserRight> userRights;
-	private boolean enabled;
+	private boolean enabled = true;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private boolean hasOptionalHealthFacility = true;
 	private boolean hasAssociatedDistrictUser = true;
 	private boolean portHealthUser = true;
+	private DefaultUserRole linkedDefaultUserRole;
 	private JurisdictionLevel jurisdictionLevel;
-	private List<NotificationType> emailNotificationTypes;
-	private List<NotificationType> smsNotificationTypes;
+	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
+	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
 
 	public static UserRoleDto build(UserRight... userRights) {
 
@@ -100,7 +111,7 @@ public class UserRoleDto extends EntityDto {
 		this.description = description;
 	}
 
-	public boolean hasOptionalHealthFacility() {
+	public boolean getHasOptionalHealthFacility() {
 		return hasOptionalHealthFacility;
 	}
 
@@ -108,7 +119,7 @@ public class UserRoleDto extends EntityDto {
 		this.hasOptionalHealthFacility = hasOptionalHealthFacility;
 	}
 
-	public boolean hasAssociatedDistrictUser() {
+	public boolean getHasAssociatedDistrictUser() {
 		return hasAssociatedDistrictUser;
 	}
 
@@ -132,19 +143,19 @@ public class UserRoleDto extends EntityDto {
 		this.jurisdictionLevel = jurisdictionLevel;
 	}
 
-	public List<NotificationType> getEmailNotificationTypes() {
+	public Set<NotificationType> getEmailNotificationTypes() {
 		return emailNotificationTypes;
 	}
 
-	public void setEmailNotificationTypes(List<NotificationType> emailNotificationTypes) {
+	public void setEmailNotificationTypes(Set<NotificationType> emailNotificationTypes) {
 		this.emailNotificationTypes = emailNotificationTypes;
 	}
 
-	public List<NotificationType> getSmsNotificationTypes() {
+	public Set<NotificationType> getSmsNotificationTypes() {
 		return smsNotificationTypes;
 	}
 
-	public void setSmsNotificationTypes(List<NotificationType> smsNotificationTypes) {
+	public void setSmsNotificationTypes(Set<NotificationType> smsNotificationTypes) {
 		this.smsNotificationTypes = smsNotificationTypes;
 	}
 
@@ -155,6 +166,15 @@ public class UserRoleDto extends EntityDto {
 	public static Set<UserRight> getUserRights(Collection<UserRoleDto> userRoles) {
 
 		return userRoles != null ? userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet()) : null;
+	}
+
+
+	public DefaultUserRole getLinkedDefaultUserRole() {
+		return linkedDefaultUserRole;
+	}
+
+	public void setLinkedDefaultUserRole(DefaultUserRole linkedDefaultUserRole) {
+		this.linkedDefaultUserRole = linkedDefaultUserRole;
 	}
 
 	public static JurisdictionLevel getJurisdictionLevel(Collection<UserRoleDto> roles) {
@@ -177,13 +197,27 @@ public class UserRoleDto extends EntityDto {
 		return I18N_PREFIX;
 	}
 
-	@SuppressWarnings("serial") public static class UserRoleValidationException extends ValidationException {
+	@Transient
+	public NotificationTypes getNotificationTypes() {
+		return NotificationTypes.of(smsNotificationTypes, emailNotificationTypes);
+	}
+
+	@Transient
+	public void setNotificationTypes(NotificationTypes notificationTypes) {
+		this.smsNotificationTypes = notificationTypes.sms;
+		this.emailNotificationTypes = notificationTypes.email;
+	}
+
+	@SuppressWarnings("serial")
+	public static class UserRoleValidationException extends ValidationException {
 
 		private final UserRoleDto checkedUserRole;
 		private final UserRoleDto forbiddenUserRole;
 
 		public UserRoleValidationException(UserRoleDto checkedUserRole, UserRoleDto forbiddenUserRole) {
-			super(checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " " + forbiddenUserRole.getCaption());
+			super(
+				checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " "
+					+ forbiddenUserRole.getCaption());
 			this.checkedUserRole = checkedUserRole;
 			this.forbiddenUserRole = forbiddenUserRole;
 		}
@@ -194,6 +228,40 @@ public class UserRoleDto extends EntityDto {
 
 		public UserRoleDto getForbiddenUserRole() {
 			return forbiddenUserRole;
+		}
+	}
+
+	public static class NotificationTypes {
+
+		private final Set<NotificationType> sms;
+		private final Set<NotificationType> email;
+
+		private NotificationTypes(Set<NotificationType> sms, Set<NotificationType> email) {
+			this.sms = sms;
+			this.email = email;
+		}
+
+		public static NotificationTypes of(Set<NotificationType> sms, Set<NotificationType> email) {
+			return new NotificationTypes(sms, email);
+		}
+
+		public Set<NotificationType> getSms() {
+			return sms;
+		}
+
+		public Set<NotificationType> getEmail() {
+			return email;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof NotificationTypes)) {
+				return false;
+			}
+
+			NotificationTypes notificationTypes = (NotificationTypes) obj;
+
+			return sms.equals(notificationTypes.sms) && email.equals(notificationTypes.email);
 		}
 	}
 }

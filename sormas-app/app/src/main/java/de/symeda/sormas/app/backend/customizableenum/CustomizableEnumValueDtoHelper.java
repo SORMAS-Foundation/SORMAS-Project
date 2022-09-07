@@ -37,7 +37,7 @@ public class CustomizableEnumValueDtoHelper extends AdoDtoHelper<CustomizableEnu
 	}
 
 	@Override
-	protected Call<List<CustomizableEnumValueDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<CustomizableEnumValueDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		return RetroProvider.getCustomizableEnumValueFacade().pullAllSince(since);
 	}
 
@@ -61,6 +61,7 @@ public class CustomizableEnumValueDtoHelper extends AdoDtoHelper<CustomizableEnu
 		target.setDescription(source.getDescription());
 		target.setDescriptionTranslations(source.getDescriptionTranslations());
 		target.setProperties(source.getProperties());
+		target.setDefaultValue(source.isDefaultValue());
 	}
 
 	@Override
@@ -68,8 +69,8 @@ public class CustomizableEnumValueDtoHelper extends AdoDtoHelper<CustomizableEnu
 		// Not supported
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 }

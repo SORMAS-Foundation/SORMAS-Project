@@ -43,17 +43,18 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasShareRequestTest extends SormasToSormasTest {
@@ -145,6 +146,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		});
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,
@@ -220,6 +222,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		});
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,
@@ -260,6 +263,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		});
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,

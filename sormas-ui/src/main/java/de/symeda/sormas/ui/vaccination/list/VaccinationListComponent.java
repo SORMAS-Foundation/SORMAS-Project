@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.vaccination.list;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -33,33 +34,31 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class VaccinationListComponent extends SideComponent {
 
-	public VaccinationListComponent(VaccinationListCriteria criteria) {
-		this(criteria, null);
+	public VaccinationListComponent(Supplier<VaccinationListCriteria> criteriaSupplier, Consumer<Runnable> actionCallback) {
+		this(criteriaSupplier, actionCallback, true);
 	}
 
-	public VaccinationListComponent(VaccinationListCriteria criteria, Consumer<Runnable> actionCallback) {
-		this(criteria, actionCallback, true);
-	}
-
-	public VaccinationListComponent(VaccinationListCriteria criteria, Consumer<Runnable> actionCallback, boolean allowNewVaccine) {
+	public VaccinationListComponent(Supplier<VaccinationListCriteria> criteriaSupplier, Consumer<Runnable> actionCallback, boolean allowNewVaccine) {
 
 		super(I18nProperties.getString(Strings.entityVaccinations), actionCallback);
 
 		if (allowNewVaccine) {
-			addCreateButton(
-				I18nProperties.getCaption(Captions.vaccinationNewVaccination),
-				() -> ControllerProvider.getVaccinationController()
+			addCreateButton(I18nProperties.getCaption(Captions.vaccinationNewVaccination), () -> {
+				VaccinationListCriteria criteria = criteriaSupplier.get();
+				ControllerProvider.getVaccinationController()
 					.create(
 						criteria.getRegion(),
 						criteria.getDistrict(),
 						criteria.getPerson(),
 						criteria.getDisease(),
 						UiFieldAccessCheckers.getNoop(),
-						v -> SormasUI.refreshView()),
-				UserRight.IMMUNIZATION_CREATE);
+						v -> SormasUI.refreshView());
+			}, UserRight.IMMUNIZATION_CREATE);
 		}
 
 		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier;
+
+		VaccinationListCriteria criteria = criteriaSupplier.get();
 
 		if (criteria.getVaccinationAssociationType() != null) {
 			switch (criteria.getVaccinationAssociationType()) {

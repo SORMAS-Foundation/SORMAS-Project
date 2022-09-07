@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -86,6 +88,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -121,6 +124,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
@@ -137,9 +141,11 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -165,7 +171,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 @LocalBean
 public class CaseService extends AbstractCoreAdoService<Case> {
 
-	private static final long SECONDS_30_DAYS = 30L * 24L * 60L * 60L;
+	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 
 	@EJB
 	private CaseListCriteriaBuilder listQueryBuilder;
@@ -213,6 +219,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@EJB
 	private VaccinationService vaccinationService;
+	@EJB
+	private ExternalMessageService externalMessageService;
 
 	public CaseService() {
 		super(Case.class);
@@ -890,6 +898,53 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyShowCasesWithFulfilledReferenceDefinition())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_DEFINITION), CaseReferenceDefinition.FULFILLED));
 		}
+		if (caseCriteria.getWithOwnership() != null) {
+			Subquery<Boolean> sharesQuery = cq.subquery(Boolean.class);
+			Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
+			sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
+
+			Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
+			Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+			latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+			latestRequestDateQuery.where(
+				cb.equal(
+					shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+					shareInfoFrom.get(SormasToSormasShareInfo.ID)));
+
+			Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
+			sharesQuery.where(
+				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.CAZE), from.get(Case.ID)),
+				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
+				cb.equal(
+					requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
+						.get(ShareRequestInfo.REQUEST_STATUS),
+					ShareRequestStatus.ACCEPTED));
+
+			if (Boolean.TRUE.equals(caseCriteria.getWithOwnership())) {
+				filter =
+					CriteriaBuilderHelper
+						.and(
+							cb,
+							filter,
+							cb.and(
+								cb.or(
+									cb.isNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+									cb.equal(
+										from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
+											.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+										true)),
+								cb.not(cb.exists(sharesQuery))));
+			} else {
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.or(
+						cb.equal(
+							from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+							false),
+						cb.exists(sharesQuery)));
+			}
+		}
 
 		filter = CriteriaBuilderHelper.and(
 			cb,
@@ -1110,6 +1165,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		// Remove the case as the related case of immunizations
 		immunizationService.unlinkRelatedCase(caze);
+
+		// Remove the case from any external message referencing it
+		externalMessageService.getForCase(new CaseReferenceDto(caze.getUuid())).forEach(labMessage -> {
+			labMessage.setCaze(null);
+			externalMessageService.ensurePersisted(labMessage);
+		});
 	}
 
 	@Override
@@ -1505,6 +1566,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.getFollowUpEndDate();
 	}
 
+	public EditPermissionType isAddContactAllowed(Case caze) {
+		// we allow CaseContactViewEdit independently of ownership or similar
+
+		if (!inJurisdictionOrOwned(caze)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.getEditPermissionType(caze);
+	}
+
 	@Override
 	public EditPermissionType getEditPermissionType(Case caze) {
 
@@ -1830,8 +1901,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
 			SECONDS_30_DAYS);
 
 		// // todo this should use PersonService.buildSimilarityCriteriaFilter
@@ -1859,8 +1930,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			cb.lessThanOrEqualTo(
 				cb.abs(
 					cb.diff(
-						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
-						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
+						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
+						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
 				SECONDS_30_DAYS));
 
 		Predicate creationDateFilter = cb.or(
@@ -2009,7 +2080,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
 		Root<Case> root = cq.from(Case.class);
 
-		cq.where(cb.equal(root.get(Case.DUPLICATE_OF), caseId));
+		cq.where(cb.equal(root.get(Case.DUPLICATE_OF).get(Case.ID), caseId));
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -2035,7 +2106,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate datePredicate = vaccinationService.getRelevantVaccinationPredicate(root, cu, cb, vaccination);
 
-		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
+		cu.where(
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(root.get(Case.PERSON).get(Person.ID), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}

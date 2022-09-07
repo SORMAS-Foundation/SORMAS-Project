@@ -38,7 +38,7 @@
             android:id="@+id/age_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.4"
+            android:layout_weight="0.3"
             android:textSize="16sp"
             android:textColor="@color/listActivityRowTertiaryText"
             android:fontFamily="sans-serif-light"
@@ -88,6 +88,20 @@
             app:slim="true"
             app:value="@={data.deaths}"
             app:showCaption="false" />
+
+        <TextView
+            android:id="@+id/expired"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:textSize="12sp"
+            android:textColor="@color/listActivityRowTertiaryText"
+            android:fontFamily="sans-serif-light"
+            android:ellipsize="none"
+            android:scrollHorizontally="false"
+            android:paddingTop="18dp"
+            android:paddingEnd="8dp"
+            app:value="test" />
 
     </LinearLayout>
 

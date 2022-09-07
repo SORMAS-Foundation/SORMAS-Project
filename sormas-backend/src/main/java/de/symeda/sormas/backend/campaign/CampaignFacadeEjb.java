@@ -207,7 +207,7 @@ public class CampaignFacadeEjb
 		validate(getByUuid(campaignReferenceDto.getUuid()));
 	}
 
-	public void validate(CampaignDto campaignDto) {
+	public void validate(@Valid CampaignDto campaignDto) {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
 
@@ -312,11 +312,6 @@ public class CampaignFacadeEjb
 	@Override
 	public CampaignReferenceDto toRefDto(Campaign campaign) {
 		return toReferenceDto(campaign);
-	}
-
-	@Override
-	public CampaignDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override

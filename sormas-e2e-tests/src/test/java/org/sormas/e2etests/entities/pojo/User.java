@@ -54,4 +54,5 @@ public class User {
   String userName;
   String userRole;
   String limitedDisease;
+  String password;
 }

@@ -184,8 +184,8 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
@@ -217,7 +217,7 @@ public class ContactFacadeEjb
 	extends AbstractCoreFacadeEjb<Contact, ContactDto, ContactIndexDto, ContactReferenceDto, ContactService, ContactCriteria>
 	implements ContactFacade {
 
-	private static final long SECONDS_30_DAYS = TimeUnit.DAYS.toSeconds(30L);
+	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -248,7 +248,7 @@ public class ContactFacadeEjb
 	@EJB
 	private EpiDataFacadeEjbLocal epiDataFacade;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -345,7 +345,7 @@ public class ContactFacadeEjb
 		ContactDto contactDto = coreAndPersonDto.getCoreData();
 		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
 		if (coreAndPersonDto.getPerson() != null) {
-			PersonDto newlyCreatedPersonDto = personFacade.savePerson(coreAndPersonDto.getPerson());
+			PersonDto newlyCreatedPersonDto = personFacade.save(coreAndPersonDto.getPerson());
 			contactDto.setPerson(newlyCreatedPersonDto.toReference());
 			savedCoreAndPersonDto.setPerson(newlyCreatedPersonDto);
 		}
@@ -850,9 +850,10 @@ public class ContactFacadeEjb
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-							List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
-								exportContact.getUuid(),
-								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
+							List<Vaccination> relevantSortedVaccinations = vaccinationService.getRelevantSortedVaccinations(
+								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()),
+								exportContact.getLastContactDate(),
+								exportContact.getReportDate());
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 
@@ -1419,7 +1420,7 @@ public class ContactFacadeEjb
 		target.setVaccinationStatus(source.getVaccinationStatus());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
 		}
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
@@ -1759,11 +1760,12 @@ public class ContactFacadeEjb
 			}
 
 			// find already existing tasks
-			TaskCriteria pendingUserTaskCriteria = new TaskCriteria().contact(contact.toReference())
-				.taskType(TaskType.CONTACT_FOLLOW_UP)
-				.assigneeUser(assignee.toReference())
-				.taskStatus(TaskStatus.PENDING);
-			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria, true);
+			List<Task> pendingUserTasks = taskService.findByAssigneeContactTypeAndStatuses(
+				assignee.toReference(),
+				contact.toReference(),
+				TaskType.CONTACT_FOLLOW_UP,
+				TaskStatus.IN_PROGRESS,
+				TaskStatus.PENDING);
 
 			if (!pendingUserTasks.isEmpty()) {
 				// the user still has a pending task for this contact
@@ -1815,14 +1817,11 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public void validate(ContactDto contact) throws ValidationRuntimeException {
+	public void validate(@Valid ContactDto contact) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (contact.getReportDateTime() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
-		}
-		if (contact.getReportingUser() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
 		}
 		if (contact.getDisease() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
@@ -1952,8 +1951,8 @@ public class ContactFacadeEjb
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!DataHelper.equal(leadContactDto.getPerson().getUuid(), otherContactDto.getPerson().getUuid())) {
-			PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
-			PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
+			PersonDto leadPerson = personFacade.getByUuid(leadContactDto.getPerson().getUuid());
+			PersonDto otherPerson = personFacade.getByUuid(otherContactDto.getPerson().getUuid());
 			personFacade.mergePerson(leadPerson, otherPerson);
 		}
 
@@ -2066,8 +2065,8 @@ public class ContactFacadeEjb
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
 			SECONDS_30_DAYS);
 		// Sex filter: only when sex is filled in for both cases
 		Predicate sexFilter = cb.or(
@@ -2260,15 +2259,6 @@ public class ContactFacadeEjb
 	private User getRandomDistrictContactResponsible(District district) {
 
 		return userService.getRandomDistrictUser(district, UserRight.CONTACT_RESPONSIBLE);
-	}
-
-	private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
-		Contact contact = contactService.getByUuid(caseUuid);
-
-		return vaccinations.stream()
-			.filter(v -> vaccinationService.isVaccinationRelevant(contact, v))
-			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-			.collect(Collectors.toList());
 	}
 
 	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {

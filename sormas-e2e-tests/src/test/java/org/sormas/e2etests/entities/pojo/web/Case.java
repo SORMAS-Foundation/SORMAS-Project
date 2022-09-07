@@ -46,6 +46,8 @@ public class Case {
   String placeDescription;
   String responsibleJurisdiction;
   String placeOfStay;
+  String placeOfStayRegion;
+  String placeOfStayDistrict;
   String region;
   String district;
   String pointOfEntry;
@@ -96,4 +98,13 @@ public class Case {
   String city;
   String areaType;
   String country;
+  String investigatedDate;
+  String quarantineHelpNeeded;
+  String symptoms_temperatureclinicianName;
+  String clinicianPhone;
+  String clinicianEmail;
+  String reportingUserName;
+  String reportingUserRoles;
+  String followUpStatusChangeUserName;
+  String followUpStatusChangeUserRoles;
 }

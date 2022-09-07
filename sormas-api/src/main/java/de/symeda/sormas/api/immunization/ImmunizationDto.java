@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -103,6 +104,7 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private PersonReferenceDto person;
 	@Required
 	private Date reportDate;
+	@NotNull(message = Validations.validReportingUser)
 	private UserReferenceDto reportingUser;
 	private boolean archived;
 	@Required

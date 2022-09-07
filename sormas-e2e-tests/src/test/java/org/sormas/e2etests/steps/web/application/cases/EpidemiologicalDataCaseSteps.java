@@ -18,6 +18,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_WITH_SOURCE_CASE_KNOWN;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.COUNTRY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DATE_EXPOSURE_TABLE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DISCARD_BUTTON;
@@ -54,6 +55,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SHORT_DISTANCE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.START_OF_EXPOSURE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SUBCONTINENT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SUBCONTINENT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_ACTIVITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_ACTIVITY_EXPOSURES;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
@@ -710,6 +712,40 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_SOURCE_CONTACTS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_SOURCE_CONTACTS_BUTTON);
+        });
+
+    And(
+        "^I check if the continent combobox is available in the location section in Exposure form$",
+        () -> webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTINENT_COMBOBOX));
+
+    And(
+        "^I check if the subcontinent combobox is available in the location section in Exposure form$",
+        () ->
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                SUBCONTINENT_COMBOBOX));
+
+    And(
+        "^I select \"([^\"]*)\" as a country in Exposure form$",
+        (String country) -> webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, country));
+
+    And(
+        "^I check that continent is automatically selected as \"([^\"]*)\"$",
+        (String continent) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(CONTINENT_INPUT),
+              continent,
+              "Automatically selected continent is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that subcontinent is automatically selected as \"([^\"]*)\"$",
+        (String subcontinent) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(SUBCONTINENT_INPUT),
+              subcontinent,
+              "Automatically selected subcontinent is incorrect!");
+          softly.assertAll();
         });
   }
 

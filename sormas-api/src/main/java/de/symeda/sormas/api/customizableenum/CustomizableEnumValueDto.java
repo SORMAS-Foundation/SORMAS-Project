@@ -48,6 +48,11 @@ public class CustomizableEnumValueDto extends EntityDto {
 	@Valid
 	private List<CustomizableEnumTranslation> descriptionTranslations;
 	private Map<String, Object> properties;
+	/**
+	 * Whether the value is a default value provided by the software. Default values don't need a caption
+	 * or translations because they can be translated via properties files.
+	 */
+	private boolean defaultValue;
 
 	public CustomizableEnumType getDataType() {
 		return dataType;
@@ -111,5 +116,13 @@ public class CustomizableEnumValueDto extends EntityDto {
 
 	public void setProperties(Map<String, Object> properties) {
 		this.properties = properties;
+	}
+
+	public boolean isDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(boolean defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 }

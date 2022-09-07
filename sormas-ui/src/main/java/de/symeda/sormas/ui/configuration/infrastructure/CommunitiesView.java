@@ -20,7 +20,6 @@ import java.util.Set;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -48,6 +47,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.IgnoreCancelDownloader;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
@@ -130,7 +130,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 			StreamResource streamResource = GridExportStreamResource
 				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.COMMUNITIES, CommunitiesGrid.EDIT_BTN_ID);
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			IgnoreCancelDownloader fileDownloader = new IgnoreCancelDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
 

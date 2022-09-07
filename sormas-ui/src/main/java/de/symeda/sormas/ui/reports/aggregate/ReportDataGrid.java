@@ -7,6 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.utils.AgeGroupUtils;
@@ -28,10 +29,12 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 		setCriteria(criteria);
 
 		addEditColumn();
-
 		addDeleteColumn();
-
 		addDefaultColumns();
+
+		for (Column<AggregateReportDto, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.findPrefixCaptionWithDefault(column.getId(), column.getCaption(), AggregateReportDto.I18N_PREFIX));
+		}
 
 		setStyleGenerator(aggregateReportDto -> {
 			if (aggregateReportDto.isDuplicate()) {
@@ -62,12 +65,11 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	}
 
 	protected void addEditColumn() {
-
 		addComponentColumn(this::createEditButton).setId(EDIT_AGGREGATE_REPORT).setSortable(false);
-
 	}
 
 	private Button createEditButton(AggregateReportDto aggregateReport) {
+
 		if (!aggregateReport.isDuplicate()) {
 			Button editButton = ButtonHelper.createIconButton(VaadinIcons.EDIT);
 			editButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
@@ -78,7 +80,6 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 			return editButton;
 		}
 		return null;
-
 	}
 
 	protected void addDeleteColumn() {
@@ -96,10 +97,10 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 			return deleteButton;
 		}
 		return null;
-
 	}
 
 	public void reload() {
+
 		ListDataProvider<AggregateReportDto> dataProvider =
 			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getAggregateReports(getCriteria()).stream().map(aggregatedReportDto -> {
 				if (aggregatedReportDto.getAgeGroup() != null) {

@@ -67,7 +67,7 @@ public interface SampleFacade {
 
 	List<String> deleteSamples(List<String> sampleUuids, DeletionDetails deletionDetails);
 
-	void validate(SampleDto sample, boolean checkAssociatedEntities) throws ValidationRuntimeException;
+	void validate(@Valid SampleDto sample, boolean checkAssociatedEntities) throws ValidationRuntimeException;
 
 	List<String> getDeletedUuidsSince(Date since);
 

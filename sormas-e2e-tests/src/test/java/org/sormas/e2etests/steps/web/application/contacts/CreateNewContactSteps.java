@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CON
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 
 import com.github.javafaker.Faker;
@@ -48,6 +49,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -478,6 +480,57 @@ public class CreateNewContactSteps implements En {
           formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
           webDriverHelpers.clearAndFillInWebElement(
               DATE_OF_REPORT_INPUT, formatter.format(LocalDate.now()));
+        });
+
+    And(
+        "^I fill a mandatory fields for a new contact and date of report to yesterday$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(LocalDate.now().minusDays(1), Locale.ENGLISH);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+        });
+
+    And(
+        "^I change disease to \"([^\"]*)\" in the Edit contact page$",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(EditContactPage.DISEASE_COMBOBOX, option);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "^I click on SAVE new contact button and choose create new person in duplication detection$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+
+    Then(
+        "^I check the wording of the last two entries for type of contact$",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              TYPE_OF_CONTACT_MEDICAL_PERSONEL_SAME_ROOM_CHECKBOX,
+              "Medical personnel at safe proximity (> 2 meter) or with protective equipment");
+          webDriverHelpers.checkWebElementContainsText(
+              TYPE_OF_CONTACT_MEDICAL_PERSONEL_WITHOUT_DIRECT_CONTACT_CHECKBOX,
+              "Medical personnel at safe proximity (> 2 meter), without direct contact with secretions or excretions of the patient and without aerosol exposure");
+        });
+
+    When(
+        "^I click on Discard button in Create New Contact form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
         });
   }
 

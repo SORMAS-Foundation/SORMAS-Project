@@ -117,7 +117,7 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		}
 
 		diseaseFilter = addField(FieldConfiguration.pixelSized(AggregateReportCriteria.DISEASE, 200), ComboBox.class);
-		List<Disease> aggregateDiseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false);
+		List<Disease> aggregateDiseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false, true);
 		FieldHelper.updateItems(diseaseFilter, aggregateDiseases);
 		for (Object r : aggregateDiseases) {
 			diseaseFilter.getItem(r).getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());

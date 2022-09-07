@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
+import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -144,6 +146,10 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			}
 		} else if (MultiSelect.class.isAssignableFrom(fieldType)) {
 			return (T) MultiSelect.create(type);
+		} else if (CheckboxSet.class.isAssignableFrom(fieldType)) {
+			return (T) new CheckboxSet();
+		} else if (UserRoleNotificationCheckboxSet.class.isAssignableFrom(fieldType)) {
+			return (T) new UserRoleNotificationCheckboxSet();
 		}
 		return super.createField(type, fieldType);
 	}

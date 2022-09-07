@@ -2182,7 +2182,7 @@ public class CaseExportDto implements Serializable {
 		CaseDataDto.PERSON,
 		PersonDto.BIRTH_COUNTRY })
 	@ExportGroup(ExportGroupType.SENSITIVE)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {})
 	public String getBirthCountry() {
 		return birthCountry;
 	}
@@ -2196,7 +2196,7 @@ public class CaseExportDto implements Serializable {
 		CaseDataDto.PERSON,
 		PersonDto.CITIZENSHIP })
 	@ExportGroup(ExportGroupType.SENSITIVE)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {})
 	public String getCitizenship() {
 		return citizenship;
 	}

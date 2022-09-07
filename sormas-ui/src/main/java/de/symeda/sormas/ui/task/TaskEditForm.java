@@ -337,9 +337,6 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				.isPropertyValueTrue(FeatureType.TASK_MANAGEMENT, FeatureTypeProperty.ALLOW_FREE_EDITING);
 
 			setVisible(freeEditingAllowed || !creating || assignee || nationalOrAdmin, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
-			if (freeEditingAllowed || creating && !assignee && !nationalOrAdmin) {
-				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
-			}
 
 			if (UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
 				setReadOnly(!(freeEditingAllowed || assignee || creator || nationalOrAdmin), TaskDto.TASK_STATUS);

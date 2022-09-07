@@ -34,6 +34,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
@@ -365,9 +367,9 @@ public class User extends AbstractDomainObject {
 
 	static class UserListener {
 
-		@PrePersist
-		@PreUpdate
-		private void beforeAnyUpdate(User user) {
+		@PostPersist
+		@PostUpdate
+		private void afterAnyUpdate(User user) {
 			UserCache.getInstance().remove(user.getUserName());
 		}
 	}

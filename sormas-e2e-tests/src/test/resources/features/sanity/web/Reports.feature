@@ -3,7 +3,7 @@ Feature: Reports
 
   @env_main
   Scenario: Reports directory layout
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Reports button from navbar
     Then I check that all filter components for weekly reports are shown
     Then I check that info icon for weekly reports is shown
@@ -12,7 +12,7 @@ Feature: Reports
 
   @env_main
   Scenario: Reports filter work
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Reports button from navbar
     When I choose "2020" as year for weekly reports
     Then I check that grid for weekly reports is shown

@@ -23,7 +23,10 @@ public enum FeatureTypeProperty {
 	ALLOW_FREE_EDITING(Boolean.class),
 	THRESHOLD_IN_DAYS(Integer.class),
 	EXCLUDE_NO_CASE_CLASSIFIED_CASES(Boolean.class),
-	S2S_SHARING(Boolean.class);
+	S2S_SHARING(Boolean.class),
+	SHARE_ASSOCIATED_CONTACTS(Boolean.class),
+	SHARE_SAMPLES(Boolean.class),
+	SHARE_IMMUNIZATIONS(Boolean.class);
 
 	private final Class<?> returnType;
 

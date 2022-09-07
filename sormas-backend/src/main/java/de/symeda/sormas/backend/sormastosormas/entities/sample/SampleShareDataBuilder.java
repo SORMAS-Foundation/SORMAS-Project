@@ -30,7 +30,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
@@ -39,7 +39,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -67,26 +67,24 @@ public class SampleShareDataBuilder
 	}
 
 	@Override
-	protected SormasToSormasSampleDto doBuildShareData(Sample data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
+	protected SormasToSormasSampleDto doBuildShareData(Sample sample, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+			dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		SampleDto sampleDto = sampleFacade.convertToDto(data, pseudonymizer);
-		sampleDto.setReportingUser(null);
-		sampleDto.setSormasToSormasOriginInfo(null);
+		SampleDto sampleDto = getDto(sample, pseudonymizer);
 
-		List<PathogenTestDto> pathogenTests = data.getPathogenTests().stream().map(t -> {
+		List<PathogenTestDto> pathogenTests = sample.getPathogenTests().stream().map(t -> {
 			PathogenTestDto pathogenTestDto = pathogenTestFacade.convertToDto(t, pseudonymizer);
 			dataBuilderHelper.clearIgnoredProperties(pathogenTestDto);
 			return pathogenTestDto;
 		}).collect(Collectors.toList());
 
 		List<AdditionalTestDto> additionalTests =
-			data.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList());
+				sample.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 
 		List<SormasToSormasExternalMessageDto> externalMessages = Collections.emptyList();
 		if (ownerShipHandedOver) {
-			externalMessages = data.getExternalMessages().stream().map(m -> {
+			externalMessages = sample.getExternalMessages().stream().map(m -> {
 				ExternalMessageDto externalMessageDto = externalMessageFacade.toDto(m);
 				externalMessageDto.setAssignee(null);
 
@@ -98,11 +96,21 @@ public class SampleShareDataBuilder
 	}
 
 	@Override
+	protected SampleDto getDto(Sample sample, Pseudonymizer pseudonymizer) {
+
+		SampleDto sampleDto = sampleFacade.convertToDto(sample, pseudonymizer);
+		sampleDto.setReportingUser(null);
+		sampleDto.setSormasToSormasOriginInfo(null);
+		// todo no dataBuilderHelper.clearIgnoredProperties(sampleDto); ?
+		return sampleDto;
+	}
+
+	@Override
 	public void doBusinessValidation(SormasToSormasSampleDto sormasToSormasSampleDto) throws ValidationRuntimeException {
 		sampleFacade.validate(sormasToSormasSampleDto.getEntity(), true);
 		sormasToSormasSampleDto.getPathogenTests().forEach(pathogenTestFacade::validate);
-		// additional test facade has no validation method
-		// external messages facade has no validation method
+		// todo additional test facade has no validation method. Add them here if they are available
+		// todo external messages facade has no validation method. Add them if they are available
 	}
 
 	@Override

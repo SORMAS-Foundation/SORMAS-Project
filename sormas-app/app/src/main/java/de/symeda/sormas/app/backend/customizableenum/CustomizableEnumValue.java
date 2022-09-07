@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
@@ -53,6 +54,9 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 
 	@Column
 	private String description;
+
+	@DatabaseField
+	private boolean defaultValue;
 
 	@Column(name = "descriptionTranslations")
 	private String descriptionTranslationsJson;
@@ -216,6 +220,14 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.properties = properties;
 		Gson gson = new Gson();
 		propertiesJson = gson.toJson(properties);
+	}
+
+	public boolean isDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(boolean defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	@Override

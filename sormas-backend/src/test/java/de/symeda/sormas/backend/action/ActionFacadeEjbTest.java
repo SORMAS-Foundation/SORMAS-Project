@@ -42,7 +42,7 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllUuidsEmpty() {
-		List<String> allUuids = getActionFacade().getAllUuids();
+		List<String> allUuids = getActionFacade().getAllActiveUuids();
 		assertTrue(allUuids.isEmpty());
 	}
 
@@ -98,7 +98,7 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 
 		getActionFacade().saveAction(actionDto2);
 
-		List<String> allUuids = getActionFacade().getAllUuids();
+		List<String> allUuids = getActionFacade().getAllActiveUuids();
 		assertEquals(2, allUuids.size());
 		assertTrue(allUuids.contains(uuid1));
 		assertTrue(allUuids.contains(uuid2));

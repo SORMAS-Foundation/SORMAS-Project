@@ -1005,4 +1005,34 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		visitService.deletePersonVisits(uuids);
 		super.deletePermanentByUuids(uuids);
 	}
+
+	public boolean isPersonAssociatedWithNotDeletedEntities(@NotNull String uuid) {
+
+		if (uuid == null) {
+			return false;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Person> from = cq.from(Person.class);
+
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, from);
+		final PersonJoins joins = personQueryContext.getJoins();
+
+		cq.select(cb.count(from.get(AbstractDomainObject.ID)));
+
+		Predicate predicate = cb.or(
+			cb.isFalse(joins.getCaze().get(Case.DELETED)),
+			cb.isFalse(joins.getContact().get(Contact.DELETED)),
+			cb.isFalse(joins.getTravelEntry().get(TravelEntry.DELETED)),
+			cb.isFalse(joins.getImmunization().get(Immunization.DELETED)),
+			cb.isFalse(joins.getEventParticipant().get(EventParticipant.DELETED)));
+		predicate = cb.and(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam), predicate);
+
+		cq.where(predicate);
+
+		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+		return q.getSingleResult() > 0;
+	}
 }

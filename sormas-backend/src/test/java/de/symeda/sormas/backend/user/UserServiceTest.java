@@ -195,7 +195,7 @@ public class UserServiceTest extends AbstractBeanTest {
 			"1",
 			creator.getUserRoleReference(DefaultUserRole.COMMUNITY_OFFICER));
 		commOff1.setCommunity(rdcf1.community);
-		getUserFacade().saveUser(commOff1);
+		getUserFacade().saveUser(commOff1, false);
 		UserDto poeSup1 = creator.createUser(
 			rdcf1.region.getUuid(),
 			rdcf1.district.getUuid(),
@@ -204,7 +204,7 @@ public class UserServiceTest extends AbstractBeanTest {
 			"1",
 			creator.getUserRoleReference(DefaultUserRole.POE_SUPERVISOR));
 		poeSup1.setPointOfEntry(rdcf1.pointOfEntry);
-		getUserFacade().saveUser(poeSup1);
+		getUserFacade().saveUser(poeSup1, false);
 
 		assertThat(
 			getUserService().getUserRefsByInfrastructure(rdcf1.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
@@ -235,9 +235,9 @@ public class UserServiceTest extends AbstractBeanTest {
 			hasSize(2));
 
 		commOff1.setLimitedDisease(Disease.EVD);
-		getUserFacade().saveUser(commOff1);
+		getUserFacade().saveUser(commOff1, false);
 		survOff11.setLimitedDisease(Disease.CHOLERA);
-		getUserFacade().saveUser(survOff11);
+		getUserFacade().saveUser(survOff11, false);
 		assertThat(
 			getUserService()
 				.getUserRefsByInfrastructure(rdcf1.community.getUuid(), JurisdictionLevel.COMMUNITY, JurisdictionLevel.REGION, Disease.CHOLERA),

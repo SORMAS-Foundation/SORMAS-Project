@@ -362,7 +362,7 @@ public class ExternalMessageMapper {
 			labs = null;
 		}
 
-		if (labs == null) {
+		if (labs == null || labs.isEmpty()) {
 			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
 		} else if (labs.size() == 1) {
 			return labs.get(0);

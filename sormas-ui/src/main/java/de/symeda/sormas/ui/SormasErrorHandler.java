@@ -20,6 +20,8 @@ package de.symeda.sormas.ui;
 import java.net.SocketException;
 import java.util.stream.Collectors;
 
+import javax.validation.ValidationException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.omg.CORBA.NO_PERMISSION;
@@ -77,6 +79,7 @@ public class SormasErrorHandler implements ErrorHandler {
 		ErrorMessage errorMessage = getErrorMessageForException(t);
 
 		if (t != null) {
+			t.printStackTrace();
 			// log the error or warning
 			if (errorMessage instanceof SystemError) {
 				logger.error(getMessage(t), t);
@@ -167,6 +170,8 @@ public class SormasErrorHandler implements ErrorHandler {
 
 				return error;
 
+			} else if (rootCause instanceof ValidationException) {
+				return new LocalUserError(rootCause.getMessage(), ContentMode.HTML, ErrorLevel.WARNING);
 			} else if (rootCause instanceof NO_PERMISSION) {
 				return new LocalUserError(I18nProperties.getString(Strings.errorForbidden), ContentMode.TEXT, ErrorLevel.ERROR);
 			} else {

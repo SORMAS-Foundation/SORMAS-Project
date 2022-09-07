@@ -27,7 +27,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Disease disease;
 	private Boolean active;
 	private Boolean primaryDisease;
-	private Boolean caseBased;
+	private Boolean caseSurveillanceEnabled;
+	private Boolean aggregateReportingEnabled;
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
 	private Integer caseFollowUpDuration;
@@ -71,12 +72,21 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	}
 
 	@Column
-	public Boolean getCaseBased() {
-		return caseBased;
+	public Boolean getCaseSurveillanceEnabled() {
+		return caseSurveillanceEnabled;
 	}
 
-	public void setCaseBased(Boolean caseBased) {
-		this.caseBased = caseBased;
+	public void setCaseSurveillanceEnabled(Boolean caseBased) {
+		this.caseSurveillanceEnabled = caseBased;
+	}
+
+	@Column
+	public Boolean getAggregateReportingEnabled() {
+		return aggregateReportingEnabled;
+	}
+
+	public void setAggregateReportingEnabled(Boolean aggregateReportingEnabled) {
+		this.aggregateReportingEnabled = aggregateReportingEnabled;
 	}
 
 	@Column

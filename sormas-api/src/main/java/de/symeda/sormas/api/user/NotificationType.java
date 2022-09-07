@@ -19,38 +19,50 @@
 package de.symeda.sormas.api.user;
 
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum NotificationType {
 
-	CASE_CLASSIFICATION_CHANGED,
-	CASE_INVESTIGATION_DONE,
-	EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED(FeatureType.EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS),
-	EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS(FeatureType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS),
-	CASE_LAB_RESULT_ARRIVED,
-	CONTACT_LAB_RESULT_ARRIVED,
-	EVENT_PARTICIPANT_LAB_RESULT_ARRIVED,
-	LAB_SAMPLE_SHIPPED,
-	CONTACT_SYMPTOMATIC,
-	TASK_START(FeatureType.TASK_NOTIFICATIONS),
-	TASK_DUE(FeatureType.TASK_NOTIFICATIONS),
-	TASK_UPDATED_ASSIGNEE(FeatureType.TASK_NOTIFICATIONS),
-	VISIT_COMPLETED,
-	DISEASE_CHANGED,
-	EVENT_GROUP_CREATED(FeatureType.EVENT_GROUPS_MODIFICATION_NOTIFICATIONS),
-	EVENT_ADDED_TO_EVENT_GROUP(FeatureType.EVENT_GROUPS_MODIFICATION_NOTIFICATIONS),
-	EVENT_REMOVED_FROM_EVENT_GROUP(FeatureType.EVENT_GROUPS_MODIFICATION_NOTIFICATIONS);
+	CASE_CLASSIFICATION_CHANGED(NotificationTypeGroup.CASES),
+	CASE_INVESTIGATION_DONE(NotificationTypeGroup.CASES),
+	CASE_LAB_RESULT_ARRIVED(NotificationTypeGroup.CASES),
+	CASE_DISEASE_CHANGED(NotificationTypeGroup.CASES),
+	CONTACT_LAB_RESULT_ARRIVED(NotificationTypeGroup.CONTACTS),
+	CONTACT_SYMPTOMATIC(NotificationTypeGroup.CONTACTS),
+	CONTACT_VISIT_COMPLETED(NotificationTypeGroup.CONTACTS),
+	EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED(FeatureType.EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS, NotificationTypeGroup.EVENTS),
+	EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS(FeatureType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS, NotificationTypeGroup.EVENTS),
+	EVENT_PARTICIPANT_LAB_RESULT_ARRIVED(NotificationTypeGroup.EVENTS),
+	EVENT_GROUP_CREATED(FeatureType.EVENT_GROUPS_MODIFICATION_NOTIFICATIONS, NotificationTypeGroup.EVENTS),
+	EVENT_ADDED_TO_EVENT_GROUP(FeatureType.EVENT_GROUPS_MODIFICATION_NOTIFICATIONS, NotificationTypeGroup.EVENTS),
+	EVENT_REMOVED_FROM_EVENT_GROUP(FeatureType.EVENT_GROUPS_MODIFICATION_NOTIFICATIONS, NotificationTypeGroup.EVENTS),
+	LAB_SAMPLE_SHIPPED(NotificationTypeGroup.SAMPLES),
+	TASK_START(FeatureType.TASK_NOTIFICATIONS, NotificationTypeGroup.TASKS),
+	TASK_DUE(FeatureType.TASK_NOTIFICATIONS, NotificationTypeGroup.TASKS),
+	TASK_UPDATED_ASSIGNEE(FeatureType.TASK_NOTIFICATIONS, NotificationTypeGroup.TASKS);
 
 	private final FeatureType relatedFeatureType;
 
-	NotificationType() {
-		this.relatedFeatureType = FeatureType.OTHER_NOTIFICATIONS;
+	private final NotificationTypeGroup notificationTypeGroup;
+
+	NotificationType(NotificationTypeGroup notificationTypeGroup) {
+		this(FeatureType.OTHER_NOTIFICATIONS, notificationTypeGroup);
 	}
 
-	NotificationType(FeatureType relatedFeatureType) {
+	NotificationType(FeatureType relatedFeatureType, NotificationTypeGroup notificationTypeGroup) {
 		this.relatedFeatureType = relatedFeatureType;
+		this.notificationTypeGroup = notificationTypeGroup;
 	}
 
 	public FeatureType getRelatedFeatureType() {
 		return relatedFeatureType;
+	}
+
+	public NotificationTypeGroup getNotificationTypeGroup() {
+		return notificationTypeGroup;
+	}
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

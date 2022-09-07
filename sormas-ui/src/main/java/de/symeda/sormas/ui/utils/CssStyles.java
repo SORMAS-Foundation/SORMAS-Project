@@ -230,6 +230,8 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_NOT = "status-not";
 	public static final String GRID_ROW_STATUS_DONE = "status-done";
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
+	public static final String GRID_ROW_STATUS_PROGRESS = "status-progress";
+
 	public static final String GRID_ROW_TITLE = "row-title";
 
 	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";

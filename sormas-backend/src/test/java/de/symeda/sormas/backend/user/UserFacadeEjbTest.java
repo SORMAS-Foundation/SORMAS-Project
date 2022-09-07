@@ -205,7 +205,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 				UserRole.getUserRights(Collections.singletonList(creator.getUserRole(SURVEILLANCE_SUPERVISOR))).toArray(new UserRight[] {})));
 
 		user.setActive(false);
-		getUserFacade().saveUser(user);
+		getUserFacade().saveUser(user, false);
 
 		validLoginRights = getUserFacade().getValidLoginRights(user.getUserName(), password);
 		assertThat(validLoginRights, nullValue());

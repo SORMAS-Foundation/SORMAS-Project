@@ -85,6 +85,8 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 					return CssStyles.GRID_ROW_STATUS_DONE;
 				case PENDING:
 					return CssStyles.GRID_ROW_STATUS_PENDING;
+				case IN_PROGRESS:
+					return CssStyles.GRID_ROW_STATUS_PROGRESS;
 				default:
 					throw new IndexOutOfBoundsException(item.getTaskStatus().toString());
 				}

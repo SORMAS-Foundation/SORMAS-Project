@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.disease;
 
+import java.util.List;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-
-import java.util.List;
 
 public class DiseaseConfigurationDto extends EntityDto {
 
@@ -12,7 +12,8 @@ public class DiseaseConfigurationDto extends EntityDto {
 	private Disease disease;
 	private Boolean active;
 	private Boolean primaryDisease;
-	private Boolean caseBased;
+	private Boolean caseSurveillanceEnabled;
+	private Boolean aggregateReportingEnabled;
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
 	private Integer caseFollowUpDuration;
@@ -45,12 +46,20 @@ public class DiseaseConfigurationDto extends EntityDto {
 		this.primaryDisease = primaryDisease;
 	}
 
-	public Boolean getCaseBased() {
-		return caseBased;
+	public Boolean getCaseSurveillanceEnabled() {
+		return caseSurveillanceEnabled;
 	}
 
-	public void setCaseBased(Boolean caseBased) {
-		this.caseBased = caseBased;
+	public void setCaseSurveillanceEnabled(Boolean caseSurveillanceEnabled) {
+		this.caseSurveillanceEnabled = caseSurveillanceEnabled;
+	}
+
+	public Boolean getAggregateReportingEnabled() {
+		return aggregateReportingEnabled;
+	}
+
+	public void setAggregateReportingEnabled(Boolean aggregateReportingEnabled) {
+		this.aggregateReportingEnabled = aggregateReportingEnabled;
 	}
 
 	public Boolean getFollowUpEnabled() {

@@ -69,6 +69,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private static final String HOSPITALIZATION_HEADING_LOC = "hospitalizationHeadingLoc";
 	private static final String PREVIOUS_HOSPITALIZATIONS_HEADING_LOC = "previousHospitalizationsHeadingLoc";
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;
+	private static final String HOSPITAL_NAME_DETAIL = " ( %s )";
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(HOSPITALIZATION_HEADING_LOC) +
@@ -124,8 +125,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
-		final boolean noneFacility = healthFacility == null || healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
-		facilityField.setValue(noneFacility || !FacilityType.HOSPITAL.equals(caze.getFacilityType()) ? null : healthFacility.toString());
+		facilityField.setValue(getHospitalName(healthFacility, caze));
 		facilityField.setReadOnly(true);
 
 		final NullableOptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, NullableOptionGroup.class);
@@ -295,5 +295,18 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	private String getHospitalName(FacilityReferenceDto healthFacility, CaseDataDto caze) {
+		final boolean noneFacility = healthFacility == null || healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
+		if (noneFacility || !FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
+			return null;
+		}
+		StringBuilder hospitalName = new StringBuilder();
+		hospitalName.append(healthFacility.toString());
+		if (caze.getHealthFacilityDetails() != null && caze.getHealthFacilityDetails().trim().length() > 0) {
+			hospitalName.append(String.format(HOSPITAL_NAME_DETAIL, caze.getHealthFacilityDetails()));
+		}
+		return hospitalName.toString();
 	}
 }

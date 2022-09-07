@@ -20,6 +20,8 @@ import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -459,6 +461,15 @@ public class WebDriverHelpers {
   public boolean isElementEnabled(By selector) {
     scrollToElement(selector);
     return baseSteps.getDriver().findElement(selector).isEnabled();
+  }
+
+  public boolean isElementEnabledAtAttributeLevel(By elementLocator) {
+    scrollToElement(elementLocator);
+    boolean isDisabled = getAttributeFromWebElement(elementLocator, "class").contains("disabled");
+    if (isDisabled) {
+      return false;
+    }
+    return true;
   }
 
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
@@ -1033,6 +1044,32 @@ public class WebDriverHelpers {
     } else {
       throw new NotFoundException(
           "Cannot close active window and switch to parent window because only one is available!");
+    }
+  }
+
+  public boolean isFileExists(Path file_path) {
+    return Files.exists(file_path);
+  }
+
+  public void waitForFileExists(Path file_path, int seconds) {
+    assertHelpers.assertWithPoll(
+        () ->
+            Assert.assertTrue(
+                Files.exists(file_path),
+                String.format("File %s not exists after %s", file_path, seconds)),
+        seconds);
+  }
+
+  public void checkIsPopupContainsList(By popup, List popupElements) {
+    String popupElementXPath;
+    String popupXPath = popup.toString();
+    By lookingElement;
+    for (Object popupMessage : popupElements) {
+      popupElementXPath = popupXPath + "//li[contains(text(),'" + popupMessage + "')]";
+      lookingElement = By.xpath(popupElementXPath.replace("By.xpath:", ""));
+      Assert.assertTrue(
+          isElementVisibleWithTimeout(lookingElement, 10),
+          "Popup do not contains expected list of items!");
     }
   }
 }

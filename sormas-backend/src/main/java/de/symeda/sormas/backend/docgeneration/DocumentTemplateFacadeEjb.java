@@ -390,7 +390,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				String uuid = referenceDto.getUuid();
 				Class<? extends ReferenceDto> referenceDtoClass = referenceDto.getClass();
 				if (PersonReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-					return personFacade.getPersonByUuid(uuid);
+					return personFacade.getByUuid(uuid);
 				} else if (CaseReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return caseFacade.getCaseDataByUuid(uuid);
 				} else if (ContactReferenceDto.class.isAssignableFrom(referenceDtoClass)) {

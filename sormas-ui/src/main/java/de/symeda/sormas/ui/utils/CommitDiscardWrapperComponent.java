@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.naming.CannotProceedException;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.event.Action.Notifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -407,13 +409,18 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return discardButton;
 	}
 
-	public Button getDeleteButton(String entityName) {
-
+	public Button getDeleteButton(String entityName, Supplier<String> confirmationMessageSupplier) {
 		if (deleteButton == null) {
 			deleteButton = buildDeleteButton(
-				() -> VaadinUiUtil.showDeleteConfirmationWindow(
-					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-					this::onDelete));
+				() -> {
+					String confirmationMessage = confirmationMessageSupplier == null ? null : confirmationMessageSupplier.get();
+
+					VaadinUiUtil.showDeleteConfirmationWindow(
+							StringUtils.isBlank(confirmationMessage)
+									? String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName)
+									: confirmationMessage,
+							this::onDelete);
+				});
 		}
 
 		return deleteButton;
@@ -733,7 +740,14 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public void addDeleteListener(DeleteListener listener, String entityName) {
 		if (deleteListeners.isEmpty())
-			buttonsPanel.addComponent(getDeleteButton(entityName), 0);
+			buttonsPanel.addComponent(getDeleteButton(entityName, null), 0);
+		if (!deleteListeners.contains(listener))
+			deleteListeners.add(listener);
+	}
+
+	public void addDeleteListener(DeleteListener listener, String entityName, Supplier<String> confirmationMessageSupplier) {
+		if (deleteListeners.isEmpty())
+			buttonsPanel.addComponent(getDeleteButton(entityName, confirmationMessageSupplier), 0);
 		if (!deleteListeners.contains(listener))
 			deleteListeners.add(listener);
 	}

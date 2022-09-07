@@ -37,6 +37,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -44,11 +46,13 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -60,10 +64,12 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SormasToSormasCaseFacade")
 public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto>
@@ -85,6 +91,8 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	private ImmunizationService immunizationService;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private UserService userService;
 
 	public SormasToSormasCaseFacadeEjb() {
 		super(
@@ -95,6 +103,19 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 			CASE_SHARES_ENDPOINT,
 			Captions.CaseData,
 			ShareRequestDataType.CASE);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	public void share(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+		if (!userService.hasRight(UserRight.CASE_EDIT)
+			|| (options.isWithAssociatedContacts() && !userService.hasRight(UserRight.CONTACT_EDIT))
+			|| (options.isWithSamples() && !userService.hasRight(UserRight.SAMPLE_EDIT))
+			|| (options.isWithImmunizations() && !userService.hasRight(UserRight.IMMUNIZATION_EDIT))) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+
+		super.share(entityUuids, options);
 	}
 
 	@Override
@@ -139,7 +160,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	public Case extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
+	protected Case extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
 		return shareInfo.getCaze();
 	}
 

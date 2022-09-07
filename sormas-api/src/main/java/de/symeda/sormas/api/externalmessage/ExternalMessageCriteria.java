@@ -3,6 +3,7 @@ package de.symeda.sormas.api.externalmessage;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -23,6 +24,7 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	private ExternalMessageType type;
 	private ExternalMessageStatus externalMessageStatus;
 	private SampleReferenceDto sample;
+	private CaseReferenceDto caze;
 	private String searchFieldLike;
 	private Date messageDateFrom;
 	private Date messageDateTo;
@@ -61,6 +63,14 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 
 	public void setSample(SampleReferenceDto sample) {
 		this.sample = sample;
+	}
+
+	public CaseReferenceDto getCaze() {
+		return caze;
+	}
+
+	public void setCaze(CaseReferenceDto caze) {
+		this.caze = caze;
 	}
 
 	public String getSearchFieldLike() {

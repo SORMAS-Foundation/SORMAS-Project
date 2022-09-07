@@ -29,7 +29,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
@@ -145,7 +144,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// Event should be marked as deleted; Event participant should be deleted
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertTrue(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
-		assertNull(getActionFacade().getByUuid(action.getUuid()));
+		assertNotNull(getActionFacade().getByUuid(action.getUuid())); // actions get deleted only with permanent delete
 		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
 		assertEquals("test reason", getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
 	}

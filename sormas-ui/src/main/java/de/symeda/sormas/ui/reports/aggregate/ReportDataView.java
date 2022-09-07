@@ -78,7 +78,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.aggregateReportNewAggregateReport,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), false, null),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> navigateTo(criteria), false, null),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(btnCreate);
@@ -86,7 +86,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			btnEdit = ButtonHelper.createIconButton(
 				Captions.aggregateReportEditAggregateReport,
 				VaadinIcons.EDIT,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), true, null),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> navigateTo(criteria), true, null),
 				ValoTheme.BUTTON_PRIMARY);
 			btnEdit.setVisible(false);
 
@@ -98,7 +98,8 @@ public class ReportDataView extends AbstractAggregateReportsView {
 
 			addHeaderComponent(btnExport);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.AGGREGATE_REPORTS, EDIT_AGGREGATE_REPORT, DELETE_AGGREGATE_REPORT);
+			StreamResource streamResource = GridExportStreamResource
+				.createStreamResource(grid, ExportEntityName.AGGREGATE_REPORTS, EDIT_AGGREGATE_REPORT, DELETE_AGGREGATE_REPORT);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(btnExport);
 		}

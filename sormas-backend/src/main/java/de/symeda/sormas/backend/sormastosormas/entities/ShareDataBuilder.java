@@ -32,10 +32,10 @@ import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.CaseShareDataBuilder;
@@ -45,9 +45,9 @@ import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.EventPa
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.ImmunizationShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SampleShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.ShareRequestPreviews;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.ShareRequestPreviews;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless

@@ -458,6 +458,11 @@ components:
           - Enterovirus
           - M.pneumoniae
           - C.pneumoniae
+          - ARI (Acute Respiratory Infections)
+          - Chikungunya
+          - Post-immunization adverse events mild
+          - Post-immunization adverse events severe
+          - FHA (Functional Hypothalamic Amenorrhea)
           - Other Epidemic Disease
           - Not Yet Defined
         visitDateTime:

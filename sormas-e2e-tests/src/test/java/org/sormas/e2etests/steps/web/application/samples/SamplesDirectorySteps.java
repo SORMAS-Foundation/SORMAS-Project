@@ -49,7 +49,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import cucumber.api.java8.En;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -72,6 +71,7 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.Assert;
@@ -299,8 +299,12 @@ public class SamplesDirectorySteps implements En {
     When(
         "^I search for Sample using Sample UUID from the created Sample",
         () -> {
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT, CreateNewSampleSteps.sampleId);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilWebElementHasAttributeWithValue(
               SEARCH_RESULT_SAMPLE, "title", CreateNewSampleSteps.sampleId);
         });
@@ -529,9 +533,8 @@ public class SamplesDirectorySteps implements En {
     When(
         "I delete exported file from Sample Directory",
         () -> {
-          File toDelete =
-              new File(userDirPath + "/downloads/sormas_samples_" + LocalDate.now() + "_.csv");
-          toDelete.deleteOnExit();
+          String filePath = "sormas_samples_" + LocalDate.now() + "_.csv";
+          FilesHelper.deleteFile(filePath);
         });
   }
 

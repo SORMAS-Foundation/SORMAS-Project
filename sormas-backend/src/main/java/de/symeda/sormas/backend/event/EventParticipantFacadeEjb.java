@@ -88,6 +88,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -126,8 +127,10 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -169,11 +172,14 @@ public class EventParticipantFacadeEjb
 	@EJB
 	private NotificationService notificationService;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private VaccinationService vaccinationService;
+
+	@EJB
+	private SampleService sampleService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -276,15 +282,6 @@ public class EventParticipantFacadeEjb
 		if (!eventParticipantUuids.isEmpty()) {
 			archive(eventParticipantUuids);
 		}
-	}
-
-	private List<Vaccination> getRelevantSortedVaccinations(String eventUuid, List<Vaccination> vaccinations) {
-		Event event = eventService.getByUuid(eventUuid);
-
-		return vaccinations.stream()
-			.filter(v -> vaccinationService.isVaccinationRelevant(event, v))
-			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-			.collect(Collectors.toList());
 	}
 
 	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
@@ -447,7 +444,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public void validate(EventParticipantDto eventParticipant) throws ValidationRuntimeException {
+	public void validate(@Valid EventParticipantDto eventParticipant) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (eventParticipant.getPerson() == null) {
@@ -521,6 +518,8 @@ public class EventParticipantFacadeEjb
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			joins.getSamples().get(Sample.PATHOGEN_TEST_RESULT),
+			joins.getSamples().get(Sample.SAMPLE_DATE_TIME),
 			eventParticipant.get(EventParticipant.VACCINATION_STATUS),
 			joins.getEventParticipantReportingUser().get(User.ID),
 			joins.getEventParticipantReportingUser().get(User.UUID),
@@ -533,6 +532,13 @@ public class EventParticipantFacadeEjb
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
+
+		cq.distinct(true);
+
+		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
+		Predicate latestSamplePredicate =
+			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
+		filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -554,6 +560,14 @@ public class EventParticipantFacadeEjb
 				case EventParticipantIndexDto.APPROXIMATE_AGE:
 				case EventParticipantIndexDto.SEX:
 				case EventParticipantIndexDto.LAST_NAME:
+				case SampleIndexDto.PATHOGEN_TEST_RESULT:
+					expression = joins.getSamples().get(SampleIndexDto.PATHOGEN_TEST_RESULT);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				case SampleIndexDto.SAMPLE_DATE_TIME:
+					expression = joins.getSamples().get(SampleIndexDto.SAMPLE_DATE_TIME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
 				case EventParticipantIndexDto.FIRST_NAME:
 					expression = person.get(sortProperty.propertyName);
 					break;
@@ -659,6 +673,7 @@ public class EventParticipantFacadeEjb
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext)),
 
 			event.get(Event.UUID),
+			event.get(Event.REPORT_DATE_TIME),
 
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -806,9 +821,11 @@ public class EventParticipantFacadeEjb
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
-							exportDto.getEventUuid(),
-							filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
+						List<Vaccination> relevantSortedVaccinations = vaccinationService.getRelevantSortedVaccinations(
+							filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()),
+							exportDto.getEventStartDate(),
+							exportDto.getEventEndDate(),
+							exportDto.getEventReportDateTime());
 						Vaccination firstVaccination = null;
 						Vaccination lastVaccination = null;
 
@@ -953,7 +970,7 @@ public class EventParticipantFacadeEjb
 		target.setVaccinationStatus(source.getVaccinationStatus());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
 		}
 
 		target.setDeleted(source.isDeleted());
@@ -1001,7 +1018,7 @@ public class EventParticipantFacadeEjb
 
 		target.setReportingUser(source.getReportingUser().toReference());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
+		target.setPerson(PersonFacadeEjb.toPersonDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));

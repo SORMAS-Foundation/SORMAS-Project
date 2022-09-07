@@ -23,7 +23,12 @@ import org.openqa.selenium.By;
 public class EditUserPage {
   public static final By FIRST_NAME_OF_USER_INPUT = By.id("firstName");
   public static final By LAST_NAME_OF_USER_INPUT = By.id("lastName");
-  public static final By CREATE_NEW_PASSWORD_INPUT = By.id("userResetPassword");
+  public static final By CREATE_NEW_PASSWORD_BUTTON = By.id("userResetPassword");
+  public static final By CONFIRM_NEW_PASSWORD_BUTTON = By.id("actionConfirm");
+  public static final By NEW_GENERATED_PASSWORD_TEXT =
+      By.xpath("//div[@class='v-window-wrap']//div[contains(@class,\"h2 v-label-undef-w\")]");
+  public static final By CLOSE_PASSWORD_POPUP_BUTTON =
+      By.xpath("//div[@class='v-window-closebox']");
   public static final By EMAIL_ADDRESS_INPUT = By.id("userEmail");
   public static final By PHONE_INPUT = By.id("phone");
   public static final By COUNTRY_COMBOBOX_INPUT = By.cssSelector("#country input");

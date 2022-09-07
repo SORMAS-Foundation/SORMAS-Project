@@ -99,6 +99,8 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserReference;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -462,8 +464,19 @@ public class VisitFacadeEjb implements VisitFacade {
 			if (resultList.size() > 0) {
 
 				Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+				Set<Long> userIds = resultList.stream().map(VisitExportDto::getVisitUserId).filter(Objects::nonNull).collect(Collectors.toSet());
+				Map<Long, UserReference> visitUsers = userIds.isEmpty()
+					? null
+					: userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
 				for (VisitExportDto exportDto : resultList) {
 					boolean inJurisdiction = exportDto.getInJurisdiction();
+
+					UserReference user = visitUsers != null ? visitUsers.get(exportDto.getVisitUserId()) : null;
+
+					if (user != null) {
+						exportDto.setVisitUserName(user.getName());
+						exportDto.setVisitUserRoles(user.getUserRoles().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+					}
 
 					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
 						if (v.getSymptoms() != null) {

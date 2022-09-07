@@ -48,7 +48,6 @@ import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportRegionSummaryDto;
 import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -377,9 +376,12 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 				// task
 				continue;
 			} else {
-				TaskCriteria pendingUserTaskCriteria =
-					new TaskCriteria().taskType(TaskType.WEEKLY_REPORT_GENERATION).assigneeUser(user.toReference()).taskStatus(TaskStatus.PENDING);
-				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria, true);
+				List<Task> existingTasks = taskService.findByAssigneeContactTypeAndStatuses(
+					user.toReference(),
+					null,
+					TaskType.WEEKLY_REPORT_GENERATION,
+					TaskStatus.IN_PROGRESS,
+					TaskStatus.PENDING);
 
 				if (!existingTasks.isEmpty()) {
 					// There is already a task for generating the Weekly Report for last week

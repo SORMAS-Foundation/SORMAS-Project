@@ -182,17 +182,6 @@ public final class PersonHelper {
 		return result.toString();
 	}
 
-	public static String buildOccupationString(OccupationType occupationType, String occupationDetails) {
-
-		StringBuilder result = new StringBuilder();
-		if (occupationType == OccupationType.OTHER) {
-			result.append(occupationDetails);
-		} else if (occupationType != null) {
-			result.append(occupationType);
-		}
-		return result.toString();
-	}
-
 	public static String buildEducationString(EducationType educationType, String educationDetails) {
 
 		StringBuilder result = new StringBuilder();

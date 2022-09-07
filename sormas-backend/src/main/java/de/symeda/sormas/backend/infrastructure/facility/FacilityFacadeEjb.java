@@ -34,6 +34,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -576,7 +577,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public void validate(FacilityDto dto) {
+	public void validate(@Valid FacilityDto dto) {
 		if (dto.getType() == null
 			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
 			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {

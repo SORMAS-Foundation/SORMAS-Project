@@ -34,6 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -127,6 +129,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			vaccination.getImmunization().getPerson().getId(),
 			vaccination.getImmunization().getDisease());
 
+		immunizationFacade.onImmunizationChanged(vaccination.getImmunization(), true);
+
 		return convertToDto(vaccination, pseudonymizer);
 	}
 
@@ -176,6 +180,10 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		vaccinationService.ensurePersisted(vaccination);
 
 		updateVaccinationStatuses(vaccination, null, vaccination.getImmunization().getPerson().getId(), disease);
+
+		if (immunizationFound) {
+			immunizationFacade.onImmunizationChanged(vaccination.getImmunization(), true);
+		}
 
 		return convertToDto(vaccination, Pseudonymizer.getDefault(userService::hasRight));
 	}
@@ -281,6 +289,26 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		dto.setRelevant(relevant);
 		dto.setNonRelevantMessage(message);
 		return dto;
+	}
+
+	@Override
+	public boolean isVaccinationRelevant(CaseDataDto cazeDto, VaccinationDto vaccinationDto) {
+		Case caze = caseService.getByUuid(cazeDto.getUuid());
+		Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+		return vaccinationService.isVaccinationRelevant(caze, vaccination);
+	}
+
+	@Override
+	public List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto) {
+		Case caze = caseService.getByUuid(cazeDto.getUuid());
+		List<Vaccination> vaccinations = vaccinationService.getRelevantVaccinationsForCase(caze);
+		return convertToDtoList(vaccinations);
+	}
+
+	public List<VaccinationDto> convertToDtoList(List<Vaccination> vaccinations) {
+		Pseudonymizer defaultPseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+
+		return vaccinations.stream().map(v -> convertToDto(v, defaultPseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -547,13 +575,16 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	public void copyOrMergeVaccinations(ImmunizationDto immunizationDto, Immunization newImmunization, List<VaccinationDto> leadPersonVaccinations) {
 
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
-		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
-			Optional<VaccinationDto> duplicateVaccination = leadPersonVaccinations != null
-				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).findFirst()
-				: Optional.empty();
+		List<VaccinationDto> followPersonVaccinationWithoutDuplicates = getMergedVaccination(immunizationDto.getVaccinations());
 
-			if (duplicateVaccination.isPresent()) {
-				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination.get(), vaccinationDto, false);
+		for (VaccinationDto vaccinationDto : followPersonVaccinationWithoutDuplicates) {
+			List<VaccinationDto> duplicateLeadVaccinations = leadPersonVaccinations != null
+				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).collect(Collectors.toList())
+				: new ArrayList<>();
+			duplicateLeadVaccinations.sort(Comparator.comparing(EntityDto::getChangeDate).reversed());
+			if (duplicateLeadVaccinations.size() > 0) {
+				VaccinationDto duplicateVaccination = duplicateLeadVaccinations.get(0);
+				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination, vaccinationDto, false);
 				save(updatedVaccination);
 			} else {
 				Vaccination vaccination = new Vaccination();
@@ -571,6 +602,47 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 		newImmunization.getVaccinations().clear();
 		newImmunization.getVaccinations().addAll(vaccinationEntities);
+	}
+
+	/**
+	 * This method will return the list with vaccination for a person and merge all duplicates.
+	 * The lead vaccine will be considered the latest vaccine changed.
+	 * !! The list of merged vaccines is not persisted in DB
+	 */
+	private List<VaccinationDto> getMergedVaccination(List<VaccinationDto> vaccinationDtos) {
+		if (vaccinationDtos == null || vaccinationDtos.isEmpty()) {
+			return new ArrayList<>();
+		}
+		List<VaccinationDto> vaccinationsWithoutDuplicates = new ArrayList<>();
+		for (VaccinationDto vaccinationDto : vaccinationDtos) {
+			int duplicateIndex = 0;
+			VaccinationDto duplicateVaccine = null;
+			for (int i = 0; i < vaccinationsWithoutDuplicates.size(); i++) {
+				if (isDuplicateOf(vaccinationDto, vaccinationsWithoutDuplicates.get(i))) {
+					duplicateVaccine = vaccinationsWithoutDuplicates.get(i);
+					duplicateIndex = i;
+					break;
+				}
+			}
+
+			if (duplicateVaccine == null) {
+				vaccinationsWithoutDuplicates.add(vaccinationDto);
+			} else {
+				VaccinationDto targetVaccine;
+				VaccinationDto sourceVaccine;
+				if (duplicateVaccine.getChangeDate().after(vaccinationDto.getChangeDate())) {
+					targetVaccine = duplicateVaccine;
+					sourceVaccine = vaccinationDto;
+				} else {
+					targetVaccine = vaccinationDto;
+					sourceVaccine = duplicateVaccine;
+				}
+
+				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(targetVaccine, sourceVaccine, false);
+				vaccinationsWithoutDuplicates.set(duplicateIndex, updatedVaccination);
+			}
+		}
+		return vaccinationsWithoutDuplicates;
 	}
 
 	private boolean isDuplicateOf(VaccinationDto vaccination1, VaccinationDto vaccination2) {

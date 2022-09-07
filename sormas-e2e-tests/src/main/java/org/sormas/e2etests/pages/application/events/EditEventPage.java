@@ -70,6 +70,9 @@ public class EditEventPage {
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
   public static final By EVENT_HANDOUT_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By GPS_LATITUDE_INPUT_EDIT_EVENT = By.id("latitude");
+  public static final By GPS_LONGITUDE_INPUT_EDIT_EVENT = By.id("longitude");
+  public static final By MAP_CONTAINER = By.cssSelector("[class*='leaflet-container']");
   public static final By EVENT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By CREATE_EVENT_HANDOUT_BUTTON =
       By.cssSelector(".popupContent [id='Create']");
@@ -89,6 +92,7 @@ public class EditEventPage {
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
+  public static final By CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT = By.id("bulkActions-5");
   public static final By EVENT_MANAGEMENT_STATUS_CHECK =
       By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");
   public static final By EVENT_CLUSTER_EDIT = By.xpath("//span[.='Cluster']");
@@ -172,10 +176,23 @@ public class EditEventPage {
   public static final By EVENT_ERROR_POPUP_SECOND_MESSAGE =
       By.xpath(
           "//div[@class='popupContent']//li[text()='Start date has to be before or on the same day as Date of report']");
+  public static final By VACCINATION_STATUS_COMBOBOX =
+      By.xpath("//div[@id='vaccinationStatus']/div");
+  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+  public static final By EYE_ICON =
+      By.cssSelector("[class*='v-caption-on-top']>[class*='v-popupview']");
 
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
   }
 
-  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+  public static By getEventParticipantUUIDbyIndex(int index) {
+    return By.xpath(
+        String.format(
+            "(//input[@type=\"checkbox\"])[%x]/../../following-sibling::td/a", index + 2));
+  }
+
+  public static final By FIRST_EVENT_PARTICIPANT_FROM_LIST = By.cssSelector("tr td a");
+  public static final By CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON =
+      By.xpath("(//tr//td//a)[3]");
 }

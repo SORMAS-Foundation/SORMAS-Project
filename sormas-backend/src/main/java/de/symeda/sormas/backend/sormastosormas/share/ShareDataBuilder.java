@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.share;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 
 public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, ADO extends SormasToSormasShareable, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
 
@@ -65,6 +66,7 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		}
 		return shared;
 	}
+	protected abstract DTO getDto(ADO ado, Pseudonymizer pseudonymizer);
 
 	protected abstract void doBusinessValidation(SHARED shared) throws ValidationRuntimeException;
 

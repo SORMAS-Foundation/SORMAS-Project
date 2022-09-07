@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
@@ -34,7 +34,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -60,12 +60,9 @@ public class CaseShareDataBuilder
 
 	@Override
 	protected SormasToSormasCaseDto doBuildShareData(Case caze, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
-
-		PersonDto personDto = dataBuilderHelper
-			.getPersonDto(caze.getPerson(), pseudonymizer, requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
-		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, requestInfo);
+		CaseDataDto cazeDto = getDto(caze, pseudonymizer);
 
 		dataBuilderHelper.clearIgnoredProperties(cazeDto);
 
@@ -80,16 +77,17 @@ public class CaseShareDataBuilder
 
 	@Override
 	protected SormasToSormasCasePreview doBuildShareDataPreview(Case caze, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		return getCasePreview(caze, pseudonymizer);
 	}
 
-	private CaseDataDto getCazeDto(Case caze, Pseudonymizer pseudonymizer) {
-		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
+	@Override
+	protected CaseDataDto getDto(Case caze, Pseudonymizer pseudonymizer) {
 
-		cazeDto.setReportingUser(null);
+		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		cazeDto.setClassificationUser(null);
 		cazeDto.setSurveillanceOfficer(null);
 		cazeDto.setCaseOfficer(null);
@@ -99,7 +97,7 @@ public class CaseShareDataBuilder
 		return cazeDto;
 	}
 
-	private SormasToSormasCasePreview getCasePreview(Case caze, Pseudonymizer pseudonymizer) {
+	public SormasToSormasCasePreview getCasePreview(Case caze, Pseudonymizer pseudonymizer) {
 		SormasToSormasCasePreview casePreview = new SormasToSormasCasePreview();
 
 		casePreview.setUuid(caze.getUuid());

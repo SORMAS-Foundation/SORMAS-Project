@@ -143,6 +143,10 @@ public class ContactsDetailedTableViewSteps implements En {
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID);
         });
+
+    Then(
+        "I click on the first Contact ID from Contacts Directory in Contacts in Case",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID_FROM_CASE));
   }
 
   private List<Map<String, String>> getTableRowsData() {

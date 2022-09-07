@@ -1,7 +1,7 @@
 @UI @Sanity @Contact @Filters
 Feature: Contact filter functionality
 
-  @issue=SORDEV-5692 @env_main
+  @tmsLink=SORDEV-5692 @env_main
   Scenario: Check Contact basic filters on Contact directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -12,7 +12,7 @@ Feature: Contact filter functionality
     Given API: I create a new contact linked to the previous created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     Then I apply Id of last api created Contact on Contact Directory Page
     And I apply Contact classification filter to "Unconfirmed contact" on Contact Directory Page
@@ -42,7 +42,7 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
     And I apply Follow-up status filter to "Completed follow-up" on Contact Directory Page
 
-  @issue=SORDEV-5692 @env_main
+  @tmsLink=SORDEV-5692 @env_main
   Scenario: Check checkbox filters on Contact directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -53,7 +53,7 @@ Feature: Contact filter functionality
     Given API: I create a new contact linked to the previous created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     Then I apply Id of last api created Contact on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
@@ -80,7 +80,7 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
     And I click "Only contacts from other instances" checkbox on Contact directory page
 
-  @issue=SORDEV-5692 @env_main
+  @tmsLink=SORDEV-5692 @env_main
   Scenario: Check aggregation buttons on Contact directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -91,7 +91,7 @@ Feature: Contact filter functionality
     Given API: I create a new contact linked to the previous created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     Then I apply Id of last api created Contact on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
@@ -105,9 +105,9 @@ Feature: Contact filter functionality
     And I click on Dropped button on Contact Directory Page
     And I check that number of displayed contact results is 0
 
-  @issue=SORQA-5911 @env_de
+  @tmsLink=SORQA-5911 @env_de
   Scenario: Check Contact basic filters on Contact directory page for DE version
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
@@ -151,9 +151,9 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
     And I apply Follow-up status filter to "Nachverfolgung abgebrochen" on Contact Directory Page
 
-  @issue=SORQA-5911 @env_de
+  @tmsLink=SORQA-5911 @env_de
   Scenario: Check checkbox filters on Contact directory page for DE version
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
@@ -202,9 +202,9 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
     And I click "Nur Kontakte von anderen Instanzen" checkbox on Contact directory page for DE version
 
-  @issue=SORQA-6100 @env_de
+  @tmsLink=SORQA-6100 @env_de
   Scenario: Add disease variant filter to the contact directory and variant to source case box for DE
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
@@ -275,3 +275,28 @@ Feature: Contact filter functionality
     And I click APPLY BUTTON in Contact Directory Page
     And I check that number of displayed contact results is 0
 
+
+
+  @tmsLink=SORQA-5969 @env_de
+  Scenario Outline: Test vaccination status filter <status> and columns to contact
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    When I click on the Contacts button from navbar
+    Then I search after last created contact via API by UUID and open
+    And I set contact vaccination status to <status>
+    When I click on the Contacts button from navbar
+    And I click SHOW MORE FILTERS button on Contact directory page
+    Then I set contact vaccination status filter to <status>
+    And I apply contact filters
+    Then I check that created Contact is visible with <status> status
+
+    Examples:
+      | status    |
+      | Geimpft   |
+      | Ungeimpft |
+      | Unbekannt |

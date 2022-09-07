@@ -30,4 +30,10 @@ public class EditActionPage {
   public static final By DESCRIPTION_IFRAME = By.cssSelector("#description > iframe");
   public static final By DESCRIPTION_INPUT = By.cssSelector("body");
   public static final By ACTION_STATUS_OPTIONS = By.cssSelector("#actionStatus label");
+  public static final By DOWNLOAD_LAST_UPDATED_DOCUMENT =
+      By.xpath("(//div[@class='v-button v-widget'])[1]");
+  public static final By DELETE_LAST_UPDATED_DOCUMENT =
+      By.xpath("(//div[@class='v-button v-widget'])[2]");
+  public static final By NO_DOCUMENT_TEXT =
+      By.xpath("(//div[@class='v-label v-widget v-label-undef-w'])[3]");
 }

@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @Remote
 public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria> {
@@ -219,6 +221,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseDataDto> getByExternalId(String externalId);
 
+	List<CaseDataDto> getRelevantCasesForVaccination(VaccinationDto vaccination);
+
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	int updateCompleteness();
@@ -232,4 +236,9 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
 
 	void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto);
+
+	EditPermissionType isEditContactAllowed(String uuid);
+
+	boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid);
+
 }

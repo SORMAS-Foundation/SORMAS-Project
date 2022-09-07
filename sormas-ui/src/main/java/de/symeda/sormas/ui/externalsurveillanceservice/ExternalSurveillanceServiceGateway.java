@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.externalsurveillanceservice;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.util.Collections;
 import java.util.List;
 
@@ -8,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -16,6 +14,7 @@ import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -106,24 +105,12 @@ public class ExternalSurveillanceServiceGateway {
 	public static void sendCasesToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCases), () -> {
 			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids, false);
-			new Notification(
-				I18nProperties.getString(Strings.headingCasesSentToExternalSurveillanceTool),
-				I18nProperties.getString(Strings.messageCasesSentToExternalSurveillanceTool),
-				Notification.Type.HUMANIZED_MESSAGE,
-				false).show(Page.getCurrent());
-
 		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
 	}
 
 	public static void sendEventsToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvents), () -> {
 			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids, false);
-			new Notification(
-				I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
-				I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),
-				Notification.Type.HUMANIZED_MESSAGE,
-				false).show(Page.getCurrent());
-
 		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
 	}
 

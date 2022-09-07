@@ -100,7 +100,9 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, column.getId(), column.getCaption()));
-			column.setMaximumWidth(300);
+			if (!column.getId().equals(COLUMN_ACTIONS)) {
+				column.setMaximumWidth(300);
+			}
 		}
 		getColumn(COLUMN_ACTIONS).setCaption("");
 		getColumn(COLUMN_UUID).setCaption(I18nProperties.getPrefixCaption(i18nPrefix, UUID));
@@ -220,6 +222,7 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 
 		expandRecursively(data.getRootItems(), 0);
 		dataProvider.refreshAll();
+		this.recalculateColumnWidths();
 	}
 
 	public void reload(boolean ignoreRegion) {
