@@ -48,7 +48,10 @@ Changing these entries overrides that default value. Unlike with features, disea
 [This Wiki page](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Disease-Configuration-Options) contains a list and explanation of all currently configurable disease properties.
 
 ## Deletion Configuration
-SORMAS can be set up to automatically delete entities after a specific time period. There are seven core entities for which automatic deletion can be enabled and configured: *Case, Contact, Event, Event Participant, Immunization, Travel Entry, and Campaign.* This configuration is currently only possible directly in the database via the `deleteconfiguration` table, which already contains rows for each of these entities. The table consists of the following columns:
+SORMAS can be set up to automatically delete entities after a specific time period. 
+There are seven core entities for which automatic deletion can be enabled and configured: *Case, Contact, Event, Event Participant, Immunization, Travel Entry, and Campaign.* 
+This configuration is currently only possible directly in the database via the `deleteconfiguration` table, which already contains rows for each of these entities. 
+The table consists of the following columns:
 
 * **`entityType`:** The name of the entity that supports automatic deletion.
 * **`deletionReference`:** The reference date for the calculation of the date on which deletion takes place (see below).
@@ -57,7 +60,8 @@ SORMAS can be set up to automatically delete entities after a specific time peri
 Both `deletionReference` and `deletionPeriod` need to be filled in order for the automatic deletion to take place. Entities for which at least one of these fields is left empty will not be automatically deleted. Deletion is executed via a nightly cron job and might therefore not happen immediately when the deletion date has been reached.
 
 ### Deletion Reference
-The `deletionReference` field has four possible values which define the date that is used to calculate whether an entity needs to be deleted (i.e., when the date calculated by subtracting the deletion period from the current date is before the deletion reference date, the entity is deleted). A `MANUAL_DELETION` entry can exist in parallel to one of the other entries, and if both entries are configured, deletion is executed as soon as the threshold of one of these entries is met.
+The `deletionReference` field has four possible values which define the date that is used to calculate whether an entity needs to be deleted (i.e., when the date calculated by subtracting the deletion period from the current date is before the deletion reference date, the entity is deleted). 
+A `MANUAL_DELETION` entry can exist in parallel to one of the other entries, and if both entries are configured, deletion is executed as soon as the threshold of one of these entries is met.
 
 * **`CREATION`**: The creation date of the entity will be used.
 * **`END`**: The latest change date of the entity itself and any of its depending entities will be used. E.g. for cases, this includes but is not limited to its epi data, symptoms, or hospitalization.
@@ -93,13 +97,13 @@ To cover the typical use cases, SORMAS defines a set of default user roles that 
 
 Most user rights define an action related to an entity type, e.g. the user right *CASE_EDIT* allows users to edit case data.
 The following automatically generated documents list and describe **all user rights and the default user roles**:
-* https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_User_Roles.xlsx
+* [https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_User_Roles.xlsx](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_User_Roles.xlsx)
 
-User roles are fully configurable, allowing admins to create new user roles and edit existing ones, to customize the instance to the given needs and to make sure data protection requirements are fulfilled. 
+User roles are fully configurable, allowing admins to create new user roles and edit existing ones, to customize the instance to the given needs and to make sure data protection requirements are fulfilled.
 
 ### Related topics
 
 * Epic that introduced configurable user roles: #898
-* Data access based on user rights and user's jurisdiction: https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-backend/doc/UserDataAccess.md
-* Using keycloak as authentication provider: https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/SERVER_SETUP.md#keycloak-server
-* The available jurisdiction levels (nation, region, district, health facility, etc.) are defined in Java code (https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/user/JurisdictionLevel.java)
+* Data access based on user rights and user's jurisdiction: [https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-backend/doc/UserDataAccess.md](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-backend/doc/UserDataAccess.md)
+* Using keycloak as authentication provider: [https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/SERVER_SETUP.md#keycloak-server](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/SERVER_SETUP.md#keycloak-server)
+* The available jurisdiction levels (nation, region, district, health facility, etc.) are defined in Java code [https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/user/JurisdictionLevel.java](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/user/JurisdictionLevel.java)
