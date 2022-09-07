@@ -15,6 +15,13 @@
 
 package de.symeda.sormas.api.externalmessage.labmessage;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -26,12 +33,6 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
-
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
 public class SampleReportDto extends EntityDto {

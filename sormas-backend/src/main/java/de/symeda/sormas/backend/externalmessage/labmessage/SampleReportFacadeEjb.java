@@ -81,6 +81,7 @@ public class SampleReportFacadeEjb implements SampleReportFacade {
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setLabSampleId(source.getLabSampleId());
 		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 		target.setLabMessage(externalMessageService.getByReferenceDto(source.getLabMessage()));
@@ -118,6 +119,7 @@ public class SampleReportFacadeEjb implements SampleReportFacade {
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setLabSampleId(source.getLabSampleId());
 		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 		target.setLabMessage(ExternalMessageFacadeEjb.toReferenceDto(source.getLabMessage()));

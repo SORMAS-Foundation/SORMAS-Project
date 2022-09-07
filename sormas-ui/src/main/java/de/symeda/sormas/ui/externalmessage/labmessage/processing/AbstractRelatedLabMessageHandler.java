@@ -238,10 +238,11 @@ public abstract class AbstractRelatedLabMessageHandler {
 		HandlerResultStatus defaultResult,
 		ChainHandler chainHandler) {
 
+		// TODO Generify this. It may be possible to handle the correction of multiple samples, but this is not yet thought through
 		return handleCorrection(
 			labMessage,
 			sample,
-			mapper::mapToSample,
+			mapper::mapFirstSampleReportToSample,
 			confirmationSupplier,
 			this::handleSampleCorrection,
 			defaultResult,
@@ -335,6 +336,11 @@ public abstract class AbstractRelatedLabMessageHandler {
 
 	// related entities
 	public RelatedEntities getRelatedEntities(ExternalMessageDto labMessage) {
+		// TODO It may be possible to use related entities for multiple sample reports, but this is not yet thought through
+		if (labMessage.getSampleReportsNullSave().size() > 1) {
+			return null;
+		}
+
 		String reportId = labMessage.getReportId();
 		String labSampleId = labMessage.getSampleReportsNullSave().get(0).getLabSampleId();
 

@@ -200,6 +200,10 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 	}
 
 	public long countForCase(String caseUuid) {
+		return countLabMessagesForCase(caseUuid) + countLabMessagesForCase(caseUuid);
+	}
+
+	private long countLabMessagesForCase(String caseUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
@@ -208,6 +212,17 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 		Join<Sample, Case> caseJoin = sampleJoin.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
 		cq.where(caseJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(caseUuid)));
+		cq.select(cb.countDistinct(labMessageRoot));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	private long countPhysiciansReportsForCase(String caseUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
+
+		cq.where(cb.equal(labMessageRoot.get(ExternalMessage.CASE), caseUuid));
 		cq.select(cb.countDistinct(labMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -44,13 +45,28 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 	@Test
 	public void testHomogenousTestResultTypesInWithNoTestReport() {
-		ExternalMessageDto externalMessageDto = ExternalMessageDto.build();
-		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(externalMessageDto);
+		ExternalMessageDto oneSampleReportMessage = ExternalMessageDto.build();
+		ExternalMessageMapper oneSampleReportMessageMapper = ExternalMessageMapper.forLabMessage(oneSampleReportMessage);
 
-		SampleDto sample = new SampleDto();
-		mapper.mapToSample(sample);
+		SampleDto sample1 = new SampleDto();
+		oneSampleReportMessageMapper.mapToSample(sample1, 0);
 
-		assertNull(sample.getPathogenTestResult());
+		assertNull(sample1.getPathogenTestResult());
+
+		ExternalMessageDto twoSampleReportsMessage = ExternalMessageDto.build();
+		twoSampleReportsMessage.addSampleReport(SampleReportDto.build());
+		twoSampleReportsMessage.addSampleReport(SampleReportDto.build());
+		ExternalMessageMapper twoSampleReportsMessageMapper = ExternalMessageMapper.forLabMessage(twoSampleReportsMessage);
+
+		SampleDto sample2 = new SampleDto();
+		twoSampleReportsMessageMapper.mapToSample(sample2, 0);
+
+		SampleDto sample3 = new SampleDto();
+		twoSampleReportsMessageMapper.mapToSample(sample3, 1);
+
+		assertNull(sample2.getPathogenTestResult());
+		assertNull(sample3.getPathogenTestResult());
+
 	}
 
 	@Test
@@ -67,9 +83,9 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		labMessage.getSampleReports().get(0).addTestReport(testReport2);
 
 		SampleDto sample = new SampleDto();
-		mapper.mapToSample(sample);
+		mapper.mapToSample(sample, 0);
 
-		assertEquals(sample.getPathogenTestResult(), PathogenTestResultType.POSITIVE);
+		assertEquals(PathogenTestResultType.POSITIVE, sample.getPathogenTestResult());
 	}
 
 	@Test
@@ -91,7 +107,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
 
 		SampleDto sample = new SampleDto();
-		mapper.mapToSample(sample);
+		mapper.mapToSample(sample, 0);
 
 		assertNull(sample.getPathogenTestResult());
 	}

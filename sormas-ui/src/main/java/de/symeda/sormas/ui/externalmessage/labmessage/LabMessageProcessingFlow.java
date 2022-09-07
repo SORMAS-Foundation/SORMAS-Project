@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.externalmessage.labmessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showCreateCaseWindow;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showFormWithLabMessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMultipleSamplesPopup;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreateEntryWindow;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreatePersonWindow;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
@@ -60,14 +61,14 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
+import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
@@ -123,15 +124,22 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	}
 
 	@Override
+	public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
+		return showMultipleSamplesPopup();
+	}
+
+	@Override
 	protected void handleCreateSampleAndPathogenTests(
 		SampleDto sample,
 		List<PathogenTestDto> pathogenTests,
 		Disease disease,
 		ExternalMessageDto labMessage,
 		boolean entityCreated,
+		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = getSampleCreateComponent(sample, pathogenTests, labMessage, disease);
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
+			getSampleCreateComponent(sample, lastSample, pathogenTests, labMessage, disease);
 
 		sampleCreateComponent.addCommitListener(() -> {
 			List<PathogenTestDto> createdPathogenTests = new ArrayList<>();
@@ -326,13 +334,15 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		SampleDto sample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto labMessage,
+		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
-		ExternalMessageProcessingUIHelper.showEditSampleWindow(sample, newPathogenTests, labMessage, callback::done, callback::cancel);
+		ExternalMessageProcessingUIHelper.showEditSampleWindow(sample, lastSample, newPathogenTests, labMessage, callback::done, callback::cancel);
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sample,
+		boolean lastSample,
 		List<PathogenTestDto> pathogenTests,
 		ExternalMessageDto externalMessageDto,
 		Disease disease) {
@@ -345,7 +355,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		// add option to create additional pathogen tests
 		sampleController.addPathogenTestButton(sampleCreateComponent, true);
 
-		LabMessageUiHelper.establishFinalCommitButtons(sampleCreateComponent);
+		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
 
 		return sampleCreateComponent;
 	}

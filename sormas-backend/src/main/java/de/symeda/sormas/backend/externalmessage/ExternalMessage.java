@@ -69,6 +69,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
 	public static final String ASSIGNEE = "assignee";
+	public static final String CASE = "case";
 
 	private ExternalMessageType type;
 	private Disease testedDisease;

@@ -18,6 +18,7 @@ import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProc
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -48,11 +49,12 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -60,7 +62,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.RelatedSamplesReportsAndPathogenTests;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
@@ -112,7 +114,7 @@ public class ExternalMessageController {
 		LabMessageProcessingFlow flow = new LabMessageProcessingFlow();
 
 		flow.run(labMessage, relatedLabMessageHandler)
-			.handle((BiFunction<? super ProcessingResult<SampleAndPathogenTests>, Throwable, Void>) (result, exception) -> {
+			.handle((BiFunction<? super ProcessingResult<RelatedSamplesReportsAndPathogenTests>, Throwable, Void>) (result, exception) -> {
 				if (exception != null) {
 					logger.error("Unexpected exception while processing lab message", exception);
 
@@ -129,7 +131,7 @@ public class ExternalMessageController {
 				if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
 					showCorrectionsSavedPopup();
 				} else if (status == ProcessingResultStatus.DONE) {
-					markExternalMessageAsProcessed(labMessage, result.getData().getSample().toReference());
+					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReports());
 					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 				}
 
@@ -164,8 +166,11 @@ public class ExternalMessageController {
 		});
 	}
 
-	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, SampleReferenceDto sample) {
-		externalMessage.getSampleReportsNullSave().get(0).setSample(sample);
+	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, Map<SampleReportDto, SampleDto> relatedSampleReports) {
+
+		for (Map.Entry<SampleReportDto, SampleDto> entry : relatedSampleReports.entrySet()) {
+			entry.getKey().setSample(entry.getValue().toReference());
+		}
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}

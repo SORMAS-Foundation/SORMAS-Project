@@ -21,7 +21,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
-import de.symeda.sormas.api.externalmessage.labmessage.SampleReportReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
@@ -48,7 +47,6 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 
 		SampleReport sampleReport = new SampleReport();
 		SampleReportDto sampleReportDto = new SampleReportFacadeEjb.SampleReportFacadeEjbLocal().toDto(sampleReport);
-		SampleReportReferenceDto sampleReportRef = sampleReportDto.toReference();
 
 		User assignee = new User();
 		assignee.setUuid("12345");

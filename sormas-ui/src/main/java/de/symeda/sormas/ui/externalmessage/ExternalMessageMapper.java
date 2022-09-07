@@ -114,33 +114,37 @@ public class ExternalMessageMapper {
 				Mapping.of(location::setCity, location.getCity(), externalMessage.getPersonCity(), PersonDto.ADDRESS, LocationDto.CITY)));
 	}
 
-	public List<String[]> mapToSample(SampleDto sample) {
+	public List<String[]> mapFirstSampleReportToSample(SampleDto sample) {
+		return mapToSample(sample, 0);
+	}
+
+	public List<String[]> mapToSample(SampleDto sample, int sampleReportIndex) {
 		List<String[]> changedFields = map(
 			Stream.of(
 				Mapping.of(
 					sample::setSampleDateTime,
 					sample.getSampleDateTime(),
-					externalMessage.getSampleReportsNullSave().get(0).getSampleDateTime(),
+					externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleDateTime(),
 					SampleDto.SAMPLE_DATE_TIME),
 				Mapping.of(
 					sample::setSampleMaterial,
 					sample.getSampleMaterial(),
-					externalMessage.getSampleReportsNullSave().get(0).getSampleMaterial(),
+					externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleMaterial(),
 					SampleDto.SAMPLE_MATERIAL),
 				Mapping.of(
 					sample::setSampleMaterialText,
 					sample.getSampleMaterialText(),
-					externalMessage.getSampleReportsNullSave().get(0).getSampleMaterialText(),
+					externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleMaterialText(),
 					SampleDto.SAMPLE_MATERIAL_TEXT),
 				Mapping.of(
 					sample::setSpecimenCondition,
 					sample.getSpecimenCondition(),
-					externalMessage.getSampleReportsNullSave().get(0).getSpecimenCondition(),
+					externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSpecimenCondition(),
 					SampleDto.SPECIMEN_CONDITION),
 				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
-		if (externalMessage.getSampleReportsNullSave().get(0).getSampleReceivedDate() != null) {
+		if (externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleReceivedDate() != null) {
 			changedFields.addAll(
 				map(
 					Stream.of(
@@ -148,20 +152,20 @@ public class ExternalMessageMapper {
 						Mapping.of(
 							sample::setReceivedDate,
 							sample.getReceivedDate(),
-							externalMessage.getSampleReportsNullSave().get(0).getSampleReceivedDate(),
+							externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleReceivedDate(),
 							SampleDto.RECEIVED_DATE),
 						Mapping.of(
 							sample::setLabSampleID,
 							sample.getLabSampleID(),
-							externalMessage.getSampleReportsNullSave().get(0).getLabSampleId(),
+							externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getLabSampleId(),
 							SampleDto.LAB_SAMPLE_ID))));
 		}
 
 		PathogenTestResultType pathogenTestResult = null;
-		if (externalMessage.getSampleReportsNullSave().get(0).getSampleOverallTestResult() != null) {
-			pathogenTestResult = externalMessage.getSampleReportsNullSave().get(0).getSampleOverallTestResult();
+		if (externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleOverallTestResult() != null) {
+			pathogenTestResult = externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleOverallTestResult();
 		} else if (homogenousTestResultTypesIn(externalMessage)) {
-			pathogenTestResult = externalMessage.getSampleReportsNullSave().get(0).getTestReports().get(0).getTestResult();
+			pathogenTestResult = externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getTestReports().get(0).getTestResult();
 		}
 
 		changedFields.addAll(

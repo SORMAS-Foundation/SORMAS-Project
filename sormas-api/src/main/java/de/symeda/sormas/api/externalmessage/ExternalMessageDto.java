@@ -351,7 +351,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	 * the sample report ({@link SampleReportDto#setLabMessage(ExternalMessageReferenceDto)}).
 	 * Otherwise, use the {@link ExternalMessageDto#addSampleReport(SampleReportDto)}.
 	 *
-	 * @param sampleReports
 	 */
 	public void setSampleReports(List<SampleReportDto> sampleReports) {
 		this.sampleReports = sampleReports;
