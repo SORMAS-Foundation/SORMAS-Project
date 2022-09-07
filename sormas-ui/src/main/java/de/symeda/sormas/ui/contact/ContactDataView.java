@@ -275,6 +275,8 @@ public class ContactDataView extends AbstractContactView {
 		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
+			layout.disable();
+		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
 			layout.disable(true);
 		}
 	}

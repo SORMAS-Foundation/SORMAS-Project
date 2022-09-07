@@ -1583,8 +1583,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(contact).getInJurisdiction() || sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+		if (!inJurisdictionOrOwned(contact).getInJurisdiction()) {
 			return EditPermissionType.REFUSED;
+		}
+
+		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+			return EditPermissionType.DOCUMENTS_ONLY;
 		}
 
 		return getEditPermissionType(contact);
