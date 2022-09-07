@@ -76,13 +76,13 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 		final PersonDto person = processedData.getPerson();
 		if (isCreate) {
 			// save person first during creation
-			handleValidationError(() -> personFacade.savePerson(person, false, false, false), Captions.Person, contactValidationGroupName, person);
+			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, person);
 
 			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName, contact);
 		} else {
 			//save contact first during update
 			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName, contact);
-			handleValidationError(() -> personFacade.savePerson(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
+			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
 		}
 	}
 }

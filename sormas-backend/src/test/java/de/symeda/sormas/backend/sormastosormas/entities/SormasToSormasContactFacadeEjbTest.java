@@ -247,7 +247,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedContact.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
 		assertThat(savedContact.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 
-		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedContact.getPerson().getUuid());
+		PersonDto savedPerson = getPersonFacade().getByUuid(savedContact.getPerson().getUuid());
 		assertThat(savedPerson, is(notNullValue()));
 		assertThat(savedPerson.getAddress().getRegion(), is(rdcf.region));
 		assertThat(savedPerson.getAddress().getDistrict(), is(rdcf.district));

@@ -496,6 +496,7 @@
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Déjà en train de sauvegarder..</string>
     <string name="message_aggregate_report_found">Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.</string>
+    <string name="message_aggregate_report_expired_age_groups">Age groups marked \"Expired\" are based on existing data for an age group that is no longer used.</string>
     <string name="message_case_infrastructure_data_changed">Vous avez modifié les données d\'infrastructure de ce cas. Voulez-vous transférer le cas vers le nouvel établissement de santé (les données d\'hospitalisation seront mises à jour) ou voulez-vous seulement modifier les données pour corriger une erreur ?</string>
     <string name="message_download_app_failed">Le téléchargement de la nouvelle version de SORMAS a échoué. Veuillez vous assurer que vous disposez de la meilleure connexion Internet possible et réessayez ou informez un superviseur si vous continuez à obtenir cette erreur malgré une bonne connexion Internet.</string>
     <string name="message_empty_password">Veuillez entrer un mot de passe.</string>

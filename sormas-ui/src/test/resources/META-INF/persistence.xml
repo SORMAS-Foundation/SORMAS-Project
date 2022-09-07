@@ -91,6 +91,7 @@
 		<validation-mode>CALLBACK</validation-mode>
 		<properties>
       		<property name="hibernate.dialect" value="de.symeda.sormas.ui.ExtendedH2Dialect"/>
+			<property name="hibernate.criteria.literal_handling_mode" value="bind" />
       		<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=YEAR,VALUE" />
 	    	<property name="javax.persistence.jdbc.user" value="sa" />

@@ -149,7 +149,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, allAfterBatched.size());
 		assertEquals(Disease.CORONAVIRUS, allAfterBatched.get(0).getDisease());
 
-		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate());
+		List<PersonDto> allPersonsAfter = getPersonFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(1, allPersonsAfter.size());
 
 		List<ImmunizationDto> allAfterWithUuid =
@@ -240,13 +240,13 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("", byUuid.getPerson().getLastName());
 		assertEquals("", byUuid.getPerson().getFirstName());
 
-		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate());
+		List<PersonDto> allPersonsAfter = getPersonFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(1, allPersonsAfter.size());
 		PersonDto personDto = allPersonsAfter.get(0);
 		assertEquals(person2.getUuid(), personDto.getUuid());
 
 		loginWith(nationalUser);
-		assertEquals(2, getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate()).size());
+		assertEquals(2, getPersonFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate()).size());
 	}
 
 	@Test
@@ -273,7 +273,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(immunization.getImmunizationManagementStatus(), immunizationDto.getImmunizationManagementStatus());
 		assertEquals(immunization.getMeansOfImmunization(), immunizationDto.getMeansOfImmunization());
 
-		final List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(yesterday);
+		final List<PersonDto> allPersonsAfter = getPersonFacade().getAllAfter(yesterday);
 		assertEquals(1, allPersonsAfter.size());
 		final PersonDto personDto = allPersonsAfter.get(0);
 
