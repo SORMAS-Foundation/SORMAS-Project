@@ -648,3 +648,11 @@ Feature: Vaccination tests
     And I click SAVE button in new Vaccination form
     And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
     And I check that displayed vaccination name is "enabled" on Edit case page
+
+  @tmsLink=SORDEV-12605 @env_de
+  Scenario: Test that the vaccination status changes from VACCINATED to blank after the vaccination is removed
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data for DE version with date 14 days ago
+    And I check if date of report is set for 14 day ago from today on Edit Case page for DE version
