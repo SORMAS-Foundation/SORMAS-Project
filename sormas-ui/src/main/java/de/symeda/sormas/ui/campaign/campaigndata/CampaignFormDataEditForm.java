@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -108,6 +109,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
 		ComboBox cbCommunity = addInfrastructureField(CampaignFormDataDto.COMMUNITY);
 
+		
+		
 		// addField(CampaignFormDataDto.FORM_TYPE);
 
 		/*
@@ -174,13 +177,15 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			cbDistrict.setEnabled(false);
 		}
 		if (currentUser.getCommunity() != null) {
-			cbCommunity.setValue(currentUser.getCommunity());
-			cbCommunity.setEnabled(false);
+			//cbCommunity.setValue(currentUser.getCommunity());
+			//cbCommunity.setEnabled(false);
 		}
 	}
 
 	@SuppressWarnings("deprecation")
 	private void addInfrastructureListeners(ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity) {
+		
+		
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbDistrict,
@@ -189,9 +194,12 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 		cbDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+			
+			
 			FieldHelper.updateItems(cbCommunity,
 					district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid())
 							: null);
+			
 		});
 	}
 
@@ -225,6 +233,15 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 			}
 
+			
+			final UserDto currentUserx = UserProvider.getCurrent().getUser();
+			if(currentUserx.getCommunity().size() > 0) {
+				cbCommunity.clear();
+				FieldHelper.updateItems(cbCommunity,
+						  currentUserx.getCommunity().stream().collect(Collectors.toList())
+							);
+			}
+			
 //			FieldHelper.updateItems(cbCommunity, district != null ? items.stream().filter(ce -> ce.getCaption() != null).collect(Collectors.toList()) : null);
 	
 

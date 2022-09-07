@@ -36,6 +36,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -315,6 +316,12 @@ public class CampaignController {
 		if (campaignFormData == null) {
 
 			final UserDto currentUser = UserProvider.getCurrent().getUser();
+			
+			
+			CommunityReferenceDto u = new CommunityReferenceDto();
+			if(currentUser.getCommunity() != null) {
+			//u = currentUser.getCommunity().iterator().next();
+			}
 			campaignFormData =
 				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getArea(), currentUser.getRegion(),  currentUser.getDistrict(), null);
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
