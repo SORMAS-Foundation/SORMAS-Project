@@ -335,6 +335,8 @@ public class CampaignDataView extends AbstractCampaignView {
 
 					ControllerProvider.getCampaignController().navigateToFormDataView(criteria.getCampaign().getUuid(),
 							campaignForm.getUuid());
+					
+					System.out.println("####################################################################");
 					newFormButton.setPopupVisible(false);
 				});
 
