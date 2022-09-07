@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +40,8 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
 
@@ -179,4 +182,51 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		return getEditPermissionType(entity) == EditPermissionType.ALLOWED;
 	}
 
+
+	/**
+	 * @return Ids of given {@code selectedEntities} within the users jurisdiction or owned by him.
+	 */
+	public List<Long> getInJurisdictionIds(List<ADO> selectedEntities) {
+
+		List<Long> result = new ArrayList<>(selectedEntities.size());
+		IterableHelper.executeBatched(selectedEntities, ModelConstants.PARAMETER_LIMIT, batchEntities -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+			Root<ADO> root = cq.from(getElementClass());
+			cq.select(root.get(ADO.ID));
+
+			List<Long> ids = batchEntities.stream().map(e -> e.getId()).collect(Collectors.toList());
+			cq.where(cb.and(cb.in(root.get(ADO.ID)).value(ids), inJurisdictionOrOwned(cb, cq, root)));
+			result.addAll(em.createQuery(cq).getResultList());
+		});
+
+		return result;
+	}
+
+	/**
+	 * @return {@code true}, if {@code entity} is within the current users jurisdiction or owned by him.
+	 */
+	public boolean inJurisdictionOrOwned(ADO entity) {
+
+		if (entity == null) {
+			return false;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<ADO> root = cq.from(getElementClass());
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(cb, cq, root)));
+		cq.where(cb.equal(root.get(ADO.UUID), entity.getUuid()));
+
+		return em.createQuery(cq).getResultList().stream().anyMatch(isInJurisdiction -> isInJurisdiction);
+	}
+
+	/**
+	 * Used to fetch {@link #getInJurisdictionIds(List)}/{@link #inJurisdictionOrOwned(CoreAdo)}
+	 * (without {@link QueryContext} because there are no other conditions etc.).
+	 * 
+	 * @return A filter on entities within the users jurisdiction or owned by him.
+	 */
+	protected abstract Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> from);
 }

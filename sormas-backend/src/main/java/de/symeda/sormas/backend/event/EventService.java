@@ -993,15 +993,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return super.getEditPermissionType(event);
 	}
 
-	public boolean inJurisdictionOrOwned(Event event, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Event> root = cq.from(Event.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
-		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
-	}
 
 	public boolean inJurisdiction(Event event) {
 
@@ -1013,12 +1004,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
-	public boolean inJurisdictionOrOwned(Event event) {
-		return inJurisdictionOrOwned(event, userService.getCurrentUser());
-	}
-
 	public Predicate inJurisdiction(EventQueryContext qc, User user) {
 		return EventJurisdictionPredicateValidator.of(qc, user).inJurisdiction();
+	}
+
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
+		return inJurisdictionOrOwned(new EventQueryContext(cb, cq, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(EventQueryContext qc) {

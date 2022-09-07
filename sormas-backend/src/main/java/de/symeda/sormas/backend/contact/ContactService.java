@@ -1587,17 +1587,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
 	}
 
-	public boolean inJurisdictionOrOwned(Contact contact, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Contact> root = cq.from(Contact.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new ContactQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
-		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
-	}
-
-	public ContactJurisdictionFlagsDto inJurisdictionOrOwned(Contact contact) {
+	public ContactJurisdictionFlagsDto getJurisdictionFlags(Contact contact) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactJurisdictionFlagsDto> cq = cb.createQuery(ContactJurisdictionFlagsDto.class);
@@ -1605,6 +1595,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.multiselect(getJurisdictionSelections(new ContactQueryContext(cb, cq, root)));
 		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> from) {
+		return inJurisdictionOrOwned(new ContactQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(ContactQueryContext contactQueryContext) {
@@ -1622,7 +1617,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (Boolean.FALSE.equals(inJurisdictionOrOwned(contact).getInJurisdiction())) {
+		if (Boolean.FALSE.equals(getJurisdictionFlags(contact).getInJurisdiction())) {
 			return EditPermissionType.REFUSED;
 		}
 

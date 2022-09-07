@@ -143,6 +143,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			.getResultList();
 	}
 
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> from) {
+		return isInJurisdictionOrOwned(new ImmunizationQueryContext(cb, query, from));
+	}
+
 	private Predicate isInJurisdictionOrOwned(ImmunizationQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
@@ -159,11 +164,13 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return filter;
 	}
 
+	@Override
 	public boolean inJurisdictionOrOwned(Immunization immunization) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Immunization> root = cq.from(Immunization.class);
+		// Deviation from super implementation: createUserFilter
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(Immunization.UUID), immunization.getUuid()));
 		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);

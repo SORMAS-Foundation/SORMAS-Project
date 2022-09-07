@@ -1585,18 +1585,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
-	public boolean inJurisdictionOrOwned(Case caze, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Case> root = cq.from(Case.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
-		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
-	}
-
-	public boolean inJurisdictionOrOwned(Case caze) {
-		return inJurisdictionOrOwned(caze, userService.getCurrentUser());
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
+		return inJurisdictionOrOwned(new CaseQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(CaseQueryContext qc) {

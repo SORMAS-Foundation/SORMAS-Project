@@ -204,7 +204,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			return caseService.inJurisdictionOrOwned(caze);
 		case CONTACT:
 			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
-			return contactService.inJurisdictionOrOwned(contact).getInJurisdiction();
+			return contactService.getJurisdictionFlags(contact).getInJurisdiction();
 		case EVENT:
 			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
 			return eventService.inJurisdictionOrOwned(event);

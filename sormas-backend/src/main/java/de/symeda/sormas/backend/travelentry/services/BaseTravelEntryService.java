@@ -25,12 +25,17 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 		super(TravelEntry.class);
 	}
 
-	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
-		return TravelEntryJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> from) {
+		return inJurisdictionOrOwned(new TravelEntryQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc) {
 		return inJurisdictionOrOwned(qc, userService.getCurrentUser());
+	}
+	
+	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
+		return TravelEntryJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {

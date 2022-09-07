@@ -44,7 +44,6 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -157,20 +156,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 
 		cq.select(cb.countDistinct(travelEntry));
 		return em.createQuery(cq).getSingleResult();
-	}
-
-	public boolean inJurisdictionOrOwned(TravelEntry travelEntry) {
-		return inJurisdictionOrOwned(travelEntry, getCurrentUser());
-	}
-
-	public boolean inJurisdictionOrOwned(TravelEntry travelEntry, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<TravelEntry> root = cq.from(TravelEntry.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(TravelEntry.UUID), travelEntry.getUuid()));
-		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
 	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {

@@ -967,12 +967,11 @@ public class EventParticipantFacadeEjb
 		return target;
 	}
 
-	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
+	@Override
+	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		if (source != null) {
 			validate(dto);
-
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
@@ -1155,5 +1154,4 @@ public class EventParticipantFacadeEjb
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
 	}
-
 }

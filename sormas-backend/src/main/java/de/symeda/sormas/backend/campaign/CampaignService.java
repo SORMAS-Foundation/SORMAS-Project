@@ -112,4 +112,11 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
 		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
 	}
+
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Campaign> from) {
+
+		// Currently no jurisdiction checks for campaigns
+		return cb.conjunction();
+	}
 }

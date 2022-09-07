@@ -524,15 +524,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return em.createQuery(cq).getResultList();
 	}
 
-	public boolean inJurisdictionOrOwned(EventParticipant eventParticipant) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<EventParticipant> root = cq.from(EventParticipant.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, root))));
-		cq.where(cb.equal(root.get(EventParticipant.UUID), eventParticipant.getUuid()));
-		return em.createQuery(cq).getSingleResult();
-	}
-
 	public boolean inJurisdiction(EventParticipant eventParticipant) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
@@ -545,6 +536,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate inJurisdiction(EventParticipantQueryContext qc) {
 		final User currentUser = this.getCurrentUser();
 		return EventParticipantJurisdictionPredicateValidator.of(qc, currentUser).inJurisdiction();
+	}
+
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, EventParticipant> from) {
+		return inJurisdictionOrOwned(new EventParticipantQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(EventParticipantQueryContext qc) {

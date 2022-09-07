@@ -1127,18 +1127,19 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	public EventDto convertToDetailedReferenceDto(Event source, Pseudonymizer pseudonymizer) {
+
 		EventDto eventDto = toDto(source);
 		eventDto.setSuperordinateEvent(EventFacadeEjb.toDetailedReferenceDto(source.getSuperordinateEvent()));
-		pseudonymizeDto(source, eventDto, pseudonymizer);
+		pseudonymizeDto(source, eventDto, pseudonymizer, service.inJurisdictionOrOwned(source));
 
 		return eventDto;
 	}
 
-	protected void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(event);
+	@Override
+	protected void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
-			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
+		if (dto != null) {
+			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, e -> {
 				pseudonymizer.pseudonymizeUser(
 					EventDto.class,
 					EventDto.REPORTING_USER,
@@ -1396,5 +1397,4 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			super(service, userService);
 		}
 	}
-
 }
