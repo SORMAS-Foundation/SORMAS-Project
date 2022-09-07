@@ -548,26 +548,16 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return result;
 	}
 
-	public List<Long> getInJurisdictionIDs(final List<Person> selectedEntities) {
-		if (selectedEntities.size() == 0) {
-			return Collections.emptyList();
-		}
+	/**
+	 * @return Ids of given {@code selectedEntities} within the users jurisdiction or owned by him.
+	 */
+	public List<Long> getInJurisdictionIds(List<Person> selectedEntities) {
 
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<Person> personRoot = inJurisdictionQuery.from(Person.class);
-
-		inJurisdictionQuery.select(personRoot.get(Person.ID));
-
-		final Predicate isFromSelectedPersons =
-			cb.in(personRoot.get(Person.ID)).value(selectedEntities.stream().map(Person::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, inJurisdictionOrOwned(new PersonQueryContext(cb, inJurisdictionQuery, personRoot))));
-
-		return em.createQuery(inJurisdictionQuery).getResultList();
+		return getIdList(selectedEntities, (cb, cq, from) -> inJurisdictionOrOwned(new PersonQueryContext(cb, cq, from)));
 	}
 
 	public boolean inJurisdictionOrOwned(Person person) {
-		return !getInJurisdictionIDs(Arrays.asList(person)).isEmpty();
+		return !getInJurisdictionIds(Arrays.asList(person)).isEmpty();
 	}
 
 	public Predicate inJurisdictionOrOwned(PersonQueryContext personQueryContext) {
@@ -662,7 +652,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		}
 
 		List<Person> persons = query.getResultList();
-		List<Long> personsInJurisdiction = getInJurisdictionIDs(persons);
+		List<Long> personsInJurisdiction = getInJurisdictionIds(persons);
 		return persons.stream().filter(p -> personsInJurisdiction.contains(p.getId())).map(this::toSimilarPersonDto).collect(Collectors.toList());
 	}
 

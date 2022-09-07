@@ -189,6 +189,27 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return em.createQuery(cq).getResultList();
 	}
 
+	/**
+	 * @return Ids of given {@code selectedEntities} that match the filter given by the {@code filterProvider}.
+	 */
+	protected List<Long> getIdList(List<ADO> selectedEntities, FilterProvider<ADO> filterProvider) {
+
+		List<Long> result = new ArrayList<>(selectedEntities.size());
+		IterableHelper.executeBatched(selectedEntities, ModelConstants.PARAMETER_LIMIT, batchEntities -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+			Root<ADO> root = cq.from(getElementClass());
+			cq.select(root.get(ADO.ID));
+
+			List<Long> ids = batchEntities.stream().map(ADO::getId).collect(Collectors.toList());
+			cq.where(cb.and(cb.in(root.get(ADO.ID)).value(ids), filterProvider.provide(cb, cq, root)));
+			result.addAll(em.createQuery(cq).getResultList());
+		});
+
+		return result;
+	}
+
 	public List<String> getAllUuids(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

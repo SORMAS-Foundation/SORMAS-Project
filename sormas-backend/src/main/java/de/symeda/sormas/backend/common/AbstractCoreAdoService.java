@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +40,6 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
 
@@ -188,20 +186,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 	 */
 	public List<Long> getInJurisdictionIds(List<ADO> selectedEntities) {
 
-		List<Long> result = new ArrayList<>(selectedEntities.size());
-		IterableHelper.executeBatched(selectedEntities, ModelConstants.PARAMETER_LIMIT, batchEntities -> {
-
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-			Root<ADO> root = cq.from(getElementClass());
-			cq.select(root.get(ADO.ID));
-
-			List<Long> ids = batchEntities.stream().map(e -> e.getId()).collect(Collectors.toList());
-			cq.where(cb.and(cb.in(root.get(ADO.ID)).value(ids), inJurisdictionOrOwned(cb, cq, root)));
-			result.addAll(em.createQuery(cq).getResultList());
-		});
-
-		return result;
+		return getIdList(selectedEntities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
 	}
 
 	/**
