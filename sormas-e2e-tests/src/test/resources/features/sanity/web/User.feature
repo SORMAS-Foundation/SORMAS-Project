@@ -166,6 +166,6 @@ Feature: Create user
     Then I search user "PasswordUser"
     And I select first user from list
     Then I create new user password and save it on Edit User page
-    Then I click on logout button
-    And I login with last edited user on Keycloak Enabled Environment
-    Then I click on logout button
+    Then I click on logout button from navbar
+    And I login first time as a last edited user from keycloak instance
+    Then I click on logout button from navbar
