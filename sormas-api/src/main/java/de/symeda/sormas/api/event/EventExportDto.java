@@ -196,8 +196,8 @@ public class EventExportDto implements Serializable {
 		this.srcMediaName = srcMediaName;
 		this.srcMediaDetails = srcMediaDetails;
 		this.reportDateTime = reportDateTime;
-		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null, null);
-		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null, null);
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null, null,null);
+		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null, null, null);
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 		this.eventManagementStatus = eventManagementStatus;
 		this.eventIdentificationSource = eventIdentificationSource;

@@ -104,7 +104,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = phone;
-		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null, null);
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null, null, null);
 		this.eventCount = eventCount;
 		this.latestSampleDateTime = latestSampleDateTime;
 		this.sampleCount = sampleCount;

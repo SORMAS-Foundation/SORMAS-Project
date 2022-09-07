@@ -265,7 +265,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			if (facilityType != null) {
 				final UserDto user = UserProvider.getCurrent().getUser();
 				final CommunityReferenceDto community =
-					user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
+					user.getCommunity() != null ? null : (CommunityReferenceDto) communityField.getValue();
 
 				facilityField.setEnabled(true);
 				if (community != null) {

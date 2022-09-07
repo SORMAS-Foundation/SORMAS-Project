@@ -31,6 +31,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -42,6 +43,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -63,6 +65,7 @@ public class User extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "users";
 	public static final String TABLE_NAME_USERROLES = "users_userroles";
+	public static final String TABLE_NAME_FORMACCESS = "users_formaccess";
 	public static final String TABLE_NAME_USERTYPES = "users_usertypes";
 
 	public static final String USER_NAME = "userName";
@@ -81,6 +84,7 @@ public class User extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String USER_ROLES = "userRoles";
+	public static final String USER_FORM_ACCESS = "formAccess";
 	public static final String USER_TYPE = "usertype";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String LABORATORY = "laboratory";
@@ -104,6 +108,8 @@ public class User extends AbstractDomainObject {
 	private Location address;
 
 	private Set<UserRole> userRoles;
+	
+	private Set<FormAccess> formAccess;
 	//can add a user type property to the user  
 	private UserType usertype;
 	
@@ -112,7 +118,7 @@ public class User extends AbstractDomainObject {
 	private Region region;
 	private District district;
 	// community of community informant
-	private Community community;
+	private Set<Community> community;
 	// facility of hospital informant
 	private Facility healthFacility;
 	// laboratory of lab user
@@ -263,6 +269,23 @@ public class User extends AbstractDomainObject {
 		this.userRoles = userRoles;
 	}
 	
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = TABLE_NAME_FORMACCESS,
+		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"user_id",
+			"formAccess" }))
+	@Column(name = "formAccess", nullable = false)
+	public Set<FormAccess> getFormAccess() {
+		return formAccess;
+	}
+
+	public void setFormAccess(Set<FormAccess> formAccess) {
+		this.formAccess = formAccess;
+	}
+	
+	
 	//@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = TABLE_NAME_USERTYPES,
@@ -294,7 +317,7 @@ public class User extends AbstractDomainObject {
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), getUsertype());
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), getFormAccess(), getUsertype());
 	}
 
 	@Transient
@@ -316,12 +339,12 @@ public class User extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
-	public Community getCommunity() {
+	@ManyToMany(cascade = {})
+	public Set<Community> getCommunity() {
 		return community;
 	}
 
-	public void setCommunity(Community community) {
+	public void setCommunity(Set<Community> community) {
 		this.community = community;
 	}
 
@@ -383,6 +406,13 @@ public class User extends AbstractDomainObject {
 	 */
 	public boolean hasAnyUserRole(UserRole... userRoles) {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
+	}
+	
+	/**
+	 * Checks if the User possesses any of the specified formAccess
+	 */
+	public boolean hasAnyFormAccess(FormAccess... formAccess) {
+		return Arrays.stream(formAccess).anyMatch(getFormAccess()::contains);
 	}
 
 	@Transient

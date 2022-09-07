@@ -190,7 +190,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 		ActivityAsCaseDto activityAsCase = ActivityAsCaseDto.build(null);
 		activityAsCase.getLocation().setRegion(user.getRegion());
 		activityAsCase.getLocation().setDistrict(user.getDistrict());
-		activityAsCase.getLocation().setCommunity(user.getCommunity());
+		activityAsCase.getLocation().setCommunity(null);
 		activityAsCase.setReportingUser(user.toReference());
 		return activityAsCase;
 	}

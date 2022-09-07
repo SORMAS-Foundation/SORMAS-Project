@@ -78,7 +78,7 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 	@Override
 	protected Predicate whenCommunityLevel() {
 		return CriteriaBuilderHelper
-			.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()));
+			.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), null));
 	}
 
 	@Override

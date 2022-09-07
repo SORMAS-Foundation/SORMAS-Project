@@ -23,8 +23,12 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
@@ -44,6 +48,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
@@ -81,7 +86,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					
                     loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
-                    fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
+                    fluidRowLocs(UserDto.USER_NAME) +
+                    fluidRowLocs(UserDto.FORM_ACCESS, UserDto.USER_ROLES) +
                     fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
                     //fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
@@ -140,13 +146,46 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
+        
+        addField(UserDto.FORM_ACCESS, OptionGroup.class);
+        OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
+        formAccess.setMultiSelect(true);
+        
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.setMultiSelect(true);
+//        
+//        addField(UserDto.COMMUNITY, ComboBox.class);
+//     // Initialize a list with items
+//     		List<String> list = new ArrayList<String>();
+//     		
+//     		list.add("Java1");
+//     		list.add("Java2");
+//     		list.add("Java3");
+//     		list.add("Java4");
+//     		
+//     		// Initialize the ComboBoxMultiselect
+//     		ComboBoxMultiselect comboBoxMultiselect = (ComboBoxMultiselect) getFieldGroup().getField(UserDto.COMMUNITY);
+//     		//final ComboBoxMultiselect<String> comboBoxMultiselect = new ComboBoxMultiselect<>();
+//     		comboBoxMultiselect.setPlaceholder("Type here");
+//     		comboBoxMultiselect.setCaption("ComboBoxMultiselect");
+//     		comboBoxMultiselect.setItems(list);
+//     	//	comboBoxMultiselect.setValue(new HashSet<>(Arrays.asList(vaadin)));
+//     		
+//        
+//        
+        
+        
 
         ComboBox area = addInfrastructureField(UserDto.AREA);
         ComboBox region = addInfrastructureField(UserDto.REGION);
-        ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
+        
+        addField(UserDto.COMMUNITY, OptionGroup.class);
+        OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
+        
+        
+        
+       // ComboBox community = addInfrastructureField("gcgcvg");
         ComboBox district = addInfrastructureField(UserDto.DISTRICT);
         
         /*
@@ -155,6 +194,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
          * See issue issue #201
          */
         community.setValue("11111111111");
+        community.setMultiSelect(true);
         
         
         area.addValueChangeListener(e -> {
@@ -184,7 +224,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
          * See issue issue #201
          */
         community.addValueChangeListener(e -> {
-        	CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+        //	CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
         	
         });
         		
@@ -216,11 +256,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        //region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+        //region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry()); //Sormas.sql
         System.out.println("ddddddddddddddddddddddddddddddddssssssssssssssssssssefasdfas "+FacadeProvider.getAreaFacade().getAllActiveAsReference());
         area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
-        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
+        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES, UserDto.FORM_ACCESS);
         addValidators(UserDto.USER_NAME, new UserNameValidator());
 
         addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
@@ -298,12 +338,14 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			district.clear();
 		}
 		
-		final ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
-		community.setVisible(useCommunity);
-		setRequired(useCommunity, UserDto.COMMUNITY);
-		if (!useCommunity) {
-			community.clear();
-		}	
+	
+//		
+//		final ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
+//		community.setVisible(useCommunity);
+//		setRequired(useCommunity, UserDto.COMMUNITY);
+//		if (!useCommunity) {
+//			community.clear();
+//		}	
 	}
 
     private void suggestUserName() {
@@ -338,6 +380,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.removeAllItems();
         userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
+        
+        OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
+        formAccess.removeAllItems();
+        formAccess.addItems(UserUiHelper.getAssignableForms());
+
 
         super.setValue(userDto);
     }

@@ -92,7 +92,7 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId());
+		return cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), null);
 	}
 
 	@Override

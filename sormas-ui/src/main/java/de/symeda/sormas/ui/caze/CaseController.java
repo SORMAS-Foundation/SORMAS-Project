@@ -591,7 +591,7 @@ public class CaseController {
 		} else if (convertedTravelEntry == null) {
 			caze.setResponsibleRegion(user.getRegion());
 			caze.setResponsibleDistrict(user.getDistrict());
-			caze.setResponsibleCommunity(user.getCommunity());
+			caze.setResponsibleCommunity(null);
 		}
 
 		createForm.setValue(caze);

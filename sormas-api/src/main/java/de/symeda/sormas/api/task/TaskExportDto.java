@@ -161,9 +161,9 @@ public class TaskExportDto extends PseudonymizableIndexDto implements Serializab
 		this.dueDate = dueDate;
 		this.suggestedStart = suggestedStart;
 		this.taskStatus = taskStatus;
-		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName, null, null);
+		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName, null, null, null);
 		this.creatorComment = creatorComment;
-		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null, null);
+		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null, null, null);
 		this.assigneeReply = assigneeReply;
 		this.region = region;
 		this.district = district;

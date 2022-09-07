@@ -103,8 +103,8 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	protected Predicate whenCommunityLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()),
-			cb.equal(joins.getRoot().get(Case.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()));
+			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), null),
+			cb.equal(joins.getRoot().get(Case.COMMUNITY).get(Community.ID), null));
 	}
 
 	@Override

@@ -104,7 +104,7 @@ public class WeeklyReportInformantsGrid extends Grid {
 			(a, b) -> {
 				// 1. community
 				if (a.getCommunity() != null && b.getCommunity() != null) {
-					int result = a.getCommunity().getCaption().compareTo(b.getCommunity().getCaption());
+					int result = 0;
 					if (result != 0)
 						return result;
 				} else if (a.getCommunity() != null) {
@@ -125,7 +125,7 @@ public class WeeklyReportInformantsGrid extends Grid {
 		for (UserDto informant : informants) {
 			WeeklyReportInformantSummary reportDetails = new WeeklyReportInformantSummary();
 			reportDetails.setInformant(informant.toReference());
-			reportDetails.setCommunity(informant.getCommunity());
+			reportDetails.setCommunity(null);
 			reportDetails.setFacility(informant.getHealthFacility());
 			WeeklyReportDto weeklyReport = FacadeProvider.getWeeklyReportFacade().getByEpiWeekAndUser(epiWeek, informant.toReference());
 			if (weeklyReport != null) {

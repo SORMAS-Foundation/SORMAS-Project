@@ -459,19 +459,7 @@ public class StartupShutdownService {
 					});
 			//@formatter:on
 
-			// Create Community Officer
-			//@formatter:off
-			createAndPersistDefaultUser(
-					UserRole.COMMUNITY_OFFICER,
-					"Community",
-					"Officer",
-					DefaultEntityHelper.COMM_OFF_USERNAME_AND_PASSWORD,
-					u -> {
-						u.setRegion(region);
-						u.setDistrict(district);
-						u.setCommunity(community);
-					});
-			//@formatter:on
+			
 
 			// Create Poe Informant
 			//@formatter:off

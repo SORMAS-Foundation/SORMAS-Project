@@ -25,6 +25,7 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -37,6 +38,7 @@ public class UserProvider {
 	private UserDto user;
 	private UserReferenceDto userReference;
 	private Set<UserRight> userRights;
+	private Set<FormAccess> formAccess;
 	private UserType usertype;
 
 	public UserDto getUser() {
@@ -59,6 +61,8 @@ public class UserProvider {
 		return getUser().getUserRoles();
 	}
 	
+	
+	
 //	public UserType getUsertype() {
 //		if (usertype == null) {
 //			usertype = FacadeProvider.getUserRoleConfigFacade().get;
@@ -66,8 +70,16 @@ public class UserProvider {
 //		return usertype;
 //	}
 
+	public Set<FormAccess> getFormAccess() {
+		return getUser().getFormAccess();
+	}
+
 	public boolean hasUserRole(UserRole userRole) {
 		return getUser().getUserRoles().contains(userRole);
+	}
+	
+	public boolean hasFormAccess(FormAccess formAccess) {
+		return getUser().getFormAccess().contains(formAccess);
 	}
 	
 	public boolean hasUserType(UserType userType) {
@@ -80,6 +92,14 @@ public class UserProvider {
 	public boolean hasAnyUserRole(UserRole... userRoles) {
 		Set<UserRole> currentUserRoles = getUser().getUserRoles();
 		return Arrays.stream(userRoles).anyMatch(currentUserRoles::contains);
+	}
+	
+	/**
+	 * Checks if the User possesses any of the specified formAccess
+	 */
+	public boolean hasAnyFormAccess(FormAccess... formAccess) {
+		Set<FormAccess> currentFormAccess = getUser().getFormAccess();
+		return Arrays.stream(formAccess).anyMatch(currentFormAccess::contains);
 	}
 
 	public boolean hasUserRight(UserRight userRight) {

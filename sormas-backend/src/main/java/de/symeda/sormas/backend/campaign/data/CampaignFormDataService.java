@@ -23,6 +23,8 @@ package de.symeda.sormas.backend.campaign.data;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -174,10 +176,10 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 				}
 				break;
 			case COMMUNITY:
-				final Community community = currentUser.getCommunity();
+				final Set<Community> community = currentUser.getCommunity();
 				if (community != null) {
 					filter = CriteriaBuilderHelper.or(cb, filter, cb
-							.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), community.getId()));
+							.isMember(community.stream().map(Community::getId).collect(Collectors.toList()), campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID)));
 				}
 				break;
 			default:

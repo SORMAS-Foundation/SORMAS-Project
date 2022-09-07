@@ -81,7 +81,7 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId());
+		return cb.equal(joins.getCommunity().get(Community.ID), null);
 	}
 
 	@Override

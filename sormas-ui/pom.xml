@@ -189,15 +189,14 @@
 			<version>23.0.6</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-math3</artifactId>
-		    <version>3.5</version>
-		</dependency>
-	
-	</dependencies>
 
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.5</version>
+		</dependency>		
+	</dependencies>
+	
 	<build>
 		<finalName>${project.artifactId}</finalName>
 

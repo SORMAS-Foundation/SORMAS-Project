@@ -34,6 +34,7 @@ import java.util.stream.StreamSupport;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
@@ -590,6 +591,18 @@ public final class FieldHelper {
 			select.addItems(items);
 		}
 		select.setValue(value);
+		select.setReadOnly(readOnly);
+	}
+	
+	public static void updateItems(ListSelect select, List<?> items) {
+		Object value = select.getValue();
+		boolean readOnly = select.isReadOnly();
+		select.setReadOnly(false);
+		select.clear();
+		if (items != null) {
+			select.setItems(items);
+		}
+		//select.setValue(value);
 		select.setReadOnly(readOnly);
 	}
 

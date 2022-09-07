@@ -942,7 +942,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 			break;
 		case COMMUNITY:
-			final Community community = currentUser.getCommunity();
+			final Community community = null;
 			if (community != null) {
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactPath.get(Contact.COMMUNITY), currentUser.getCommunity()));
 			}

@@ -47,7 +47,7 @@ public class UserReferenceDto extends ReferenceDto {
 	}
 	
 
-	public UserReferenceDto(String uuid, String firstName, String lastName, Set<UserRole> userRoles, UserType userType) {
+	public UserReferenceDto(String uuid, String firstName, String lastName, Set<UserRole> userRoles, Set<FormAccess> formAccess, UserType userType) {
 		setUuid(uuid);
 	//	setCaption(buildCaption(firstName, lastName, userRoles, userType));
 		this.firstName = firstName;

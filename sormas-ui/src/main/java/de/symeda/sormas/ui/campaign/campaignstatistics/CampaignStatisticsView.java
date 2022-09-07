@@ -190,7 +190,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
-		criteria.setCommunity(user.getCommunity());
+		criteria.setCommunity(null);
 		CampaignStatisticsFilterForm filterForm = new CampaignStatisticsFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter() && campaignSelector == null) {

@@ -33,6 +33,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Immutable;
 
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -52,6 +53,7 @@ public class UserReference extends AbstractDomainObject {
 	private String firstName;
 	private String lastName;
 	private Set<UserRole> userRoles;
+	private Set<FormAccess> formAccess;
 	private UserType userType;
 
 	public boolean isActive() {
@@ -92,6 +94,22 @@ public class UserReference extends AbstractDomainObject {
 
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = User.TABLE_NAME_FORMACCESS,
+		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"user_id",
+			"formAccess" }))
+	@Column(name = "formAccess", nullable = false)
+	public Set<FormAccess> getFormAccess() {
+		return formAccess;
+	}
+
+	public void setFormAccess(Set<FormAccess> formAccess) {
+		this.formAccess = formAccess;
 	}
 
 	@Enumerated(EnumType.STRING)

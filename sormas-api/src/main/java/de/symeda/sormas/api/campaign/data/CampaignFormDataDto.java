@@ -22,6 +22,7 @@ package de.symeda.sormas.api.campaign.data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 

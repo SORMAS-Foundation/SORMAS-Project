@@ -190,8 +190,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.srcMediaWebsite = srcMediaWebsite;
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
-		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null, null);
-		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null, null);
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null, null, null);
+		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null, null, null);
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 		this.regionUuid = regionUuid;
 		this.eventIdentificationSource = eventIdentificationSource;

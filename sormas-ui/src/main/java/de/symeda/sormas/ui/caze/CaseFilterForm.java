@@ -623,7 +623,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		// Get initial field values according to user and criteria
 		final RegionReferenceDto region = user.getRegion() == null ? criteria.getRegion() : user.getRegion();
 		final DistrictReferenceDto district = user.getDistrict() == null ? criteria.getDistrict() : user.getDistrict();
-		final CommunityReferenceDto community = user.getCommunity() == null ? criteria.getCommunity() : user.getCommunity();
+		final CommunityReferenceDto community = user.getCommunity() == null ? criteria.getCommunity() : null;
 		final FacilityTypeGroup facilityTypeGroup = criteria.getFacilityTypeGroup();
 		final FacilityType facilityType = criteria.getFacilityType();
 

@@ -2,12 +2,15 @@ package de.symeda.sormas.backend.campaign.form;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -36,13 +39,13 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-
 
 @Stateless(name = "CampaignFormMetaFacade")
 public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
@@ -64,6 +67,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());
+		target.setFormCategory(source.getFormCategory());
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElementsList(source.getCampaignFormElements());
 		target.setCampaignFormTranslationsList(source.getCampaignFormTranslations());
@@ -81,6 +85,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());
+		target.setFormCategory(source.getFormCategory());
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElements(source.getCampaignFormElementsList());
 		target.setCampaignFormTranslations(source.getCampaignFormTranslationsList());
@@ -143,6 +148,25 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRoundandCampaign(String round,
 			String campaignUUID) {
 		return service.getCampaignFormMetasAsReferencesByCampaignandRound(round, campaignUUID);
+	}
+
+	@Override
+	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(String round,
+			String campaignUUID, Set<FormAccess> userFormAccess) {
+		List<CampaignFormMetaReferenceDto> filterdList = new ArrayList<>();
+		List<CampaignFormMetaReferenceDto> allForms = service.getCampaignFormMetasAsReferencesByCampaignandRound(round,
+				campaignUUID);
+		allForms.removeIf(e -> e.getFormCategory() == null);
+
+		for (FormAccess n : userFormAccess) {
+			boolean yn = allForms.stream().filter(e -> !e.getFormCategory().equals(null))
+					.filter(ee -> ee.getFormCategory().equals(n)).collect(Collectors.toList()).size() > 0;
+			if (yn) {
+				filterdList.addAll(allForms.stream().filter(e -> !e.getFormCategory().equals(null))
+						.filter(ee -> ee.getFormCategory().equals(n)).collect(Collectors.toList()));
+			}
+		}
+		return filterdList;
 	}
 
 	@Override
@@ -388,7 +412,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 			return null;
 		}
 
-		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.toString(), entity.getFormType());
+		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.toString(), entity.getFormType(),
+				entity.getFormCategory());
 	}
 
 	@LocalBean

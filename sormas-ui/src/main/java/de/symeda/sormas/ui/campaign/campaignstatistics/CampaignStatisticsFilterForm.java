@@ -90,7 +90,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 		UserDto user = currentUserDto();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
-		final CommunityReferenceDto userCommunity = user.getCommunity();
+		final CommunityReferenceDto userCommunity = null;
 		if (userRegion != null) {
 			regionFilter.setEnabled(false);
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));

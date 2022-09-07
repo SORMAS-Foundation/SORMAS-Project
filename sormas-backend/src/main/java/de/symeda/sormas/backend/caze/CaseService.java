@@ -1018,7 +1018,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 				break;
 			case COMMUNITY:
-				final Community community = currentUser.getCommunity();
+				final Community community = null;
 				if (community != null) {
 					filter = CriteriaBuilderHelper.or(
 						cb,

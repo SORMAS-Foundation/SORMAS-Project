@@ -111,7 +111,7 @@ public class CampaignFormDataImporter extends DataImporter {
 				.getExistingData(
 					new CampaignFormDataCriteria().campaign(campaignFormData.getCampaign())
 						.campaignFormMeta(campaignFormData.getCampaignFormMeta())
-						.community(campaignFormData.getCommunity())
+						.community((CommunityReferenceDto) campaignFormData.getCommunity())
 						.formDate(campaignFormData.getFormDate()));
 
 		/*	if (existingData != null) {
@@ -204,7 +204,7 @@ public class CampaignFormDataImporter extends DataImporter {
 								propertyDescriptor.getWriteMethod().invoke(campaignFormData, district.get(0));
 							}
 						} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUserDto.getCommunity().getCaption().equals(entry[i])) {
+							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUserDto.getCommunity().stream().map(CommunityReferenceDto::getCaption).collect(Collectors.toList()).contains(entry[i])) {
 								throw new ImportErrorException(
 									I18nProperties
 										.getValidationError(Validations.importEntryCommunityNotInUsersJurisdiction, entry[i], propertyPath));

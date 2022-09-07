@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.infrastructure.community;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -76,7 +78,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<Community> getByExternalId(Long ext_id, District district_ext, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -84,7 +86,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		Root<Community> from = cq.from(getElementClass());
 
 		Predicate filter = cb.equal(from.get("externalId"), ext_id);
-		
+
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -118,33 +120,34 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		if (country != null) {
 			CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 
-			Path<Object> countryUuid = from.join(Community.DISTRICT, JoinType.LEFT)
-				.join(District.REGION, JoinType.LEFT)
-				.join(Region.COUNTRY, JoinType.LEFT)
-				.get(Country.UUID);
+			Path<Object> countryUuid = from.join(Community.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT)
+					.join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
 			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
 
 			if (country.equals(serverCountry)) {
-				filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.or(cb, countryFilter, countryUuid.isNull()));
+				filter = CriteriaBuilderHelper.and(cb, filter,
+						CriteriaBuilderHelper.or(cb, countryFilter, countryUuid.isNull()));
 			} else {
 				filter = CriteriaBuilderHelper.and(cb, filter, countryFilter);
 			}
 		}
-		
+
 		System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz ");
-		
+
 		AreaReferenceDto aread = criteria.getArea();
-		
+
 		if (aread != null) {
 			System.out.println("zzzzzzzzzzzzzzzzzzzz");
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(area.get(Area.UUID), aread.getUuid()));
 		}
 
 		if (criteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region.get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(region.get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district.get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(district.get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getNameLike() != null) {
 			String[] textFilters = criteria.getNameLike().split("\\s+");
@@ -159,8 +162,8 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.or(cb.equal(from.get(Community.ARCHIVED), false), cb.isNull(from.get(Community.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(cb, filter,
+						cb.or(cb.equal(from.get(Community.ARCHIVED), false), cb.isNull(from.get(Community.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Community.ARCHIVED), true));
 			}
@@ -180,6 +183,24 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 
 		TypedQuery query = em.createQuery(cq);
 		return query.getResultList();
+	}
+
+	public Set<Community> getByReferenceDto(Set<CommunityReferenceDto> community) {
+		Set<Community> communities = new HashSet<Community>();
+		for (CommunityReferenceDto com : community) {
+			if (com != null && com.getUuid() != null) {
+				Community result = getByUuid(com.getUuid());
+				if (result == null) {
+					logger.warn("Could not find entity for " + com.getClass().getSimpleName() + " with uuid "
+							+ com.getUuid());
+				}
+				communities.add(result);
+				return communities;
+			} else {
+				return null;
+			}
+		}
+		return communities;
 	}
 
 }

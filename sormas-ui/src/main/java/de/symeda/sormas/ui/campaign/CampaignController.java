@@ -249,7 +249,7 @@ public class CampaignController {
 
 				final UserDto currentUser = UserProvider.getCurrent().getUser();
 				campaignFormData =
-					CampaignFormDataDto.build(campaign, campaignForm, currentUser.getArea(), currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
+					CampaignFormDataDto.build(campaign, campaignForm, currentUser.getArea(), currentUser.getRegion(), currentUser.getDistrict(), null);
 				campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 			}
 			form.setValue(campaignFormData);
@@ -316,7 +316,7 @@ public class CampaignController {
 
 			final UserDto currentUser = UserProvider.getCurrent().getUser();
 			campaignFormData =
-				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getArea(), currentUser.getRegion(),  currentUser.getDistrict(), currentUser.getCommunity());
+				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getArea(), currentUser.getRegion(),  currentUser.getDistrict(), null);
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		final UserDto currentUsex = UserProvider.getCurrent().getUser();

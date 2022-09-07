@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.campaign.form;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -15,6 +16,7 @@ import javax.persistence.criteria.Root;
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -103,8 +105,28 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFo
 		// TODO: post campaign implementations
 		cq = cq.where(filter);
 		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME), campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), campaignFormMetaJoin.get(CampaignFormMeta.FORM_CATEGORY));
+		 System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
+		return em.createQuery(cq).getResultList();
+	}
+	
+	
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaignandRoundandForm(String round,
+			String uuid, Set<FormAccess> userFormAccess) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormMetaReferenceDto> cq = cb.createQuery(CampaignFormMetaReferenceDto.class);
+		Root<Campaign> campaignRoot = cq.from(Campaign.class);
+		Join<Campaign, CampaignFormMeta> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
+		Predicate filterc = cb.equal(campaignRoot.get(Campaign.UUID), uuid);
+		Predicate filterx = cb.equal(campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), round);
+		
+		
+		Predicate filter = cb.and(filterc, filterx);
+		// TODO: post campaign implementations
+		cq = cq.where(filter);
+		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID),
 				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
-		// System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
+
 		return em.createQuery(cq).getResultList();
 	}
 }
