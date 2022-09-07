@@ -19,9 +19,9 @@ curl -X POST http://localhost:8081/keycloak/realms/SORMAS/protocol/openid-connec
 
 ## sormas-backend client in Keycloak
 
-This client is used to authenticate the SORMAS backend to the Keycloak server.
+This client is used to allow the SORMAS backend to access the Keycloak server.
 It is configured as a confidential client, which means that it has a secret that is used to authenticate the client
-to the Keycloak server. This used the client credentials grant type, which is configured via the associated
+to the OIDC server. This is based on the client credentials grant type, which is configured via the associated
 **Service Account**. Currently, the following roles are assigned to the service account:
 ```json
 {
