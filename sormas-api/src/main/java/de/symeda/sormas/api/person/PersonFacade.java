@@ -19,7 +19,9 @@ import java.util.List;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.common.Page;
@@ -31,31 +33,17 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface PersonFacade {
-
-	List<PersonDto> getPersonsAfter(Date date);
+public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, PersonReferenceDto, PersonCriteria> {
 
 	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease);
 
-	PersonReferenceDto getReferenceByUuid(String uuid);
-
 	JournalPersonDto getPersonForJournal(String uuid);
 
-	PersonDto savePerson(@Valid PersonDto dto);
-
-	PersonDto savePerson(@Valid PersonDto source, boolean skipValidation);
+	PersonDto save(@Valid @NotNull PersonDto source, boolean skipValidation);
 
 	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 
-	void validate(PersonDto dto);
-
-	List<String> getAllUuids();
-
-	PersonDto getPersonByUuid(String uuid);
-
-	List<PersonDto> getPersonsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
-	List<PersonDto> getByUuids(List<String> uuids);
+	List<PersonDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
@@ -75,13 +63,9 @@ public interface PersonFacade {
 
 	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
 
-	List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer offset, Integer limit, List<SortProperty> sortProperties);
-
 	List<PersonExportDto> getExportList(PersonCriteria criteria, int first, int max);
 
 	Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
-
-	long count(PersonCriteria criteria);
 
 	boolean exists(String uuid);
 
@@ -99,7 +83,11 @@ public interface PersonFacade {
 
 	PersonDto getByContext(PersonContext context, String contextUuid);
 
-    boolean isEnrolledInExternalJournal(String uuid);
+	boolean isEnrolledInExternalJournal(String uuid);
+
+	// todo the PersonFacadeEjb has additional pseudonomization methods which causes a
+	// Hibernate LazyInitializationException if this is removed
+	PersonDto getByUuid(String uuid);
 
 	boolean isPersonAssociatedWithNotDeletedEntities(String uuid);
 }

@@ -127,6 +127,13 @@ public class LoginSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
         });
 
+    When(
+        "I navigate to {string} environment",
+        (String env) -> {
+          locale = env;
+          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
+          TimeUnit.SECONDS.sleep(5);
+        });
     Then(
         "I login with last edited user",
         () -> {

@@ -868,14 +868,14 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
 		exposure.setRiskArea(YesNoUnknown.NO);
 		caze.getEpiData().getExposures().add(exposure);
-		PersonDto casePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+		PersonDto casePerson = getPersonFacade().getByUuid(caze.getPerson().getUuid());
 		casePerson.setApproximateAge(5);
 		casePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		getPersonFacade().savePerson(casePerson);
+		getPersonFacade().save(casePerson);
 		caze = getCaseFacade().save(caze);
 		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
 		casePerson.setApproximateAge(0);
-		getPersonFacade().savePerson(casePerson);
+		getPersonFacade().save(casePerson);
 		caze.setOutcome(CaseOutcome.DECEASED);
 		caze.getEpiData().getExposures().get(0).setRiskArea(YesNoUnknown.YES);
 		caze = getCaseFacade().save(caze);
@@ -1209,10 +1209,10 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			caze.getSymptoms().setSkinRash(SymptomState.YES);
 			break;
 		case CHOLERA:
-			PersonDto casePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+			PersonDto casePerson = getPersonFacade().getByUuid(caze.getPerson().getUuid());
 			casePerson.setApproximateAge(5);
 			casePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-			getPersonFacade().savePerson(casePerson);
+			getPersonFacade().save(casePerson);
 			caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 			break;
 		case PLAGUE:

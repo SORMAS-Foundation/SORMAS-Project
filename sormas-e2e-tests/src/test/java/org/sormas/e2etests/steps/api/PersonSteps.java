@@ -53,6 +53,15 @@ public class PersonSteps implements En {
         });
 
     When(
+        "API: I create a new person with {string} region and {string} district",
+        (String region, String district) -> {
+          Person createPersonObject =
+              personApiService.buildGeneratedPersonParamRegionAndDistrict(region, district);
+          apiState.setLastCreatedPerson(createPersonObject);
+          personsHelper.createNewPerson(createPersonObject);
+        });
+
+    When(
         "API: I create {int} persons",
         (Integer numberOfPersons) -> {
           List<Person> personList = new ArrayList<>();
