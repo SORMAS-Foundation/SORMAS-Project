@@ -45,6 +45,8 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.collections4.CollectionUtils;
 import org.keycloak.representations.idm.UserFederationProviderFactoryRepresentation;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -281,10 +283,10 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(districtJoin.get(District.UUID)).value(districtUuids));
 			userEntityJoinUsed = true;
 		}
-		if (filterByJurisdiction) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createJurisdictionFilter(cb, userRoot));
-			userEntityJoinUsed = true;
-		}
+//		if (filterByJurisdiction) {
+//			filter = CriteriaBuilderHelper.and(cb, filter, createJurisdictionFilter(cb, userRoot));
+//			userEntityJoinUsed = true;
+//		}
 		if (CollectionUtils.isNotEmpty(userRoles)) {
 			filter = CriteriaBuilderHelper.and(cb, filter, rolesJoin.in(userRoles));
 		}
@@ -318,6 +320,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(User.ID)));
 
+		System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
 		List<UserReference> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true)
 				.getResultList();
 		return resultList;
