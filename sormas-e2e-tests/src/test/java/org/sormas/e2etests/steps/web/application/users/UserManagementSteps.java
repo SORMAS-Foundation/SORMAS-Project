@@ -31,6 +31,7 @@ import org.testng.Assert;
 
 public class UserManagementSteps implements En {
   public static int numberOfUsers;
+  public static int numberOfRows;
   protected WebDriverHelpers webDriverHelpers;
 
   @Inject
@@ -49,6 +50,19 @@ public class UserManagementSteps implements En {
         "^I set active inactive filter to ([^\"]*) in User Management directory$",
         (String activeInactive) -> {
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, activeInactive);
+          TimeUnit.SECONDS.sleep(2); // needed for table to refresh
+        });
+
+    Then(
+        "^I set user role filter to ([^\"]*) in User Roles tab$",
+        (String activeInactive) -> {
+          webDriverHelpers.selectFromCombobox(USER_RIGHTS_COMBOBOX, activeInactive);
+          TimeUnit.SECONDS.sleep(2); // needed for table to refresh
+        });
+    Then(
+        "^I set jurisdiction level filter to ([^\"]*) in User Roles tab$",
+        (String activeInactive) -> {
+          webDriverHelpers.selectFromCombobox(JURISDICTION_LEVEL_COMBOBOX, activeInactive);
           TimeUnit.SECONDS.sleep(2); // needed for table to refresh
         });
 
@@ -94,6 +108,24 @@ public class UserManagementSteps implements En {
                         webDriverHelpers.isElementVisibleWithTimeout(SYNC_SUCCESS_DE, 5),
                         "Sync of users failed"),
                 10));
+    When(
+        "I go to USER ROLES tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(USER_ROLES_TAB));
+    Then(
+        "I get row count from User Roles tab",
+        () ->
+            numberOfRows =
+                Integer.parseInt(
+                    webDriverHelpers.getAttributeFromWebElement(
+                        USER_ROLE_TABLE_GRID, "aria-rowcount")));
+    Then(
+        "I compare that actual row coutner is less than first one",
+        () ->
+            Assert.assertTrue(
+                Integer.parseInt(
+                        webDriverHelpers.getAttributeFromWebElement(
+                            USER_ROLE_TABLE_GRID, "aria-rowcount"))
+                    < numberOfRows));
   }
 
   private void searchForUser(String userName) {

@@ -31,4 +31,10 @@ public class UserManagementPage {
   public static final By SYNC_USERS_BUTTON = By.id("syncUsers");
   public static final By SYNC_POPUP_BUTTON = By.id("import-step-1");
   public static final By SYNC_SUCCESS_DE = By.xpath("//*[text()='Synchronisation erfolgreich!']");
+  public static final By USER_ROLES_TAB = By.id("tab-user-userroles");
+  public static final By USER_RIGHTS_COMBOBOX =
+      By.cssSelector("[id='userRights'] [class='v-filterselect-button']");
+  public static final By JURISDICTION_LEVEL_COMBOBOX =
+      By.cssSelector("[id='jurisdictionLevel'] [class='v-filterselect-button']");
+  public static final By USER_ROLE_TABLE_GRID = By.xpath("//table[@role='grid']");
 }
