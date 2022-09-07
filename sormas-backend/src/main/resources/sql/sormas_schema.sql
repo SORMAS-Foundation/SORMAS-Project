@@ -8551,24 +8551,21 @@ ADD COLUMN userposition VARCHAR;
 
 INSERT INTO schema_version (version_number, comment) VALUES (422, 'adding organisation and position to user table');
 
+
 --add organisation and position to user table
 
 ALTER TABLE campaignformdata
 ADD COLUMN lat float,
 ADD COLUMN lon float;
 
-
 INSERT INTO schema_version (version_number, comment) VALUES (423, 'adding longandLat');
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 
---add organisation and position to user table
+--add clusternumber to community
 
 ALTER TABLE community ADD column clusternumber int;
 
-
 INSERT INTO schema_version (version_number, comment) VALUES (424, 'adding cluster number to communities');
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 
 -- add usertype to user table
@@ -8576,10 +8573,40 @@ ALTER TABLE users add column usertype VARCHAR;
 
 INSERT INTO schema_version (version_number, comment) VALUES (425, 'adding usertype to users table');
 
+
 -- Set all default/previous users to WHO_USER type
 UPDATE users SET usertype = 'WHO_USER' WHERE usertype IS NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (426, 'setting default user type for existing users');
+
+--add users_community table to allow assigning of multiple clusters to users
+CREATE TABLE users_community (
+users_id bigint NOT NULL,
+community_id character varying(255) NOT NULL
+);
+
+ALTER TABLE users_community OWNER TO sormas_user;
+
+ALTER TABLE users_community
+ALTER COLUMN community_id  TYPE bigint
+USING community_id::bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (427, 'configuring multiple community for users');
+
+-- create table users_formacess
+CREATE TABLE users_formaccess (
+user_id bigint NOT NULL,
+formAccess character varying(255) NOT NULL
+);
+
+ALTER TABLE users_formaccess OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (428, 'add form access type to user table');
+
+-- add form category to campaignformmeta
+ALTER TABLE campaignformmeta add column formCategory varchar(50);
+
+INSERT INTO schema_version (version_number, comment) VALUES (429, 'add form category to campaignformmeta');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

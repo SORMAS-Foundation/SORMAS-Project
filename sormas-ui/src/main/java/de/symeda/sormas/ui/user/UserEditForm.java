@@ -23,8 +23,12 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
@@ -150,10 +154,38 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.setMultiSelect(true);
+//        
+//        addField(UserDto.COMMUNITY, ComboBox.class);
+//     // Initialize a list with items
+//     		List<String> list = new ArrayList<String>();
+//     		
+//     		list.add("Java1");
+//     		list.add("Java2");
+//     		list.add("Java3");
+//     		list.add("Java4");
+//     		
+//     		// Initialize the ComboBoxMultiselect
+//     		ComboBoxMultiselect comboBoxMultiselect = (ComboBoxMultiselect) getFieldGroup().getField(UserDto.COMMUNITY);
+//     		//final ComboBoxMultiselect<String> comboBoxMultiselect = new ComboBoxMultiselect<>();
+//     		comboBoxMultiselect.setPlaceholder("Type here");
+//     		comboBoxMultiselect.setCaption("ComboBoxMultiselect");
+//     		comboBoxMultiselect.setItems(list);
+//     	//	comboBoxMultiselect.setValue(new HashSet<>(Arrays.asList(vaadin)));
+//     		
+//        
+//        
+        
+        
 
         ComboBox area = addInfrastructureField(UserDto.AREA);
         ComboBox region = addInfrastructureField(UserDto.REGION);
-        ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
+        
+        addField(UserDto.COMMUNITY, OptionGroup.class);
+        OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
+        
+        
+        
+       // ComboBox community = addInfrastructureField("gcgcvg");
         ComboBox district = addInfrastructureField(UserDto.DISTRICT);
         
         /*
@@ -162,6 +194,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
          * See issue issue #201
          */
         community.setValue("11111111111");
+        community.setMultiSelect(true);
         
         
         area.addValueChangeListener(e -> {
@@ -191,7 +224,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
          * See issue issue #201
          */
         community.addValueChangeListener(e -> {
-        	CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+        //	CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
         	
         });
         		
@@ -223,7 +256,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        //region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+        //region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry()); //Sormas.sql
         System.out.println("ddddddddddddddddddddddddddddddddssssssssssssssssssssefasdfas "+FacadeProvider.getAreaFacade().getAllActiveAsReference());
         area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
@@ -305,12 +338,14 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			district.clear();
 		}
 		
-		final ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
-		community.setVisible(useCommunity);
-		setRequired(useCommunity, UserDto.COMMUNITY);
-		if (!useCommunity) {
-			community.clear();
-		}	
+	
+//		
+//		final ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
+//		community.setVisible(useCommunity);
+//		setRequired(useCommunity, UserDto.COMMUNITY);
+//		if (!useCommunity) {
+//			community.clear();
+//		}	
 	}
 
     private void suggestUserName() {
