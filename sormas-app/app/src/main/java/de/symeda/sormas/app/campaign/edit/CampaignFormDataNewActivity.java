@@ -81,7 +81,7 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, CampaignFormData activityRootData) {
         activityRootData.setCampaign(campaign);
         activityRootData.setCampaignFormMeta(campaignFormMeta);
-        CampaignFormDataNewFragment campaignFormDataNewFragment = CampaignFormDataNewFragment.newInstance(activityRootData);
+        BaseEditFragment campaignFormDataNewFragment = CampaignFormDataNewFragment.newInstance(activityRootData);
         campaignFormDataNewFragment.setLiveValidationDisabled(true);
         return campaignFormDataNewFragment;
     }

@@ -206,9 +206,20 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         fieldMap.put(campaignFormElement.getId(), dynamicField);
                         final String dependingOn = campaignFormElement.getDependingOn();
                         final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                        if (dependingOn != null && dependingOnValues != null) {
+                        List<String> constraints;
+                        String depenValuexd = null;
+                        if (dependingOnValues != null) {
+                            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                            ListIterator<String> lstItemsx = constraints.listIterator();
+                            while (lstItemsx.hasNext()) {
+                                depenValuexd = lstItemsx.next().toString();
+                            }
+                        }
+                        final String depenValuex = depenValuexd;
+
+                        if (dependingOn != null && depenValuex != null) {
                             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                            setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
                         }
                         final String expressionString = campaignFormElement.getExpression();
                         if (expressionString != null) {
@@ -250,10 +261,23 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         fieldMap.put(campaignFormElement.getId(), dynamicField);
                         final String dependingOn = campaignFormElement.getDependingOn();
                         final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                        if (dependingOn != null && dependingOnValues != null) {
-                            ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                            setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+
+                        List<String> constraints;
+                        String depenValuexd = null;
+                        if (dependingOnValues != null) {
+                            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                            ListIterator<String> lstItemsx = constraints.listIterator();
+                            while (lstItemsx.hasNext()) {
+                                depenValuexd = lstItemsx.next().toString();
+                            }
                         }
+                        final String depenValuex = depenValuexd;
+
+                        if (dependingOn != null && depenValuex != null) {
+                            ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
+                            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
+                        }
+
                         final String expressionString = campaignFormElement.getExpression();
                         if (expressionString != null) {
                             try {
@@ -294,9 +318,20 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         fieldMap.put(campaignFormElement.getId(), dynamicField);
                         final String dependingOn = campaignFormElement.getDependingOn();
                         final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                        if (dependingOn != null && dependingOnValues != null) {
+                        List<String> constraints;
+                        String depenValuexd = null;
+                        if (dependingOnValues != null) {
+                            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                            ListIterator<String> lstItemsx = constraints.listIterator();
+                            while (lstItemsx.hasNext()) {
+                                depenValuexd = lstItemsx.next().toString();
+                            }
+                        }
+                        final String depenValuex = depenValuexd;
+
+                        if (dependingOn != null && depenValuex != null) {
                             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                            setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
                         }
                         final String expressionString = campaignFormElement.getExpression();
                         if (expressionString != null) {
@@ -338,9 +373,20 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         fieldMap.put(campaignFormElement.getId(), dynamicField);
                         final String dependingOn = campaignFormElement.getDependingOn();
                         final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                        if (dependingOn != null && dependingOnValues != null) {
+                        List<String> constraints;
+                        String depenValuexd = null;
+                        if (dependingOnValues != null) {
+                            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                            ListIterator<String> lstItemsx = constraints.listIterator();
+                            while (lstItemsx.hasNext()) {
+                                depenValuexd = lstItemsx.next().toString();
+                            }
+                        }
+                        final String depenValuex = depenValuexd;
+
+                        if (dependingOn != null && depenValuex != null) {
                             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                            setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
                         }
                         final String expressionString = campaignFormElement.getExpression();
                         if (expressionString != null) {
@@ -382,9 +428,20 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         fieldMap.put(campaignFormElement.getId(), dynamicField);
                         final String dependingOn = campaignFormElement.getDependingOn();
                         final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                        if (dependingOn != null && dependingOnValues != null) {
+                        List<String> constraints;
+                        String depenValuexd = null;
+                        if (dependingOnValues != null) {
+                            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                            ListIterator<String> lstItemsx = constraints.listIterator();
+                            while (lstItemsx.hasNext()) {
+                                depenValuexd = lstItemsx.next().toString();
+                            }
+                        }
+                        final String depenValuex = depenValuexd;
+
+                        if (dependingOn != null && depenValuex != null) {
                             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                            setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
                         }
                         final String expressionString = campaignFormElement.getExpression();
                         if (expressionString != null) {
@@ -426,9 +483,20 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         fieldMap.put(campaignFormElement.getId(), dynamicField);
                         final String dependingOn = campaignFormElement.getDependingOn();
                         final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                        if (dependingOn != null && dependingOnValues != null) {
+                        List<String> constraints;
+                        String depenValuexd = null;
+                        if (dependingOnValues != null) {
+                            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                            ListIterator<String> lstItemsx = constraints.listIterator();
+                            while (lstItemsx.hasNext()) {
+                                depenValuexd = lstItemsx.next().toString();
+                            }
+                        }
+                        final String depenValuex = depenValuexd;
+
+                        if (dependingOn != null && depenValuex != null) {
                             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                            setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
                         }
                         final String expressionString = campaignFormElement.getExpression();
                         if (expressionString != null) {
@@ -470,9 +538,20 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         fieldMap.put(campaignFormElement.getId(), dynamicField);
                         final String dependingOn = campaignFormElement.getDependingOn();
                         final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                        if (dependingOn != null && dependingOnValues != null) {
+                        List<String> constraints;
+                        String depenValuexd = null;
+                        if (dependingOnValues != null) {
+                            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                            ListIterator<String> lstItemsx = constraints.listIterator();
+                            while (lstItemsx.hasNext()) {
+                                depenValuexd = lstItemsx.next().toString();
+                            }
+                        }
+                        final String depenValuex = depenValuexd;
+
+                        if (dependingOn != null && depenValuex != null) {
                             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                            setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
                         }
                         final String expressionString = campaignFormElement.getExpression();
                         if (expressionString != null) {
@@ -514,9 +593,20 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         fieldMap.put(campaignFormElement.getId(), dynamicField);
                         final String dependingOn = campaignFormElement.getDependingOn();
                         final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                        if (dependingOn != null && dependingOnValues != null) {
+                        List<String> constraints;
+                        String depenValuexd = null;
+                        if (dependingOnValues != null) {
+                            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                            ListIterator<String> lstItemsx = constraints.listIterator();
+                            while (lstItemsx.hasNext()) {
+                                depenValuexd = lstItemsx.next().toString();
+                            }
+                        }
+                        final String depenValuex = depenValuexd;
+
+                        if (dependingOn != null && depenValuex != null) {
                             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                            setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
                         }
                         final String expressionString = campaignFormElement.getExpression();
                         if (expressionString != null) {
@@ -559,9 +649,20 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                     fieldMap.put(campaignFormElement.getId(), dynamicField);
                     final String dependingOn = campaignFormElement.getDependingOn();
                     final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                    if (dependingOn != null && dependingOnValues != null) {
+                    List<String> constraints;
+                    String depenValuexd = null;
+                    if (dependingOnValues != null) {
+                        constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+                        ListIterator<String> lstItemsx = constraints.listIterator();
+                        while (lstItemsx.hasNext()) {
+                            depenValuexd = lstItemsx.next().toString();
+                        }
+                    }
+                    final String depenValuex = depenValuexd;
+
+                    if (dependingOn != null && depenValuex != null) {
                         ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                        setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                        setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
                     }
                     final String expressionString = campaignFormElement.getExpression();
                     if (expressionString != null) {
