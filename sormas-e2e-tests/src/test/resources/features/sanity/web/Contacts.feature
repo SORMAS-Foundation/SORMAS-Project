@@ -1159,3 +1159,17 @@ Feature: Contacts end to end tests
     When I click on Discard button in Create New Contact form
     And I click on the User Settings button from navbar
     And I select "Deutsch" language from Combobox in User settings
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Contact Person
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I navigate to the last created contact via the url
+    Then I open Contact Person tab
+    Then I check that Citizenship is not visible in Contact Information section for DE version
+    And I check that Country of birth is not visible in Contact Information section for DE version

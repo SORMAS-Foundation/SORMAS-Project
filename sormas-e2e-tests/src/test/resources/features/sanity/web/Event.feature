@@ -1292,3 +1292,13 @@ Feature: Create events
     Then I Verify The Eye Icon opening the Map is enabled in the Edit Event Page
     And I click on the The Eye Icon located in the Edit Event Page
     Then I verify that the Map Container is now Visible in the Edit Event Page
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Event Participant Person Page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
