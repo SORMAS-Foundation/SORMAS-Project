@@ -234,6 +234,7 @@
                     android:id="@+id/caseData_reportDate"
                     app:value="@={data.reportDate}"
                     app:required="true"
+                    app:simpleDate="@{true}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField

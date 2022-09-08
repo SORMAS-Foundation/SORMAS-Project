@@ -15,6 +15,12 @@
 
 package de.symeda.sormas.app.component.controls;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,12 +41,6 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 import androidx.fragment.app.FragmentManager;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -67,6 +67,8 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	private SimpleDateFormat dateFormat;
 	private int allowedDaysInFuture;
 	private Date cachedTime;
+
+	private boolean simpleDate;
 
 	// Constructors
 
@@ -383,7 +385,17 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
 	public static Date getValue(ControlDateField view) {
-		return view.getFieldValue();
+		Date viewDate = view.getFieldValue();
+		if (view.isSimpleDate() && viewDate != null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(viewDate);
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
+			viewDate = calendar.getTime();
+		}
+		return viewDate;
 	}
 
 	@BindingAdapter("valueAttrChanged")
@@ -394,5 +406,18 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	@BindingAdapter("dateFormat")
 	public static void setDateFormat(ControlDateField field, SimpleDateFormat dateFormat) {
 		field.dateFormat = dateFormat;
+	}
+
+//	@InverseBindingAdapter(attribute = "simpleDate", event = "valueAttrChanged")
+//	public static Date getValue(ControlDateField view) {
+//		return view.getFieldValue();
+//	}
+
+	public boolean isSimpleDate() {
+		return simpleDate;
+	}
+
+	public void setSimpleDate(boolean simpleDate) {
+		this.simpleDate = simpleDate;
 	}
 }
