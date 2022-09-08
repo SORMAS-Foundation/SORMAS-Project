@@ -82,7 +82,8 @@ public class RunningConfiguration {
           .getSurvnetResponsible();
     } catch (NullPointerException e) {
       throw new Exception(
-          String.format("Unable to get Survnet Responsible of Environment for market: %s", identifier));
+          String.format(
+              "Unable to get Survnet Responsible of Environment for market: %s", identifier));
     }
   }
 

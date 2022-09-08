@@ -1135,7 +1135,7 @@ Feature: Contacts end to end tests
     And I select last created API result in grid in Contact Directory for Bulk Action
     And I click on Bulk Actions combobox on Contact Directory Page
     And I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page
-    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory for DE
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory
     And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
     And I click on Create button in Create Quarantine Order form DE
     And I click on close button in Create Quarantine Order form
