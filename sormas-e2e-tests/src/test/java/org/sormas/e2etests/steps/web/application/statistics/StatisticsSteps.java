@@ -92,25 +92,68 @@ public class StatisticsSteps implements En {
         });
 
     And(
-        "^I Click on the +Add filter button from the statistics Page",
+        "I click on the Add filter button from the Statistics Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_FILTER_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ADD_FILTER_BUTTON);
         });
 
     And(
-        "^I Click the Remove Filter Button from the statistics Page",
+        "I click the Remove Filter Button from the Statistics Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REMOVE_FILTER_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(REMOVE_FILTER_BUTTON);
         });
 
     And(
-        "^I Click the Reset Filter Button from the statistics Page",
+        "I click the Reset Filter Button from the Statistics Page",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESET_FILTER_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESET_FILTER_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
         });
+
+    And(
+        "^I select Visualisation type ([^\"]*) from the Statistics Page",
+        (String visualisationType) -> {
+          switch (visualisationType) {
+            case "Table":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  VISUALISATION_TYPE_TABLE_RADIO_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(VISUALISATION_TYPE_TABLE_RADIO_BUTTON);
+              break;
+            case "Map":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  VISUALISATION_TYPE_MAP_RADIO_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(VISUALISATION_TYPE_MAP_RADIO_BUTTON);
+              break;
+            case "Chart":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  VISUALISATION_TYPE_CHART_RADIO_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(VISUALISATION_TYPE_CHART_RADIO_BUTTON);
+              break;
+          }
+        });
+
+    Then(
+        "I Verify the presence of Rows, Columns, and switch-between Button in the Statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(TABLE_ROWS_DROPDOWN);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SWITCH_ROWS_AND_COLUMNS_BUTTON);
+        });
+
+    Then(
+        "I Verify the presence of Map Type Regions and Districts buttons in the Statistics Page",
+        () -> {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(MAP_TYPE_REGIONS_RADIO_BUTTON);
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(MAP_TYPE_DISTRICTS_RADIO_BUTTON);
+        });
+
+      Then(
+          "I Verify the presence of Chart Type Column buttons in the Statistics Page",
+          () -> {
+              //WIP
+          });
   }
 
   public String[] parseEventGroupsDatabaseExportColumns(String fileName) {
