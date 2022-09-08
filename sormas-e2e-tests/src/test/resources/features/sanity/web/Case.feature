@@ -1779,3 +1779,23 @@ Feature: Case end to end tests
      And I click on the Shares button from navbar
      Then I click on the The Eye Icon located in the Shares Page
      And I check if received case id is equal with sent
+
+   @tmsLink=SORDEV-10230 @env_main
+      Scenario: Test Archived entities should always be read-only
+      Then I log in as a Admin User
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      When I create a new case with specific data
+      Then I check the created data is correctly displayed on Edit case page
+      And I collect uuid of the case
+      Then I click on the Cases button from navbar
+      And I apply "Active cases" to combobox on Case Directory Page
+      Then I filter with first Case ID
+      And I click on the first Case ID from Case Directory
+      Then I click on the Archive case button
+      Then I check the end of processing date in the archive popup and select Archive contacts checkbox
+      And I back to the cases list from edit case
+      And I apply "Archived cases" to combobox on Case Directory Page
+      And I check that number of displayed cases results is 1
+      And I apply "All cases" to combobox on Case Directory Page
+      And I check that number of displayed cases results is 1

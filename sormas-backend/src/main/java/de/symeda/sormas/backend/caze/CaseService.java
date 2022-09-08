@@ -1583,8 +1583,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(caze) || sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+		if (!inJurisdictionOrOwned(caze)) {
 			return EditPermissionType.REFUSED;
+		}
+
+		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+			return EditPermissionType.DOCUMENTS_ONLY;
 		}
 
 		return super.getEditPermissionType(caze);

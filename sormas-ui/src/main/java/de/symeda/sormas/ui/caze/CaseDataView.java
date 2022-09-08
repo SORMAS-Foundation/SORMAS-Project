@@ -205,6 +205,8 @@ public class CaseDataView extends AbstractCaseView {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
+		} else if (caseEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
+			layout.disable(true);
 		}
 	}
 }

@@ -79,15 +79,11 @@ public class CreateNewUserSteps implements En {
 
     When(
         "I click Enter Bulk Edit Mode on Users directory page",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
-        });
+        () -> webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE));
 
     When(
         "I click checkbox to choose all User results",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
-        });
+        () -> webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX));
 
     When(
         "I pick {string} value for Active filter in User Directory",
@@ -385,6 +381,27 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP_DE);
+        });
+    When(
+        "I login first time as a last edited user from keycloak instance",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_NAME_INPUT, EditUserSteps.collectedUser.getUserName());
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          String newPassword = EditUserSteps.collectedUser.getPassword() + "3!";
+          EditUserSteps.collectedUser =
+              EditUserSteps.collectedUser.toBuilder().password(newPassword).build();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.fillInWebElement(
+              LoginPage.PASSWORD_NEW_INPUT, EditUserSteps.collectedUser.getPassword());
+          webDriverHelpers.fillInWebElement(
+              LoginPage.PASSWORD_CONFIRM_INPUT, EditUserSteps.collectedUser.getPassword());
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.SUBMIT_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
         });
 
     When(

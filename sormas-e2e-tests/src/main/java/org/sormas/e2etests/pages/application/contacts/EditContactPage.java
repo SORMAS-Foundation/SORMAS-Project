@@ -186,6 +186,9 @@ public class EditContactPage {
   }
 
   public static final By NOTIFICATION_MESSAGE_POPUP = By.cssSelector(".v-Notification-description");
+  public static final By EDIT_VACCINATION_BUTTON =
+      By.xpath(
+          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
 
   public static final By OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK =
       By.cssSelector("[location='toCaseBtnLoc'] div");

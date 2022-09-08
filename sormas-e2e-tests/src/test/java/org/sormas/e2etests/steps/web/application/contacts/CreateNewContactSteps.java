@@ -532,6 +532,19 @@ public class CreateNewContactSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
         });
+
+    And(
+        "^I fill a new Contact form with specific data for DE version with date (\\d+) days ago$",
+        (Integer daysAgo) -> {
+          contact = contactService.buildGeneratedContactDE();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(LocalDate.now().minusDays(daysAgo), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+        });
   }
 
   private void fillFirstName(String firstName) {
