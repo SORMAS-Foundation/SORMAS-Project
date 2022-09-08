@@ -362,6 +362,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 					previousMeansOfImmunization = meansOfImmunization;
 				}
 			}
+
 			vaccinationHeadingLabel.setVisible(isVaccinationVisible);
 			numberOfDosesField.setVisible(isVaccinationVisible);
 			numberOfDosesDetailsField.setVisible(isVaccinationVisible && getValue().getNumberOfDosesDetails() != null);
@@ -369,6 +370,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			recoveryHeadingLabel.setVisible(isRecoveryVisible);
 			positiveTestResultDate.setVisible(isRecoveryVisible);
 			recoveryDate.setVisible(isRecoveryVisible);
+
+			if (!isVaccinationVisible) {
+				numberOfDosesField.clear();
+				numberOfDosesDetailsField.clear();
+			}
 
 			if (!isRecoveryVisible) {
 				positiveTestResultDate.clear();
