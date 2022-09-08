@@ -37,6 +37,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPID_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_COMMENT_FIELD;
@@ -44,7 +45,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
@@ -1263,7 +1263,7 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EPID_NUMBER_INPUT);
         });
 
     And(

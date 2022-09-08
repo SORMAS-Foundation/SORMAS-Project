@@ -2494,12 +2494,14 @@ public class EditCaseSteps implements En {
         "^I check that follow-up status comment is correctly displayed on Edit case page$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
-          String followUpStatusComment =
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FOLLOW_UP_COMMENT_FIELD);
+          String actualFollowUpStatusComment =
               webDriverHelpers.getValueFromWebElement(FOLLOW_UP_COMMENT_FIELD);
+          String expectedFollowUpStatusComment =
+              EditContactSteps.editedContact.getFollowUpStatusComment();
           softly.assertEquals(
-              followUpStatusComment,
-              EditContactSteps.editedContact.getFollowUpStatusComment(),
+              actualFollowUpStatusComment,
+              expectedFollowUpStatusComment,
               "Follow-up status comment is incorrect!");
           softly.assertAll();
         });
