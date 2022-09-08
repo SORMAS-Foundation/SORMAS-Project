@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
@@ -160,7 +161,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
-			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+				.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		if (externalSurveillanceToolShareEnabled) {
 			Column<CaseIndexDto, Date> shareDateColumn = ((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE));
