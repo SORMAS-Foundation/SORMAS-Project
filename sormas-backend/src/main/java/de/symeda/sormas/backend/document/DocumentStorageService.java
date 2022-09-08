@@ -93,6 +93,10 @@ public class DocumentStorageService {
 	}
 
 	private void setAttribute(Path path, String attributeKey, String attributeValue) throws IOException {
-		Files.setAttribute(path, "user:" + attributeKey, Charset.defaultCharset().encode(attributeValue));
+		try {
+			Files.setAttribute(path, "user:" + attributeKey, Charset.defaultCharset().encode(attributeValue));
+		} catch (UnsupportedOperationException uoe) {
+			logger.warn("Could not set document attribute [{}]: {}", attributeKey, uoe.getMessage());
+		}
 	}
 }
