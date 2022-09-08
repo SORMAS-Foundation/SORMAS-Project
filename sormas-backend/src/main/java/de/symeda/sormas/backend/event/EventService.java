@@ -307,26 +307,20 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			try {
-				externalSurveillanceToolGatewayFacade
-					.sendEvents(externalShareInfoService.getSharedEventUuidsWithoutDeletedStatus(entityUuids), archived);
-			} catch (ExternalSurveillanceToolException e) {
-				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			List<String> sharedEventUuids = externalShareInfoService.getSharedEventUuidsWithoutDeletedStatus(entityUuids);
+
+			if (!sharedEventUuids.isEmpty()) {
+				try {
+					externalSurveillanceToolGatewayFacade.sendEvents(sharedEventUuids, archived);
+				} catch (ExternalSurveillanceToolException e) {
+					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+				}
 			}
 		}
 	}
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) {
-		Event event = getByUuid(eventUuid);
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
-			&& externalShareInfoService.isEventShared(event.getId())
-			&& !hasShareInfoWithDeletedStatus(eventUuid)) {
-			try {
-				externalSurveillanceToolGatewayFacade.sendEvents(Collections.singletonList(eventUuid), archived);
-			} catch (ExternalSurveillanceToolException e) {
-				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-			}
-		}
+		setArchiveInExternalSurveillanceToolForEntities(Collections.singletonList(eventUuid), archived);
 	}
 
 	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
