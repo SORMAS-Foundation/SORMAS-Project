@@ -64,7 +64,7 @@ public class SynchronizationDialog extends AbstractDialog {
 	private final List<DialogSynchronizationProgressItemLayoutBinding> progressItemBindings = new ArrayList<>();
 	private int progressItemBindingsIndex = 0;
 	private boolean updatingProgressItemBindings = false;
-	private DialogSynchronizationProgressItemLayoutBinding currentBinding;
+	private DialogSynchronizationProgressItemLayoutBinding currentProgressItemBinding;
 	private final SynchronizationCallbacks syncCallbacks;
 
 	public SynchronizationDialog(final FragmentActivity activity) {
@@ -85,7 +85,7 @@ public class SynchronizationDialog extends AbstractDialog {
 			this::updateDeletions,
 			this::updatePushTotal,
 			this::showDialog,
-			this::showNextCleanupItems);
+			this::showNextClearItems);
 	}
 
 	@Override
@@ -103,6 +103,10 @@ public class SynchronizationDialog extends AbstractDialog {
 		getActivity().runOnUiThread(this::show);
 	}
 
+	/**
+	 * Updates the dialog to show the next synchronization step as active and display
+	 * the corresponding progress items.
+	 */
 	private void updateSynchronizationStep(SynchronizationStep synchronizationStep) {
 
 		synchronized (BINDING_LOCK) {
@@ -111,12 +115,14 @@ public class SynchronizationDialog extends AbstractDialog {
 					BINDING_LOCK.wait();
 				}
 			} catch (InterruptedException e) {
-				logger.error("InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.updateSynchronizationStep: " + e.getMessage());
+				logger.error(
+					"InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.updateSynchronizationStep: "
+						+ e.getMessage());
 			}
 		}
 
 		updatingProgressItemBindings = true;
-		currentBinding = null;
+		currentProgressItemBinding = null;
 		currentSyncStep = synchronizationStep;
 
 		switch (synchronizationStep) {
@@ -158,20 +164,25 @@ public class SynchronizationDialog extends AbstractDialog {
 		});
 	}
 
-
+	/**
+	 * Waits until the UI thread has set up the progress item bindings to ensure that they
+	 * are present when the synchronization process accesses them.
+	 */
 	private void waitForProgressItemBindings() {
 
-		if (!updatingProgressItemBindings && currentBinding != null) {
+		if (!updatingProgressItemBindings && currentProgressItemBinding != null) {
 			return;
 		}
 
 		synchronized (BINDING_LOCK) {
 			try {
-				if (updatingProgressItemBindings || currentBinding == null) {
+				if (updatingProgressItemBindings || currentProgressItemBinding == null) {
 					BINDING_LOCK.wait();
 				}
 			} catch (InterruptedException e) {
-				logger.error("InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.waitForProgressItemBindings: " + e.getMessage());
+				logger.error(
+					"InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.waitForProgressItemBindings: "
+						+ e.getMessage());
 			}
 		}
 	}
@@ -180,40 +191,50 @@ public class SynchronizationDialog extends AbstractDialog {
 		getActivity().runOnUiThread(() -> contentBinding.stepsLayout.setStepNumber(stepNumber));
 	}
 
+	/**
+	 * Activates the next progress item.
+	 */
 	private void loadNext() {
 
 		waitForProgressItemBindings();
 
-		currentBinding.setActive(false);
-		currentBinding.setDone(true);
+		currentProgressItemBinding.setActive(false);
+		currentProgressItemBinding.setDone(true);
 
 		if (progressItemBindings.size() > ++progressItemBindingsIndex) {
-			currentBinding = progressItemBindings.get(progressItemBindingsIndex);
-			currentBinding.setActive(true);
+			currentProgressItemBinding = progressItemBindings.get(progressItemBindingsIndex);
+			currentProgressItemBinding.setActive(true);
 		}
 	}
 
 	private void updatePulls(int pulled) {
 		waitForProgressItemBindings();
-		currentBinding.setPulls(currentBinding.getPulls() + pulled);
+		currentProgressItemBinding.setPulls(currentProgressItemBinding.getPulls() + pulled);
 	}
 
 	private void updatePushes(int pushed) {
 		waitForProgressItemBindings();
-		currentBinding.setPushes(currentBinding.getPushes() + pushed);
+		currentProgressItemBinding.setPushes(currentProgressItemBinding.getPushes() + pushed);
 	}
 
 	private void updatePushTotal(int pushTotal) {
 		waitForProgressItemBindings();
-		currentBinding.setPushTotal(pushTotal);
+		currentProgressItemBinding.setPushTotal(pushTotal);
 	}
 
 	private void updateDeletions(int deleted) {
 		waitForProgressItemBindings();
-		currentBinding.setDeletions(currentBinding.getDeletions() + deleted);
+		currentProgressItemBinding.setDeletions(currentProgressItemBinding.getDeletions() + deleted);
 	}
 
-	private void showNextCleanupItems() {
+	/**
+	 * Replaces the current progress items with new ones that match the next step in the
+	 * clear up synchronization steps. Since the two clear up steps belong together, they are
+	 * not separated by individual synchronization steps. However, the two actions (deletions
+	 * and pulls) also can't be displayed at the same time because they are performed in
+	 * reverse order.
+	 */
+	private void showNextClearItems() {
 
 		synchronized (BINDING_LOCK) {
 			try {
@@ -221,12 +242,14 @@ public class SynchronizationDialog extends AbstractDialog {
 					BINDING_LOCK.wait();
 				}
 			} catch (InterruptedException e) {
-				logger.error("InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.updateSynchronizationStep: " + e.getMessage());
+				logger.error(
+					"InterruptedException when trying to perform BINDING_LOCK.wait() in SynchronizationDialog.updateSynchronizationStep: "
+						+ e.getMessage());
 			}
 		}
 
 		updatingProgressItemBindings = true;
-		currentBinding = null;
+		currentProgressItemBinding = null;
 
 		if (currentSyncStep == SynchronizationStep.CLEAR_UP_INFRASTRUCTURE) {
 			showClearUpInfrastructureProgressItems(false);
@@ -245,7 +268,7 @@ public class SynchronizationDialog extends AbstractDialog {
 	private void showProgressItems(boolean showPulls, boolean showPushes, boolean showDeletions, List<String> captions) {
 
 		getActivity().runOnUiThread(() -> {
-			assert (currentBinding == null);
+			assert (currentProgressItemBinding == null);
 
 			progressItemBindings.clear();
 			progressItemBindingsIndex = 0;
@@ -256,8 +279,8 @@ public class SynchronizationDialog extends AbstractDialog {
 			captions.forEach(caption -> progressItemBindings.add(createBinding(inflater, caption, showPulls, showPushes, showDeletions)));
 
 			synchronized (BINDING_LOCK) {
-				currentBinding = progressItemBindings.get(0);
-				currentBinding.setActive(true);
+				currentProgressItemBinding = progressItemBindings.get(0);
+				currentProgressItemBinding.setActive(true);
 				updatingProgressItemBindings = false;
 				BINDING_LOCK.notify();
 			}
