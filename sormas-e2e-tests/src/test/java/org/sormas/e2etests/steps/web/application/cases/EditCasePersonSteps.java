@@ -322,22 +322,23 @@ public class EditCasePersonSteps implements En {
               break;
           }
         });
-      When(
-              "I check that ([^\"]*) is not visible in Contact Information section for DE version",
-              (String option) -> {
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-                  By selector = null;
-                  switch (option) {
-                      case "Citizenship":
-                          selector = CITIZENSHIP_LABEL_DE;
-                          break;
-                      case "Country of birth":
-                          selector = COUNTRY_OF_BIRTH_LABEL_DE;
-                          break;
-                  }
-                  softly.assertFalse(webDriverHelpers.isElementVisibleWithTimeout(selector,3), option + " is visible!");
-                  softly.assertAll();
-              });
+    When(
+        "I check that ([^\"]*) is not visible in Contact Information section for DE version",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          switch (option) {
+            case "Citizenship":
+              selector = CITIZENSHIP_LABEL_DE;
+              break;
+            case "Country of birth":
+              selector = COUNTRY_OF_BIRTH_LABEL_DE;
+              break;
+          }
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(selector, 3), option + " is visible!");
+          softly.assertAll();
+        });
     When(
         "I set Present condition of person to {string}",
         (String option) -> webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, option));
