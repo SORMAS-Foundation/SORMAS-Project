@@ -51,7 +51,7 @@ public enum EntityColumn {
 	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false, true, false),
 	CAPTION(256 * 30, EntityColumn::getCaption, false, true, false),
 	DESCRIPTION(256 * 60, EntityColumn::getDescription, true, true, false),
-	NOT_NULL(256 * 10, EntityColumn::getNotNull, false, true, false),
+	REQUIRED(256 * 10, EntityColumn::getNotNull, false, true, false),
 	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false, true, false),
 	DISEASES(256 * 45, EntityColumn::getDiseases, true, true, false),
 	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false, true, false),
