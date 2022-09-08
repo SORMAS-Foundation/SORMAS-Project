@@ -297,10 +297,8 @@ Feature: Edit Persons
 
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth on Edit Person Page
-    Given API: I create a new person
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
     Given I log in as a National User
-    Then I navigate to the last created via api Person page via URL
+    When I click on the Persons button from navbar
+    And I click on first person in person directory
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
