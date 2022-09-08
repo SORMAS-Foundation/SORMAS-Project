@@ -665,12 +665,15 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	public SampleJurisdictionFlagsDto inJurisdictionOrOwned(Sample sample) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SampleJurisdictionFlagsDto> cq = cb.createQuery(SampleJurisdictionFlagsDto.class);
-		Root<Sample> root = cq.from(Sample.class);
-		cq.multiselect(getJurisdictionSelections(new SampleQueryContext(cb, cq, root)));
-		cq.where(cb.equal(root.get(Sample.UUID), sample.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return getInJurisdictionFlags(Collections.singletonList(sample)).get(sample.getId());
+	}
+
+	public Map<Long, SampleJurisdictionFlagsDto> getInJurisdictionFlags(List<Sample> entities) {
+
+		return getSelectionAttributes(
+			entities,
+			(cb, cq, from) -> getJurisdictionSelections(new SampleQueryContext(cb, cq, from)),
+			e -> new SampleJurisdictionFlagsDto(e));
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(SampleQueryContext qc) {

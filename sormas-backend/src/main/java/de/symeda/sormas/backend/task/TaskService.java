@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.ejb.EJB;
@@ -708,12 +709,15 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 	public TaskJurisdictionFlagsDto inJurisdictionOrOwned(Task task) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TaskJurisdictionFlagsDto> cq = cb.createQuery(TaskJurisdictionFlagsDto.class);
-		Root<Task> root = cq.from(Task.class);
-		cq.multiselect(getJurisdictionSelections(new TaskQueryContext(cb, cq, root)));
-		cq.where(cb.equal(root.get(Task.UUID), task.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return getInJurisdictionFlags(Collections.singletonList(task)).get(task.getId());
+	}
+
+	public Map<Long, TaskJurisdictionFlagsDto> getInJurisdictionFlags(List<Task> selectedEntities) {
+
+		return getSelectionAttributes(
+			selectedEntities,
+			(cb, cq, from) -> getJurisdictionSelections(new TaskQueryContext(cb, cq, from)),
+			e -> new TaskJurisdictionFlagsDto(e));
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {

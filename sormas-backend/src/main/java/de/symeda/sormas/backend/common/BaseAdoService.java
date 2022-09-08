@@ -22,10 +22,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.TransactionAttribute;
@@ -44,6 +47,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
@@ -205,6 +209,45 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			List<Long> ids = batchEntities.stream().map(ADO::getId).collect(Collectors.toList());
 			cq.where(cb.and(cb.in(root.get(ADO.ID)).value(ids), filterProvider.provide(cb, cq, root)));
 			result.addAll(em.createQuery(cq).getResultList());
+		});
+
+		return result;
+	}
+
+	/**
+	 * @param <S>
+	 *            An object with the selected attributes (projection with id as first parameter in constructor).
+	 * @param selectedEntities
+	 *            From these entities attributes will be fetched.
+	 * @param selectionProvider
+	 *            To fetch or calculate the desired attributes.
+	 * @param attributesConverter
+	 *            Converts the query result to an S object.
+	 *            The first entry of Object array (Object[0]) contains the entity id that is provided as map key in the method result.
+	 * @return Objects with several selected or calculated attributes, with entity id as key.
+	 */
+	protected <S> Map<Long, S> getSelectionAttributes(
+		List<ADO> selectedEntities,
+		SelectionProvider<ADO> selectionProvider,
+		Function<Object[], S> attributesConverter) {
+
+		Map<Long, S> result = new LinkedHashMap<>(selectedEntities.size());
+		IterableHelper.executeBatched(selectedEntities, ModelConstants.PARAMETER_LIMIT, batchEntities -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			Root<ADO> root = cq.from(getElementClass());
+
+			List<Selection<?>> selectionList = new ArrayList<>();
+			selectionList.add(root.get(ADO.ID));
+			selectionList.addAll(selectionProvider.provide(cb, cq, root));
+			cq.multiselect(selectionList);
+
+			List<Long> ids = batchEntities.stream().map(ADO::getId).collect(Collectors.toList());
+			cq.where(cb.and(cb.in(root.get(ADO.ID)).value(ids)));
+			List<Object[]> resultList = em.createQuery(cq).getResultList();
+
+			result.putAll(resultList.stream().collect(Collectors.toMap(e -> (Long) e[0], e -> attributesConverter.apply(e))));
 		});
 
 		return result;
