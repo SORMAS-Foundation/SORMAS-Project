@@ -160,7 +160,7 @@ Feature: Create user
     And I check if user is disabled in Keycloak Admin Page
 
   @tmsLink=SORQA-461 @env_de
-  Scenario: Test user roles view in UI
+  Scenario: Test user rights view in UI
     Given I log in as a Admin Usere
     And I click on the Users from navbar
     When I go to USER ROLES tab
@@ -180,3 +180,23 @@ Feature: Create user
     Then I set user role filter to Fälle von SORMAS exportieren in User Roles tab
     Then I compare that actual row coutner is less than first one
 
+  @tmsLink=SORQA-461 @env_de
+  Scenario: Test user jurisdiction level view in UI
+    Given I log in as a Admin Usere
+    And I click on the Users from navbar
+    When I go to USER ROLES tab
+    Then I get row count from User Roles tab
+    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I compare that actual row coutner is less than first one
