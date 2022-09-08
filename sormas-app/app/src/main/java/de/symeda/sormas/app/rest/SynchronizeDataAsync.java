@@ -284,6 +284,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new PrescriptionDtoHelper().pushEntities(true);
 		new TreatmentDtoHelper().pushEntities(true);
 		new ClinicalVisitDtoHelper().pushEntities(true);
+
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			new CampaignFormDataDtoHelper().pushEntities(true);
+		}
 	}
 
 	@AddTrace(name = "synchronizeChangedDataTrace")

@@ -649,6 +649,46 @@ Feature: Vaccination tests
     And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
     And I check that displayed vaccination name is "enabled" on Edit case page
 
+  @tmsLink=SORDEV-12286 @env_de
+  Scenario: Test Vaccinations without a "vaccination date" should also be marked as relevant and included in the status calculation (Contact)
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new Contact form with specific data for DE version with date 16 days ago
+    And I click on SAVE new contact button
+    And I click NEW VACCINATION button for DE
+    And I change the report vaccination date for minus 17 day from today
+    And I fill new vaccination data in new Vaccination form for DE
+    And I remove the vaccination date in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit contact page
+    And I check that displayed vaccination name is "enabled" on Edit contact page
+    And I click on the Edit Vaccination icon on vaccination card on Edit contact page
+    And I change the report vaccination date for minus 9 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit contact page
+    And I check that displayed vaccination name is "enabled" on Edit contact page
+    And I check if Vaccination Status is set to "Geimpft" on Edit Contact page
+    And I click on the Edit Vaccination icon on vaccination card on Edit contact page
+    And I change the report vaccination date for minus 1 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit contact page
+    And I check that displayed vaccination name is "greyed out" on Edit contact page
+    And I set the last contact date for minus 17 days from today for DE version
+    And I click SAVE button on Edit Contact Page
+    And I click on the Edit Vaccination icon on vaccination card on Edit contact page
+    And I change the report vaccination date for minus 9 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit contact page
+    And I check that displayed vaccination name is "enabled" on Edit contact page
+    And I set the last contact date for minus 17 days from today for DE version
+    And I click SAVE button on Edit Contact Page
+    And I click on the Edit Vaccination icon on vaccination card on Edit contact page
+    And I change the report vaccination date for minus 1 day from today
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit contact page
+    And I check that displayed vaccination name is "greyed out" on Edit contact page
+
   @tmsLink=SORDEV-12605 @env_de
   Scenario: Test that the vaccination status changes from VACCINATED to blank after the vaccination is removed
     Given I log in as a Admin User

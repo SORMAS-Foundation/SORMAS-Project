@@ -484,6 +484,14 @@ public class EditContactsSteps implements En {
     When(
         "I click on the contacts list button",
         () -> webDriverHelpers.clickOnWebElementBySelector(CONTACTS_LIST));
+
+    And(
+        "^I set the last contact date for minus (\\d+) days from today for DE version$",
+        (Integer days) -> {
+          webDriverHelpers.scrollToElement(LAST_CONTACT_DATE);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              LAST_CONTACT_DATE, formatterDE.format(LocalDate.now().minusDays(days)));
+        });
   }
 
   private void fillFirstName(String firstName) {
