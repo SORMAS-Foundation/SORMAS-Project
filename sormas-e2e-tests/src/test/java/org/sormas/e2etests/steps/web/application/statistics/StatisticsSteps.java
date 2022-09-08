@@ -1,8 +1,7 @@
 package org.sormas.e2etests.steps.web.application.statistics;
 
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_EXPORT_BUTTON;
-import static org.sormas.e2etests.pages.application.statistics.StatisticsPage.DATABASE_EXPORT_TAB;
-import static org.sormas.e2etests.pages.application.statistics.StatisticsPage.EVENT_GROUPS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.statistics.StatisticsPage.*;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -90,6 +89,27 @@ public class StatisticsSteps implements En {
               Arrays.asList(Columns).contains("change_user_id"),
               "Downloaded data does not contain change_user_id column!");
           softly.assertAll();
+        });
+
+    And(
+        "^I Click on the +Add filter button from the statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_FILTER_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_FILTER_BUTTON);
+        });
+
+    And(
+        "^I Click the Remove Filter Button from the statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(REMOVE_FILTER_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(REMOVE_FILTER_BUTTON);
+        });
+
+    And(
+        "^I Click the Reset Filter Button from the statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESET_FILTER_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
         });
   }
 
