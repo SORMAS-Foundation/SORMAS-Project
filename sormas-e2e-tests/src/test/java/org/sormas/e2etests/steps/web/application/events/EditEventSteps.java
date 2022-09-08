@@ -19,10 +19,7 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_PERSON_CHECKBOX_DE;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
@@ -673,8 +670,7 @@ public class EditEventSteps implements En {
                 CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT));
     And(
         "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Event Participant directory for DE",
-        () ->
-            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
+        () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX));
     When(
         "I add only person data for event participant creation for DE with built person shared for all entities",
         () -> {
@@ -1045,7 +1041,7 @@ public class EditEventSteps implements En {
         "I click to create new person from the Event Participant Import popup if Pick or create popup appears",
         () -> {
           if (webDriverHelpers.isElementVisibleWithTimeout(COMMIT_BUTTON, 10)) {
-            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX_DE);
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
           }
         });
