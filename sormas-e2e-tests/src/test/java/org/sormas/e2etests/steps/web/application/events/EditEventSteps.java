@@ -168,6 +168,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PASSPORT_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.POPUP_CANCEL_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.POPUP_DISCARD_CHANGES_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEARCH_FOR_PERSON_BUTTON_IN_ADD_PARTICIPANT_POPUP_WINDOW;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SELECT_FIRST_PERSON_IN_SEARCHED_LIST_FROM_ADD_PARTICIPANT;
@@ -1416,6 +1417,13 @@ public class EditEventSteps implements En {
           if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
             webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
           }
+        });
+
+    Then(
+        "^I click the Cancel Action button from the Unsaved Changes pop-up located in the Event Participant Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_CANCEL_ACTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_CANCEL_ACTION_BUTTON);
         });
 
     When(

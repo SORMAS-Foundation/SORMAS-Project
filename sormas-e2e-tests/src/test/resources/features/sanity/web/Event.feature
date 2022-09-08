@@ -1293,6 +1293,23 @@ Feature: Create events
     And I click on the The Eye Icon located in the Edit Event Page
     Then I verify that the Map Container is now Visible in the Edit Event Page
 
+  @env_main @#8559
+  Scenario: Confirm navigation' pop-up is triggered when a user creates a new entry for 'Contact information' and tries to navigate to another page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    When I open the last created event via api
+    When I click on the Event participant tab
+    When I add a participant to the event
+    Then I click on new entry button from Contact Information section
+    When I click the Done button in Person Contact Details popup
+    When I click on the Tasks button from navbar
+    Then I click the Cancel Action button from the Unsaved Changes pop-up located in the Event Participant Page
+    And I click on the NEW IMMUNIZATION button in Edit event participant
+    Then I click the Cancel Action button from the Unsaved Changes pop-up located in the Event Participant Page
+
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth on Edit Event Participant Person Page
     Given API: I create a new event

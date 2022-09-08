@@ -26,7 +26,7 @@ public class EditEventPage {
   public static final By UUID_EDIT_EVENT = By.cssSelector("div[location='uuid']");
   public static final By FIRST_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[1]//a");
   public static final By FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE = By.xpath("//td//a");
-  public static final By FIRST_ARCHIVED_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[2]");
+  public static final By FIRST_ARCHIVED_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[1]");
   public static final By EVENT_ACTIONS_TAB = By.cssSelector("#tab-events-eventactions span");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By TITLE_INPUT = By.cssSelector("#eventTitle");

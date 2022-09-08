@@ -92,12 +92,10 @@ SORMAS comes with an extensive list of user rights that are used to check which 
 To cover the typical use cases, SORMAS defines a set of default user roles that are automatically created when setting up a SORMAS instance.
 
 Most user rights define an action related to an entity type, e.g. the user right *CASE_EDIT* allows users to edit case data.
-The following automatically generated document **lists and describes all user rights and the default user roles**:
-https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx
+The following automatically generated documents list and describe **all user rights and the default user roles**:
+* https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_User_Roles.xlsx
 
 User roles are fully configurable, allowing admins to create new user roles and edit existing ones, to customize the instance to the given needs and to make sure data protection requirements are fulfilled. 
-
-At this point the configuration has to be done in the database, a user interface to configure user roles will be implemented starting sprint 117 (see #4462 and #4463).
 
 ### Related topics
 

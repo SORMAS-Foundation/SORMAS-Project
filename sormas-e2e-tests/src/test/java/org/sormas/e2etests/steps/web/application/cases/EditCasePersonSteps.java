@@ -320,7 +320,14 @@ public class EditCasePersonSteps implements En {
             case "Cause of death":
               selector = CASE_OF_DEATH_COMBOBOX;
               break;
+            case "Burial conductor":
+              selector = BURIAL_CONDUCTOR_INPUT;
+              break;
+            case "Burial place description":
+              selector = BURIAL_PLACE_DESCRIPTION;
+              break;
           }
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(selector);
         });
     When(
         "I check that ([^\"]*) is not visible in Contact Information section for DE version",
