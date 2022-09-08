@@ -87,7 +87,6 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -1068,31 +1067,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			try {
-				externalSurveillanceToolGatewayFacade
-					.sendCases(externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids), archived);
-			} catch (ExternalSurveillanceToolException e) {
-				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			List<String> sharedCaseUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids);
+
+			if (!sharedCaseUuids.isEmpty()) {
+				try {
+					externalSurveillanceToolGatewayFacade.sendCases(sharedCaseUuids, archived);
+				} catch (ExternalSurveillanceToolException e) {
+					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+				}
 			}
 		}
 	}
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
-		Case caze = getByUuid(entityUuid);
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
-			&& externalShareInfoService.isCaseShared(caze.getId())
-			&& !hasShareInfoWithDeletedStatus(entityUuid)) {
-			try {
-				externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), archived);
-			} catch (ExternalSurveillanceToolException e) {
-				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-			}
-		}
-	}
-
-	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
-		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
-		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
+		setArchiveInExternalSurveillanceToolForEntities(Collections.singletonList(entityUuid), archived);
 	}
 
 	@Override
