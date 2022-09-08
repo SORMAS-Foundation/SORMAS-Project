@@ -23,11 +23,12 @@ import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Required;
 
 @SuppressWarnings("serial")
-public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
+public abstract class ReferenceDto implements Serializable, Auditable, Comparable<ReferenceDto> {
 
 	public static final String CAPTION = "caption";
 	public static final String NO_REFERENCE_UUID = "SORMAS-CONSTID-NO-REFERENCE";

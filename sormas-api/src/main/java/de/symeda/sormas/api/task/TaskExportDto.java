@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.task;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.BirthDateDto;
@@ -31,7 +30,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
-public class TaskExportDto extends PseudonymizableIndexDto implements Serializable {
+public class TaskExportDto extends PseudonymizableIndexDto {
 
 	private static final long serialVersionUID = 4762759594879661318L;
 

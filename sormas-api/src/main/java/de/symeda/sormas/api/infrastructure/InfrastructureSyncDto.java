@@ -3,8 +3,6 @@ package de.symeda.sormas.api.infrastructure;
 import java.io.Serializable;
 import java.util.List;
 
-import de.symeda.sormas.api.campaign.CampaignDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;

@@ -3,9 +3,10 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class PrescriptionIndexDto implements Serializable {
+public class PrescriptionIndexDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 9189039796173435070L;
 

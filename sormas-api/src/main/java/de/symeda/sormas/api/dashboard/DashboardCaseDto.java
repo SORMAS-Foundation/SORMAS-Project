@@ -21,11 +21,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.person.PresentCondition;
 
-public class DashboardCaseDto implements Serializable {
+public class DashboardCaseDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -5705128377788207648L;
 
@@ -73,6 +74,7 @@ public class DashboardCaseDto implements Serializable {
 		this.id = id;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

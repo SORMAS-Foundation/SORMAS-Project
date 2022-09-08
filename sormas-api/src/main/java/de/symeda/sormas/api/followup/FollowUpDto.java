@@ -1,6 +1,5 @@
 package de.symeda.sormas.api.followup;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -11,7 +10,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitResultDto;
 
-public abstract class FollowUpDto extends PseudonymizableIndexDto implements Serializable {
+public abstract class FollowUpDto extends PseudonymizableIndexDto {
 
 	private static final long serialVersionUID = 8562530147842271464L;
 

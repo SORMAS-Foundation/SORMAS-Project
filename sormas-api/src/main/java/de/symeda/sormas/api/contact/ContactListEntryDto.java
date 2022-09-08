@@ -1,11 +1,9 @@
 package de.symeda.sormas.api.contact;
 
-import java.io.Serializable;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class ContactListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class ContactListEntryDto extends PseudonymizableIndexDto implements Cloneable {
 
 	private ContactStatus contactStatus;
 	private Disease disease;

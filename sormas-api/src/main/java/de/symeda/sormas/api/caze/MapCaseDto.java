@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -29,7 +30,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class MapCaseDto implements Serializable {
+public class MapCaseDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -3021332968056368431L;
 
@@ -99,6 +100,7 @@ public class MapCaseDto implements Serializable {
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

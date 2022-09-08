@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -42,7 +43,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
  *              especially for fields that are not needed for all diseases
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
+public abstract class EntityDto implements Serializable, Cloneable, Auditable {
 
 	private static final long serialVersionUID = -1L;
 

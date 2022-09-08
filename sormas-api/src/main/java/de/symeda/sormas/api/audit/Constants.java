@@ -1,13 +1,15 @@
 package de.symeda.sormas.api.audit;
 
-import org.apache.commons.collections.set.UnmodifiableSet;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Constants {
+
+	private Constants() {
+		throw new IllegalStateException("Utility class");
+	}
 
 	public static final Set<String> createPrefix =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList("create", "generate", "build", "clone", "calculate")));

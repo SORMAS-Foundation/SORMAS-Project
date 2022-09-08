@@ -3,9 +3,10 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class TreatmentIndexDto implements Serializable {
+public class TreatmentIndexDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 8736174497617079947L;
 
@@ -48,6 +49,7 @@ public class TreatmentIndexDto implements Serializable {
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

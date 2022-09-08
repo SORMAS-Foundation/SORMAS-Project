@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class JournalPersonDto implements Serializable {
+public class JournalPersonDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 3561284010406711305L;
 
@@ -33,6 +34,7 @@ public class JournalPersonDto implements Serializable {
 	private Date latestFollowUpEndDate;
 	private FollowUpStatus followUpStatus;
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

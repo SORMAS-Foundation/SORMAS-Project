@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.vaccination;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -25,9 +24,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-import org.apache.commons.lang3.StringUtils;
 
-public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Cloneable {
 
 	private static final long serialVersionUID = 5665903874736291912L;
 

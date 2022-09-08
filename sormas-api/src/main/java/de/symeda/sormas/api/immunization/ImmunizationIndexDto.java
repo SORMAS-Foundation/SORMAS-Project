@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.immunization;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -25,7 +24,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Cloneable {
 
 	public static final String I18N_PREFIX = "Immunization";
 

@@ -3,11 +3,12 @@ package de.symeda.sormas.api.clinicalcourse;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class ClinicalVisitIndexDto implements Serializable {
+public class ClinicalVisitIndexDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -7587908114350685830L;
 

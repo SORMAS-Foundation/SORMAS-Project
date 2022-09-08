@@ -1,12 +1,11 @@
 package de.symeda.sormas.api.travelentry;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class TravelEntryListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class TravelEntryListEntryDto extends PseudonymizableIndexDto implements Cloneable {
 
 	public static final String I18N_PREFIX = "TravelEntry";
 	public static final String POINT_OF_ENTRY_I18N_PREFIX = "PointOfEntry";

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -28,7 +27,7 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class ContactIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class ContactIndexDto extends PseudonymizableIndexDto implements Cloneable {
 
 	private static final long serialVersionUID = 7511900591141885152L;
 

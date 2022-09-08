@@ -21,12 +21,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 
-public class DashboardEventDto implements Serializable {
+public class DashboardEventDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -4108181804263076837L;
 
@@ -84,6 +85,7 @@ public class DashboardEventDto implements Serializable {
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

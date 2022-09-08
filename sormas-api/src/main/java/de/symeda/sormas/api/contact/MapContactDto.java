@@ -22,6 +22,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -30,7 +31,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class MapContactDto implements Serializable {
+public class MapContactDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -5840120135940125045L;
 
@@ -90,6 +91,7 @@ public class MapContactDto implements Serializable {
 		this.casePersonLastName = casePersonLastName;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

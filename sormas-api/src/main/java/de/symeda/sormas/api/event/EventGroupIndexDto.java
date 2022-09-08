@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 import java.util.Date;
 
-public class EventGroupIndexDto implements Serializable {
+public class EventGroupIndexDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 8322646404033924938L;
 
@@ -43,6 +45,7 @@ public class EventGroupIndexDto implements Serializable {
 		this.eventCount = eventCount;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

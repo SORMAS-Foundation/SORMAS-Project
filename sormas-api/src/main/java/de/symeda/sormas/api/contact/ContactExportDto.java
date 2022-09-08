@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -60,7 +61,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCod
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(ContactDto.class)
-public class ContactExportDto implements Serializable {
+public class ContactExportDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 2054231712903661096L;
 
@@ -381,6 +382,7 @@ public class ContactExportDto implements Serializable {
 	@Order(0)
 	@ExportProperty(ContactDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

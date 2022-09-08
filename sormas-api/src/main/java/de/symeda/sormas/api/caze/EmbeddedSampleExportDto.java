@@ -23,12 +23,13 @@ package de.symeda.sormas.api.caze;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class EmbeddedSampleExportDto implements Serializable {
+public class EmbeddedSampleExportDto implements Auditable, Serializable {
 
 	private String uuid;
 	private Date dateTime;
@@ -98,6 +99,7 @@ public class EmbeddedSampleExportDto implements Serializable {
 		this.result = result;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

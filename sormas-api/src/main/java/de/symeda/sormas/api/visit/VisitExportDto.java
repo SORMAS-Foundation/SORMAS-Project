@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
@@ -20,7 +21,7 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class VisitExportDto implements Serializable {
+public class VisitExportDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 6432390815000039126L;
 

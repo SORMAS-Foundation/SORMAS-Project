@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -32,7 +33,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class SampleExportDto implements Serializable {
+public class SampleExportDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -3027326087594387560L;
 
@@ -248,11 +249,11 @@ public class SampleExportDto implements Serializable {
 		this.contactStatus = contactStatus;
 
 		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
-				isInJurisdiction,
-				isCaseInJurisdiction,
-				isContactInJurisdiction,
-				isContactCaseInJurisdiction,
-				isEventParticipantInJurisdiction);
+			isInJurisdiction,
+			isCaseInJurisdiction,
+			isContactInJurisdiction,
+			isContactCaseInJurisdiction,
+			isEventParticipantInJurisdiction);
 	}
 
 	@Order(0)
@@ -265,6 +266,7 @@ public class SampleExportDto implements Serializable {
 	}
 
 	@Order(1)
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

@@ -1,11 +1,13 @@
 package de.symeda.sormas.api.visit;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class VisitSummaryExportDto implements Serializable {
+public class VisitSummaryExportDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 7066530434713936967L;
 
@@ -49,6 +51,7 @@ public class VisitSummaryExportDto implements Serializable {
 		this.maximumFollowUpVisits = maximumFollowUpVisits;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

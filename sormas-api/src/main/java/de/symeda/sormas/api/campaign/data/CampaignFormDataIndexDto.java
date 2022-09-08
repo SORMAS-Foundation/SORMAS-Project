@@ -15,11 +15,13 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class CampaignFormDataIndexDto implements Serializable, Cloneable {
+public class CampaignFormDataIndexDto implements Serializable, Cloneable, Auditable {
 
 	public static final String I18N_PREFIX = "CampaignFormData";
 
@@ -61,6 +63,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.formDate = formDate;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

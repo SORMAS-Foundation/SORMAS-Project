@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportGroup;
@@ -32,7 +33,7 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @ExportEntity(EventDto.class)
-public class EventExportDto implements Serializable {
+public class EventExportDto implements Auditable, Serializable {
 
 	public static final String I18N_PREFIX = "EventExport";
 
@@ -206,6 +207,7 @@ public class EventExportDto implements Serializable {
 	@Order(0)
 	@ExportProperty(EventDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

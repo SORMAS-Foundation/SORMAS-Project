@@ -5,10 +5,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class ExternalMessageIndexDto implements Serializable {
+public class ExternalMessageIndexDto implements Auditable, Serializable {
 
 	public static final String I18N_PREFIX = "ExternalMessage";
 
@@ -86,6 +87,7 @@ public class ExternalMessageIndexDto implements Serializable {
 		}
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

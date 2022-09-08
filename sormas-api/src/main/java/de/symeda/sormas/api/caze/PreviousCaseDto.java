@@ -18,9 +18,10 @@ package de.symeda.sormas.api.caze;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 
-public class PreviousCaseDto implements Serializable {
+public class PreviousCaseDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 5816724717269837258L;
 
@@ -38,6 +39,7 @@ public class PreviousCaseDto implements Serializable {
 		this.onsetDate = onsetDate;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

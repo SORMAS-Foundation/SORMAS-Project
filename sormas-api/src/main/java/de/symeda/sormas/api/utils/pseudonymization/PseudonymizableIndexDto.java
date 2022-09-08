@@ -19,7 +19,9 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class PseudonymizableIndexDto implements Pseudonymizable, Serializable {
+import de.symeda.sormas.api.audit.Auditable;
+
+public class PseudonymizableIndexDto implements Pseudonymizable, Auditable, Serializable {
 
 	private boolean pseudonymized;
 	private String uuid;
@@ -39,6 +41,7 @@ public class PseudonymizableIndexDto implements Pseudonymizable, Serializable {
 		this.uuid = uuid;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

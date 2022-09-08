@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -26,16 +25,14 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
-import org.apache.commons.lang3.StringUtils;
 
-public class SampleIndexDto extends PseudonymizableIndexDto implements Serializable {
+public class SampleIndexDto extends PseudonymizableIndexDto {
 
 	private static final long serialVersionUID = -6298614717044087479L;
 

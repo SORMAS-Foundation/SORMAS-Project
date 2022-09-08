@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -83,7 +84,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
  * recommended to remove properties that are removed from this file from existing export configurations.
  */
 @ExportEntity(CaseDataDto.class)
-public class CaseExportDto implements Serializable {
+public class CaseExportDto implements Serializable, Auditable {
 
 	private static final long serialVersionUID = 8581579464816945555L;
 
@@ -586,6 +587,7 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

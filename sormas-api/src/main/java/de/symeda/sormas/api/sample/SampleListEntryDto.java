@@ -1,12 +1,11 @@
 package de.symeda.sormas.api.sample;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class SampleListEntryDto extends PseudonymizableIndexDto implements Serializable {
+public class SampleListEntryDto extends PseudonymizableIndexDto {
 
 	public static final String I18N_PREFIX = "Sample";
 

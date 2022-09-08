@@ -19,13 +19,14 @@ package de.symeda.sormas.api.infrastructure.facility;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.HasUuid;
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import org.apache.commons.lang3.StringUtils;
 
-public class FacilityIndexDto implements Serializable, HasUuid {
+public class FacilityIndexDto implements Serializable, Auditable {
 
 	public static final String I18N_PREFIX = "Facility";
 

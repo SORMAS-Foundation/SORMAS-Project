@@ -19,10 +19,11 @@ package de.symeda.sormas.api.infrastructure.facility;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.utils.Order;
 
-public class FacilityExportDto implements Serializable {
+public class FacilityExportDto implements Auditable, Serializable {
 
 	public static final String I18N_PREFIX = "FacilityExport";
 
@@ -109,6 +110,7 @@ public class FacilityExportDto implements Serializable {
 	}
 
 	@Order(0)
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

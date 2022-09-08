@@ -1,6 +1,5 @@
 package de.symeda.sormas.api.feature;
 
-import static de.symeda.sormas.api.HasUuid.UUID_REGEX;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MAX;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MIN;
 
@@ -11,9 +10,10 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.i18n.Validations;
 
-public class FeatureConfigurationIndexDto implements Serializable {
+public class FeatureConfigurationIndexDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -8033830301352311580L;
 
@@ -62,6 +62,7 @@ public class FeatureConfigurationIndexDto implements Serializable {
 	public FeatureConfigurationIndexDto() {
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}
