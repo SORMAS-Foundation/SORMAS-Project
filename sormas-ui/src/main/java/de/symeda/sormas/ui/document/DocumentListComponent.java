@@ -53,7 +53,7 @@ public class DocumentListComponent extends SideComponent {
 		documentList.reload();
 
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(editRight)) {
+		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_UPLOAD)) {
 			Button uploadButton = buildUploadButton(relatedEntityType, entityRef);
 			addCreateButton(uploadButton);
 		}
