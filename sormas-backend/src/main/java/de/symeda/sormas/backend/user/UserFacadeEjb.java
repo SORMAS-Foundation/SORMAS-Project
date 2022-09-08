@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -55,6 +56,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -72,6 +74,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.user.UserSyncResult;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -119,6 +122,7 @@ import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -209,6 +213,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights) {
 		return userService
 			.getUserReferences(
@@ -224,11 +229,12 @@ public class UserFacadeEjb implements UserFacade {
 			.collect(Collectors.toList());
 	}
 
-	@Override
 	/*
 	 * Get all users with the next higher jurisdiction, whose location contains the current users location
 	 * For facility users, this includes district and community users, if their district/community is identical with that of the facility
 	 */
+	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user) {
 		JurisdictionLevel superordinateJurisdiction = InfrastructureHelper.getSuperordinateJurisdiction(user.getJurisdictionLevel());
 
@@ -281,6 +287,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, Disease limitedDisease, UserRight... userRights) {
 
 		return userService
@@ -298,6 +305,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUserRefsByDistrict(
 		DistrictReferenceDto districtRef,
 		boolean excludeLimitedDiseaseUsers,
@@ -318,6 +326,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, Disease limitedDisease, UserRight... userRights) {
 
 		return userService
@@ -335,6 +344,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUserRefsByInfrastructure(
 		InfrastructureDataReferenceDto infrastructure,
 		JurisdictionLevel jurisdictionLevel,
@@ -357,6 +367,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getAllUserRefs(boolean includeInactive) {
 
 		return userService.getUserReferences(null, null, true, !includeInactive)
@@ -390,6 +401,7 @@ public class UserFacadeEjb implements UserFacade {
 		return availableUsers;
 	}
 
+	@PermitAll
 	public List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(TaskContextIndex taskContextIndex) {
 
 		List<UserReferenceDto> availableUsers = getAssignableUsersBasedOnContext(taskContextIndex);
@@ -403,12 +415,16 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public Set<UserRoleDto> getUserRoles(UserDto userDto) {
 		User user = userService.getByUuid(userDto.getUuid());
 		return user != null ? user.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet()) : null;
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._WEEKLYREPORT_VIEW,
+		UserRight._WEEKLYREPORT_CREATE })
 	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRight... userRights) {
 
 		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);
@@ -416,6 +432,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUsersHavingCaseInJurisdiction(CaseReferenceDto caseReferenceDto) {
 
 		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
@@ -438,6 +455,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUsersHavingContactInJurisdiction(ContactReferenceDto contactReferenceDto) {
 		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
 
@@ -459,6 +477,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUsersHavingEventInJurisdiction(EventReferenceDto eventReferenceDto) {
 
 		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
@@ -481,6 +500,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto) {
 
 		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
@@ -502,7 +522,7 @@ public class UserFacadeEjb implements UserFacade {
 		});
 	}
 
-	public <ADO extends AbstractDomainObject> List<UserReferenceDto> getUsersHavingEntityInJurisdiction(
+	private <ADO extends AbstractDomainObject> List<UserReferenceDto> getUsersHavingEntityInJurisdiction(
 		JurisdictionOverEntitySubqueryBuilder<ADO> subqueryBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -519,6 +539,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_VIEW)
 	public Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties) {
 		List<UserDto> userIndexList = getIndexList(userCriteria, offset, size, sortProperties);
 		long totalElementCount = count(userCriteria);
@@ -526,16 +547,19 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserDto> getAllAfter(Date date) {
 		return userService.getAllAfter(date).stream().map(UserFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
+	@PermitAll
 	public List<UserDto> getByUuids(List<String> uuids) {
 		return userService.getByUuids(uuids).stream().map(UserFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
+	@PermitAll
 	public List<String> getAllUuids() {
 
 		if (userService.getCurrentUser() == null) {
@@ -546,17 +570,24 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public UserDto getByUuid(String uuid) {
 		return toDto(userService.getByUuid(uuid));
 	}
 
 	@Override
+	@PermitAll
 	public UserDto getByUserName(String userName) {
 		return toDto(userService.getByUserName(userName));
 	}
 
 	@Override
+	@PermitAll
 	public UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate) {
+
+		if (!userService.hasRight(UserRight.USER_CREATE) && !userService.hasRight(UserRight.USER_EDIT) && !DataHelper.isSame(getCurrentUser(), dto)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
 
 		User oldUser = null;
 		Set<UserRight> oldUserRights = Collections.emptySet();
@@ -610,6 +641,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_VIEW)
 	public List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -677,6 +709,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_VIEW)
 	public long count(UserCriteria userCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -697,7 +730,7 @@ public class UserFacadeEjb implements UserFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public User fromDto(UserDto source, boolean checkChangeDate) {
+	private User fromDto(UserDto source, boolean checkChangeDate) {
 
 		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 
@@ -743,11 +776,16 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._USER_CREATE,
+		UserRight._USER_EDIT })
 	public boolean isLoginUnique(String uuid, String userName) {
 		return userService.isLoginUnique(uuid, userName);
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._USER_EDIT })
 	public String resetPassword(String uuid) {
 		String resetPassword = userService.resetPassword(uuid);
 		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
@@ -755,16 +793,19 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public UserDto getCurrentUser() {
 		return toDto(userService.getCurrentUser());
 	}
 
 	@Override
+	@PermitAll
 	public UserReferenceDto getCurrentUserAsReference() {
 		return new UserReferenceDto(userService.getCurrentUser().getUuid());
 	}
 
 	@Override
+	@PermitAll
 	public Set<UserRight> getValidLoginRights(String userName, String password) {
 
 		User user = userService.getByUserName(userName);
@@ -777,6 +818,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_EDIT)
 	public void removeUserAsSurveillanceAndContactOfficer(String userUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> caseQuery = cb.createQuery(Case.class);
@@ -805,6 +847,9 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._USER_CREATE,
+		UserRight._USER_EDIT })
 	public UserSyncResult syncUser(String uuid) {
 		User user = userService.getByUuid(uuid);
 
@@ -823,6 +868,8 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	// TODO - default password change only for ADMIN??
+	@PermitAll
 	public List<UserDto> getUsersWithDefaultPassword() {
 		if (userService.hasRight(UserRight.USER_EDIT)) {
 			// user is allowed to change all passwords
@@ -847,11 +894,13 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_EDIT)
 	public void enableUsers(List<String> userUuids) {
 		updateActiveState(userUuids, true);
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_EDIT)
 	public void disableUsers(List<String> userUuids) {
 		updateActiveState(userUuids, false);
 	}
@@ -875,11 +924,13 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_ROLE_VIEW)
 	public long getUserCountHavingRole(UserRoleReferenceDto userRoleRef) {
 		return userService.countWithRole(userRoleRef);
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_ROLE_VIEW)
 	public List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef) {
 		return userService.getAllWithOnlyRole(userRoleRef).stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}

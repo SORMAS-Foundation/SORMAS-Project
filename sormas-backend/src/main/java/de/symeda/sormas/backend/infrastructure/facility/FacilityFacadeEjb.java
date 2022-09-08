@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -70,8 +72,10 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "FacilityFacade")
+@RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class FacilityFacadeEjb
 	extends AbstractInfrastructureFacadeEjb<Facility, FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityService, FacilityCriteria>
 	implements FacilityFacade {
@@ -92,6 +96,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
 		CommunityReferenceDto communityRef,
 		FacilityType type,
@@ -104,6 +109,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getActiveFacilitiesByDistrictAndType(
 		DistrictReferenceDto districtRef,
 		FacilityType type,
@@ -116,6 +122,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto communityRef, boolean includeOtherFacility) {
 		Community community = communityService.getByUuid(communityRef.getUuid());
 		List<Facility> facilities = service.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, includeOtherFacility, false);
@@ -123,6 +130,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getActiveHospitalsByDistrict(DistrictReferenceDto districtRef, boolean includeOtherFacility) {
 		District district = districtService.getByUuid(districtRef.getUuid());
 		List<Facility> facilities = service.getActiveFacilitiesByDistrictAndType(district, FacilityType.HOSPITAL, includeOtherFacility, false);
@@ -130,6 +138,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherFacility) {
 
 		List<Facility> laboratories = service.getAllActiveLaboratories(includeOtherFacility);
@@ -137,6 +146,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -181,6 +191,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
@@ -229,11 +240,13 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._STATISTICS_ACCESS)
 	public FacilityReferenceDto getFacilityReferenceById(long id) {
 		return toReferenceDto(service.getById(id));
 	}
 
 	@Override
+	@RightsAllowed(UserRight._STATISTICS_ACCESS)
 	public Map<String, String> getDistrictUuidsForFacilities(List<FacilityReferenceDto> facilities) {
 
 		if (facilities.isEmpty()) {
@@ -253,6 +266,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._STATISTICS_ACCESS)
 	public Map<String, String> getCommunityUuidsForFacilities(List<FacilityReferenceDto> facilities) {
 
 		if (facilities.isEmpty()) {
@@ -274,6 +288,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities) {
 		return service.getFacilitiesByExternalIdAndType(id, type, includeArchivedEntities)
 			.stream()
@@ -289,6 +304,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getByNameAndType(
 		String name,
 		DistrictReferenceDto districtRef,
@@ -309,6 +325,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
 		return service.getFacilitiesByNameAndType(name, null, null, FacilityType.LABORATORY, includeArchivedEntities)
 			.stream()
@@ -392,7 +409,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public FacilityReferenceDto toRefDto(Facility facility) {
+	protected FacilityReferenceDto toRefDto(Facility facility) {
 		return toReferenceDto(facility);
 	}
 
@@ -475,6 +492,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._INFRASTRUCTURE_EXPORT)
 	public List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Collection<String> selectedRows, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FacilityExportDto> cq = cb.createQuery(FacilityExportDto.class);
@@ -526,6 +544,9 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW,
+		UserRight._SYSTEM })
 	public long count(FacilityCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -551,12 +572,16 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_CREATE,
+		UserRight._INFRASTRUCTURE_EDIT })
 	public FacilityDto save(FacilityDto dto, boolean allowMerge) {
 		validate(dto);
 		return super.save(dto, allowMerge);
 	}
 
 	@Override
+	@RightsAllowed(UserRight._SYSTEM)
 	public FacilityDto saveFromCentral(FacilityDto dto) {
 		return save(dto);
 	}
