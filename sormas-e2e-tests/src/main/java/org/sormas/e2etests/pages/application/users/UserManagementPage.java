@@ -36,5 +36,7 @@ public class UserManagementPage {
       By.cssSelector("[id='userRights'] [class='v-filterselect-button']");
   public static final By JURISDICTION_LEVEL_COMBOBOX =
       By.cssSelector("[id='jurisdictionLevel'] [class='v-filterselect-button']");
+  public static final By ENABLED_USER_COMBOBOX =
+      By.cssSelector("[id='enabled'] [class='v-filterselect-button']");
   public static final By USER_ROLE_TABLE_GRID = By.xpath("//table[@role='grid']");
 }

@@ -55,14 +55,20 @@ public class UserManagementSteps implements En {
 
     Then(
         "^I set user role filter to ([^\"]*) in User Roles tab$",
-        (String activeInactive) -> {
-          webDriverHelpers.selectFromCombobox(USER_RIGHTS_COMBOBOX, activeInactive);
+        (String filter) -> {
+          webDriverHelpers.selectFromCombobox(USER_RIGHTS_COMBOBOX, filter);
           TimeUnit.SECONDS.sleep(2); // needed for table to refresh
         });
     Then(
         "^I set jurisdiction level filter to ([^\"]*) in User Roles tab$",
-        (String activeInactive) -> {
-          webDriverHelpers.selectFromCombobox(JURISDICTION_LEVEL_COMBOBOX, activeInactive);
+        (String filter) -> {
+          webDriverHelpers.selectFromCombobox(JURISDICTION_LEVEL_COMBOBOX, filter);
+          TimeUnit.SECONDS.sleep(2); // needed for table to refresh
+        });
+    Then(
+        "^I set enabled filter to ([^\"]*) in User Roles tab$",
+        (String filter) -> {
+          webDriverHelpers.selectFromCombobox(ENABLED_USER_COMBOBOX, filter);
           TimeUnit.SECONDS.sleep(2); // needed for table to refresh
         });
 

@@ -161,7 +161,7 @@ Feature: Create user
 
   @tmsLink=SORQA-461 @env_de
   Scenario: Test user rights view in UI
-    Given I log in as a Admin Usere
+    Given I log in as a Admin User
     And I click on the Users from navbar
     When I go to USER ROLES tab
     Then I get row count from User Roles tab
@@ -182,21 +182,36 @@ Feature: Create user
 
   @tmsLink=SORQA-461 @env_de
   Scenario: Test user jurisdiction level view in UI
-    Given I log in as a Admin Usere
+    Given I log in as a Admin User
     And I click on the Users from navbar
     When I go to USER ROLES tab
     Then I get row count from User Roles tab
-    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I set jurisdiction level filter to Keine in User Roles tab
     Then I compare that actual row coutner is less than first one
-    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I set jurisdiction level filter to Nation in User Roles tab
     Then I compare that actual row coutner is less than first one
-    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I set jurisdiction level filter to Bundesland in User Roles tab
     Then I compare that actual row coutner is less than first one
-    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I set jurisdiction level filter to Landkreis/Kreisfreie Stadt in User Roles tab
     Then I compare that actual row coutner is less than first one
-    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I set jurisdiction level filter to Gemeinde in User Roles tab
     Then I compare that actual row coutner is less than first one
-    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I set jurisdiction level filter to Einreiseort in User Roles tab
     Then I compare that actual row coutner is less than first one
-    Then I set jurisdiction level filter to ([^"]*) in User Roles tab
+    Then I set jurisdiction level filter to Einrichtung in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set jurisdiction level filter to Labor in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set jurisdiction level filter to Externes Labor in User Roles tab
+    Then I compare that actual row coutner is less than first one
+
+  @tmsLink=SORQA-461 @env_de
+  Scenario: Test user enabled/disabled view in UI
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I go to USER ROLES tab
+    Then I get row count from User Roles tab
+    Then I set enabled filter to Aktiviert in User Roles tab
+    Then I compare that actual row coutner is less than first one
+    Then I set enabled filter to Deaktiviert in User Roles tab
     Then I compare that actual row coutner is less than first one
