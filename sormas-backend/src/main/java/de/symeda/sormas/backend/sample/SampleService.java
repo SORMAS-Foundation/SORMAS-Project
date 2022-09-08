@@ -59,6 +59,7 @@ import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -1131,6 +1132,25 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			cb.and(cb.isFalse(subRoot.get(Sample.DELETED))),
 			cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(AbstractDomainObject.ID)));
 		return subquery;
+	}
+
+	public List<DiseaseVariant> getAssociatedDiseaseVariants(String sampleUuid) {
+		if (DataHelper.isNullOrEmpty(sampleUuid)) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<DiseaseVariant> cq = cb.createQuery(DiseaseVariant.class);
+		final Root<Sample> from = cq.from(getElementClass());
+		final Join<Sample, PathogenTest> pathogenTestJoin = from.join(Sample.PATHOGENTESTS, JoinType.LEFT);
+
+		Predicate filter = createDefaultFilter(cb, from);
+
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(AbstractDomainObject.UUID), sampleUuid));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pathogenTestJoin.get(DeletableAdo.DELETED), false));
+		cq.where(filter);
+		cq.select(pathogenTestJoin.get(PathogenTest.TESTED_DISEASE_VARIANT));
+		return em.createQuery(cq).getResultList();
 	}
 
 }
