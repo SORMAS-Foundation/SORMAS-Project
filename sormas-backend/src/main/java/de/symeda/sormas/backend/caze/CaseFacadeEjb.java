@@ -2945,7 +2945,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public CaseReferenceDto toRefDto(Case aCase) {
+	protected CaseReferenceDto toRefDto(Case aCase) {
 		return convertToReferenceDto(aCase);
 	}
 

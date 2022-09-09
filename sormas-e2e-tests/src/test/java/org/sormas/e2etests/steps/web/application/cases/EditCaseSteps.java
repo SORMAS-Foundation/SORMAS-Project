@@ -255,6 +255,7 @@ import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
 import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
 import org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
@@ -2170,7 +2171,7 @@ public class EditCaseSteps implements En {
         "I change disease to {string} in the case tab",
         (String disease) -> {
           webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_POPUP_TITLE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_CONFIRMATION_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
 
@@ -2487,6 +2488,22 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementGreyedOut(VACCINATION_CARD_VACCINATION_NAME);
               break;
           }
+        });
+
+    And(
+        "^I check that follow-up status comment is correctly displayed on Edit case page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FOLLOW_UP_COMMENT_FIELD);
+          String actualFollowUpStatusComment =
+              webDriverHelpers.getValueFromWebElement(FOLLOW_UP_COMMENT_FIELD);
+          String expectedFollowUpStatusComment =
+              EditContactSteps.editedContact.getFollowUpStatusComment();
+          softly.assertEquals(
+              actualFollowUpStatusComment,
+              expectedFollowUpStatusComment,
+              "Follow-up status comment is incorrect!");
+          softly.assertAll();
         });
   }
 

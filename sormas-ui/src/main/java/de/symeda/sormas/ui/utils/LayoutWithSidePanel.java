@@ -1,11 +1,17 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.opencsv.bean.AbstractFieldMap;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import de.symeda.sormas.ui.caze.CaseDataView;
+import de.symeda.sormas.ui.document.DocumentListComponent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class LayoutWithSidePanel extends CustomLayout {
 
@@ -16,6 +22,7 @@ public class LayoutWithSidePanel extends CustomLayout {
 
 	private final CustomLayout sidePanel;
 	private final CommitDiscardWrapperComponent<?> editComponent;
+	private Map<String, Component> sideComponents = new HashMap<>();
 
 	public LayoutWithSidePanel(CommitDiscardWrapperComponent editComponent, String... sideComponentLocs) {
 		this.editComponent = editComponent;
@@ -43,6 +50,7 @@ public class LayoutWithSidePanel extends CustomLayout {
 
 	public void addSidePanelComponent(Component component, String loc) {
 		sidePanel.addComponent(component, loc);
+		sideComponents.put(loc, component);
 	}
 
 	public CustomLayout getSidePanelComponent() {
@@ -53,5 +61,21 @@ public class LayoutWithSidePanel extends CustomLayout {
 	public void disable(String... excludedButtons) {
 		editComponent.setEditable(false, excludedButtons);
 		sidePanel.setEnabled(false);
+	}
+
+	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
+	public void disable(boolean excludePresentDocuments, String... excludedButtons) {
+		editComponent.setEditable(false, excludedButtons);
+		if (excludePresentDocuments) {
+			sideComponents.keySet().stream().forEach(loc -> {
+				if (!loc.equals(CaseDataView.DOCUMENTS_LOC)) {
+					sideComponents.get(loc).setEnabled(false);
+				} else {
+					((DocumentListComponent) ((SideComponentLayout) sideComponents.get(loc)).getComponent()).getMainButton().setEnabled(false);
+				}
+			});
+		} else {
+			sidePanel.setEnabled(false);
+		}
 	}
 }
