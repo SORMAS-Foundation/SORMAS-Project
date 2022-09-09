@@ -102,20 +102,26 @@
 	</div>
 
 	<script>
-        var form = document.getElementById('my-form');
-        form.addEventListener("submit", e => {
-            e.preventDefault();
-            fetch(form.action, {
-                method: "POST",
-                body: new FormData(document.getElementById("my-form")),
-            }).then(res => res.json()) // the .json() method parses the JSON response into a JS object literal
-            .then(data => console.log(data));
+        window.addEventListener("load", function () {
+            const form = document.getElementById('my-form');
+            form.addEventListener("submit", function (e) {
+               
+                const data = new FormData(form);
+                const action = e.target.action;
+
+                fetch(action, {
+                    method: 'POST',
+                    body: data,
+                } )
+                .then(response => {
+                	if (response.status === 200) {
+                        let data = await response.text();
+                        alert(data);
+                    }
+    })
+                
+            });
         });
-        
-        function my_button_click_handler()
-        {
-        alert('Button Clcked');
-        }
     </script>
 
 
