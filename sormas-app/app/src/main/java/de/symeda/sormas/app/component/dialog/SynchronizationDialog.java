@@ -344,6 +344,9 @@ public class SynchronizationDialog extends AbstractDialog {
 		addEntityIfEditAllowed(PrescriptionDto.class, Strings.entityPrescriptions, allowedEntities);
 		addEntityIfEditAllowed(TreatmentDto.class, Strings.entityTreatments, allowedEntities);
 		addEntityIfEditAllowed(ClinicalVisitDto.class, Strings.entityClinicalVisits, allowedEntities);
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			addEntityIfEditAllowed(CampaignFormDataDto.class, Strings.entityCampaignFormData, allowedEntities);
+		}
 		showProgressItems(false, true, allowedEntities);
 	}
 

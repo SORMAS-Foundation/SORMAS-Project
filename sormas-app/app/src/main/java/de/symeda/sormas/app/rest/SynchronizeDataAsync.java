@@ -316,7 +316,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new ClinicalVisitDtoHelper().pushEntities(true, syncCallbacks);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignFormDataDtoHelper().pushEntities(true);
+			new CampaignFormDataDtoHelper().pushEntities(true, syncCallbacks);
 		}
 	}
 
