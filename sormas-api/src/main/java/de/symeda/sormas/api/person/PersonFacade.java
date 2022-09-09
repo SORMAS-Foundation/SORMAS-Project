@@ -85,9 +85,5 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	boolean isEnrolledInExternalJournal(String uuid);
 
-	// todo the PersonFacadeEjb has additional pseudonomization methods which causes a
-	// Hibernate LazyInitializationException if this is removed
-	PersonDto getByUuid(String uuid);
-
 	boolean isPersonAssociatedWithNotDeletedEntities(String uuid);
 }

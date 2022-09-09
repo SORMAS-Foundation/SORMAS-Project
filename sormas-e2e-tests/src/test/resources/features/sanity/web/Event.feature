@@ -317,7 +317,7 @@ Feature: Create events
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant appears in the event participants list
 
-  @tmsLink=SORDEV-7138  @env_main
+  @tmsLink=SORDEV-7138 @env_main
   Scenario: Add a participant to an event and bulk create contacts
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -329,6 +329,7 @@ Feature: Create events
     And I collect the UUID displayed on Edit event page
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
+    And I click Enter Bulk Edit Mode on Event directory page
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
     And I click checkbox to choose all Event Participants results in Event Participant Tab
@@ -1229,6 +1230,7 @@ Feature: Create events
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
     Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click Enter Bulk Edit Mode on Event directory page
     And I select first 2 results in grid in Event Participant Directory
     And I click on Bulk Actions combobox in Event Parcitipant Tab
     And I click on Create Quarantine Order from Bulk Actions combobox on Event Participant Directory Page
@@ -1279,6 +1281,28 @@ Feature: Create events
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"
     Then I check if Present condition of person combobox has no value "Buried"
+
+  @tmsLink=SORDEV-12439 @env_main
+  Scenario: Test set 'All Event Participants' as the default value when an event is active
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I am accessing the event tab using the created event via api
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I check event participant filter dropdown on event participant page when event is active
+
+  @tmsLink=SORDEV-12439 @env_main
+  Scenario: Test set 'Active event participants' as the default value when an event is archived
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I am accessing the event tab using the created event via api
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I check event participant filter dropdown on event participant page when event is archived
 
   @env_main @#7750
   Scenario: Check the map functionality in the Edit Event Page

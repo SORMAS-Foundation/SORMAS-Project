@@ -188,7 +188,7 @@ Feature: Edit Persons
     And I fill new case form with chosen data without personal data on Case directory page for DE
     And I click on the person search button in new case form
     And I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window
-    And I open the first found result in the popup of Select Person window for DE version
+    And I open the first found result in the popup of Select Person window
     Then I click on Save button in Case form
     And I collect uuid of the case
     Then I click on the Contacts button from navbar
@@ -196,7 +196,7 @@ Feature: Edit Persons
     Then I fill a new contact form for DE version without person data
     And I click on the person search button in create new contact form
     And I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window
-    And I open the first found result in the popup of Select Person window for DE version
+    And I open the first found result in the popup of Select Person window
     And I click on SAVE new contact button
     And I collect contact UUID displayed on Edit Contact Page
     And I click on the Persons button from navbar

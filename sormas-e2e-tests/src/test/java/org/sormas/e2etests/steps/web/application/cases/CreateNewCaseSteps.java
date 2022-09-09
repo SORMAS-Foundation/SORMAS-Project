@@ -33,7 +33,6 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONFIRM_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_MONTH_COMBOBOX;
@@ -61,12 +60,9 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_ATTRIBUTE;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_POPUP_TABLE_HEADER;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NICKNAME_ATTRIBUTE;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NICKNAME_POPUP_TABLE_HEADER;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PASSPORT_NUMBER_ATTRIBUTE;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PASSPORT_NUMBER_POPUP_TABLE_HEADER;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
@@ -89,7 +85,6 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESP
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_PERSON_WINDOW_CONFIRM_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
@@ -121,9 +116,6 @@ import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SH
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -144,6 +136,7 @@ import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -722,18 +715,6 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
-        "^I open the first found result in the popup of Select Person window for DE version$",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
-          webDriverHelpers.clickOnWebElementBySelector(
-              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE);
-          webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE);
-        });
-
-    When(
         "^I click on Save button in Case form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
@@ -743,7 +724,6 @@ public class CreateNewCaseSteps implements En {
           }
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          //   webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
         "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",
@@ -767,14 +747,6 @@ public class CreateNewCaseSteps implements En {
         "^I pick a new case in pick or create a case popup$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-        });
-
-    When(
-        "^I pick a new case in pick or create a case popup for DE$",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
@@ -988,30 +960,19 @@ public class CreateNewCaseSteps implements En {
         "I check if ([^\"]*) file is downloaded correctly",
         (String fileType) -> {
           String file = "./downloads/testCase_" + fileType + "." + fileType;
-          Path path = Paths.get(file);
-          softly.assertTrue(Files.exists(path));
-          softly.assertAll();
-          Files.delete(path); // clean
+          FilesHelper.waitForFileToDownload(file, 40);
+          FilesHelper.deleteFile(file);
         });
     When(
-        "I check that ([^\"]*) is not visible in Person search popup",
+        "^I check that ([^\"]*) is not visible in Person search popup$",
         (String option) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-          By selector = null;
+          String selector =
+              "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"%s\"]";
           Boolean elementVisible = true;
-          switch (option) {
-            case "Passport Number":
-              selector = PASSPORT_NUMBER_POPUP_TABLE_HEADER;
-              break;
-            case "National Health ID":
-              selector = NATIONAL_HEALTH_ID_POPUP_TABLE_HEADER;
-              break;
-            case "Nickname":
-              selector = NICKNAME_POPUP_TABLE_HEADER;
-              break;
-          }
           try {
-            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+            webDriverHelpers.scrollToElementUntilIsVisible(
+                By.xpath(String.format(selector, option)));
           } catch (Throwable ignored) {
             elementVisible = false;
           }
@@ -1151,6 +1112,17 @@ public class CreateNewCaseSteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
+        "^I fill only mandatory fields for a new case form$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
         });
 
     And(
@@ -1455,11 +1427,6 @@ public class CreateNewCaseSteps implements En {
 
   private void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_PHONE_NUMBER_INPUT, primaryPhoneNumber);
-  }
-
-  private void fillDateOfSymptomOnsetDE(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
   }
 
   private void fillPrimaryEmailAddress(String primaryPhoneNumber) {

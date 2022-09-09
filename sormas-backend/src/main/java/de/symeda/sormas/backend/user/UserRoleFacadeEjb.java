@@ -39,6 +39,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -104,6 +105,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
+	@PermitAll
 	public List<UserRoleDto> getAllAfter(Date since) {
 		return userRoleService.getAllAfter(since).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
@@ -124,6 +126,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<String> getDeletedUuids(Date since) {
 		return userRoleService.getDeletedUuids(since);
 	}
