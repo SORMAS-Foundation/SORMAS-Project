@@ -83,7 +83,8 @@ public class EditEventPage {
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON = By.id("tab-events");
   public static final By NAVIGATE_TO_EVENT_GROUP_BUTTON = By.id("tab-events-data");
-  public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON = By.id("tab-events-eventparticipants");
+  public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON =
+      By.id("tab-events-eventparticipants");
   public static final By NAVIGATE_TO_EVENT_DATA_BUTTON = By.id("tab-events-data");
   public static final By EVENT_PARTICIPANT_HEADER =
       By.xpath(
