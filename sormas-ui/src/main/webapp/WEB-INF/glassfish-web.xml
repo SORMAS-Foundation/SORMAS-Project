@@ -791,6 +791,21 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>DOCUMENT_VIEW</role-name>
+        <group-name>DOCUMENT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DOCUMENT_UPLOAD</role-name>
+        <group-name>DOCUMENT_UPLOAD</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DOCUMENT_DELETE</role-name>
+        <group-name>DOCUMENT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EXPORT_DATA_PROTECTION_DATA</role-name>
         <group-name>EXPORT_DATA_PROTECTION_DATA</group-name>
     </security-role-mapping>

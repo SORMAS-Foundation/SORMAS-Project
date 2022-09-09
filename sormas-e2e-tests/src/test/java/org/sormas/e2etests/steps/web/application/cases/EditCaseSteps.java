@@ -2171,7 +2171,7 @@ public class EditCaseSteps implements En {
         "I change disease to {string} in the case tab",
         (String disease) -> {
           webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_POPUP_TITLE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_CONFIRMATION_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
 

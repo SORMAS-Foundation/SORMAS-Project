@@ -317,7 +317,7 @@ Feature: Create events
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant appears in the event participants list
 
-  @tmsLink=SORDEV-7138  @env_main
+  @tmsLink=SORDEV-7138 @env_main
   Scenario: Add a participant to an event and bulk create contacts
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -329,6 +329,7 @@ Feature: Create events
     And I collect the UUID displayed on Edit event page
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
+    And I click Enter Bulk Edit Mode on Event directory page
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
     And I click checkbox to choose all Event Participants results in Event Participant Tab
