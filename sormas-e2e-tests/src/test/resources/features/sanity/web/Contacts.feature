@@ -1159,3 +1159,21 @@ Feature: Contacts end to end tests
     When I click on Discard button in Create New Contact form
     And I click on the User Settings button from navbar
     And I select "Deutsch" language from Combobox in User settings
+
+  @tmsLink=SORDEV-6146 @env_de
+  Scenario: Test Extend the follow-up until date calculation for Contacts
+    Given I log in as a National User
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    Then I fill a new contact form for DE version
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page for DE version
+    And I check if Follow up until date is 14 days after last contact date of recently created contact
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I navigate to the last created contact via the url
+    And I check if Follow up until date is 14 days after last created API contact report date

@@ -1090,6 +1090,24 @@ public class EditCaseSteps implements En {
           softly.assertEquals(DATE_FORMATTER.format(dateFollowUp.plusDays(days)), date);
           softly.assertAll();
         });
+    When(
+        "I check if Follow up until date is ([^\"]*) days after last created API case report date",
+        (Integer days) -> {
+          TimeUnit.SECONDS.sleep(3);
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(
+              DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                  .format(
+                      apiState
+                          .getCreatedCase()
+                          .getReportDate()
+                          .toInstant()
+                          .atZone(ZoneId.systemDefault())
+                          .toLocalDate()
+                          .plusDays(days)),
+              date);
+          softly.assertAll();
+        });
 
     When(
         "I set the quarantine end to a date ([^\"]*) day after the Follow-up until date",

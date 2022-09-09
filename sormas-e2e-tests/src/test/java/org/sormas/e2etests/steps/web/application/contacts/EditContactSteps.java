@@ -491,6 +491,36 @@ public class EditContactSteps implements En {
         });
 
     When(
+        "I check if Follow up until date is ([^\"]*) days after last contact date of recently created contact",
+        (Integer days) -> {
+          TimeUnit.SECONDS.sleep(3);
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(
+              DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                  .format(EditContactSteps.collectedContact.getDateOfLastContact().plusDays(days)),
+              date);
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Follow up until date is ([^\"]*) days after last created API contact report date",
+        (Integer days) -> {
+          TimeUnit.SECONDS.sleep(3);
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(
+              DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                  .format(
+                      apiState
+                          .getCreatedContact()
+                          .getReportDateTime()
+                          .toInstant()
+                          .atZone(ZoneId.systemDefault())
+                          .toLocalDate()
+                          .plusDays(days)),
+              date);
+          softly.assertAll();
+        });
+    When(
         "^I click on ([^\"]*) radio button Contact Person tab$",
         (String buttonName) ->
             webDriverHelpers.clickWebElementByText(
