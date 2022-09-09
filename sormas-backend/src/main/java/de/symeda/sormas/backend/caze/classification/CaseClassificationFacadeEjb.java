@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -151,6 +152,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<DiseaseClassificationCriteriaDto> getAllSince(Date changeDate) {
 
 		if (criteriaMap.isEmpty()) {
