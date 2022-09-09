@@ -67,7 +67,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 		formActionButtonsComponent.setSpacing(false);
 		formActionButtonsComponent.setSizeFull();
-		formActionButtonsComponent.setMargin(new MarginInfo(false, false, false, true)); ///campaigndata
+		formActionButtonsComponent.setMargin(new MarginInfo(false, false, false, true)); /// campaigndata
 	}
 
 	public String getPhaseFilterContent() {
@@ -76,7 +76,8 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	public void setPhaseFilterContent(String phaseFilterContent) {
 		this.phaseFilterContent = phaseFilterContent;
-	} 
+	}
+
 	@Override
 	protected String[] getMainFilterLocators() {
 		return new String[] {
@@ -127,8 +128,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			System.out.println("11111111111111111111111111111111111111");
 			cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 		}
-		
-		
+
 		FieldHelper.addSoftRequiredStyle(cbCampaignForm);
 
 		if (formMetaChangedCallback != null) {
@@ -156,10 +156,11 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		communityFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllCommunities));
 
 		UserDto user = currentUserDto();
+
 		final AreaReferenceDto userArea = user.getArea();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
-		final CommunityReferenceDto userCommunity = null; //set to null since users can have more than one community
+		final CommunityReferenceDto userCommunity = null; // set to null since users can have more than one community
 		// final ReferenceDto formType;
 
 		if (userArea != null) {
@@ -170,15 +171,16 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
 				if (userDistrict != null) {
 					districtFilter.setEnabled(false);
-					// can I set the caption of all the items here before adding
-					// List<CommunityReferenceDto> items =
-					// FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid());
-					// for(CommunityReferenceDto item : items) {
-					// item.setCaption(item.getNumber().toString());
-					// }
-					communityFilter.addItems(
-							FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
 
+					if (user.getCommunity().size() < 1) { //if user has more than 1 community assigned
+						communityFilter.addItems(
+								FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
+					}else {
+						communityFilter.addItems(
+								user.getCommunity()); //toDto
+					}
+					
+					
 					if (userCommunity != null) {
 						communityFilter.setEnabled(false);
 					}

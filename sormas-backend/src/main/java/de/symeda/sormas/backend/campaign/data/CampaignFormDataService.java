@@ -178,8 +178,13 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 			case COMMUNITY:
 				final Set<Community> community = currentUser.getCommunity();
 				if (community != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb
-							.isMember(community.stream().map(Community::getId).collect(Collectors.toList()), campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID)));
+					for (Community com : community) {
+						filter = CriteriaBuilderHelper.or(cb, filter,
+								cb.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), com.getId()));
+					}
+					// filter = CriteriaBuilderHelper.or(cb, filter, cb
+					// .isMember(community.stream().map(Community::getId).collect(Collectors.toList()),
+					// campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID)));
 				}
 				break;
 			default:

@@ -412,13 +412,16 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		}
 	}
 
-	public static Set<CommunityReferenceDto> toReferenceDto(Set<Community> community) {
+
+	public static Set<CommunityReferenceDto> toReferenceDto(Set<Community> community) { //save
 		
 		Set<CommunityReferenceDto> dtos = new HashSet<CommunityReferenceDto>();
 		for(Community com : community) {	
 			CommunityReferenceDto dto = new CommunityReferenceDto(com.getUuid(), com.toString(), com.getExternalId(), com.getClusterNumber());	
 			dtos.add(dto);
 		}
+		
+		System.out.println("111111111111????????????????????????????????????????????????"+dtos.toString());
 		return dtos;
 	}
 }

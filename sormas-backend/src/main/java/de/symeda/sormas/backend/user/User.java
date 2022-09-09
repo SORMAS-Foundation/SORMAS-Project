@@ -427,7 +427,7 @@ public class User extends AbstractDomainObject {
 
 		String caption = user.getFirstName() + " " + user.getLastName();
 		if (StringUtils.isNotEmpty(user.getUserEmail())) {
-			caption += " (" + user.getUserEmail() + ")";
+			caption += " (" + user.getUserEmail() + ")"; //source
 		}
 		return caption;
 	}
