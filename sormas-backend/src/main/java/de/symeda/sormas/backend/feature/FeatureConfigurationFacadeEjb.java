@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -101,6 +102,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacadeEjb;
 
 	@Override
+	@PermitAll
 	public List<FeatureConfigurationDto> getAllAfter(Date date) {
 		return service.getAllAfter(date).stream().map(FeatureConfigurationFacadeEjb::toDto).collect(Collectors.toList());
 	}
@@ -116,6 +118,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
+	@PermitAll
 	public List<String> getDeletedUuids(Date since) {
 
 		User user = userService.getCurrentUser();

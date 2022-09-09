@@ -76,7 +76,6 @@ public class InfrastructureHelper {
 		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new PointOfEntryDtoHelper().handlePulledList(DatabaseHelper.getPointOfEntryDao(), infrastructureData.getPointsOfEntry());
 		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		DatabaseHelper.getUserRoleDao().delete(infrastructureData.getDeletedUserRoleUuids());
 		new UserRoleDtoHelper().handlePulledList(DatabaseHelper.getUserRoleDao(), infrastructureData.getUserRoles());
 		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new UserDtoHelper().handlePulledList(DatabaseHelper.getUserDao(), infrastructureData.getUsers());
@@ -87,6 +86,7 @@ public class InfrastructureHelper {
 		new DiseaseConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getDiseaseConfigurationDao(), infrastructureData.getDiseaseConfigurations());
 		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		DatabaseHelper.getUserRoleDao().delete(infrastructureData.getDeletedUserRoleUuids());
 		DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
 		new FeatureConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations());

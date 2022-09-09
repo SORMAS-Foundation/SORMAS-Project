@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -48,6 +51,24 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
 		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
+	}
+
+	@Override
+	@PermitAll
+	public List<String> getAllUuids() {
+		return super.getAllUuids();
+	}
+
+	@Override
+	@PermitAll
+	public List<DTO> getAllAfter(Date date) {
+		return super.getAllAfter(date);
+	}
+
+	@Override
+	@PermitAll
+	public List<DTO> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
