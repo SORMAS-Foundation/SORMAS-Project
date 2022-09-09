@@ -23,4 +23,9 @@ Feature: Statistics tab tests
     And I select Visualisation type Map from the Statistics Page
     Then I Verify the presence of Map Type Regions and Districts buttons in the Statistics Page
     And I select Visualisation type Chart from the Statistics Page
-    Then I Verify the presence of Chart Type Column buttons in the Statistics Page
+    Then I Verify the presence of Chart Type buttons from the Statistics Page
+    And I select Options Data Displayed Case Count from the Statistics Page
+    Then I Verify the presence of Show Zero Values checkbox from the Statistics Page
+    And I select Options Data Displayed Case Incidence from the Statistics Page
+    Then I Verify the presence of Incidence Divisor Input from the Statistics Page
+    Then I Verify the presence of the Generate Button from the Statistics Page

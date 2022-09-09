@@ -134,6 +134,23 @@ public class StatisticsSteps implements En {
               break;
           }
         });
+    And(
+        "^I select Options Data Displayed ([^\"]*) from the Statistics Page",
+        (String dataDisplayed) -> {
+          switch (dataDisplayed) {
+            case "Case Count":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  DATA_DISPLAYED_CASE_COUNT_RADIO_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_DISPLAYED_CASE_COUNT_RADIO_BUTTON);
+              break;
+            case "Case Incidence":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  DATA_DISPLAYED_CASE_INCIDENCE_RADIO_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  DATA_DISPLAYED_CASE_INCIDENCE_RADIO_BUTTON);
+              break;
+          }
+        });
 
     Then(
         "I Verify the presence of Rows, Columns, and switch-between Button in the Statistics Page",
@@ -145,15 +162,37 @@ public class StatisticsSteps implements En {
     Then(
         "I Verify the presence of Map Type Regions and Districts buttons in the Statistics Page",
         () -> {
-            webDriverHelpers.waitUntilElementIsVisibleAndClickable(MAP_TYPE_REGIONS_RADIO_BUTTON);
-            webDriverHelpers.waitUntilElementIsVisibleAndClickable(MAP_TYPE_DISTRICTS_RADIO_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MAP_TYPE_REGIONS_RADIO_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MAP_TYPE_DISTRICTS_RADIO_BUTTON);
         });
 
-      Then(
-          "I Verify the presence of Chart Type Column buttons in the Statistics Page",
-          () -> {
-              //WIP
-          });
+    Then(
+        "I Verify the presence of Chart Type buttons from the Statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CHART_TYPE_COLUMN_RADIO_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CHART_TYPE_STACKED_COLUMN_RADIO_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CHART_TYPE_LINE_RADIO_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CHART_TYPE_PIE_RADIO_BUTTON);
+        });
+
+    Then(
+        "I Verify the presence of Show Zero Values checkbox from the Statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SHOW_ZERO_VALUES_CHECKBOX);
+        });
+
+    Then(
+        "I Verify the presence of Incidence Divisor Input from the Statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(INCIDENCE_DIVISOR_INPUT);
+        });
+
+    Then(
+        "I Verify the presence of the Generate Button from the Statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERATE_BUTTON);
+        });
   }
 
   public String[] parseEventGroupsDatabaseExportColumns(String fileName) {

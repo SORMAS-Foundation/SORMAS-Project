@@ -18,4 +18,16 @@ public class StatisticsPage {
   public static final By EVENT_GROUPS_CHECKBOX = By.xpath("//label[text()='Event groups']");
   public static final By MAP_TYPE_REGIONS_RADIO_BUTTON = By.xpath("//label[text()='Regions']");
   public static final By MAP_TYPE_DISTRICTS_RADIO_BUTTON = By.xpath("//label[text()='Districts']");
+  public static final By CHART_TYPE_COLUMN_RADIO_BUTTON = By.xpath("//label[text()='Column']");
+  public static final By CHART_TYPE_STACKED_COLUMN_RADIO_BUTTON =
+      By.xpath("//label[text()='Stacked column']");
+  public static final By CHART_TYPE_LINE_RADIO_BUTTON = By.xpath("//label[text()='Line']");
+  public static final By CHART_TYPE_PIE_RADIO_BUTTON = By.xpath("//label[text()='Pie']");
+  public static final By DATA_DISPLAYED_CASE_COUNT_RADIO_BUTTON =
+      By.xpath("//label[text()='Case count']");
+  public static final By DATA_DISPLAYED_CASE_INCIDENCE_RADIO_BUTTON =
+      By.xpath("//label[text()='Case incidence']");
+  public static final By SHOW_ZERO_VALUES_CHECKBOX = By.id("statisticsShowZeroValues");
+  public static final By INCIDENCE_DIVISOR_INPUT = By.id("incidenceDivisor");
+  public static final By GENERATE_BUTTON = By.id("actionGenerate");
 }
