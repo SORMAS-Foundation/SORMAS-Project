@@ -360,4 +360,7 @@ public class EditCasePage {
   public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
       By.xpath(
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
+  public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='L\u00F6schen best\u00E4tigen']");
 }

@@ -213,6 +213,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -2487,6 +2488,23 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementGreyedOut(VACCINATION_CARD_VACCINATION_NAME);
               break;
           }
+        });
+
+    And(
+        "^I check if date of report is set for (\\d+) day ago from today on Edit Case page for DE version$",
+        (Integer days) -> {
+          String actualReportDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+          String expectedReportDate =
+              (LocalDate.now().minusDays(days)).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+          Assert.assertEquals(actualReportDate, expectedReportDate, "Report date is incorrect!");
+        });
+
+    And(
+        "^I choose the reason of deletion in popup for Vaccination for DE version$",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              DELETE_VACCINATION_REASON_POPUP_DE_VERSION, "Entität ohne Rechtsgrund angelegt");
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
         });
   }
 
