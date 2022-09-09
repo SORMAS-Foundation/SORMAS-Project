@@ -152,17 +152,16 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.EventGroup;
 import org.sormas.e2etests.entities.services.EventGroupService;
 import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.EventReferenceDateOptions;
-import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
@@ -189,10 +188,11 @@ public class EventDirectorySteps implements En {
       EventGroupService eventGroupService,
       EventService eventService,
       SoftAssert softly,
-      RunningConfiguration runningConfiguration) {
+      RunningConfiguration runningConfiguration,
+      RestAssuredClient restAssuredClient) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
-
+    EnvironmentManager manager = new EnvironmentManager(restAssuredClient);
     When(
         "I fill EVENT ID filter by API",
         () -> {
@@ -272,7 +272,7 @@ public class EventDirectorySteps implements En {
         () -> {
           String region = apiState.getCreatedEvent().getEventLocation().getRegion().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getNameValueForUuid(region));
+              EVENT_REGION_COMBOBOX_INPUT, manager.getRegionName(region));
         });
 
     When(
@@ -280,7 +280,7 @@ public class EventDirectorySteps implements En {
         () -> {
           String district = apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getNameValueForUuid(district));
+              EVENT_DISTRICT_COMBOBOX_INPUT, manager.getDistrictName(district));
         });
 
     When(
@@ -288,7 +288,7 @@ public class EventDirectorySteps implements En {
         () -> {
           String community = apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getNameValueForUuid(community));
+              EVENT_COMMUNITY_COMBOBOX_INPUT, manager.getCommunityName(community));
         });
 
     When(
@@ -1119,17 +1119,17 @@ public class EventDirectorySteps implements En {
               tableRowsData.get(0).get(EventsTableColumnsHeaders.DISEASE_HEADER.toString()),
               "Diseases are not equal");
           softly.assertEquals(
-              RegionsValues.getNameValueForUuid(
+              manager.getRegionName(
                   apiState.getCreatedEvent().getEventLocation().getRegion().getUuid()),
               tableRowsData.get(0).get(EventsTableColumnsHeaders.REGION_HEADER.toString()),
               "Regions are not equal");
           softly.assertEquals(
-              DistrictsValues.getNameValueForUuid(
+              manager.getDistrictName(
                   apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid()),
               tableRowsData.get(0).get(EventsTableColumnsHeaders.DISTRICT_HEADER.toString()),
               "Districts are not equal");
           softly.assertEquals(
-              CommunityValues.getNameValueForUuid(
+              manager.getCommunityName(
                   apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid()),
               tableRowsData.get(0).get(EventsTableColumnsHeaders.COMMUNITY_HEADER.toString()),
               "Communities are not equal");

@@ -185,7 +185,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToS
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
@@ -217,7 +217,7 @@ public class ContactFacadeEjb
 	extends AbstractCoreFacadeEjb<Contact, ContactDto, ContactIndexDto, ContactReferenceDto, ContactService, ContactCriteria>
 	implements ContactFacade {
 
-	private static final long SECONDS_30_DAYS = TimeUnit.DAYS.toSeconds(30L);
+	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -345,7 +345,7 @@ public class ContactFacadeEjb
 		ContactDto contactDto = coreAndPersonDto.getCoreData();
 		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
 		if (coreAndPersonDto.getPerson() != null) {
-			PersonDto newlyCreatedPersonDto = personFacade.savePerson(coreAndPersonDto.getPerson());
+			PersonDto newlyCreatedPersonDto = personFacade.save(coreAndPersonDto.getPerson());
 			contactDto.setPerson(newlyCreatedPersonDto.toReference());
 			savedCoreAndPersonDto.setPerson(newlyCreatedPersonDto);
 		}
@@ -1732,7 +1732,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public ContactReferenceDto toRefDto(Contact contact) {
+	protected ContactReferenceDto toRefDto(Contact contact) {
 		return convertToReferenceDto(contact);
 	}
 
@@ -1951,8 +1951,8 @@ public class ContactFacadeEjb
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!DataHelper.equal(leadContactDto.getPerson().getUuid(), otherContactDto.getPerson().getUuid())) {
-			PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
-			PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
+			PersonDto leadPerson = personFacade.getByUuid(leadContactDto.getPerson().getUuid());
+			PersonDto otherPerson = personFacade.getByUuid(otherContactDto.getPerson().getUuid());
 			personFacade.mergePerson(leadPerson, otherPerson);
 		}
 
@@ -2065,8 +2065,8 @@ public class ContactFacadeEjb
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
 			SECONDS_30_DAYS);
 		// Sex filter: only when sex is filled in for both cases
 		Predicate sexFilter = cb.or(

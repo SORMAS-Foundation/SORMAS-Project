@@ -33,7 +33,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequest;
 
 @Entity(name = "sormastosormasorigininfo")
 public class SormasToSormasOriginInfo extends AbstractDomainObject {

@@ -23,7 +23,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestService;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -64,7 +64,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 	}
 
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_PROCESS,
 		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
 
@@ -76,7 +76,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 	}
 
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_PROCESS,
 		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public SormasToSormasOriginInfo fromDto(SormasToSormasOriginInfoDto source, boolean checkChangeDate) {
 		if (source == null) {
@@ -101,7 +101,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 	}
 
 	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_PROCESS,
 		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public boolean exists(String uuid) {
 		return originInfoService.exists(uuid);

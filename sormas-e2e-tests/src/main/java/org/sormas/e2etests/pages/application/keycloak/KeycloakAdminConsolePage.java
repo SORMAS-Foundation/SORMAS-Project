@@ -23,4 +23,11 @@ public class KeycloakAdminConsolePage {
   public static final By VIEW_ALL_USERS_BUTTON = By.id("viewAllUsers");
   public static final By USER_ID = By.cssSelector("td.clip a");
   public static final By NEXT_PAGE_BUTTON = By.cssSelector("button.next.ng-binding");
+  public static final By USER_ENABLE_DISABLE_SWITCH = By.cssSelector("#userEnabled");
+  public static final By USER_DISABLED =
+      By.xpath("//input[@id=\"userEnabled\" and contains(@class,\"ng-empty\")]");
+
+  public static By getUserIdByName(String name) {
+    return By.xpath(String.format("//td[text()=\"%s\"]/../td/a", name));
+  }
 }

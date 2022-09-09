@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -23,6 +24,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
@@ -30,8 +32,10 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "AreaFacade")
+@RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto, AreaDto, AreaReferenceDto, AreaService, AreaCriteria>
 	implements AreaFacade {
 
@@ -44,6 +48,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 	}
 
 	@Override
+	@PermitAll
 	public List<AreaReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(Area.NAME, true).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
@@ -94,6 +99,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 	}
 
 	@Override
+	@PermitAll
 	public List<AreaReferenceDto> getByName(String name, boolean includeArchived) {
 		return service.getByName(name, includeArchived).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
@@ -114,6 +120,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 	}
 
 	@Override
+	@PermitAll
 	public List<AreaReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
@@ -135,7 +142,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 	}
 
 	@Override
-	public AreaReferenceDto toRefDto(Area area) {
+	protected AreaReferenceDto toRefDto(Area area) {
 		return toReferenceDto(area);
 	}
 
@@ -147,6 +154,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 	}
 
 	@Override
+	@PermitAll
 	public List<AreaReferenceDto> getReferencesByName(String name, boolean includeArchived) {
 		return getByName(name, includeArchived);
 	}

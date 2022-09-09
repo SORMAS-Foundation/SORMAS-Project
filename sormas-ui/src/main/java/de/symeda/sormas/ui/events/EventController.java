@@ -511,7 +511,7 @@ public class EventController {
 		}
 
 		// Create new EventParticipant for this Person
-		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
+		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(caseDataDto.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
@@ -520,7 +520,7 @@ public class EventController {
 	}
 
 	public void createEventParticipantWithContact(EventReferenceDto eventReferenceDto, ContactDto contact) {
-		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {

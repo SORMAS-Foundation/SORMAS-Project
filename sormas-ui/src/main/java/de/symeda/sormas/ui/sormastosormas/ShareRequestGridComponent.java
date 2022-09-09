@@ -15,25 +15,11 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 
 public class ShareRequestGridComponent extends VerticalLayout {
 
@@ -41,11 +27,9 @@ public class ShareRequestGridComponent extends VerticalLayout {
 	private ShareRequestCriteria criteria;
 	private ShareRequestFilterForm filterForm;
 	private ShareRequestGrid grid;
-	private Map<Button, String> statusButtons;
-	private Button activeStatusButton;
 
 	public ShareRequestGridComponent(
-		ViewConfiguration viewConfiguration,
+		ShareRequestsViewConfiguration viewConfiguration,
 		ShareRequestCriteria criteria,
 		Runnable filterChangeHandler,
 		Runnable filterResetHandler) {
@@ -54,14 +38,11 @@ public class ShareRequestGridComponent extends VerticalLayout {
 		setSizeFull();
 		setMargin(false);
 
-		grid = new ShareRequestGrid(viewConfiguration.isInEagerMode(), criteria);
+		grid = new ShareRequestGrid(viewConfiguration.isInEagerMode(), criteria, viewConfiguration.getViewType());
 		grid.setSizeFull();
-		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		VerticalLayout gridLayout = new VerticalLayout();
-		// Filters to be added later
-		/* gridLayout.addComponent( */createFilterBar(filterChangeHandler, filterResetHandler)/* ) */;
-		gridLayout.addComponent(createStatusFilterBar(filterChangeHandler));
+		gridLayout.addComponent(createFilterBar(filterChangeHandler, filterResetHandler));
 
 		gridLayout.addComponent(grid);
 
@@ -105,55 +86,5 @@ public class ShareRequestGridComponent extends VerticalLayout {
 
 	public void updateFilterComponents() {
 		filterForm.setValue(criteria);
-	}
-
-	public HorizontalLayout createStatusFilterBar(Runnable filterChangeHandler) {
-		HorizontalLayout statusFilterLayout = new HorizontalLayout();
-		statusFilterLayout.setMargin(false);
-		statusFilterLayout.setSpacing(true);
-		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
-
-		statusButtons = new HashMap<>();
-
-		activeStatusButton = createAndAddStatusButton(null, statusFilterLayout, filterChangeHandler);
-
-		createAndAddStatusButton(ShareRequestStatus.PENDING, statusFilterLayout, filterChangeHandler);
-		createAndAddStatusButton(ShareRequestStatus.ACCEPTED, statusFilterLayout, filterChangeHandler);
-
-		return statusFilterLayout;
-	}
-
-	private Button createAndAddStatusButton(@Nullable ShareRequestStatus status, HorizontalLayout buttonLayout, Runnable filterChangeHandler) {
-		Button button = ButtonHelper.createButton(status == null ? I18nProperties.getCaption(Captions.all) : status.toString(), e -> {
-			criteria.setStatus(status);
-
-			filterChangeHandler.run();
-		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
-
-		if (status != null) {
-			button.setData(status);
-		}
-
-		button.setCaptionAsHtml(true);
-
-		buttonLayout.addComponent(button);
-		statusButtons.put(button, button.getCaption());
-
-		return button;
-	}
-
-	private void updateStatusButtons() {
-		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-			b.setCaption(statusButtons.get(b));
-			if (b.getData() == criteria.getStatus()) {
-				activeStatusButton = b;
-			}
-		});
-		if (activeStatusButton != null) {
-			CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
-			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
-		}
 	}
 }

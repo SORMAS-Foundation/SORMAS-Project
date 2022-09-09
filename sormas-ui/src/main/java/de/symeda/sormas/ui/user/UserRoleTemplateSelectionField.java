@@ -17,28 +17,29 @@ package de.symeda.sormas.ui.user;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.ComboBox;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 
-public class UserRoleTemplateSelectionField extends CustomField<UserRoleReferenceDto> {
+public class UserRoleTemplateSelectionField extends CustomField<UserRoleDto> {
 
 	private VerticalLayout mainLayout;
 	private ComboBox templateRoleCombo;
 	private UserRoleEditForm userRoleEditForm;
+	private DefaultUserRole defaultUserRole;
 	private UserRoleNotificationsForm userRoleNotificationsForm;
 
 	@Override
-	protected void doSetValue(UserRoleReferenceDto userRoleReferenceDto) {
-		super.setValue(userRoleReferenceDto);
+	protected void doSetValue(UserRoleDto userRoleDto) {
+		super.setValue(userRoleDto);
 	}
 
 	@Override
@@ -55,7 +56,8 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleReferenc
 
 		templateRoleCombo = new ComboBox();
 		templateRoleCombo.setWidth(300, Unit.PIXELS);
-		templateRoleCombo.setItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
+		UserRoleFormHelper.setTemplateRoleItems(templateRoleCombo);
+		UserRoleFormHelper.setTemplateRoleValue(templateRoleCombo, defaultUserRole);
 		templateRoleCombo.setCaption(I18nProperties.getCaption(Captions.userrole_applyUserRoleTemplate));
 		mainLayout.addComponent(templateRoleCombo);
 
@@ -63,8 +65,8 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleReferenc
 	}
 
 	@Override
-	public UserRoleReferenceDto getValue() {
-		return (UserRoleReferenceDto) templateRoleCombo.getValue();
+	public UserRoleDto getValue() {
+		return (UserRoleDto) templateRoleCombo.getValue();
 	}
 
 	public UserRoleEditForm getUserRoleEditForm() {
@@ -73,6 +75,13 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleReferenc
 
 	public void setUserRoleEditForm(UserRoleEditForm userRoleEditForm) {
 		this.userRoleEditForm = userRoleEditForm;
+	}
+
+	public void setDefaultUserRole(DefaultUserRole defaultUserRole) {
+		this.defaultUserRole = defaultUserRole;
+		if (templateRoleCombo != null) {
+			UserRoleFormHelper.setTemplateRoleValue(templateRoleCombo, defaultUserRole);
+		}
 	}
 
 	public UserRoleNotificationsForm getUserRoleNotificationsForm() {

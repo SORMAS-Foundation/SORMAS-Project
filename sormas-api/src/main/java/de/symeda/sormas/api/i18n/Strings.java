@@ -781,6 +781,7 @@ public interface Strings {
 	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
+	String infoDocumentOverride = "infoDocumentOverride";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadDocumentTemplateImportGuide = "infoDownloadDocumentTemplateImportGuide";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
@@ -910,6 +911,7 @@ public interface Strings {
 	String listOf = "listOf";
 	String mapOf = "mapOf";
 	String max = "max";
+	String messageAcceptRequestToNavigate = "messageAcceptRequestToNavigate";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
@@ -1033,6 +1035,7 @@ public interface Strings {
 	String messageDistrictsDearchivingNotPossible = "messageDistrictsDearchivingNotPossible";
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
+	String messageEntityNotFound = "messageEntityNotFound";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";

@@ -51,16 +51,23 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_CREATE,
+		UserRight._INFRASTRUCTURE_EDIT })
 	public DTO save(@Valid @NotNull DTO dtoToSave) {
 		return save(dtoToSave, false);
 	}
 
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_CREATE,
+		UserRight._INFRASTRUCTURE_EDIT })
 	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
 		// default behaviour is to include archived data and check for the change date
 		return doSave(dto, allowMerge, true, true, duplicateErrorMessageProperty);
 	}
 
+	@RightsAllowed(UserRight._SYSTEM)
 	public DTO saveFromCentral(DTO dtoToSave) {
 		// merge, but do not include archived data (we consider archive data to be completely broken)
 		// also ignore change date as merging will always cause the date to be newer to what is present in central
@@ -116,6 +123,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
+	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public void archive(String uuid) {
 		// todo this should be really in the parent but right now there the setter for archived is not available there
 		checkInfraDataLocked();
@@ -126,6 +134,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		}
 	}
 
+	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public void dearchive(String uuid) {
 		checkInfraDataLocked();
 		ADO ado = service.getByUuid(uuid);
@@ -166,14 +175,21 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	// todo this can be moved up
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW,
+		UserRight._SYSTEM })
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW })
 	public boolean isUsedInOtherInfrastructureData(Collection<String> uuids) {
 		return false;
 	}
 
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW })
 	public boolean hasArchivedParentInfrastructure(Collection<String> uuids) {
 		return false;
 	}
@@ -183,6 +199,8 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	// todo implement toDto() here
 
 	@Override
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW })
 	public void validate(@Valid DTO dto) throws ValidationRuntimeException {
 		// todo we do not run any generic validation logic for infra yet
 	}

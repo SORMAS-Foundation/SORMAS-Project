@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
-import com.vaadin.shared.Registration;
-import com.vaadin.ui.Window;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -56,7 +54,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
-import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class PersonController {
 
@@ -130,7 +127,7 @@ public class PersonController {
 				} else {
 					PersonDto savedPerson;
 					if (saveNewPerson) {
-						savedPerson = personFacade.savePerson(person);
+						savedPerson = personFacade.save(person);
 					} else {
 						savedPerson = person;
 					}
@@ -152,7 +149,7 @@ public class PersonController {
 			personSelect.selectBestMatch();
 		} else if (saveNewPerson) {
 			// no duplicate persons found so save a new person
-			PersonDto savedPerson = personFacade.savePerson(person);
+			PersonDto savedPerson = personFacade.save(person);
 			resultConsumer.accept(savedPerson.toReference());
 		} else {
 			resultConsumer.accept(person.toReference());
@@ -160,7 +157,7 @@ public class PersonController {
 	}
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, UserRight editUserRight) {
-		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
+		PersonDto personDto = personFacade.getByUuid(personUuid);
 
 		PersonEditForm editForm = new PersonEditForm(personDto.isPseudonymized());
 		editForm.setValue(personDto);
@@ -187,7 +184,7 @@ public class PersonController {
 		String diseaseDetails,
 		UserRight editUserRight,
 		final ViewMode viewMode) {
-		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
+		PersonDto personDto = personFacade.getByUuid(personUuid);
 
 		PersonEditForm editForm = new PersonEditForm(personContext, disease, diseaseDetails, viewMode, personDto.isPseudonymized());
 		editForm.setValue(personDto);
