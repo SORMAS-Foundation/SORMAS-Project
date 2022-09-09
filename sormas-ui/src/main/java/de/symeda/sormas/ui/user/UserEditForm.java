@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -168,7 +167,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
          * district get populated as the default value in the user edit form.
          * See issue issue #201
          */
-        community.setValue("11111111111");
+        community.setValue(UserDto.COMMUNITY);
         community.setMultiSelect(true);
         
         
@@ -193,15 +192,16 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     .updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
         });
         
+        
 //        /*
 //         * Don't ask!!! I can't explain. This is a hack that gets the user's previous 
 //         * district get populated as the default value in the user edit form.
 //         * See issue issue #201
 //         */
-//        community.addValueChangeListener(e -> {
-//        //	CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-//        	
-//        });
+       community.addValueChangeListener(e -> {
+    	  // community.clear();
+    	 //  FieldHelper.removeItems(community);
+     });
         		
         
         // for informant
