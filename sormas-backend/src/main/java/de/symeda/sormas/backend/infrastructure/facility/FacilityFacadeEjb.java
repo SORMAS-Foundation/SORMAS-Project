@@ -170,6 +170,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<FacilityDto> getAllWithoutRegionAfter(Date date) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

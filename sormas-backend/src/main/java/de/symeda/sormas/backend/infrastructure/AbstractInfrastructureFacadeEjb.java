@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
@@ -62,6 +63,12 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	@PermitAll
 	public List<DTO> getAllAfter(Date date) {
 		return super.getAllAfter(date);
+	}
+
+	@Override
+	@PermitAll
+	public List<DTO> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
