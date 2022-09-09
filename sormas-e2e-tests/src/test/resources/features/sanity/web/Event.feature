@@ -1230,6 +1230,7 @@ Feature: Create events
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
     Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click Enter Bulk Edit Mode on Event directory page
     And I select first 2 results in grid in Event Participant Directory
     And I click on Bulk Actions combobox in Event Parcitipant Tab
     And I click on Create Quarantine Order from Bulk Actions combobox on Event Participant Directory Page
