@@ -159,7 +159,7 @@ Feature: Create user
     And I open last created user from SORMAS in Keycloak Admin Page
     And I check if user is disabled in Keycloak Admin Page
 
-  @tmsLink=SORQA-461 @env_de
+  @tmsLink=SORDEV-12437 @env_de
   Scenario: Test user rights view in UI
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -180,7 +180,7 @@ Feature: Create user
     Then I set user role filter to Fälle von SORMAS exportieren in User Roles tab
     Then I compare that actual row coutner is less than first one
 
-  @tmsLink=SORQA-461 @env_de
+  @tmsLink=SORDEV-12437 @env_de
   Scenario: Test user jurisdiction level view in UI
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -205,7 +205,7 @@ Feature: Create user
     Then I set jurisdiction level filter to Externes Labor in User Roles tab
     Then I compare that actual row coutner is less than first one
 
-  @tmsLink=SORQA-461 @env_de
+  @tmsLink=SORDEV-12437 @env_de
   Scenario: Test user enabled/disabled view in UI
     Given I log in as a Admin User
     And I click on the Users from navbar
