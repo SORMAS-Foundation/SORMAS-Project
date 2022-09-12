@@ -1635,7 +1635,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(contact).getInJurisdiction()) {
+		if (Boolean.FALSE.equals(inJurisdictionOrOwned(contact).getInJurisdiction())) {
 			return EditPermissionType.REFUSED;
 		}
 
@@ -1643,7 +1643,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return EditPermissionType.DOCUMENTS_ONLY;
 		}
 
-		return getEditPermissionType(contact);
+		return super.getEditPermissionType(contact);
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
