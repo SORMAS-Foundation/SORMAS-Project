@@ -19,7 +19,10 @@ import javax.ejb.LocalBean;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
-import de.symeda.sormas.api.HasUuid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -30,7 +33,7 @@ import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 public class AuditLoggerInterceptor {
-
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	@EJB
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 
@@ -132,17 +135,18 @@ public class AuditLoggerInterceptor {
 		if (o == null) {
 			return null;
 		}
-		if (o instanceof HasUuid) {
-			return ((HasUuid) o).getUuid();
+		if (o instanceof Auditable) {
+			return ((Auditable) o).getAuditRepresentation();
 		}
 		if (o instanceof List) {
 			List list = (List) o;
-			if (!list.isEmpty() && list.get(0) instanceof HasUuid) {
-				List<HasUuid> uuidList = list;
-				String str = uuidList.stream().map(HasUuid::getUuid).collect(Collectors.joining(","));
+			if (!list.isEmpty() && list.get(0) instanceof Auditable) {
+				List<Auditable> auditableList = list;
+				String str = auditableList.stream().map(Auditable::getAuditRepresentation).collect(Collectors.joining(","));
 				return String.format("List(%s)", str);
 			}
 		}
+		logger.warn("Audit logging for object of type {} is not implemented. Please file an issue.", o.getClass());
 		return o.toString();
 	}
 }
