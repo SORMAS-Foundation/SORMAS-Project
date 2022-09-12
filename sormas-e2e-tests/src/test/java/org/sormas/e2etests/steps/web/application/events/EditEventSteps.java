@@ -1053,9 +1053,6 @@ public class EditEventSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
           }
-          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 15)) {
-            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
-          }
         });
     When(
         "I check that an import success notification appears in the Import Event Participant popup for DE",
