@@ -18,7 +18,7 @@ Feature: Edit Persons
     And While on Person edit page, I will edit all fields with new values
     And I edit all Person primary contact details and save
     Then I click on save button from Edit Person page
-    And I check that previous edited person is correctly displayed in Edit Person page
+    And I check that new edited person is correctly displayed in Edit Person page
 
   @tmsLink=SORDEV-8466 @env_main
   Scenario: Check Filters on Person page work as expected
