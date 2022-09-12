@@ -38,6 +38,8 @@ import android.widget.TextView;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableList;
 
+import com.google.common.base.Strings;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -921,16 +923,16 @@ public class TextViewBindingAdapters {
 
 	@BindingAdapter(value = {
 		"timeAgoValue",
+		"timeAgoDetailLevelDays",
 		"valueFormat",
 		"defaultValue" }, requireAll = false)
-	public static void setTimeAgoValue(TextView textField, Date dateValue, String valueFormat, String defaultValue) {
+	public static void setTimeAgoValue(TextView textField, Date dateValue, boolean timeAgoDetailLevelDays, String valueFormat, String defaultValue) {
 		String val = defaultValue;
 
 		if (dateValue == null) {
 			textField.setText(val);
 		} else {
-			val = TimeAgo.using(textField.getContext()).with(dateValue);
-
+			val = TimeAgo.using(textField.getContext()).with(dateValue, timeAgoDetailLevelDays);
 			if (valueFormat != null && valueFormat.trim() != "") {
 				textField.setText(String.format(valueFormat, val));
 			} else {

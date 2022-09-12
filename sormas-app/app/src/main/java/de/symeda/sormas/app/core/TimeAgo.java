@@ -56,7 +56,7 @@ public final class TimeAgo {
 	 * @see TimeAgoMessages
 	 */
 	public String with(final long time) {
-		return with(time, new TimeAgoMessages.Builder(context).build());
+		return with(time, false, new TimeAgoMessages.Builder(context).build());
 	}
 
 	/**
@@ -66,24 +66,44 @@ public final class TimeAgo {
 	 *
 	 * @param time
 	 *            the date time for parsing
+	 * @param detailLevelDays restrict to day levels only
+	 * @return the 'time ago' formatted text using date time
+	 * @see TimeAgoMessages
+	 */
+	public String with(final long time, final boolean detailLevelDays) {
+		return with(time, detailLevelDays, new TimeAgoMessages.Builder(context).build());
+	}
+
+	/**
+	 * <p>
+	 * Returns the 'time ago' formatted text using date time.
+	 * </p>
+	 *
+	 * @param time
+	 *            the date time for parsing
+	 * @param detailLevelDays restrict to day levels only
 	 * @param resources
 	 *            the resources for localizing messages
 	 * @return the 'time ago' formatted text using date time
 	 * @see TimeAgoMessages
 	 */
-	public String with(final long time, final TimeAgoMessages resources) {
+	public String with(final long time, final boolean detailLevelDays, final TimeAgoMessages resources) {
 		final long dim = getTimeDistanceInMinutes(time);
-		final StringBuilder timeAgo = buildTimeagoText(resources, dim);
+		final StringBuilder timeAgo = buildTimeagoText(resources, dim, detailLevelDays);
 		return timeAgo.toString();
 	}
 
 	public String with(Date date) {
-		return with(date, new TimeAgoMessages.Builder(context).build());
+		return with(date, false, new TimeAgoMessages.Builder(context).build());
 	}
 
-	public String with(Date date, TimeAgoMessages resources) {
+	public String with(Date date, boolean detailLevelDays) {
+		return with(date, detailLevelDays, new TimeAgoMessages.Builder(context).build());
+	}
+
+	public String with(Date date, boolean detailLevelDays, TimeAgoMessages resources) {
 		final long dim = getTimeDistanceInMinutes(date.getTime());
-		final StringBuilder timeAgo = buildTimeagoText(resources, dim);
+		final StringBuilder timeAgo = buildTimeagoText(resources, dim, detailLevelDays);
 		return timeAgo.toString();
 	}
 
@@ -94,12 +114,13 @@ public final class TimeAgo {
 	 *            the resources
 	 * @param dim
 	 *            the distance in minutes from now
+	 * @param detailLevelDays  restrict to day levels only
 	 * @return the string builder
 	 */
-	private static StringBuilder buildTimeagoText(TimeAgoMessages resources, long dim) {
+	private static StringBuilder buildTimeagoText(TimeAgoMessages resources, long dim, boolean detailLevelDays) {
 		final StringBuilder timeAgo = new StringBuilder();
 
-		final Periods foundTimePeriod = Periods.findByDistanceMinutes(dim);
+		final Periods foundTimePeriod = Periods.findByDistanceMinutes(dim, detailLevelDays);
 		if (foundTimePeriod != null) {
 			final int periodKey = foundTimePeriod.getPropertyKey();
 			switch (foundTimePeriod) {
@@ -204,41 +225,50 @@ public final class TimeAgo {
 	 */
 	private enum Periods {
 
-		NOW(R.string.time_now, new DistancePredicate() {
+		NOW(R.string.time_now, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
 				return distance == 0;
 			}
 		}),
-		ONEMINUTE_PAST(R.string.time_past_one_minute, new DistancePredicate() {
+		ONEMINUTE_PAST(R.string.time_past_one_minute, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
 				return distance == 1;
 			}
 		}),
-		XMINUTES_PAST(R.string.time_past_x_minutes, new DistancePredicate() {
+		XMINUTES_PAST(R.string.time_past_x_minutes, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
 				return distance >= 2 && distance <= 44;
 			}
 		}),
-		ABOUTANHOUR_PAST(R.string.time_past_one_hour, new DistancePredicate() {
+		ABOUTANHOUR_PAST(R.string.time_past_one_hour, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
 				return distance >= 45 && distance <= 89;
 			}
 		}),
-		XHOURS_PAST(R.string.time_past_x_hours, new DistancePredicate() {
+		XHOURS_PAST(R.string.time_past_x_hours, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
 				return distance >= 90 && distance <= 1439;
 			}
 		}),
+
+		TODAY(R.string.time_past_today, true, new DistancePredicate() {
+
+			@Override
+			public boolean validateDistanceMinutes(final long distance) {
+				return distance >= 0 && distance <= 1439;
+			}
+		}),
+
 		ONEDAY_PAST(R.string.time_past_one_day, new DistancePredicate() {
 
 			@Override
@@ -417,9 +447,16 @@ public final class TimeAgo {
 		 */
 		private DistancePredicate mPredicate;
 
+		private boolean dayLevel;
+
 		Periods(int propertyKey, DistancePredicate predicate) {
+			this(propertyKey, true, predicate);
+		}
+
+		Periods(int propertyKey, boolean dayLevel, DistancePredicate predicate) {
 			this.mPropertyKey = propertyKey;
 			this.mPredicate = predicate;
+			this.dayLevel=dayLevel;
 		}
 
 		/**
@@ -427,13 +464,15 @@ public final class TimeAgo {
 		 *
 		 * @param distanceMinutes
 		 *            the distance minutes
+		 * @param detailLevelDays show time in days or above
 		 * @return the periods
 		 */
-		public static Periods findByDistanceMinutes(final long distanceMinutes) {
+		public static Periods findByDistanceMinutes(final long distanceMinutes, final boolean detailLevelDays) {
 			final Periods[] values = Periods.values();
 			for (final Periods item : values) {
 				final boolean successful = item.getPredicate().validateDistanceMinutes(distanceMinutes);
-				if (successful) {
+				final boolean passDayLevelRestriction = detailLevelDays?item.isDayLevel():true;
+				if (successful && passDayLevelRestriction) {
 					return item;
 				}
 			}
@@ -456,6 +495,10 @@ public final class TimeAgo {
 		 */
 		public int getPropertyKey() {
 			return mPropertyKey;
+		}
+
+		private boolean isDayLevel() {
+			return dayLevel;
 		}
 	}
 
