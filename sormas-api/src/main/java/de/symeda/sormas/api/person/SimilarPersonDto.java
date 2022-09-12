@@ -1,14 +1,14 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.audit.Auditable;
-import de.symeda.sormas.api.utils.HideForCountries;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class SimilarPersonDto implements Auditable, Serializable {
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.utils.HideForCountries;
+
+public class SimilarPersonDto implements HasUuid, Serializable {
 
 	public static final String I18N_PREFIX = "Person";
 	public static final String I18N_PREFIX_LOCATION = "Location";

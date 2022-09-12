@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.contact;
 
-import de.symeda.sormas.api.audit.Auditable;
-
 import java.io.Serializable;
 
-public class FollowUpStatusDto implements Auditable, Serializable {
+import de.symeda.sormas.api.HasUuid;
+
+public class FollowUpStatusDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 6075542609471404489L;
 

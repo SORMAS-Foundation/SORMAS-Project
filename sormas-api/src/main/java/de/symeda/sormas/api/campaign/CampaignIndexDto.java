@@ -1,11 +1,11 @@
 package de.symeda.sormas.api.campaign;
 
-import de.symeda.sormas.api.audit.Auditable;
-
 import java.io.Serializable;
 import java.util.Date;
 
-public class CampaignIndexDto implements Serializable, Auditable {
+import de.symeda.sormas.api.HasUuid;
+
+public class CampaignIndexDto implements Serializable, HasUuid {
 
 	private static final long serialVersionUID = 2448753530580084851L;
 

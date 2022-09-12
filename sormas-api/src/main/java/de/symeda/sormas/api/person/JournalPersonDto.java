@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class JournalPersonDto implements Auditable, Serializable {
+public class JournalPersonDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 3561284010406711305L;
 
