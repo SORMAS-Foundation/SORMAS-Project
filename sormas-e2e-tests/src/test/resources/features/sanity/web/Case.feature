@@ -1129,9 +1129,9 @@ Feature: Case end to end tests
     And I click on the Cases button from navbar
     Then I click on the NEW CASE button
     And I click on the person search button in new case form
-    Then I check that National Health ID is not visible in Person search popup
-    And I check that Passport Number is not visible in Person search popup
-    And I check that Nickname is not visible in Person search popup
+    Then I check that Krankenversicherungsnummer is not visible in Person search popup
+    And I check that Reisepassnummer is not visible in Person search popup
+    And I check that Spitzname is not visible in Person search popup
 
   @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
@@ -1677,7 +1677,7 @@ Feature: Case end to end tests
     And I select last created API result in grid in Case Directory for Bulk Action
     And I click on Bulk Actions combobox on Case Directory Page
     And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
-    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory for DE
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory
     And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Case directory
     And I click on Create button in Create Quarantine Order form DE
     And I click on close button in Create Quarantine Order form
@@ -1759,3 +1759,43 @@ Feature: Case end to end tests
      And I set Date of symptom onset to 7 days into the future
      When I click on save case button in Symptoms tab
      Then I Verify popup message from Symptoms Tab Contains "Date of symptom onset cannot be in the future"
+
+   @tmsLink=SORQA-478 @env_s2s_1
+     Scenario: Test send case to another instance using S2S connection
+     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+     And API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+     Then API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given I log in as Admin User in Keycloak enabled environment
+     Then I navigate to the last created case via the url
+     And I collect uuid of the case
+     Then I click on share case button
+     And I select organization to share with "s2s_2"
+     Then I click on share button in s2s share popup and wait for share to finish
+     Then I navigate to "s2s_2" environment
+     Given I log in as Admin User in Keycloak enabled environment
+     And I click on the Shares button from navbar
+     Then I click on the The Eye Icon located in the Shares Page
+     And I check if received case id is equal with sent
+
+   @tmsLink=SORDEV-10230 @env_main
+      Scenario: Test Archived entities should always be read-only
+      Then I log in as a Admin User
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      When I create a new case with specific data
+      Then I check the created data is correctly displayed on Edit case page
+      And I collect uuid of the case
+      Then I click on the Cases button from navbar
+      And I apply "Active cases" to combobox on Case Directory Page
+      Then I filter with first Case ID
+      And I click on the first Case ID from Case Directory
+      Then I click on the Archive case button
+      Then I check the end of processing date in the archive popup and select Archive contacts checkbox
+      And I back to the cases list from edit case
+      And I apply "Archived cases" to combobox on Case Directory Page
+      And I check that number of displayed cases results is 1
+      And I apply "All cases" to combobox on Case Directory Page
+      And I check that number of displayed cases results is 1

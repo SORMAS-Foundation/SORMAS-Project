@@ -22,41 +22,41 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
-import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
-public class CasePreviewGrid extends Grid<SormasToSormasCasePreview> {
+public class CasePreviewGrid extends BasePreviewGrid<SormasToSormasCasePreview> {
 
 	private static final long serialVersionUID = -7325193086495081297L;
 
-	public CasePreviewGrid(List<SormasToSormasCasePreview> cases) {
-		super(SormasToSormasCasePreview.class);
-		setItems(cases);
-		setHeightByRows(cases.size() > 0 ? (Math.min(cases.size(), 10)) : 1);
+	public CasePreviewGrid(List<SormasToSormasCasePreview> cases, boolean isPendingRequest) {
+		super(
+			SormasToSormasCasePreview.class,
+			Captions.CaseData,
+			uuid -> FacadeProvider.getCaseFacade().exists(uuid),
+			uuid -> ControllerProvider.getCaseController().navigateToCase(uuid),
+			isPendingRequest);
 
-		buildGrid();
+		setItems(cases);
 	}
 
-	private void buildGrid() {
-
-		setSizeFull();
-		setSelectionMode(SelectionMode.SINGLE);
-		setHeightMode(HeightMode.ROW);
+	@Override
+	protected void buildGrid() {
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
@@ -104,7 +104,7 @@ public class CasePreviewGrid extends Grid<SormasToSormasCasePreview> {
 				SormasToSormasCasePreview.CASE_CLASSIFICATION,
 				SormasToSormasCasePreview.INVESTIGATION_STATUS,
 				SormasToSormasCasePreview.OUTCOME));
-		columnConfig.addAll(PreviewGridHelper.createPersonColumns(this, SormasToSormasCasePreview::getPerson));
+		columnConfig.addAll(createPersonColumns(SormasToSormasCasePreview::getPerson));
 		columnConfig.addAll(
 			Arrays.asList(
 				SormasToSormasCasePreview.REGION,
@@ -115,7 +115,7 @@ public class CasePreviewGrid extends Grid<SormasToSormasCasePreview> {
 				SormasToSormasCasePreview.ONSET_DATE));
 		setColumns(columnConfig);
 
-		((Column<SormasToSormasCasePreview, String>) getColumn(SormasToSormasContactPreview.UUID)).setRenderer(new UuidRenderer());
+		((Column<SormasToSormasCasePreview, String>) getColumn(SormasToSormasCasePreview.UUID)).setRenderer(new UuidRenderer());
 		((Column<SormasToSormasCasePreview, Date>) getColumn(SormasToSormasCasePreview.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<SormasToSormasCasePreview, Date>) getColumn(SormasToSormasCasePreview.ONSET_DATE))

@@ -268,11 +268,11 @@ public class CreateNewContactSteps implements En {
           fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
           selectMultiDayContact();
           fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.ENGLISH);
-          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           fillCaseOrEventInformation(contact.getCaseOrEventInformation());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           selectTypeOfContact(contact.getTypeOfContact());
           //          fillAdditionalInformationOnTheTypeOfContact(
           //              contact.getAdditionalInformationOnContactType());
@@ -531,6 +531,19 @@ public class CreateNewContactSteps implements En {
         "^I click on Discard button in Create New Contact form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
+        });
+
+    And(
+        "^I fill a new Contact form with specific data for DE version with date (\\d+) days ago$",
+        (Integer daysAgo) -> {
+          contact = contactService.buildGeneratedContactDE();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(LocalDate.now().minusDays(daysAgo), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
         });
   }
 

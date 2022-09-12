@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.tasks;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
@@ -258,9 +259,9 @@ public class TaskManagementSteps implements En {
     When(
         "I check if popup message is {string}",
         (String expectedText) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOTIFICATION_MESSAGE_POPUP);
           softly.assertEquals(
-              webDriverHelpers.getTextFromPresentWebElement(
-                  By.cssSelector(".v-Notification-description")),
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_MESSAGE_POPUP),
               expectedText,
               "Bulk action went wrong");
           softly.assertAll();
@@ -442,7 +443,7 @@ public class TaskManagementSteps implements En {
           TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(8); // wait for download start
-          webDriverHelpers.waitForFileExists(file_path, 90);
+          webDriverHelpers.waitForFileExists(file_path, 120);
         });
 
     When(
@@ -462,7 +463,7 @@ public class TaskManagementSteps implements En {
         (String customExportName) -> {
           String configurationName;
           if (customExportName.equals("generated")) {
-            configurationName = LocalDate.now().toString();
+            configurationName = String.format("generated_%s", LocalDate.now().toString());
           } else {
             configurationName = customExportName;
           }
@@ -494,7 +495,7 @@ public class TaskManagementSteps implements En {
             Files.delete(file_path);
           }
           webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DOWNLOAD_BUTTON);
-          webDriverHelpers.waitForFileExists(file_path, 90);
+          webDriverHelpers.waitForFileExists(file_path, 120);
           Assert.assertTrue(webDriverHelpers.isFileExists(file_path));
         });
 
@@ -559,14 +560,13 @@ public class TaskManagementSteps implements En {
         });
 
     And(
-        "I delete all created custom task export configs",
+        "I delete last created custom task export config",
         () -> {
-          while (webDriverHelpers.isElementVisibleWithTimeout(
-              CUSTOM_TASK_EXPORT_DELETE_BUTTON, 1)) {
-            TimeUnit.SECONDS.sleep(2);
-            webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DELETE_BUTTON);
-            TimeUnit.SECONDS.sleep(2);
-          }
+          String export_id =
+              webDriverHelpers.getAttributeFromWebElement(CUSTOM_TASK_EXPORT_DELETE_BUTTON, "id");
+          webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DELETE_BUTTON);
+          Assert.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(getCustomExportByID(export_id), 1));
         });
   }
 

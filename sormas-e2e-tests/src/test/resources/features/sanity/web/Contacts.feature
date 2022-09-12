@@ -1092,7 +1092,29 @@ Feature: Contacts end to end tests
     And I click SAVE button on Edit Contact Page
     And I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page
 
-  @tmsLink=SORDEV-10227 @env_de
+  @tmsLink=SORDEV-5086  @env_main
+  Scenario: Test copying the Follow-up status comment when converting a contact into case
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I click on new contact button from Case Contacts tab
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I check the created data is correctly displayed on Edit Contact page
+    Then I copy uuid of current contact
+    And I click on CONFIRMED CONTACT radio button Contact Data tab
+    And I fill follow-up status comment from Edit contact page
+    And I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I fill only mandatory fields for a new case form
+    And I save the new case
+    And I click on the Contacts button from navbar
+    And I filter with last created contact using contact UUID
+    And I click on the first Contact ID from Contacts Directory
+    And I check that follow-up status comment is correctly displayed on Edit contact page
+    And I click on Open case of this contact person on Edit contact page
+    And I check that follow-up status comment is correctly displayed on Edit case page
+
+  @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Contact
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -1135,7 +1157,7 @@ Feature: Contacts end to end tests
     And I select last created API result in grid in Contact Directory for Bulk Action
     And I click on Bulk Actions combobox on Contact Directory Page
     And I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page
-    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory for DE
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory
     And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
     And I click on Create button in Create Quarantine Order form DE
     And I click on close button in Create Quarantine Order form
@@ -1147,7 +1169,7 @@ Feature: Contacts end to end tests
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
 
-  @tmsLink=SORDEV-12133 @env_de
+  @tmsLink=SORDEV-12133 @env_de @LanguageRisk
   Scenario: Test spelling correction on new contact creation form
     Given I log in as a Admin User
     When I click on the User Settings button from navbar

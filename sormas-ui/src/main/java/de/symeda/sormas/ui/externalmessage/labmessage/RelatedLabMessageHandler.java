@@ -142,7 +142,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 			changedFields);
 
 		showCorrectionWindow(labMessage, Strings.headingCorrectPerson, personCorrectionPanel, p -> {
-			FacadeProvider.getPersonFacade().savePerson(p);
+			FacadeProvider.getPersonFacade().save(p);
 			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Notification.Type.TRAY_NOTIFICATION);
 		}, chain);
 	}

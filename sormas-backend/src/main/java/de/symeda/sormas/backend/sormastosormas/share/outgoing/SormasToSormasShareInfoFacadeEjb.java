@@ -55,7 +55,9 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	@Override
-	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_PROCESS,
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public List<SormasToSormasShareInfoDto> getIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
@@ -92,7 +94,9 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 		return toDto(shareInfo);
 	}
 
-	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_PROCESS })
 	public SormasToSormasShareInfoDto toDto(SormasToSormasShareInfo source) {
 		if (source == null) {
 			return null;

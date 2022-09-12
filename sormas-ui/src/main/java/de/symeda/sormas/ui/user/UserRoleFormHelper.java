@@ -62,12 +62,16 @@ public class UserRoleFormHelper {
 			.stream()
 			.sorted(Comparator.comparing(UserRoleDto::getCaption))
 			.collect(Collectors.toList());
-		defaultUserRoles.forEach(r -> r.setCaption(r.getCaption() + " (" + I18nProperties.getCaption(Captions.captionDefault) + ")"));
+		defaultUserRoles.forEach(r -> r.setCaption(r.getCaption() + defaultCaptionExtension()));
 
 		ArrayList<UserRoleDto> templateItems = new ArrayList<>(existingUserRoles);
 		templateItems.addAll(defaultUserRoles);
 
 		FieldHelper.updateItems(templateRoleCombo, templateItems);
 		templateItems.forEach(t -> templateRoleCombo.setItemCaption(t, t.getCaption()));
+	}
+
+	private static String defaultCaptionExtension() {
+		return " (" + I18nProperties.getCaption(Captions.captionDefault) + ")";
 	}
 }

@@ -39,6 +39,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -173,7 +174,8 @@ public class ActionListEntry extends HorizontalLayout {
 			priorityLabel.addStyleName(statusStyle);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			VerticalLayout documentLayout = new VerticalLayout();
 			documentLayout.setMargin(false);
 			documentLayout.setSpacing(false);
@@ -181,7 +183,6 @@ public class ActionListEntry extends HorizontalLayout {
 			setExpandRatio(documentLayout, 1);
 			documentLayout.setMargin(new MarginInfo(true, true, false, false));
 
-			// TODO: user rights?
 			DocumentListComponent documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.ACTION, action.toReference(), UserRight.EVENT_EDIT, false);
 			documentLayout.addComponent(new SideComponentLayout(documentList));

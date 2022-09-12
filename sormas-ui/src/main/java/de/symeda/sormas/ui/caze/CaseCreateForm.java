@@ -667,7 +667,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		PersonReferenceDto casePersonReference = caseDataDto.getPerson();
 		String personUuid = casePersonReference == null ? null : casePersonReference.getUuid();
-		PersonDto personByUuid = personUuid == null ? null : FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
+		PersonDto personByUuid = personUuid == null ? null : FacadeProvider.getPersonFacade().getByUuid(personUuid);
 		personCreateForm.setPerson(personByUuid);
 	}
 

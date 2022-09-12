@@ -123,7 +123,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		person.getAddress().setPostalCode("test postal code");
 		person.getAddress().setPostalCode("test postal code");
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 
 		StreamResource exportStreamResource =
 			CaseDownloadUtil.createCaseExportResource(new CaseCriteria(), Collections::emptySet, CaseExportType.CASE_SURVEILLANCE, null);
@@ -209,7 +209,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertThat(importedCase.getSymptoms().getTremor(), is(SymptomState.YES));
 		assertThat(importedCase.getSymptoms().getVomiting(), is(SymptomState.YES));
 
-		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedCase.getPerson().getUuid());
+		PersonDto importedPerson = getPersonFacade().getByUuid(importedCase.getPerson().getUuid());
 
 		assertThat(importedPerson.getFirstName(), is("Import John"));
 		assertThat(importedPerson.getLastName(), is("Import Doe"));
@@ -278,7 +278,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		person.getAddress().setPostalCode("test postal code");
 		person.getAddress().setPostalCode("test postal code");
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 
 		StreamResource exportStreamResource = ContactDownloadUtil.createContactExportResource(new ContactCriteria(), Collections::emptySet, null);
 
@@ -350,7 +350,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertThat(importedContact.isQuarantineExtended(), is(true));
 		assertThat(importedContact.getFollowUpStatus(), is(FollowUpStatus.FOLLOW_UP));
 
-		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedContact.getPerson().getUuid());
+		PersonDto importedPerson = getPersonFacade().getByUuid(importedContact.getPerson().getUuid());
 
 		assertThat(importedPerson.getFirstName(), is("Import John"));
 		assertThat(importedPerson.getLastName(), is("Import Doe"));
