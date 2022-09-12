@@ -85,6 +85,7 @@ public class EditEventPage {
   public static final By NAVIGATE_TO_EVENT_GROUP_BUTTON = By.id("tab-events-data");
   public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON =
       By.id("tab-events-eventparticipants");
+  public static final By NAVIGATE_TO_EVENT_DATA_BUTTON = By.id("tab-events-data");
   public static final By EVENT_PARTICIPANT_HEADER =
       By.xpath(
           "//div[@class='v-label v-widget h2 v-label-h2 primary v-label-primary vspace-none v-label-vspace-none vspace-top-none v-label-vspace-top-none caption-truncated v-label-caption-truncated v-label-undef-w']");
@@ -181,6 +182,8 @@ public class EditEventPage {
   public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
   public static final By EYE_ICON =
       By.cssSelector("[class*='v-caption-on-top']>[class*='v-popupview']");
+  public static final By EVENT_PARTICIPANT_STATUS =
+      By.xpath("//*[@id='relevanceStatusFilter']/div");
 
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
