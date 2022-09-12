@@ -268,11 +268,11 @@ public class CreateNewContactSteps implements En {
           fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
           selectMultiDayContact();
           fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.ENGLISH);
-          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           fillCaseOrEventInformation(contact.getCaseOrEventInformation());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           selectTypeOfContact(contact.getTypeOfContact());
           //          fillAdditionalInformationOnTheTypeOfContact(
           //              contact.getAdditionalInformationOnContactType());
