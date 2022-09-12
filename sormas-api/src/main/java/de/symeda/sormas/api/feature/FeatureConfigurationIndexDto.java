@@ -10,10 +10,10 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.i18n.Validations;
 
-public class FeatureConfigurationIndexDto implements Auditable, Serializable {
+public class FeatureConfigurationIndexDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -8033830301352311580L;
 

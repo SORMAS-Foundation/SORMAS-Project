@@ -43,7 +43,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
  *              especially for fields that are not needed for all diseases
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class EntityDto implements Serializable, Cloneable, Auditable {
+public abstract class EntityDto implements Serializable, Cloneable, Auditable, HasUuid {
 
 	private static final long serialVersionUID = -1L;
 
