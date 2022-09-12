@@ -408,11 +408,6 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 		field.dateFormat = dateFormat;
 	}
 
-//	@InverseBindingAdapter(attribute = "simpleDate", event = "valueAttrChanged")
-//	public static Date getValue(ControlDateField view) {
-//		return view.getFieldValue();
-//	}
-
 	public boolean isSimpleDate() {
 		return simpleDate;
 	}
