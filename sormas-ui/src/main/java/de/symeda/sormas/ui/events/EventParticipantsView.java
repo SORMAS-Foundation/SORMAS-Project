@@ -107,7 +107,6 @@ public class EventParticipantsView extends AbstractEventView {
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
-		viewConfiguration.setInEagerMode(false);
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -198,7 +197,7 @@ public class EventParticipantsView extends AbstractEventView {
 			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantCriteria.class);
 			navigateTo(null);
 		});
-		filterForm.addApplyHandler(e -> navigateTo(criteria));
+		filterForm.addApplyHandler(e -> grid.reload());
 
 		topLayout.addComponent(filterForm);
 

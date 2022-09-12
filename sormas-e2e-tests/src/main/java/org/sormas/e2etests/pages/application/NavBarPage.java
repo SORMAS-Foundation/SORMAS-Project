@@ -46,4 +46,5 @@ public class NavBarPage {
       By.cssSelector(".popupContent #Best\u00E4tigen");
   public static final By MSERS_BUTTON = By.cssSelector("div #aggregatereports");
   public static final By LOGOUT_KEYCLOAK_BUTTON = By.cssSelector("[id='actionLogout-2']");
+  public static final By SHARE_REQUESTS_BUTTON = By.cssSelector("[id='shareRequests']");
 }

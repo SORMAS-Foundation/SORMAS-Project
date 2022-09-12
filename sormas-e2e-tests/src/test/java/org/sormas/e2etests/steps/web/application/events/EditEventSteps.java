@@ -19,10 +19,7 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_PERSON_CHECKBOX_DE;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
@@ -78,18 +75,24 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_H
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_INVESTIGATION_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANT_HEADER;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANT_STATUS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EYE_ICON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_CATEGORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_GROUP_ID;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.GPS_LATITUDE_INPUT_EDIT_EVENT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.GPS_LONGITUDE_INPUT_EDIT_EVENT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_NAME_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_UUID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.IMPRESSION_TEST_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LABORATORY_DIAGNOSTIC_EVIDENCE_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LINK_EVENT_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.MAP_CONTAINER;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DATA_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_GROUP_BUTTON;
@@ -164,6 +167,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PASSPORT_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.POPUP_CANCEL_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.POPUP_DISCARD_CHANGES_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEARCH_FOR_PERSON_BUTTON_IN_ADD_PARTICIPANT_POPUP_WINDOW;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SELECT_FIRST_PERSON_IN_SEARCHED_LIST_FROM_ADD_PARTICIPANT;
@@ -669,8 +673,7 @@ public class EditEventSteps implements En {
                 CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT));
     And(
         "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Event Participant directory for DE",
-        () ->
-            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
+        () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX));
     When(
         "I add only person data for event participant creation for DE with built person shared for all entities",
         () -> {
@@ -1012,6 +1015,12 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON);
         });
     When(
+        "I navigate to EVENT DATA from edit event page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NAVIGATE_TO_EVENT_DATA_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NAVIGATE_TO_EVENT_DATA_BUTTON);
+        });
+    When(
         "I check that number of added Vaccinations is {int} on Edit Event Participant Page",
         (Integer expected) ->
             assertHelpers.assertWithPoll20Second(
@@ -1041,7 +1050,7 @@ public class EditEventSteps implements En {
         "I click to create new person from the Event Participant Import popup if Pick or create popup appears",
         () -> {
           if (webDriverHelpers.isElementVisibleWithTimeout(COMMIT_BUTTON, 10)) {
-            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX_DE);
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
           }
         });
@@ -1402,6 +1411,13 @@ public class EditEventSteps implements En {
           if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
             webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
           }
+        });
+
+    Then(
+        "^I click the Cancel Action button from the Unsaved Changes pop-up located in the Event Participant Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_CANCEL_ACTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_CANCEL_ACTION_BUTTON);
         });
 
     When(
@@ -1787,11 +1803,105 @@ public class EditEventSteps implements En {
           fillStartDataDE(eventStartDate);
         });
 
+    Then(
+        "^I Verify The Eye Icon opening the Map is ([^\"]*) in the Edit Event Page",
+        (String elementStatus) -> {
+          switch (elementStatus) {
+            case "disabled":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+              softly.assertFalse(
+                  webDriverHelpers.isElementEnabledAtAttributeLevel(EYE_ICON),
+                  "Eye Icon is not disabled in the Edit Event Page");
+              softly.assertAll();
+              break;
+            case "enabled":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+              softly.assertTrue(
+                  webDriverHelpers.isElementEnabledAtAttributeLevel(EYE_ICON),
+                  "Eye Icon is not Enabled in the Edit Event Page");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    And(
+        "^I Add the GPS Latitude and Longitude Values in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LATITUDE_INPUT_EDIT_EVENT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GPS_LONGITUDE_INPUT_EDIT_EVENT);
+          webDriverHelpers.fillInWebElement(
+              GPS_LATITUDE_INPUT_EDIT_EVENT,
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
+          webDriverHelpers.fillInWebElement(
+              GPS_LONGITUDE_INPUT_EDIT_EVENT,
+              String.valueOf(faker.number().randomDouble(7, 10, 89)));
+          webDriverHelpers.submitInWebElement(GPS_LATITUDE_INPUT_EDIT_EVENT);
+        });
+
+    And(
+        "^I click on the The Eye Icon located in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+          webDriverHelpers.clickOnWebElementBySelector(EYE_ICON);
+        });
+
+    Then(
+        "^I verify that the Map Container is now Visible in the Edit Event Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EYE_ICON);
+          softly.assertTrue(
+              webDriverHelpers.isElementEnabled(MAP_CONTAINER),
+              "Map Container is not displayed/enabled in edit Event Page");
+          softly.assertAll();
+        });
+
     When(
         "I click on Create in Case ID row in event participant list",
         () ->
             webDriverHelpers.clickOnWebElementBySelector(
                 CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON));
+
+    And(
+        "I check event participant filter dropdown on event participant page when event is active",
+        () -> {
+          Assert.assertEquals(
+              webDriverHelpers.getValueFromCombobox(EVENT_PARTICIPANT_STATUS),
+              "Active event participants",
+              "Default option is not 'All event participants'");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "All event participants"),
+              "There is no 'All event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Active event participants"),
+              "There is no 'Active event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Archived event participants"),
+              "There is no 'Archived event participants' option in drop list.");
+        });
+
+    And(
+        "I check event participant filter dropdown on event participant page when event is archived",
+        () -> {
+          Assert.assertEquals(
+              webDriverHelpers.getValueFromCombobox(EVENT_PARTICIPANT_STATUS),
+              "All event participants",
+              "Default option is not 'All event participants'");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "All event participants"),
+              "There is no 'All event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Active event participants"),
+              "There is no 'Active event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Archived event participants"),
+              "There is no 'Archived event participants' option in drop list.");
+        });
   }
 
   private String collectEventParticipantUuid() {

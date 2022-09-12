@@ -56,9 +56,9 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -613,7 +613,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		cu.set(root.get(EventParticipant.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
 		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
-		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON), personId), cb.isNotNull(eventSq.getSelection())));
+		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON).get(Person.ID), personId), cb.isNotNull(eventSq.getSelection())));
 
 		em.createQuery(cu).executeUpdate();
 	}

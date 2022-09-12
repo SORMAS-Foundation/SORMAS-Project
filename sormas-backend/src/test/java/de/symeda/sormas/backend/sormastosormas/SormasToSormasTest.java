@@ -59,9 +59,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -74,8 +74,8 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class SormasToSormasTest extends AbstractBeanTest {

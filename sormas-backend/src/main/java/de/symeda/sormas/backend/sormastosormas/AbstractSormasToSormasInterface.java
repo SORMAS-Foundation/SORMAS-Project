@@ -66,9 +66,9 @@ import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
@@ -107,15 +107,15 @@ import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.ShareRequestPreviews;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.ShareRequestPreviews;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequest;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -255,7 +255,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		if (options.isHandOverOwnership()) {
 			options.setPseudonymizeData(false);
 
-			if (SormasToSormasCaseDto[].class.isAssignableFrom(getShareDataClass())) {
+			if (SormasToSormasCaseDto[].class.isAssignableFrom(getShareDataClass())
+				|| SormasToSormasContactDto[].class.isAssignableFrom(getShareDataClass())) {
 				options.setWithSamples(true);
 				options.setWithImmunizations(true);
 			}
@@ -272,7 +273,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_PROCESS)
 	public void acceptShareRequest(String requestUuid) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(requestUuid);
 
@@ -437,7 +438,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	 * @return list of share trees (shares and shares of shares)
 	 */
 	@Override
-	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@PermitAll
 	public List<SormasToSormasShareTree> getAllShares(String uuid) {
 		return getShareTrees(new ShareTreeCriteria(uuid), true);
 	}

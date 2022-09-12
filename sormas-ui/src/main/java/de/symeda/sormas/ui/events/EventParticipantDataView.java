@@ -160,7 +160,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
-		if (sormasToSormasEnabled || eventParticipant.getSormasToSormasOriginInfo() != null) {
+		if (sormasToSormasEnabled || eventParticipant.getSormasToSormasOriginInfo() != null || eventParticipant.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);

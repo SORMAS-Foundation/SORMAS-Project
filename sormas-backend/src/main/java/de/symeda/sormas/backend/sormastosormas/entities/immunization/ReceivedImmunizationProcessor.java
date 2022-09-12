@@ -25,7 +25,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;

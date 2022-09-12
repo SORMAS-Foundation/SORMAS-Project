@@ -103,11 +103,11 @@ Feature: Create travel entries
     When I fill the required fields in a new travel entry form without personal data
     Then I click on the person search button in create new travel entry form
     And I search for the last created person by First Name and Last Name in popup on Select Person window
-    And I open the first found result in the popup of Select Person window for DE version
+    And I open the first found result in the popup of Select Person window
     And I click on the clear button in new case form
     And I click on the person search button in new case form
     And I search for the last created person by First Name and Last Name in popup on Select Person window
-    And I open the first found result in the popup of Select Person window for DE version
+    And I open the first found result in the popup of Select Person window
     And I click on Save button from the new travel entry form
     And I collect travel UUID from travel entry
     And I check the created data is correctly displayed on Edit travel entry page for DE version

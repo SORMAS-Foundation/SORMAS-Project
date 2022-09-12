@@ -72,4 +72,9 @@ public class TaskManagementPage {
     return By.xpath(
         String.format("//span[@class='v-checkbox v-widget']/label[contains(text(), '%s')]", text));
   }
+
+  public static By getCustomExportByID(String id) {
+    return By.xpath(
+        String.format("//div[@class='popupContent']//div[contains(@id, '%s-download')]", id));
+  }
 }

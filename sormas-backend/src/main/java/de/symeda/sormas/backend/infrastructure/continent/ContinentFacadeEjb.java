@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.infrastructure.continent.ContinentIndexDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
@@ -55,8 +57,10 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ContinentFacade")
+@RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class ContinentFacadeEjb
 	extends AbstractInfrastructureFacadeEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
 	implements ContinentFacade {
@@ -89,6 +93,7 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<ContinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
 		return service.getByDefaultName(name, includeArchivedEntities).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
@@ -99,11 +104,13 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public ContinentReferenceDto getBySubcontinent(SubcontinentReferenceDto subcontinentReferenceDto) {
 		return toReferenceDto(subcontinentService.getByUuid(subcontinentReferenceDto.getUuid()).getContinent());
 	}
 
 	@Override
+	@PermitAll
 	public ContinentReferenceDto getByCountry(CountryReferenceDto countryReferenceDto) {
 		final Country country = countryService.getByUuid(countryReferenceDto.getUuid());
 		final Subcontinent subcontinent = country.getSubcontinent();
@@ -156,6 +163,7 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<ContinentReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(Continent.DEFAULT_NAME, true)
 			.stream()
@@ -192,7 +200,7 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	public ContinentReferenceDto toRefDto(Continent continent) {
+	protected ContinentReferenceDto toRefDto(Continent continent) {
 		return toReferenceDto(continent);
 	}
 

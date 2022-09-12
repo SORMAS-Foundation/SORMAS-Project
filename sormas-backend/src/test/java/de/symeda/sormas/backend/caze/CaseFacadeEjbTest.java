@@ -506,7 +506,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 
 		cazePerson.setPhone("40742140797");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 	}
@@ -823,7 +823,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = createCase(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
 		exposure.getLocation().setDetails("Ghana");
@@ -837,7 +837,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createTreatment(caze);
 		creator.createClinicalVisit(caze);
 
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_MANAGEMENT, 0, 100, null, Language.EN);
@@ -858,7 +858,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = createCase(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
@@ -896,7 +896,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = createCase(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
 		exposure.getLocation().setDetails("Ghana");
@@ -975,7 +975,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		final String primaryPhone = "0000444888";
 		final String primaryEmail = "primary@email.com";
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 		cazePerson.setPhone(primaryPhone);
 		cazePerson.setEmailAddress(primaryEmail);
 
@@ -1001,7 +1001,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				PersonContactDetailDto
 					.build(cazePerson.toReference(), false, PersonContactDetailType.OTHER, null, "SkypeID", "personSkype", "", false, "", ""));
 
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
@@ -1067,7 +1067,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setRegion(rdcf.region);
 		caze.setDistrict(rdcf.district);
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
 		caze = getCaseFacade().save(caze);
@@ -1098,8 +1098,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			"code456",
 			"2");
 
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
-		getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
+		getPersonFacade().save(cazePerson);
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
@@ -1140,7 +1140,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			p.getAddress().setLatLonAccuracy(3F);
 		});
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1272,7 +1272,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = createCase(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		SampleDto sample1 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
@@ -1384,7 +1384,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// case deceased -> person should be set to dead, causeofdeath(disease) filled in
 		firstCase.setOutcome(CaseOutcome.DECEASED);
 		firstCase = getCaseFacade().save(firstCase);
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 
 		assertNull(firstCase.getOutcomeDate());
 		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
@@ -1394,14 +1394,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// update just the outcomeDate -> person should also get the deathdate set
 		firstCase.setOutcomeDate(today);
 		firstCase = getCaseFacade().save(firstCase);
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 
 		assertTrue(DateHelper.isSameDay(firstCase.getOutcomeDate(), cazePerson.getDeathDate()));
 
 		// case has no outcome again -> person should be alive
 		firstCase.setOutcome(CaseOutcome.NO_OUTCOME);
 		firstCase = getCaseFacade().save(firstCase);
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 		assertNull(firstCase.getOutcomeDate());
 		assertEquals(PresentCondition.ALIVE, cazePerson.getPresentCondition());
 		assertNull(cazePerson.getDeathDate());
@@ -1434,7 +1434,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		thirdCase = getCaseFacade().save(thirdCase);
 
 		// the newest case is set to deceased -> person should be dead
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
 		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
@@ -1447,7 +1447,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// person alive again -> deceased case has to be set to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().save(cazePerson);
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
 		thirdCase = getCaseFacade().getCaseDataByUuid(thirdCase.getUuid());
@@ -1467,16 +1467,16 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// Set 2nd Case to deceased again
 		secondCase.setOutcome(CaseOutcome.DECEASED);
 		secondCase = getCaseFacade().save(secondCase);
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 
 		// manually set the persons deathdate to 32 days in the past
 		cazePerson.setDeathDate(DateHelper.subtractDays(secondCase.getReportDate(), 32));
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().save(cazePerson);
 
 		// Change Case to RECOVERD -> person should not change, because deathdate is over 30 days away from case reportdate
 		secondCase.setOutcome(CaseOutcome.RECOVERED);
 		secondCase = getCaseFacade().save(secondCase);
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 
 		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
 
@@ -1485,7 +1485,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setDeathDate(today);
 		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
 		cazePerson.setCauseOfDeathDisease(secondCase.getDisease());
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
 
 		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
@@ -1520,7 +1520,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setDeathDate(new Date());
 		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
 		cazePerson.setCauseOfDeathDisease(firstCase.getDisease());
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		// this should throw an exception
 		exception.expect(OutdatedEntityException.class);
@@ -1672,7 +1672,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Thread.sleep(10L);
 
 		cazePerson.setBurialDate(new Date());
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
@@ -1696,11 +1696,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
 		Thread.sleep(10L);
 
-		PersonDto cazePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+		PersonDto cazePerson = getPersonFacade().getByUuid(caze.getPerson().getUuid());
 		cazePerson.getAddress().setStreet("new Street");
 		cazePerson.getAddress().setHouseNumber("new Number");
 		cazePerson.getAddress().setAdditionalInformation("new Information");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().save(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
@@ -1794,7 +1794,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
 		otherPerson.setBirthWeight(2);
-		getPersonFacade().savePerson(otherPerson);
+		getPersonFacade().save(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF("Reg2", "Dis2", "Comm2", "Fac2", "Poe2");
 		CaseDataDto otherCase = creator.createCase(
@@ -1893,7 +1893,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// Check 'lead has no value, other has'
 		assertEquals(otherCase.getCaseIdIsm(), mergedCase.getCaseIdIsm());
 
-		PersonDto mergedPerson = getPersonFacade().getPersonByUuid(mergedCase.getPerson().getUuid());
+		PersonDto mergedPerson = getPersonFacade().getByUuid(mergedCase.getPerson().getUuid());
 
 		// Check no values
 		assertNull(mergedPerson.getBirthdateDD());
@@ -2142,7 +2142,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto userReferenceDto = new UserReferenceDto(user.getUuid());
 		PersonDto person = creator.createPerson("Max", "Smith");
 		person.setBirthWeight(2);
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 		PersonReferenceDto personReferenceDto = new PersonReferenceDto(person.getUuid());
 		RDCF rdcf = creator.createRDCF();
 		CaseDataDto aCase = creator.createCase(

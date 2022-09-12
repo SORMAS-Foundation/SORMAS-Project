@@ -277,6 +277,10 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 					}
 					i++;
 				}
+			} else {
+				if (!diseasesWithReports.get(disease).contains(null)) {
+					editForms.add(new AggregateReportEditForm(disease, null, true, false));
+				}
 			}
 		}
 
