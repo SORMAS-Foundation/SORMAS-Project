@@ -102,6 +102,8 @@
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
 
+			<!-- Temporary solution for org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: de.symeda.sormas.backend.person.Person.addresses, could not initialize proxy - no Session -->
+			<!-- TODO Should be removed when  replacing the testing framework: https://github.com/hzi-braunschweig/SORMAS-Project/issues/10074 -->
 			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
 			<!-- 			
