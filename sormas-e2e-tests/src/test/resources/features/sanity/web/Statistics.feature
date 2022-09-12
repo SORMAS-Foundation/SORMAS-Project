@@ -29,3 +29,12 @@ Feature: Statistics tab tests
     And I select Options Data Displayed Case Incidence from the Statistics Page
     Then I Verify the presence of Incidence Divisor Input from the Statistics Page
     Then I Verify the presence of the Generate Button from the Statistics Page
+
+  @#7469_1 @env_main
+  Scenario: Validate Statistics directory database export tab layout
+    Given I log in as a Admin User
+    And I click on the Statistics button from navbar
+    And I click on the Database Export tab from Statistics directory
+    And I click on the Select All Button in Database Export tab of Statistics Page
+    Then I verify that All Checkboxes are Selected in Database Export tab of Statistics Page
+    And I click on the Deselect all Button in Database Export tab of Statistics Page

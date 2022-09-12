@@ -472,6 +472,15 @@ public class WebDriverHelpers {
     return true;
   }
 
+  public boolean isElementChecked(By elementLocator) {
+    scrollToElement(elementLocator);
+    boolean isChecked = getAttributeFromWebElement(elementLocator, "checked").equals("true");
+    if (isChecked) {
+      return true;
+    }
+    return false;
+  }
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info(PID + "Clicking on element: {}", byObject);
