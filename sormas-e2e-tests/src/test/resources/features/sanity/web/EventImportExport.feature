@@ -58,7 +58,7 @@ Given I log in as a Admin User
     Then I click to create new person from the Event Participant Import popup if Pick or create popup appears
     And I check that an import success notification appears in the Import Event Participant popup for DE
     Then I close Import Event Participant form
-    And I click on the first row from event participant
+    And I click on the first row from event participant after importing event participant
     And I check that number of added Vaccinations is 5 on Edit Event Participant Page
     And I click to edit 1 vaccination on Edit Event Participant page
     Then I check that displayed vaccination date is equal to "08.02.2022"
