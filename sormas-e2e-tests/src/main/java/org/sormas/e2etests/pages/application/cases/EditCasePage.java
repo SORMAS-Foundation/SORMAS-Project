@@ -362,5 +362,9 @@ public class EditCasePage {
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
   public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
       By.xpath(
-          "//div[@class='popupContent']//*[text()='L\u00F6schen best\u00E4tigen']");
+          "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");
+  public static final By REASON_FOR_DELETION_DETAILS_TEXTAREA =
+      By.cssSelector(".popupContent textarea");
+  public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
+      By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
 }

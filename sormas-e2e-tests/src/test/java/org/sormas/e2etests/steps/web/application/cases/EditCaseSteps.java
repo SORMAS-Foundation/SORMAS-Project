@@ -213,7 +213,6 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
-import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -2503,8 +2502,24 @@ public class EditCaseSteps implements En {
         "^I choose the reason of deletion in popup for Vaccination for DE version$",
         () -> {
           webDriverHelpers.selectFromCombobox(
-              DELETE_VACCINATION_REASON_POPUP_DE_VERSION, "Entität ohne Rechtsgrund angelegt");
+              DELETE_VACCINATION_REASON_POPUP_DE_VERSION, "Anderer Grund");
+          webDriverHelpers.fillInWebElement(REASON_FOR_DELETION_DETAILS_TEXTAREA, "Other reason");
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+        });
+
+    And(
+        "^I choose \"([^\"]*)\" in Vaccination Status update popup for DE version$",
+        (String option) -> {
+          webDriverHelpers.isElementVisibleWithTimeout(VACCINATION_STATUS_UPDATE_POPUP_HEADER, 5);
+          switch (option) {
+            case "JA":
+              webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+              break;
+            case "NEIN":
+              webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+              break;
+          }
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
         });
   }
 
