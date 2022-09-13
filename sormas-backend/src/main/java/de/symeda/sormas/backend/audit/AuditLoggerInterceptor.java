@@ -26,6 +26,7 @@ import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.i18n.I18nFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
@@ -33,6 +34,7 @@ import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 public class AuditLoggerInterceptor {
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	@EJB
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
@@ -40,14 +42,15 @@ public class AuditLoggerInterceptor {
 	/**
 	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
 	 */
-	private final static Map<Class<?>, Boolean> shouldIgnoreClassCache = new HashMap<>();
+	private static final Map<Class<?>, Boolean> shouldIgnoreClassCache = new HashMap<>();
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
 	 */
-	private final static Set<Class<?>> ignoreAuditClasses = Collections.unmodifiableSet(
+	private static final Set<Class<?>> ignoreAuditClasses = Collections.unmodifiableSet(
 		new HashSet<>(
 			Arrays.asList(
+				FeatureConfigurationFacadeEjb.class,
 				ConfigFacadeEjb.class,
 				CurrentUserService.class,
 				AuditContextProducer.class,
@@ -140,13 +143,42 @@ public class AuditLoggerInterceptor {
 		}
 		if (o instanceof List) {
 			List list = (List) o;
+
 			if (!list.isEmpty() && list.get(0) instanceof Auditable) {
 				List<Auditable> auditableList = list;
 				String str = auditableList.stream().map(Auditable::getAuditRepresentation).collect(Collectors.joining(","));
-				return String.format("List(%s)", str);
+				return String.format("[%s]", str);
+			} else {
+				return list.toString();
 			}
 		}
-		logger.warn("Audit logging for object of type {} is not implemented. Please file an issue.", o.getClass());
+
+		if (o instanceof Set) {
+			Set set = (Set) o;
+			if (!set.isEmpty() && set.iterator().next() instanceof Auditable) {
+				Set<Auditable> auditableSet = set;
+				String str = auditableSet.stream().map(Auditable::getAuditRepresentation).collect(Collectors.joining(","));
+				return String.format("[%s]", str);
+			} else {
+				return set.toString();
+			}
+		}
+
+		if (o instanceof Map) {
+			Map map = (Map) o;
+			if (!map.isEmpty() && map.values().iterator().next() instanceof Auditable) {
+				Map<Auditable, Auditable> auditableMap = map;
+				String str = auditableMap.entrySet()
+					.stream()
+					.map(e -> String.format("%s=%s", e.getKey().getAuditRepresentation(), e.getValue().getAuditRepresentation()))
+					.collect(Collectors.joining(","));
+				return String.format("{%s}", str);
+			} else {
+				return map.toString();
+			}
+		}
+
+		logger.debug("Audit logging for object of type {} is not implemented. Please file an issue.", o.getClass());
 		return o.toString();
 	}
 }
