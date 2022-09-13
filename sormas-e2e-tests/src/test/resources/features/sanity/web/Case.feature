@@ -1799,3 +1799,17 @@ Feature: Case end to end tests
       And I check that number of displayed cases results is 1
       And I apply "All cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Case Person page
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I navigate to case person tab
+    Then I check that Citizenship is not visible in Contact Information section for DE version
+    And I check that Country of birth is not visible in Contact Information section for DE version

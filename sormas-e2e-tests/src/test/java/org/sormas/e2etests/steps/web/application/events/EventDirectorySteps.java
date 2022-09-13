@@ -37,6 +37,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_M
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_ARCHIVED_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_AFTER_IMPORT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_FROM_LIST;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
@@ -847,6 +848,10 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
         });
+
+    When(
+        "I click on the first row from event participant after importing event participant",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT_AFTER_IMPORT));
 
     When(
         "I click on the first result in table from event participant",
