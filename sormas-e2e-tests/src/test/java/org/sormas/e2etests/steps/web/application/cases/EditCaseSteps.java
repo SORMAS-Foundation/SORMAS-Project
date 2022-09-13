@@ -2491,11 +2491,16 @@ public class EditCaseSteps implements En {
 
     And(
         "I check that {string} Pre-existing condition is visible on page",
-        (String preExistingCondition) -> {
-          Assert.assertTrue(
-              webDriverHelpers.isElementEnabled(
-                  getPreExistingConditionCombobox_DE(preExistingCondition)));
-        });
+        (String preExistingCondition) ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementEnabled(
+                    getPreExistingConditionCombobox_DE(preExistingCondition))));
+    And(
+        "I check that {string} Pre-existing condition have {string} selected",
+        (String preExistingCondition, String value) ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementEnabled(
+                    getPreExistingConditionComboboxWithValue_DE(preExistingCondition, value))));
 
     Then(
         "I check that Clinical Assessments heading is visible in DE",

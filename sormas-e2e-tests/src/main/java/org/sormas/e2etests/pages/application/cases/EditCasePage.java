@@ -369,4 +369,11 @@ public class EditCasePage {
             "//div[@id='%s']//input[@value='on']/following-sibling::label[contains(text(),'Ja') or contains(text(),'Nein') or contains(text(),'Unbekannt')]",
             id));
   }
+
+  public static By getPreExistingConditionComboboxWithValue_DE(String id, String value) {
+    return By.xpath(
+        String.format(
+            "//div[@id='%s']//input[@value='on' and @checked]/following-sibling::label[contains(text(),'%s')]",
+            id, value));
+  }
 }
