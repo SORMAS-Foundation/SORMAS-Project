@@ -23,12 +23,12 @@ import de.symeda.sormas.api.importexport.ImportLineResultDto;
 @Remote
 public interface EventImportFacade {
 
-	ImportLineResultDto<EventImportEntities> importEventData(
+	ImportLineResultDto<EventImportEntitiesDto> importEventData(
 		String[] values,
 		String[] entityClasses,
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries);
 
-	ImportLineResultDto<EventImportEntities> saveImportedEntities(@Valid EventImportEntities entities);
+	ImportLineResultDto<EventImportEntitiesDto> saveImportedEntities(@Valid EventImportEntitiesDto entities);
 }

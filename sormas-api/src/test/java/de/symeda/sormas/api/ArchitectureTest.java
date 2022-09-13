@@ -1,35 +1,34 @@
 package de.symeda.sormas.api;
 
-import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.JavaMethod;
-import com.tngtech.archunit.lang.ArchCondition;
-import com.tngtech.archunit.lang.ConditionEvents;
-import com.tngtech.archunit.lang.SimpleConditionEvent;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.tngtech.archunit.junit.AnalyzeClasses;
-import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.junit.ArchUnitRunner;
-import com.tngtech.archunit.lang.ArchRule;
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
-
-import javax.ejb.Remote;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.name;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static de.symeda.sormas.api.audit.Constants.createPrefix;
 import static de.symeda.sormas.api.audit.Constants.deletePrefix;
 import static de.symeda.sormas.api.audit.Constants.executePrefix;
 import static de.symeda.sormas.api.audit.Constants.readPrefix;
 import static de.symeda.sormas.api.audit.Constants.updatePrefix;
-import static java.lang.reflect.Modifier.PUBLIC;
 import static java.util.stream.Collectors.toList;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.ejb.Remote;
+
+import org.junit.runner.RunWith;
+
+import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.junit.ArchUnitRunner;
+import com.tngtech.archunit.lang.ArchCondition;
+import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
+
+import de.symeda.sormas.api.audit.Auditable;
 
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = "de.symeda.sormas.api")
@@ -40,6 +39,7 @@ public class ArchitectureTest {
 		ArchRuleDefinition.theClass(FacadeProvider.class).should().onlyBeAccessed().byClassesThat().belongToAnyOf(FacadeProvider.class);
 
 	private static final Set<String> allowedPrefix = new HashSet<String>() {
+
 		{
 			addAll(createPrefix);
 			addAll(readPrefix);
@@ -69,15 +69,22 @@ public class ArchitectureTest {
 					.collect(toList());
 
 				boolean satisfied = wrongNaming.isEmpty();
+				String message;
 				if (satisfied) {
-					String message = "All methods in " + javaClass.getName() + " are correctly named";
-					events.add(new SimpleConditionEvent(javaClass, satisfied, message));
+					message = "All methods in " + javaClass.getName() + " are correctly named";
 				} else {
-					String message = String.format("%s contains the following wrongly named methods: %s", javaClass.getName(), wrongNaming);
-					events.add(new SimpleConditionEvent(javaClass, satisfied, message));
+					message = String.format("%s contains the following wrongly named methods: %s", javaClass.getName(), wrongNaming);
 				}
+				events.add(new SimpleConditionEvent(javaClass, satisfied, message));
 
 			}
 		});
+
+
+	@ArchTest
+	public static final ArchRule testDtosAreAuditable = classes().that().resideInAPackage("de.symeda.sormas.api.(*)..").and().haveSimpleNameEndingWith("Dto").should().implement(Auditable.class);
+
+	@ArchTest
+	public static final ArchRule testDtosWithUuidFieldMustImplementHasUuid = classes().that().resideInAPackage("de.symeda.sormas.api.(*)..").and().haveSimpleNameEndingWith("Dto").and().containAnyFieldsThat(name("uuid")).should().implement(HasUuid.class);
 
 }

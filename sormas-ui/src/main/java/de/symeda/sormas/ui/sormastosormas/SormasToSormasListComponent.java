@@ -47,7 +47,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
@@ -291,7 +291,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 					&& originInfo != null
 					&& !rootOrigin.getOrganizationId().equals(currentServerOrgId)
 					&& !rootOrigin.getOrganizationId().equals(originInfo.getOrganizationId())) {
-					SormasServerDescriptor serverDescriptor =
+					SormasServerDescriptorDto serverDescriptor =
 						FacadeProvider.getSormasToSormasFacade().getSormasServerDescriptorById(rootOrigin.getOrganizationId());
 
 					SormasToSormasShareListEntryData entryData = new SormasToSormasShareListEntryData();
@@ -442,7 +442,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		infoLayout.setMargin(false);
 		infoLayout.setSpacing(false);
 
-		SormasServerDescriptor serverDescriptor =
+		SormasServerDescriptorDto serverDescriptor =
 			FacadeProvider.getSormasToSormasFacade().getSormasServerDescriptorById(originInfo.getOrganizationId());
 
 		Label senderOrganizationLabel =

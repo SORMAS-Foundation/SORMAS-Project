@@ -3,10 +3,11 @@ package de.symeda.sormas.api.messaging;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class ManualMessageLogDto implements Serializable {
+public class ManualMessageLogDto implements Auditable, Serializable {
 
 	private MessageType messageType;
 	private Date sentDate;
@@ -53,5 +54,14 @@ public class ManualMessageLogDto implements Serializable {
 
 	public void setRecipientPerson(PersonReferenceDto recipientPerson) {
 		this.recipientPerson = recipientPerson;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format(
+			"%s(sendingUser=%s, recipientPerson=%s)",
+			getClass().getSimpleName(),
+			sendingUser.getAuditRepresentation(),
+			recipientPerson.getAuditRepresentation());
 	}
 }

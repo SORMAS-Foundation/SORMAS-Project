@@ -30,7 +30,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.eventimport.EventImportEntities;
+import de.symeda.sormas.api.event.eventimport.EventImportEntitiesDto;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -87,14 +87,14 @@ public class EventImporter extends DataImporter {
 		boolean firstLine)
 		throws IOException, InterruptedException {
 
-		ImportLineResultDto<EventImportEntities> importResult =
+		ImportLineResultDto<EventImportEntitiesDto> importResult =
 			eventImportFacade.importEventData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);
 
 		if (importResult.isError()) {
 			writeImportError(values, importResult.getMessage());
 			return ImportLineResult.ERROR;
 		} else if (importResult.isDuplicate()) {
-			EventImportEntities entities = importResult.getImportEntities();
+			EventImportEntitiesDto entities = importResult.getImportEntities();
 			List<EventParticipantDto> eventParticipants = entities.getEventParticipants();
 
 			ImportSimilarityResultOption resultOption = null;
@@ -139,7 +139,7 @@ public class EventImporter extends DataImporter {
 				}
 			}
 
-			ImportLineResultDto<EventImportEntities> saveResult = eventImportFacade.saveImportedEntities(entities);
+			ImportLineResultDto<EventImportEntitiesDto> saveResult = eventImportFacade.saveImportedEntities(entities);
 
 			if (saveResult.isError()) {
 				writeImportError(values, importResult.getMessage());

@@ -40,7 +40,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.event.eventimport.EventImportEntities;
+import de.symeda.sormas.api.event.eventimport.EventImportEntitiesDto;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -101,7 +101,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 
 	@Override
 	@Transactional
-	public ImportLineResultDto<EventImportEntities> importEventData(
+	public ImportLineResultDto<EventImportEntitiesDto> importEventData(
 		String[] values,
 		String[] entityClasses,
 		String[] entityProperties,
@@ -113,14 +113,14 @@ public class EventImportFacadeEjb implements EventImportFacade {
 			return ImportLineResultDto.errorResult(I18nProperties.getValidationError(Validations.importLineTooLong));
 		}
 
-		final EventImportEntities entities = new EventImportEntities(userService.getCurrentUser().toReference());
-		ImportLineResultDto<EventImportEntities> importResult =
+		final EventImportEntitiesDto entities = new EventImportEntitiesDto(userService.getCurrentUser().toReference());
+		ImportLineResultDto<EventImportEntitiesDto> importResult =
 			buildEntities(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, entities);
 		if (importResult.isError()) {
 			return importResult;
 		}
 
-		ImportLineResultDto<EventImportEntities> validationResult = validateEntities(entities);
+		ImportLineResultDto<EventImportEntitiesDto> validationResult = validateEntities(entities);
 		if (validationResult.isError()) {
 			return validationResult;
 		}
@@ -137,7 +137,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 	}
 
 	@Override
-	public ImportLineResultDto<EventImportEntities> saveImportedEntities(@Valid EventImportEntities entities) {
+	public ImportLineResultDto<EventImportEntitiesDto> saveImportedEntities(@Valid EventImportEntitiesDto entities) {
 
 		EventDto event = entities.getEvent();
 		List<EventParticipantDto> eventParticipants = entities.getEventParticipants();
@@ -165,8 +165,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		}
 	}
 
-	private ImportLineResultDto<EventImportEntities> validateEntities(EventImportEntities entities) {
-		ImportLineResultDto<EventImportEntities> validationResult = importFacade.validateConstraints(entities);
+	private ImportLineResultDto<EventImportEntitiesDto> validateEntities(EventImportEntitiesDto entities) {
+		ImportLineResultDto<EventImportEntitiesDto> validationResult = importFacade.validateConstraints(entities);
 		if (validationResult.isError()) {
 			return validationResult;
 		}
@@ -183,12 +183,12 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		return ImportLineResultDto.successResult();
 	}
 
-	private ImportLineResultDto<EventImportEntities> buildEntities(
+	private ImportLineResultDto<EventImportEntitiesDto> buildEntities(
 		String[] values,
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		EventImportEntities entities) {
+		EventImportEntitiesDto entities) {
 
 		final UserReferenceDto currentUserRef = userService.getCurrentUser().toReference();
 
@@ -198,7 +198,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		final MutableBoolean currentEventParticipantHasEntries = new MutableBoolean(false);
 		final Mutable<String> firstEventParticipantColumnName = new MutableObject<>(null);
 
-		final ImportLineResultDto<EventImportEntities> result =
+		final ImportLineResultDto<EventImportEntitiesDto> result =
 			insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, (cellData) -> {
 				try {
 					// If the first column of a new event participant has been reached, remove the last event
@@ -256,7 +256,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		return result;
 	}
 
-	protected ImportLineResultDto<EventImportEntities> insertRowIntoData(
+	protected ImportLineResultDto<EventImportEntitiesDto> insertRowIntoData(
 		String[] values,
 		String[] entityClasses,
 		String[][] entityPropertyPaths,

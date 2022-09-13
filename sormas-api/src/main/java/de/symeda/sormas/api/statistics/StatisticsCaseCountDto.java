@@ -3,10 +3,11 @@ package de.symeda.sormas.api.statistics;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class StatisticsCaseCountDto implements Serializable {
+public class StatisticsCaseCountDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 8900419282951754875L;
 
@@ -87,5 +88,10 @@ public class StatisticsCaseCountDto implements Serializable {
 		result = prime * result + ((rowKey == null) ? 0 : rowKey.hashCode());
 		result = prime * result + ((columnKey == null) ? 0 : columnKey.hashCode());
 		return result;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return getClass().getSimpleName();
 	}
 }

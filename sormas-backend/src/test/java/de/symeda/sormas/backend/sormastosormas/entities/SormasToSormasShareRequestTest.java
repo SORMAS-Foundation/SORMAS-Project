@@ -40,7 +40,7 @@ import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
@@ -84,7 +84,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
 		Mockito
@@ -191,7 +191,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 			});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setComment("New comment");
 
@@ -237,7 +237,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 			.thenAnswer(invocation -> Response.noContent().build());
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setComment("New comment");
 
@@ -308,7 +308,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 			});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setComment("New comment");
 

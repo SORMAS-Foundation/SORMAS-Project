@@ -24,7 +24,7 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 @Remote
 public interface CaseImportFacade {
 
-	ImportLineResultDto<CaseImportEntities> importCaseData(
+	ImportLineResultDto<CaseImportEntitiesDto> importCaseData(
 		String[] values,
 		String[] entityClasses,
 		String[] entityProperties,
@@ -32,7 +32,7 @@ public interface CaseImportFacade {
 		boolean ignoreEmptyEntries)
 		throws InvalidColumnException;
 
-	ImportLineResultDto<CaseImportEntities> updateCaseWithImportData(
+	ImportLineResultDto<CaseImportEntitiesDto> updateCaseWithImportData(
 		String personUuid,
 		String caseUuid,
 		String[] values,
@@ -41,5 +41,5 @@ public interface CaseImportFacade {
 		boolean skipPersonValidation)
 		throws InvalidColumnException;
 
-	ImportLineResultDto<CaseImportEntities> saveImportedEntities(@Valid CaseImportEntities entities, boolean skipPersonValidation);
+	ImportLineResultDto<CaseImportEntitiesDto> saveImportedEntities(@Valid CaseImportEntitiesDto entities, boolean skipPersonValidation);
 }

@@ -29,7 +29,7 @@ import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntities;
+import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntitiesDto;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.importer.DataImporter;
@@ -66,14 +66,14 @@ public class TravelEntryImporter extends DataImporter {
 		boolean firstLine)
 		throws IOException, InvalidColumnException, InterruptedException {
 
-		ImportLineResultDto<TravelEntryImportEntities> importResult =
+		ImportLineResultDto<TravelEntryImportEntitiesDto> importResult =
 			importFacade.importData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);
 
 		if (importResult.isError()) {
 			writeImportError(values, importResult.getMessage());
 			return ImportLineResult.ERROR;
 		} else if (importResult.isDuplicate()) {
-			TravelEntryImportEntities entities = importResult.getImportEntities();
+			TravelEntryImportEntitiesDto entities = importResult.getImportEntities();
 			PersonDto importPerson = entities.getPerson();
 
 			TravelEntryImportConsumer consumer = new TravelEntryImportConsumer();
@@ -111,7 +111,7 @@ public class TravelEntryImporter extends DataImporter {
 				cancelImport();
 				return ImportLineResult.SKIPPED;
 			} else {
-				ImportLineResultDto<TravelEntryImportEntities> saveResult;
+				ImportLineResultDto<TravelEntryImportEntitiesDto> saveResult;
 				if (resultOption == ImportSimilarityResultOption.PICK && pickedPersonUuid != null) {
 					saveResult = importFacade.importDataWithExistingPerson(pickedPersonUuid, values, entityClasses, entityPropertyPaths);
 				} else {

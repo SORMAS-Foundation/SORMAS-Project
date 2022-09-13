@@ -1,8 +1,10 @@
 package de.symeda.sormas.api.dashboard;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 
-public class DashboardContactStoppedFollowUpDto implements Serializable {
+public class DashboardContactStoppedFollowUpDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -5705128377788207652L;
 
@@ -71,5 +73,10 @@ public class DashboardContactStoppedFollowUpDto implements Serializable {
 
 	public int getContactStatusConvertedPercentage() {
 		return contactStatusConvertedPercentage;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return getClass().getSimpleName();
 	}
 }

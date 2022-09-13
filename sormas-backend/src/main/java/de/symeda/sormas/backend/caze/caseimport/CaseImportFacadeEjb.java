@@ -41,7 +41,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
+import de.symeda.sormas.api.caze.caseimport.CaseImportEntitiesDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -126,7 +126,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 	@Override
 	@Transactional
-	public ImportLineResultDto<CaseImportEntities> importCaseData(
+	public ImportLineResultDto<CaseImportEntitiesDto> importCaseData(
 		String[] values,
 		String[] entityClasses,
 		String[] entityProperties,
@@ -139,14 +139,14 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			return ImportLineResultDto.errorResult(I18nProperties.getValidationError(Validations.importLineTooLong));
 		}
 
-		final CaseImportEntities entities = new CaseImportEntities(userService.getCurrentUser().toReference());
-		ImportLineResultDto<CaseImportEntities> importResult =
+		final CaseImportEntitiesDto entities = new CaseImportEntitiesDto(userService.getCurrentUser().toReference());
+		ImportLineResultDto<CaseImportEntitiesDto> importResult =
 			buildEntities(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, entities);
 		if (importResult.isError()) {
 			return importResult;
 		}
 
-		ImportLineResultDto<CaseImportEntities> validationResult = validateEntities(entities);
+		ImportLineResultDto<CaseImportEntitiesDto> validationResult = validateEntities(entities);
 		if (validationResult.isError()) {
 			return validationResult;
 		}
@@ -157,13 +157,13 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			return ImportLineResultDto.duplicateResult(entities);
 		}
 
-		ImportLineResultDto<CaseImportEntities> result = saveImportedEntities(entities, false);
+		ImportLineResultDto<CaseImportEntitiesDto> result = saveImportedEntities(entities, false);
 
 		return result;
 	}
 
 	@Override
-	public ImportLineResultDto<CaseImportEntities> updateCaseWithImportData(
+	public ImportLineResultDto<CaseImportEntitiesDto> updateCaseWithImportData(
 		String personUuid,
 		String caseUuid,
 		String[] values,
@@ -183,11 +183,11 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		if (caseUuid != null) {
 			caze = caseFacade.getCaseDataByUuid(caseUuid);
 		} else {
-			caze = CaseImportEntities.createCase(person, userService.getCurrentUser().toReference());
+			caze = CaseImportEntitiesDto.createCase(person, userService.getCurrentUser().toReference());
 		}
 
-		CaseImportEntities entities = new CaseImportEntities(person, caze);
-		ImportLineResultDto<CaseImportEntities> importResult = buildEntities(values, entityClasses, entityPropertyPaths, true, entities);
+		CaseImportEntitiesDto entities = new CaseImportEntitiesDto(person, caze);
+		ImportLineResultDto<CaseImportEntitiesDto> importResult = buildEntities(values, entityClasses, entityPropertyPaths, true, entities);
 
 		if (importResult.isError()) {
 			return importResult;
@@ -197,7 +197,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	}
 
 	@Override
-	public ImportLineResultDto<CaseImportEntities> saveImportedEntities(@Valid CaseImportEntities entities, boolean skipPersonValidation) {
+	public ImportLineResultDto<CaseImportEntitiesDto> saveImportedEntities(@Valid CaseImportEntitiesDto entities, boolean skipPersonValidation) {
 
 		CaseDataDto caze = entities.getCaze();
 		PersonDto person = entities.getPerson();
@@ -244,9 +244,9 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		}
 	}
 
-	private ImportLineResultDto<CaseImportEntities> validateEntities(CaseImportEntities entities) {
+	private ImportLineResultDto<CaseImportEntitiesDto> validateEntities(CaseImportEntitiesDto entities) {
 
-		ImportLineResultDto<CaseImportEntities> validationResult = importFacade.validateConstraints(entities);
+		ImportLineResultDto<CaseImportEntitiesDto> validationResult = importFacade.validateConstraints(entities);
 		if (validationResult.isError()) {
 			return validationResult;
 		}
@@ -267,12 +267,12 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		return ImportLineResultDto.successResult();
 	}
 
-	private ImportLineResultDto<CaseImportEntities> buildEntities(
+	private ImportLineResultDto<CaseImportEntitiesDto> buildEntities(
 		String[] values,
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		CaseImportEntities entities) {
+		CaseImportEntitiesDto entities) {
 
 		final UserReferenceDto currentUserRef = userService.getCurrentUser().toReference();
 
@@ -303,7 +303,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
 
-		final ImportLineResultDto<CaseImportEntities> result =
+		final ImportLineResultDto<CaseImportEntitiesDto> result =
 			insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, (cellData) -> {
 				try {
 
@@ -328,7 +328,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		return result;
 	}
 
-	protected ImportLineResultDto<CaseImportEntities> insertRowIntoData(
+	protected ImportLineResultDto<CaseImportEntitiesDto> insertRowIntoData(
 		String[] values,
 		String[] entityClasses,
 		String[][] entityPropertyPaths,

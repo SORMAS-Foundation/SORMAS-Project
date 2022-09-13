@@ -54,7 +54,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -105,7 +105,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 			.createContact(officer, officer, person.toReference(), caze, new Date(), null, null, rdcf, dto -> dto.setResultingCaseUser(officer));
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
 		Mockito
@@ -186,7 +186,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		creator.createAdditionalTest(sample.toReference());
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 		options.setWithSamples(true);
 
@@ -309,7 +309,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 			.createSample(contact.toReference(), officer, rdcf.facility, s -> s.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo()));
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setWithSamples(true);
 		options.setComment("Test comment");
@@ -483,7 +483,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		ContactDto contact = creator.createContact(officer.toReference(), person.toReference(), caze);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 
 		final String uuidCase = DataHelper.createUuid();
 		final String uuidContact = DataHelper.createUuid();

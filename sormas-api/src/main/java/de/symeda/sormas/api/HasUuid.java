@@ -27,6 +27,6 @@ public interface HasUuid extends Auditable {
 	String getUuid();
 
 	default String getAuditRepresentation() {
-		return getUuid();
+		return String.format("%s(uuid=%s)", getClass().getSimpleName(), getUuid());
 	}
 }

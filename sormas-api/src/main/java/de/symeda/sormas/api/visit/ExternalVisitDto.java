@@ -17,6 +17,7 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Required;
@@ -26,7 +27,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
  * The class ExternalVisitDto.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExternalVisitDto implements Serializable, Cloneable {
+public class ExternalVisitDto implements Auditable, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7909093498222091926L;
 
@@ -148,5 +149,10 @@ public class ExternalVisitDto implements Serializable, Cloneable {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format("%s(personUuid=%s, visitDateTime=%s)", getClass().getSimpleName(), personUuid, visitDateTime);
 	}
 }

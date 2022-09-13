@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.campaign.statistics;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 import java.util.Objects;
 
-public class CampaignStatisticsGroupingDto implements Serializable, Cloneable {
+public class CampaignStatisticsGroupingDto implements Auditable, Serializable, Cloneable {
 
 	private String campaign;
 	private String form;
@@ -62,5 +64,18 @@ public class CampaignStatisticsGroupingDto implements Serializable, Cloneable {
 			&& this.region.equals(campaignStatisticsGroupingDto.getRegion())
 			&& this.district.equals(campaignStatisticsGroupingDto.getDistrict())
 			&& this.community.equals(campaignStatisticsGroupingDto.getCommunity());
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format(
+			"%s(campaign=%s, form=%s, area=%s, region=%s, district=%s, community=%s)",
+			getClass().getSimpleName(),
+			campaign,
+			form,
+			area,
+			region,
+			district,
+			community);
 	}
 }

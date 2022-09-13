@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,9 +15,11 @@
 
 package de.symeda.sormas.api.task;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 
-public class TaskJurisdictionFlagsDto implements Serializable {
+public class TaskJurisdictionFlagsDto implements Auditable, Serializable {
 
 	private Boolean isInJurisdiction;
 	private Boolean isCaseInJurisdiction;
@@ -63,5 +65,10 @@ public class TaskJurisdictionFlagsDto implements Serializable {
 
 	public Boolean getTravelEntryInJurisdiction() {
 		return isTravelEntryInJurisdiction;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return getClass().getSimpleName();
 	}
 }

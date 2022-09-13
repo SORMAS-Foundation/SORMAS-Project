@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -48,7 +48,7 @@ public class SormasToSormasDiscoveryService {
 	@Inject
 	private EtcdCentralClient centralClient;
 
-	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
+	public SormasServerDescriptorDto getSormasServerDescriptorById(String id) {
 		if (!sormasToSormasFacadeEjb.isFeatureConfigured()) {
 			LOGGER.error("Tried to invoke getSormasServerDescriptorById() with S2S disabled");
 			return null;
@@ -56,7 +56,7 @@ public class SormasToSormasDiscoveryService {
 
 		try {
 			String key = String.format(configFacadeEjb.getS2SConfig().getKeyPrefixTemplate(), id);
-			SormasServerDescriptor descriptor = centralClient.get(key, SormasServerDescriptor.class);
+			SormasServerDescriptorDto descriptor = centralClient.get(key, SormasServerDescriptorDto.class);
 
 			LOGGER.info("Fetched SormasServerDescriptor for {}.", id);
 			return descriptor;
@@ -68,7 +68,7 @@ public class SormasToSormasDiscoveryService {
 		}
 	}
 
-	public List<SormasServerDescriptor> getAllAvailableServers() {
+	public List<SormasServerDescriptorDto> getAllAvailableServers() {
 		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 		if (sormasToSormasConfig.getId() == null) {
 			return Collections.emptyList();
@@ -76,7 +76,7 @@ public class SormasToSormasDiscoveryService {
 
 		try {
 			final String keyPrefix = String.format(sormasToSormasConfig.getKeyPrefixTemplate(), "");
-			List<SormasServerDescriptor> availableServers = centralClient.getWithPrefix(keyPrefix, SormasServerDescriptor.class)
+			List<SormasServerDescriptorDto> availableServers = centralClient.getWithPrefix(keyPrefix, SormasServerDescriptorDto.class)
 				.stream()
 				.filter(
 					// this ensures that the own key (i.e., /s2s/$instance_id) is removed from the list

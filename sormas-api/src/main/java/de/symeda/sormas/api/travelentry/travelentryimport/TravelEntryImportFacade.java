@@ -23,19 +23,19 @@ import de.symeda.sormas.api.importexport.ImportLineResultDto;
 @Remote
 public interface TravelEntryImportFacade {
 
-	ImportLineResultDto<TravelEntryImportEntities> importData(
+	ImportLineResultDto<TravelEntryImportEntitiesDto> importData(
 		String[] values,
 		String[] entityClasses,
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries);
 
-	ImportLineResultDto<TravelEntryImportEntities> importDataWithExistingPerson(
+	ImportLineResultDto<TravelEntryImportEntitiesDto> importDataWithExistingPerson(
 		String personUuid,
 		String[] values,
 		String[] entityClasses,
 		String[][] entityPropertyPaths);
 
-	ImportLineResultDto<TravelEntryImportEntities> saveImportedEntities(@Valid TravelEntryImportEntities entities);
+	ImportLineResultDto<TravelEntryImportEntitiesDto> saveImportedEntities(@Valid TravelEntryImportEntitiesDto entities);
 
 }

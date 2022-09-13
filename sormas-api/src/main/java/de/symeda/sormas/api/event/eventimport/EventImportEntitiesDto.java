@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,12 +21,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class EventImportEntities implements Serializable {
+public class EventImportEntitiesDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
@@ -37,14 +38,14 @@ public class EventImportEntities implements Serializable {
 	@Valid
 	private final List<EventGroupReferenceDto> eventGroupReferences;
 
-	public EventImportEntities(UserReferenceDto reportingUser) {
+	public EventImportEntitiesDto(UserReferenceDto reportingUser) {
 		event = createEvent(reportingUser);
 
 		eventParticipants = new ArrayList<>();
 		eventGroupReferences = new ArrayList<>();
 	}
 
-	public EventImportEntities(EventDto event) {
+	public EventImportEntitiesDto(EventDto event) {
 		this.event = event;
 
 		eventParticipants = new ArrayList<>();
@@ -68,5 +69,30 @@ public class EventImportEntities implements Serializable {
 
 	public List<EventGroupReferenceDto> getEventGroupReferences() {
 		return eventGroupReferences;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(getClass().getSimpleName());
+
+		sb.append("(event=");
+		sb.append(event.getAuditRepresentation());
+		sb.append(", eventParticipants=[");
+
+		for (EventParticipantDto eventParticipant : eventParticipants) {
+			sb.append(eventParticipant.getAuditRepresentation());
+			sb.append(", ");
+		}
+		sb.append("],");
+
+		sb.append("eventGroupReferences=[");
+		for (EventGroupReferenceDto eventGroupReference : eventGroupReferences) {
+			sb.append(eventGroupReference.getAuditRepresentation());
+			sb.append(", ");
+		}
+		sb.append("])");
+		return sb.toString();
 	}
 }

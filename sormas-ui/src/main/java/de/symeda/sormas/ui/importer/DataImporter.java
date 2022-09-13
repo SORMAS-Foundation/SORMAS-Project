@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.importer;
 
-import de.symeda.sormas.api.importexport.ImportCellData;
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
@@ -48,11 +46,14 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportCellData;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -691,7 +692,7 @@ public abstract class DataImporter {
 		return errorReportFileName;
 	}
 
-	protected <T> ImportLineResultDto<T> validateConstraints(T object) {
+	protected <T extends Auditable> ImportLineResultDto<T> validateConstraints(T object) {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 

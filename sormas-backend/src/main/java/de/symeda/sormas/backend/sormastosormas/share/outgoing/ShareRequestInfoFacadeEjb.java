@@ -38,7 +38,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
@@ -115,8 +115,8 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		List<Order> order = new ArrayList<>();
 		String organizationOrderExpr = sormasToSormasDiscoveryService.getAllAvailableServers()
 			.stream()
-			.sorted(Comparator.comparing(SormasServerDescriptor::getName))
-			.map(SormasServerDescriptor::getId)
+			.sorted(Comparator.comparing(SormasServerDescriptorDto::getName))
+			.map(SormasServerDescriptorDto::getId)
 			.map(i -> "'" + i + "'")
 			.collect(Collectors.joining(","));
 
@@ -156,13 +156,13 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		List<ShareRequestIndexDto> requests = QueryHelper.getResultList(em, cq, offset, size);
 
 		if (!requests.isEmpty()) {
-			Map<String, SormasServerDescriptor> serverDescriptorMap = sormasToSormasDiscoveryService.getAllAvailableServers()
+			Map<String, SormasServerDescriptorDto> serverDescriptorMap = sormasToSormasDiscoveryService.getAllAvailableServers()
 				.stream()
-				.collect(Collectors.toMap(SormasServerDescriptor::getId, Function.identity()));
+				.collect(Collectors.toMap(SormasServerDescriptorDto::getId, Function.identity()));
 
 			requests.forEach(request -> {
 				String organizationId = request.getOrganizationId();
-				SormasServerDescriptor serverDescriptor = serverDescriptorMap.get(organizationId);
+				SormasServerDescriptorDto serverDescriptor = serverDescriptorMap.get(organizationId);
 
 				request.setOrganizationName(serverDescriptor != null ? serverDescriptor.getName() : organizationId);
 			});

@@ -2,9 +2,10 @@ package de.symeda.sormas.api.caze;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 
-public class AgeAndBirthDateDto extends BirthDateDto implements Serializable {
+public class AgeAndBirthDateDto extends BirthDateDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -3544971830146580773L;
 
@@ -25,5 +26,10 @@ public class AgeAndBirthDateDto extends BirthDateDto implements Serializable {
 
 	public ApproximateAgeType getAgeType() {
 		return ageType;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format("%s(ageType=%s,%s)", getClass().getSimpleName(), ageType, super.getAuditRepresentation());
 	}
 }

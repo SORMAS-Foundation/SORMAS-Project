@@ -31,7 +31,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -61,7 +60,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
@@ -114,7 +113,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 			});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
 		Mockito
@@ -199,7 +198,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		creator.createAdditionalTest(sample.toReference());
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setWithEventParticipants(true);
 		options.setWithSamples(true);
 		options.setComment("Test comment");
@@ -402,7 +401,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 			(p) -> p.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()),
 			null);
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setWithEventParticipants(true);
 		options.setComment("Test comment");
@@ -778,7 +777,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setWithEventParticipants(true);
 		options.setWithSamples(true);
 		final String uuid = DataHelper.createUuid();

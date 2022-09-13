@@ -1,10 +1,12 @@
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class PersonFollowUpEndDto implements Serializable {
+public class PersonFollowUpEndDto implements Auditable, Serializable {
 
 	private String personUuid;
 	private Date latestFollowUpEndDate;
@@ -43,5 +45,10 @@ public class PersonFollowUpEndDto implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(personUuid);
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format("%s(personUuid=%s)", getClass().getSimpleName(), personUuid);
 	}
 }

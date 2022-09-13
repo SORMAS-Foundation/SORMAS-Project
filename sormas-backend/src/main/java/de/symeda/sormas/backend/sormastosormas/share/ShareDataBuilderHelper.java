@@ -28,7 +28,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -36,7 +36,6 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPr
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
@@ -126,7 +125,7 @@ public class ShareDataBuilderHelper {
 	public SormasToSormasOptionsDto createOptionsFormShareRequestInfo(ShareRequestInfo requestInfo) {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
-		options.setOrganization(new SormasServerDescriptor(requestInfo.getShares().get(0).getOrganizationId()));
+		options.setOrganization(new SormasServerDescriptorDto(requestInfo.getShares().get(0).getOrganizationId()));
 		options.setHandOverOwnership(requestInfo.getShares().get(0).isOwnershipHandedOver());
 		options.setWithAssociatedContacts(requestInfo.isWithAssociatedContacts());
 		options.setWithSamples(requestInfo.isWithSamples());
@@ -142,7 +141,7 @@ public class ShareDataBuilderHelper {
 	public SormasToSormasOptionsDto createOptionsFromOriginInfoDto(SormasToSormasOriginInfo originInfo) {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
-		options.setOrganization(new SormasServerDescriptor(originInfo.getOrganizationId()));
+		options.setOrganization(new SormasServerDescriptorDto(originInfo.getOrganizationId()));
 		options.setHandOverOwnership(originInfo.isOwnershipHandedOver());
 		options.setWithAssociatedContacts(originInfo.isWithAssociatedContacts());
 		options.setWithSamples(originInfo.isWithSamples());

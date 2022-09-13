@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,46 +15,53 @@
 
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 
-public class SampleJurisdictionFlagsDto implements Serializable {
+public class SampleJurisdictionFlagsDto implements Auditable, Serializable {
 
-    private Boolean isInJurisdiction;
-    private Boolean isCaseInJurisdiction;
-    private Boolean isContactInJurisdiction;
-    private Boolean isContactCaseInJurisdiction;
-    private Boolean isEvenParticipantInJurisdiction;
+	private Boolean isInJurisdiction;
+	private Boolean isCaseInJurisdiction;
+	private Boolean isContactInJurisdiction;
+	private Boolean isContactCaseInJurisdiction;
+	private Boolean isEvenParticipantInJurisdiction;
 
-    public SampleJurisdictionFlagsDto(
-            Boolean isInJurisdiction,
-            Boolean isCaseInJurisdiction,
-            Boolean isContactInJurisdiction,
-            Boolean isContactCaseInJurisdiction,
-            Boolean isEvenParticipantInJurisdiction) {
-        this.isInJurisdiction = isInJurisdiction;
-        this.isCaseInJurisdiction = isCaseInJurisdiction;
-        this.isContactInJurisdiction = isContactInJurisdiction;
-        this.isContactCaseInJurisdiction = isContactCaseInJurisdiction;
-        this.isEvenParticipantInJurisdiction = isEvenParticipantInJurisdiction;
-    }
+	public SampleJurisdictionFlagsDto(
+		Boolean isInJurisdiction,
+		Boolean isCaseInJurisdiction,
+		Boolean isContactInJurisdiction,
+		Boolean isContactCaseInJurisdiction,
+		Boolean isEvenParticipantInJurisdiction) {
+		this.isInJurisdiction = isInJurisdiction;
+		this.isCaseInJurisdiction = isCaseInJurisdiction;
+		this.isContactInJurisdiction = isContactInJurisdiction;
+		this.isContactCaseInJurisdiction = isContactCaseInJurisdiction;
+		this.isEvenParticipantInJurisdiction = isEvenParticipantInJurisdiction;
+	}
 
-    public Boolean getInJurisdiction() {
-        return isInJurisdiction;
-    }
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
+	}
 
-    public Boolean getCaseInJurisdiction() {
-        return isCaseInJurisdiction;
-    }
+	public Boolean getCaseInJurisdiction() {
+		return isCaseInJurisdiction;
+	}
 
-    public Boolean getContactInJurisdiction() {
-        return isContactInJurisdiction;
-    }
+	public Boolean getContactInJurisdiction() {
+		return isContactInJurisdiction;
+	}
 
-    public Boolean getContactCaseInJurisdiction() {
-        return isContactCaseInJurisdiction;
-    }
+	public Boolean getContactCaseInJurisdiction() {
+		return isContactCaseInJurisdiction;
+	}
 
-    public Boolean getEvenParticipantInJurisdiction() {
-        return isEvenParticipantInJurisdiction;
-    }
+	public Boolean getEvenParticipantInJurisdiction() {
+		return isEvenParticipantInJurisdiction;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return getClass().getSimpleName();
+	}
 }

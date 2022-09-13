@@ -3,6 +3,7 @@ package de.symeda.sormas.api.infrastructure;
 import java.io.Serializable;
 import java.util.List;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
@@ -18,7 +19,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRoleDto;
 
-public class InfrastructureSyncDto implements Serializable {
+public class InfrastructureSyncDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -3874808120492307171L;
 
@@ -174,5 +175,10 @@ public class InfrastructureSyncDto implements Serializable {
 
 	public void setDeletedFeatureConfigurationUuids(List<String> deletedFeatureConfigurationUuids) {
 		this.deletedFeatureConfigurationUuids = deletedFeatureConfigurationUuids;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return getClass().getSimpleName();
 	}
 }

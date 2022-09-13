@@ -19,11 +19,12 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class TravelEntryImportEntities implements Serializable {
+public class TravelEntryImportEntitiesDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -714807989630027827L;
 
@@ -32,13 +33,13 @@ public class TravelEntryImportEntities implements Serializable {
 	@Valid
 	private final PersonDto person;
 
-	public TravelEntryImportEntities(UserReferenceDto reportingUser) {
+	public TravelEntryImportEntitiesDto(UserReferenceDto reportingUser) {
 		person = PersonDto.buildImportEntity();
 		travelEntry = TravelEntryDto.build(person.toReference());
 		travelEntry.setReportingUser(reportingUser);
 	}
 
-	public TravelEntryImportEntities(UserReferenceDto reportingUser, PersonDto person) {
+	public TravelEntryImportEntitiesDto(UserReferenceDto reportingUser, PersonDto person) {
 		this.person = person;
 		travelEntry = TravelEntryDto.build(person.toReference());
 		travelEntry.setReportingUser(reportingUser);
@@ -50,5 +51,14 @@ public class TravelEntryImportEntities implements Serializable {
 
 	public PersonDto getPerson() {
 		return person;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format(
+			"%s(person=%s, travelEntry=%s)",
+			getClass().getSimpleName(),
+			person.getAuditRepresentation(),
+			travelEntry.getAuditRepresentation());
 	}
 }

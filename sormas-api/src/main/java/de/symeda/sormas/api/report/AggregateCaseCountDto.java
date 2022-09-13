@@ -5,10 +5,11 @@ import java.util.Date;
 import java.util.Objects;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class AggregateCaseCountDto implements Serializable {
+public class AggregateCaseCountDto implements Auditable, Serializable {
 
 	public static final String I18N_PREFIX = "AggregateReport";
 
@@ -403,4 +404,20 @@ public class AggregateCaseCountDto implements Serializable {
 			ageGroup);
 	}
 
+	@Override
+	public String getAuditRepresentation() {
+
+		return String.format(
+			"%s(regionId=%s, districtId=%s, healthFacilityId=%s, pointOfEntryId=%s, year=%s, epiWeek=%s, disease=%s, reportingUser=%s, changeDate=%s)",
+			getClass().getSimpleName(),
+			regionId,
+			districtId,
+			healthFacilityId,
+			pointOfEntryId,
+			year,
+			epiWeek,
+			disease,
+			reportingUser,
+			changeDate);
+	}
 }

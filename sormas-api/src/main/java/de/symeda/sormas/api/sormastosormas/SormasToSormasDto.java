@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
@@ -27,7 +28,7 @@ import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantD
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 
-public class SormasToSormasDto implements Serializable {
+public class SormasToSormasDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 3226296154450214227L;
 
@@ -101,5 +102,46 @@ public class SormasToSormasDto implements Serializable {
 
 	public void setImmunizations(List<SormasToSormasImmunizationDto> immunizations) {
 		this.immunizations = immunizations;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append("(originInfo=").append(originInfo.getAuditRepresentation());
+		sb.append(", cases=[");
+		for (SormasToSormasCaseDto caze : cases) {
+			sb.append(caze.getAuditRepresentation());
+			sb.append(", ");
+		}
+
+		sb.append("], contacts=[");
+
+		for (SormasToSormasContactDto contact : contacts) {
+			sb.append(contact.getAuditRepresentation());
+			sb.append(", ");
+		}
+		sb.append("], samples=[");
+		for (SormasToSormasSampleDto sample : samples) {
+			sb.append(sample.getAuditRepresentation());
+			sb.append(", ");
+		}
+		sb.append("], events=[");
+		for (SormasToSormasEventDto event : events) {
+			sb.append(event.getAuditRepresentation());
+			sb.append(", ");
+		}
+		sb.append("], eventParticipants=[");
+		for (SormasToSormasEventParticipantDto eventParticipant : eventParticipants) {
+			sb.append(eventParticipant.getAuditRepresentation());
+			sb.append(", ");
+		}
+		sb.append("], immunizations=[");
+		for (SormasToSormasImmunizationDto immunization : immunizations) {
+			sb.append(immunization.getAuditRepresentation());
+			sb.append(", ");
+		}
+		sb.append("])");
+		return sb.toString();
 	}
 }

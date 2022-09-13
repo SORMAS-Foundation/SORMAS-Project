@@ -85,6 +85,7 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -501,7 +502,8 @@ public class ImportFacadeEjb implements ImportFacade {
 		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()), featureConfigurations);
 	}
 
-	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath, List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath, List<FeatureConfigurationDto> featureConfigurations)
+		throws IOException {
 
 		createExportDirectoryIfNecessary();
 
@@ -724,10 +726,15 @@ public class ImportFacadeEjb implements ImportFacade {
 	 * fields in the order of declaration (which is what we need here), but that could change
 	 * in the future.
 	 */
-	private void appendListOfFields(List<ImportColumn> importColumns, Class<?> clazz, String prefix, char separator, List<FeatureConfigurationDto> featureConfigurations) {
+	private void appendListOfFields(
+		List<ImportColumn> importColumns,
+		Class<?> clazz,
+		String prefix,
+		char separator,
+		List<FeatureConfigurationDto> featureConfigurations) {
 
-		FieldVisibilityCheckers visibilityChecker = FieldVisibilityCheckers.withCountry(configFacade.getCountryCode())
-				.add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
+		FieldVisibilityCheckers visibilityChecker =
+			FieldVisibilityCheckers.withCountry(configFacade.getCountryCode()).add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
@@ -771,13 +778,15 @@ public class ImportFacadeEjb implements ImportFacade {
 					importColumns,
 					field.getType(),
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
-					separator, featureConfigurations);
+					separator,
+					featureConfigurations);
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(
 					importColumns,
 					PersonDto.class,
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
-					separator, featureConfigurations);
+					separator,
+					featureConfigurations);
 				addPrimaryPhoneAndEmail(separator, importColumns);
 			} else {
 				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));
@@ -913,7 +922,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		return String.join(".", entityPropertyPath);
 	}
 
-	public <T> ImportLineResultDto<T> validateConstraints(T entities) {
+	public <T extends Auditable> ImportLineResultDto<T> validateConstraints(T entities) {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 

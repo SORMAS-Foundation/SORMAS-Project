@@ -65,7 +65,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -112,7 +112,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
 		Mockito
@@ -171,7 +171,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		ContactDto contact = creator.createContact(officer, creator.createPerson().toReference(), caze);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 		options.setWithAssociatedContacts(true);
 
@@ -231,7 +231,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		creator.createAdditionalTest(contactSampleSample.toReference());
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 		options.setWithSamples(true);
 		options.setWithAssociatedContacts(true);
@@ -500,7 +500,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setPseudonymizeData(true);
 
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
@@ -563,7 +563,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 			creator.createSample(caze.toReference(), officer, rdcf.facility, s -> s.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo()));
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setWithAssociatedContacts(true);
 		options.setWithSamples(true);
@@ -956,7 +956,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 					.post(eq(SECOND_SERVER_ID), eq("/sormasToSormas/cases/shares"), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> {
 				SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
-				shareInfo.setTargetDescriptor(new SormasServerDescriptor("dummy SORMAS"));
+				shareInfo.setTargetDescriptor(new SormasServerDescriptorDto("dummy SORMAS"));
 				shareInfo.setOwnershipHandedOver(true);
 				shareInfo.setComment("re-shared");
 
@@ -1090,7 +1090,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 					.post(eq(SECOND_SERVER_ID), eq("/sormasToSormas/cases/shares"), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> {
 				SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
-				shareInfo.setTargetDescriptor(new SormasServerDescriptor("dummy SORMAS"));
+				shareInfo.setTargetDescriptor(new SormasServerDescriptorDto("dummy SORMAS"));
 				shareInfo.setOwnershipHandedOver(false);
 				shareInfo.setComment("re-shared");
 
@@ -1134,7 +1134,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setWithImmunizations(true);
 
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
 
 		final String uuid = DataHelper.createUuid();
 

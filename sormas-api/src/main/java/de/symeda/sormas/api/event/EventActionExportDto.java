@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
@@ -24,13 +21,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.importexport.format.ExportFormat;
 import de.symeda.sormas.api.importexport.format.ImportExportFormat;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Order;
 
-public class EventActionExportDto implements Serializable {
+public class EventActionExportDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 8231951545991794808L;
 
@@ -238,5 +236,10 @@ public class EventActionExportDto implements Serializable {
 	@Order(22)
 	public UserReferenceDto getActionLastModifiedBy() {
 		return actionLastModifiedBy;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format("%s(eventUuid=%s)", getClass().getSimpleName(), eventUuid);
 	}
 }

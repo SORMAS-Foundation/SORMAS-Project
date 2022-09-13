@@ -17,7 +17,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.io.Serializable;
-
+// todo a Dto in the backend?
 public class ContactJurisdictionFlagsDto implements Serializable {
 
     private Boolean isInJurisdiction;

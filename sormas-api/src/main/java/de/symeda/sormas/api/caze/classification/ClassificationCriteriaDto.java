@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -53,7 +54,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 	@JsonSubTypes.Type(value = ClassificationXOfCriteriaDto.class, name = "ClassificationXOfCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationAllSymptomsCriteriaDto.class, name = "ClassificationAllSymptomsCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationEventClusterCriteriaDto.class, name = "ClassificationEventClusterCriteriaDto") })
-public abstract class ClassificationCriteriaDto implements Serializable {
+public abstract class ClassificationCriteriaDto implements Auditable,Serializable {
 
 	protected String type = getClass().getSimpleName();
 
@@ -74,5 +75,11 @@ public abstract class ClassificationCriteriaDto implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		//todo this is likely not what we want
+		return String.format("%s(buildDescription=%s)", getType(), buildDescription());
 	}
 }

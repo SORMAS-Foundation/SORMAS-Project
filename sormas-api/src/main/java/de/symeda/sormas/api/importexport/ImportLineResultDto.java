@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,9 +15,11 @@
 
 package de.symeda.sormas.api.importexport;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 
-public class ImportLineResultDto<E> implements Serializable {
+public class ImportLineResultDto<E extends Auditable> implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -9004769653154669800L;
 
@@ -55,19 +57,28 @@ public class ImportLineResultDto<E> implements Serializable {
 		return result == ImportLineResult.SUCCESS;
 	}
 
-	public static <E> ImportLineResultDto<E> successResult() {
+	public static <E extends Auditable> ImportLineResultDto<E> successResult() {
 		return new ImportLineResultDto<>(ImportLineResult.SUCCESS, null, null);
 	}
 
-	public static <E> ImportLineResultDto<E> errorResult(String message) {
+	public static <E extends Auditable> ImportLineResultDto<E> errorResult(String message) {
 		return new ImportLineResultDto<>(ImportLineResult.ERROR, message, null);
 	}
 
-	public static <E> ImportLineResultDto<E> duplicateResult(E entities) {
+	public static <E extends Auditable> ImportLineResultDto<E> duplicateResult(E entities) {
 		return new ImportLineResultDto<>(ImportLineResult.DUPLICATE, null, entities);
 	}
 
-	public static <E> ImportLineResultDto<E> skippedResult(String message) {
+	public static <E extends Auditable> ImportLineResultDto<E> skippedResult(String message) {
 		return new ImportLineResultDto<>(ImportLineResult.SKIPPED, message, null);
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format(
+			"%s(result=%s, importEntities=%s)",
+			getClass().getSimpleName(),
+			result,
+			importEntities != null ? importEntities.getAuditRepresentation() : "null");
 	}
 }

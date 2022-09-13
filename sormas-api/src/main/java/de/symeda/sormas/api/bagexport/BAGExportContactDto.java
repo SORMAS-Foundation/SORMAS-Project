@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +18,7 @@ package de.symeda.sormas.api.bagexport;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -28,7 +29,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.Order;
 
-public class BAGExportContactDto implements Serializable {
+public class BAGExportContactDto implements Auditable, Serializable {
 
 	private Long contactId;
 	private Long personId;
@@ -485,5 +486,10 @@ public class BAGExportContactDto implements Serializable {
 
 	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
 		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format("%s(contactId=%s, personId=%s)", getClass().getSimpleName(), contactId, personId);
 	}
 }

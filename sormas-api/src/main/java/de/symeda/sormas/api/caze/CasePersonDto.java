@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,9 +19,10 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.person.PersonDto;
 
-public class CasePersonDto implements Serializable {
+public class CasePersonDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = 4238365446327936524L;
 
@@ -52,5 +53,10 @@ public class CasePersonDto implements Serializable {
 
 	public void setPerson(PersonDto person) {
 		this.person = person;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format("%s(caze=%s,person=%s)", getClass().getSimpleName(), caze.getAuditRepresentation(), person.getAuditRepresentation());
 	}
 }

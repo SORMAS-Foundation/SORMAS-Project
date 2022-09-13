@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,20 +15,21 @@
 
 package de.symeda.sormas.api.caze.caseimport;
 
-import de.symeda.sormas.api.vaccination.VaccinationDto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 
-public class CaseImportEntities implements Serializable {
+public class CaseImportEntitiesDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
@@ -43,7 +44,7 @@ public class CaseImportEntities implements Serializable {
 	@Valid
 	private final List<VaccinationDto> vaccinations;
 
-	public CaseImportEntities(UserReferenceDto reportingUser) {
+	public CaseImportEntitiesDto(UserReferenceDto reportingUser) {
 		person = PersonDto.buildImportEntity();
 		caze = createCase(person, reportingUser);
 
@@ -52,7 +53,7 @@ public class CaseImportEntities implements Serializable {
 		vaccinations = new ArrayList<>();
 	}
 
-	public CaseImportEntities(PersonDto person, CaseDataDto caze) {
+	public CaseImportEntitiesDto(PersonDto person, CaseDataDto caze) {
 		this.person = person;
 		this.caze = caze;
 
@@ -86,5 +87,39 @@ public class CaseImportEntities implements Serializable {
 
 	public List<VaccinationDto> getVaccinations() {
 		return vaccinations;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		StringBuilder auditRepresentation = new StringBuilder(getClass().getSimpleName());
+		auditRepresentation.append(getClass().getSimpleName());
+
+		auditRepresentation.append("(person=");
+		auditRepresentation.append(person.getAuditRepresentation());
+
+		auditRepresentation.append(", caze=");
+		auditRepresentation.append(caze.getAuditRepresentation());
+
+
+		auditRepresentation.append(", samples=[");
+		for (SampleDto sample : samples) {
+			auditRepresentation.append(sample.getAuditRepresentation());
+			auditRepresentation.append(", ");
+		}
+
+		auditRepresentation.append("], pathogenTests=[");
+		for (PathogenTestDto pathogenTest : pathogenTests) {
+			auditRepresentation.append(pathogenTest.getAuditRepresentation());
+			auditRepresentation.append(", ");
+		}
+
+		auditRepresentation.append("], vaccinations=[");
+		for (VaccinationDto vaccination : vaccinations) {
+			auditRepresentation.append(vaccination.getAuditRepresentation());
+			auditRepresentation.append(", ");
+
+		}
+		auditRepresentation.append("])");
+		return auditRepresentation.toString();
 	}
 }

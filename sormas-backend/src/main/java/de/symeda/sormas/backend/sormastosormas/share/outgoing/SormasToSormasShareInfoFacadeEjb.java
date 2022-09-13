@@ -31,7 +31,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoFacade;
@@ -106,9 +106,9 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 
 		DtoHelper.fillDto(target, source);
 
-		SormasServerDescriptor sormasServerDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(source.getOrganizationId());
+		SormasServerDescriptorDto sormasServerDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(source.getOrganizationId());
 		if (sormasServerDescriptor == null) {
-			sormasServerDescriptor = new SormasServerDescriptor(source.getOrganizationId(), source.getOrganizationId());
+			sormasServerDescriptor = new SormasServerDescriptorDto(source.getOrganizationId(), source.getOrganizationId());
 		}
 
 		target.setTargetDescriptor(sormasServerDescriptor);

@@ -57,7 +57,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
-import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntities;
+import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntitiesDto;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -112,7 +112,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
-	public ImportLineResultDto<TravelEntryImportEntities> importData(
+	public ImportLineResultDto<TravelEntryImportEntitiesDto> importData(
 		String[] values,
 		String[] entityClasses,
 		String[] entityProperties,
@@ -124,16 +124,16 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 			return ImportLineResultDto.errorResult(I18nProperties.getValidationError(Validations.importLineTooLong));
 		}
 
-		final TravelEntryImportEntities entities = new TravelEntryImportEntities(userService.getCurrentUser().toReference());
+		final TravelEntryImportEntitiesDto entities = new TravelEntryImportEntitiesDto(userService.getCurrentUser().toReference());
 		TravelEntryDto travelEntry = entities.getTravelEntry();
 		fillTravelEntryWithDefaultValues(travelEntry);
-		ImportLineResultDto<TravelEntryImportEntities> importResult =
+		ImportLineResultDto<TravelEntryImportEntitiesDto> importResult =
 			buildEntities(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, entities);
 		if (importResult.isError()) {
 			return importResult;
 		}
 
-		ImportLineResultDto<TravelEntryImportEntities> validationResult = validateEntities(entities);
+		ImportLineResultDto<TravelEntryImportEntitiesDto> validationResult = validateEntities(entities);
 		if (validationResult.isError()) {
 			return validationResult;
 		}
@@ -148,16 +148,16 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	}
 
 	@Override
-	public ImportLineResultDto<TravelEntryImportEntities> importDataWithExistingPerson(
+	public ImportLineResultDto<TravelEntryImportEntitiesDto> importDataWithExistingPerson(
 		String personUuid,
 		String[] values,
 		String[] entityClasses,
 		String[][] entityPropertyPaths) {
 
-		TravelEntryImportEntities entities =
-			new TravelEntryImportEntities(userService.getCurrentUser().toReference(), personFacade.getByUuid(personUuid));
+		TravelEntryImportEntitiesDto entities =
+			new TravelEntryImportEntitiesDto(userService.getCurrentUser().toReference(), personFacade.getByUuid(personUuid));
 		fillTravelEntryWithDefaultValues(entities.getTravelEntry());
-		ImportLineResultDto<TravelEntryImportEntities> importResult = buildEntities(values, entityClasses, entityPropertyPaths, true, entities);
+		ImportLineResultDto<TravelEntryImportEntitiesDto> importResult = buildEntities(values, entityClasses, entityPropertyPaths, true, entities);
 
 		if (importResult.isError()) {
 			return importResult;
@@ -195,7 +195,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	}
 
 	@Override
-	public ImportLineResultDto<TravelEntryImportEntities> saveImportedEntities(@Valid TravelEntryImportEntities entities) {
+	public ImportLineResultDto<TravelEntryImportEntitiesDto> saveImportedEntities(@Valid TravelEntryImportEntitiesDto entities) {
 
 		TravelEntryDto travelEntry = entities.getTravelEntry();
 		PersonDto person = entities.getPerson();
@@ -211,8 +211,8 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		}
 	}
 
-	private ImportLineResultDto<TravelEntryImportEntities> validateEntities(TravelEntryImportEntities entities) {
-		ImportLineResultDto<TravelEntryImportEntities> validationResult = importFacade.validateConstraints(entities);
+	private ImportLineResultDto<TravelEntryImportEntitiesDto> validateEntities(TravelEntryImportEntitiesDto entities) {
+		ImportLineResultDto<TravelEntryImportEntitiesDto> validationResult = importFacade.validateConstraints(entities);
 		if (validationResult.isError()) {
 			return validationResult;
 		}
@@ -227,14 +227,14 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		return ImportLineResultDto.successResult();
 	}
 
-	private ImportLineResultDto<TravelEntryImportEntities> buildEntities(
+	private ImportLineResultDto<TravelEntryImportEntitiesDto> buildEntities(
 		String[] values,
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		TravelEntryImportEntities entities) {
+		TravelEntryImportEntitiesDto entities) {
 
-		ImportLineResultDto<TravelEntryImportEntities> importResult =
+		ImportLineResultDto<TravelEntryImportEntitiesDto> importResult =
 			insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, cellData -> {
 				try {
 					TravelEntryDto travelEntry = entities.getTravelEntry();
@@ -260,7 +260,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		return importResult;
 	}
 
-	private ImportLineResultDto<TravelEntryImportEntities> insertRowIntoData(
+	private ImportLineResultDto<TravelEntryImportEntitiesDto> insertRowIntoData(
 		String[] values,
 		String[] entityClasses,
 		String[][] entityPropertyPaths,

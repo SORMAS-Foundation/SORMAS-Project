@@ -37,7 +37,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
@@ -121,13 +121,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	@RightsAllowed({
 		UserRight._SORMAS_TO_SORMAS_SHARE })
-	public List<SormasServerDescriptor> getAllAvailableServers() {
+	public List<SormasServerDescriptorDto> getAllAvailableServers() {
 		return sormasToSormasDiscoveryService.getAllAvailableServers();
 	}
 
 	@Override
 	@PermitAll
-	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
+	public SormasServerDescriptorDto getSormasServerDescriptorById(String id) {
 		return sormasToSormasDiscoveryService.getSormasServerDescriptorById(id);
 	}
 

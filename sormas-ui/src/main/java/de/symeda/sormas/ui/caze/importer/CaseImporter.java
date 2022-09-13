@@ -32,7 +32,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
-import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
+import de.symeda.sormas.api.caze.caseimport.CaseImportEntitiesDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -103,14 +103,14 @@ public class CaseImporter extends DataImporter {
 		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
 		setValueUuid(values, entityProperties, DataHelper.createUuid());
 
-		ImportLineResultDto<CaseImportEntities> importResult =
+		ImportLineResultDto<CaseImportEntitiesDto> importResult =
 			caseImportFacade.importCaseData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);
 
 		if (importResult.isError()) {
 			writeImportError(values, importResult.getMessage());
 			return ImportLineResult.ERROR;
 		} else if (importResult.isDuplicate()) {
-			CaseImportEntities entities = importResult.getImportEntities();
+			CaseImportEntitiesDto entities = importResult.getImportEntities();
 			CaseDataDto importCase = entities.getCaze();
 			PersonDto importPerson = entities.getPerson();
 
@@ -209,7 +209,7 @@ public class CaseImporter extends DataImporter {
 				cancelImport();
 				return ImportLineResult.SKIPPED;
 			} else {
-				ImportLineResultDto<CaseImportEntities> saveResult;
+				ImportLineResultDto<CaseImportEntitiesDto> saveResult;
 				boolean skipPersonValidation = selectedPersonUuid != null;
 				if (selectedPersonUuid != null || selectedCaseUuid != null) {
 					saveResult = caseImportFacade.updateCaseWithImportData(

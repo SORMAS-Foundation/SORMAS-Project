@@ -18,6 +18,7 @@ package de.symeda.sormas.api.bagexport;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.QuarantineReason;
@@ -31,7 +32,8 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class BAGExportCaseDto implements Serializable {
+public class BAGExportCaseDto implements Auditable, Serializable {
+
 	private Integer caseIdIsm;
 	private Long caseId;
 	private Long personId;
@@ -720,5 +722,10 @@ public class BAGExportCaseDto implements Serializable {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format("%s(caseIdIsm=%s, caseId=%s, personId=%s)", getClass().getSimpleName(), caseIdIsm, caseId, personId);
 	}
 }

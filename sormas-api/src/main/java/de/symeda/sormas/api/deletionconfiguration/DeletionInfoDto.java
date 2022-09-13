@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.deletionconfiguration;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 import java.util.Date;
 
-public class DeletionInfoDto implements Serializable {
+public class DeletionInfoDto implements Auditable, Serializable {
 
 	private Date deletionDate;
 	private Date referenceDate;
@@ -47,5 +49,16 @@ public class DeletionInfoDto implements Serializable {
 
 	public void setDeletionReferenceField(String deletionReferenceField) {
 		this.deletionReferenceField = deletionReferenceField;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String.format(
+			"%s(deletionDate=%s, referenceDate=%s, deletionPeriod=%s, deletionReferenceField=%s)",
+			getClass().getSimpleName(),
+			deletionDate,
+			referenceDate,
+			deletionPeriod,
+			deletionReferenceField);
 	}
 }

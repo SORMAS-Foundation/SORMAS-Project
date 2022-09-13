@@ -1,21 +1,16 @@
 /*
- * ******************************************************************************
- * * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- * *
- * * This program is free software: you can redistribute it and/or modify
- * * it under the terms of the GNU General Public License as published by
- * * the Free Software Foundation, either version 3 of the License, or
- * * (at your option) any later version.
- * *
- * * This program is distributed in the hope that it will be useful,
- * * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * * GNU General Public License for more details.
- * *
- * * You should have received a copy of the GNU General Public License
- * * along with this program. If not, see <https://www.gnu.org/licenses/>.
- * ******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.api.event;
@@ -26,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -57,7 +53,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCod
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(EventParticipantDto.class)
-public class EventParticipantExportDto implements Serializable {
+public class EventParticipantExportDto implements Auditable, Serializable {
 
 	public static final String I18N_PREFIX = "EventParticipantExport";
 
@@ -983,5 +979,11 @@ public class EventParticipantExportDto implements Serializable {
 
 	public Date getEventReportDateTime() {
 		return eventReportDateTime;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return String
+			.format("%s(id=%s, personId=%s, personAddressId=%s, eventUuid=%s)", getClass().getSimpleName(), id, personId, personAddressId, eventUuid);
 	}
 }

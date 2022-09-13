@@ -1,8 +1,10 @@
 package de.symeda.sormas.api.dashboard;
 
+import de.symeda.sormas.api.audit.Auditable;
+
 import java.io.Serializable;
 
-public class DashboardContactVisitDto implements Serializable {
+public class DashboardContactVisitDto implements Auditable, Serializable {
 
 	private static final long serialVersionUID = -5705128377788207651L;
 
@@ -99,5 +101,10 @@ public class DashboardContactVisitDto implements Serializable {
 
 	public int getPreviousCooperativeVisitsCount() {
 		return previousCooperativeVisitsCount;
+	}
+
+	@Override
+	public String getAuditRepresentation() {
+		return getClass().getSimpleName();
 	}
 }
