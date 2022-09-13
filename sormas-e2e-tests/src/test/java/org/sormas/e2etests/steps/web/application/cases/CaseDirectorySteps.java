@@ -77,6 +77,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -1075,6 +1076,20 @@ public class CaseDirectorySteps implements En {
           FilesHelper.deleteFile(fileName);
         });
     When(
+        "I check if citizenship and country of birth is not present in Detailed Case export file",
+        () -> {
+          String fileName = "sormas_f\u00E4lle_" + LocalDate.now() + "_.csv";
+          String[] headers = parseDetailedCaseExportHeaders(userDirPath + "/downloads/" + fileName);
+          FilesHelper.deleteFile(fileName);
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("citizenship"::equals),
+              "Citizenship is present in file");
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("countryOfBirth"::equals),
+              "Country of birth is present in file");
+          softly.assertAll();
+        });
+    When(
         "I check that ([^\"]*) is visible in Pick or Create Person popup for De",
         (String option) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
@@ -1372,5 +1387,25 @@ public class CaseDirectorySteps implements En {
     } catch (IOException e) {
       log.error("IOException csvWriter: ", e);
     }
+  }
+
+  public String[] parseDetailedCaseExportHeaders(String fileName) {
+    List<String[]> r = null;
+    String[] values = new String[] {};
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
+    try (CSVReader reader =
+        new CSVReaderBuilder(new FileReader(fileName)).withCSVParser(csvParser).build()) {
+      r = reader.readAll();
+    } catch (IOException e) {
+      log.error("IOException parseDetailedCaseExportHeaders: {}", e.getCause());
+    } catch (CsvException e) {
+      log.error("CsvException parseDetailedCaseExportHeaders: {}", e.getCause());
+    }
+    try {
+      values = r.get(1);
+    } catch (NullPointerException e) {
+      log.error("Null pointer exception parseDetailedCaseExportHeaders: {}", e.getCause());
+    }
+    return values;
   }
 }
