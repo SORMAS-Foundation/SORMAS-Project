@@ -2488,6 +2488,20 @@ public class EditCaseSteps implements En {
               break;
           }
         });
+
+    And(
+        "I check that {string} Pre-existing condition is visible on page",
+        (String preExistingCondition) -> {
+          Assert.assertTrue(
+              webDriverHelpers.isElementEnabled(
+                  getPreExistingConditionCombobox_DE(preExistingCondition)));
+        });
+
+    Then(
+        "I check that Clinical Assessments heading is visible in DE",
+        () ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementVisibleWithTimeout(CLINICAL_ASSESSMENTS_LABEL_DE, 15)));
   }
 
   private Vaccination collectVaccinationData() {

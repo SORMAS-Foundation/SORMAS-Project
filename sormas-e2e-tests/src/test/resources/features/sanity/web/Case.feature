@@ -1799,3 +1799,26 @@ Feature: Case end to end tests
       And I check that number of displayed cases results is 1
       And I apply "All cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
+
+  @tmsLink=SORDEV-9789 @env_de
+  Scenario: Test Move health conditions from clinical course to the case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that "diabetes" Pre-existing condition is visible on page
+    And I check that "immunodeficiencyIncludingHiv" Pre-existing condition is visible on page
+    And I check that "chronicLiverDisease" Pre-existing condition is visible on page
+    And I check that "malignancyChemotherapy" Pre-existing condition is visible on page
+    And I check that "chronicPulmonaryDisease" Pre-existing condition is visible on page
+    And I check that "chronicKidneyDisease" Pre-existing condition is visible on page
+    And I check that "chronicNeurologicCondition" Pre-existing condition is visible on page
+    And I check that "cardiovascularDiseaseIncludingHypertension" Pre-existing condition is visible on page
+    Then I click on Clinical Course tab from Edit Case page
+    Then I check that Clinical Assessments heading is visible in DE
+
+

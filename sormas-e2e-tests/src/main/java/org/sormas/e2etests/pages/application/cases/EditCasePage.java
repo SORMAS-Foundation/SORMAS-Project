@@ -360,4 +360,13 @@ public class EditCasePage {
   public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
       By.xpath(
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
+  public static final By CLINICAL_ASSESSMENTS_LABEL_DE =
+      By.xpath("//div[contains(text(), 'Klinische Bewertungen')]");
+
+  public static By getPreExistingConditionCombobox_DE(String id) {
+    return By.xpath(
+        String.format(
+            "//div[@id='%s']//input[@value='on']/following-sibling::label[contains(text(),'Ja') or contains(text(),'Nein') or contains(text(),'Unbekannt')]",
+            id));
+  }
 }
