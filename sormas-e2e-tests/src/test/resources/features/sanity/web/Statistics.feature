@@ -38,3 +38,4 @@ Feature: Statistics tab tests
     And I click on the Select All Button in Database Export tab of Statistics Page
     Then I verify that All Checkboxes are Selected in Database Export tab of Statistics Page
     And I click on the Deselect all Button in Database Export tab of Statistics Page
+    Then I verify that All Checkboxes are Deselected in Database Export tab of Statistics Page

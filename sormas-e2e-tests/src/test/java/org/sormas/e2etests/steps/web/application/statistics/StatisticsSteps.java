@@ -180,6 +180,7 @@ public class StatisticsSteps implements En {
         (String checkBoxSelection) -> {
           switch (checkBoxSelection) {
             case "Selected":
+              TimeUnit.SECONDS.sleep(1);
               softly.assertTrue(
                   webDriverHelpers.isElementChecked(CASES_CHECKBOX),
                   "Cases Checkbox is not checked in the database export page");
@@ -297,9 +298,212 @@ public class StatisticsSteps implements En {
               softly.assertTrue(
                   webDriverHelpers.isElementChecked(DOCUMENTS_CHECKBOX),
                   "Documents checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(CONTINENTS_CHECKBOX),
+                  "Continents checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(SUBCONTINENTS_CHECKBOX),
+                  "Subcontinents checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(COUNTRIES_CHECKBOX),
+                  "Countries checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(REGIONS_CHECKBOX),
+                  "Regions checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(DISTRICTS_CHECKBOX),
+                  "Districts checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(COMMUNITIES_CHECKBOX),
+                  "Communities checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(FACILITIES_CHECKBOX),
+                  "Communities checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(POINTS_OF_ENTRY_CHECKBOX),
+                  "Points of entry checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(POPULATION_DATA_CHECKBOX),
+                  "Population data checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(CUSTOMIZABLE_ENUM_VALUES_CHECKBOX),
+                  "Customizable enum values checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(EXPORT_CONFIGURATION_CHECKBOX),
+                  "Export configuration checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(FEATURE_CONFIGURATIONS_CHECKBOX),
+                  "Feature configurations checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(DISEASE_CONFIGURATIONS_CHECKBOX),
+                  "Disease configurations checkbox is not checked in the database export page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementChecked(DELETION_CONFIGURATIONS_CHECKBOX),
+                  "Deletion configurations checkbox is not checked in the database export page");
               softly.assertAll();
               break;
             case "Deselected":
+              TimeUnit.SECONDS.sleep(2);
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(CASES_CHECKBOX),
+                  "Cases Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(HOSPITALIZATIONS_CHECKBOX),
+                  "Hospitalization Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(PREVIOUS_HOSPITALIZATIONS_CHECKBOX),
+                  "Previous Hospitalization Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(THERAPIES_CHECKBOX),
+                  "Therapies Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(PRESCRIPTIONS_CHECKBOX),
+                  "Prescriptions Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(TREATMENTS_CHECKBOX),
+                  "Treatments Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(TREATMENTS_CHECKBOX),
+                  "Treatments Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(CLINICAL_COURSES_CHECKBOX),
+                  "Clinical Courses Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(CLINICAL_VISITS_CHECKBOX),
+                  "Clinical Visits Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(PORT_HEALTH_INFORMATION_CHECKBOX),
+                  "Port Health Information Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(MATERNAL_HISTORIES_CHECKBOX),
+                  "Maternal Histories Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(EPIDEMIOLOGICAL_DATA_CHECKBOX),
+                  "Epidemiological data Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(EXPOSURES_CHECKBOX),
+                  "Exposures Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(ACTIVITIES_AS_CASE_CHECKBOX),
+                  "Activities as case Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(HEALTH_CONDITIONS_CHECKBOX),
+                  "Health conditions Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(CONTACTS_CHECKBOX),
+                  "Contacts Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(VISITS_CHECKBOX),
+                  "Visits Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(SYMPTOMS_CHECKBOX),
+                  "Symptoms Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(EVENTS_CHECKBOX),
+                  "Events Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(EVENT_GROUPS_CHECKBOX),
+                  "Events Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(PERSONS_INVOLVED_CHECKBOX),
+                  "Persons involved Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(ACTIONS_CHECKBOX),
+                  "Actions Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(IMMUNIZATIONS_CHECKBOX),
+                  "Immunizations Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(VACCINATIONS_CHECKBOX),
+                  "Vaccinations Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(SAMPLES_CHECKBOX),
+                  "Samples Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(PATHOGEN_TESTS_CHECKBOX),
+                  "Samples Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(ADDITIONAL_TESTS_CHECKBOX),
+                  "Additional tests Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(ADDITIONAL_TESTS_CHECKBOX),
+                  "Additional tests Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(TASKS_CHECKBOX),
+                  "Tasks Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(PERSONS_CHECKBOX),
+                  "Persons Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(PERSON_CONTACT_DETAILS_CHECKBOX),
+                  "Person Contact Details Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(LOCATIONS_CHECKBOX),
+                  "Locations Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(OUTBREAKS_CHECKBOX),
+                  "Outbreaks Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(USERS_CHECKBOX),
+                  "Users Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(USER_ROLES_CHECKBOX),
+                  "User Roles Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(AGGREGATE_REPORTS_CHECKBOX),
+                  "Aggregate Reports Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(WEEKLY_REPORTS_CHECKBOX),
+                  "Weekly Reports Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(WEEKLY_REPORT_ENTRIES_CHECKBOX),
+                  "Weekly Report Entries Checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(DOCUMENTS_CHECKBOX),
+                  "Documents checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(CONTINENTS_CHECKBOX),
+                  "Continents checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(SUBCONTINENTS_CHECKBOX),
+                  "Subcontinents checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(COUNTRIES_CHECKBOX),
+                  "Countries checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(REGIONS_CHECKBOX),
+                  "Regions checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(DISTRICTS_CHECKBOX),
+                  "Districts checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(COMMUNITIES_CHECKBOX),
+                  "Communities checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(FACILITIES_CHECKBOX),
+                  "Communities checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(POINTS_OF_ENTRY_CHECKBOX),
+                  "Points of entry checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(POPULATION_DATA_CHECKBOX),
+                  "Population data checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(CUSTOMIZABLE_ENUM_VALUES_CHECKBOX),
+                  "Customizable enum values checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(EXPORT_CONFIGURATION_CHECKBOX),
+                  "Export configuration checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(FEATURE_CONFIGURATIONS_CHECKBOX),
+                  "Feature configurations checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(DISEASE_CONFIGURATIONS_CHECKBOX),
+                  "Disease configurations checkbox is not checked in the database export page");
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(DELETION_CONFIGURATIONS_CHECKBOX),
+                  "Deletion configurations checkbox is not checked in the database export page");
+              softly.assertAll();
               break;
           }
         });

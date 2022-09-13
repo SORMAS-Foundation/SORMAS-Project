@@ -125,4 +125,14 @@ public class StatisticsPage {
       By.xpath("//label[text()='Points of entry']/preceding-sibling::input");
   public static final By POPULATION_DATA_CHECKBOX =
       By.xpath("//label[text()='Population data']/preceding-sibling::input");
+  public static final By CUSTOMIZABLE_ENUM_VALUES_CHECKBOX =
+      By.xpath("//label[text()='Customizable enum values']/preceding-sibling::input");
+  public static final By EXPORT_CONFIGURATION_CHECKBOX =
+      By.xpath("//label[text()='Export configurations']/preceding-sibling::input");
+  public static final By FEATURE_CONFIGURATIONS_CHECKBOX =
+      By.xpath("//label[text()='Feature configurations']/preceding-sibling::input");
+  public static final By DISEASE_CONFIGURATIONS_CHECKBOX =
+      By.xpath("//label[text()='Disease configurations']/preceding-sibling::input");
+  public static final By DELETION_CONFIGURATIONS_CHECKBOX =
+      By.xpath("//label[text()='Deletion configurations']/preceding-sibling::input");
 }
