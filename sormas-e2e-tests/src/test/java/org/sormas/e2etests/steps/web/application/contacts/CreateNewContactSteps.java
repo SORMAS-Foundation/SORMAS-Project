@@ -35,6 +35,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -443,6 +444,11 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
             webDriverHelpers.clickOnWebElementBySelector(SELECT_MATCHING_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
             TimeUnit.SECONDS.sleep(1);
           }
