@@ -2297,6 +2297,7 @@ public class EditCaseSteps implements En {
     And(
         "^I check that the vaccination card displays \"([^\"]*)\" in place of the vaccination date$",
         (String vaccinationDateDescription) -> {
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REPORT_DATE_INPUT);
           softly.assertEquals(
