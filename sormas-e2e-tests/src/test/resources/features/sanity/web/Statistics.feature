@@ -30,7 +30,7 @@ Feature: Statistics tab tests
     Then I Verify the presence of Incidence Divisor Input from the Statistics Page
     Then I Verify the presence of the Generate Button from the Statistics Page
 
-  @#7469_1 @env_main
+  @#7469 @env_main
   Scenario: Validate Statistics directory database export tab layout
     Given I log in as a Admin User
     And I click on the Statistics button from navbar
@@ -39,3 +39,21 @@ Feature: Statistics tab tests
     Then I verify that All Checkboxes are Selected in Database Export tab of Statistics Page
     And I click on the Deselect all Button in Database Export tab of Statistics Page
     Then I verify that All Checkboxes are Deselected in Database Export tab of Statistics Page
+
+  @#7469 @env_main
+  Scenario: Statistics report generation flow check
+    Given I log in as a Admin User
+    And I click on the Statistics button from navbar
+    And I click on the Add filter button from the Statistics Page
+    And I Select the Attribute Disease from the Statistics Page Filter Section in the Statistics Page
+    And I Select the COVID-19 option from the Disease Dropdown in the Statistics Page
+    And I select Visualisation type Table from the Statistics Page
+    And I click on the Generate Button from the Statistics Page
+    Then I Verify the Presence of the Export Button from the Statistics Page
+    Then I validate the Results Section displays data for Table in the Statistics Page
+    And I select Visualisation type Map from the Statistics Page
+    And I click on the Generate Button from the Statistics Page
+    Then I validate the Results Section displays data for Map in the Statistics Page
+    And I select Visualisation type Chart from the Statistics Page
+    And I click on the Generate Button from the Statistics Page
+    Then I validate the Results Section displays data for Chart in the Statistics Page

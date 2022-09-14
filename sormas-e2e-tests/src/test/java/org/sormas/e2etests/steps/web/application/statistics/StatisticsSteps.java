@@ -180,7 +180,8 @@ public class StatisticsSteps implements En {
         (String checkBoxSelection) -> {
           switch (checkBoxSelection) {
             case "Selected":
-              TimeUnit.SECONDS.sleep(1);
+              webDriverHelpers.waitUntilWebElementHasAttributeWithValue(
+                  CASES_CHECKBOX, "checked", "true");
               softly.assertTrue(
                   webDriverHelpers.isElementChecked(CASES_CHECKBOX),
                   "Cases Checkbox is not checked in the database export page");
@@ -237,9 +238,6 @@ public class StatisticsSteps implements En {
                   "Symptoms Checkbox is not checked in the database export page");
               softly.assertTrue(
                   webDriverHelpers.isElementChecked(EVENTS_CHECKBOX),
-                  "Events Checkbox is not checked in the database export page");
-              softly.assertTrue(
-                  webDriverHelpers.isElementChecked(EVENT_GROUPS_CHECKBOX),
                   "Events Checkbox is not checked in the database export page");
               softly.assertTrue(
                   webDriverHelpers.isElementChecked(PERSONS_INVOLVED_CHECKBOX),
@@ -343,7 +341,8 @@ public class StatisticsSteps implements En {
               softly.assertAll();
               break;
             case "Deselected":
-              TimeUnit.SECONDS.sleep(2);
+              // TODO remove hardcoded sleep
+              TimeUnit.SECONDS.sleep(1);
               softly.assertFalse(
                   webDriverHelpers.isElementChecked(CASES_CHECKBOX),
                   "Cases Checkbox is not checked in the database export page");
@@ -400,9 +399,6 @@ public class StatisticsSteps implements En {
                   "Symptoms Checkbox is not checked in the database export page");
               softly.assertFalse(
                   webDriverHelpers.isElementChecked(EVENTS_CHECKBOX),
-                  "Events Checkbox is not checked in the database export page");
-              softly.assertFalse(
-                  webDriverHelpers.isElementChecked(EVENT_GROUPS_CHECKBOX),
                   "Events Checkbox is not checked in the database export page");
               softly.assertFalse(
                   webDriverHelpers.isElementChecked(PERSONS_INVOLVED_CHECKBOX),
@@ -508,6 +504,21 @@ public class StatisticsSteps implements En {
           }
         });
 
+    And(
+        "^I Select the Attribute ([^\"]*) from the Statistics Page Filter Section in the Statistics Page",
+        (String parameter) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SELECT_ATTRIBUTE_DROPDOWN);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_ATTRIBUTE_DROPDOWN);
+          webDriverHelpers.clickWebElementByText(ATTRIBUTE_DROPDOWN_VALUES, parameter);
+        });
+
+    And(
+        "^I Select the ([^\"]*) option from the Disease Dropdown in the Statistics Page",
+        (String parameter) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SELECT_DISEASE_DROPDOWN);
+          webDriverHelpers.selectFromCombobox(SELECT_DISEASE_DROPDOWN, parameter);
+        });
+
     Then(
         "I Verify the presence of Rows, Columns, and switch-between Button in the Statistics Page",
         () -> {
@@ -548,6 +559,35 @@ public class StatisticsSteps implements En {
         "I Verify the presence of the Generate Button from the Statistics Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERATE_BUTTON);
+        });
+
+    And(
+        "I click on the Generate Button from the Statistics Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(GENERATE_BUTTON);
+        });
+
+    Then(
+        "I Verify the Presence of the Export Button from the Statistics Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              STATISTICS_EXPORT_BUTTON);
+        });
+
+    Then(
+        "^I validate the Results Section displays data for ([^\"]*) in the Statistics Page",
+        (String typeOfReport) -> {
+          switch (typeOfReport) {
+            case "Table":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(TABLE_RESULTS);
+              break;
+            case "Map":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(MAP_CONTAINER_STATISTICS_PAGE);
+              break;
+            case "Chart":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(CHART_RESULTS);
+              break;
+          }
         });
   }
 

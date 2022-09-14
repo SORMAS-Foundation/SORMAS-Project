@@ -475,7 +475,6 @@ public class WebDriverHelpers {
   public boolean isElementChecked(By elementLocator) {
     scrollToElement(elementLocator);
     boolean isChecked = elementContainsAttribute(elementLocator, "checked");
-    System.out.println(isChecked);
     if (isChecked) {
       return true;
     }

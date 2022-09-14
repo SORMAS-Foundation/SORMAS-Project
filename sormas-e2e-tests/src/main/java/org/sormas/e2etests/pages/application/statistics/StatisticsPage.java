@@ -7,6 +7,10 @@ public class StatisticsPage {
   public static final By RESET_FILTER_BUTTON = By.id("statisticsResetFilters");
   public static final By REMOVE_FILTER_BUTTON = By.id("close");
   public static final By SELECT_ATTRIBUTE_DROPDOWN = By.cssSelector("[id='statisticsAttribute-0']");
+  public static final By SELECT_DISEASE_DROPDOWN =
+      By.cssSelector("[class='v-filterselect-button']");
+  public static final By ATTRIBUTE_DROPDOWN_VALUES =
+      By.cssSelector("[class='v-menubar-menuitem-caption']");
   public static final By VISUALISATION_TYPE_TABLE_RADIO_BUTTON =
       By.xpath("//label[text()='Table']");
   public static final By VISUALISATION_TYPE_MAP_RADIO_BUTTON = By.xpath("//label[text()='Map']");
@@ -69,8 +73,7 @@ public class StatisticsPage {
       By.xpath("//label[text()='Symptoms']/preceding-sibling::input");
   public static final By EVENTS_CHECKBOX =
       By.xpath("//label[text()='Events']/preceding-sibling::input");
-  public static final By EVENT_GROUPS_CHECKBOX =
-      By.xpath("//label[text()='Event groups']/preceding-sibling::input");
+  public static final By EVENT_GROUPS_CHECKBOX = By.xpath("//label[text()='Event groups']");
   public static final By PERSONS_INVOLVED_CHECKBOX =
       By.xpath("//label[text()='Persons involved']/preceding-sibling::input");
   public static final By ACTIONS_CHECKBOX =
@@ -135,4 +138,9 @@ public class StatisticsPage {
       By.xpath("//label[text()='Disease configurations']/preceding-sibling::input");
   public static final By DELETION_CONFIGURATIONS_CHECKBOX =
       By.xpath("//label[text()='Deletion configurations']/preceding-sibling::input");
+  public static final By STATISTICS_EXPORT_BUTTON = By.id("export");
+  public static final By TABLE_RESULTS = By.cssSelector("td[class*='v-grid-cell']");
+  public static final By MAP_CONTAINER_STATISTICS_PAGE =
+      By.cssSelector("[class*='leaflet-container']");
+  public static final By CHART_RESULTS = By.cssSelector("[class*='highcharts-container']");
 }
