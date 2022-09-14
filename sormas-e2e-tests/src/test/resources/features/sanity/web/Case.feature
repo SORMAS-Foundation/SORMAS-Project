@@ -1129,9 +1129,9 @@ Feature: Case end to end tests
     And I click on the Cases button from navbar
     Then I click on the NEW CASE button
     And I click on the person search button in new case form
-    Then I check that National Health ID is not visible in Person search popup
-    And I check that Passport Number is not visible in Person search popup
-    And I check that Nickname is not visible in Person search popup
+    Then I check that Krankenversicherungsnummer is not visible in Person search popup
+    And I check that Reisepassnummer is not visible in Person search popup
+    And I check that Spitzname is not visible in Person search popup
 
   @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
@@ -1677,7 +1677,7 @@ Feature: Case end to end tests
     And I select last created API result in grid in Case Directory for Bulk Action
     And I click on Bulk Actions combobox on Case Directory Page
     And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
-    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory for DE
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory
     And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Case directory
     And I click on Create button in Create Quarantine Order form DE
     And I click on close button in Create Quarantine Order form
@@ -1799,3 +1799,17 @@ Feature: Case end to end tests
       And I check that number of displayed cases results is 1
       And I apply "All cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Case Person page
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I navigate to case person tab
+    Then I check that Citizenship is not visible in Contact Information section for DE version
+    And I check that Country of birth is not visible in Contact Information section for DE version

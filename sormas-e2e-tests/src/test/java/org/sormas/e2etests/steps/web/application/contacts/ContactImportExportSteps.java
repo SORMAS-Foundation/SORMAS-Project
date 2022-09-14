@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.C
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.CONFIGURATION_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.CUSTOM_CASE_DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.CUSTOM_CASE_EXPORT_DOWNLOAD_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.DETAILED_CASE_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.EXPORT_CONFIGURATION_DATA_DISEASE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.NEW_EXPORT_CONFIGURATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.NEW_EXPORT_CONFIGURATION_SAVE_BUTTON;
@@ -30,6 +31,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactImportExport
 import static org.sormas.e2etests.pages.application.contacts.ContactImportExportPage.EXPORT_CONFIGURATION_DATA_FIRST_NAME_CHECKBOX_CONTACT;
 import static org.sormas.e2etests.pages.application.contacts.ContactImportExportPage.EXPORT_CONFIGURATION_DATA_ID_CHECKBOX_CONTACT;
 import static org.sormas.e2etests.pages.application.contacts.ContactImportExportPage.EXPORT_CONFIGURATION_DATA_LAST_NAME_CHECKBOX_CONTACT;
+import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.userDirPath;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -44,6 +46,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +57,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -86,6 +90,11 @@ public class ContactImportExportSteps implements En {
         "I click on the Basic Contact Export button",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(BASIC_CASE_EXPORT_BUTTON);
+        });
+    When(
+        "I click on the Detailed Contact Export button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DETAILED_CASE_EXPORT_BUTTON);
         });
 
     When(
@@ -168,6 +177,22 @@ public class ContactImportExportSteps implements En {
           Files.delete(path);
           softly.assertAll();
         });
+    When(
+        "I check if citizenship and country of birth is not present in Detailed Contact export file",
+        () -> {
+          String fileName = "sormas_kontakte_" + LocalDate.now() + "_.csv";
+          FilesHelper.waitForFileToDownload(fileName, 20);
+          String[] headers =
+              parseDetailedContactExportHeaders(userDirPath + "/downloads/" + fileName);
+          FilesHelper.deleteFile(fileName);
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("citizenship"::equals),
+              "Citizenship is present in file");
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("countryOfBirth"::equals),
+              "Country of birth is present in file");
+          softly.assertAll();
+        });
 
     When(
         "I delete created custom contact export file",
@@ -232,5 +257,25 @@ public class ContactImportExportSteps implements En {
       log.error("Null pointer exception parseBasicContactExport: {}", e.getCause());
     }
     return builder;
+  }
+
+  public String[] parseDetailedContactExportHeaders(String fileName) {
+    List<String[]> r = null;
+    String[] values = new String[] {};
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
+    try (CSVReader reader =
+        new CSVReaderBuilder(new FileReader(fileName)).withCSVParser(csvParser).build()) {
+      r = reader.readAll();
+    } catch (IOException e) {
+      log.error("IOException parseDetailedContactExportHeaders: {}", e.getCause());
+    } catch (CsvException e) {
+      log.error("CsvException parseDetailedContactExportHeaders: {}", e.getCause());
+    }
+    try {
+      values = r.get(1);
+    } catch (NullPointerException e) {
+      log.error("Null pointer exception parseDetailedContactExportHeaders: {}", e.getCause());
+    }
+    return values;
   }
 }

@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -63,6 +64,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -77,6 +79,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "DocumentTemplateFacade")
 public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
@@ -128,6 +131,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	private TemplateEngine templateEngine = new TemplateEngine();
 
 	@Override
+	@PermitAll
 	public byte[] generateDocumentDocxFromEntities(
 		DocumentWorkflow documentWorkflow,
 		String templateName,
@@ -153,6 +157,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
+	@PermitAll
 	public String generateDocumentTxtFromEntities(
 		DocumentWorkflow documentWorkflow,
 		String templateName,
@@ -266,6 +271,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<String> getAvailableTemplates(DocumentWorkflow documentWorkflow) {
 		File workflowTemplateDir = new File(getWorkflowTemplateDirPath(documentWorkflow).toUri());
 		if (!workflowTemplateDir.exists() || !workflowTemplateDir.isDirectory()) {
@@ -280,12 +286,14 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._DOCUMENT_TEMPLATE_MANAGEMENT)
 	public boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName) {
 		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(templateName).toUri());
 		return templateFile.exists();
 	}
 
 	@Override
+	@PermitAll
 	public DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
 		DocumentVariables documentVariables =
@@ -300,6 +308,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._DOCUMENT_TEMPLATE_MANAGEMENT)
 	public void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, byte[] document) throws DocumentTemplateException {
 		if (!documentWorkflow.getFileExtension().equalsIgnoreCase(FilenameUtils.getExtension(templateName))) {
 			throw new DocumentTemplateException(I18nProperties.getString(Strings.headingWrongFileType));
@@ -331,6 +340,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._DOCUMENT_TEMPLATE_MANAGEMENT)
 	public boolean deleteDocumentTemplate(DocumentWorkflow documentWorkflow, String fileName) throws DocumentTemplateException {
 		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(fileName).toUri());
 		if (templateFile.exists() && templateFile.isFile()) {
@@ -341,6 +351,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._DOCUMENT_TEMPLATE_MANAGEMENT)
 	public byte[] getDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException {
 		try {
 			return FileUtils.readFileToByteArray(getTemplateFile(documentWorkflow, templateName));

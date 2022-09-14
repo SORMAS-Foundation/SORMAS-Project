@@ -50,6 +50,10 @@ public class CreateNewTravelEntryPage {
       By.xpath("//*[text()='W\u00E4hlen Sie eine passende Person']");
   public static final By PICK_A_EXISTING_CASE_LABEL_DE =
       By.xpath("//*[text()='Einen vorhandenen Fall w\u00E4hlen']");
+  public static final By PICK_A_EXISTING_CASE_HEADER_DE =
+      By.xpath("//*[text()='Fall ausw\u00E4hlen oder erstellen']");
+  public static final By CREATE_NEW_CASE_RADIOBUTTON_DE =
+      By.xpath("//*[text()='Neuen Fall erstellen']");
   public static final By ARRIVAL_DATE = By.cssSelector("#dateOfArrival input");
   public static final By REPORT_DATE = By.cssSelector("#reportDate input");
   public static final By DATE_OF_ARRIVAL_POPUP_CLOSE =
