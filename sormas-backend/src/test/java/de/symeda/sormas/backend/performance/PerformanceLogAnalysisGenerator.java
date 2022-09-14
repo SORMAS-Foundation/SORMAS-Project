@@ -85,7 +85,7 @@ public class PerformanceLogAnalysisGenerator {
 	public static final int TIME_TRESHOLD_ORANGE = 300;
 	public static final int TIME_TRESHOLD_RED = 1000;
 
-	public static final String OUTPUT_DIRECTORY = "target/performanceLogAnalysis/";
+	public static String OUTPUT_DIRECTORY = "target/performanceLogAnalysis/";
 
 	private Map<String, Stack<String>> callstacks;
 
@@ -99,7 +99,18 @@ public class PerformanceLogAnalysisGenerator {
 			logFile = new File(PerformanceLogAnalysisGenerator.class.getResource("/performance/exampleApplication.debug").toURI());
 		}
 
-		new PerformanceLogAnalysisGenerator().analyzePerformanceLog(logFile);
+		if (!logFile.exists()) {
+			return;
+		} else if (logFile.isDirectory()) {
+			OUTPUT_DIRECTORY = logFile.getAbsolutePath() + "/";
+			for (File singleLogFile : logFile.listFiles()) {
+				if (singleLogFile.getName().endsWith(".debug")) {
+					new PerformanceLogAnalysisGenerator().analyzePerformanceLog(singleLogFile);
+				}
+			}
+		} else {
+			new PerformanceLogAnalysisGenerator().analyzePerformanceLog(logFile);
+		}
 	}
 
 	public void analyzePerformanceLog(File logFile) throws IOException {
