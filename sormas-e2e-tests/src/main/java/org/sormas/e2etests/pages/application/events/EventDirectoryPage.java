@@ -81,6 +81,8 @@ public class EventDirectoryPage {
   public static final By LINKED_EVENT_GROUP_ID =
       By.xpath("//div[@location = 'event-groups']//div[contains(@class, 'v-slot')]//a");
   public static final By SAVE_BUTTON_IN_LINK_FORM = By.cssSelector(".popupContent #commit");
+  public static final By CHOOSE_OR_CREATE_EVENT_HEADER_DE =
+      By.cssSelector("//*[text()='Ereignisse ausw\u00E4hlen oder erstellen']");
   public static final By FILTERED_EVENT_LINK_EVENT_FORM = By.xpath("//tr[@role='row']");
   public static final By FIRST_EVENT_GROUP = By.xpath("//tr[@role='row']");
   /*public static By getByEventUuid(String eventUuid) {

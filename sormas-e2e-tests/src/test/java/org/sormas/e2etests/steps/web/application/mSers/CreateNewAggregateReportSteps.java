@@ -7,8 +7,8 @@ import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateRep
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DUPLICATE_DETECTION_TEXT;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_INPUT_POPUP;
-import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.POPUP_MESSAGE_WINDOW;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.ERROR_MESSAGE;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.POPUP_MESSAGE_WINDOW;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP_DIV;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.SNAKE_BITE_SUSPECTED_CASES_INPUT;
@@ -147,7 +147,8 @@ public class CreateNewAggregateReportSteps implements En {
         });
     And(
         "^I set report period to \"([^\"]*)\" on Create a new aggregated report form$",
-        (String buttonName) -> webDriverHelpers.clickWebElementByText(WEEK_RADIOBUTTON, buttonName));
+        (String buttonName) ->
+            webDriverHelpers.clickWebElementByText(WEEK_RADIOBUTTON, buttonName));
     And(
         "^I check if Epi week filed is enabled on Create a new aggregated report form$",
         () -> {
