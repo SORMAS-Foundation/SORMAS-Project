@@ -26,13 +26,20 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import java.util.stream.Collectors;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -398,6 +405,120 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, eventParticipantIndexDtos.size());
 		assertEquals(PathogenTestResultType.NEGATIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
 		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
+	}
+
+	@Test
+	public void searchEventParticipantsByPersonPhone() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
+		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
+
+		PersonContactDetailDto primaryPhone =
+				creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+		PersonContactDetailDto secondaryPhone =
+				creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+
+		personWithPhone.getPersonContactDetails().add(primaryPhone);
+		personWithPhone.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithPhone);
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto1 = creator.createEventParticipant(eventDto.toReference(), personWithPhone, user.toReference());
+		EventParticipantDto eventParticipantDto2 = creator.createEventParticipant(eventDto.toReference(), personWithoutPhone, user.toReference());
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(eventDto.toReference());
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0 , 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		List<String> uuids = eventParticipantIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(eventParticipantDto1.getUuid()));
+		assertTrue(uuids.contains(eventParticipantDto2.getUuid()));
+
+		eventParticipantCriteria.setFreeText("111222333");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipantDto1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		eventParticipantCriteria.setFreeText("444555666");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(0, eventParticipantIndexDtos.size());
+	}
+
+	@Test
+	public void searchEventParticipantsByPersonEmail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
+		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
+
+		PersonContactDetailDto primaryEmail =
+				creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+		PersonContactDetailDto secondaryEmail =
+				creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+
+		personWithEmail.getPersonContactDetails().add(primaryEmail);
+		personWithEmail.getPersonContactDetails().add(secondaryEmail);
+		getPersonFacade().save(personWithEmail);
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto1 = creator.createEventParticipant(eventDto.toReference(), personWithEmail, user.toReference());
+		EventParticipantDto eventParticipantDto2 = creator.createEventParticipant(eventDto.toReference(), personWithoutEmail, user.toReference());
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(eventDto.toReference());
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0 , 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		List<String> uuids = eventParticipantIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(eventParticipantDto1.getUuid()));
+		assertTrue(uuids.contains(eventParticipantDto2.getUuid()));
+
+		eventParticipantCriteria.setFreeText("test1@email.com");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipantDto1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		eventParticipantCriteria.setFreeText("test2@email.com");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(0, eventParticipantIndexDtos.size());
+	}
+
+	@Test
+	public void searchEventParticipantsByPersonOtherDetail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
+		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
+
+		PersonContactDetailDto primaryOtherDetail =
+				creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+		PersonContactDetailDto secondaryOtherDetail =
+				creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+
+		personWithOtherDetail.getPersonContactDetails().add(primaryOtherDetail);
+		personWithOtherDetail.getPersonContactDetails().add(secondaryOtherDetail);
+		getPersonFacade().save(personWithOtherDetail);
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto1 = creator.createEventParticipant(eventDto.toReference(), personWithOtherDetail, user.toReference());
+		EventParticipantDto eventParticipantDto2 = creator.createEventParticipant(eventDto.toReference(), personWithoutOtherDetail, user.toReference());
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(eventDto.toReference());
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0 , 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		List<String> uuids = eventParticipantIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(eventParticipantDto1.getUuid()));
+		assertTrue(uuids.contains(eventParticipantDto2.getUuid()));
+
+		eventParticipantCriteria.setFreeText("detail1");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipantDto1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		eventParticipantCriteria.setFreeText("detail2");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(0, eventParticipantIndexDtos.size());
 	}
 
 	private UserDto createUser(TestDataCreator.RDCF rdcf) {
