@@ -19,12 +19,13 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class TravelEntryImportEntitiesDto implements Auditable, Serializable {
+@AuditedClass
+public class TravelEntryImportEntitiesDto implements Serializable {
 
 	private static final long serialVersionUID = -714807989630027827L;
 
@@ -53,12 +54,15 @@ public class TravelEntryImportEntitiesDto implements Auditable, Serializable {
 		return person;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format(
-			"%s(person=%s, travelEntry=%s)",
-			getClass().getSimpleName(),
-			person.getAuditRepresentation(),
-			travelEntry.getAuditRepresentation());
-	}
+	/*
+	 * @Override
+	 * public String getAuditRepresentation() {
+	 * return String.format(
+	 * "%s(person=%s, travelEntry=%s)",
+	 * getClass().getSimpleName(),
+	 * person.getAuditRepresentation(),
+	 * travelEntry.getAuditRepresentation());
+	 * }
+	 */
+	// todo
 }

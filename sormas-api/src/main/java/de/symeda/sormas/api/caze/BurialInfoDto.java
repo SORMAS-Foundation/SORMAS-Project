@@ -3,11 +3,12 @@ package de.symeda.sormas.api.caze;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class BurialInfoDto implements Auditable, Serializable {
+@AuditedClass
+public class BurialInfoDto implements Serializable {
 
 	private static final long serialVersionUID = -8353779195208414541L;
 
@@ -35,8 +36,4 @@ public class BurialInfoDto implements Auditable, Serializable {
 		return burialPlaceDescription;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

@@ -85,7 +85,6 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -922,7 +921,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		return String.join(".", entityPropertyPath);
 	}
 
-	public <T extends Auditable> ImportLineResultDto<T> validateConstraints(T entities) {
+	public <T> ImportLineResultDto<T> validateConstraints(T entities) {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 

@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -33,6 +35,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
+@AuditedClass
 public class SampleExportDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -3027326087594387560L;
@@ -267,6 +270,7 @@ public class SampleExportDto implements HasUuid, Serializable {
 
 	@Order(1)
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

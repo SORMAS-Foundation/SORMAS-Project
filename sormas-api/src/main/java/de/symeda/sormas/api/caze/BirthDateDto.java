@@ -2,10 +2,11 @@ package de.symeda.sormas.api.caze;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.utils.PersonalData;
 
-public class BirthDateDto implements Auditable, Serializable {
+@AuditedClass
+public class BirthDateDto implements Serializable {
 
 	private static final long serialVersionUID = -905128183629450296L;
 
@@ -52,8 +53,4 @@ public class BirthDateDto implements Auditable, Serializable {
 		this.dateOfBirthYYYY = dateOfBirthYYYY;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

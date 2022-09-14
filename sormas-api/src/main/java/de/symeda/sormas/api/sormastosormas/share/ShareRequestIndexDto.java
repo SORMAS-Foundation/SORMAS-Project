@@ -19,9 +19,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 
+@AuditedClass
 public class ShareRequestIndexDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 2314636780125234734L;
@@ -68,6 +71,7 @@ public class ShareRequestIndexDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

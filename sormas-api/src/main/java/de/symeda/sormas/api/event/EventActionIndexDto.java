@@ -20,11 +20,13 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class EventActionIndexDto implements Auditable, Serializable {
+@AuditedClass
+public class EventActionIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 8231951545991794808L;
 
@@ -128,6 +130,7 @@ public class EventActionIndexDto implements Auditable, Serializable {
 		this.actionCreatorUser = actionCreatorUser;
 	}
 
+	@AuditInclude
 	public String getEventUuid() {
 		return eventUuid;
 	}
@@ -312,8 +315,4 @@ public class EventActionIndexDto implements Auditable, Serializable {
 		this.eventManagementStatus = eventManagementStatus;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(eventUuid=%s)", getClass().getSimpleName(), eventUuid);
-	}
 }

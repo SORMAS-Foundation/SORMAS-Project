@@ -14,11 +14,12 @@
  */
 package de.symeda.sormas.api.visit;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 
-public class DashboardVisitDto implements Auditable, Serializable {
+@AuditedClass
+public class DashboardVisitDto implements Serializable {
 
 	private static final long serialVersionUID = 3659266276391189213L;
 
@@ -38,8 +39,4 @@ public class DashboardVisitDto implements Auditable, Serializable {
 		this.visitStatus = visitStatus;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

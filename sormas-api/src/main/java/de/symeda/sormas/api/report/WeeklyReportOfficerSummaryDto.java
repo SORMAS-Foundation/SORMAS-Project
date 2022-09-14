@@ -17,11 +17,13 @@ package de.symeda.sormas.api.report;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class WeeklyReportOfficerSummaryDto implements Auditable, Serializable {
+@AuditedClass
+public class WeeklyReportOfficerSummaryDto implements Serializable {
 
 	private static final long serialVersionUID = -4256242450263049614L;
 
@@ -46,6 +48,7 @@ public class WeeklyReportOfficerSummaryDto implements Auditable, Serializable {
 	private int informantCaseReports;
 	private int informantZeroReports;
 
+	// todo @AuditInclude
 	public UserReferenceDto getOfficer() {
 		return officer;
 	}
@@ -54,6 +57,7 @@ public class WeeklyReportOfficerSummaryDto implements Auditable, Serializable {
 		this.officer = officer;
 	}
 
+	// todo @AuditInclude
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
@@ -62,6 +66,7 @@ public class WeeklyReportOfficerSummaryDto implements Auditable, Serializable {
 		this.district = district;
 	}
 
+	@AuditInclude
 	public Date getOfficerReportDate() {
 		return officerReportDate;
 	}
@@ -118,8 +123,4 @@ public class WeeklyReportOfficerSummaryDto implements Auditable, Serializable {
 		return 0;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(officer=%s, district=%s, officerReportDate=%s)", getClass().getSimpleName(), officer, district, officerReportDate);
-	}
 }

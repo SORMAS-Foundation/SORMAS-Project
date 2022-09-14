@@ -20,10 +20,14 @@ import static de.symeda.sormas.api.audit.Constants.deletePrefix;
 import static de.symeda.sormas.api.audit.Constants.executePrefix;
 import static de.symeda.sormas.api.audit.Constants.readPrefix;
 import static de.symeda.sormas.api.audit.Constants.updatePrefix;
+import static org.reflections.ReflectionUtils.Methods;
+import static org.reflections.util.ReflectionUtilsPredicates.withAnnotation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -48,12 +53,16 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.AuditEntityType;
 import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
@@ -76,6 +85,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	private FhirContext fhirContext;
 	private IParser fhirJsonParser;
 	private String auditSourceSite;
+	private Reflections reflections;
 	private Map<String, AuditEvent.AuditEventAction> actionBackendMap;
 	private static final Map<String, AuditEvent.AuditEventAction> actionRestMap = new HashMap<String, AuditEvent.AuditEventAction>() {
 
@@ -102,8 +112,29 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 	public static boolean isLoggingDisabled() {
 		// using ConfigFacade in the interceptor is difficult,
-		// therefore we compute the value for the skip fast path here and forward it
+		// therefore, we compute the value for the skip fast path here and forward it
 		return loggingDisabled;
+	}
+
+	private Map<Class<?>, List<Method>> cachedAnnotatedMethods = new HashMap<>();
+
+	private List<Method> getMethodsAnnotatedWithAuditInclude(final Class<?> type) {
+		return cachedAnnotatedMethods.computeIfAbsent(type, k -> {
+			Set<Method> methodsFound = reflections.get(Methods.of(type).filter(withAnnotation(AuditInclude.class)));
+			final ArrayList<Method> methods = new ArrayList<>(methodsFound);
+			return methods.stream().sorted().collect(Collectors.toCollection(ArrayList::new));
+		});
+	}
+
+	private Map<Class<?>, String> cachedClassName = new HashMap<>();
+
+	private String getClassNameAnnotatedWithAuditedClass(final Class<?> type) {
+		return cachedClassName.computeIfAbsent(type, k -> {
+			if (type.isAnnotationPresent(AuditedClass.class)) {
+				return type.getSimpleName();
+			}
+			return null;
+		});
 	}
 
 	@PostConstruct
@@ -123,6 +154,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		fhirContext = FhirContext.forR4();
 		fhirJsonParser = fhirContext.newJsonParser();
+		reflections = new Reflections("de.symeda.sormas.api", Scanners.MethodsAnnotated, Scanners.TypesAnnotated);
 	}
 
 	private void accept(AuditEvent event) {
@@ -180,14 +212,14 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		accept(applicationStartAudit);
 	}
 
-	public void logBackendCall(Method calledMethod, List<String> params, String returnValue, Date start, Date end) {
+	public void logBackendCall(Method calledMethod, Object[] params, Object returnValue, Date start, Date end) {
 		AuditEvent backendCall = new AuditEvent();
 
 		backendCall.setAction(inferBackendAction(calledMethod.getName()));
 		makePeriod(start, end, backendCall);
 
 		backendCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
-		backendCall.setOutcomeDesc(returnValue);
+		backendCall.setOutcomeDesc(printObject(returnValue));
 
 		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
 		CodeableConcept codeableConcept = new CodeableConcept();
@@ -224,11 +256,14 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		entity.setWhat(new Reference(calledMethod.toString()));
 
 		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
-		params.forEach(p -> {
-			AuditEvent.AuditEventEntityDetailComponent detail =
-				new AuditEvent.AuditEventEntityDetailComponent(new StringType("param"), new StringType(p));
-			details.add(detail);
-		});
+
+		if (params != null) {
+			Arrays.stream(params).map(this::printObject).forEach(p -> {
+				AuditEvent.AuditEventEntityDetailComponent detail =
+					new AuditEvent.AuditEventEntityDetailComponent(new StringType("param"), new StringType(p));
+				details.add(detail);
+			});
+		}
 
 		entity.setDetail(details);
 		backendCall.addEntity(entity);
@@ -511,6 +546,81 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		AuditEvent.AuditEventAgentComponent agent = getAuditEventAgentComponent();
 		agent.setAltId(authAlias);
 		return agent;
+	}
+
+	private String printFromAnnotationsInner(Object object, List<Method> methods) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(object.getClass().getSimpleName());
+
+		if (methods.isEmpty()) {
+			return sb.toString();
+		}
+
+		sb.append("(");
+
+		// iterate over all methods and append the value of the method to the string
+		for (Method method : methods) {
+			try {
+				sb.append(method.getName());
+				sb.append("=");
+				sb.append(method.invoke(object));
+				sb.append(", ");
+			} catch (Exception e) {
+				sb.append("getter invocation failed");
+			}
+		}
+
+		sb.append(")");
+		return sb.toString();
+
+	}
+
+	private String printObject(Object object) {
+		if (object == null) {
+			return "null";
+		}
+
+		if (object instanceof Collection) {
+			Collection<Object> collection = (Collection<Object>) object;
+
+			if (!collection.isEmpty()) {
+				String str = collection.stream().map(this::tryPrintFromAnnotation).collect(Collectors.joining(","));
+				return String.format("[%s]", str);
+			} else {
+				return "[]";
+			}
+		}
+
+		if (object instanceof Map) {
+			Map<Object, Object> map = (Map<Object, Object>) object;
+
+			if (!map.isEmpty()) {
+				String str = map.entrySet()
+					.stream()
+					.map(e -> String.format("%s=%s", tryPrintFromAnnotation(e.getKey()), tryPrintFromAnnotation(e.getValue())))
+					.collect(Collectors.joining(","));
+				return String.format("{%s}", str);
+			} else {
+				return "{}";
+			}
+		}
+
+		return tryPrintFromAnnotation(object);
+
+	}
+
+	private String tryPrintFromAnnotation(Object object) {
+		List<Method> methods = getMethodsAnnotatedWithAuditInclude(object.getClass());
+		if (!methods.isEmpty()) {
+			return printFromAnnotationsInner(object, methods);
+		}
+		String auditedClassName = getClassNameAnnotatedWithAuditedClass(object.getClass());
+		if (auditedClassName != null) {
+			return auditedClassName;
+		}
+
+		logger.debug("Audit logging for object of type {} is not implemented. Please file an issue.", object.getClass());
+		return object.toString();
 	}
 
 	private class AgentDetails {

@@ -28,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -42,6 +44,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
  *              especially for fields that are not needed for all diseases
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AuditedClass
 public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 	private static final long serialVersionUID = -1L;
@@ -86,6 +89,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}
@@ -145,4 +149,5 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	public String toString() {
 		return (i18nPrefix() != null ? i18nPrefix() : getClass().getSimpleName()) + StringUtils.SPACE + this.getUuid();
 	}
+
 }

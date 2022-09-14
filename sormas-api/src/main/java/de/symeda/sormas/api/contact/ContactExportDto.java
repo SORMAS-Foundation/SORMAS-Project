@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -61,6 +63,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCod
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(ContactDto.class)
+@AuditedClass
 public class ContactExportDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 2054231712903661096L;
@@ -383,6 +386,7 @@ public class ContactExportDto implements HasUuid, Serializable {
 	@ExportProperty(ContactDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

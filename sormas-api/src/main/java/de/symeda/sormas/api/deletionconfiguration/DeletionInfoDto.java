@@ -1,11 +1,13 @@
 package de.symeda.sormas.api.deletionconfiguration;
 
-import de.symeda.sormas.api.audit.Auditable;
-
 import java.io.Serializable;
 import java.util.Date;
 
-public class DeletionInfoDto implements Auditable, Serializable {
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
+public class DeletionInfoDto implements Serializable {
 
 	private Date deletionDate;
 	private Date referenceDate;
@@ -19,6 +21,7 @@ public class DeletionInfoDto implements Auditable, Serializable {
 		this.deletionReferenceField = deletionReferenceField;
 	}
 
+	@AuditInclude
 	public Date getDeletionDate() {
 		return deletionDate;
 	}
@@ -27,6 +30,7 @@ public class DeletionInfoDto implements Auditable, Serializable {
 		this.deletionDate = deletionDate;
 	}
 
+	@AuditInclude
 	public Date getReferenceDate() {
 		return referenceDate;
 	}
@@ -35,6 +39,7 @@ public class DeletionInfoDto implements Auditable, Serializable {
 		this.referenceDate = referenceDate;
 	}
 
+	@AuditInclude
 	public int getDeletionPeriod() {
 		return deletionPeriod;
 	}
@@ -43,6 +48,7 @@ public class DeletionInfoDto implements Auditable, Serializable {
 		this.deletionPeriod = deletionPeriod;
 	}
 
+	@AuditInclude
 	public String getDeletionReferenceField() {
 		return deletionReferenceField;
 	}
@@ -51,14 +57,4 @@ public class DeletionInfoDto implements Auditable, Serializable {
 		this.deletionReferenceField = deletionReferenceField;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format(
-			"%s(deletionDate=%s, referenceDate=%s, deletionPeriod=%s, deletionReferenceField=%s)",
-			getClass().getSimpleName(),
-			deletionDate,
-			referenceDate,
-			deletionPeriod,
-			deletionReferenceField);
-	}
 }

@@ -15,11 +15,12 @@
 
 package de.symeda.sormas.api.importexport;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 
-public class ImportLineResultDto<E extends Auditable> implements Auditable, Serializable {
+@AuditedClass
+public class ImportLineResultDto<E> implements Serializable {
 
 	private static final long serialVersionUID = -9004769653154669800L;
 
@@ -57,28 +58,31 @@ public class ImportLineResultDto<E extends Auditable> implements Auditable, Seri
 		return result == ImportLineResult.SUCCESS;
 	}
 
-	public static <E extends Auditable> ImportLineResultDto<E> successResult() {
+	public static <E> ImportLineResultDto<E> successResult() {
 		return new ImportLineResultDto<>(ImportLineResult.SUCCESS, null, null);
 	}
 
-	public static <E extends Auditable> ImportLineResultDto<E> errorResult(String message) {
+	public static <E> ImportLineResultDto<E> errorResult(String message) {
 		return new ImportLineResultDto<>(ImportLineResult.ERROR, message, null);
 	}
 
-	public static <E extends Auditable> ImportLineResultDto<E> duplicateResult(E entities) {
+	public static <E> ImportLineResultDto<E> duplicateResult(E entities) {
 		return new ImportLineResultDto<>(ImportLineResult.DUPLICATE, null, entities);
 	}
 
-	public static <E extends Auditable> ImportLineResultDto<E> skippedResult(String message) {
+	public static <E> ImportLineResultDto<E> skippedResult(String message) {
 		return new ImportLineResultDto<>(ImportLineResult.SKIPPED, message, null);
 	}
+// todo
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format(
-			"%s(result=%s, importEntities=%s)",
-			getClass().getSimpleName(),
-			result,
-			importEntities != null ? importEntities.getAuditRepresentation() : "null");
-	}
+	/*
+	 * @Override
+	 * public String getAuditRepresentation() {
+	 * return String.format(
+	 * "%s(result=%s, importEntities=%s)",
+	 * getClass().getSimpleName(),
+	 * result,
+	 * importEntities != null ? importEntities.getAuditRepresentation() : "null");
+	 * }
+	 */
 }

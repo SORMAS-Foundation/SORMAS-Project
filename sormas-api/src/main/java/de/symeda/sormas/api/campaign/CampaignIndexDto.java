@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditedClass;
 
+@AuditedClass
 public class CampaignIndexDto implements Serializable, HasUuid {
 
 	private static final long serialVersionUID = 2448753530580084851L;

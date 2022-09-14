@@ -20,6 +20,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportGroup;
@@ -33,6 +35,7 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @ExportEntity(EventDto.class)
+@AuditedClass
 public class EventExportDto implements HasUuid, Serializable {
 
 	public static final String I18N_PREFIX = "EventExport";
@@ -208,6 +211,7 @@ public class EventExportDto implements HasUuid, Serializable {
 	@ExportProperty(EventDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.audit.Auditable;
-
 import java.io.Serializable;
+
+import de.symeda.sormas.api.audit.AuditedClass;
 
 /**
  * An event may be related to several event groups.
@@ -25,7 +25,8 @@ import java.io.Serializable;
  * It also contains an information about the total count of event groups related to an Event.
  * It will be used in Events directory for the Event groups column.
  */
-public class EventGroupsIndexDto implements Auditable, Serializable {
+@AuditedClass
+public class EventGroupsIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 769275615231297865L;
 
@@ -60,9 +61,11 @@ public class EventGroupsIndexDto implements Auditable, Serializable {
 		}
 		return eventGroup.getUuid() + " (" + count + ")";
 	}
-
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(eventGroup=%s, count=%s)", getClass().getSimpleName(), eventGroup.getAuditRepresentation(), count);
-	}
+// todo
+	/*
+	 * @Override
+	 * public String getAuditRepresentation() {
+	 * return String.format("%s(eventGroup=%s, count=%s)", getClass().getSimpleName(), eventGroup.getAuditRepresentation(), count);
+	 * }
+	 */
 }

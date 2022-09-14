@@ -16,10 +16,11 @@ package de.symeda.sormas.api.report;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
-public class WeeklyReportRegionSummaryDto implements Auditable, Serializable {
+@AuditedClass
+public class WeeklyReportRegionSummaryDto implements Serializable {
 
 	private static final long serialVersionUID = -8776688104892901821L;
 
@@ -47,6 +48,7 @@ public class WeeklyReportRegionSummaryDto implements Auditable, Serializable {
 	private int informantCaseReports;
 	private int informantZeroReports;
 
+// todo @AuditInclude
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -134,8 +136,4 @@ public class WeeklyReportRegionSummaryDto implements Auditable, Serializable {
 		return 0;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(region=%s)", getClass().getSimpleName(), region);
-	}
 }

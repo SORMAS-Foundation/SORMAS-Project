@@ -1,12 +1,14 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.audit.Auditable;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class PersonQuarantineEndDto implements Auditable, Serializable {
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
+public class PersonQuarantineEndDto implements Serializable {
 
 	private String personUuid;
 	private Date latestQuarantineEndDate;
@@ -16,6 +18,7 @@ public class PersonQuarantineEndDto implements Auditable, Serializable {
 		this.latestQuarantineEndDate = latestQuarantineEndDate;
 	}
 
+	@AuditInclude
 	public String getPersonUuid() {
 		return personUuid;
 	}
@@ -47,8 +50,4 @@ public class PersonQuarantineEndDto implements Auditable, Serializable {
 		return Objects.hash(personUuid);
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(personUuid=%s)", getClass().getSimpleName(), personUuid);
-	}
 }

@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@AuditedClass
 public class ClinicalVisitIndexDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -7587908114350685830L;
@@ -61,6 +64,7 @@ public class ClinicalVisitIndexDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

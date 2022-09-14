@@ -38,7 +38,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
@@ -187,13 +187,13 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		List<ShareRequestIndexDto> requests = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!requests.isEmpty()) {
-			Map<String, SormasServerDescriptorDto> serverDescriptorMap = sormasToSormasDiscoveryService.getAllAvailableServers()
+			Map<String, SormasServerDescriptor> serverDescriptorMap = sormasToSormasDiscoveryService.getAllAvailableServers()
 				.stream()
-				.collect(Collectors.toMap(SormasServerDescriptorDto::getId, Function.identity()));
+				.collect(Collectors.toMap(SormasServerDescriptor::getId, Function.identity()));
 
 			requests.forEach(request -> {
 				String organizationId = request.getOrganizationId();
-				SormasServerDescriptorDto serverDescriptor = serverDescriptorMap.get(organizationId);
+				SormasServerDescriptor serverDescriptor = serverDescriptorMap.get(organizationId);
 
 				request.setOrganizationName(serverDescriptor != null ? serverDescriptor.getName() : organizationId);
 			});

@@ -1,10 +1,12 @@
 package de.symeda.sormas.api.report;
 
-import de.symeda.sormas.api.audit.Auditable;
-
 import java.io.Serializable;
 
-public class AggregateReportGroupingDto implements Auditable, Serializable, Cloneable {
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
+public class AggregateReportGroupingDto implements Serializable, Cloneable {
 
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -23,18 +25,22 @@ public class AggregateReportGroupingDto implements Auditable, Serializable, Clon
 		this.pointOfEntry = pointOfEntry;
 	}
 
+	@AuditInclude
 	public String getRegion() {
 		return region;
 	}
 
+	@AuditInclude
 	public String getDistrict() {
 		return district;
 	}
 
+	@AuditInclude
 	public String getHealthFacility() {
 		return healthFacility;
 	}
 
+	@AuditInclude
 	public String getPointOfEntry() {
 		return pointOfEntry;
 	}
@@ -51,14 +57,4 @@ public class AggregateReportGroupingDto implements Auditable, Serializable, Clon
 			&& this.pointOfEntry.equals(aggregateReportGroupingDto.getPointOfEntry());
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format(
-			"%s(region=%s, district=%s, healthFacility=%s, pointOfEntry=%s)",
-			getClass().getSimpleName(),
-			region,
-			district,
-			healthFacility,
-			pointOfEntry);
-	}
 }

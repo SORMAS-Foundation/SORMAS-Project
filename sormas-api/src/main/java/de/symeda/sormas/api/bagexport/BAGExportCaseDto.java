@@ -18,7 +18,8 @@ package de.symeda.sormas.api.bagexport;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.QuarantineReason;
@@ -32,7 +33,8 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class BAGExportCaseDto implements Auditable, Serializable {
+@AuditedClass
+public class BAGExportCaseDto implements Serializable {
 
 	private Integer caseIdIsm;
 	private Long caseId;
@@ -167,6 +169,7 @@ public class BAGExportCaseDto implements Auditable, Serializable {
 	}
 
 	@Order(1)
+	@AuditInclude
 	public Integer getCaseIdIsm() {
 		return caseIdIsm;
 	}
@@ -176,6 +179,7 @@ public class BAGExportCaseDto implements Auditable, Serializable {
 	}
 
 	@Order(2)
+	@AuditInclude
 	public Long getCaseId() {
 		return caseId;
 	}
@@ -184,6 +188,7 @@ public class BAGExportCaseDto implements Auditable, Serializable {
 		this.caseId = caseId;
 	}
 
+	@AuditInclude
 	public Long getPersonId() {
 		return personId;
 	}
@@ -724,8 +729,4 @@ public class BAGExportCaseDto implements Auditable, Serializable {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(caseIdIsm=%s, caseId=%s, personId=%s)", getClass().getSimpleName(), caseIdIsm, caseId, personId);
-	}
 }

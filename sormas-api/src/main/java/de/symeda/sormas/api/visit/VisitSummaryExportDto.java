@@ -6,7 +6,10 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 
+@AuditedClass
 public class VisitSummaryExportDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 7066530434713936967L;
@@ -52,6 +55,7 @@ public class VisitSummaryExportDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

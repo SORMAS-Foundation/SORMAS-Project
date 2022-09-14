@@ -18,7 +18,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 
+@AuditedClass
 public class EventGroupIndexDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 8322646404033924938L;
@@ -43,6 +46,7 @@ public class EventGroupIndexDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

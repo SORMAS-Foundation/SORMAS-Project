@@ -1,10 +1,12 @@
 package de.symeda.sormas.api.externaljournal.patientdiary;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 
-public class PatientDiaryPersonDto implements Auditable, Serializable {
+@AuditedClass
+public class PatientDiaryPersonDto implements Serializable {
 
 	private static final long serialVersionUID = 1300043011538769976L;
 
@@ -16,6 +18,7 @@ public class PatientDiaryPersonDto implements Auditable, Serializable {
 	private PatientDiaryContactInformation contactInformation;
 	private String endDate;
 
+	@AuditInclude
 	public String getPersonUUID() {
 		return personUUID;
 	}
@@ -72,8 +75,4 @@ public class PatientDiaryPersonDto implements Auditable, Serializable {
 		this.endDate = endDate;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(personUuid=%s)", getClass().getSimpleName(), personUUID);
-	}
 }

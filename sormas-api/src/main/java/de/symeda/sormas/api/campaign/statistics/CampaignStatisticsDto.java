@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 
-public class CampaignStatisticsDto implements Auditable, Serializable, Cloneable {
+@AuditedClass
+public class CampaignStatisticsDto implements Serializable, Cloneable {
 
 	public static final String I18N_PREFIX = "CampaignStatistics";
 
@@ -86,9 +87,13 @@ public class CampaignStatisticsDto implements Auditable, Serializable, Cloneable
 		return this.campaignStatisticsGroupingDto.equals(campaignStatisticsDto.campaignStatisticsGroupingDto)
 			&& this.formCount == campaignStatisticsDto.formCount;
 	}
-
-	@Override
+// todo
+	/*@Override
 	public String getAuditRepresentation() {
-		return String.format("%s(campaignStatisticsGroupingDto=%s, formCount=%s)", getClass().getSimpleName(), campaignStatisticsGroupingDto.getAuditRepresentation(), formCount);
-	}
+		return String.format(
+			"%s(campaignStatisticsGroupingDto=%s, formCount=%s)",
+			getClass().getSimpleName(),
+			campaignStatisticsGroupingDto.getAuditRepresentation(),
+			formCount);
+	}*/
 }

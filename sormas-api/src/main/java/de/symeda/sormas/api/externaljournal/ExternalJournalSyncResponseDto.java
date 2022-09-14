@@ -5,10 +5,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ExternalJournalSyncResponseDto implements Auditable, Serializable {
+@AuditedClass
+public class ExternalJournalSyncResponseDto implements Serializable {
 
 	private boolean success;
 	private String message;
@@ -42,8 +43,4 @@ public class ExternalJournalSyncResponseDto implements Auditable, Serializable {
 		this.errors = errors;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

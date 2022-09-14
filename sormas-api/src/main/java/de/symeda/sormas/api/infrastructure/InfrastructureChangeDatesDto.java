@@ -1,11 +1,12 @@
 package de.symeda.sormas.api.infrastructure;
 
-import de.symeda.sormas.api.audit.Auditable;
-
 import java.io.Serializable;
 import java.util.Date;
 
-public class InfrastructureChangeDatesDto implements Auditable, Serializable {
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
+public class InfrastructureChangeDatesDto implements Serializable {
 
 	private static final long serialVersionUID = 6269655187128160377L;
 
@@ -134,10 +135,5 @@ public class InfrastructureChangeDatesDto implements Auditable, Serializable {
 
 	public void setFeatureConfigurationChangeDate(Date featureConfigurationChangeDate) {
 		this.featureConfigurationChangeDate = featureConfigurationChangeDate;
-	}
-
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
 	}
 }

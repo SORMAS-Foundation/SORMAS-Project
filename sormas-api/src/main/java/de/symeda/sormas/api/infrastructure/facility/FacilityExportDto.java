@@ -17,9 +17,12 @@ package de.symeda.sormas.api.infrastructure.facility;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.utils.Order;
 
+@AuditedClass
 public class FacilityExportDto implements HasUuid, Serializable {
 
 	public static final String I18N_PREFIX = "FacilityExport";
@@ -108,6 +111,7 @@ public class FacilityExportDto implements HasUuid, Serializable {
 
 	@Order(0)
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

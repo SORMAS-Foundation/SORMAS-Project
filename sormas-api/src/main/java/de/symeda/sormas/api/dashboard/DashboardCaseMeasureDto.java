@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 
-public class DashboardCaseMeasureDto implements Auditable, Serializable {
+@AuditedClass
+public class DashboardCaseMeasureDto implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207658L;
 
@@ -43,8 +44,4 @@ public class DashboardCaseMeasureDto implements Auditable, Serializable {
 		return districtValuesUpperQuartile;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

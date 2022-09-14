@@ -3,11 +3,12 @@ package de.symeda.sormas.api.statistics;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class StatisticsCaseCountDto implements Auditable, Serializable {
+@AuditedClass
+public class StatisticsCaseCountDto implements Serializable {
 
 	private static final long serialVersionUID = 8900419282951754875L;
 
@@ -90,8 +91,4 @@ public class StatisticsCaseCountDto implements Auditable, Serializable {
 		return result;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

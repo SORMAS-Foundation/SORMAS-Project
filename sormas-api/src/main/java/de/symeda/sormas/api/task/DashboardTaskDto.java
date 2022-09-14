@@ -15,11 +15,12 @@
 
 package de.symeda.sormas.api.task;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 
-public class DashboardTaskDto implements Auditable, Serializable {
+@AuditedClass
+public class DashboardTaskDto implements Serializable {
 
 	private static final long serialVersionUID = -4719548498678710837L;
 
@@ -52,8 +53,4 @@ public class DashboardTaskDto implements Auditable, Serializable {
 		this.taskStatus = taskStatus;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

@@ -7,10 +7,12 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
-public class CampaignDiagramDataDto implements Auditable, Serializable {
+@AuditedClass
+public class CampaignDiagramDataDto implements Serializable {
 
 	private static final long serialVersionUID = -8813972727008846360L;
 
@@ -102,6 +104,7 @@ public class CampaignDiagramDataDto implements Auditable, Serializable {
 		this.formMetaUuid = formMetaUuid;
 	}
 
+	@AuditInclude
 	public String getFormId() {
 		return formId;
 	}
@@ -110,6 +113,7 @@ public class CampaignDiagramDataDto implements Auditable, Serializable {
 		this.formId = formId;
 	}
 
+	@AuditInclude
 	public String getFieldId() {
 		return fieldId;
 	}
@@ -166,16 +170,4 @@ public class CampaignDiagramDataDto implements Auditable, Serializable {
 		this.hasAgeGroupData = hasAgeGroupData;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format(
-			"%s(fieldCaption=%s, valueSum=%s, groupingKey=%s, groupingCaption=%s, fieldId=%s, formId=%s)",
-			getClass().getSimpleName(),
-			fieldCaption,
-			valueSum,
-			groupingKey,
-			groupingCaption,
-			fieldId,
-			formId);
-	}
 }

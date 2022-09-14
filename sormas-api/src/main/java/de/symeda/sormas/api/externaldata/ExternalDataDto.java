@@ -10,8 +10,11 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
+@AuditedClass
 public class ExternalDataDto implements HasUuid, Serializable, HasExternalData {
 
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
@@ -23,6 +26,7 @@ public class ExternalDataDto implements HasUuid, Serializable, HasExternalData {
 	private String externalToken;
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

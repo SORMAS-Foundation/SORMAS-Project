@@ -3,9 +3,11 @@ package de.symeda.sormas.api.visit;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.VisitOrigin;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 
-public class VisitResultDto implements Auditable, Serializable {
+@AuditedClass
+public class VisitResultDto implements Serializable {
 
 	public VisitResultDto() {
 	}
@@ -18,6 +20,7 @@ public class VisitResultDto implements Auditable, Serializable {
 	private VisitOrigin origin;
 	private VisitResult result;
 
+	@AuditInclude
 	public VisitOrigin getOrigin() {
 		return origin;
 	}
@@ -38,8 +41,4 @@ public class VisitResultDto implements Auditable, Serializable {
 		return result.toString();
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(origin=%s)", getClass().getSimpleName(), origin);
-	}
 }

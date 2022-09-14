@@ -10,6 +10,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
@@ -21,6 +23,7 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@AuditedClass
 public class VisitExportDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 6432390815000039126L;
@@ -94,11 +97,13 @@ public class VisitExportDto implements HasUuid, Serializable {
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
+	@AuditInclude
 	public Long getId() {
 		return id;
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

@@ -21,10 +21,12 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
-public class SormasToSormasOptionsDto implements Auditable, Serializable {
+@AuditedClass
+public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "SormasToSormasOptions";
 
@@ -41,7 +43,7 @@ public class SormasToSormasOptionsDto implements Auditable, Serializable {
 	public static final String WITH_IMMUNIZATIONS = "withImmunizations";
 
 	// Fixme this should be renamed but it has strange side effects with the UI
-	private SormasServerDescriptorDto organization;
+	private SormasServerDescriptor organization;
 
 	private boolean handOverOwnership;
 
@@ -59,14 +61,16 @@ public class SormasToSormasOptionsDto implements Auditable, Serializable {
 	private boolean withImmunizations;
 
 	// FIXME(#6101): This should be renamed as it is the target of the operation
-	public SormasServerDescriptorDto getOrganization() {
+	// todo @AuditInclude
+	public SormasServerDescriptor getOrganization() {
 		return organization;
 	}
 
-	public void setOrganization(SormasServerDescriptorDto organization) {
+	public void setOrganization(SormasServerDescriptor organization) {
 		this.organization = organization;
 	}
 
+	@AuditInclude
 	public boolean isHandOverOwnership() {
 		return handOverOwnership;
 	}
@@ -75,6 +79,7 @@ public class SormasToSormasOptionsDto implements Auditable, Serializable {
 		this.handOverOwnership = handOverOwnership;
 	}
 
+	@AuditInclude
 	public boolean isPseudonymizeData() {
 		return pseudonymizeData;
 	}
@@ -91,6 +96,7 @@ public class SormasToSormasOptionsDto implements Auditable, Serializable {
 		this.comment = comment;
 	}
 
+	@AuditInclude
 	public boolean isWithAssociatedContacts() {
 		return withAssociatedContacts;
 	}
@@ -99,6 +105,7 @@ public class SormasToSormasOptionsDto implements Auditable, Serializable {
 		this.withAssociatedContacts = withAssociatedContacts;
 	}
 
+	@AuditInclude
 	public boolean isWithSamples() {
 		return withSamples;
 	}
@@ -107,6 +114,7 @@ public class SormasToSormasOptionsDto implements Auditable, Serializable {
 		this.withSamples = withSamples;
 	}
 
+	@AuditInclude
 	public boolean isWithEventParticipants() {
 		return withEventParticipants;
 	}
@@ -115,6 +123,7 @@ public class SormasToSormasOptionsDto implements Auditable, Serializable {
 		this.withEventParticipants = withEventParticipants;
 	}
 
+	@AuditInclude
 	public boolean isWithImmunizations() {
 		return withImmunizations;
 	}
@@ -123,17 +132,4 @@ public class SormasToSormasOptionsDto implements Auditable, Serializable {
 		this.withImmunizations = withImmunizations;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format(
-			"%s(organization=%s, handOverOwnership=%s, pseudonymizeData=%s, withAssociatedContacts=%s, withSamples=%s, withEventParticipants=%s, withImmunizations=%s)",
-			getClass().getSimpleName(),
-			organization.getAuditRepresentation(),
-			handOverOwnership,
-			pseudonymizeData,
-			withAssociatedContacts,
-			withSamples,
-			withEventParticipants,
-			withImmunizations);
-	}
 }

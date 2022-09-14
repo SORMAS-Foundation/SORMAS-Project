@@ -21,11 +21,13 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.HasUuid;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
-public class RequestResponseDataDto implements Auditable, Serializable {
+@AuditedClass
+public class RequestResponseDataDto implements Serializable {
 
 	private static final long serialVersionUID = 8682273164157677666L;
 
@@ -44,6 +46,7 @@ public class RequestResponseDataDto implements Auditable, Serializable {
 		this.comment = comment;
 	}
 
+	@AuditInclude
 	public String getRequestUuid() {
 		return requestUuid;
 	}
@@ -60,8 +63,4 @@ public class RequestResponseDataDto implements Auditable, Serializable {
 		this.comment = comment;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(requestUuid=%s)", getClass().getSimpleName(), requestUuid);
-	}
 }

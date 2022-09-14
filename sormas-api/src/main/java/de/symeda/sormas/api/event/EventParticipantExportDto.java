@@ -21,7 +21,8 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -53,7 +54,8 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCod
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(EventParticipantDto.class)
-public class EventParticipantExportDto implements Auditable, Serializable {
+@AuditedClass
+public class EventParticipantExportDto implements Serializable {
 
 	public static final String I18N_PREFIX = "EventParticipantExport";
 
@@ -258,10 +260,12 @@ public class EventParticipantExportDto implements Auditable, Serializable {
 	@Order(9)
 	@ExportProperty(EventParticipantDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
+	@AuditInclude
 	public String getEventParticipantUuid() {
 		return eventParticipantUuid;
 	}
 
+	@AuditInclude
 	public long getPersonAddressId() {
 		return personAddressId;
 	}
@@ -272,6 +276,7 @@ public class EventParticipantExportDto implements Auditable, Serializable {
 		EventParticipantDto.PERSON,
 		PersonDto.UUID })
 	@ExportGroup(ExportGroupType.PERSON)
+	@AuditInclude
 	public String getPersonUuid() {
 		return personUuid;
 	}
@@ -293,6 +298,7 @@ public class EventParticipantExportDto implements Auditable, Serializable {
 		EventParticipantDto.RESULTING_CASE,
 		CaseDataDto.UUID })
 	@ExportGroup(ExportGroupType.CORE)
+	@AuditInclude
 	public String getCaseUuid() {
 		return caseUuid;
 	}
@@ -670,6 +676,7 @@ public class EventParticipantExportDto implements Auditable, Serializable {
 		EventParticipantDto.EVENT,
 		EventDto.UUID })
 	@ExportGroup(ExportGroupType.CORE)
+	@AuditInclude
 	public String getEventUuid() {
 		return eventUuid;
 	}
@@ -817,10 +824,12 @@ public class EventParticipantExportDto implements Auditable, Serializable {
 		this.eventParticipantSamples.add(exportSampleDto);
 	}
 
+	@AuditInclude
 	public long getId() {
 		return id;
 	}
 
+	@AuditInclude
 	public long getPersonId() {
 		return personId;
 	}
@@ -981,9 +990,4 @@ public class EventParticipantExportDto implements Auditable, Serializable {
 		return eventReportDateTime;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String
-			.format("%s(id=%s, personId=%s, personAddressId=%s, eventUuid=%s)", getClass().getSimpleName(), id, personId, personAddressId, eventUuid);
-	}
 }

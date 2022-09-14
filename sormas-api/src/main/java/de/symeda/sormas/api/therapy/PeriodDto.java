@@ -1,11 +1,13 @@
 package de.symeda.sormas.api.therapy;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class PeriodDto implements Auditable, Serializable {
+@AuditedClass
+public class PeriodDto implements Serializable {
 
 	private static final long serialVersionUID = 4184076586681485994L;
 
@@ -18,16 +20,14 @@ public class PeriodDto implements Auditable, Serializable {
 		this.end = end;
 	}
 
+	@AuditInclude
 	public Date getStart() {
 		return start;
 	}
 
+	@AuditInclude
 	public Date getEnd() {
 		return end;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(start=%s, end=%s)", getClass().getSimpleName(), start, end);
-	}
 }

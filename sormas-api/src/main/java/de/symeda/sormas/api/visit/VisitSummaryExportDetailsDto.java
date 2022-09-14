@@ -1,11 +1,13 @@
 package de.symeda.sormas.api.visit;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class VisitSummaryExportDetailsDto implements Auditable, Serializable {
+@AuditedClass
+public class VisitSummaryExportDetailsDto implements Serializable {
 
 	private static final long serialVersionUID = -4677902897777543789L;
 
@@ -20,6 +22,7 @@ public class VisitSummaryExportDetailsDto implements Auditable, Serializable {
 		this.symptoms = symptoms;
 	}
 
+	@AuditInclude
 	public Date getVisitDateTime() {
 		return visitDateTime;
 	}
@@ -44,8 +47,4 @@ public class VisitSummaryExportDetailsDto implements Auditable, Serializable {
 		this.symptoms = symptoms;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(visitDateTime=%s)", getClass().getSimpleName(), visitDateTime);
-	}
 }

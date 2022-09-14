@@ -46,7 +46,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.audit.Auditable;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -692,7 +691,7 @@ public abstract class DataImporter {
 		return errorReportFileName;
 	}
 
-	protected <T extends Auditable> ImportLineResultDto<T> validateConstraints(T object) {
+	protected <T> ImportLineResultDto<T> validateConstraints(T object) {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 

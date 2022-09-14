@@ -20,7 +20,10 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 
+@AuditedClass
 public class CampaignFormDataIndexDto implements Serializable, Cloneable, HasUuid {
 
 	public static final String I18N_PREFIX = "CampaignFormData";
@@ -64,6 +67,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable, HasUui
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}
@@ -72,6 +76,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable, HasUui
 		this.uuid = uuid;
 	}
 
+	@AuditInclude
 	public String getCampaign() {
 		return campaign;
 	}

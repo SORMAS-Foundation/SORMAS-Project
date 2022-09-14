@@ -17,7 +17,10 @@ package de.symeda.sormas.api.person;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 
+@AuditedClass
 public class PersonNameDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 8807952809814344983L;
@@ -50,6 +53,7 @@ public class PersonNameDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

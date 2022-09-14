@@ -21,6 +21,8 @@ import java.util.Date;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ExportGroup;
@@ -36,6 +38,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
+@AuditedClass
 public class PersonExportDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -6902138630884671263L;
@@ -297,6 +300,7 @@ public class PersonExportDto implements HasUuid, Serializable {
 	@ExportProperty(PersonDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

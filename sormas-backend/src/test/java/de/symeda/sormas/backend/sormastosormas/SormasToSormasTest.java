@@ -54,7 +54,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -245,7 +245,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
 
 		shareInfo.setOwnershipHandedOver(ownershipHandedOver);
-		shareInfo.setTargetDescriptor(new SormasServerDescriptorDto(serverId));
+		shareInfo.setTargetDescriptor(new SormasServerDescriptor(serverId));
 		shareInfo.setSender(sender);
 
 		return shareInfo;

@@ -49,7 +49,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
@@ -99,7 +99,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	private final boolean hasOptions;
 
 	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
-	private Function<SormasServerDescriptorDto, String> targetValidator;
+	private Function<SormasServerDescriptor, String> targetValidator;
 
 	private ComboBox targetCombo;
 
@@ -331,7 +331,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	protected void addFields() {
 		targetCombo = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
 		targetCombo.setRequired(true);
-		List<SormasServerDescriptorDto> availableServers = FacadeProvider.getSormasToSormasFacade().getAllAvailableServers();
+		List<SormasServerDescriptor> availableServers = FacadeProvider.getSormasToSormasFacade().getAllAvailableServers();
 		targetCombo.addItems(availableServers);
 
 		if (hasOptions) {
@@ -341,7 +341,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			pseudonymizeData.addStyleNames(CssStyles.VSPACE_3);
 
 			targetCombo.addValueChangeListener(e -> {
-				SormasServerDescriptorDto selectedServer = (SormasServerDescriptorDto) e.getProperty().getValue();
+				SormasServerDescriptor selectedServer = (SormasServerDescriptor) e.getProperty().getValue();
 
 				if (selectedServer == null) {
 					getContent().removeComponent(TARGET_VALIDATION_ERROR_LOC);
@@ -441,7 +441,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		});
 	}
 
-	public void setTargetValidator(Function<SormasServerDescriptorDto, String> targetValidator) {
+	public void setTargetValidator(Function<SormasServerDescriptor, String> targetValidator) {
 		this.targetValidator = targetValidator;
 	}
 
@@ -460,7 +460,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	}
 
 	public boolean isTargetValid() {
-		return targetValidator == null || targetValidator.apply((SormasServerDescriptorDto) targetCombo.getValue()) == null;
+		return targetValidator == null || targetValidator.apply((SormasServerDescriptor) targetCombo.getValue()) == null;
 	}
 
 	private static class OptionFeatureTypeProperty {

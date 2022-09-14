@@ -20,7 +20,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
@@ -28,7 +28,8 @@ import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantD
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 
-public class SormasToSormasDto implements Auditable, Serializable {
+@AuditedClass
+public class SormasToSormasDto implements Serializable {
 
 	private static final long serialVersionUID = 3226296154450214227L;
 
@@ -104,7 +105,7 @@ public class SormasToSormasDto implements Auditable, Serializable {
 		this.immunizations = immunizations;
 	}
 
-	@Override
+	/*@Override
 	public String getAuditRepresentation() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName());
@@ -143,5 +144,6 @@ public class SormasToSormasDto implements Auditable, Serializable {
 		}
 		sb.append("])");
 		return sb.toString();
-	}
+	}*/
+	//todo
 }

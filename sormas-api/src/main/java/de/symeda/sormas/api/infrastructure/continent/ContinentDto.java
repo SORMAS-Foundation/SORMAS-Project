@@ -66,4 +66,5 @@ public class ContinentDto extends InfrastructureDto {
 	public String i18nPrefix() {
 		return I18N_PREFIX;
 	}
+
 }

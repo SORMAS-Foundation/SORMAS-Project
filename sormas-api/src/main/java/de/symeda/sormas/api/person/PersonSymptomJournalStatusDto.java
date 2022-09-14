@@ -2,10 +2,11 @@ package de.symeda.sormas.api.person;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.utils.Required;
 
-public class PersonSymptomJournalStatusDto implements Auditable, Serializable {
+@AuditedClass
+public class PersonSymptomJournalStatusDto implements Serializable {
 
 	private static final long serialVersionUID = 6985497943624025440L;
 
@@ -18,7 +19,7 @@ public class PersonSymptomJournalStatusDto implements Auditable, Serializable {
 		personSymptomJournalStatusDto.setStatus(status);
 		personSymptomJournalStatusDto.setStatusDateTime(statusDateTime);
 		return personSymptomJournalStatusDto;
-	};
+	}
 
 	public SymptomJournalStatus getStatus() {
 		return status;
@@ -36,8 +37,4 @@ public class PersonSymptomJournalStatusDto implements Auditable, Serializable {
 		this.statusDateTime = statusDateTime;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

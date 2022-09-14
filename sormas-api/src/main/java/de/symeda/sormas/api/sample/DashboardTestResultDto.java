@@ -17,9 +17,10 @@ package de.symeda.sormas.api.sample;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
-public class DashboardTestResultDto implements Auditable, Serializable {
+@AuditedClass
+public class DashboardTestResultDto implements Serializable {
 
 	private static final long serialVersionUID = -6488827968218301232L;
 
@@ -52,8 +53,4 @@ public class DashboardTestResultDto implements Auditable, Serializable {
 		this.testResult = testResult;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

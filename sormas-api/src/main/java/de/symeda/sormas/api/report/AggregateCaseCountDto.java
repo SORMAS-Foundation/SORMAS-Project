@@ -5,11 +5,13 @@ import java.util.Date;
 import java.util.Objects;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class AggregateCaseCountDto implements Auditable, Serializable {
+@AuditedClass
+public class AggregateCaseCountDto implements Serializable {
 
 	public static final String I18N_PREFIX = "AggregateReport";
 
@@ -232,6 +234,7 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.regionName = regionName;
 	}
 
+	@AuditInclude
 	public Long getRegionId() {
 		return regionId;
 	}
@@ -248,6 +251,7 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.districtName = districtName;
 	}
 
+	@AuditInclude
 	public Long getDistrictId() {
 		return districtId;
 	}
@@ -264,6 +268,7 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.healthFacilityName = healthFacilityName;
 	}
 
+	@AuditInclude
 	public Long getHealthFacilityId() {
 		return healthFacilityId;
 	}
@@ -280,6 +285,7 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.pointOfEntryName = pointOfEntryName;
 	}
 
+	@AuditInclude
 	public Long getPointOfEntryId() {
 		return pointOfEntryId;
 	}
@@ -288,6 +294,7 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.pointOfEntryId = pointOfEntryId;
 	}
 
+	@AuditInclude
 	public Disease getDisease() {
 		return disease;
 	}
@@ -328,6 +335,7 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.ageGroup = ageGroup;
 	}
 
+	@AuditInclude
 	public int getYear() {
 		return year;
 	}
@@ -336,6 +344,7 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.year = year;
 	}
 
+	@AuditInclude
 	public Integer getEpiWeek() {
 		return epiWeek;
 	}
@@ -344,6 +353,8 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.epiWeek = epiWeek;
 	}
 
+	//@AuditInclude 
+	//todo
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
@@ -352,6 +363,7 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 		this.reportingUser = reportingUser;
 	}
 
+	@AuditInclude
 	public Date getChangeDate() {
 		return changeDate;
 	}
@@ -404,20 +416,4 @@ public class AggregateCaseCountDto implements Auditable, Serializable {
 			ageGroup);
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-
-		return String.format(
-			"%s(regionId=%s, districtId=%s, healthFacilityId=%s, pointOfEntryId=%s, year=%s, epiWeek=%s, disease=%s, reportingUser=%s, changeDate=%s)",
-			getClass().getSimpleName(),
-			regionId,
-			districtId,
-			healthFacilityId,
-			pointOfEntryId,
-			year,
-			epiWeek,
-			disease,
-			reportingUser,
-			changeDate);
-	}
 }

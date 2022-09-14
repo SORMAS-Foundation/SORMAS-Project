@@ -19,10 +19,13 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.person.PresentCondition;
 
+@AuditedClass
 public class DashboardCaseDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -5705128377788207648L;
@@ -72,6 +75,7 @@ public class DashboardCaseDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

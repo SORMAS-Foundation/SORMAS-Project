@@ -14,9 +14,7 @@
  */
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.audit.Auditable;
-
-public interface HasUuid extends Auditable {
+public interface HasUuid {
 
 	String UUID_REGEX = "^[0-9a-zA-Z-]*$";
 
@@ -25,8 +23,4 @@ public interface HasUuid extends Auditable {
 	 * other.
 	 */
 	String getUuid();
-
-	default String getAuditRepresentation() {
-		return String.format("%s(uuid=%s)", getClass().getSimpleName(), getUuid());
-	}
 }

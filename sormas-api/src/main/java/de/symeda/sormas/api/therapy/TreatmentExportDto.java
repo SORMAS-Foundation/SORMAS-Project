@@ -17,12 +17,14 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class TreatmentExportDto implements Auditable, Serializable {
+@AuditedClass
+public class TreatmentExportDto implements Serializable {
 
 	private static final long serialVersionUID = 1165581587169924707L;
 
@@ -77,6 +79,7 @@ public class TreatmentExportDto implements Auditable, Serializable {
 	}
 
 	@Order(0)
+	@AuditInclude
 	public String getCaseUuid() {
 		return caseUuid;
 	}
@@ -179,8 +182,4 @@ public class TreatmentExportDto implements Auditable, Serializable {
 		return isInJurisdiction;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(caseUuid=%s)", getClass().getSimpleName(), caseUuid);
-	}
 }

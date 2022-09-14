@@ -19,11 +19,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@AuditedClass
 public class EmbeddedSampleExportDto implements HasUuid, Serializable {
 
 	private String uuid;
@@ -95,6 +98,7 @@ public class EmbeddedSampleExportDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

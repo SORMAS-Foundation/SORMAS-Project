@@ -20,13 +20,15 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
 
-public class DashboardContactDto implements Auditable, Serializable {
+@AuditedClass
+public class DashboardContactDto implements Serializable {
 
 	private static final long serialVersionUID = -8118109313009645462L;
 
@@ -67,6 +69,7 @@ public class DashboardContactDto implements Auditable, Serializable {
 		this.dashboardQuarantineDataDto = new DashboardQuarantineDataDto(id, quarantineFrom, quarantineTo);
 	}
 
+	@AuditInclude
 	public long getId() {
 		return id;
 	}
@@ -75,6 +78,7 @@ public class DashboardContactDto implements Auditable, Serializable {
 		this.id = id;
 	}
 
+	@AuditInclude
 	public Date getReportDate() {
 		return reportDate;
 	}
@@ -181,8 +185,4 @@ public class DashboardContactDto implements Auditable, Serializable {
 		return dashboardQuarantineDataDto;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(id=%s,reportDate=%s)", getClass().getSimpleName(), id, reportDate);
-	}
 }

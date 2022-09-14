@@ -19,10 +19,13 @@ import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
+@AuditedClass
 public class FacilityIndexDto implements Serializable, HasUuid {
 
 	public static final String I18N_PREFIX = "Facility";
@@ -83,6 +86,7 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

@@ -15,11 +15,12 @@
 
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 
-public class SampleJurisdictionFlagsDto implements Auditable, Serializable {
+@AuditedClass
+public class SampleJurisdictionFlagsDto implements Serializable {
 
 	private Boolean isInJurisdiction;
 	private Boolean isCaseInJurisdiction;
@@ -60,8 +61,4 @@ public class SampleJurisdictionFlagsDto implements Auditable, Serializable {
 		return isEvenParticipantInJurisdiction;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

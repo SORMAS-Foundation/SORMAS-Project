@@ -6,9 +6,12 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
+@AuditedClass
 public class ExternalMessageIndexDto implements HasUuid, Serializable {
 
 	public static final String I18N_PREFIX = "ExternalMessage";
@@ -88,6 +91,7 @@ public class ExternalMessageIndexDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

@@ -15,12 +15,13 @@
 
 package de.symeda.sormas.api.followup;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class FollowUpPeriodDto implements Auditable, Serializable {
+@AuditedClass
+public class FollowUpPeriodDto implements Serializable {
 
 	private final Date followUpStartDate;
 	private final FollowUpStartDateType followUpStartDateType;
@@ -48,8 +49,4 @@ public class FollowUpPeriodDto implements Auditable, Serializable {
 		this.followUpEndDate = followUpEndDate;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

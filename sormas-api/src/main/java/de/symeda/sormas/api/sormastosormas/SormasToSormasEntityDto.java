@@ -19,9 +19,10 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
-public abstract class SormasToSormasEntityDto<T extends SormasToSormasShareableDto> implements Auditable, Serializable {
+@AuditedClass
+public abstract class SormasToSormasEntityDto<T extends SormasToSormasShareableDto> implements Serializable {
 
 	private static final long serialVersionUID = -1142043326721172412L;
 
@@ -39,8 +40,9 @@ public abstract class SormasToSormasEntityDto<T extends SormasToSormasShareableD
 		return entity;
 	}
 
-	@Override
+	/*@Override
 	public String getAuditRepresentation() {
 		return String.format("%s(entity=%s)", getClass().getSimpleName(), entity.getAuditRepresentation());
-	}
+	}*/
+	// todo
 }

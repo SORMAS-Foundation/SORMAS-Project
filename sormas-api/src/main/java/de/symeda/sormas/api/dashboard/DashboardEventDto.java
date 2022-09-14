@@ -19,11 +19,14 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 
+@AuditedClass
 public class DashboardEventDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -4108181804263076837L;
@@ -83,6 +86,7 @@ public class DashboardEventDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

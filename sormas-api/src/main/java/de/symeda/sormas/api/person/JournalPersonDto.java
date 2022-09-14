@@ -5,10 +5,13 @@ import java.util.Date;
 import java.util.Objects;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@AuditedClass
 public class JournalPersonDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 3561284010406711305L;
@@ -35,6 +38,7 @@ public class JournalPersonDto implements HasUuid, Serializable {
 	private FollowUpStatus followUpStatus;
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

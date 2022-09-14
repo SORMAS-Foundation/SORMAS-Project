@@ -21,13 +21,14 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class EventImportEntitiesDto implements Auditable, Serializable {
+@AuditedClass
+public class EventImportEntitiesDto implements Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
@@ -70,7 +71,8 @@ public class EventImportEntitiesDto implements Auditable, Serializable {
 	public List<EventGroupReferenceDto> getEventGroupReferences() {
 		return eventGroupReferences;
 	}
-
+// todo
+	/*
 	@Override
 	public String getAuditRepresentation() {
 		StringBuilder sb = new StringBuilder();
@@ -94,5 +96,5 @@ public class EventImportEntitiesDto implements Auditable, Serializable {
 		}
 		sb.append("])");
 		return sb.toString();
-	}
+	}*/
 }

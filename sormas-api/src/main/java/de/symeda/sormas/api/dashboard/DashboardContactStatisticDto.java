@@ -5,9 +5,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
-public class DashboardContactStatisticDto implements Auditable, Serializable {
+@AuditedClass
+public class DashboardContactStatisticDto implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207649L;
 
@@ -125,8 +126,4 @@ public class DashboardContactStatisticDto implements Auditable, Serializable {
 		return dashboardContactVisit;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

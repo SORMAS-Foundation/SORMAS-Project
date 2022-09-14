@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
@@ -116,7 +116,7 @@ public class SormasToSormasRestClient {
 	}
 
 	private Invocation.Builder buildRestClient(String receiverId, String endpoint) throws SormasToSormasException {
-		SormasServerDescriptorDto targetServerDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(receiverId);
+		SormasServerDescriptor targetServerDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(receiverId);
 		if (targetServerDescriptor == null) {
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasServerAccess);
 		}

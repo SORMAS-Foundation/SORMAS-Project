@@ -32,7 +32,7 @@ import org.mockito.Mockito;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
@@ -68,7 +68,7 @@ public class SormasToSormasExternalMessageFacadeEjbTest extends SormasToSormasTe
 			});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptorDto(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 
 		getSormasToSormasLabMessageFacade().sendExternalMessages(Collections.singletonList(labMessage.getUuid()), options);
 

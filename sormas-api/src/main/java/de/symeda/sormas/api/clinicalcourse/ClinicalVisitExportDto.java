@@ -4,14 +4,16 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class ClinicalVisitExportDto implements Auditable, Serializable {
+@AuditedClass
+public class ClinicalVisitExportDto implements Serializable {
 
 	private static final long serialVersionUID = -5724133522485897878L;
 
@@ -53,6 +55,7 @@ public class ClinicalVisitExportDto implements Auditable, Serializable {
 	}
 
 	@Order(0)
+	@AuditInclude
 	public String getCaseUuid() {
 		return caseUuid;
 	}
@@ -127,8 +130,4 @@ public class ClinicalVisitExportDto implements Auditable, Serializable {
 		return isInJurisdiction;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(caseUuid=%s)", getClass().getSimpleName(), caseUuid);
-	}
 }

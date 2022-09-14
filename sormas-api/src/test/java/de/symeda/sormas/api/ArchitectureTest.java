@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.ArchUnitRunner;
@@ -28,7 +29,7 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = "de.symeda.sormas.api")
@@ -82,9 +83,12 @@ public class ArchitectureTest {
 
 
 	@ArchTest
-	public static final ArchRule testDtosAreAuditable = classes().that().resideInAPackage("de.symeda.sormas.api.(*)..").and().haveSimpleNameEndingWith("Dto").should().implement(Auditable.class);
+	public static final ArchRule testDtosAreAuditable = classes().that().resideInAPackage("de.symeda.sormas.api.(*)..").and().haveSimpleNameEndingWith("Dto").should().beAnnotatedWith(AuditedClass.class).orShould().beAssignableTo(CanBeAnnotated.Predicates.annotatedWith(AuditedClass.class));
+
 
 	@ArchTest
-	public static final ArchRule testDtosWithUuidFieldMustImplementHasUuid = classes().that().resideInAPackage("de.symeda.sormas.api.(*)..").and().haveSimpleNameEndingWith("Dto").and().containAnyFieldsThat(name("uuid")).should().implement(HasUuid.class);
+	public static final ArchRule testDtosWithUuidFieldMustImplementHasUuidAndMustBeAuditable = classes().that().resideInAPackage("de.symeda.sormas.api.(*)..").and().haveSimpleNameEndingWith("Dto").and().containAnyFieldsThat(name("uuid")).should().implement(HasUuid.class);
+
+	// todo getUuid should always be annotated with @AuditInclude
 
 }

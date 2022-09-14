@@ -19,8 +19,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 
+@AuditedClass
 public class PreviousCaseDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 5816724717269837258L;
@@ -40,6 +43,7 @@ public class PreviousCaseDto implements HasUuid, Serializable {
 	}
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

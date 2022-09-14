@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -29,7 +29,8 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
-public class CaseImportEntitiesDto implements Auditable, Serializable {
+@AuditedClass
+public class CaseImportEntitiesDto implements Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
@@ -88,38 +89,33 @@ public class CaseImportEntitiesDto implements Auditable, Serializable {
 	public List<VaccinationDto> getVaccinations() {
 		return vaccinations;
 	}
-
-	@Override
-	public String getAuditRepresentation() {
-		StringBuilder auditRepresentation = new StringBuilder(getClass().getSimpleName());
-		auditRepresentation.append(getClass().getSimpleName());
-
-		auditRepresentation.append("(person=");
-		auditRepresentation.append(person.getAuditRepresentation());
-
-		auditRepresentation.append(", caze=");
-		auditRepresentation.append(caze.getAuditRepresentation());
-
-
-		auditRepresentation.append(", samples=[");
-		for (SampleDto sample : samples) {
-			auditRepresentation.append(sample.getAuditRepresentation());
-			auditRepresentation.append(", ");
-		}
-
-		auditRepresentation.append("], pathogenTests=[");
-		for (PathogenTestDto pathogenTest : pathogenTests) {
-			auditRepresentation.append(pathogenTest.getAuditRepresentation());
-			auditRepresentation.append(", ");
-		}
-
-		auditRepresentation.append("], vaccinations=[");
-		for (VaccinationDto vaccination : vaccinations) {
-			auditRepresentation.append(vaccination.getAuditRepresentation());
-			auditRepresentation.append(", ");
-
-		}
-		auditRepresentation.append("])");
-		return auditRepresentation.toString();
-	}
+	/*
+	 * @Override
+	 * public String getAuditRepresentation() {
+	 * StringBuilder auditRepresentation = new StringBuilder(getClass().getSimpleName());
+	 * auditRepresentation.append(getClass().getSimpleName());
+	 * auditRepresentation.append("(person=");
+	 * auditRepresentation.append(person.getAuditRepresentation());
+	 * auditRepresentation.append(", caze=");
+	 * auditRepresentation.append(caze.getAuditRepresentation());
+	 * auditRepresentation.append(", samples=[");
+	 * for (SampleDto sample : samples) {
+	 * auditRepresentation.append(sample.getAuditRepresentation());
+	 * auditRepresentation.append(", ");
+	 * }
+	 * auditRepresentation.append("], pathogenTests=[");
+	 * for (PathogenTestDto pathogenTest : pathogenTests) {
+	 * auditRepresentation.append(pathogenTest.getAuditRepresentation());
+	 * auditRepresentation.append(", ");
+	 * }
+	 * auditRepresentation.append("], vaccinations=[");
+	 * for (VaccinationDto vaccination : vaccinations) {
+	 * auditRepresentation.append(vaccination.getAuditRepresentation());
+	 * auditRepresentation.append(", ");
+	 * }
+	 * auditRepresentation.append("])");
+	 * return auditRepresentation.toString();
+	 * }
+	 */
+	// todo
 }

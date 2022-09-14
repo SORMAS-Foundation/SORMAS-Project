@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptorDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -31,7 +31,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = -1478467237560439811L;
 
-	private SormasServerDescriptorDto targetDescriptor;
+	private SormasServerDescriptor targetDescriptor;
 	private UserReferenceDto sender;
 	private boolean ownershipHandedOver;
 	private boolean withAssociatedContacts;
@@ -49,7 +49,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	/**
 	 * @return Get the target server of the share operation.
 	 */
-	public SormasServerDescriptorDto getTargetDescriptor() {
+	public SormasServerDescriptor getTargetDescriptor() {
 		return targetDescriptor;
 	}
 
@@ -57,7 +57,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	 * @param targetDescriptor
 	 *            The target server of the share operation.
 	 */
-	public void setTargetDescriptor(SormasServerDescriptorDto targetDescriptor) {
+	public void setTargetDescriptor(SormasServerDescriptor targetDescriptor) {
 		this.targetDescriptor = targetDescriptor;
 	}
 

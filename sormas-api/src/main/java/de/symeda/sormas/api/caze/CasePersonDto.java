@@ -19,10 +19,11 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.PersonDto;
 
-public class CasePersonDto implements Auditable, Serializable {
+@AuditedClass
+public class CasePersonDto implements Serializable {
 
 	private static final long serialVersionUID = 4238365446327936524L;
 
@@ -54,9 +55,12 @@ public class CasePersonDto implements Auditable, Serializable {
 	public void setPerson(PersonDto person) {
 		this.person = person;
 	}
-
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(caze=%s,person=%s)", getClass().getSimpleName(), caze.getAuditRepresentation(), person.getAuditRepresentation());
-	}
+	// todo
+	/*
+	 * @Override
+	 * public String getAuditRepresentation() {
+	 * return String.format("%s(caze=%s,person=%s)", getClass().getSimpleName(), caze.getAuditRepresentation(),
+	 * person.getAuditRepresentation());
+	 * }
+	 */
 }

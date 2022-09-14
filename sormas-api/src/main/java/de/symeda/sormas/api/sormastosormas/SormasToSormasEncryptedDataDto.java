@@ -21,10 +21,12 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
-public class SormasToSormasEncryptedDataDto implements Auditable, Serializable {
+@AuditedClass
+public class SormasToSormasEncryptedDataDto implements Serializable {
 
 	private static final long serialVersionUID = 8658507076136806951L;
 
@@ -41,6 +43,7 @@ public class SormasToSormasEncryptedDataDto implements Auditable, Serializable {
 		this.data = data;
 	}
 
+	@AuditInclude
 	public String getSenderId() {
 		return senderId;
 	}
@@ -55,10 +58,5 @@ public class SormasToSormasEncryptedDataDto implements Auditable, Serializable {
 
 	public void setData(byte[] data) {
 		this.data = data;
-	}
-
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(senderId=%s)", getClass().getSimpleName(), senderId);
 	}
 }

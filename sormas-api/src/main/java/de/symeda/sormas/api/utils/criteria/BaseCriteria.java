@@ -32,12 +32,13 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
-
-@SuppressWarnings("serial")
+// todo what fields to include?
+@AuditedClass
 public abstract class BaseCriteria implements Serializable {
 
 	public String toUrlParams() {

@@ -17,9 +17,10 @@ package de.symeda.sormas.api.disease;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.Auditable;
+import de.symeda.sormas.api.audit.AuditedClass;
 
-public class DiseaseBurdenDto implements Auditable, Serializable {
+@AuditedClass
+public class DiseaseBurdenDto implements Serializable {
 
 	private static final long serialVersionUID = 2430932452606853497L;
 
@@ -146,8 +147,4 @@ public class DiseaseBurdenDto implements Auditable, Serializable {
 		return (caseCount + previousCaseCount + eventCount + outbreakDistrictCount) > 0;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return getClass().getSimpleName();
-	}
 }

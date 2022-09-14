@@ -20,7 +20,9 @@ import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditedClass;
 
+@AuditedClass
 public class PseudonymizableIndexDto implements Pseudonymizable, HasUuid, Serializable {
 
 	private boolean pseudonymized;

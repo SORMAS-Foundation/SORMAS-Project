@@ -6,8 +6,11 @@ import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.utils.HideForCountries;
 
+@AuditedClass
 public class SimilarPersonDto implements HasUuid, Serializable {
 
 	public static final String I18N_PREFIX = "Person";
@@ -54,6 +57,7 @@ public class SimilarPersonDto implements HasUuid, Serializable {
 	private String passportNumber;
 
 	@Override
+	@AuditInclude
 	public String getUuid() {
 		return uuid;
 	}

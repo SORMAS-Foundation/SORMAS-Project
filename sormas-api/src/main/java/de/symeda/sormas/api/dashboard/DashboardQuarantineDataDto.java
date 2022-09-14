@@ -15,12 +15,14 @@
 
 package de.symeda.sormas.api.dashboard;
 
-import de.symeda.sormas.api.audit.Auditable;
-
 import java.io.Serializable;
 import java.util.Date;
 
-public class DashboardQuarantineDataDto implements Auditable, Serializable {
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
+public class DashboardQuarantineDataDto implements Serializable {
 
 	private long id;
 	private Date quarantineFrom;
@@ -32,6 +34,7 @@ public class DashboardQuarantineDataDto implements Auditable, Serializable {
 		this.quarantineTo = quarantineTo;
 	}
 
+	@AuditInclude
 	public long getId() {
 		return id;
 	}
@@ -56,8 +59,4 @@ public class DashboardQuarantineDataDto implements Auditable, Serializable {
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(id=%s)", getClass().getSimpleName(), getId());
-	}
 }
