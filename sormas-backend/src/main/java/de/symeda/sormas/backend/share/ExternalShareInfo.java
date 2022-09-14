@@ -66,7 +66,7 @@ public class ExternalShareInfo extends AbstractDomainObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn
 	public User getSender() {
 		return sender;
 	}
