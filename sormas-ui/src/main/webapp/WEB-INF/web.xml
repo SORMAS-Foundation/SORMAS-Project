@@ -605,6 +605,14 @@
 	</security-role>
 
 	<security-role>
+		<role-name>EXTERNAL_SURVEILLANCE_SHARE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_SURVEILLANCE_DELETE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>EXTERNAL_MESSAGE_VIEW</role-name>
 	</security-role>
 

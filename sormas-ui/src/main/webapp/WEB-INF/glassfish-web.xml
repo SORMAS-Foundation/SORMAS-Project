@@ -746,6 +746,17 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>EXTERNAL_SURVEILLANCE_SHARE</role-name>
+        <group-name>EXTERNAL_SURVEILLANCE_SHARE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_SURVEILLANCE_DELETE</role-name>
+        <group-name>EXTERNAL_SURVEILLANCE_DELETE</group-name>
+    </security-role-mapping>
+
+
+    <security-role-mapping>
         <role-name>EXTERNAL_MESSAGE_VIEW</role-name>
         <group-name>EXTERNAL_MESSAGE_VIEW</group-name>
     </security-role-mapping>

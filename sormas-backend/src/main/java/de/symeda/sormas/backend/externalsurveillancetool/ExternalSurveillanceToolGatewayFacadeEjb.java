@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -40,10 +41,14 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRes
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ExternalSurveillanceToolFacade")
 public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveillanceToolFacade {
@@ -59,14 +64,24 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	private EventService eventService;
 	@EJB
 	private ExternalShareInfoService shareInfoService;
+	@EJB
+	private UserService userService;
 
 	@Override
+	@PermitAll
 	public boolean isFeatureEnabled() {
 		return configFacade.isExternalSurveillanceToolGatewayConfigured();
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._EXTERNAL_SURVEILLANCE_SHARE,
+		UserRight._CASE_ARCHIVE })
 	public void sendCases(List<String> caseUuids, boolean archived) throws ExternalSurveillanceToolException {
+		if (!userService.hasRight(UserRight.CASE_EDIT)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+
 		ExportParameters params = new ExportParameters();
 		params.setCaseUuids(caseUuids);
 		params.setArchived(archived);
@@ -75,7 +90,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._EXTERNAL_SURVEILLANCE_SHARE,
+		UserRight._EVENT_ARCHIVE })
 	public void sendEvents(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
+		if (!userService.hasRight(UserRight.EVENT_EDIT)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+
 		ExportParameters params = new ExportParameters();
 		params.setEventUuids(eventUuids);
 		params.setArchived(archived);
@@ -126,16 +148,27 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public void createCaseShareInfo(List<String> caseUuids) {
 		caseService.getByUuids(caseUuids).forEach(caze -> shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED));
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._EVENT_CREATE,
+		UserRight._EVENT_EDIT })
 	public void createEventShareInfo(List<String> eventUuids) {
 		eventService.getByUuids(eventUuids).forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._EXTERNAL_SURVEILLANCE_DELETE,
+		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_CLIENT,
+		UserRight._SYSTEM })
 	public void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException {
 		DeleteParameters params = new DeleteParameters();
 		params.setCases(cases);
@@ -148,6 +181,11 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._EXTERNAL_SURVEILLANCE_DELETE,
+		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_CLIENT,
+		UserRight._SYSTEM })
 	public void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolException {
 		DeleteParameters params = new DeleteParameters();
 		params.setEvents(events);
@@ -188,6 +226,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
+	@PermitAll
 	public String getVersion() throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
 		String versionEndpoint = configFacade.getExternalSurveillanceToolVersionEndpoint().trim();

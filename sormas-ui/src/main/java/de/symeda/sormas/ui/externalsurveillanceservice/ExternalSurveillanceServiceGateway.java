@@ -19,7 +19,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -83,7 +85,8 @@ public class ExternalSurveillanceServiceGateway {
 		GatewayCall gatewaySendCall,
 		GatewayCall gatewayDeleteCall,
 		ExternalShareInfoCriteria shareInfoCriteria) {
-		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()
+			|| !UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)) {
 			return null;
 		}
 

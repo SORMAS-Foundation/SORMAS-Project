@@ -343,7 +343,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@RightsAllowed({
-		UserRight._CASE_DELETE,
+		UserRight._EVENT_DELETE,
 		UserRight._SYSTEM })
 	public void deleteEventInExternalSurveillanceTool(Event event) throws ExternalSurveillanceToolException {
 

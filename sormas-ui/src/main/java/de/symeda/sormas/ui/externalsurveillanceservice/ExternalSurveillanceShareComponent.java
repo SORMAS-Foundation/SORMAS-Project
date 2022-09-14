@@ -27,6 +27,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
@@ -79,9 +81,12 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 			headerLayout.setComponentAlignment(sendButton, Alignment.MIDDLE_RIGHT);
 		}
 
-		Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
-		headerLayout.addComponent(deleteButton);
-		headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_DELETE)) {
+			Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
+			headerLayout.addComponent(deleteButton);
+			headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
+		}
+
 		headerLayout.setWidth(100, Unit.PERCENTAGE);
 
 		return headerLayout;
