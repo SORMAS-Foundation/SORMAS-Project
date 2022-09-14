@@ -342,6 +342,9 @@ public class EditCasePage {
   public static final By VACCINATION_CARD_INFO_ICON =
       By.xpath(
           "//div[@location = 'vaccinations']//span[contains(@class, 'v-icon v-icon-info_circle')]");
+  public static final By VACCINATION_CARD_VACCINATION_ID =
+      By.xpath(
+          "//div[@location='vaccinations']//div[@class='v-label v-disabled v-widget bold v-label-bold uppercase v-label-uppercase v-label-undef-w']");
   public static final By VACCINATION_CARD_INFO_POPUP_TEXT =
       By.xpath("//div[@class='v-tooltip-text']");
   public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");

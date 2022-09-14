@@ -2538,6 +2538,22 @@ public class EditCaseSteps implements En {
           }
           TimeUnit.SECONDS.sleep(1); // wait for reaction
         });
+
+    And(
+        "^I check that vaccination is removed from vaccination card on Edit Case page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+
+          try {
+            webDriverHelpers.isElementVisibleWithTimeout(VACCINATION_CARD_VACCINATION_ID, 2);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          System.out.print("Element visible = " + elementVisible);
+          softly.assertFalse(elementVisible, "Vaccination ID is visible!");
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {
