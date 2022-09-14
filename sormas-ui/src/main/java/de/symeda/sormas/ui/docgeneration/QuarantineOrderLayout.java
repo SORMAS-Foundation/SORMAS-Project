@@ -99,10 +99,12 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 		pathogenTestSelector = new ComboBox<>(I18nProperties.getCaption(Captions.PathogenTest));
 		pathogenTestSelector.setWidth(100F, Unit.PERCENTAGE);
+		pathogenTestSelector.setItemCaptionGenerator(e -> e.buildCaption());
 		pathogenTestSelector.setEnabled(false);
 
 		sampleSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Sample));
 		sampleSelector.setWidth(100F, Unit.PERCENTAGE);
+		sampleSelector.setItemCaptionGenerator(e -> e.getCaption());
 		sampleSelector.setItems(samples);
 		sampleSelector.setEnabled(!samples.isEmpty());
 		sampleSelector.addValueChangeListener(e -> {
@@ -132,6 +134,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 		vaccinationSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Vaccination));
 		vaccinationSelector.setWidth(100F, Unit.PERCENTAGE);
+		vaccinationSelector.setItemCaptionGenerator(e -> e.getCaption());
 		vaccinationSelector.setItems(vaccinations);
 		vaccinationSelector.setEnabled(!vaccinations.isEmpty());
 
