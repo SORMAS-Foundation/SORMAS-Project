@@ -3164,7 +3164,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonContactDetailDto primaryPhone =
 			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
 		PersonContactDetailDto secondaryPhone =
-			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.EMAIL, "444555666");
+			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
 
 		personWithPhone.getPersonContactDetails().add(primaryPhone);
 		personWithPhone.getPersonContactDetails().add(secondaryPhone);

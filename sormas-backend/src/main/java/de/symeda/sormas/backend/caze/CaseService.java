@@ -820,7 +820,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper
 						.unaccentedIlike(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
 					CriteriaBuilderHelper
-						.unaccentedIlike(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PRIMARTY_OTHER_SUBQUERY), textFilter),
+						.unaccentedIlike(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
