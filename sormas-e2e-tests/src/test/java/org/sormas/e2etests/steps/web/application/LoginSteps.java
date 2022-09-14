@@ -127,6 +127,13 @@ public class LoginSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
         });
 
+    When(
+        "I navigate to {string} environment",
+        (String env) -> {
+          locale = env;
+          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
+          TimeUnit.SECONDS.sleep(5);
+        });
     Then(
         "I login with last edited user",
         () -> {
@@ -140,6 +147,21 @@ public class LoginSteps implements En {
               LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
           log.info("Click on Login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    Then(
+        "I login with last edited user on Keycloak Enabled Environment",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LoginPage.USER_NAME_INPUT, 100);
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_NAME_INPUT, EditUserSteps.collectedUser.getUserName());
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
+          log.info("Click on Login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
           webDriverHelpers.waitForPageLoaded();
         });
 

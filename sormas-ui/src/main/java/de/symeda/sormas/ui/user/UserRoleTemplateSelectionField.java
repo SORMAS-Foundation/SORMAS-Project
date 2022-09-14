@@ -26,7 +26,6 @@ import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRoleDto;
 
 public class UserRoleTemplateSelectionField extends CustomField<UserRoleDto> {
@@ -34,7 +33,6 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleDto> {
 	private VerticalLayout mainLayout;
 	private ComboBox templateRoleCombo;
 	private UserRoleEditForm userRoleEditForm;
-	private DefaultUserRole defaultUserRole;
 	private UserRoleNotificationsForm userRoleNotificationsForm;
 
 	@Override
@@ -57,7 +55,6 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleDto> {
 		templateRoleCombo = new ComboBox();
 		templateRoleCombo.setWidth(300, Unit.PIXELS);
 		UserRoleFormHelper.setTemplateRoleItems(templateRoleCombo);
-		UserRoleFormHelper.setTemplateRoleValue(templateRoleCombo, defaultUserRole);
 		templateRoleCombo.setCaption(I18nProperties.getCaption(Captions.userrole_applyUserRoleTemplate));
 		mainLayout.addComponent(templateRoleCombo);
 
@@ -75,13 +72,6 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleDto> {
 
 	public void setUserRoleEditForm(UserRoleEditForm userRoleEditForm) {
 		this.userRoleEditForm = userRoleEditForm;
-	}
-
-	public void setDefaultUserRole(DefaultUserRole defaultUserRole) {
-		this.defaultUserRole = defaultUserRole;
-		if (templateRoleCombo != null) {
-			UserRoleFormHelper.setTemplateRoleValue(templateRoleCombo, defaultUserRole);
-		}
 	}
 
 	public UserRoleNotificationsForm getUserRoleNotificationsForm() {

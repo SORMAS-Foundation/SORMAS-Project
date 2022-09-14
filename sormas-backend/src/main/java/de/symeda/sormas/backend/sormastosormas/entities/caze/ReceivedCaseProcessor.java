@@ -68,7 +68,7 @@ public class ReceivedCaseProcessor
 
 		handleIgnoredProperties(
 			sharedData.getPerson(),
-			Optional.ofNullable(existingCase).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
+			Optional.ofNullable(existingCase).map(c -> PersonFacadeEjb.toPersonDto(c.getPerson())).orElse(null));
 
 		CaseDataDto caze = sharedData.getEntity();
 		PersonDto person = sharedData.getPerson();

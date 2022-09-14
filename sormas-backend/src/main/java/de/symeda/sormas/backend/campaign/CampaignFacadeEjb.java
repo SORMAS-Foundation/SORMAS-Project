@@ -310,13 +310,8 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public CampaignReferenceDto toRefDto(Campaign campaign) {
+	protected CampaignReferenceDto toRefDto(Campaign campaign) {
 		return toReferenceDto(campaign);
-	}
-
-	@Override
-	public CampaignDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override

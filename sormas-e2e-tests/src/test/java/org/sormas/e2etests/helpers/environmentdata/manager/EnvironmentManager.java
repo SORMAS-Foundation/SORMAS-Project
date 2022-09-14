@@ -127,6 +127,22 @@ public class EnvironmentManager {
   }
 
   @SneakyThrows
+  public String getCommunityName(String communityUUID) {
+    response =
+        restAssuredClient.sendRequestAndGetResponse(
+            Request.builder().method(Method.GET).path(COMMUNITIES_PATH + ALL_FROM_0).build());
+    checkResponse(response);
+    objectMapper = getNewObjMapper();
+    List<Community> districts =
+        List.of(objectMapper.readValue(response.getBody().asInputStream(), Community[].class));
+    return districts.stream()
+        .filter(district -> district.getUuid().equalsIgnoreCase(communityUUID))
+        .findFirst()
+        .orElseThrow(() -> new Exception("Unable to find district name for uuid: " + communityUUID))
+        .getName();
+  }
+
+  @SneakyThrows
   public String getContinentUUID(String continentName) {
     response =
         restAssuredClient.sendRequestAndGetResponse(

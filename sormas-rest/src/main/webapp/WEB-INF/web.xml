@@ -637,6 +637,18 @@
 	</security-role>
 
 	<security-role>
+		<role-name>DOCUMENT_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>DOCUMENT_UPLOAD</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>DOCUMENT_DELETE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>TRAVEL_ENTRY_ARCHIVE</role-name>
 	</security-role>
 
