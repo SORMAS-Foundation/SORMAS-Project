@@ -816,7 +816,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					phoneNumberPredicate(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PRIMARTY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
