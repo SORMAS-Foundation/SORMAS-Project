@@ -50,7 +50,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		}
 		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 		cq.distinct(true);
-		System.out.println("DEBUGGER 5678ijdfasdfashyuio"+SQLExtractor.from(em.createQuery(cq)));
+		System.out.println("DEBUGGER 5678ijdfasdfashyuio : "+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 

@@ -238,6 +238,10 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 		return false;
 	}
 
+	public boolean setErrorIfEmptyRange() {
+		return true;
+	}
+
 	public void setSoftRequired(boolean softRequired) {
 		if (labelSoftRequired != null) {
 			if (softRequired && !required) {
@@ -368,6 +372,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 				((ControlPropertyEditField) field).disableErrorState();
 				if (!liveValidationDisabled) {
 					((ControlPropertyEditField) field).setErrorIfEmpty();
+					((ControlPropertyEditField) field).setErrorIfEmptyRange();
 
 					if (validationCallback != null) {
 						validationCallback.call();

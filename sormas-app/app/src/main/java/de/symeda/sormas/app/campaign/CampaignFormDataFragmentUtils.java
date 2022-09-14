@@ -18,11 +18,14 @@ package de.symeda.sormas.app.campaign;
 import static de.symeda.sormas.api.campaign.ExpressionProcessorUtils.refreshEvaluationContext;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -54,326 +57,443 @@ import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.controls.ControlTextReadField;
 
 public class CampaignFormDataFragmentUtils {
-	public static final int DEFAULT_MIN_LENGTH = 1;
+    public static final int DEFAULT_MIN_LENGTH = 1;
 
-	private CampaignFormDataFragmentUtils() {
-	}
+    private CampaignFormDataFragmentUtils() {
+    }
 
-	public static void handleExpression(
-		ExpressionParser expressionParser,
-		List<CampaignFormDataEntry> formValues,
-		CampaignFormElementType type,
-		ControlPropertyField dynamicField,
-		String expressionString) {
-		try {
-			final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
-			if (type == CampaignFormElementType.YES_NO) {
-				ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, (Boolean) expressionValue);
-			} else {
-				ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null: expressionValue.toString());
-			}
-			dynamicField.setEnabled(false);
-		} catch (SpelEvaluationException e) {
-			Log.e("Error evaluating expression depending on field" + dynamicField.getCaption(), e.getMessage());
-		}
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
-	}
+    public static void handleExpression(
+            ExpressionParser expressionParser,
+            List<CampaignFormDataEntry> formValues,
+            CampaignFormElementType type,
+            ControlPropertyField dynamicField,
+            String expressionString,
+            Boolean isDisIgnore) {
+        try {
+            final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
 
-	public static Object getExpressionValue(ExpressionParser expressionParser, List<CampaignFormDataEntry> formValues, String expressionString)
-		throws SpelEvaluationException {
-		final EvaluationContext context = refreshEvaluationContext(formValues);
-		final Expression expression = expressionParser.parseExpression(expressionString);
-		final Class<?> valueType = expression.getValueType(context);
-		return expression.getValue(context, valueType);
-	}
+            if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
+                if (type == CampaignFormElementType.YES_NO) {
+                    ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, (Boolean) expressionValue);
+                } else if (type == CampaignFormElementType.RANGE) {
+                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
 
-	public static void handleDependingOn(
-		Map<String, ControlPropertyField> fieldMap,
-		CampaignFormElement campaignFormElement,
-		ControlPropertyField dynamicField) {
-		final String dependingOn = campaignFormElement.getDependingOn();
-		final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-		if (dependingOn != null && dependingOnValues != null) {
-			ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-			setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
-			final ControlPropertyField finalDynamicField = dynamicField;
-			controlPropertyField.addValueChangedListener(field -> setVisibilityDependency(finalDynamicField, dependingOnValues, field.getValue()));
-		}
-	}
+                } else if (type == CampaignFormElementType.NUMBER) {
+                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? "0" : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
 
-	public static void setVisibilityDependency(ControlPropertyField field, String[] dependingOnValues, Object dependingOnFieldValue) {
-		String parsedDependingOnFieldValue = dependingOnFieldValue == null
-			? ""
-			: dependingOnFieldValue instanceof Boolean
-				? YesNoUnknown.valueOf(((Boolean) dependingOnFieldValue).booleanValue()).name()
-				: dependingOnFieldValue.toString();
-		if (!containsIgnoreCase(Arrays.asList(dependingOnValues), parsedDependingOnFieldValue)) {
-			field.setVisibility(View.INVISIBLE);
-		} else {
-			field.setVisibility(View.VISIBLE);
-		}
-	}
+                } else if (expressionValue.getClass().isAssignableFrom(Boolean.class)) {
+                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, (Double) (!Double.isFinite((double) expressionValue) ? 0 : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : df.format((double) expressionValue)));
+                } else {
+                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null : expressionValue.toString());
+                }
 
-	private static boolean containsIgnoreCase(List<String> list, String soughtFor) {
-		for (String current : list) {
-			if (current.equalsIgnoreCase(soughtFor)) {
-				return true;
-			}
-		}
-		return false;
-	}
+                System.out.println(dynamicField.getCaption()+" : _______________________"+isDisIgnore);
+              //  if (type == CampaignFormElementType.RANGE) {
+                //    System.out.println(" _______________________"+isDisIgnore);
 
-	public static CampaignFormDataEntry getOrCreateCampaignFormDataEntry(
-		List<CampaignFormDataEntry> formValues,
-		CampaignFormElement campaignFormElement) {
-		for (CampaignFormDataEntry campaignFormDataEntry : formValues) {
-			if (campaignFormDataEntry.getId().equals(campaignFormElement.getId())) {
-				return campaignFormDataEntry;
-			}
-		}
-		final CampaignFormDataEntry newCampaignFomDataEntry = new CampaignFormDataEntry(campaignFormElement.getId(), null);
-		formValues.add(newCampaignFomDataEntry);
-		return newCampaignFomDataEntry;
-	}
+              //  } else {
+               //     System.out.println(" _______________________"+isDisIgnore);
+               //     dynamicField.setEnabled(isDisIgnore);
+               // }
+            }
 
-	public static Map<String, String> getUserTranslations(CampaignFormMeta campaignFormMeta) {
-		final Map<String, String> userTranslations = new HashMap<>();
 
-		final Locale locale = I18nProperties.getUserLanguage().getLocale();
-		if (locale != null) {
-			final List<CampaignFormTranslations> campaignFormTranslations = campaignFormMeta.getCampaignFormTranslations();
-			campaignFormTranslations.forEach(cft -> {
-				if (cft.getLanguageCode().equalsIgnoreCase(locale.toString())) {
-					cft.getTranslations()
-						.forEach(translationElement -> userTranslations.put(translationElement.getElementId(), translationElement.getCaption()));
-				}
-			});
-		}
-		return userTranslations;
-	}
 
-	public static String getUserLanguageCaption(Map<String, String> userTranslations, CampaignFormElement campaignFormElement) {
-		if (userTranslations != null && userTranslations.containsKey(campaignFormElement.getId())) {
-			return userTranslations.get(campaignFormElement.getId());
-		} else {
-			return campaignFormElement.getCaption();
-		}
-	}
 
-	public static ControlTextEditField createControlTextEditField(
-		CampaignFormElement campaignFormElement,
-		Context context,
-		Map<String, String> userTranslations,
-		Boolean isIntegerField,
-		Boolean isRequired) {
-		return new ControlTextEditField(context) {
 
-			@Override
-			protected String getPrefixDescription() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
 
-			@Override
-			protected String getPrefixCaption() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
+        } catch (SpelEvaluationException e) {
+            Log.e("Error evaluating expression on field : " + dynamicField.getCaption(), e.getMessage());
+        }
+        if (type == CampaignFormElementType.RANGE) {
+            dynamicField.setEnabled(true);
+        }else if (isDisIgnore) {
+            dynamicField.setEnabled(true);
+        }else{
+            dynamicField.setEnabled(false);
+        }
 
-			@Override
-			public int getTextAlignment() {
-				return View.TEXT_ALIGNMENT_VIEW_START;
-			}
+    }
 
-			@Override
-			public int getGravity() {
-				return Gravity.CENTER_VERTICAL;
-			}
+    public static Object getExpressionValue(ExpressionParser expressionParser, List<CampaignFormDataEntry> formValues, String expressionString)
+            throws SpelEvaluationException {
+        final EvaluationContext context = refreshEvaluationContext(formValues);
+        final Expression expression = expressionParser.parseExpression(expressionString);
+        final Class<?> valueType = expression.getValueType(context);
+        return expression.getValue(context, valueType);
+    }
 
-			@Override
-			public int getMaxLines() {
-				return 1;
-			}
+    public static void handleDependingOn(
+            Map<String, ControlPropertyField> fieldMap,
+            CampaignFormElement campaignFormElement,
+            ControlPropertyField dynamicField) {
+        final String dependingOn = campaignFormElement.getDependingOn();
+        final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
 
-			@Override
-			public int getMaxLength() {
-				return CHARACTER_LIMIT_DEFAULT;
-			}
+       List<String> constraints;
+       String depenValuexd = null;
+        if (dependingOnValues != null) {
+            constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
+            ListIterator<String> lstItemsx = constraints.listIterator();
+            while (lstItemsx.hasNext()) {
+                depenValuexd = lstItemsx.next().toString();
+            }
+        }
+        final String depenValuex = depenValuexd;
 
-		//	@Override
-		//	public int getMinLength() {
-		//		return DEFAULT_MIN_LENGTH;
-		//	}
+
+        if (dependingOn != null && depenValuex != null) {
+            ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
+            setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
+            final ControlPropertyField finalDynamicField = dynamicField;
+            controlPropertyField.addValueChangedListener(field -> setVisibilityDependency(finalDynamicField, depenValuex, field.getValue()));
+        }
+    }
+
+    public static void setVisibilityDependency(ControlPropertyField field, String dependingOnValues, Object dependingOnFieldValue) {
+        String parsedDependingOnFieldValue = dependingOnFieldValue == null
+                ? ""
+                : dependingOnFieldValue instanceof Boolean
+                ? YesNoUnknown.valueOf(((Boolean) dependingOnFieldValue).booleanValue()).name()
+                : dependingOnFieldValue.toString();
+        if (dependingOnValues.contains("!")) {
+
+            System.out.println("++++++++!!!!!!!!!!+++++++++parsedDependingOnFieldValue+++++++++++++++++++++++++++++++"+dependingOnFieldValue);
+            System.out.println(dependingOnValues);
+            dependingOnValues = dependingOnValues.replace("!", "");
+            if (dependingOnValues.contains(parsedDependingOnFieldValue)) {
+                field.setVisibility(View.GONE);
+            } else {
+
+                field.setVisibility(View.VISIBLE);
+            }
+        } else {
+            System.out.println("++++++1111+++++++++++parsedDependingOnFieldValue+++++++++++++++++++++++++++++++"+dependingOnFieldValue);
+            System.out.println(dependingOnValues);
+            if (!dependingOnValues.contains(parsedDependingOnFieldValue)) {
+                field.setVisibility(View.GONE);
+            } else {
+                field.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private static boolean containsIgnoreCase(List<String> list, String soughtFor) {
+        for (String current : list) {
+            if (current.equalsIgnoreCase(soughtFor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static CampaignFormDataEntry getOrCreateCampaignFormDataEntry(
+            List<CampaignFormDataEntry> formValues,
+            CampaignFormElement campaignFormElement) {
+        for (CampaignFormDataEntry campaignFormDataEntry : formValues) {
+            if (campaignFormDataEntry.getId().equals(campaignFormElement.getId())) {
+                return campaignFormDataEntry;
+            }
+        }
+        final CampaignFormDataEntry newCampaignFomDataEntry = new CampaignFormDataEntry(campaignFormElement.getId(), null);
+        formValues.add(newCampaignFomDataEntry);
+        return newCampaignFomDataEntry;
+    }
+
+    public static Map<String, String> getUserTranslations(CampaignFormMeta campaignFormMeta) {
+        final Map<String, String> userTranslations = new HashMap<>();
+
+        final Locale locale = I18nProperties.getUserLanguage().getLocale();
+        if (locale != null) {
+            final List<CampaignFormTranslations> campaignFormTranslations = campaignFormMeta.getCampaignFormTranslations();
+            campaignFormTranslations.forEach(cft -> {
+                if (cft.getLanguageCode().equalsIgnoreCase(locale.toString())) {
+                    cft.getTranslations()
+                            .forEach(translationElement -> userTranslations.put(translationElement.getElementId(), translationElement.getCaption()));
+                }
+            });
+        }
+        return userTranslations;
+    }
+
+    public static String getUserLanguageCaption(Map<String, String> userTranslations, CampaignFormElement campaignFormElement) {
+        if (userTranslations != null && userTranslations.containsKey(campaignFormElement.getId())) {
+            return userTranslations.get(campaignFormElement.getId());
+        } else {
+            return campaignFormElement.getCaption();
+        }
+    }
+
+    public static ControlTextEditField createControlTextEditField(
+            CampaignFormElement campaignFormElement,
+            Context context,
+            Map<String, String> userTranslations,
+            Boolean isIntegerField,
+            Boolean isRequired) {
+        return new ControlTextEditField(context) {
+
+            @Override
+            protected String getPrefixDescription() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
+
+            @Override
+            protected String getPrefixCaption() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
+
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
+
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
+
+            @Override
+            public int getMaxLines() {
+                return 1;
+            }
+
+            @Override
+            public int getMaxLength() {
+                return CHARACTER_LIMIT_DEFAULT;
+            }
+
+            //	@Override
+            //	public int getMinLength() {
+            //		return DEFAULT_MIN_LENGTH;
+            //	}
 //
-			@Override
-			protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
-				super.inflateView(context, attrs, defStyle);
-				initLabel();
-				initLabelAndValidationListeners();
-				initInput(isIntegerField, isRequired);
-			}
-		};
-	}
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initLabelAndValidationListeners();
+                initInput(isIntegerField, isRequired, false, null, null, false, false);
+            }
+        };
+    }
+
+    public static ControlTextEditField createControlTextEditFieldRange(
+            CampaignFormElement campaignFormElement,
+            Context context,
+            Map<String, String> userTranslations,
+            Boolean isIntegerField,
+            Boolean isRequired,
+            Integer minVal,
+            Integer maxVal,
+            Boolean isExpression,
+            Boolean warnOnError) {
+        return new ControlTextEditField(context) {
+
+            @Override
+            protected String getPrefixDescription() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
+
+            @Override
+            protected String getPrefixCaption() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
+
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
+
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
+
+            @Override
+            public int getMaxLines() {
+                return 1;
+            }
+
+            @Override
+            public int getMaxLength() {
+                return 7;
+            }
+
+            @Override
+            public int getMinLength() {
+                return 1;
+            }
+
+            //
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initLabelAndValidationListeners();
+                initInput(isIntegerField, isRequired, true, minVal, maxVal, isExpression, warnOnError);
+            }
+        };
+    }
 
 
+    public static ControlSpinnerField createControlSpinnerFieldEditField(
+            CampaignFormElement campaignFormElement,
+            Context context,
+            Map<String, String> userTranslations,
+            Map<String, String> isIntegerField) {
+        return new ControlSpinnerField(context) {
 
-	public static ControlSpinnerField createControlSpinnerFieldEditField(
-			CampaignFormElement campaignFormElement,
-			Context context,
-			Map<String, String> userTranslations,
-			Map<String, String> isIntegerField) {
-		return new ControlSpinnerField(context) {
+            @Override
+            protected String getPrefixDescription() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
 
-			@Override
-			protected String getPrefixDescription() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
+            @Override
+            protected String getPrefixCaption() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
 
-			@Override
-			protected String getPrefixCaption() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
 
-			@Override
-			public int getTextAlignment() {
-				return View.TEXT_ALIGNMENT_VIEW_START;
-			}
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
 
-			@Override
-			public int getGravity() {
-				return Gravity.CENTER_VERTICAL;
-			}
-
-			@Override
-			protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
-				super.inflateView(context, attrs, defStyle);
-				initLabel();
-				initLabelAndValidationListeners();
-				initInput(isIntegerField);
-			}
-		};
-	}
-
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initLabelAndValidationListeners();
+                initInput(isIntegerField);
+            }
+        };
+    }
 
 
-	public static ControlDateField createControlDateEditField(
-			CampaignFormElement campaignFormElement,
-			Context context,
-			Map<String, String> userTranslations,
-			Boolean isIntegerField,
-			FragmentManager fm, boolean isRequired) {
-		return new ControlDateField(context) {
+    public static ControlDateField createControlDateEditField(
+            CampaignFormElement campaignFormElement,
+            Context context,
+            Map<String, String> userTranslations,
+            Boolean isIntegerField,
+            FragmentManager fm, boolean isRequired) {
+        return new ControlDateField(context) {
 
-			@Override
-			protected String getPrefixDescription() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
+            @Override
+            protected String getPrefixDescription() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
 
-			@Override
-			protected String getPrefixCaption() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
+            @Override
+            protected String getPrefixCaption() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
 
-			@Override
-			public int getTextAlignment() {
-				return View.TEXT_ALIGNMENT_VIEW_START;
-			}
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
 
-			@Override
-			public int getGravity() {
-				return Gravity.CENTER_VERTICAL;
-			}
-
-
-
-			@Override
-			protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
-				super.inflateView(context, attrs, defStyle);
-				initLabel();
-				initLabelAndValidationListeners();
-
-				initializeDateField(fm);
-				initInput(true, isRequired);
-			}
-		};
-	}
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
 
 
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initLabelAndValidationListeners();
 
-	public static ControlCheckBoxField createControlCheckBoxField(
-		CampaignFormElement campaignFormElement,
-		Context context,
-		Map<String, String> userTranslations) {
-		return new ControlCheckBoxField(context) {
+                initializeDateField(fm);
+                initInput(true, isRequired);
+            }
+        };
+    }
 
-			@Override
-			protected String getPrefixDescription() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
 
-			@Override
-			protected String getPrefixCaption() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
+    public static ControlCheckBoxField createControlCheckBoxField(
+            CampaignFormElement campaignFormElement,
+            Context context,
+            Map<String, String> userTranslations) {
+        return new ControlCheckBoxField(context) {
 
-			@Override
-			public int getTextAlignment() {
-				return View.TEXT_ALIGNMENT_VIEW_START;
-			}
+            @Override
+            protected String getPrefixDescription() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
 
-			@Override
-			public int getGravity() {
-				return Gravity.CENTER_VERTICAL;
-			}
+            @Override
+            protected String getPrefixCaption() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
 
-			@Override
-			protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
-				super.inflateView(context, attrs, defStyle);
-				initLabel();
-				initLabelAndValidationListeners();
-				//required = true;
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
 
-				initInput();
-			}
-		};
-	}
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
 
-	public static ControlTextReadField createControlTextReadField(
-		CampaignFormElement campaignFormElement,
-		Context context,
-		Map<String, String> userTranslations) {
-		return new ControlTextReadField(context) {
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initLabelAndValidationListeners();
+                //required = true;
 
-			@Override
-			protected String getPrefixDescription() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
+                initInput();
+            }
+        };
+    }
 
-			@Override
-			protected String getPrefixCaption() {
-				return getUserLanguageCaption(userTranslations, campaignFormElement);
-			}
+    public static ControlTextReadField createControlTextReadField(
+            CampaignFormElement campaignFormElement,
+            Context context,
+            Map<String, String> userTranslations) {
+        return new ControlTextReadField(context) {
 
-			@Override
-			public int getTextAlignment() {
-				return View.TEXT_ALIGNMENT_VIEW_START;
-			}
+            @Override
+            protected String getPrefixDescription() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
 
-			@Override
-			public int getGravity() {
-				return Gravity.CENTER_VERTICAL;
-			}
+            @Override
+            protected String getPrefixCaption() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
 
-			@Override
-			public int getMaxLines() {
-				return 1;
-			}
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
 
-			@Override
-			protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
-				super.inflateView(context, attrs, defStyle);
-				initLabel();
-				initTextView();
-			}
-		};
-	}
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
+
+            @Override
+            public int getMaxLines() {
+                return 1;
+            }
+
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initTextView();
+            }
+        };
+    }
 
 }

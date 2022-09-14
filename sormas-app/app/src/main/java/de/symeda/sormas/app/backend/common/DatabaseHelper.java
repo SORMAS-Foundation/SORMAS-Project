@@ -223,7 +223,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		try {
 			ConnectionSource connectionSource = getCaseDao().getConnectionSource();
-			TableUtils.clearTable(connectionSource, Case.class);
+		/*	TableUtils.clearTable(connectionSource, Case.class);
 			TableUtils.clearTable(connectionSource, Immunization.class);
 			TableUtils.clearTable(connectionSource, Vaccination.class);
 			TableUtils.clearTable(connectionSource, Treatment.class);
@@ -258,7 +258,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
 			TableUtils.clearTable(connectionSource, CampaignFormData.class);
-			TableUtils.clearTable(connectionSource, LbdsSync.class);
+			TableUtils.clearTable(connectionSource, LbdsSync.class);*/
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);

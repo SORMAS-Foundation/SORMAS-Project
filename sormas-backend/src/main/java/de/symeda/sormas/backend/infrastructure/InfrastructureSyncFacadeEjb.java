@@ -1,11 +1,13 @@
 package de.symeda.sormas.backend.infrastructure;
 
+import java.util.Arrays;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncFacade;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
@@ -85,7 +87,7 @@ public class InfrastructureSyncFacadeEjb implements InfrastructureSyncFacade {
 		sync.setCountries(countryFacade.getAllAfter(changeDates.getCountryChangeDate()));
 		sync.setRegions(regionFacade.getAllAfter(changeDates.getRegionChangeDate()));
 		sync.setDistricts(districtFacade.getAllAfter(changeDates.getDistrictChangeDate()));
-		sync.setCommunities(communityFacade.getAllAfter(changeDates.getCommunityChangeDate()));
+		sync.setCommunities(Arrays.asList((CommunityDto) userFacade.getCurrentUser().getCommunity())); // communityFacade.getAllAfter(changeDates.getCommunityChangeDate()));
 		sync.setFacilities(facilityFacade.getAllByRegionAfter(null, changeDates.getFacilityChangeDate()));
 		sync.setPointsOfEntry(pointOfEntryFacade.getAllAfter(changeDates.getPointOfEntryChangeDate()));
 		sync.setUsers(userFacade.getAllAfter(changeDates.getUserChangeDate()));

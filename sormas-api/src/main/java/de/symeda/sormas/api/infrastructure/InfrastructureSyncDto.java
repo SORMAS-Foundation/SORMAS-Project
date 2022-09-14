@@ -2,6 +2,7 @@ package de.symeda.sormas.api.infrastructure;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -11,6 +12,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -101,11 +103,14 @@ public class InfrastructureSyncDto implements Serializable {
 	}
 
 	public List<CommunityDto> getCommunities() {
+		System.out.println("____________________++++!!!!: "+communities.toString());
 		return communities;
 	}
 
-	public void setCommunities(List<CommunityDto> communities) {
-		this.communities = communities;
+	public void setCommunities(List<CommunityDto> list) {
+		System.out.println("____________________++++####: "+list.toString());
+		
+		this.communities = list;
 	}
 
 	public List<FacilityDto> getFacilities() {

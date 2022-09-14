@@ -14,7 +14,8 @@ import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed({
 	"USER",
-	"REST_USER" })
+	"REST_USER",
+	"COMMUNITY_OFFICER"})
 public class InfrastructureResource {
 
 	@POST

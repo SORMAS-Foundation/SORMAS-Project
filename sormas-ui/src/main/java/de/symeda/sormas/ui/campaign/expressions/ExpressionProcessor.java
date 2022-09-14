@@ -99,7 +99,7 @@ public class ExpressionProcessor {
 				final Class<?> valueType = expression.getValueType(context);
 				final Object value = expression.getValue(context, valueType); 
 				//final Object valx = Precision.round((double) value, 3);
-				final List <String> opt = null;
+				//final List <String> opt = null;
 				System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context));
 				String valuex = value +"";
 			
