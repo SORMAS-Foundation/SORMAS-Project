@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +123,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		return cachedAnnotatedMethods.computeIfAbsent(type, k -> {
 			Set<Method> methodsFound = reflections.get(Methods.of(type).filter(withAnnotation(AuditInclude.class)));
 			final ArrayList<Method> methods = new ArrayList<>(methodsFound);
-			return methods.stream().sorted().collect(Collectors.toCollection(ArrayList::new));
+			return methods.stream().sorted(Comparator.comparing(Method::getName)).collect(Collectors.toList());
 		});
 	}
 
@@ -563,7 +564,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 			try {
 				sb.append(method.getName());
 				sb.append("=");
-				sb.append(method.invoke(object));
+				final Object returnObject = method.invoke(object);
+				sb.append(printObject(returnObject));
 				sb.append(", ");
 			} catch (Exception e) {
 				sb.append("getter invocation failed");

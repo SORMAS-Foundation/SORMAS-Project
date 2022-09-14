@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
@@ -49,6 +50,7 @@ public class SormasToSormasDto implements Serializable {
 	@Valid
 	private List<SormasToSormasImmunizationDto> immunizations;
 
+	@AuditInclude
 	public SormasToSormasOriginInfoDto getOriginInfo() {
 		return originInfo;
 	}
@@ -57,6 +59,7 @@ public class SormasToSormasDto implements Serializable {
 		this.originInfo = originInfo;
 	}
 
+	@AuditInclude
 	public List<SormasToSormasCaseDto> getCases() {
 		return cases;
 	}
@@ -65,6 +68,7 @@ public class SormasToSormasDto implements Serializable {
 		this.cases = cases;
 	}
 
+	@AuditInclude
 	public List<SormasToSormasContactDto> getContacts() {
 		return contacts;
 	}
@@ -73,6 +77,7 @@ public class SormasToSormasDto implements Serializable {
 		this.contacts = contacts;
 	}
 
+	@AuditInclude
 	public List<SormasToSormasSampleDto> getSamples() {
 		return samples;
 	}
@@ -81,6 +86,7 @@ public class SormasToSormasDto implements Serializable {
 		this.samples = samples;
 	}
 
+	@AuditInclude
 	public List<SormasToSormasEventDto> getEvents() {
 		return events;
 	}
@@ -89,6 +95,7 @@ public class SormasToSormasDto implements Serializable {
 		this.events = events;
 	}
 
+	@AuditInclude
 	public List<SormasToSormasEventParticipantDto> getEventParticipants() {
 		return eventParticipants;
 	}
@@ -97,6 +104,7 @@ public class SormasToSormasDto implements Serializable {
 		this.eventParticipants = eventParticipants;
 	}
 
+	@AuditInclude
 	public List<SormasToSormasImmunizationDto> getImmunizations() {
 		return immunizations;
 	}
@@ -104,46 +112,4 @@ public class SormasToSormasDto implements Serializable {
 	public void setImmunizations(List<SormasToSormasImmunizationDto> immunizations) {
 		this.immunizations = immunizations;
 	}
-
-	/*@Override
-	public String getAuditRepresentation() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append("(originInfo=").append(originInfo.getAuditRepresentation());
-		sb.append(", cases=[");
-		for (SormasToSormasCaseDto caze : cases) {
-			sb.append(caze.getAuditRepresentation());
-			sb.append(", ");
-		}
-
-		sb.append("], contacts=[");
-
-		for (SormasToSormasContactDto contact : contacts) {
-			sb.append(contact.getAuditRepresentation());
-			sb.append(", ");
-		}
-		sb.append("], samples=[");
-		for (SormasToSormasSampleDto sample : samples) {
-			sb.append(sample.getAuditRepresentation());
-			sb.append(", ");
-		}
-		sb.append("], events=[");
-		for (SormasToSormasEventDto event : events) {
-			sb.append(event.getAuditRepresentation());
-			sb.append(", ");
-		}
-		sb.append("], eventParticipants=[");
-		for (SormasToSormasEventParticipantDto eventParticipant : eventParticipants) {
-			sb.append(eventParticipant.getAuditRepresentation());
-			sb.append(", ");
-		}
-		sb.append("], immunizations=[");
-		for (SormasToSormasImmunizationDto immunization : immunizations) {
-			sb.append(immunization.getAuditRepresentation());
-			sb.append(", ");
-		}
-		sb.append("])");
-		return sb.toString();
-	}*/
-	//todo
 }

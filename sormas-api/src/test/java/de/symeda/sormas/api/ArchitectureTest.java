@@ -91,4 +91,6 @@ public class ArchitectureTest {
 
 	// todo getUuid should always be annotated with @AuditInclude
 
+	//todo there should be no DTOs in sormas-backend
+
 }

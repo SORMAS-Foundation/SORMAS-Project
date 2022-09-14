@@ -61,7 +61,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 	private boolean withImmunizations;
 
 	// FIXME(#6101): This should be renamed as it is the target of the operation
-	// todo @AuditInclude
+	@AuditInclude
 	public SormasServerDescriptor getOrganization() {
 		return organization;
 	}

@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 @AuditedClass
@@ -36,13 +37,9 @@ public abstract class SormasToSormasEntityDto<T extends SormasToSormasShareableD
 		this.entity = entity;
 	}
 
+	@AuditInclude
 	public T getEntity() {
 		return entity;
 	}
 
-	/*@Override
-	public String getAuditRepresentation() {
-		return String.format("%s(entity=%s)", getClass().getSimpleName(), entity.getAuditRepresentation());
-	}*/
-	// todo
 }
