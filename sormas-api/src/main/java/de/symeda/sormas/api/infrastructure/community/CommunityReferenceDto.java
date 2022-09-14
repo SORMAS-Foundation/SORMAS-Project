@@ -23,7 +23,7 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 public class CommunityReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -8833267932522978860L;
-	private transient Integer numberx;
+	private Integer numberx;
 
 	public CommunityReferenceDto() {
 		super();

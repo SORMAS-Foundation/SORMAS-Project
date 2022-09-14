@@ -109,8 +109,6 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
 		ComboBox cbCommunity = addInfrastructureField(CampaignFormDataDto.COMMUNITY);
 
-		
-		
 		// addField(CampaignFormDataDto.FORM_TYPE);
 
 		/*
@@ -177,31 +175,35 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			cbDistrict.setEnabled(false);
 		}
 		if (currentUser.getCommunity() != null) {
-			//cbCommunity.setValue(currentUser.getCommunity());
-			//cbCommunity.setEnabled(false);
+			cbCommunity.clear();
+			List<CommunityReferenceDto> items = currentUser.getCommunity().stream().collect(Collectors.toList());
+			for (CommunityReferenceDto item : items) {
+				item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
+			}
+			cbCommunity.addItems(items);
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	private void addInfrastructureListeners(ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity) {
-		
-		
-		cbRegion.addValueChangeListener(e -> {
-			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(cbDistrict,
-					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
-		});
-
-		cbDistrict.addValueChangeListener(e -> {
-			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			
-			
-			FieldHelper.updateItems(cbCommunity,
-					district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid())
-							: null);
-			
-		});
-	}
+//	@SuppressWarnings("deprecation")
+//	private void addInfrastructureListeners(ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity) {
+//		
+//		
+//		cbRegion.addValueChangeListener(e -> {
+//			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+//			FieldHelper.updateItems(cbDistrict,
+//					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+//		});
+//
+//		cbDistrict.addValueChangeListener(e -> {
+//			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+//			
+//			
+//			FieldHelper.updateItems(cbCommunity,
+//					district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid())
+//							: null);
+//			
+//		});
+//	}
 
 	@SuppressWarnings("deprecation")
 	private void addInfrastructureListenerx(ComboBox cbArea, ComboBox cbRegion, ComboBox cbDistrict,
@@ -221,6 +223,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		});
 
 		cbDistrict.addValueChangeListener(e -> {
+			cbCommunity.clear();
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 
 			if (district != null) {
@@ -232,7 +235,6 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
 
 			}
-
 			
 			final UserDto currentUserx = UserProvider.getCurrent().getUser();
 			if(currentUserx.getCommunity().size() > 0) {
@@ -241,9 +243,6 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 						  currentUserx.getCommunity().stream().collect(Collectors.toList())
 							);
 			}
-			
-//			FieldHelper.updateItems(cbCommunity, district != null ? items.stream().filter(ce -> ce.getCaption() != null).collect(Collectors.toList()) : null);
-	
 
 		});
 		System.out.println(Page.getCurrent().getLocation());
