@@ -156,7 +156,7 @@ Feature: Dashboard counters
       And I select "Deutsch" language from Combobox in User settings
       When I click on the Dashboard button from navbar and access Surveillance Dashboard
       Then I get Confirmed labels and value from Surveillance Dashboard with Deutsch language
-      When I click on the Dashboard button from navbar and access Contacts Dashboard with Deutsch language
+      When I click on the Dashboard button from navbar and access Contacts Dashboard
       Then I get Confirmed Contact labels and value from Contact Dashboard with Deutsch language
       And I compare English and German confirmed counter
       And I compare English and German confirmed contacts counter

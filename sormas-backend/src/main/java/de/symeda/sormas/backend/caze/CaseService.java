@@ -1583,18 +1583,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(caze) || sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+		if (!inJurisdictionOrOwned(caze)) {
 			return EditPermissionType.REFUSED;
+		}
+
+		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+			return EditPermissionType.DOCUMENTS_ONLY;
 		}
 
 		return super.getEditPermissionType(caze);
 
-	}
-
-	@Override
-	public EditPermissionType isEditAllowed(Case entity) {
-		// todo compared to ContactService this seems strange.
-		return getEditPermissionType(entity);
 	}
 
 	public boolean inJurisdiction(Case caze, User user) {

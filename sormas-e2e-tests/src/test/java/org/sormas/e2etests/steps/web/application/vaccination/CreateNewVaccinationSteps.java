@@ -43,6 +43,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Vaccination;
@@ -197,12 +198,16 @@ public class CreateNewVaccinationSteps implements En {
         "I click SAVE button in new Vaccination form",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_VACCINATION_FORM_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
         "I click NEW VACCINATION button for DE",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_VACCINATION_DE_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_VACCINATION_DE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(VACCINATION_DATE_INPUT);
+        });
 
     And(
         "^I fill new vaccination data in new Vaccination form with vaccination date (\\d+) days before the current day for DE$",

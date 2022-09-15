@@ -30,7 +30,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST;
-import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CELLS_IN_URINE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CELLS_IN_URINE_INPUT;
@@ -214,7 +214,7 @@ public class CreateNewSampleSteps implements En {
           selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
           fillDateOfCollectionDE(sample.getDateOfCollection());
           selectSampleType(sample.getSampleType());
-          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON);
           selectTestedDisease(sample.getTestedDisease());
           selectTestResult(sample.getSampleTestResults());
           selectLaboratory(sample.getLaboratory());
@@ -773,7 +773,7 @@ public class CreateNewSampleSteps implements En {
 
     And(
         "I click Add Pathogen test in Sample creation page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE));
+        () -> webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON));
 
     And(
         "I check DATE AND TIME OF RESULT field",

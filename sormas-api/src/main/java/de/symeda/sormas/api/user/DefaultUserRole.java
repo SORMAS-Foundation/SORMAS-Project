@@ -422,6 +422,9 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					TRAVEL_ENTRY_DELETE,
 					TRAVEL_ENTRY_ARCHIVE,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
+					DOCUMENT_DELETE,
 					EXPORT_DATA_PROTECTION_DATA,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
@@ -532,6 +535,9 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
 					TRAVEL_ENTRY_DELETE,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
+					DOCUMENT_DELETE,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
 					SORMAS_REST,
@@ -586,6 +592,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -662,6 +670,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -693,6 +703,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -761,6 +773,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -804,6 +818,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -869,6 +885,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -895,6 +913,7 @@ public enum DefaultUserRole {
 					AGGREGATE_REPORT_EDIT,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
+					DOCUMENT_VIEW,
 					OUTBREAK_VIEW,
 					SORMAS_REST,
 					SORMAS_UI));
@@ -945,6 +964,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -997,6 +1018,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1060,6 +1083,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1131,6 +1156,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					OUTBREAK_VIEW,
 					SORMAS_REST,
 					SORMAS_UI));
@@ -1158,6 +1185,7 @@ public enum DefaultUserRole {
 					AGGREGATE_REPORT_EDIT,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
+					DOCUMENT_VIEW,
 					OUTBREAK_VIEW,
 					SORMAS_REST,
 					SORMAS_UI));
@@ -1274,6 +1302,9 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
 					TRAVEL_ENTRY_DELETE,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
+					DOCUMENT_DELETE,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
 					SORMAS_REST,
@@ -1305,6 +1336,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST));
 			break;
 		case POE_NATIONAL_USER:
@@ -1345,6 +1378,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					OUTBREAK_VIEW,
 					SORMAS_REST,
 					SORMAS_UI));
@@ -1392,6 +1427,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					OUTBREAK_VIEW,
 					SORMAS_REST,
 					SORMAS_UI));
@@ -1440,6 +1477,7 @@ public enum DefaultUserRole {
 					AGGREGATE_REPORT_EDIT,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
+					DOCUMENT_VIEW,
 					OUTBREAK_VIEW,
 					SORMAS_REST,
 					SORMAS_UI));
@@ -1508,6 +1546,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1598,6 +1638,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					DOCUMENT_VIEW,
+					DOCUMENT_UPLOAD,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
 					SORMAS_REST,
@@ -1663,7 +1705,7 @@ public enum DefaultUserRole {
 
 		return userRole;
 	}
-	
+
 	public static DefaultUserRole getByCaption(String caption) {
 		Optional<DefaultUserRole> defaultUserRole =
 			Arrays.stream(values()).filter(dur -> dur.name().equals(caption) || I18nProperties.getEnumCaption(dur).equals(caption)).findAny();

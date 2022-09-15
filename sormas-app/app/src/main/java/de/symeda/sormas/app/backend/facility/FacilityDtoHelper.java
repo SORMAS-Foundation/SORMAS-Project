@@ -15,12 +15,13 @@
 
 package de.symeda.sormas.app.backend.facility;
 
-import android.content.Context;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import android.content.Context;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -32,6 +33,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
@@ -51,7 +53,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 	}
 
 	@Override
-	protected Call<List<FacilityDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<FacilityDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		throw new UnsupportedOperationException("Use pullAllByRegionSince");
 	}
 
@@ -78,12 +80,12 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 	 *
 	 * @param markAsRead
 	 * @param context
-     * @throws DaoException
+	 * @throws DaoException
 	 * @throws SQLException
 	 * @throws IOException
 	 */
 	@Override
-	public void pullEntities(final boolean markAsRead, Context context)
+	public void pullEntities(final boolean markAsRead, Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
 		try {
 			final FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
@@ -98,7 +100,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 				if (dtoCall == null) {
 					return;
 				}
-				handlePullResponse(markAsRead, facilityDao, dtoCall.execute());
+				handlePullResponse(markAsRead, facilityDao, dtoCall.execute(), syncCallbacks);
 			}
 
 			{
@@ -111,9 +113,10 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 				if (dtoCall == null) {
 					return;
 				}
-				handlePullResponse(markAsRead, facilityDao, dtoCall.execute());
+				handlePullResponse(markAsRead, facilityDao, dtoCall.execute(), syncCallbacks);
 			}
 
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		} catch (IOException e) {
 			throw new ServerCommunicationException(e);
 		} finally {
@@ -193,12 +196,12 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 		throw new UnsupportedOperationException();
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 
-    public static FacilityReferenceDto toReferenceDto(Facility ado) {
+	public static FacilityReferenceDto toReferenceDto(Facility ado) {
 		if (ado == null) {
 			return null;
 		}

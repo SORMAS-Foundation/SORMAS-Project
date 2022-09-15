@@ -123,6 +123,6 @@ public class CaseEpiDataView extends AbstractCaseView {
 				TRAVEL_ENTRIES_LOC);
 		}
 
-		setCaseEditPermission(container);
+		setEditPermission(container);
 	}
 }

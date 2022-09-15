@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -98,6 +99,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
+	@PermitAll
 	public List<UserRoleDto> getAllAfter(Date since) {
 		return userRoleService.getAllAfter(since).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
@@ -118,6 +120,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<String> getDeletedUuids(Date since) {
 		return userRoleService.getDeletedUuids(since);
 	}
@@ -161,6 +164,11 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 				I18nProperties.getValidationError(
 					Validations.missingRequiredUserRights,
 					requiredUserRights.stream().filter(r -> !userRights.contains(r)).map(UserRight::toString).collect(Collectors.joining(", "))));
+		}
+
+		UserRoleDto existingUserRole = getByUuid(source.getUuid());
+		if (existingUserRole != null && source.getJurisdictionLevel() != existingUserRole.getJurisdictionLevel() && userService.countWithRole(source.toReference()) > 0) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.jurisdictionChangeUserAssignment));
 		}
 
 		User currentUser = userService.getCurrentUser();

@@ -257,6 +257,17 @@
     <string name="caption_aggregate_deaths_abbr">D</string>
     <string name="caption_start_date_existing">Fecha inicial existente</string>
     <string name="caption_end_date_existing">Fecha final existente</string>
+    <string name="caption_sync_send_new">%1$s. Enviando nuevos datos…</string>
+    <string name="caption_sync_pull_infrastructure">%1$s. Descargando datos de infraestructura…</string>
+    <string name="caption_sync_clear_up_infrastructure">%1$s. Limpiando datos de infraestructura…</string>
+    <string name="caption_sync_delete_obsolete">%1$s. Eliminando datos obsoletos…</string>
+    <string name="caption_sync_clear_up">%1$s. Limpiando datos…</string>
+    <string name="caption_sync_synchronize">%1$s. Sincronizando datos…</string>
+    <string name="caption_sync_pull_modified">%1$s. Descargando datos modificados…</string>
+    <string name="caption_sync_repull">%1$s. Redescargando todos los datos…</string>
+    <string name="caption_sync_pulled">%1$s descargado</string>
+    <string name="caption_sync_pushed">%1$s/%2$s enviado</string>
+    <string name="caption_sync_deleted">%1$s eliminado</string>
     <string name="confirmation_action">¿Está seguro de que quiere hacer esto?</string>
     <string name="confirmation_delete">¿Está seguro de que desea eliminar este registro?</string>
     <string name="confirmation_pick_gps">¿Se encuentra en este lugar ahora?</string>
@@ -386,7 +397,7 @@
     <string name="heading_surveillance_outbreak">Brotes y Vigilancia</string>
     <string name="heading_symptoms">Signos &amp; Síntomas</string>
     <string name="heading_sync_conflicts">Conflictos de sincronización</string>
-    <string name="heading_synchronization">Sincronización</string>
+    <string name="heading_synchronization">Sincronizando con el servidor…</string>
     <string name="heading_task_edit">Tarea</string>
     <string name="heading_task_notification">Comprobar la tarea sormas</string>
     <string name="heading_task_read">Leer tarea</string>

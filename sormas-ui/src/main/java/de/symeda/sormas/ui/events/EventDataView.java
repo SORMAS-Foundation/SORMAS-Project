@@ -121,8 +121,8 @@ public class EventDataView extends AbstractEventView {
 		layout.addSidePanelComponent(actionList, ACTIONS_LOC);
 
 		DocumentListComponent documentList = null;
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
-			// TODO: user rights?
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
@@ -207,7 +207,7 @@ public class EventDataView extends AbstractEventView {
 			layout.setEnabled(false);
 		}
 
-		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().isEditAllowed(event.getUuid());
+		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(event.getUuid());
 
 		if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

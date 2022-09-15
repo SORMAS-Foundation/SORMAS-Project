@@ -35,6 +35,6 @@ public class ContactEpiDataView extends AbstractContactView {
 		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
 			ControllerProvider.getContactController().getEpiDataComponent(getContactRef().getUuid());
 		setSubComponent(epidDataForm);
-		setContactEditPermission(epidDataForm);
+		setEditPermission(epidDataForm);
 	}
 }

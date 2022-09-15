@@ -59,6 +59,9 @@ public class EditCasePersonPage {
   public static final By SEE_CASES_FOR_THIS_PERSON_BUTTON = By.id("See cases for this person");
   public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
   public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
+  public static final By COUNTRY_OF_BIRTH_LABEL_DE = By.xpath("//div[text()=\"Geburtsland\"]");
+  public static final By CITIZENSHIP_LABEL_DE =
+      By.xpath("//div[text()=\"Staatsb\u00FCrgerschaft\"]");
   public static final By EDUCATION_COMBOBOX =
       By.cssSelector("[id='educationType'] [class='v-filterselect-button']");
   public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector("#details");
