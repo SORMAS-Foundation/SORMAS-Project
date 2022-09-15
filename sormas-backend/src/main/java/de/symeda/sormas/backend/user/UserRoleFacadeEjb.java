@@ -172,6 +172,11 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 					requiredUserRights.stream().filter(r -> !userRights.contains(r)).map(UserRight::toString).collect(Collectors.joining(", "))));
 		}
 
+		UserRoleDto existingUserRole = getByUuid(source.getUuid());
+		if (existingUserRole != null && source.getJurisdictionLevel() != existingUserRole.getJurisdictionLevel() && userService.countWithRole(source.toReference()) > 0) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.jurisdictionChangeUserAssignment));
+		}
+
 		User currentUser = userService.getCurrentUser();
 		if (currentUser != null && currentUser.getUserRoles().stream().anyMatch(r -> DataHelper.isSame(r, source))) {
 			Set<UserRole> currentUserRoles = currentUser.getUserRoles();
