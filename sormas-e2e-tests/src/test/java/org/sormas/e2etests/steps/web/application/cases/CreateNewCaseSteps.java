@@ -962,7 +962,7 @@ public class CreateNewCaseSteps implements En {
     When(
         "I check if ([^\"]*) file is downloaded correctly",
         (String fileType) -> {
-          String file = "./downloads/testCase_" + fileType + "." + fileType;
+          String file = "testCase_" + fileType + "." + fileType;
           FilesHelper.waitForFileToDownload(file, 40);
           FilesHelper.deleteFile(file);
         });
