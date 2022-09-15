@@ -499,15 +499,13 @@ public class CaseDirectorySteps implements En {
         "I click on new entry button from Epidemiological Data tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON);
-        //  webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
-            webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
 
     Then(
         "I click on new entry button from Epidemiological Data tab for DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
-         // webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
 
