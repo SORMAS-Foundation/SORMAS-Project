@@ -20,6 +20,7 @@ import java.util.Date;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
 public class CampaignIndexDto extends AbstractUuidDto {
+	private static final long serialVersionUID = 2448753530580084851L;
 
 	public static final String I18N_PREFIX = "Campaign";
 	public static final String NAME = "name";
