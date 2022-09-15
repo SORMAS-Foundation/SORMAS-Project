@@ -80,6 +80,7 @@ import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -106,7 +107,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class SampleService extends AbstractDeletableAdoService<Sample> {
+public class SampleService extends AbstractDeletableAdoService<Sample>
+	implements JurisdictionFlagsService<Sample, SampleJurisdictionFlagsDto, SampleJoins, SampleQueryContext> {
 
 	@EJB
 	private UserService userService;
@@ -663,12 +665,14 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		return filter;
 	}
 
-	public SampleJurisdictionFlagsDto inJurisdictionOrOwned(Sample sample) {
+	@Override
+	public SampleJurisdictionFlagsDto getJurisdictionFlags(Sample entity) {
 
-		return getInJurisdictionFlags(Collections.singletonList(sample)).get(sample.getId());
+		return getJurisdictionsFlags(Collections.singletonList(entity)).get(entity.getId());
 	}
 
-	public Map<Long, SampleJurisdictionFlagsDto> getInJurisdictionFlags(List<Sample> entities) {
+	@Override
+	public Map<Long, SampleJurisdictionFlagsDto> getJurisdictionsFlags(List<Sample> entities) {
 
 		return getSelectionAttributes(
 			entities,
@@ -676,11 +680,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			e -> new SampleJurisdictionFlagsDto(e));
 	}
 
+	@Override
 	public List<Selection<?>> getJurisdictionSelections(SampleQueryContext qc) {
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		final SampleJoins joins = qc.getJoins();
-		final CriteriaQuery cq = qc.getQuery();
+		final CriteriaQuery<?> cq = qc.getQuery();
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
@@ -704,6 +709,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 					eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())))));
 	}
 
+	@Override
 	public Predicate inJurisdictionOrOwned(SampleQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		return SampleJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
@@ -1092,7 +1098,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			return false;
 		}
 
-		return inJurisdictionOrOwned(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
+		return getJurisdictionFlags(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
 	}
 
 	public Date getEarliestSampleDate(Collection<Sample> samples) {

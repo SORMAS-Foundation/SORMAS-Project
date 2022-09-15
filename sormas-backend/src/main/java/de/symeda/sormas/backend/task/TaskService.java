@@ -65,6 +65,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -86,7 +87,8 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
-public class TaskService extends AdoServiceWithUserFilter<Task> {
+public class TaskService extends AdoServiceWithUserFilter<Task>
+	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext> {
 
 	@EJB
 	private CaseService caseService;
@@ -707,12 +709,14 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	public TaskJurisdictionFlagsDto inJurisdictionOrOwned(Task task) {
+	@Override
+	public TaskJurisdictionFlagsDto getJurisdictionFlags(Task entity) {
 
-		return getInJurisdictionFlags(Collections.singletonList(task)).get(task.getId());
+		return getJurisdictionsFlags(Collections.singletonList(entity)).get(entity.getId());
 	}
 
-	public Map<Long, TaskJurisdictionFlagsDto> getInJurisdictionFlags(List<Task> selectedEntities) {
+	@Override
+	public Map<Long, TaskJurisdictionFlagsDto> getJurisdictionsFlags(List<Task> selectedEntities) {
 
 		return getSelectionAttributes(
 			selectedEntities,
@@ -720,7 +724,9 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			e -> new TaskJurisdictionFlagsDto(e));
 	}
 
+	@Override
 	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {
+
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		final TaskJoins joins = qc.getJoins();
 
@@ -754,6 +760,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					travelEntryService.inJurisdictionOrOwned(new TravelEntryQueryContext(cb, qc.getQuery(), joins.getTravelEntryJoins())))));
 	}
 
+	@Override
 	public Predicate inJurisdictionOrOwned(TaskQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		return TaskJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();

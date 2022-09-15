@@ -233,7 +233,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return null;
 		}
 
-		return toDto(source, pseudonymizer, taskService.inJurisdictionOrOwned(source));
+		return toDto(source, pseudonymizer, taskService.getJurisdictionFlags(source));
 	}
 
 	private TaskDto toDto(Task source, Pseudonymizer pseudonymizer, TaskJurisdictionFlagsDto jurisdictionFlags) {
@@ -298,7 +298,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	private List<TaskDto> toPseudonymizedDtos(List<Task> entities) {
 
-		Map<Long, TaskJurisdictionFlagsDto> jurisdictionFlags = taskService.getInJurisdictionFlags(entities);
+		Map<Long, TaskJurisdictionFlagsDto> jurisdictionFlags = taskService.getJurisdictionsFlags(entities);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
 		List<TaskDto> dtos = entities.stream().map(p -> toDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
 		return dtos;

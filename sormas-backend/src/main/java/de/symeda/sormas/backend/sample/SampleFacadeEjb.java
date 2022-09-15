@@ -810,7 +810,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			return null;
 		}
 
-		return convertToDto(source, pseudonymizer, sampleService.inJurisdictionOrOwned(source));
+		return convertToDto(source, pseudonymizer, sampleService.getJurisdictionFlags(source));
 	}
 
 	private SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
@@ -823,7 +823,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private List<SampleDto> toPseudonymizedDtos(List<Sample> entities) {
 
-		Map<Long, SampleJurisdictionFlagsDto> jurisdictionFlags = sampleService.getInJurisdictionFlags(entities);
+		Map<Long, SampleJurisdictionFlagsDto> jurisdictionFlags = sampleService.getJurisdictionsFlags(entities);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
 		List<SampleDto> dtos = entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
 		return dtos;
@@ -854,7 +854,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	private void restorePseudonymizedDto(SampleDto dto, Sample existingSample, SampleDto existingSampleDto) {
 
 		if (existingSampleDto != null) {
-			boolean inJurisdiction = sampleService.inJurisdictionOrOwned(existingSample).getInJurisdiction();
+			boolean inJurisdiction = sampleService.getJurisdictionFlags(existingSample).getInJurisdiction();
 			User currentUser = userService.getCurrentUser();
 
 			Pseudonymizer pseudonymizer = createPseudonymizer();
