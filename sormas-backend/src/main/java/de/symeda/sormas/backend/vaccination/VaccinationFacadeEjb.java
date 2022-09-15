@@ -279,8 +279,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	private VaccinationListEntryDto toVaccinationListEntryDto(Vaccination vaccination, boolean relevant, String message) {
-		VaccinationListEntryDto dto = new VaccinationListEntryDto();
-		dto.setUuid(vaccination.getUuid());
+		VaccinationListEntryDto dto = new VaccinationListEntryDto(vaccination.getUuid());
 		dto.setDisease(vaccination.getImmunization().getDisease());
 		dto.setVaccinationDate(vaccination.getVaccinationDate());
 		dto.setVaccineName(vaccination.getVaccineName());

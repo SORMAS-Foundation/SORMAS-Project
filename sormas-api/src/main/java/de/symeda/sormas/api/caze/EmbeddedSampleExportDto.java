@@ -1,36 +1,30 @@
 /*
- * ******************************************************************************
- * * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- * *
- * * This program is free software: you can redistribute it and/or modify
- * * it under the terms of the GNU General Public License as published by
- * * the Free Software Foundation, either version 3 of the License, or
- * * (at your option) any later version.
- * *
- * * This program is distributed in the hope that it will be useful,
- * * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * * GNU General Public License for more details.
- * *
- * * You should have received a copy of the GNU General Public License
- * * along with this program. If not, see <https://www.gnu.org/licenses/>.
- * ******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.api.caze;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class EmbeddedSampleExportDto implements Serializable {
+public class EmbeddedSampleExportDto extends AbstractUuidDto {
 
-	private String uuid;
 	private Date dateTime;
 	@SensitiveData
 	private String lab;
@@ -38,10 +32,11 @@ public class EmbeddedSampleExportDto implements Serializable {
 	private Long caseId;
 
 	public EmbeddedSampleExportDto() {
+		super(null);
 	}
 
 	public EmbeddedSampleExportDto(String uuid, Date dateTime, String lab, PathogenTestResultType result) {
-		this.uuid = uuid;
+		super(uuid);
 		this.dateTime = dateTime;
 		this.lab = lab;
 		this.result = result;
@@ -55,7 +50,7 @@ public class EmbeddedSampleExportDto implements Serializable {
 		String labDetails,
 		PathogenTestResultType result,
 		Long caseId) {
-		this.uuid = uuid;
+		super(uuid);
 		this.dateTime = dateTime;
 		this.lab = labUuid != null ? FacilityHelper.buildFacilityString(labUuid, labName, labDetails) : null;
 		this.result = result;
@@ -96,14 +91,6 @@ public class EmbeddedSampleExportDto implements Serializable {
 
 	public void setResult(PathogenTestResultType result) {
 		this.result = result;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public Long getCaseId() {
