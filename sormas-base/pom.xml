@@ -646,6 +646,13 @@
 				<artifactId>docx4j-docx-anon</artifactId>
 				<version>${docx4j.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.10.2</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.docx4j</groupId>
 				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
@@ -966,7 +973,6 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-inline</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<build>
