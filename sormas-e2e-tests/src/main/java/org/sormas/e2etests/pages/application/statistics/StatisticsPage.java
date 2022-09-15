@@ -11,6 +11,7 @@ public class StatisticsPage {
       By.cssSelector("[class='v-filterselect-button']");
   public static final By ATTRIBUTE_DROPDOWN_VALUES =
       By.cssSelector("[class='v-menubar-menuitem-caption']");
+  public static final By DISEASE_DROPDOWN_VALUES = By.cssSelector("[class='gwt-MenuItem']");
   public static final By VISUALISATION_TYPE_TABLE_RADIO_BUTTON =
       By.xpath("//label[text()='Table']");
   public static final By VISUALISATION_TYPE_MAP_RADIO_BUTTON = By.xpath("//label[text()='Map']");

@@ -341,8 +341,7 @@ public class StatisticsSteps implements En {
               softly.assertAll();
               break;
             case "Deselected":
-              // TODO remove hardcoded sleep
-              TimeUnit.SECONDS.sleep(1);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
               softly.assertFalse(
                   webDriverHelpers.isElementChecked(CASES_CHECKBOX),
                   "Cases Checkbox is not checked in the database export page");
@@ -516,7 +515,8 @@ public class StatisticsSteps implements En {
         "^I Select the ([^\"]*) option from the Disease Dropdown in the Statistics Page",
         (String parameter) -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SELECT_DISEASE_DROPDOWN);
-          webDriverHelpers.selectFromCombobox(SELECT_DISEASE_DROPDOWN, parameter);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_DISEASE_DROPDOWN);
+          webDriverHelpers.clickWebElementByText(DISEASE_DROPDOWN_VALUES, parameter);
         });
 
     Then(
