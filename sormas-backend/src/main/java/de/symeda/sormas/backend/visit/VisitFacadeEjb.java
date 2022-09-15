@@ -219,6 +219,44 @@ public class VisitFacadeEjb implements VisitFacade {
 		UserRight._VISIT_CREATE,
 		UserRight._VISIT_EDIT })
 	public VisitDto saveVisit(@Valid VisitDto dto) {
+		return doSaveVisit(dto);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EXTERNAL_VISITS)
+	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
+
+		final String personUuid = dto.getPersonUuid();
+		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
+
+		final VisitDto visitDto = VisitDto.build(
+			new PersonReferenceDto(personUuid),
+			dto.getDisease(),
+			dto.getVisitDateTime(),
+			currentUser,
+			dto.getVisitStatus(),
+			dto.getVisitRemarks(),
+			dto.getSymptoms(),
+			dto.getReportLat(),
+			dto.getReportLon(),
+			dto.getReportLatLonAccuracy(),
+			VisitOrigin.EXTERNAL_JOURNAL);
+
+		doSaveVisit(visitDto);
+
+		return ExternalVisitDto.build(
+			personUuid,
+			visitDto.getDisease(),
+			visitDto.getVisitDateTime(),
+			visitDto.getVisitStatus(),
+			visitDto.getVisitRemarks(),
+			visitDto.getSymptoms(),
+			visitDto.getReportLat(),
+			visitDto.getReportLon(),
+			visitDto.getReportLatLonAccuracy());
+	}
+
+	private VisitDto doSaveVisit(@Valid VisitDto dto) {
 		final String visitUuid = dto.getUuid();
 		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
 
@@ -242,40 +280,6 @@ public class VisitFacadeEjb implements VisitFacade {
 		onVisitChanged(existingDto, entity);
 
 		return convertToDto(entity, Pseudonymizer.getDefault(userService::hasRight));
-	}
-
-	@Override
-	@RightsAllowed(UserRight._EXTERNAL_VISITS)
-	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
-
-		final String personUuid = dto.getPersonUuid();
-		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
-
-		final VisitDto visitDto = VisitDto.build(
-			new PersonReferenceDto(personUuid),
-			dto.getDisease(),
-			dto.getVisitDateTime(),
-			currentUser,
-			dto.getVisitStatus(),
-			dto.getVisitRemarks(),
-			dto.getSymptoms(),
-			dto.getReportLat(),
-			dto.getReportLon(),
-			dto.getReportLatLonAccuracy(),
-			VisitOrigin.EXTERNAL_JOURNAL);
-
-		saveVisit(visitDto);
-
-		return ExternalVisitDto.build(
-			personUuid,
-			visitDto.getDisease(),
-			visitDto.getVisitDateTime(),
-			visitDto.getVisitStatus(),
-			visitDto.getVisitRemarks(),
-			visitDto.getSymptoms(),
-			visitDto.getReportLat(),
-			visitDto.getReportLon(),
-			visitDto.getReportLatLonAccuracy());
 	}
 
 	@Override
