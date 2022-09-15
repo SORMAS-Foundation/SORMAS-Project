@@ -32,8 +32,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -44,8 +42,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -58,6 +54,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
@@ -90,6 +87,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -1983,9 +1981,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
 
 		PersonContactDetailDto primaryPhone =
-				creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
 		PersonContactDetailDto secondaryPhone =
-				creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
 
 		personWithPhone.getPersonContactDetails().add(primaryPhone);
 		personWithPhone.getPersonContactDetails().add(secondaryPhone);
@@ -2019,9 +2017,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
 
 		PersonContactDetailDto primaryEmail =
-				creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+			creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
 		PersonContactDetailDto secondaryEmail =
-				creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+			creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
 
 		personWithEmail.getPersonContactDetails().add(primaryEmail);
 		personWithEmail.getPersonContactDetails().add(secondaryEmail);
@@ -2055,9 +2053,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
 
 		PersonContactDetailDto primarOtherDetail =
-				creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
 		PersonContactDetailDto secondaryOtherDetail =
-				creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+			creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
 
 		personWithOtherDetail.getPersonContactDetails().add(primarOtherDetail);
 		personWithOtherDetail.getPersonContactDetails().add(secondaryOtherDetail);
@@ -2082,7 +2080,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
 		assertEquals(0, contactIndexDetailedDtos.size());
 	}
-
 
 	private CaseDataDto createCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcf) {
 		return creator.createCase(

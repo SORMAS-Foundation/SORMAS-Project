@@ -15,7 +15,6 @@ public class ContactQueryContext extends QueryContext<Contact, ContactJoins> {
 	public static final String PERSON_PHONE_SUBQUERY = "personPhoneSubquery";
 	public static final String PERSON_PHONE_OWNER_SUBQUERY = "personPhoneOwnerSubquery";
 	public static final String PERSON_EMAIL_SUBQUERY = "personEmailSubquery";
-	public static final String PERSON_PRIMARY_OTHER_SUBQUERY = "personPrimaryOtherSubquery";
 	public static final String PERSON_OTHER_CONTACT_DETAILS_SUBQUERY = "personOtherContactDetailsSubQuery";
 
 	protected ContactQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> root) {
@@ -34,8 +33,6 @@ public class ContactQueryContext extends QueryContext<Contact, ContactJoins> {
 			return addSubqueryExpression(PERSON_PHONE_SUBQUERY, getPersonContactDetailSubquery(PersonContactDetailType.PHONE, personJoin));
 		} else if (name.equals(PERSON_EMAIL_SUBQUERY)) {
 			return addSubqueryExpression(PERSON_EMAIL_SUBQUERY, getPersonContactDetailSubquery(PersonContactDetailType.EMAIL, personJoin));
-		} else if (name.equals(PERSON_PRIMARY_OTHER_SUBQUERY)) {
-			return addSubqueryExpression(PERSON_PRIMARY_OTHER_SUBQUERY, getPersonContactDetailSubquery(PersonContactDetailType.OTHER, personJoin));
 		} else if (name.equals(PERSON_PHONE_OWNER_SUBQUERY)) {
 			return addSubqueryExpression(PERSON_PHONE_OWNER_SUBQUERY, phoneOwnerSubquery(personJoin));
 		} else if (name.equals(PERSON_OTHER_CONTACT_DETAILS_SUBQUERY)) {

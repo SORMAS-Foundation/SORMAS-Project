@@ -136,6 +136,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -643,6 +644,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, Facility> facility = joins.getFacility();
 		Join<Person, Location> location = joins.getPersonAddress();
 
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
+
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
@@ -816,11 +819,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper
-						.unaccentedIlike(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
 					CriteriaBuilderHelper
-						.unaccentedIlike(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 

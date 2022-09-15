@@ -15,9 +15,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -75,6 +72,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
@@ -1154,9 +1152,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user.toReference(), personWithoutPhone.toReference(), rdcf);
 
 		PersonContactDetailDto primaryPhone =
-				creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
 		PersonContactDetailDto secondaryPhone =
-				creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
 
 		personWithPhone.getPersonContactDetails().add(primaryPhone);
 		personWithPhone.getPersonContactDetails().add(secondaryPhone);
@@ -1190,9 +1188,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user.toReference(), personWithoutEmail.toReference(), rdcf);
 
 		PersonContactDetailDto primaryPhone =
-				creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+			creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
 		PersonContactDetailDto secondaryPhone =
-				creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+			creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
 
 		personWithEmail.getPersonContactDetails().add(primaryPhone);
 		personWithEmail.getPersonContactDetails().add(secondaryPhone);
@@ -1226,9 +1224,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user.toReference(), personWithoutOtherDetail.toReference(), rdcf);
 
 		PersonContactDetailDto primaryPhone =
-				creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
 		PersonContactDetailDto secondaryPhone =
-				creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+			creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
 
 		personWithOtherDetail.getPersonContactDetails().add(primaryPhone);
 		personWithOtherDetail.getPersonContactDetails().add(secondaryPhone);

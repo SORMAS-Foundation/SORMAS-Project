@@ -52,6 +52,7 @@ import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
@@ -181,8 +182,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		final EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 		final Join<EventParticipant, Event> event = joins.getEvent();
 		final Join<EventParticipant, Person> person = joins.getPerson();
-		final EventParticipantQueryContext personQueryContext = new EventParticipantQueryContext(cb, cq, joins);
-
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
+		
 		Predicate filter = null;
 		if (criteria.getEvent() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
@@ -201,18 +202,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						personQueryContext.getSubqueryExpression(EventParticipantQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(
-						cb,
-						personQueryContext.getSubqueryExpression(EventParticipantQueryContext.PERSON_EMAIL_SUBQUERY),
-						textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(
-						cb,
-						personQueryContext.getSubqueryExpression(EventParticipantQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY),
-						textFilter));
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

@@ -717,9 +717,9 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
 
 		PersonContactDetailDto primaryEmail =
-				creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
 		PersonContactDetailDto secondaryEmail =
-				creator.createPersonContactDetail(personWithPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+			creator.createPersonContactDetail(personWithPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
 
 		personWithPhone.getPersonContactDetails().add(primaryEmail);
 		personWithPhone.getPersonContactDetails().add(secondaryEmail);
@@ -752,17 +752,19 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
 
 		PersonContactDetailDto primaryEmail =
-				creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
 		PersonContactDetailDto secondaryEmail =
-				creator.createPersonContactDetail(personWithOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
 
 		personWithOtherDetail.getPersonContactDetails().add(primaryEmail);
 		personWithOtherDetail.getPersonContactDetails().add(secondaryEmail);
 		getPersonFacade().save(personWithOtherDetail);
 
 		final Date startOfDay = DateHelper.getStartOfDay(new Date());
-		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithOtherDetail, new DateTime(startOfDay).minusDays(1).toDate());
-		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutOtherDetail, new DateTime(startOfDay).minusDays(1).toDate());
+		ImmunizationDto immunizationDto1 =
+			createOngoingImmunizationWithEndDate(personWithOtherDetail, new DateTime(startOfDay).minusDays(1).toDate());
+		ImmunizationDto immunizationDto2 =
+			createOngoingImmunizationWithEndDate(personWithoutOtherDetail, new DateTime(startOfDay).minusDays(1).toDate());
 
 		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 		List<ImmunizationIndexDto> immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
