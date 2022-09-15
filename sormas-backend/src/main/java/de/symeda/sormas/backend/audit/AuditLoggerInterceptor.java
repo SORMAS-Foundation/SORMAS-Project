@@ -7,22 +7,22 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
-import de.symeda.sormas.api.uuid.HasUuid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.i18n.I18nFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
@@ -31,20 +31,22 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 public class AuditLoggerInterceptor {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	@EJB
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 
 	/**
 	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
 	 */
-	private final static Map<Class<?>, Boolean> shouldIgnoreClassCache = new HashMap<>();
+	private static final Map<Class<?>, Boolean> shouldIgnoreClassCache = new HashMap<>();
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
 	 */
-	private final static Set<Class<?>> ignoreAuditClasses = Collections.unmodifiableSet(
+	private static final Set<Class<?>> ignoreAuditClasses = Collections.unmodifiableSet(
 		new HashSet<>(
 			Arrays.asList(
+				FeatureConfigurationFacadeEjb.class,
 				ConfigFacadeEjb.class,
 				CurrentUserService.class,
 				AuditContextProducer.class,
@@ -105,44 +107,16 @@ public class AuditLoggerInterceptor {
 		// start auditing
 
 		// AuditContextProducer
-		List<String> parameters = getParameters(context);
+		Object[] parameters = context.getParameters();
 
 		// do the actual call
 		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		Object result = context.proceed();
 		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
-		String returnValue = printObject(result);
 
-		auditLogger.logBackendCall(calledMethod, parameters, returnValue, start, end);
+		auditLogger.logBackendCall(calledMethod, parameters, result, start, end);
 
 		return result;
 	}
 
-	private List<String> getParameters(InvocationContext context) {
-		Object[] contextParameters = context.getParameters();
-
-		if (contextParameters != null) {
-			return Arrays.stream(contextParameters).filter(Objects::nonNull).map(this::printObject).collect(Collectors.toList());
-		} else {
-			return Collections.emptyList();
-		}
-	}
-
-	private String printObject(Object o) {
-		if (o == null) {
-			return null;
-		}
-		if (o instanceof HasUuid) {
-			return ((HasUuid) o).getUuid();
-		}
-		if (o instanceof List) {
-			List list = (List) o;
-			if (!list.isEmpty() && list.get(0) instanceof HasUuid) {
-				List<HasUuid> uuidList = list;
-				String str = uuidList.stream().map(HasUuid::getUuid).collect(Collectors.joining(","));
-				return String.format("List(%s)", str);
-			}
-		}
-		return o.toString();
-	}
 }
