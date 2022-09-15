@@ -1629,13 +1629,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Contact contact) {
+	public EditPermissionType getEditPermissionType(Contact contact) {
 
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(contact).getInJurisdiction()) {
+		if (Boolean.FALSE.equals(inJurisdictionOrOwned(contact).getInJurisdiction())) {
 			return EditPermissionType.REFUSED;
 		}
 
@@ -1643,13 +1643,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return EditPermissionType.DOCUMENTS_ONLY;
 		}
 
-		return getEditPermissionType(contact);
+		return super.getEditPermissionType(contact);
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		final ContactJoins joins = (ContactJoins) qc.getJoins();
+		final ContactJoins joins = qc.getJoins();
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc, userService.getCurrentUser())),
 			JurisdictionHelper.booleanSelector(

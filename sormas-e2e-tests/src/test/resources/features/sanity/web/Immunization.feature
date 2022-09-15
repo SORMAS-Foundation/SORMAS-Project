@@ -361,8 +361,3 @@ Feature: Immunization end to end tests
     And I click on SAVE new contact button and choose same person in duplicate detection
     And I check that vaccination entry is greyed out in the vaccination card
     And I check if Vaccination Status is set to "" on Edit Case page
-
-
-
-
-

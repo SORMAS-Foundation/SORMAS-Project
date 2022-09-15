@@ -1595,12 +1595,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	}
 
-	@Override
-	public EditPermissionType isEditAllowed(Case entity) {
-		// todo compared to ContactService this seems strange.
-		return getEditPermissionType(entity);
-	}
-
 	public boolean inJurisdiction(Case caze, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

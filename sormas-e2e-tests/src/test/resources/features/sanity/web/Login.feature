@@ -28,6 +28,8 @@ Feature: Login with different type of users
     Given I navigate to SORMAS login page
     Then I log in as a <user>
     Then I am logged in with name <user>
+    Then I click on the User Settings button from navbar
+    And I select "Deutsch" language from Combobox in User settings
     And I check that German word for User Settings is present in the left main menu
     Then I click on the User Settings button from navbar
     And I check that Deutsch language is selected in User Settings

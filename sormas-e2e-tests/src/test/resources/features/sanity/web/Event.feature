@@ -1230,6 +1230,7 @@ Feature: Create events
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
     Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click Enter Bulk Edit Mode on Event directory page
     And I select first 2 results in grid in Event Participant Directory
     And I click on Bulk Actions combobox in Event Parcitipant Tab
     And I click on Create Quarantine Order from Bulk Actions combobox on Event Participant Directory Page
@@ -1332,3 +1333,13 @@ Feature: Create events
     Then I click the Cancel Action button from the Unsaved Changes pop-up located in the Event Participant Page
     And I click on the NEW IMMUNIZATION button in Edit event participant
     Then I click the Cancel Action button from the Unsaved Changes pop-up located in the Event Participant Page
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Event Participant Person Page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
