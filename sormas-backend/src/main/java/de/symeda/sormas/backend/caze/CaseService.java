@@ -86,7 +86,6 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -1031,11 +1030,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
 		setArchiveInExternalSurveillanceToolForEntities(Collections.singletonList(entityUuid), archived);
-	}
-
-	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
-		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
-		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
 
 	@Override

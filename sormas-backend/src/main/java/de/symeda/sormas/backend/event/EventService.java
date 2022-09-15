@@ -55,7 +55,6 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
-import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -321,11 +320,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) {
 		setArchiveInExternalSurveillanceToolForEntities(Collections.singletonList(eventUuid), archived);
-	}
-
-	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
-		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByEvent(entityUuid);
-		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {
