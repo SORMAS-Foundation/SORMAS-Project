@@ -25,6 +25,6 @@ public class ImmunizationPersonView extends AbstractImmunizationView {
 			.getPersonEditComponent(PersonContext.IMMUNIZATION, dto.getPerson().getUuid(), dto.getDisease(), null, UserRight.IMMUNIZATION_EDIT, null);
 		setSubComponent(immunizationPersonComponent);
 
-		setImmunizationEditPermission(immunizationPersonComponent);
+		setEditPermission(immunizationPersonComponent);
 	}
 }

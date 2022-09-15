@@ -126,6 +126,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -138,6 +139,7 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
 
 public class TestDataCreator {
@@ -186,16 +188,21 @@ public class TestDataCreator {
 
 	public UserDto createTestUser() {
 
-		UserDto user = UserDto.build();
+		User user = new User();
+		user.setUuid(DataHelper.createUuid());
 		user.setFirstName("ad");
 		user.setLastName("min");
 		user.setUserName("admin");
-		user.setUserRoles(
-			new HashSet<>(Arrays.asList(getUserRoleReference(DefaultUserRole.ADMIN), getUserRoleReference(DefaultUserRole.NATIONAL_USER))));
 
-		beanTest.getUserService().persist(beanTest.getUserFacade().fromDto(user, false));
+		String password = PasswordHelper.createPass(12);
+		user.setSeed(PasswordHelper.createPass(16));
+		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
 
-		return user;
+		user.setUserRoles(new HashSet<>(Arrays.asList(getUserRole(DefaultUserRole.ADMIN), getUserRole(DefaultUserRole.NATIONAL_USER))));
+
+		beanTest.getUserService().persist(user);
+
+		return beanTest.getUserFacade().getByUuid(user.getUuid());
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto userRole, Consumer<UserDto> customConfig) {
@@ -1858,7 +1865,13 @@ public class TestDataCreator {
 		return populationData;
 	}
 
-	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseSurveillance, Boolean aggregateReporting, List<String> ageGroups) {
+	public void updateDiseaseConfiguration(
+		Disease disease,
+		Boolean active,
+		Boolean primary,
+		Boolean caseSurveillance,
+		Boolean aggregateReporting,
+		List<String> ageGroups) {
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);

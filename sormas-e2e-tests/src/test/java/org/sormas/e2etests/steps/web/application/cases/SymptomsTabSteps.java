@@ -273,6 +273,15 @@ public class SymptomsTabSteps implements En {
               "Assert on notification popup went wrong");
           softly.assertAll();
         });
+
+    And(
+        "^I set Date of symptom onset to (\\d+) days before today$",
+        (Integer numberOfDays) -> {
+          webDriverHelpers.scrollToElement(DATE_OF_SYMPTOM_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              DATE_OF_SYMPTOM_INPUT,
+              DATE_FORMATTER_DE.format(LocalDate.now().minusDays(numberOfDays)));
+        });
   }
 
   private void FillSymptomsData(Symptoms symptoms) {

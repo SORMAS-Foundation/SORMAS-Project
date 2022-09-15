@@ -394,10 +394,11 @@ public class CaseContactsView extends AbstractCaseView {
 		updateFilterComponents();
 
 		grid.reload();
-		setCaseEditPermission(gridLayout);
+		setEditPermission(gridLayout);
 	}
 
-	protected boolean isCaseEditAllowed() {
+	@Override
+	protected boolean isEditAllowed() {
 		return FacadeProvider.getCaseFacade().isEditContactAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 

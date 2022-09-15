@@ -103,11 +103,11 @@ Feature: Create travel entries
     When I fill the required fields in a new travel entry form without personal data
     Then I click on the person search button in create new travel entry form
     And I search for the last created person by First Name and Last Name in popup on Select Person window
-    And I open the first found result in the popup of Select Person window for DE version
+    And I open the first found result in the popup of Select Person window
     And I click on the clear button in new case form
     And I click on the person search button in new case form
     And I search for the last created person by First Name and Last Name in popup on Select Person window
-    And I open the first found result in the popup of Select Person window for DE version
+    And I open the first found result in the popup of Select Person window
     And I click on Save button from the new travel entry form
     And I collect travel UUID from travel entry
     And I check the created data is correctly displayed on Edit travel entry page for DE version
@@ -454,3 +454,14 @@ Feature: Create travel entries
       Then I apply "Aktive Einreisen" to combobox on Travel Entry Directory Page
       And I search for first created travel entry by UUID for person in Travel Entries Directory
       And I check that number of displayed Travel Entry results is 1
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Travel Entry Person Page
+    Given I log in as a National User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form
+    And I click on Save button from the new travel entry form
+    And I navigate to person tab in Edit travel entry page
+    Then I check that Citizenship is not visible in Contact Information section for DE version
+    And I check that Country of birth is not visible in Contact Information section for DE version

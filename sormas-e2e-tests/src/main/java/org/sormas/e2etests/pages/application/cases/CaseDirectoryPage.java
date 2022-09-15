@@ -151,9 +151,8 @@ public class CaseDirectoryPage {
   public static final By LEAVE_BULK_EDIT_MODE = By.id("actionLeaveBulkEditMode");
   public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
-  public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
-  public static final By NEW_EVENT_CHECKBOX_DE =
-      By.xpath("//*[contains(text(),'Neues Ereignis')]/..");
+  public static final By NEW_EVENT_CHECKBOX =
+      By.xpath("//div[@class='v-select-optiongroup v-widget']/span");
   public static final By FIRST_RESULT_IN_GRID =
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
@@ -168,25 +167,20 @@ public class CaseDirectoryPage {
   public static final By DOWNLOAD_DATA_DICTIONARY_BUTTON = By.id("importDownloadDataDictionary");
   public static final By FACILITY_ACTIVITY_AS_CASE_COMBOBOX =
       By.cssSelector(".v-window #typeOfPlace div");
-  public static final By MERGE_DUPLICATES_WARNING_DE =
-      By.xpath(
-          "  //div[contains(text(), \"Die Berechnung und Anzeige m\u00F6glicher Duplikat-F\u00E4lle ist eine sehr komplexe Aufgabe und kann viel Zeit in Anspruch nehmen.\")]");
+  public static final By MERGE_DUPLICATES_WARNING_POPUP =
+      By.xpath("//div[@class='v-window-wrap']//div[@class='v-slot']/div");
   public static final By CASE_MEANS_OF_TRANSPORT =
       By.cssSelector(".v-window #meansOfTransport div");
   public static final By CASE_MEANS_OF_TRANSPORT_DETAILS = By.id("meansOfTransportDetails");
   public static final By CASE_CONNECTION_NUMBER = By.id("connectionNumber");
   public static final By CASE_SEAT_NUMBER = By.id("seatNumber");
-  public static final By CASE_ACTION_CONFIRM = By.id("actionConfirm");
-  public static final By CASE_ACTION_CANCEL = By.id("actionCancel");
   public static final By UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX =
-      By.xpath("//label[text()='Also upload the generated documents to the selected entities']");
-  public static final By UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE =
-      By.xpath("//label[text()='Generierte Dokumente auch den Entit\u00E4ten anh\u00E4ngen']");
+      By.xpath("//div[@class='v-slot v-slot-force-caption-checkbox']/span/label");
   public static final By CLOSE_FORM_BUTTON = By.xpath("//div[@class='v-window-closebox']");
   public static final By REINFECTION_STATUS_COMBOBOX =
       By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
-  public static final By CREATE_NEW_PERSON_CHECKBOX_DE =
-      By.xpath("//label[text()='Eine neue Person anlegen']");
+  public static final By CREATE_NEW_PERSON_CHECKBOX =
+      By.xpath("//div[@class='v-select-optiongroup v-widget']/span/label");
 
   public static By getVaccinationStatusCasesByText(String status) {
     return By.xpath(String.format("//td[contains(text(), '%s')]", status));
