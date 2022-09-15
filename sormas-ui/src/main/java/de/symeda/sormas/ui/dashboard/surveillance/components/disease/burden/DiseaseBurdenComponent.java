@@ -57,6 +57,8 @@ public class DiseaseBurdenComponent extends VerticalLayout {
 
 	public void refresh(List<DiseaseBurdenDto> diseasesBurden) {
 		grid.reload(diseasesBurden);
-		grid.setHeightByRows(diseasesBurden.size());
+		if (diseasesBurden != null && diseasesBurden.size() > 0) {
+			grid.setHeightByRows(diseasesBurden.size());
+		}
 	}
 }
