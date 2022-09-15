@@ -259,9 +259,9 @@ public class CaseExportDto extends AbstractUuidDto {
 	private int numberOfPrescriptions;
 	private int numberOfTreatments;
 	private int numberOfClinicalVisits;
-	private EmbeddedSampleExportDto sample1 = new EmbeddedSampleExportDto();
-	private EmbeddedSampleExportDto sample2 = new EmbeddedSampleExportDto();
-	private EmbeddedSampleExportDto sample3 = new EmbeddedSampleExportDto();
+	private EmbeddedSampleExportDto sample1 = new EmbeddedSampleExportDto(null);
+	private EmbeddedSampleExportDto sample2 = new EmbeddedSampleExportDto(null);
+	private EmbeddedSampleExportDto sample3 = new EmbeddedSampleExportDto(null);
 	private List<EmbeddedSampleExportDto> otherSamples = new ArrayList<>();
 
 	private Boolean nosocomialOutbreak;

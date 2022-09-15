@@ -31,8 +31,9 @@ public class EmbeddedSampleExportDto extends AbstractUuidDto {
 	private PathogenTestResultType result;
 	private Long caseId;
 
-	public EmbeddedSampleExportDto() {
-		super(null);
+	public EmbeddedSampleExportDto(String uuid) {
+		// FIXME: used in CaseExportDto where the uuid is not set. Call-site looks quite strange.
+		super(uuid);
 	}
 
 	public EmbeddedSampleExportDto(String uuid, Date dateTime, String lab, PathogenTestResultType result) {
