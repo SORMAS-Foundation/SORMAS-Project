@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Pattern;
 
+import de.symeda.sormas.api.uuid.HasUuid;
 import org.apache.commons.lang3.ObjectUtils;
 
 import de.symeda.sormas.api.i18n.Validations;
