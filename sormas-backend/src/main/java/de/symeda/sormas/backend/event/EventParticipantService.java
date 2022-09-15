@@ -182,8 +182,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		final EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 		final Join<EventParticipant, Event> event = joins.getEvent();
 		final Join<EventParticipant, Person> person = joins.getPerson();
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
-		
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
+
 		Predicate filter = null;
 		if (criteria.getEvent() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
