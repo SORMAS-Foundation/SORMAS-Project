@@ -712,6 +712,7 @@ public class CreateNewCaseSteps implements En {
               PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
           webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
         });
 
