@@ -21,10 +21,12 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
@@ -233,5 +235,10 @@ public class FormBindingAdapters {
 		}
 
 		return false;
+	}
+
+	@BindingAdapter("android:textSize")
+	public static void bindTextSize(TextView textView, int size) {
+		textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
 	}
 }

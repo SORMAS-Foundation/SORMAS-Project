@@ -262,7 +262,8 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		DocumentListComponent documentList = null;
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.CONTACT, getContactRef(), UserRight.CONTACT_EDIT, contactDto.isPseudonymized());
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
@@ -270,12 +271,14 @@ public class ContactDataView extends AbstractContactView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), contactDto, documentList);
 
-		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().isEditAllowed(contactDto.getUuid());
+		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
 
 		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
+		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
+			layout.disable(true);
 		}
 	}
 

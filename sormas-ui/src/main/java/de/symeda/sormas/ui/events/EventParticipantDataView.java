@@ -210,7 +210,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			}
 		}
 
-		EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().isEditAllowed(eventParticipantRef.getUuid());
+		EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantRef.getUuid());
 
 		if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

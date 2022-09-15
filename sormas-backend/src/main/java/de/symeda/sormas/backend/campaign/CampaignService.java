@@ -33,12 +33,6 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return createUserFilter(new CampaignQueryContext(cb, cq, from));
 	}
 
-	@Override
-	public EditPermissionType isEditAllowed(Campaign entity) {
-		// todo this case was not covered before? Feels like a bug fixed?
-		return getEditPermissionType(entity);
-	}
-
 	public Predicate createUserFilter(CampaignQueryContext queryContext) {
 		// A user who has access to CampaignView can read all campaigns
 		return null;

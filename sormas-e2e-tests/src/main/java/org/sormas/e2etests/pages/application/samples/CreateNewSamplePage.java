@@ -92,8 +92,9 @@ public class CreateNewSamplePage {
       By.xpath("//label[text()='PCR / RT-PCR']");
   public static final By FINAL_LABORATORY_RESULT_COMBOBOX =
       By.cssSelector("[id='pathogenTestResult'] [class='v-filterselect-button']");
-  public static final By ADD_PATHOGEN_TEST_BUTTON_DE =
-      By.xpath("/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[2]/div/div/div[1]/div");
+  public static final By ADD_PATHOGEN_TEST_BUTTON =
+      By.xpath(
+          "(//div[@class='v-window-contents']//div[@class='v-expand']//div[@tabindex='0'])[1]");
   public static final By HAEMOGLOBIN_IN_URINE_COMBOBOX =
       By.cssSelector("[id='haemoglobinuria'] [class='v-filterselect-button']");
   public static final By HAEMOGLOBIN_IN_URINE_INPUT =

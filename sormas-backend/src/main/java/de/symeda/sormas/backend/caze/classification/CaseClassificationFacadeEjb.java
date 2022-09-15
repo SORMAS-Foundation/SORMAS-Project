@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -111,7 +112,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			buildCriteria();
 		}
 
-		PersonDto person = personFacade.getPersonByUuid(caze.getPerson().getUuid());
+		PersonDto person = personFacade.getByUuid(caze.getPerson().getUuid());
 		List<PathogenTestDto> pathogenTests = pathogenTestService.getAllByCase(caze.getUuid())
 			.stream()
 			.map(PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal::toDto)
@@ -151,6 +152,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<DiseaseClassificationCriteriaDto> getAllSince(Date changeDate) {
 
 		if (criteriaMap.isEmpty()) {

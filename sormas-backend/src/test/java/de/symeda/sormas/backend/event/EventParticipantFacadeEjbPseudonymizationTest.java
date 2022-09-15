@@ -118,8 +118,8 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 
 		// saving event participant should be done in 2 steps: person and participant
 
-		getPersonFacade().savePerson(participant.getPerson());
-		PersonDto savedPerson = getPersonFacade().getPersonByUuid(participant.getPerson().getUuid());
+		getPersonFacade().save(participant.getPerson());
+		PersonDto savedPerson = getPersonFacade().getByUuid(participant.getPerson().getUuid());
 
 //		assertThat(savedPerson.getFirstName(), is("John"));
 //		assertThat(savedPerson.getLastName(), is("Smith"));

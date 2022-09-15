@@ -43,7 +43,6 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 			userRoleTemplateSelectionField = new UserRoleTemplateSelectionField();
 
 			applyUserRoleTemplate = ButtonHelper.createButton(Captions.userrole_applyUserRoleTemplate, e -> {
-				userRoleTemplateSelectionField.setDefaultUserRole(getForm().getDefaultUserRole());
 				VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getCaption(Captions.userrole_applyUserRoleTemplate),
 					userRoleTemplateSelectionField,

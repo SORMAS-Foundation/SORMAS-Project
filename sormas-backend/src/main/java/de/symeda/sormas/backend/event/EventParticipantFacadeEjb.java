@@ -336,7 +336,7 @@ public class EventParticipantFacadeEjb
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		FacadeHelper.checkCreateAndEditRights(existingParticipant, userService, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT);
 
-		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
 		}
 
@@ -1018,7 +1018,7 @@ public class EventParticipantFacadeEjb
 
 		target.setReportingUser(source.getReportingUser().toReference());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
+		target.setPerson(PersonFacadeEjb.toPersonDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
@@ -1036,7 +1036,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
+	protected EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
 		return toReferenceDto(eventParticipant);
 	}
 
