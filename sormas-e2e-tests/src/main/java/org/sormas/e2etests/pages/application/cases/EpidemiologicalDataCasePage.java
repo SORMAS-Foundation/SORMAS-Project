@@ -32,7 +32,7 @@ public class EpidemiologicalDataCasePage {
       By.cssSelector(".v-window div#exposureRole div");
   public static final By ACTIVITY_AS_CASE_OPTIONS =
       By.cssSelector("[id='activityAsCaseDetailsKnown'] [class='v-checkbox v-select-option']");
-  public static final By NEW_ENTRY_POPUP = By.cssSelector(".v-window  .popupContent");
+  public static final By NEW_ENTRY_POPUP = By.cssSelector(".v-window .popupContent");
   public static final By ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON = By.id("actionNewEntry");
   public static final By EPIDEMIOLOGICAL_DATA_ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON =
       By.xpath("//div[@location='activitiesAsCase']//div[@id='actionNewEntry']");
