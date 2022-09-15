@@ -280,6 +280,18 @@ public class CaseImportExportSteps implements En {
     When(
         "I delete created custom case export file",
         () -> webDriverHelpers.clickOnWebElementBySelector(CUSTOM_CASE_DELETE_BUTTON));
+
+    When(
+        "I check if downloaded docx file is correct",
+        () -> {
+          // String file = "./downloads/sormas_fälle_" + LocalDate.now().format(formatter) +
+          // "_.csv";
+          String file = "C:\\Users\\lukas\\Downloads" + LocalDate.now().format(formatter) + "_.csv";
+
+          Case reader = parseExtendCustomCaseExport(file);
+          Path path = Paths.get(file);
+          Files.delete(path);
+        });
   }
 
   public CustomCaseExportCSV parseCustomCaseExport(String fileName) {

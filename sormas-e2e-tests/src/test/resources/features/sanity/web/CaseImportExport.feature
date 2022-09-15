@@ -164,7 +164,7 @@ Feature: Case import and export tests
     And I check if citizenship and country of birth is not present in Detailed Case export file
 
   @tmsLink=SORDEV-9789 @env_de
-  Scenario: Test healt conditions from imported case
+  Scenario: Test health conditions from imported case
     Given I log in as a Admin User
     Then I click on the Cases button from navbar
     And I click on the Import button from Case directory

@@ -164,8 +164,12 @@ public class EditCasePage {
   public static final By EXTRA_COMMENT_INPUT =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
+  public static final By CREATE_DOCUMENT_BUTTON_DE = By.cssSelector("[id='Erstellen']");
+
   public static final By CREATE_QUARANTINE_ORDER_BUTTON =
       By.cssSelector(".popupContent [id='Create']");
+  public static final By CREATE_QUARANTINE_ORDER_BUTTON_DE =
+      By.cssSelector(".popupContent [id='Erstellen']");
   public static final By EXTRA_COMMENT_TEXTAREA =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =

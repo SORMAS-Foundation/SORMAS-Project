@@ -1836,4 +1836,23 @@ Feature: Case end to end tests
     Then I click on Clinical Course tab from Edit Case page
     Then I check that Clinical Assessments heading is visible in DE
 
+  @tmsLink=SORDEV-9789 @env_de
+  Scenario: Test health conditions document template
+    Given I log in as a Admin User
+    Then I click on the Cases button from navbar
+    And I click on the Import button from Case directory
+    And I click on the detailed button from import Case tab
+    Then I select the "PreExistingCondition_DetailedImport_Test.csv" CSV file in the file picker
+    And I click on the "DATENIMPORT STARTEN" button from the Import Case popup
+    Then I click to create new person from the Case Import popup
+    And I check that an import success notification appears in the Import Case popup
+    Then I close Import Cases form
+    And I filter by "Margret Schmitt" as a Person's full name on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open last created case
+    And I click on the Create button from Case Document Templates in DE
+    And I select "preExistingConditions.docx" from documents templates list
+    Then I click download in case document create page in DE
+    When I check if downloaded docx file is correct
+
 

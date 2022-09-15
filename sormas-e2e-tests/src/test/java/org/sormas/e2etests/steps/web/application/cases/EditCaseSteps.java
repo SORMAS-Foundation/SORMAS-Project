@@ -1344,6 +1344,10 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
 
     When(
+        "I click on the Create button from Case Document Templates in DE",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON_DE));
+
+    When(
         "I change the Case Classification field for {string} value",
         (String caseClassificationValue) -> {
           webDriverHelpers.selectFromCombobox(
@@ -2525,6 +2529,18 @@ public class EditCaseSteps implements En {
         () ->
             Assert.assertTrue(
                 webDriverHelpers.isElementVisibleWithTimeout(CLINICAL_ASSESSMENTS_LABEL_DE, 15)));
+
+    And(
+        "I select {string} from documents templates list",
+        (String templateName) -> {
+          selectQuarantineOrderTemplate(templateName);
+        });
+    Then(
+        "I click download in case document create page in DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(10);
+        });
   }
 
   private Vaccination collectVaccinationData() {
