@@ -373,7 +373,7 @@ public class ContactFacadeEjb
 		validateUserRights(dto, existingContactDto);
 		validate(dto);
 		dto.setReportDateTime(simplyDate(dto.getReportDateTime()));
-		dto.setLastContactDate(simplyDate(dto.getReportDateTime()));
+		dto.setLastContactDate(simplyDate(dto.getLastContactDate()));
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
