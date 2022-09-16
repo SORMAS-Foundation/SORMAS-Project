@@ -25,6 +25,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,7 +88,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     fluidRowLocs(UserDto.ACTIVE) +
                     fluidRowLocs(UserDto.USER_NAME) +
                     fluidRowLocs(UserDto.FORM_ACCESS, UserDto.USER_ROLES) +
-                    fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
+                    fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT) +
+                    fluidRowLocs(UserDto.COMMUNITY) +
                     //fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     //@formatter:off
@@ -154,24 +156,26 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.setMultiSelect(true); 
                
+     
+        
+        
         ComboBox area = addInfrastructureField(UserDto.AREA);
         ComboBox region = addInfrastructureField(UserDto.REGION);
         
         addField(UserDto.COMMUNITY, OptionGroup.class);
         OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
+     // Lay the items out horizontally
+        community.addStyleName("horizontal");
+        community.setMultiSelect(true);
+        community.setWidthFull();
+     //   community.setValue(UserDto.COMMUNITY);
         
         ComboBox district = addInfrastructureField(UserDto.DISTRICT);
-        
-        /*
-         * Don't ask!!! I can't explain. This is a hack that gets the user's previous 
-         * district get populated as the default value in the user edit form.
-         * See issue issue #201
-         */
-        community.setValue(UserDto.COMMUNITY);
-        community.setMultiSelect(true);
-        
+
+        community.setValue("11111111111");
         
         area.addValueChangeListener(e -> {
+        	community.clear();
             FieldHelper.removeItems(region);
             AreaReferenceDto areaDto = (AreaReferenceDto) e.getProperty().getValue();
             FieldHelper
@@ -180,7 +184,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         
        
         region.addValueChangeListener(e -> {
-          //  FieldHelper.removeItems(district);
+        	
+        	FieldHelper.removeItems(district);
             RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
             FieldHelper
                     .updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
@@ -188,19 +193,26 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         
         district.addValueChangeListener(e -> {
             DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+            community.clear();
+            
+            UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
+            Set<CommunityReferenceDto> data = Collections.<CommunityReferenceDto>emptySet();
+            currentUser.setCommunity(data);
+            FacadeProvider.getUserFacade().saveUser(currentUser);
+            
+			if (districtDto != null) {
+				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade()
+						.getAllActiveByDistrict(districtDto.getUuid());
+				for (CommunityReferenceDto item : items) {
+					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
+				}
              FieldHelper
-                    .updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+                    .updateItems(community, districtDto != null ? items : null);    
+			}  
         });
         
-        
-//        /*
-//         * Don't ask!!! I can't explain. This is a hack that gets the user's previous 
-//         * district get populated as the default value in the user edit form.
-//         * See issue issue #201
-//         */
        community.addValueChangeListener(e -> {
-    	  // community.clear();
-    	 //  FieldHelper.removeItems(community);
+    	  // CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
      });
         		
         
@@ -231,7 +243,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        //region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry()); //Sormas.sql
+        //region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry()); 
         System.out.println("ddddddddddddddddddddddddddddddddssssssssssssssssssssefasdfas "+FacadeProvider.getAreaFacade().getAllActiveAsReference());
         area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
