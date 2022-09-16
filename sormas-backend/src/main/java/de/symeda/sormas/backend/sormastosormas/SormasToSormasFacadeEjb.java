@@ -19,7 +19,6 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RES
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,6 +65,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
@@ -93,6 +93,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasRestClient sormasToSormasRestClient;
 	@EJB
 	private SormasToSormasShareRequestFacadeEJBLocal shareRequestFacade;
+	@EJB
+	private SormasToSormasShareRequestService shareRequestService;
 	@EJB
 	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
 	@EJB
@@ -146,10 +148,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 		sormasToSormasRestClient.post(organizationId, REJECT_REQUEST_ENDPOINT, new RequestResponseDataDto(uuid, comment), null);
 
-		shareRequest.setChangeDate(new Date());
-		shareRequest.setRejected(comment);
-
-		shareRequestFacade.saveShareRequest(shareRequest);
+		shareRequestService.deletePermanentByUuids(Collections.singletonList(shareRequest.getUuid()));
 	}
 
 	@Override
@@ -240,11 +239,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
-		shareRequests.forEach(shareRequest -> {
-			shareRequest.setChangeDate(new Date());
-			shareRequest.setRevoked();
-			shareRequestFacade.saveShareRequest(shareRequest);
-		});
+		shareRequestService.deletePermanentByUuids(shareRequests.stream().map(SormasToSormasShareRequestDto::getUuid).collect(Collectors.toList()));
 	}
 
 	/**

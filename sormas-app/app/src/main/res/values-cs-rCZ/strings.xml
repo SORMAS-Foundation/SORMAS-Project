@@ -257,6 +257,17 @@
     <string name="caption_aggregate_deaths_abbr">D</string>
     <string name="caption_start_date_existing">Stávající počáteční datum</string>
     <string name="caption_end_date_existing">Stávající datum ukončení</string>
+    <string name="caption_sync_send_new">%1$s. Odesílání nových dat…</string>
+    <string name="caption_sync_pull_infrastructure">%1$s. Stahování dat infrastruktury…</string>
+    <string name="caption_sync_clear_up_infrastructure">%1$s. Vymazání dat infrastruktury…</string>
+    <string name="caption_sync_delete_obsolete">%1$s. Mazání zastaralých dat…</string>
+    <string name="caption_sync_clear_up">%1$s. Mazání dat…</string>
+    <string name="caption_sync_synchronize">%1$s- Synchronizace dat…</string>
+    <string name="caption_sync_pull_modified">%1$s. Stahování upravených dat…</string>
+    <string name="caption_sync_repull">%1$s. Opakování všech dat…</string>
+    <string name="caption_sync_pulled">%1$s taženo</string>
+    <string name="caption_sync_pushed">%1$s/%2$s nahráno</string>
+    <string name="caption_sync_deleted">%1$s smazáno</string>
     <string name="confirmation_action">Opravdu to chcete udělat?</string>
     <string name="confirmation_delete">Opravdu chcete vymazat tento záznam?</string>
     <string name="confirmation_pick_gps">Jste právě na tomto místě?</string>
@@ -386,7 +397,7 @@
     <string name="heading_surveillance_outbreak">Dohled nad ohniskem nákazy</string>
     <string name="heading_symptoms">Znaky a příznaky</string>
     <string name="heading_sync_conflicts">Konflikty synchronizace</string>
-    <string name="heading_synchronization">Synchronizace</string>
+    <string name="heading_synchronization">Synchronizuji se serverem…</string>
     <string name="heading_task_edit">Úkol</string>
     <string name="heading_task_notification">Zkontrolovat úkol sormas</string>
     <string name="heading_task_read">Číst úkol</string>

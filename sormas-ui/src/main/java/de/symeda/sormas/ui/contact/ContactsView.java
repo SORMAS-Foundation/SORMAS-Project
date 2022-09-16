@@ -354,7 +354,7 @@ public class ContactsView extends AbstractView {
 	private ContactCriteria getDefaultCriteria() {
 		ContactCriteria criteria = new ContactCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
-		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+		if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
 			criteria.setWithOwnership(true);
 		}
 
@@ -448,7 +448,7 @@ public class ContactsView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+			if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
 				ComboBox ownershipFilter = ComboBoxHelper.createComboBoxV7();
 				ownershipFilter.setId("ownershipStatus");
 				ownershipFilter.setWidth(140, Unit.PIXELS);

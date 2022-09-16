@@ -192,19 +192,22 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addSidePanelComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
 		DocumentListComponent documentList = null;
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			documentList = new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized());
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), caze, documentList);
 
-		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().isEditAllowed(caze.getUuid());
+		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid());
 
 		if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
+		} else if (caseEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
+			layout.disable(true);
 		}
 	}
 }

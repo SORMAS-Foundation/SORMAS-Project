@@ -1551,7 +1551,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);
 
-		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF), contact.getId()));
+		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF).get(Contact.ID), contact.getId()));
 		cu.set(Contact.DUPLICATE_OF, null);
 
 		em.createQuery(cu).executeUpdate();
@@ -1629,23 +1629,27 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Contact contact) {
+	public EditPermissionType getEditPermissionType(Contact contact) {
 
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(contact).getInJurisdiction() || sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+		if (Boolean.FALSE.equals(inJurisdictionOrOwned(contact).getInJurisdiction())) {
 			return EditPermissionType.REFUSED;
 		}
 
-		return getEditPermissionType(contact);
+		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+			return EditPermissionType.DOCUMENTS_ONLY;
+		}
+
+		return super.getEditPermissionType(contact);
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		final ContactJoins joins = (ContactJoins) qc.getJoins();
+		final ContactJoins joins = qc.getJoins();
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc, userService.getCurrentUser())),
 			JurisdictionHelper.booleanSelector(
@@ -1715,7 +1719,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			: null;
 
 		cu.where(
-			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Contact.PERSON), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(root.get(Contact.PERSON).get(Person.ID), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}

@@ -159,6 +159,17 @@ Feature: Create user
     And I open last created user from SORMAS in Keycloak Admin Page
     And I check if user is disabled in Keycloak Admin Page
 
+  @tmsLink=SORQA-460 @env_keycloak
+  Scenario: Change password of SORMAS user (by admin)
+    Given I log in as Admin User in Keycloak enabled environment
+    And I click on the Users from navbar
+    Then I search user "PasswordUser"
+    And I select first user from list
+    Then I create new user password and save it on Edit User page
+    Then I click on logout button from navbar
+    And I login first time as a last edited user from keycloak instance
+    Then I click on logout button from navbar
+
   @tmsLink=SORDEV-12437 @env_de
   Scenario: Test user rights view in UI
     Given I log in as a Admin User
@@ -215,3 +226,13 @@ Feature: Create user
     Then I compare that actual row coutner is less than first one
     Then I set enabled filter to Disabled in User Roles tab
     Then I compare that actual row coutner is less than first one
+
+  @#10111 @env_main
+  Scenario: Change user password and login
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I select first user from list
+    Then I create new user password and save it on Edit User page
+    Then I click on logout button from navbar
+    And I login with last edited user
+    Then I click on logout button from navbar

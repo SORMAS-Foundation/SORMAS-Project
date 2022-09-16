@@ -278,7 +278,7 @@ Feature: Immunization end to end tests
     And I click SAVE button in new Vaccination form
     And I check that displayed vaccination card has correct vaccination date and name
     Then I click Link Event button on Edit Case Page for DE
-    And I click on New Event option in Link to Event Form for DE
+    And I click on New Event option in Link to Event Form
     And I click on SAVE button in Link Event form
     And I fill event Title field on Create New Event Page
     And I set event Date filed on Create New Event form to current date for DE
@@ -322,7 +322,7 @@ Feature: Immunization end to end tests
     And I check that vaccination entry is greyed out in the vaccination card
     And I check the displayed message is correct after hovering over the Vaccination Card Info icon on Edit Contact Page for DE
     Then I click Link Event button on Edit Case Page for DE
-    And I click on New Event option in Link to Event Form for DE
+    And I click on New Event option in Link to Event Form
     And I click on SAVE button in Link Event form
     And I fill event Title field on Create New Event Page
     And I set event Date filed on Create New Event form to current date for DE
@@ -334,10 +334,10 @@ Feature: Immunization end to end tests
     And I click on Edit event button for the first event in Events section
     And I click on the Event participant tab
     And I click Create Case for Event Participant
-    And I pick a new case in pick or create a case popup for DE
+    And I pick a new case in pick or create a case popup
     And I fill only mandatory fields for a new case form for DE
     And I save the new case
-    And I pick a new case in pick or create a case popup for DE
+    And I pick a new case in pick or create a case popup
     And I check that displayed vaccination card has correct vaccination date and name
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
     And I click on the Contacts button from navbar
@@ -361,8 +361,3 @@ Feature: Immunization end to end tests
     And I click on SAVE new contact button and choose same person in duplicate detection
     And I check that vaccination entry is greyed out in the vaccination card
     And I check if Vaccination Status is set to "" on Edit Case page
-
-
-
-
-

@@ -17,15 +17,15 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.navigator.ViewChangeListener;
 
-import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 
-public abstract class AbstractCampaignDataView extends AbstractDetailView<CampaignFormDataReferenceDto> {
+public abstract class AbstractCampaignDataView extends AbstractEditAllowedDetailView<CampaignFormDataReferenceDto> {
 
 	private static final long serialVersionUID = 4919695277077799182L;
 
@@ -33,6 +33,11 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 
 	protected AbstractCampaignDataView(String viewName) {
 		super(viewName);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getCampaignFacade();
 	}
 
 	@Override
@@ -68,7 +73,4 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 		return ROOT_VIEW_NAME;
 	}
 
-	protected boolean isCampaignEditAllowed() {
-		return FacadeProvider.getCampaignFacade().isCampaignEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
-	}
 }
