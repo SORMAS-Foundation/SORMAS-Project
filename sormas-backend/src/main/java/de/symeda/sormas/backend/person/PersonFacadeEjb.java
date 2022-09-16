@@ -343,8 +343,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	public JournalPersonDto getPersonForJournal(PersonDto detailedPerson) {
 		//only specific attributes of the person shall be returned:
 		if (detailedPerson != null) {
-			JournalPersonDto exportPerson = new JournalPersonDto();
-			exportPerson.setUuid(detailedPerson.getUuid());
+			JournalPersonDto exportPerson = new JournalPersonDto(detailedPerson.getUuid());
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());

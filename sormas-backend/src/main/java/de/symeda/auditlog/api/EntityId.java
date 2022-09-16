@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.auditlog.api;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 /**
  * Class for the unique differentiation of different entities, both in terms of the entity type as well as for the differentiation

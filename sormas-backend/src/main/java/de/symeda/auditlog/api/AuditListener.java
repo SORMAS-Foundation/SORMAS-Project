@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.auditlog.api;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 /**
  * Interface to build the entity listener for JPA entities.

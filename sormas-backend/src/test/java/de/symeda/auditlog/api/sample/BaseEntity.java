@@ -19,7 +19,7 @@ package de.symeda.auditlog.api.sample;
 
 import javax.persistence.Version;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public class BaseEntity implements HasUuid {
 

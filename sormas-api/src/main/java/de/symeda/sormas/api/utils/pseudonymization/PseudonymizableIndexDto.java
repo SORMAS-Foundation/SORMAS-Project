@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,14 +15,12 @@
 
 package de.symeda.sormas.api.utils.pseudonymization;
 
-import java.io.Serializable;
-
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import org.apache.commons.lang3.StringUtils;
 
-public class PseudonymizableIndexDto implements Pseudonymizable, Serializable {
+public class PseudonymizableIndexDto extends AbstractUuidDto implements Pseudonymizable {
 
 	private boolean pseudonymized;
-	private String uuid;
 
 	public boolean isPseudonymized() {
 		return pseudonymized;
@@ -32,19 +30,8 @@ public class PseudonymizableIndexDto implements Pseudonymizable, Serializable {
 		this.pseudonymized = pseudonymized;
 	}
 
-	public PseudonymizableIndexDto() {
-	}
-
 	public PseudonymizableIndexDto(String uuid) {
-		this.uuid = uuid;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+		super(uuid);
 	}
 
 	public String getCaption() {

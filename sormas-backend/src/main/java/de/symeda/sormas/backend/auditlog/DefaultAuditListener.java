@@ -36,7 +36,7 @@ import de.symeda.auditlog.api.Current;
 import de.symeda.auditlog.api.EntityId;
 import de.symeda.auditlog.api.TransactionId;
 import de.symeda.auditlog.api.UserId;
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 /**
  * Entity life cycle listener that can detect changes on entities.
