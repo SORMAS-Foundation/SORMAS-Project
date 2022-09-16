@@ -275,6 +275,7 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
+  public static String caseUuid;
 
   @SneakyThrows
   @Inject
@@ -1254,6 +1255,10 @@ public class EditCaseSteps implements En {
     When(
         "I collect the case person UUID displayed on Edit case page",
         () -> aCase = collectCasePersonUuid());
+
+    When(
+        "I get the case person UUID displayed on Edit case page",
+        () -> caseUuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT));
 
     When(
         "I check case created from created contact is correctly displayed on Edit Case page",

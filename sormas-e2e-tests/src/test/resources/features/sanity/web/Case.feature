@@ -1837,7 +1837,7 @@ Feature: Case end to end tests
     Then I check that Clinical Assessments heading is visible in DE
 
   @tmsLink=SORDEV-9789 @env_de
-  Scenario: Test health conditions document template
+  Scenario: Test health conditions document template export
     Given I log in as a Admin User
     Then I click on the Cases button from navbar
     And I click on the Import button from Case directory
@@ -1850,6 +1850,7 @@ Feature: Case end to end tests
     And I filter by "Margret Schmitt" as a Person's full name on Case Directory Page
     And I click APPLY BUTTON in Case Directory Page
     And I open last created case
+    When I get the case person UUID displayed on Edit case page
     And I click on the Create button from Case Document Templates in DE
     And I select "preExistingConditions.docx" from documents templates list
     Then I click download in case document create page in DE
