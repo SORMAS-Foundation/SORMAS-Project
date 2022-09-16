@@ -39,4 +39,5 @@ public class UserManagementPage {
   public static final By ENABLED_USER_COMBOBOX =
       By.cssSelector("[id='enabled'] [class='v-filterselect-button']");
   public static final By USER_ROLE_TABLE_GRID = By.xpath("//table[@role='grid']");
+  public static final By EXPORT_USER_ROLES = By.id("exportUserRoles");
 }

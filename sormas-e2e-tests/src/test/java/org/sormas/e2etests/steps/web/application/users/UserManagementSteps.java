@@ -117,6 +117,13 @@ public class UserManagementSteps implements En {
     When(
         "I go to USER ROLES tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(USER_ROLES_TAB));
+
+    Then(
+        "I export user rolex xslx file",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EXPORT_USER_ROLES);
+          TimeUnit.SECONDS.sleep(10);
+        });
     Then(
         "I get row count from User Roles tab",
         () ->
