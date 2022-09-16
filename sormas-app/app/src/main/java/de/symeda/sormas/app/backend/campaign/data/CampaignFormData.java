@@ -153,7 +153,6 @@ public class CampaignFormData extends PseudonymizableAdo {
     }
 
     public void setArea(Area area) {
-        System.out.println("+++++++__44`````4__++++++"+area);
         this.area = area;
     }
 
@@ -164,11 +163,7 @@ public class CampaignFormData extends PseudonymizableAdo {
     public void setRegion(Region region) {
 
         this.region = region;
-        System.out.println("+++++++__441114__++++++"+region);
         if (region != null) {
-            System.out.println("+++++++____++++++"+region.getArea());
-            System.out.println("+++++++____++++++"+region.getName());
-
             setArea(region.getArea());
         }
     }

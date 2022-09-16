@@ -306,7 +306,7 @@ public final class LocationService {
 	}
 
 	/**
-	 * Checks whether the SORMAS app has the permission to access the phone's location
+	 * Checks whether the APMISapp has the permission to access the phone's location
 	 */
 	public boolean hasGpsAccess() {
 		return ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;

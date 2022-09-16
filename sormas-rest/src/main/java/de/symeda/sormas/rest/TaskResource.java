@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -59,7 +60,9 @@ public class TaskResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<TaskDto> getAll(@PathParam("since") long since) {
-		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since));
+List<TaskDto> dd = new ArrayList<>();
+		
+		return dd;// FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since));
 	}
 
 	@POST
@@ -81,7 +84,9 @@ public class TaskResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
-		return FacadeProvider.getTaskFacade().getAllActiveUuids();
+List<String> dd = new ArrayList<>();
+		
+		return dd;// FacadeProvider.getTaskFacade().getAllActiveUuids();
 	}
 
 	@POST
@@ -102,13 +107,16 @@ public class TaskResource extends EntityDtoResource {
 	@GET
 	@Path("/archived/{since}")
 	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
-		return FacadeProvider.getTaskFacade().getArchivedUuidsSince(new Date(since));
+		List<String> dd = new ArrayList<>();
+		
+		return dd;// FacadeProvider.getTaskFacade().getArchivedUuidsSince(new Date(since));
 	}
 
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getTaskFacade().deleteTasks(uuids);
+		List<String> dd = new ArrayList<>();
+		return dd;//FacadeProvider.getTaskFacade().deleteTasks(uuids);
 	}
 
 }

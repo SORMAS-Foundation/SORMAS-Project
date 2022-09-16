@@ -276,8 +276,8 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 		boolean campaigns = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS);
 
 		if (caseSuveillance) {
-			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
-				&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
+			/*if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
+				&& (user.hasUserRole(UserRole.COMMUNITY_OFFICER)
 					|| user.hasUserRole(UserRole.CASE_OFFICER)
 					|| user.hasUserRole(UserRole.POE_INFORMANT)
 					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
@@ -289,7 +289,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 				NavigationHelper.goToCases(LoginActivity.this);
 			} else {
 				NavigationHelper.goToSettings(LoginActivity.this);
-			}
+			}*/
 		} else if (campaigns && ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_VIEW)) {
 			NavigationHelper.goToCampaigns(LoginActivity.this);
 		} else {

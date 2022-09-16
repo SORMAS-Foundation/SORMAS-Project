@@ -81,7 +81,7 @@ public class ReportOverviewFragment extends ReportFragment {
 		EpiWeek epiWeek = getEpiWeek();
 		if (epiWeek == null
 			|| DateHelper.isEpiWeekAfter(DateHelper.getEpiWeek(new Date()), epiWeek)
-			|| !ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+			|| !ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_OFFICER)) {
 			setVisibilityForNoData();
 		} else {
 			showWeeklyReportOverview();
@@ -96,7 +96,7 @@ public class ReportOverviewFragment extends ReportFragment {
 			return;
 		}
 
-		if (!ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+		if (!ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_OFFICER)) {
 			return;
 		}
 

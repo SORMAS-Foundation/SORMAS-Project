@@ -45,6 +45,21 @@ public class AboutView extends VerticalLayout implements View {
 		content.setSizeFull();
 		addComponent(content);
 		
+		SormasUI.getCurrent().getPage().getJavaScript().execute("        var form = document.getElementById('my-form');\n"
+				+ "        form.addEventListener(\"submit\", e => {\n"
+				+ "            e.preventDefault();\n"
+				+ "            fetch(form.action, {\n"
+				+ "                method: \"POST\",\n"
+				+ "                body: new FormData(document.getElementById(\"my-form\")),\n"
+				+ "            }).then((response) => {\n"
+				+ "   \n"
+				+ "    alert(\"You have submitted this form \");\n"
+				+ "    window.location.reload();\n"
+				+ "\n"
+				+ "  \n"
+				+ "});\n"
+				+ "        });");
+		
 		Label infoLabel = new Label(
 				I18nProperties.getCaption(Captions.aboutApmisVersion) + " " + InfoProvider.InfoProvider_apmis(),
 				ContentMode.HTML);

@@ -350,9 +350,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 //
 //		// order is important, due to dependencies (e.g. case & person)
 //
-//		new UserRoleConfigDtoHelper().repullEntities();
+		new UserRoleConfigDtoHelper().repullEntities();
 //		new DiseaseClassificationDtoHelper().repullEntities();
-//		new UserDtoHelper().repullEntities();
+		new UserDtoHelper().repullEntities();
 //		new OutbreakDtoHelper().repullEntities();
 //		new DiseaseConfigurationDtoHelper().repullEntities();
 //		new CustomizableEnumValueDtoHelper().repullEntities();
@@ -495,49 +495,46 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	@AddTrace(name = "pullAndRemoveDeletedUuidsSinceTrace")
 	private void pullAndRemoveDeletedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullDeletedUuidsSince");
+if (1 == 3) {
+	// Cases
+	List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	for (String caseUuid : caseUuids) {
+		//	DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+	}
 
-		try {
-			// Cases
-			List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String caseUuid : caseUuids) {
-				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
-			}
+	// Immunization
+	List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//	for (String immunizationUuid : immunizationUuids) {
+	//		DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
+	//	}
 
-			// Immunization
-			List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String immunizationUuid : immunizationUuids) {
-				DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
-			}
+	// Events
+	List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//for (String eventUuid : eventUuids) {
+	//	DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+	//}
 
-			// Events
-			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventUuid : eventUuids) {
-				DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
-			}
+	//Event participants
+	List<String> eventParticipantUuids =
+			executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//	for (String eventParticipantUuid : eventParticipantUuids) {
+	///	DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
+	//}
 
-			//Event participants
-			List<String> eventParticipantUuids =
-				executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventParticipantUuid : eventParticipantUuids) {
-				DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
-			}
+	// Contacts
+	List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//	for (String contactUuid : contactUuids) {
+	//DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+	//}
 
-			// Contacts
-			List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String contactUuid : contactUuids) {
-				DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
-			}
+	// Samples
+	List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//for (String sampleUuid : sampleUuids) {
+	//	DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
+	//}
+}
+	ConfigProvider.setLastDeletedSyncDate(new Date());
 
-			// Samples
-			List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String sampleUuid : sampleUuids) {
-				DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
-			}
-
-			ConfigProvider.setLastDeletedSyncDate(new Date());
-		} catch (SQLException e) {
-			Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveDeletedUuidsSince failed: " + e.getMessage());
-		}
 	}
 
 	@AddTrace(name = "pushNewPullMissingAndDeleteInvalidDataTrace")
@@ -551,7 +548,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
-//		new PersonDtoHelper().pushEntities(true);
+		new PersonDtoHelper().pushEntities(true);
 //		new CaseDtoHelper().pushEntities(true);
 //		new ImmunizationDtoHelper().pushEntities(true);
 //		new EventDtoHelper().pushEntities(true);

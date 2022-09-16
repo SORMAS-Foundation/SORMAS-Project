@@ -62,7 +62,6 @@
 				</div>
 				<div class="feedback-form" style="width: 100%;">
 					<!-- <h3 style="color: green; margin-bottom: 20px;">Feedback Form</h3> -->
-					<!--Google Sheet Link : https://docs.google.com/spreadsheets/d/1Ke0cb0EnHgT0oGlWuHwrJBH-hNGrP3Jh95dtYcZaWbk/edit#gid=0 -->
 					<form method="post" id="my-form"
 						action="https://script.google.com/macros/s/AKfycbyetFZBdzt_uqvu9DLadoIaftp4hvR47n0xBrLXc8IdPgkjKlLGvM0ZsVu6AVs6YVFY/exec">
 						<div class="fullname" style="display: flex; padding-bottom: 10px;">
@@ -92,7 +91,7 @@
 							style="width: 100%; height: 20vh; margin-top: 5px; border-radius: 5px; border: 1px solid #dadada;"
 							cols="" rows=""></textarea>
 						<br>
-						<button type="submit" value="Submit"
+						<button type="submit" value="Submit" id="submiAbout"
 							style="color: white; background-color: green; border: 2px solid green; border-radius: 5px; height: 40px; font-size: 14px"
 							onclick="my_button_click_handler">Submit Feedback</button>
 					</form>
@@ -100,31 +99,6 @@
 			</div>
 		</div>
 	</div>
-
-	<script>
-        window.addEventListener("load", function () {
-            const form = document.getElementById('my-form');
-            form.addEventListener("submit", function (e) {
-               
-                const data = new FormData(form);
-                const action = e.target.action;
-
-                fetch(action, {
-                    method: 'POST',
-                    body: data,
-                } )
-                .then(response => {
-                	if (response.status === 200) {
-                        let data = await response.text();
-                        alert(data);
-                    }
-    })
-                
-            });
-        });
-    </script>
-
-
 
 </body>
 

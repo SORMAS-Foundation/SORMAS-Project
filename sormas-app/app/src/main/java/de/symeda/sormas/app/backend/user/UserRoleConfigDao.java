@@ -48,7 +48,7 @@ public class UserRoleConfigDao extends AbstractAdoDao<UserRoleConfig> {
 	@Override
 	public void create(UserRoleConfig data) throws SQLException {
 		super.create(data);
-		if (ConfigProvider.getUser().hasUserRole(data.getUserRole())) {
+			if (ConfigProvider.getUser().hasUserRole(data.getUserRole())) {
 			ConfigProvider.onUserRolesConfigChanged();
 		}
 	}

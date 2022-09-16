@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.app.R;
@@ -179,6 +180,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
 	@Override
 	protected void setFieldValue(Object value) {
+		System.out.println("+!@@@@@@@@@@@@@@@@@@@@@@@@@@!!@! "+value);
 		if (input == null) {
 			return;
 		}
@@ -320,11 +322,8 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 	}
 
 	private static List<Item<String>> mapToDisplayOptionNames(Map<String, String> subcontinents) {
-
-		List<String> list = new ArrayList<String>(subcontinents.values());
-
-
-		return list.stream().map(c -> new Item<>(c, c)).collect(Collectors.toList());
+		List<String> list = new ArrayList<String>(subcontinents.keySet());
+		return list.stream().map(c -> new Item<>(subcontinents.get(c), c)).sorted(Comparator.comparing(Item::getKey)).collect(Collectors.toList());
 		//do translation here for Options
 				//.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.toString()), c))
 

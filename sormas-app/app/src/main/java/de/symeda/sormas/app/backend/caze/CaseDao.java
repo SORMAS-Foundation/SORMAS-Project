@@ -224,7 +224,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		User user = ConfigProvider.getUser();
 		caze.setReportingUser(user);
 
-		if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+		if (user.hasUserRole(UserRole.COMMUNITY_OFFICER)) {
 			caze.setSurveillanceOfficer(user);
 		} else if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT)
 			|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
@@ -491,11 +491,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
 					&& !DataHelper.isSame(changedCase.getResponsibleDistrict(), changedCase.getSurveillanceOfficer().getDistrict())
 					&& !DataHelper.isSame(changedCase.getDistrict(), changedCase.getSurveillanceOfficer().getDistrict()))) {
 				List<User> districtOfficers =
-					DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+					DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.COMMUNITY_OFFICER, User.UUID);
 
 				if (districtOfficers.size() == 0 && changedCase.getDistrict() != null) {
 					districtOfficers =
-						DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+						DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.COMMUNITY_OFFICER, User.UUID);
 				}
 
 				changedCase.setSurveillanceOfficer(DataUtils.getRandomCandidate(districtOfficers));
@@ -544,13 +544,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		} else {
 			// 2) A random surveillance officer from the case responsible district
 			List<User> survOffsResponsibleDistrict =
-				DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.SURVEILLANCE_OFFICER);
+				DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.COMMUNITY_OFFICER);
 			assignee = DataUtils.getRandomCandidate(survOffsResponsibleDistrict);
 		}
 
 		if (assignee == null && changedCase.getDistrict() != null) {
 			// 3) A random surveillance officer from the case district
-			List<User> survOffsDistrict = DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER);
+			List<User> survOffsDistrict = DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.COMMUNITY_OFFICER);
 			assignee = DataUtils.getRandomCandidate(survOffsDistrict);
 		}
 

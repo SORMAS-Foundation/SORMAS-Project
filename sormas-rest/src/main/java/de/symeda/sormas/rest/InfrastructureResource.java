@@ -21,6 +21,7 @@ public class InfrastructureResource {
 	@POST
 	@Path("/sync")
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
+		System.out.println("QWERTYHBHHHHHHHHHHHHHHHHHHHHHHHHHHHH "+changeDates.getCommunityChangeDate());
 		return FacadeProvider.getInfrastructureSyncFacade().getInfrastructureSyncData(changeDates);
 	}
 }

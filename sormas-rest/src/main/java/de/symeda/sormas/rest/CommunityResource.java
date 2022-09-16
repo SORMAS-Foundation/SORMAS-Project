@@ -17,10 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -34,6 +40,8 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
@@ -47,11 +55,17 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 	"USER",
 	"REST_USER" })
 public class CommunityResource {
+	final Set<CommunityReferenceDto> rdto = FacadeProvider.getUserFacade().getCurrentUser().getCommunity();
 
 	@GET
 	@Path("/all/{since}")
 	public List<CommunityDto> getAll(@PathParam("since") long since) {
-		return FacadeProvider.getCommunityFacade().getAllAfter(new Date(since));
+		
+		if(rdto != null) {
+		return FacadeProvider.getCommunityFacade().getAllAfter(new Date(since)).stream()
+				.filter(e -> rdto.stream().anyMatch(ee -> e.getUuid().equals(ee.getUuid()))).collect(Collectors.toList());
+		}
+		return null;
 	}
 
 	@POST
@@ -64,7 +78,19 @@ public class CommunityResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
-		return FacadeProvider.getCommunityFacade().getAllUuids();
+		if(rdto != null) {
+			
+			List<String> lstUuid = new ArrayList<>();
+			
+			for(CommunityReferenceDto com : rdto) {	
+				lstUuid.add(com.getUuid());
+			}
+			
+			return lstUuid;
+			}
+			return null;
+			
+		//return FacadeProvider.getCommunityFacade().getAllUuids();
 	}
 
 	@POST

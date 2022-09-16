@@ -56,7 +56,7 @@ public class LbdsIntentSender {
 
 		try {
 			PublicKey lbdsSormasPublicKey = ConfigProvider.getLbdsSormasPublicKey();
-			Log.i("SORMAS_LBDS", "send SORMAS public key: " + KeySerializationUtil.serializePublicKey(lbdsSormasPublicKey));
+			Log.i("SORMAS_LBDS", "send APMISpublic key: " + KeySerializationUtil.serializePublicKey(lbdsSormasPublicKey));
 			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(lbdsSormasPublicKey);
 
 			NotificationHelper.showNotification(

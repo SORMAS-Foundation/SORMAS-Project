@@ -83,7 +83,7 @@ public class TestHelper {
 		user.setActive(true);
 		user.setFirstName("Sana");
 		user.setLastName("Obas");
-		user.setUserRoles(new HashSet(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
+		user.setUserRoles(new HashSet(Arrays.asList(UserRole.COMMUNITY_OFFICER)));
 		user.setCreationDate(new Date());
 		user.setChangeDate(new Date());
 		user.setUuid(USER_UUID);
@@ -100,7 +100,7 @@ public class TestHelper {
 		secondUser.setActive(true);
 		secondUser.setFirstName("Sabo");
 		secondUser.setLastName("Anas");
-		secondUser.setUserRoles(new HashSet(Arrays.asList(UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER)));
+		secondUser.setUserRoles(new HashSet(Arrays.asList(UserRole.COMMUNITY_OFFICER, UserRole.CASE_OFFICER)));
 		secondUser.setCreationDate(new Date());
 		secondUser.setChangeDate(new Date());
 		secondUser.setUuid(SECOND_USER_UUID);

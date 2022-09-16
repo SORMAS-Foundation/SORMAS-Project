@@ -446,7 +446,7 @@ public class CaseBackendTest {
 		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
 		caze.setResponsibleDistrict(secondDistrict);
 
-		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
+		UserRole userRole = UserRole.COMMUNITY_OFFICER;
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 
@@ -530,7 +530,7 @@ public class CaseBackendTest {
 
 		User user = ConfigProvider.getUser();
 
-		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
+		UserRole userRole = UserRole.COMMUNITY_OFFICER;
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 		user.setUserRoles(userRoles);

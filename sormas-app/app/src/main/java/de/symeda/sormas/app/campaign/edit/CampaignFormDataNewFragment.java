@@ -178,7 +178,6 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
                 optionsValues = campaignFormElement.getOptions().stream().collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption));  // .collect(Collectors.toList());
 
-                System.out.println("_______________________ " + userOptTranslations);
                 if (userOptTranslations == null) {
                     campaignFormElementOptions.setOptionsListValues(optionsValues);
                     //get18nOptCaption(formElement.getId(), optionsValues));
@@ -192,8 +191,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
 
 
-
-            if (campaignFormElement.getConstraints() != null) {
+          if (campaignFormElement.getConstraints() != null) {
 
                 constraints = (List) Arrays.stream(campaignFormElement.getConstraints()).collect(Collectors.toList());
                 ListIterator<String> lstItemsx = constraints.listIterator();
@@ -228,7 +226,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             dynamicField = CampaignFormDataFragmentUtils.createControlTextEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                         } else if (type == CampaignFormElementType.RANGE) {
                             dynamicField = CampaignFormDataFragmentUtils.createControlTextEditFieldRange(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant(), campaignFormElementOptions.getMin(),campaignFormElementOptions.getMax(),campaignFormElementOptions.isExpression(), onError);
-                        } else if (type == CampaignFormElementType.DROPDOWN) {
+                              } else if (type == CampaignFormElementType.DROPDOWN) {
                             dynamicField = CampaignFormDataFragmentUtils.createControlSpinnerFieldEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), optionsValues);
                         } else if (type == CampaignFormElementType.DATE) {
                             dynamicField = CampaignFormDataFragmentUtils.createControlDateEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
@@ -249,8 +247,6 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             }
                         });
                         Object defaultValue = campaignFormElement.getDefaultvalue();
-                        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        System.out.println(defaultValue);
                         formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                         dynamicField.setValue(defaultValue == null ? null : defaultValue);
                         CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
@@ -299,8 +295,6 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             }
                         });
                         Object defaultValue = campaignFormElement.getDefaultvalue();
-                        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        System.out.println(defaultValue);
                         formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                         dynamicField.setValue(defaultValue == null ? null : defaultValue);
                         CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
@@ -348,8 +342,6 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             }
                         });
                         Object defaultValue = campaignFormElement.getDefaultvalue();
-                        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        System.out.println(defaultValue);
                         formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                         dynamicField.setValue(defaultValue == null ? null : defaultValue);
                         CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
@@ -397,9 +389,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             }
                         });
                         Object defaultValue = campaignFormElement.getDefaultvalue();
-                        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        System.out.println(defaultValue);
-                        formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
+                       formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                         dynamicField.setValue(defaultValue == null ? null : defaultValue);
                         CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
 
@@ -446,9 +436,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             }
                         });
                         Object defaultValue = campaignFormElement.getDefaultvalue();
-                        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        System.out.println(defaultValue);
-                        formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
+                         formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                         dynamicField.setValue(defaultValue == null ? null : defaultValue);
                         CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
 
@@ -495,9 +483,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             }
                         });
                         Object defaultValue = campaignFormElement.getDefaultvalue();
-                        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        System.out.println(defaultValue);
-                        formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
+                         formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                         dynamicField.setValue(defaultValue == null ? null : defaultValue);
                         CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
 
@@ -544,8 +530,6 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             }
                         });
                         Object defaultValue = campaignFormElement.getDefaultvalue();
-                        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        System.out.println(defaultValue);
                         formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                         dynamicField.setValue(defaultValue == null ? null : defaultValue);
                         CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
@@ -593,9 +577,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             }
                         });
                         Object defaultValue = campaignFormElement.getDefaultvalue();
-                        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        System.out.println(defaultValue);
-                        formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
+                         formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                         dynamicField.setValue(defaultValue == null ? null : defaultValue);
                         CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
 
@@ -624,6 +606,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                         dynamicField = CampaignFormDataFragmentUtils.createControlTextEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                     } else if (type == CampaignFormElementType.RANGE) {
                         dynamicField = CampaignFormDataFragmentUtils.createControlTextEditFieldRange(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant(), campaignFormElementOptions.getMin(),campaignFormElementOptions.getMax(),campaignFormElementOptions.isExpression(), onError);
+
                     } else if (type == CampaignFormElementType.DROPDOWN) {
                         dynamicField = CampaignFormDataFragmentUtils.createControlSpinnerFieldEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), optionsValues);
                     } else if (type == CampaignFormElementType.DATE) {
@@ -646,9 +629,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                     //  formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), null));
 
                     Object defaultValue = campaignFormElement.getDefaultvalue();
-                    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                    System.out.println(defaultValue);
-                    formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
+                     formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                     dynamicField.setValue(defaultValue == null ? null : defaultValue);
                     CampaignFormDataFragmentUtils.handleDependingOn(fieldMap, campaignFormElement, dynamicField);
 

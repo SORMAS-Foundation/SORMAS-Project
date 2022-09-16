@@ -55,7 +55,7 @@
                     android:contentDescription="@string/description_sormas_logo"
                     android:src="@drawable/sormas_logo" />
 
-                <!-- SORMAS description texts -->
+                <!-- APMISdescription texts -->
 
                 <TextView
                     android:id="@+id/heading_1"

@@ -89,12 +89,9 @@ public class CampaignFormDataFragmentUtils {
                     ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null : expressionValue.toString());
                 }
 
-                System.out.println(dynamicField.getCaption()+" : _______________________"+isDisIgnore);
               //  if (type == CampaignFormElementType.RANGE) {
-                //    System.out.println(" _______________________"+isDisIgnore);
 
               //  } else {
-               //     System.out.println(" _______________________"+isDisIgnore);
                //     dynamicField.setEnabled(isDisIgnore);
                // }
             }
@@ -160,8 +157,6 @@ public class CampaignFormDataFragmentUtils {
                 : dependingOnFieldValue.toString();
         if (dependingOnValues.contains("!")) {
 
-            System.out.println("++++++++!!!!!!!!!!+++++++++parsedDependingOnFieldValue+++++++++++++++++++++++++++++++"+dependingOnFieldValue);
-            System.out.println(dependingOnValues);
             dependingOnValues = dependingOnValues.replace("!", "");
             if (dependingOnValues.contains(parsedDependingOnFieldValue)) {
                 field.setVisibility(View.GONE);
@@ -170,8 +165,6 @@ public class CampaignFormDataFragmentUtils {
                 field.setVisibility(View.VISIBLE);
             }
         } else {
-            System.out.println("++++++1111+++++++++++parsedDependingOnFieldValue+++++++++++++++++++++++++++++++"+dependingOnFieldValue);
-            System.out.println(dependingOnValues);
             if (!dependingOnValues.contains(parsedDependingOnFieldValue)) {
                 field.setVisibility(View.GONE);
             } else {

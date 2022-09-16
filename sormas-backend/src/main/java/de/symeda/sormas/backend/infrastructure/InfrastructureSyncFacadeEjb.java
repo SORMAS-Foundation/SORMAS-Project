@@ -1,13 +1,21 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
@@ -20,6 +28,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
@@ -75,19 +84,30 @@ public class InfrastructureSyncFacadeEjb implements InfrastructureSyncFacade {
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
 
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
-
-		if (facilityService.countAfter(changeDates.getFacilityChangeDate()) > configFacade.getInfrastructureSyncThreshold()
-			|| communityService.countAfter(changeDates.getCommunityChangeDate()) > configFacade.getInfrastructureSyncThreshold()) {
+		System.out.println("__+_ttdddddddddddddddddddddddddddttt");
+		if (communityService.countAfter(changeDates.getCommunityChangeDate()) > 80000) {
+			System.out.println("__+_ttttt");
 			sync.setInitialSyncRequired(true);
 			return sync;
 		}
+		
+		System.out.println("__+_ttttt TTT = "+sync.isInitialSyncRequired());
+		
+		if(userFacade.getCurrentUser().getCommunity() != null) {
 
 		sync.setContinents(continentFacade.getAllAfter(changeDates.getContinentChangeDate()));
 		sync.setSubcontinents(subcontinentFacade.getAllAfter(changeDates.getSubcontinentChangeDate()));
 		sync.setCountries(countryFacade.getAllAfter(changeDates.getCountryChangeDate()));
 		sync.setRegions(regionFacade.getAllAfter(changeDates.getRegionChangeDate()));
 		sync.setDistricts(districtFacade.getAllAfter(changeDates.getDistrictChangeDate()));
-		sync.setCommunities(Arrays.asList((CommunityDto) userFacade.getCurrentUser().getCommunity())); // communityFacade.getAllAfter(changeDates.getCommunityChangeDate()));
+		
+		
+		final Set<CommunityReferenceDto> rdto = userFacade.getCurrentUser().getCommunity();	
+		System.out.println("__+_+_+_+ "+communityFacade.getAllAfter(changeDates.getCommunityChangeDate()).stream().filter(  e -> rdto.stream().anyMatch(ee -> e.getUuid().equals(ee.getUuid()))).collect(Collectors.toList()).size());
+		sync.setCommunities(communityFacade.getAllAfter(changeDates.getCommunityChangeDate()).stream().filter(  e -> rdto.stream().anyMatch(ee -> e.getUuid().equals(ee.getUuid()))).collect(Collectors.toList()));
+//		sync.setCommunities(userFacade.getCurrentUser().getCommunity().stream().collect(Collectors.toList())); // communityFacade.getAllAfter(changeDates.getCommunityChangeDate()));
+		
+		
 		sync.setFacilities(facilityFacade.getAllByRegionAfter(null, changeDates.getFacilityChangeDate()));
 		sync.setPointsOfEntry(pointOfEntryFacade.getAllAfter(changeDates.getPointOfEntryChangeDate()));
 		sync.setUsers(userFacade.getAllAfter(changeDates.getUserChangeDate()));
@@ -97,7 +117,7 @@ public class InfrastructureSyncFacadeEjb implements InfrastructureSyncFacade {
 		sync.setDeletedUserRoleConfigurationUuids(userRoleConfigurationFacade.getDeletedUuids(changeDates.getUserRoleConfigurationChangeDate()));
 		sync.setFeatureConfigurations(featureConfigurationFacade.getAllAfter(changeDates.getFeatureConfigurationChangeDate()));
 		sync.setDeletedFeatureConfigurationUuids(featureConfigurationFacade.getDeletedUuids(changeDates.getFeatureConfigurationChangeDate()));
-
+		}
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			sync.setAreas(areaFacade.getAllAfter(changeDates.getAreaChangeDate()));
 		}
@@ -108,4 +128,5 @@ public class InfrastructureSyncFacadeEjb implements InfrastructureSyncFacade {
 
 		return sync;
 	}
+	
 }

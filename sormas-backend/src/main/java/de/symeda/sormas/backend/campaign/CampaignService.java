@@ -112,8 +112,12 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 			}
 		}
 		if (filter != null) {
+			filter = cb.and(filter, createActiveCampaignsFilter(cb, root));
 			cq.where(filter);
+		} else {
+		cq.where(createActiveCampaignsFilter(cb, root));
 		}
+
 		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();

@@ -52,7 +52,7 @@ public class UserDao extends AbstractAdoDao<User> {
 	}
 
 	public User getByUsername(String username) {
-		List<User> users = queryForEq(User.USER_NAME, username);
+		List<User> users = queryForEq(User.USER_NAME, username.toLowerCase());
 		if (users.size() == 1) {
 			User user = users.get(0);
 			return user;

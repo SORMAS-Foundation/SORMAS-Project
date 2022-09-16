@@ -937,8 +937,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
+		
+		List<String> dd = new ArrayList<>();
 
-		return taskService.getArchivedUuidsSince(since);
+		return dd;
 	}
 
 	private String buildAssociatedEntityLinkContent(TaskContext taskContext, AbstractDomainObject entity) {
