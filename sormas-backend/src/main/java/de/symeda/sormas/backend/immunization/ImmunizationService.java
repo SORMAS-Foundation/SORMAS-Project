@@ -127,7 +127,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.START_DATE),
 			immunization.get(Immunization.END_DATE),
 			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(immunizationQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(immunizationQueryContext)));
 
 		final Predicate criteriaFilter = buildCriteriaFilter(personId, disease, immunizationQueryContext);
 		if (criteriaFilter != null) {
@@ -145,10 +145,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	@Override
 	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> from) {
-		return isInJurisdictionOrOwned(new ImmunizationQueryContext(cb, query, from));
+		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, query, from));
 	}
 
-	private Predicate isInJurisdictionOrOwned(ImmunizationQueryContext qc) {
+	public Predicate inJurisdictionOrOwned(ImmunizationQueryContext qc) {
+
 		final User currentUser = userService.getCurrentUser();
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter;
@@ -492,7 +493,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			return null;
 		}
 
-		Predicate filter = isInJurisdictionOrOwned(qc);
+		Predicate filter = inJurisdictionOrOwned(qc);
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		if (currentUser.getLimitedDisease() != null) {

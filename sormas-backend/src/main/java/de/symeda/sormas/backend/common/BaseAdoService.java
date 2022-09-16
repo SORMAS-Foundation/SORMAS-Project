@@ -63,6 +63,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -191,6 +192,24 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	/**
+	 * @return {@code true} if {@code entity} fulfills the provided condition, else {@code false}.
+	 */
+	protected boolean fulfillsCondition(ADO entity, FilterProvider<ADO> conditionProvider) {
+
+		if (entity == null) {
+			return false;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<ADO> root = cq.from(getElementClass());
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, conditionProvider.provide(cb, cq, root)));
+		cq.where(cb.equal(root.get(ADO.ID), entity.getId()));
+
+		return em.createQuery(cq).getResultList().stream().anyMatch(bool -> bool);
 	}
 
 	/**

@@ -49,6 +49,7 @@ import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
@@ -56,7 +57,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class PathogenTestService extends AbstractDeletableAdoService<PathogenTest> {
+public class PathogenTestService extends AbstractDeletableAdoService<PathogenTest> implements JurisdictionCheckService<PathogenTest> {
 
 	@EJB
 	private SampleService sampleService;
@@ -351,5 +352,20 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		cu.where(root.get(PathogenTest.UUID).in(pathogenTestUuids));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(PathogenTest entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<PathogenTest> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, PathogenTest> from) {
+
+		return sampleService.inJurisdictionOrOwned(new SampleQueryContext(cb, query, from.join(PathogenTest.SAMPLE)));
 	}
 }

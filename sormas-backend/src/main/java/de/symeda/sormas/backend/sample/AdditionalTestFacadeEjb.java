@@ -61,12 +61,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		Integer max,
 		List<SortProperty> sortProperties) {
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-
-		return service.getIndexList(additionalTestCriteria, first, max, sortProperties)
-			.stream()
-			.map(p -> convertToDto(p, pseudonymizer))
-			.collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getIndexList(additionalTestCriteria, first, max, sortProperties));
 	}
 
 	public Page<AdditionalTestDto> getIndexPage(
@@ -120,6 +115,15 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		return service.getAllAfter(date, batchSize, lastSynchronizedUuid).stream().map(e -> toDto(e)).collect(Collectors.toList());
 	}
 
+	private List<AdditionalTestDto> toPseudonymizedDtos(List<AdditionalTest> entities) {
+
+		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		List<AdditionalTestDto> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
+		return dtos;
+	}
+
 	@Override
 	public List<AdditionalTestDto> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
@@ -137,11 +141,18 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	}
 
 	public AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		return convertToDto(source, pseudonymizer, service.inJurisdictionOrOwned(source));
+	}
+
+	private AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		AdditionalTestDto dto = toDto(source);
-
-		pseudonymizer
-			.pseudonymizeDto(AdditionalTestDto.class, dto, sampleService.getJurisdictionFlags(source.getSample()).getInJurisdiction(), null);
-
+		pseudonymizer.pseudonymizeDto(AdditionalTestDto.class, dto, inJurisdiction, null);
 		return dto;
 	}
 

@@ -142,20 +142,22 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(p -> convertToDto(p, pseudonymizer))
-			.collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getAllAfter(date, batchSize, lastSynchronizedUuid));
 	}
 
+	private List<PrescriptionDto> toPseudonymizedDtos(List<Prescription> entities) {
+
+		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		List<PrescriptionDto> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
+		return dtos;
+	}
+	
 	@Override
 	public List<PrescriptionDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
-		return service.getByUuids(uuids).stream().map(p -> {
-			return convertToDto(p, pseudonymizer);
-		}).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getByUuids(uuids));
 	}
 
 	@Override
@@ -213,16 +215,25 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	private PrescriptionDto convertToDto(Prescription source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		boolean inJurisdiction = service.inJurisdictionOrOwned(source);
+		return convertToDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	private PrescriptionDto convertToDto(Prescription source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		PrescriptionDto dto = toDto(source);
-
-		pseudonymizeDto(source, dto, pseudonymizer);
-
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
 		return dto;
 	}
 
-	private void pseudonymizeDto(Prescription source, PrescriptionDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonymizeDto(Prescription source, PrescriptionDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 		if (source != null && dto != null) {
-			pseudonymizer.pseudonymizeDto(PrescriptionDto.class, dto, caseService.inJurisdictionOrOwned(source.getTherapy().getCaze()), null);
+			pseudonymizer.pseudonymizeDto(PrescriptionDto.class, dto, inJurisdiction, null);
 		}
 	}
 
@@ -233,7 +244,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				PrescriptionDto.class,
 				prescription,
 				existingPrescriptionDto,
-				caseService.inJurisdictionOrOwned(existingPrescription.getTherapy().getCaze()));
+				service.inJurisdictionOrOwned(existingPrescription));
 		}
 	}
 

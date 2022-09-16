@@ -22,12 +22,13 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit> {
+public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit> implements JurisdictionCheckService<ClinicalVisit> {
 
 	@EJB
 	private CaseService caseService;
@@ -127,5 +128,21 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT))));
+	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(ClinicalVisit entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<ClinicalVisit> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ClinicalVisit> from) {
+
+		return caseService.inJurisdictionOrOwned(
+			new CaseQueryContext(cb, query, new CaseJoins(from.join(ClinicalVisit.CLINICAL_COURSE).join(ClinicalCourse.CASE))));
 	}
 }

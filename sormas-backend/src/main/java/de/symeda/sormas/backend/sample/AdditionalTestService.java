@@ -25,6 +25,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
@@ -32,7 +33,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTest> {
+public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTest> implements JurisdictionCheckService<AdditionalTest> {
 
 	@EJB
 	private SampleService sampleService;
@@ -205,5 +206,20 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		cd.where(root.get(AdditionalTest.UUID).in(additionalTestUuids));
 
 		em.createQuery(cd).executeUpdate();
+	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(AdditionalTest entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<AdditionalTest> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, AdditionalTest> from) {
+
+		return sampleService.inJurisdictionOrOwned(new SampleQueryContext(cb, query, from.join(AdditionalTest.SAMPLE)));
 	}
 }
