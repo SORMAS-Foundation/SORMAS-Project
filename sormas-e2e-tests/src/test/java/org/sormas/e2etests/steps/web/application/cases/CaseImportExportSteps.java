@@ -291,13 +291,6 @@ public class CaseImportExportSteps implements En {
           String uuidFirstChars = EditCaseSteps.caseUuid.substring(0, 6);
            String file = String.format("./downloads/%s-preExistingConditions.docx",
            uuidFirstChars);
-
-           /*
-          String file =
-              String.format(
-                  "C:\\Users\\lukas\\Downloads\\%s-preExistingConditions.docx", uuidFirstChars);
-
-            */
           FileInputStream docx = new FileInputStream(file);
           XWPFDocument document = new XWPFDocument(docx);
           XWPFWordExtractor document_extracted = new XWPFWordExtractor(document);
