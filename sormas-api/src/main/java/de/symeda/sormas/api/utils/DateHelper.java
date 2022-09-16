@@ -55,6 +55,8 @@ import com.google.common.collect.Sets;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
+import javax.validation.constraints.NotNull;
+
 public final class DateHelper {
 
 	private DateHelper() {
@@ -641,6 +643,28 @@ public final class DateHelper {
 	public static boolean isBetween(Date date, Date start, Date end) {
 		//sometimes date.equals(start) returns false but start.equals(date) returns true
 		return (date.equals(start) || start.equals(date) || date.after(start)) && (date.equals(end) || end.equals(date) || date.before(end));
+	}
+
+	/**
+	 * Checks on day-base - not time!
+	 * @return false if one or both params are null
+	 */
+	public static boolean isDateAfter(Date thisDate, Date other) {
+		if (thisDate == null || other == null) {
+			return false;
+		}
+		return UtilDate.toLocalDate(thisDate).isAfter(UtilDate.toLocalDate(other));
+	}
+
+	/**
+	 * Checks on day-base - not time!
+	 * @return false if one or both params are null
+	 */
+	public static boolean isDateBefore(Date thisDate, Date other) {
+		if (thisDate == null || other == null) {
+			return false;
+		}
+		return UtilDate.toLocalDate(thisDate).isBefore(UtilDate.toLocalDate(other));
 	}
 
 	/**
