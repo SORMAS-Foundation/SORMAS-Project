@@ -160,7 +160,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
-		if (sormasToSormasEnabled || eventParticipant.getSormasToSormasOriginInfo() != null) {
+		if (sormasToSormasEnabled || eventParticipant.getSormasToSormasOriginInfo() != null || eventParticipant.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
@@ -210,7 +210,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			}
 		}
 
-		EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().isEditAllowed(eventParticipantRef.getUuid());
+		EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantRef.getUuid());
 
 		if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

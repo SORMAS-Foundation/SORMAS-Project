@@ -214,7 +214,7 @@ public class EventParticipantImporter extends DataImporter {
 					PersonDto importPerson = newPersonTemp;
 
 					if (selectedPersonUuid != null) {
-						importPerson = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonUuid);
+						importPerson = FacadeProvider.getPersonFacade().getByUuid(selectedPersonUuid);
 					}
 
 					// get first eventparticipant for event and person
@@ -240,7 +240,7 @@ public class EventParticipantImporter extends DataImporter {
 						importPerson.setChangeDate(new Date());
 					}
 
-					PersonDto savedPersonDto = FacadeProvider.getPersonFacade().savePerson(importPerson, skipPersonValidation);
+					PersonDto savedPersonDto = FacadeProvider.getPersonFacade().save(importPerson, skipPersonValidation);
 					newEventParticipant.setPerson(savedPersonDto);
 					newEventParticipant.setChangeDate(new Date());
 					eventParticipantFacade.save(newEventParticipant);

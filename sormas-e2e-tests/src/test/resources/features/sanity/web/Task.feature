@@ -210,7 +210,7 @@ Feature: Tasks functionalities
     Then I fill Configuration Name field in Custom Task Export popup with generated name
     And I add "Task context" data to export in existing Export Configuration for Custom Task Export
     And I save Export Configuration for Custom Task Export
-    And I delete all created custom task export configs
+    And I delete last created custom task export config
 
   @3384 @env_main
   Scenario: Verify that Task assignee cannot be left empty via bulk edit mode
@@ -223,3 +223,26 @@ Feature: Tasks functionalities
     And I click the Change assignee Checkbox in the Edit Task Form
     And I click on Save button in New Task form
     And I check if popup message from Edit Task Form after bulk edit is "Please check the input data"
+
+  @tmsLink=SORDEV-12438 @env_main
+  Scenario: Test add task status Progress in task edit page
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new task
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Tasks button from navbar
+    Then I open last created task by API using Contact UUID
+    And I check that Pending button exist on task edit page
+
+  @tmsLink=SORDEV-12438 @env_main
+  Scenario: Test add task status Progress in new task page
+    Given I log in as a National User
+    And I click on the Tasks button from navbar
+    Then I click on the NEW TASK button
+    And I check that Pending button exist on task edit page

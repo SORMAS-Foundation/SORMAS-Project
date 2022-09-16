@@ -319,6 +319,9 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportNewCases.setEnabled(enabled);
 					if (!DatabaseHelper.getAggregateReportDao().isCurrentAgeGroup(disease, report.getAgeGroup())) {
 						binding.expired.setText(I18nProperties.getCaption(Captions.aggregateReportExpiredAgeGroups));
+						if (report.getAgeGroup() == null) {
+							report.setAgeGroup(I18nProperties.getCaption(Captions.aggregateReportNoAgeGroup));
+						}
 						triggerExpiredWarning = true;
 					}
 					contentBinding.submitReport.setEnabled(enabled);
@@ -461,6 +464,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 						}
 						if (report.getDeaths() == null) {
 							report.setDeaths(0);
+						}
+
+						if (report.getAgeGroup() != null
+							&& report.getAgeGroup().equals(I18nProperties.getCaption(Captions.aggregateReportNoAgeGroup))) {
+							report.setAgeGroup(null);
 						}
 
 						DatabaseHelper.getAggregateReportDao().saveAndSnapshot(report);

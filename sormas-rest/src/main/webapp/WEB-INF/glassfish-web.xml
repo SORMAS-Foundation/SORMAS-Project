@@ -741,6 +741,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>SORMAS_TO_SORMAS_PROCESS</role-name>
+        <group-name>SORMAS_TO_SORMAS_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EXTERNAL_MESSAGE_VIEW</role-name>
         <group-name>EXTERNAL_MESSAGE_VIEW</group-name>
     </security-role-mapping>
@@ -783,6 +788,21 @@
     <security-role-mapping>
         <role-name>TRAVEL_ENTRY_ARCHIVE</role-name>
         <group-name>TRAVEL_ENTRY_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DOCUMENT_VIEW</role-name>
+        <group-name>DOCUMENT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DOCUMENT_UPLOAD</role-name>
+        <group-name>DOCUMENT_UPLOAD</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DOCUMENT_DELETE</role-name>
+        <group-name>DOCUMENT_DELETE</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

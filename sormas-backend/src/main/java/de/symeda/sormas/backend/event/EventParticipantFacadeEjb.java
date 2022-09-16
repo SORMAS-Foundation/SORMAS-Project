@@ -88,6 +88,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -129,7 +130,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -335,7 +336,7 @@ public class EventParticipantFacadeEjb
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		FacadeHelper.checkCreateAndEditRights(existingParticipant, userService, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT);
 
-		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
 		}
 
@@ -517,6 +518,8 @@ public class EventParticipantFacadeEjb
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			joins.getSamples().get(Sample.PATHOGEN_TEST_RESULT),
+			joins.getSamples().get(Sample.SAMPLE_DATE_TIME),
 			eventParticipant.get(EventParticipant.VACCINATION_STATUS),
 			joins.getEventParticipantReportingUser().get(User.ID),
 			joins.getEventParticipantReportingUser().get(User.UUID),
@@ -529,6 +532,8 @@ public class EventParticipantFacadeEjb
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
+
+		cq.distinct(true);
 
 		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
 		Predicate latestSamplePredicate =
@@ -555,6 +560,14 @@ public class EventParticipantFacadeEjb
 				case EventParticipantIndexDto.APPROXIMATE_AGE:
 				case EventParticipantIndexDto.SEX:
 				case EventParticipantIndexDto.LAST_NAME:
+				case SampleIndexDto.PATHOGEN_TEST_RESULT:
+					expression = joins.getSamples().get(SampleIndexDto.PATHOGEN_TEST_RESULT);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				case SampleIndexDto.SAMPLE_DATE_TIME:
+					expression = joins.getSamples().get(SampleIndexDto.SAMPLE_DATE_TIME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
 				case EventParticipantIndexDto.FIRST_NAME:
 					expression = person.get(sortProperty.propertyName);
 					break;
@@ -1005,7 +1018,7 @@ public class EventParticipantFacadeEjb
 
 		target.setReportingUser(source.getReportingUser().toReference());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
+		target.setPerson(PersonFacadeEjb.toPersonDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
@@ -1023,7 +1036,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
+	protected EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
 		return toReferenceDto(eventParticipant);
 	}
 

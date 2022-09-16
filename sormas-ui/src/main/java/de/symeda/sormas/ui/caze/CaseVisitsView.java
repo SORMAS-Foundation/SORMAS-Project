@@ -160,6 +160,6 @@ public class CaseVisitsView extends AbstractCaseView {
 
 		grid.reload();
 
-		setCaseEditPermission(gridLayout);
+		setEditPermission(gridLayout);
 	}
 }

@@ -152,7 +152,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, allAfterBatched.size());
 		assertEquals(Disease.CORONAVIRUS, allAfterBatched.get(0).getDisease());
 
-		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(UtilDate.yesterday());
+		List<PersonDto> allPersonsAfter = getPersonFacade().getAllAfter(UtilDate.yesterday());
 		assertEquals(1, allPersonsAfter.size());
 
 		List<ImmunizationDto> allAfterWithUuid =
@@ -243,13 +243,13 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("", byUuid.getPerson().getLastName());
 		assertEquals("", byUuid.getPerson().getFirstName());
 
-		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(UtilDate.yesterday());
+		List<PersonDto> allPersonsAfter = getPersonFacade().getAllAfter(UtilDate.yesterday());
 		assertEquals(1, allPersonsAfter.size());
 		PersonDto personDto = allPersonsAfter.get(0);
 		assertEquals(person2.getUuid(), personDto.getUuid());
 
 		loginWith(nationalUser);
-		assertEquals(2, getPersonFacade().getPersonsAfter(UtilDate.yesterday()).size());
+		assertEquals(2, getPersonFacade().getAllAfter(UtilDate.yesterday()).size());
 	}
 
 	@Test
@@ -275,7 +275,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(immunization.getImmunizationManagementStatus(), immunizationDto.getImmunizationManagementStatus());
 		assertEquals(immunization.getMeansOfImmunization(), immunizationDto.getMeansOfImmunization());
 
-		final List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(UtilDate.yesterday());
+		final List<PersonDto> allPersonsAfter = getPersonFacade().getAllAfter(UtilDate.yesterday());
 		assertEquals(1, allPersonsAfter.size());
 		final PersonDto personDto = allPersonsAfter.get(0);
 

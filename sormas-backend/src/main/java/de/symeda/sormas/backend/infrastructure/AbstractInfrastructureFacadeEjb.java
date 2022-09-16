@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -51,16 +55,59 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
+	@PermitAll
+	public List<String> getAllUuids() {
+		return super.getAllUuids();
+	}
+
+	@Override
+	@PermitAll
+	public List<DTO> getAllAfter(Date date) {
+		return super.getAllAfter(date);
+	}
+
+	@Override
+	@PermitAll
+	public List<String> getObsoleteUuidsSince(Date since) {
+		return super.getObsoleteUuidsSince(since);
+	}
+
+	@Override
+	@PermitAll
+	public DTO getByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
+	}
+
+	@Override
+	@PermitAll
+	public REF_DTO getReferenceByUuid(String uuid) {
+		return Optional.ofNullable(uuid).map(u -> service.getByUuid(u)).map(this::toRefDto).orElse(null);
+	}
+
+	@Override
+	@PermitAll
+	public List<DTO> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_CREATE,
+		UserRight._INFRASTRUCTURE_EDIT })
 	public DTO save(@Valid @NotNull DTO dtoToSave) {
 		return save(dtoToSave, false);
 	}
 
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_CREATE,
+		UserRight._INFRASTRUCTURE_EDIT })
 	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
 		// default behaviour is to include archived data and check for the change date
 		return doSave(dto, allowMerge, true, true, duplicateErrorMessageProperty);
 	}
 
+	@RightsAllowed(UserRight._SYSTEM)
 	public DTO saveFromCentral(DTO dtoToSave) {
 		// merge, but do not include archived data (we consider archive data to be completely broken)
 		// also ignore change date as merging will always cause the date to be newer to what is present in central
@@ -116,6 +163,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
+	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public void archive(String uuid) {
 		// todo this should be really in the parent but right now there the setter for archived is not available there
 		checkInfraDataLocked();
@@ -126,6 +174,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		}
 	}
 
+	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public void dearchive(String uuid) {
 		checkInfraDataLocked();
 		ADO ado = service.getByUuid(uuid);
@@ -166,14 +215,21 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	// todo this can be moved up
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW,
+		UserRight._SYSTEM })
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW })
 	public boolean isUsedInOtherInfrastructureData(Collection<String> uuids) {
 		return false;
 	}
 
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW })
 	public boolean hasArchivedParentInfrastructure(Collection<String> uuids) {
 		return false;
 	}
@@ -183,6 +239,8 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	// todo implement toDto() here
 
 	@Override
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_VIEW })
 	public void validate(@Valid DTO dto) throws ValidationRuntimeException {
 		// todo we do not run any generic validation logic for infra yet
 	}

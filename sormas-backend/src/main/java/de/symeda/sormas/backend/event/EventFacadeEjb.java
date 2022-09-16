@@ -115,8 +115,8 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToS
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -267,7 +267,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		FacadeHelper.checkCreateAndEditRights(existingEvent, userService, UserRight.EVENT_CREATE, UserRight.EVENT_EDIT);
 
-		if (internal && existingEvent != null && !service.isEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingEvent != null && !service.isEditAllowed(existingEvent)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -1139,7 +1139,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public EventReferenceDto toRefDto(Event event) {
+	protected EventReferenceDto toRefDto(Event event) {
 		return toReferenceDto(event);
 	}
 
@@ -1369,7 +1369,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		for (String evetUuid : eventUuidList) {
 			Event event = service.getByUuid(evetUuid);
 
-			if (service.isEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(event)) {
 				EventDto eventDto = toDto(event);
 				if (eventStatusChange) {
 					eventDto.setEventStatus(updatedTempEvent.getEventStatus());

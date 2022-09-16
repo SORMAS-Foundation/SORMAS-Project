@@ -32,22 +32,17 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -126,31 +121,6 @@ public class ShareDataBuilderHelper {
 		personPreview.setAddress(LocationFacadeEjb.toDto(person.getAddress()));
 
 		return personPreview;
-	}
-
-	public SormasToSormasContactPreview getContactPreview(Contact contact, Pseudonymizer pseudonymizer) {
-		SormasToSormasContactPreview contactPreview = new SormasToSormasContactPreview();
-
-		contactPreview.setUuid(contact.getUuid());
-		contactPreview.setReportDateTime(contact.getReportDateTime());
-		contactPreview.setDisease(contact.getDisease());
-		contactPreview.setDiseaseDetails(contact.getDiseaseDetails());
-		contactPreview.setLastContactDate(contact.getLastContactDate());
-		contactPreview.setContactClassification(contact.getContactClassification());
-		contactPreview.setContactCategory(contact.getContactCategory());
-		contactPreview.setContactStatus(contact.getContactStatus());
-
-		contactPreview.setRegion(RegionFacadeEjb.toReferenceDto(contact.getRegion()));
-		contactPreview.setDistrict(DistrictFacadeEjb.toReferenceDto(contact.getDistrict()));
-		contactPreview.setCommunity(CommunityFacadeEjb.toReferenceDto(contact.getCommunity()));
-
-		contactPreview.setPerson(getPersonPreview(contact.getPerson()));
-
-		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
-
-		pseudonymizer.pseudonymizeDto(SormasToSormasContactPreview.class, contactPreview, false, null);
-
-		return contactPreview;
 	}
 
 	public SormasToSormasOptionsDto createOptionsFormShareRequestInfo(ShareRequestInfo requestInfo) {

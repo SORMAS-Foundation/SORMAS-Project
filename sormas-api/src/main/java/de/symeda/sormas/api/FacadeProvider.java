@@ -86,8 +86,9 @@ import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageFacade;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoFacade;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.ShareRequestInfoFacade;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.systemevents.sync.SyncFacade;
@@ -457,6 +458,10 @@ public class FacadeProvider {
 
 	public static SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
 		return get().lookupEjbRemote(SormasToSormasShareRequestFacade.class);
+	}
+
+	public static ShareRequestInfoFacade getShareRequestInfoFacade() {
+		return get().lookupEjbRemote(ShareRequestInfoFacade.class);
 	}
 
 	public static CustomizableEnumFacade getCustomizableEnumFacade() {

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.document.DocumentCriteria;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -43,6 +44,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 /**
  * Manages documents and their storage.
@@ -58,6 +60,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
  * @see Document#isDeleted()
  */
 @Stateless(name = "DocumentFacade")
+@RightsAllowed(UserRight._DOCUMENT_VIEW)
 public class DocumentFacadeEjb implements DocumentFacade {
 
 	private static final String MIME_TYPE_DEFAULT = "application/octet-stream";
@@ -84,6 +87,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._DOCUMENT_UPLOAD)
 	public DocumentDto saveDocument(@Valid DocumentDto dto, byte[] content) throws IOException {
 		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
@@ -115,6 +119,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._DOCUMENT_DELETE)
 	public void deleteDocument(String uuid) {
 		// Only mark as delete here; actual deletion will be done in document storage cleanup via cron job
 		documentService.markAsDeleted(documentService.getByUuid(uuid));
@@ -140,12 +145,13 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	@Override
-	public byte[] read(String uuid) throws IOException {
+	public byte[] getContent(String uuid) throws IOException {
 		Document document = documentService.getByUuid(uuid);
 		return documentStorageService.read(document.getStorageReference());
 	}
 
 	@Override
+	@RightsAllowed(UserRight._SYSTEM)
 	public void cleanupDeletedDocuments() {
 		List<Document> deleted = documentService.getDocumentsMarkedForDeletion();
 		for (Document document : deleted) {

@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -52,6 +53,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
 
 	@Override
+	@PermitAll
 	public List<DiseaseConfigurationDto> getAllAfter(Date date) {
 		return service.getAllAfter(date).stream().map(d -> toDto(d)).collect(Collectors.toList());
 	}

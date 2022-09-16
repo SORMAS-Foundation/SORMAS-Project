@@ -18,14 +18,13 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -47,7 +46,7 @@ import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
@@ -55,7 +54,7 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
-public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceDto> {
+public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<CaseReferenceDto> {
 
 	public static final String VIEW_MODE_URL_PREFIX = "v";
 
@@ -100,6 +99,11 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getCaseFacade();
 	}
 
 	@Override
@@ -221,7 +225,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		setMainHeaderComponent(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));
 
 		if (caseFollowupEnabled && UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+			PersonDto casePerson = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
 			ExternalJournalUtil.getExternalJournalUiButton(casePerson, caze).ifPresent(getButtonsLayout()::addComponent);
 		}
 	}
@@ -282,16 +286,5 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		}
 
 		return viewConfiguration.getViewMode();
-	}
-
-	public void setCaseEditPermission(Component component) {
-
-		if (!isCaseEditAllowed()) {
-			component.setEnabled(false);
-		}
-	}
-
-	protected boolean isCaseEditAllowed() {
-		return FacadeProvider.getCaseFacade().isEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

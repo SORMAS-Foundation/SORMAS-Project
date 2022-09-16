@@ -972,7 +972,7 @@ public class DevModeView extends AbstractConfigurationView {
 				caze.setReportLon(healthFacility.getLongitude());
 			}
 
-			FacadeProvider.getPersonFacade().savePerson(person);
+			FacadeProvider.getPersonFacade().save(person);
 			FacadeProvider.getCaseFacade().save(caze);
 		}
 
@@ -1175,7 +1175,7 @@ public class DevModeView extends AbstractConfigurationView {
 			PersonDto person;
 			if (config.isCreateMultipleContactsPerPerson() && !personUuids.isEmpty() && randomPercent(25)) {
 				String personUuid = random(personUuids);
-				person = FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
+				person = FacadeProvider.getPersonFacade().getByUuid(personUuid);
 			} else {
 				person = PersonDto.build();
 				fillEntity(person, referenceDateTime);
@@ -1226,7 +1226,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// description
 			contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 
-			FacadeProvider.getPersonFacade().savePerson(person);
+			FacadeProvider.getPersonFacade().save(person);
 			contact = FacadeProvider.getContactFacade().save(contact);
 
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())) {
@@ -1350,7 +1350,7 @@ public class DevModeView extends AbstractConfigurationView {
 				fillEntity(person, referenceDateTime);
 				person.setSymptomJournalStatus(null);
 				setPersonName(person);
-				FacadeProvider.getPersonFacade().savePerson(person);
+				FacadeProvider.getPersonFacade().save(person);
 				eventParticipant.setPerson(person);
 				eventParticipant.setInvolvementDescription("Participant");
 

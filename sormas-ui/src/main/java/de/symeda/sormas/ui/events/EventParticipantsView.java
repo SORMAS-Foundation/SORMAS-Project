@@ -197,7 +197,7 @@ public class EventParticipantsView extends AbstractEventView {
 			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantCriteria.class);
 			navigateTo(null);
 		});
-		filterForm.addApplyHandler(e -> navigateTo(criteria));
+		filterForm.addApplyHandler(e -> grid.reload());
 
 		topLayout.addComponent(filterForm);
 
@@ -216,7 +216,7 @@ public class EventParticipantsView extends AbstractEventView {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 					grid.bulkActionHandler(items -> {
-						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
+						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> grid.reload());
 					}, true);
 				}));
 			}
@@ -270,12 +270,14 @@ public class EventParticipantsView extends AbstractEventView {
 				ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
+				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
 				ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
 			});
 
 		}
@@ -308,8 +310,7 @@ public class EventParticipantsView extends AbstractEventView {
 			gridLayout.setStyleName("crud-main-layout");
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
-			gridLayout
-				.setEnabled(!isEventDeleted() && isEventEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
+			gridLayout.setEnabled(!isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
 		}
 
 		if (params.startsWith("?")) {
@@ -317,8 +318,6 @@ public class EventParticipantsView extends AbstractEventView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-
-		grid.reload();
 	}
 
 	public HorizontalLayout createStatusFilterBar() {

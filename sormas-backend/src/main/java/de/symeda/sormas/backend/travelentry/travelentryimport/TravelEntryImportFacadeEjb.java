@@ -155,7 +155,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		String[][] entityPropertyPaths) {
 
 		TravelEntryImportEntities entities =
-			new TravelEntryImportEntities(userService.getCurrentUser().toReference(), personFacade.getPersonByUuid(personUuid));
+			new TravelEntryImportEntities(userService.getCurrentUser().toReference(), personFacade.getByUuid(personUuid));
 		fillTravelEntryWithDefaultValues(entities.getTravelEntry());
 		ImportLineResultDto<TravelEntryImportEntities> importResult = buildEntities(values, entityClasses, entityPropertyPaths, true, entities);
 
@@ -201,7 +201,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		PersonDto person = entities.getPerson();
 
 		try {
-			PersonDto savedPerson = personFacade.savePerson(person);
+			PersonDto savedPerson = personFacade.save(person);
 			travelEntry.setPerson(savedPerson.toReference());
 			travelEntry.setChangeDate(new Date());
 			travelEntryFacade.save(travelEntry);
