@@ -437,26 +437,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
 		}
-		if (sample.getSampleDateTime() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties
-					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)));
-		}
-		if (sample.getReportDateTime() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties
-					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORT_DATE_TIME)));
-		}
-		if (sample.getSampleMaterial() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties
-					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
-		}
-		if (sample.getSamplePurpose() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties
-					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
-		}
 		if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && sample.getLab() == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));

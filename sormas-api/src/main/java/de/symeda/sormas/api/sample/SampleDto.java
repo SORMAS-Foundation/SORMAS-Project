@@ -87,12 +87,12 @@ public class SampleDto extends SormasToSormasShareableDto {
 	private String labSampleID;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fieldSampleID;
-	@Required
+	@NotEmpty(message = Validations.validSampleDateTime)
 	private Date sampleDateTime;
 
-	@Required
+	@NotEmpty(message = Validations.validReportDateTime)
 	private Date reportDateTime;
-	@Required
+	@NotEmpty(message = Validations.validReportingUser)
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Min(value = -90, message = Validations.numberTooSmall)
@@ -105,13 +105,13 @@ public class SampleDto extends SormasToSormasShareableDto {
 
 	private Float reportLatLonAccuracy;
 
-	@Required
+	@NotEmpty(message = Validations.validSampleMaterial)
 	private SampleMaterial sampleMaterial;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@NotEmpty(message = Validations.validSampleMaterialText)
 	private String sampleMaterialText;
-	@Required
+	@NotEmpty(message = Validations.validSamplePurpose)
 	private SamplePurpose samplePurpose;
 
 	private FacilityReferenceDto lab;
