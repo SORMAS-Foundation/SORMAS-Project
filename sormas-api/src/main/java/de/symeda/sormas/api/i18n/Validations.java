@@ -241,12 +241,14 @@ public interface Validations {
 	String validPerson = "validPerson";
 	String validPhoneNumber = "validPhoneNumber";
 	String validPointOfEntry = "validPointOfEntry";
+	String validPointOfEntryDetails = "validPointOfEntryDetails";
 	String validRegion = "validRegion";
 	String validReportDateTime = "validReportDateTime";
 	String validReportingUser = "validReportingUser";
 	String validResponsibleDistrict = "validResponsibleDistrict";
 	String validResponsibleRegion = "validResponsibleRegion";
 	String validSample = "validSample";
+	String validSampleMaterialText = "validSampleMaterialText";
 	String visitAfterFollowUp = "visitAfterFollowUp";
 	String visitBeforeCaseReport = "visitBeforeCaseReport";
 	String visitBeforeContactReport = "visitBeforeContactReport";
