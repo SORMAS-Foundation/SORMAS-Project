@@ -39,9 +39,8 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 
-public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
+public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> implements JurisdictionCheckService<ADO> {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -180,31 +179,14 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		return getEditPermissionType(entity) == EditPermissionType.ALLOWED;
 	}
 
-
-	/**
-	 * @return Ids of given {@code selectedEntities} within the users jurisdiction or owned by him.
-	 */
+	@Override
 	public List<Long> getInJurisdictionIds(List<ADO> selectedEntities) {
-
 		return getIdList(selectedEntities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
 	}
 
-	/**
-	 * @return {@code true}, if {@code entity} is within the current users jurisdiction or owned by him.
-	 */
+	@Override
 	public boolean inJurisdictionOrOwned(ADO entity) {
-
-		if (entity == null) {
-			return false;
-		}
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<ADO> root = cq.from(getElementClass());
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(cb, cq, root)));
-		cq.where(cb.equal(root.get(ADO.UUID), entity.getUuid()));
-
-		return em.createQuery(cq).getResultList().stream().anyMatch(isInJurisdiction -> isInJurisdiction);
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
 	}
 
 	/**
