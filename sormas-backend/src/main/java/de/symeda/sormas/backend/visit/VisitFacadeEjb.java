@@ -219,7 +219,12 @@ public class VisitFacadeEjb implements VisitFacade {
 		UserRight._VISIT_CREATE,
 		UserRight._VISIT_EDIT })
 	public VisitDto saveVisit(@Valid VisitDto dto) {
-		return doSaveVisit(dto);
+		final String visitUuid = dto.getUuid();
+		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
+
+		FacadeHelper.checkCreateAndEditRights(existingVisit, userService, UserRight.VISIT_CREATE, UserRight.VISIT_EDIT);
+
+		return doSaveVisit(dto, existingVisit);
 	}
 
 	@Override
@@ -242,7 +247,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			dto.getReportLatLonAccuracy(),
 			VisitOrigin.EXTERNAL_JOURNAL);
 
-		doSaveVisit(visitDto);
+		doSaveVisit(visitDto, null);
 
 		return ExternalVisitDto.build(
 			personUuid,
@@ -256,12 +261,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitDto.getReportLatLonAccuracy());
 	}
 
-	private VisitDto doSaveVisit(@Valid VisitDto dto) {
-		final String visitUuid = dto.getUuid();
-		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
-
-		FacadeHelper.checkCreateAndEditRights(existingVisit, userService, UserRight.VISIT_CREATE, UserRight.VISIT_EDIT);
-
+	private VisitDto doSaveVisit(@Valid VisitDto dto, Visit existingVisit) {
 		final VisitDto existingDto = toDto(existingVisit);
 
 		restorePseudonymizedDto(dto, existingVisit, existingDto);
