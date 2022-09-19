@@ -2537,17 +2537,17 @@ public class EditCaseSteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
               break;
           }
-          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          TimeUnit.SECONDS.sleep(3); // wait for reaction
         });
 
     And(
         "^I check that vaccination is removed from vaccination card on Edit Case page$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-          Boolean elementVisible = true;
+          boolean elementVisible = true;
 
           try {
-            webDriverHelpers.isElementVisibleWithTimeout(VACCINATION_CARD_VACCINATION_ID, 2);
+            webDriverHelpers.isElementEnabled(EDIT_VACCINATION_BUTTON);
           } catch (Throwable ignored) {
             elementVisible = false;
           }

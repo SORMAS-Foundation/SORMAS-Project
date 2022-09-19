@@ -618,6 +618,7 @@ Feature: Vaccination tests
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with specific data for DE version with date 16 days ago
+    And I click SAVE button on Create New Case form
     And I click NEW VACCINATION button for DE
     And I change the report vaccination date for minus 17 day from today
     And I fill new vaccination data in new Vaccination form for DE
@@ -690,48 +691,45 @@ Feature: Vaccination tests
     And I check that displayed vaccination name is "greyed out" on Edit contact page
 
   @tmsLink=SORDEV-12605 @env_de
-  Scenario: Test that the vaccination status changes from VACCINATED to blank after the vaccination is removed
-    Given I log in as a Admin User
-#    When I click on the Cases button from navbar
-#    And I click on the NEW CASE button
-#    And I create a new case with specific data for DE version with date 14 days ago
-#    And I check if date of report is set for 14 day ago from today on Edit Case page for DE version
-#    And I click NEW VACCINATION button for DE
-#    And I change the report vaccination date for minus 17 day from today
-#    And I fill new vaccination data in new Vaccination form for DE
-#    And I remove the vaccination date in displayed vaccination form
-#    And I click SAVE button in new Vaccination form
-#    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
-#    And I check that displayed vaccination name is "enabled" on Edit case page
-#    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
-#    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
-#    And I click Delete button in Vaccination form
-#    And I choose the reason of deletion in popup for Vaccination for DE version
-#    And I choose "JA" in Vaccination Status update popup for DE version
-#    And I check if Vaccination Status is set to "" on Edit Case page
-#    And I click NEW VACCINATION button for DE
-#    And I change the report vaccination date for minus 17 day from today
-#    And I fill new vaccination data in new Vaccination form for DE
-#    And I remove the vaccination date in displayed vaccination form
-#    And I click SAVE button in new Vaccination form
-#    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
-#    And I check that displayed vaccination name is "enabled" on Edit case page
-#    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
-#    #Step5
-#    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
-#    And I click Delete button in Vaccination form
-#    And I choose the reason of deletion in popup for Vaccination for DE version
-#    And I choose "NEIN" in Vaccination Status update popup for DE version
-#    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
-#    And I check that vaccination is removed from vaccination card on Edit Case page
-    #Step6
-
-  @tmsLink=SORDEV-12605 @env_de
   Scenario Outline: Test that the vaccination status changes from VACCINATED to blank after the vaccination is removed
     Given I log in as a Admin User
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with specific data for DE version with date 14 days ago
+    And I click SAVE button on Create New Case form
+    And I check if date of report is set for 14 day ago from today on Edit Case page for DE version
+    And I click NEW VACCINATION button for DE
+    And I change the report vaccination date for minus 17 day from today
+    And I fill new vaccination data in new Vaccination form for DE
+    And I remove the vaccination date in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "enabled" on Edit case page
+    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I click Delete button in Vaccination form
+    And I choose the reason of deletion in popup for Vaccination for DE version
+    And I choose "JA" in Vaccination Status update popup for DE version
+    And I check if Vaccination Status is set to "" on Edit Case page
+    And I click NEW VACCINATION button for DE
+    And I change the report vaccination date for minus 17 day from today
+    And I fill new vaccination data in new Vaccination form for DE
+    And I remove the vaccination date in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
+    And I check that displayed vaccination name is "enabled" on Edit case page
+    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
+    #Step5
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I click Delete button in Vaccination form
+    And I choose the reason of deletion in popup for Vaccination for DE version
+    And I choose "NEIN" in Vaccination Status update popup for DE version
+    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
+    And I check that vaccination is removed from vaccination card on Edit Case page
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data for DE version with date 14 days ago
+    And I click SAVE button on Create New Case form
     And I check if date of report is set for 14 day ago from today on Edit Case page for DE version
     #Step7
     And I click NEW VACCINATION button for DE
@@ -777,5 +775,5 @@ Feature: Vaccination tests
 
     Examples:
       | option | result |
-      | JA | "Geimpft"  |
-      | NEIN | "" |
+      | JA | ""  |
+      | NEIN | "Geimpft" |

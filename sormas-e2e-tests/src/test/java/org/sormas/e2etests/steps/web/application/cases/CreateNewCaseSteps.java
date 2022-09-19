@@ -1102,10 +1102,11 @@ public class CreateNewCaseSteps implements En {
           fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
           fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
           fillPlaceDescription(caze.getPlaceDescription());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+          //          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          //
+          // webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          //          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
     When(
