@@ -20,7 +20,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -86,6 +85,7 @@ import de.symeda.sormas.backend.common.ChangeDateUuidComparator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
@@ -117,7 +117,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
-public class PersonService extends AdoServiceWithUserFilter<Person> {
+public class PersonService extends AdoServiceWithUserFilter<Person> implements JurisdictionCheckService<Person> {
 
 	@EJB
 	private UserService userService;
@@ -548,16 +548,14 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return result;
 	}
 
-	/**
-	 * @return Ids of given {@code selectedEntities} within the users jurisdiction or owned by him.
-	 */
-	public List<Long> getInJurisdictionIds(List<Person> selectedEntities) {
-
-		return getIdList(selectedEntities, (cb, cq, from) -> inJurisdictionOrOwned(new PersonQueryContext(cb, cq, from)));
+	@Override
+	public List<Long> getInJurisdictionIds(List<Person> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(new PersonQueryContext(cb, cq, from)));
 	}
 
-	public boolean inJurisdictionOrOwned(Person person) {
-		return !getInJurisdictionIds(Arrays.asList(person)).isEmpty();
+	@Override
+	public boolean inJurisdictionOrOwned(Person entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(new PersonQueryContext(cb, cq, from)));
 	}
 
 	public Predicate inJurisdictionOrOwned(PersonQueryContext personQueryContext) {
