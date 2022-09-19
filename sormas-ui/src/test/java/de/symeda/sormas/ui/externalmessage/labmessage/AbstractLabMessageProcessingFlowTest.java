@@ -30,9 +30,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -85,10 +82,13 @@ import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMess
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
@@ -999,8 +999,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
-		EventIndexDto selectedEvent = new EventIndexDto();
-		selectedEvent.setUuid(event.getUuid());
+		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 		pickOrCreateEventResult.setEvent(selectedEvent);
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(pickOrCreateEventResult);
@@ -1043,8 +1042,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
-		EventIndexDto selectedEvent = new EventIndexDto();
-		selectedEvent.setUuid(event.getUuid());
+		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 		pickOrCreateEventResult.setEvent(selectedEvent);
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(pickOrCreateEventResult);
@@ -1081,8 +1079,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		doAnswer((invocation) -> {
 			// pick event
 			PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
-			EventIndexDto selectedEvent = new EventIndexDto();
-			selectedEvent.setUuid(event.getUuid());
+			EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 			pickOrCreateEventResult.setEvent(selectedEvent);
 
 			getCallbackParam(invocation).done(pickOrCreateEventResult);
@@ -1121,8 +1118,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		doAnswer((invocation) -> {
 			// pick event for the  first time
 			PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
-			EventIndexDto selectedEvent = new EventIndexDto();
-			selectedEvent.setUuid(event.getUuid());
+			EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 			pickOrCreateEventResult.setEvent(selectedEvent);
 
 			getCallbackParam(invocation).done(pickOrCreateEventResult);
@@ -1166,8 +1162,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
-		EventIndexDto selectedEvent = new EventIndexDto();
-		selectedEvent.setUuid(event.getUuid());
+		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 		pickOrCreateEventResult.setEvent(selectedEvent);
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(pickOrCreateEventResult);

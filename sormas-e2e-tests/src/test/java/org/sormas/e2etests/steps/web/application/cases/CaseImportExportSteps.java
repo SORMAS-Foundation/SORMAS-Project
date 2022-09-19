@@ -38,6 +38,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import cucumber.api.java8.En;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,6 +51,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.sormas.e2etests.entities.pojo.csv.CustomCaseExportCSV;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.enums.CaseClassification;
@@ -57,6 +60,7 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -83,7 +87,7 @@ public class CaseImportExportSteps implements En {
     When(
         "I click on the Detailed Case Export button",
         () -> {
-          String file_name = "sormas_fälle_" + LocalDate.now().format(formatter) + "_.csv";
+          String file_name = "sormas_f\u00E4lle_" + LocalDate.now().format(formatter) + "_.csv";
           if (webDriverHelpers.isFileExists(
               Paths.get(String.format("./downloads/%s", file_name)))) {
             FilesHelper.deleteFile(file_name);
@@ -91,7 +95,7 @@ public class CaseImportExportSteps implements En {
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_CASE_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(2);
-          FilesHelper.waitForFileToDownload(file_name, 90);
+          FilesHelper.waitForFileToDownload(file_name, 15);
         });
 
     When(
@@ -280,6 +284,27 @@ public class CaseImportExportSteps implements En {
     When(
         "I delete created custom case export file",
         () -> webDriverHelpers.clickOnWebElementBySelector(CUSTOM_CASE_DELETE_BUTTON));
+
+    When(
+        "I check if downloaded docx file is correct",
+        () -> {
+          String uuidFirstChars = EditCaseSteps.caseUuid.substring(0, 6);
+           String file = String.format("./downloads/%s-preExistingConditions.docx",
+           uuidFirstChars);
+          FileInputStream docx = new FileInputStream(file);
+          XWPFDocument document = new XWPFDocument(docx);
+          XWPFWordExtractor document_extracted = new XWPFWordExtractor(document);
+          String docx_string = document_extracted.getText();
+          Assert.assertTrue(docx_string.contains("Diabetes: Ja"), "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(docx_string.contains("Immunodeficiency including HIV: Ja"), "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(docx_string.contains("Liver disease: Nein"), "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(docx_string.contains("Malignancy: Unbekannt"), "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(docx_string.contains("Chronic pulmonary disease\u00A0: Ja"), "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(docx_string.contains("Renal disease: Ja"), "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(docx_string.contains("Chronic neurologic / neuromuscular disease: Ja"), "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(docx_string.contains("Chardiovascular disesase including hypertension: Ja"), "There is no expected Pre Existing Condition value in docx file!");
+          Files.delete(Paths.get(file));
+        });
   }
 
   public CustomCaseExportCSV parseCustomCaseExport(String fileName) {

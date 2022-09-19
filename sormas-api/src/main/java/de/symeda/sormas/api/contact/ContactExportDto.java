@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.contact;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -57,10 +56,11 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(ContactDto.class)
-public class ContactExportDto implements Serializable {
+public class ContactExportDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 2054231712903661096L;
 
@@ -83,7 +83,6 @@ public class ContactExportDto implements Serializable {
 
 	private long id;
 	private long personId;
-	private String uuid;
 	private String sourceCaseUuid;
 	private CaseClassification caseClassification;
 	private Disease disease;
@@ -266,10 +265,9 @@ public class ContactExportDto implements Serializable {
 							boolean isInJurisdiction
 	) {
 	//@formatter:on
-
+		super(uuid);
 		this.id = id;
 		this.personId = personId;
-		this.uuid = uuid;
 		this.sourceCaseUuid = sourceCaseUuid;
 		this.caseClassification = caseClassification;
 		this.disease = disease;
@@ -363,7 +361,7 @@ public class ContactExportDto implements Serializable {
 	}
 
 	public ContactReferenceDto toReference() {
-		return new ContactReferenceDto(uuid);
+		return new ContactReferenceDto(getUuid());
 	}
 
 	public long getId() {
@@ -381,8 +379,9 @@ public class ContactExportDto implements Serializable {
 	@Order(0)
 	@ExportProperty(ContactDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
+	@Override
 	public String getUuid() {
-		return uuid;
+		return super.getUuid();
 	}
 
 	@Order(1)
@@ -1278,10 +1277,6 @@ public class ContactExportDto implements Serializable {
 
 	public void setPersonId(long personId) {
 		this.personId = personId;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public void setSourceCaseUuid(String sourceCaseUuid) {

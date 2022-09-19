@@ -103,3 +103,18 @@ Feature: Contact import and export tests
     Then I check that displayed vaccination date is equal to "01.02.2022"
     And I check that displayed vaccination name is equal to "Comirnaty (COVID-19-mRNA Impfstoff)"
     And I close vaccination form in Edit Contact directory
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth in Detailed Contact Export file
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    Then I filter by Contact uuid
+    And I click on the Export contact button
+    Then I click on the Detailed Contact Export button
+    Then I check if citizenship and country of birth is not present in Detailed Contact export file

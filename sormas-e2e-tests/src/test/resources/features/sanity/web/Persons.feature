@@ -294,3 +294,11 @@ Feature: Edit Persons
     Then I Verify The Eye Icon opening the Map is enabled in the Edit Person Page
     And I click on the The Eye Icon located in the Edit Person Page
     Then I verify that the Map Container is now Visible in the Edit Person Page
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Person Page
+    Given I log in as a National User
+    When I click on the Persons button from navbar
+    And I click on first person in person directory
+    Then I check that Citizenship is not visible in Contact Information section for DE version
+    And I check that Country of birth is not visible in Contact Information section for DE version

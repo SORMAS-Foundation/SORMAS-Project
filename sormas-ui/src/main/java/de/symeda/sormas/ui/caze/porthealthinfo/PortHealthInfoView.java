@@ -37,6 +37,6 @@ public class PortHealthInfoView extends AbstractCaseView {
 			ControllerProvider.getCaseController().getPortHealthInfoComponent(getCaseRef().getUuid());
 		setSubComponent(portHealthInfoComponent);
 
-		setCaseEditPermission(portHealthInfoComponent);
+		setEditPermission(portHealthInfoComponent);
 	}
 }

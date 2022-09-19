@@ -19,7 +19,7 @@ package de.symeda.sormas.api.infrastructure.facility;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;

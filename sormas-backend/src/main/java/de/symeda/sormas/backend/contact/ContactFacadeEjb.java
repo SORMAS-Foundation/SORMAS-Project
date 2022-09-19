@@ -361,7 +361,7 @@ public class ContactFacadeEjb
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		FacadeHelper.checkCreateAndEditRights(existingContact, userService, UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT);
 
-		if (internal && existingContact != null && !service.isEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingContact != null && !service.isEditAllowed(existingContact)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
 		}
 
@@ -2193,7 +2193,7 @@ public class ContactFacadeEjb
 		for (String contactUuid : contactUuidlist) {
 			Contact contact = service.getByUuid(contactUuid);
 
-			if (service.isEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(contact)) {
 				ContactDto existingContactDto = toDto(contact);
 				if (classificationChange) {
 					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());

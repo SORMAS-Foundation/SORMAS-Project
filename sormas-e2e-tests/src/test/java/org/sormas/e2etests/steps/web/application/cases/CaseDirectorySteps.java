@@ -50,6 +50,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
@@ -77,6 +78,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -161,6 +163,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -497,14 +500,14 @@ public class CaseDirectorySteps implements En {
         "I click on new entry button from Epidemiological Data tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
 
     Then(
         "I click on new entry button from Epidemiological Data tab for DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
 
     And(
@@ -1075,6 +1078,20 @@ public class CaseDirectorySteps implements En {
           FilesHelper.deleteFile(fileName);
         });
     When(
+        "I check if citizenship and country of birth is not present in Detailed Case export file",
+        () -> {
+          String fileName = "sormas_f\u00E4lle_" + LocalDate.now() + "_.csv";
+          String[] headers = parseDetailedCaseExportHeaders(userDirPath + "/downloads/" + fileName);
+          FilesHelper.deleteFile(fileName);
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("citizenship"::equals),
+              "Citizenship is present in file");
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("countryOfBirth"::equals),
+              "Country of birth is present in file");
+          softly.assertAll();
+        });
+    When(
         "I check that ([^\"]*) is visible in Pick or Create Person popup for De",
         (String option) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
@@ -1372,5 +1389,25 @@ public class CaseDirectorySteps implements En {
     } catch (IOException e) {
       log.error("IOException csvWriter: ", e);
     }
+  }
+
+  public String[] parseDetailedCaseExportHeaders(String fileName) {
+    List<String[]> r = null;
+    String[] values = new String[] {};
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
+    try (CSVReader reader =
+        new CSVReaderBuilder(new FileReader(fileName)).withCSVParser(csvParser).build()) {
+      r = reader.readAll();
+    } catch (IOException e) {
+      log.error("IOException parseDetailedCaseExportHeaders: {}", e.getCause());
+    } catch (CsvException e) {
+      log.error("CsvException parseDetailedCaseExportHeaders: {}", e.getCause());
+    }
+    try {
+      values = r.get(1);
+    } catch (NullPointerException e) {
+      log.error("Null pointer exception parseDetailedCaseExportHeaders: {}", e.getCause());
+    }
+    return values;
   }
 }
