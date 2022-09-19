@@ -18,6 +18,8 @@
 
 package de.symeda.sormas.api;
 
+import de.symeda.sormas.api.uuid.HasUuid;
+
 public interface MergeableIndexDto extends HasUuid {
     /**
      *
