@@ -28,6 +28,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
@@ -76,7 +77,7 @@ public class SormasToSormasExternalMessageFacadeEjb implements SormasToSormasExt
 
 	@Override
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
-	public void sendExternalMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public void sendExternalMessages(List<String> uuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (!userService.hasRight(UserRight.EXTERNAL_MESSAGE_PROCESS)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}

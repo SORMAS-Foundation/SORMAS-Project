@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -106,7 +107,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 
 	@Override
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
-	public void share(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public void share(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (!userService.hasRight(UserRight.CASE_EDIT)
 			|| (options.isWithAssociatedContacts() && !userService.hasRight(UserRight.CONTACT_EDIT))
 			|| (options.isWithSamples() && !userService.hasRight(UserRight.SAMPLE_EDIT))
