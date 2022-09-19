@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.user.DefaultUserRole;
 import org.junit.After;
 import org.mockito.Mockito;
 
@@ -62,6 +61,7 @@ import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -130,6 +130,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		source.setOrganizationId(serverId);
 		source.setSenderName("John doe");
 		source.setOwnershipHandedOver(ownershipHandedOver);
+		source.setComment("Test comment");
 
 		return source;
 	}

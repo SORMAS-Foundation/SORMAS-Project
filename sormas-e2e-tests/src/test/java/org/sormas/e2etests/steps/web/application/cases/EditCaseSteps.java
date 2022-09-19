@@ -275,6 +275,7 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
+  public static String caseUuid;
 
   @SneakyThrows
   @Inject
@@ -1256,6 +1257,10 @@ public class EditCaseSteps implements En {
         () -> aCase = collectCasePersonUuid());
 
     When(
+        "I get the case person UUID displayed on Edit case page",
+        () -> caseUuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT));
+
+    When(
         "I check case created from created contact is correctly displayed on Edit Case page",
         () -> {
           aCase = collectCasePersonData();
@@ -1342,6 +1347,10 @@ public class EditCaseSteps implements En {
     When(
         "I click on the Create button from Case Document Templates",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
+
+    When(
+        "I click on the Create button from Case Document Templates in DE",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON_DE));
 
     When(
         "I change the Case Classification field for {string} value",
@@ -2505,6 +2514,37 @@ public class EditCaseSteps implements En {
               expectedFollowUpStatusComment,
               "Follow-up status comment is incorrect!");
           softly.assertAll();
+        });
+
+    And(
+        "I check that {string} Pre-existing condition is visible on page",
+        (String preExistingCondition) ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementEnabled(
+                    getPreExistingConditionCombobox_DE(preExistingCondition))));
+    And(
+        "I check that {string} Pre-existing condition have {string} selected",
+        (String preExistingCondition, String value) ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementEnabled(
+                    getPreExistingConditionComboboxWithValue_DE(preExistingCondition, value))));
+
+    Then(
+        "I check that Clinical Assessments heading is visible in DE",
+        () ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementVisibleWithTimeout(CLINICAL_ASSESSMENTS_LABEL_DE, 15)));
+
+    And(
+        "I select {string} from documents templates list",
+        (String templateName) -> {
+          selectQuarantineOrderTemplate(templateName);
+        });
+    Then(
+        "I click download in case document create page in DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(10);
         });
 
     And(

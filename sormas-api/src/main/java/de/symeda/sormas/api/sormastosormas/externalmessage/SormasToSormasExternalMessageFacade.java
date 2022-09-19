@@ -18,6 +18,7 @@ package de.symeda.sormas.api.sormastosormas.externalmessage;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
@@ -27,7 +28,7 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 @Remote
 public interface SormasToSormasExternalMessageFacade {
 
-	void sendExternalMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	void sendExternalMessages(List<String> uuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
 
 	void saveExternalMessages(SormasToSormasEncryptedDataDto labMessages) throws SormasToSormasValidationException, SormasToSormasException;
 }

@@ -404,6 +404,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			});
 
 			TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
+			comment.setRequired(true);
 			comment.setRows(3);
 
 			if (customFieldDependencies != null) {

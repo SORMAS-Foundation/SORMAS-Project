@@ -210,6 +210,9 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "maxLength" : 36,
+            "minLength" : 20,
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "pseudonymized" : {

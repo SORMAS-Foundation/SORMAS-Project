@@ -674,8 +674,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			Boolean isInJurisdiction = caze.getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(CaseIndexDetailedDto.class, caze, isInJurisdiction, c -> {
 				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
-				pseudonymizer
-					.pseudonymizeUser(userService.getByUuid(caze.getReportingUser().getUuid()), userService.getCurrentUser(), caze::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					CaseDataDto.class,
+					CaseDataDto.REPORTING_USER,
+					userService.getByUuid(caze.getReportingUser().getUuid()),
+					userService.getCurrentUser(),
+					caze::setReportingUser);
 			});
 		}
 
@@ -1492,7 +1496,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
-			if (service.getEditPermissionType(caze).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(caze)) {
 				CaseDataDto existingCaseDto = toDto(caze);
 
 				updateCaseWithBulkData(
@@ -1533,7 +1537,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
-			if (service.getEditPermissionType(caze).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(caze)) {
 				CaseDataDto existingCaseDto = toDto(caze);
 
 				updateCaseWithBulkData(
@@ -1608,7 +1612,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Case existingCase = service.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingCase, userService, UserRight.CASE_CREATE, UserRight.CASE_EDIT);
 
-		if (!systemSave && internal && existingCase != null && !service.getEditPermissionType(existingCase).equals(EditPermissionType.ALLOWED)) {
+		if (!systemSave && internal && existingCase != null && !service.isEditAllowed(existingCase)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
@@ -2667,8 +2671,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			pseudonymizer.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
-				pseudonymizer.pseudonymizeUser(source.getClassificationUser(), currentUser, dto::setClassificationUser);
+				pseudonymizer
+					.pseudonymizeUser(CaseDataDto.class, CaseDataDto.REPORTING_USER, source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					CaseDataDto.class,
+					CaseDataDto.CLASSIFICATION_USER,
+					source.getClassificationUser(),
+					currentUser,
+					dto::setClassificationUser);
 
 				pseudonymizer.pseudonymizeDto(
 					EpiDataDto.class,

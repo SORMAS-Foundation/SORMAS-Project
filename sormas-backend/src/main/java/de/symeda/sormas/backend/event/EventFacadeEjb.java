@@ -267,7 +267,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		FacadeHelper.checkCreateAndEditRights(existingEvent, userService, UserRight.EVENT_CREATE, UserRight.EVENT_EDIT);
 
-		if (internal && existingEvent != null && !service.isEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingEvent != null && !service.isEditAllowed(existingEvent)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -1156,7 +1156,12 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			boolean inJurisdiction = service.inJurisdictionOrOwned(event);
 
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
-				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					EventDto.class,
+					EventDto.REPORTING_USER,
+					event.getReportingUser(),
+					userService.getCurrentUser(),
+					dto::setReportingUser);
 			});
 		}
 	}
@@ -1369,7 +1374,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		for (String evetUuid : eventUuidList) {
 			Event event = service.getByUuid(evetUuid);
 
-			if (service.isEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(event)) {
 				EventDto eventDto = toDto(event);
 				if (eventStatusChange) {
 					eventDto.setEventStatus(updatedTempEvent.getEventStatus());

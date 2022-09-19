@@ -279,8 +279,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	private VaccinationListEntryDto toVaccinationListEntryDto(Vaccination vaccination, boolean relevant, String message) {
-		VaccinationListEntryDto dto = new VaccinationListEntryDto();
-		dto.setUuid(vaccination.getUuid());
+		VaccinationListEntryDto dto = new VaccinationListEntryDto(vaccination.getUuid());
 		dto.setDisease(vaccination.getImmunization().getDisease());
 		dto.setVaccinationDate(vaccination.getVaccinationDate());
 		dto.setVaccineName(vaccination.getVaccineName());
@@ -390,7 +389,12 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			pseudonymizer.pseudonymizeDto(VaccinationDto.class, dto, inJurisdiction, c -> {
 
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					VaccinationDto.class,
+					VaccinationDto.REPORTING_USER,
+					source.getReportingUser(),
+					currentUser,
+					dto::setReportingUser);
 			});
 		}
 	}

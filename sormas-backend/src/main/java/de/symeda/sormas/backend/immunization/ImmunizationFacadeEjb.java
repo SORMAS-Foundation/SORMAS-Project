@@ -337,7 +337,7 @@ public class ImmunizationFacadeEjb
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingImmunization, userService, UserRight.IMMUNIZATION_CREATE, UserRight.IMMUNIZATION_EDIT);
 
-		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
 		}
 
@@ -378,7 +378,12 @@ public class ImmunizationFacadeEjb
 			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					ImmunizationDto.class,
+					ImmunizationDto.REPORTING_USER,
+					source.getReportingUser(),
+					currentUser,
+					dto::setReportingUser);
 				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
 			});
 		}

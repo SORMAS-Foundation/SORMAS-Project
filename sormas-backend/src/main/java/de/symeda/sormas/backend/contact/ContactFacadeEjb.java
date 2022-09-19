@@ -361,7 +361,7 @@ public class ContactFacadeEjb
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		FacadeHelper.checkCreateAndEditRights(existingContact, userService, UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT);
 
-		if (internal && existingContact != null && !service.isEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingContact != null && !service.isEditAllowed(existingContact)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
 		}
 
@@ -1258,7 +1258,12 @@ public class ContactFacadeEjb
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		User currentUser = userService.getCurrentUser();
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
-			pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c::setReportingUser);
+			pseudonymizer.pseudonymizeUser(
+				ContactIndexDetailedDto.class,
+				ContactIndexDetailedDto.REPORTING_USER,
+				userService.getByUuid(c.getReportingUser().getUuid()),
+				currentUser,
+				c::setReportingUser);
 			if (c.getCaze() != null) {
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
 			}
@@ -1533,7 +1538,8 @@ public class ContactFacadeEjb
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer
+					.pseudonymizeUser(ContactDto.class, ContactDto.REPORTING_USER, source.getReportingUser(), currentUser, dto::setReportingUser);
 
 				if (c.getCaze() != null) {
 					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), contactJurisdictionFlagsDto.getCaseInJurisdiction(), null);
@@ -2193,7 +2199,7 @@ public class ContactFacadeEjb
 		for (String contactUuid : contactUuidlist) {
 			Contact contact = service.getByUuid(contactUuid);
 
-			if (service.isEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(contact)) {
 				ContactDto existingContactDto = toDto(contact);
 				if (classificationChange) {
 					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());

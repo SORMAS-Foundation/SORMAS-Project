@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.person;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -34,8 +33,9 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class PersonExportDto implements Serializable {
+public class PersonExportDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = -6902138630884671263L;
 
@@ -43,7 +43,6 @@ public class PersonExportDto implements Serializable {
 
 	public static final String ADDRESS_GPS_COORDINATES = "addressGpsCoordinates";
 
-	private String uuid;
 	@PersonalData
 	@SensitiveData
 	private String firstName;
@@ -211,7 +210,7 @@ public class PersonExportDto implements Serializable {
 		String citizenshipCountryName,
 		String additionalDetails,
 		Boolean isInJurisdiction) {
-		this.uuid = uuid;
+		super(uuid);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.salutation = salutation;
@@ -278,7 +277,7 @@ public class PersonExportDto implements Serializable {
 		String email,
 		boolean isInJurisdiction) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.sex = sex;
@@ -296,7 +295,7 @@ public class PersonExportDto implements Serializable {
 	@ExportProperty(PersonDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getUuid() {
-		return uuid;
+		return super.getUuid();
 	}
 
 	@Order(1)
@@ -376,7 +375,9 @@ public class PersonExportDto implements Serializable {
 	@Order(17)
 	@ExportProperty(PersonDto.MOTHERS_NAME)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	public String getMothersName() {
 		return mothersName;
 	}
@@ -384,7 +385,9 @@ public class PersonExportDto implements Serializable {
 	@Order(18)
 	@ExportProperty(PersonDto.MOTHERS_MAIDEN_NAME)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	public String getMothersMaidenName() {
 		return mothersMaidenName;
 	}
@@ -392,7 +395,9 @@ public class PersonExportDto implements Serializable {
 	@Order(19)
 	@ExportProperty(PersonDto.FATHERS_NAME)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	public String getFathersName() {
 		return fathersName;
 	}
@@ -561,7 +566,9 @@ public class PersonExportDto implements Serializable {
 	@Order(54)
 	@ExportProperty(value = PersonDto.EDUCATION_TYPE, combined = true)
 	@ExportGroup(ExportGroupType.PERSON)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	public EducationType getEducationType() {
 		return educationType;
 	}
@@ -569,7 +576,9 @@ public class PersonExportDto implements Serializable {
 	@Order(55)
 	@ExportProperty(value = PersonDto.EDUCATION_TYPE, combined = true)
 	@ExportGroup(ExportGroupType.PERSON)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	public String getEducationDetails() {
 		return educationDetails;
 	}
@@ -599,7 +608,9 @@ public class PersonExportDto implements Serializable {
 	@Order(60)
 	@ExportProperty(PersonDto.PASSPORT_NUMBER)
 	@ExportGroup(ExportGroupType.CORE)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	public String getPassportNumber() {
 		return passportNumber;
 	}
