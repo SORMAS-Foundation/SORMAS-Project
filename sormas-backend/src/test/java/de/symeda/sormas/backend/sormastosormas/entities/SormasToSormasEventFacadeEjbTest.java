@@ -31,7 +31,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -781,6 +780,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setWithEventParticipants(true);
 		options.setWithSamples(true);
+		options.setComment("Test comment");
+
 		final String uuid = DataHelper.createUuid();
 
 		Mockito
