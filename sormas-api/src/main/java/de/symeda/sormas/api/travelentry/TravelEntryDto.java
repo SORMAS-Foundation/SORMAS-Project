@@ -82,15 +82,13 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
-	@NotEmpty(message = Validations.validPerson)
+	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
-	@NotEmpty(message = Validations.validReportDateTime)
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private boolean archived;
 	private boolean deleted;
-	@NotEmpty(message = Validations.validDisease)
 	private Disease disease;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -99,14 +97,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseVariantDetails;
-	@NotEmpty(message = Validations.validResponsibleRegion)
 	private RegionReferenceDto responsibleRegion;
-	@NotEmpty(message = Validations.validResponsibleDistrict)
 	private DistrictReferenceDto responsibleDistrict;
 	private CommunityReferenceDto responsibleCommunity;
 	private RegionReferenceDto pointOfEntryRegion;
 	private DistrictReferenceDto pointOfEntryDistrict;
-	@NotEmpty(message = Validations.validPointOfEntry)
 	private PointOfEntryReferenceDto pointOfEntry;
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -147,7 +142,6 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
-	@NotEmpty(message = Validations.validDateOfArrival)
 	private Date dateOfArrival;
 
 	private DeletionReason deletionReason;

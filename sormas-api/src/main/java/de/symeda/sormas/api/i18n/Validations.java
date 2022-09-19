@@ -248,10 +248,7 @@ public interface Validations {
 	String validResponsibleDistrict = "validResponsibleDistrict";
 	String validResponsibleRegion = "validResponsibleRegion";
 	String validSample = "validSample";
-	String validSampleDateTime = "validSampleDateTime";
-	String validSampleMaterial = "validSampleMaterial";
 	String validSampleMaterialText = "validSampleMaterialText";
-	String validSamplePurpose = "validSamplePurpose";
 	String visitAfterFollowUp = "visitAfterFollowUp";
 	String visitBeforeCaseReport = "visitBeforeCaseReport";
 	String visitBeforeContactReport = "visitBeforeContactReport";
