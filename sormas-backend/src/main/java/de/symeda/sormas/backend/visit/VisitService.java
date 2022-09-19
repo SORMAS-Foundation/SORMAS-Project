@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -57,11 +58,10 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
-public class VisitService extends BaseAdoService<Visit> {
+public class VisitService extends BaseAdoService<Visit> implements JurisdictionCheckService<Visit> {
 
 	@EJB
 	private ContactService contactService;
@@ -72,30 +72,14 @@ public class VisitService extends BaseAdoService<Visit> {
 		super(Visit.class);
 	}
 
-	/**
-	 * @return Ids of given {@code selectedEntities} within the users jurisdiction or owned by him.
-	 */
+	@Override
 	public List<Long> getInJurisdictionIds(List<Visit> entities) {
-
 		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
 	}
 
-	/**
-	 * @return {@code true}, if {@code entity} is within the current users jurisdiction or owned by him.
-	 */
+	@Override
 	public boolean inJurisdictionOrOwned(Visit entity) {
-
-		if (entity == null) {
-			return false;
-		}
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Visit> root = cq.from(getElementClass());
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(cb, cq, root)));
-		cq.where(cb.equal(root.get(Visit.UUID), entity.getUuid()));
-
-		return em.createQuery(cq).getResultList().stream().anyMatch(isInJurisdiction -> isInJurisdiction);
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
 	}
 
 	@SuppressWarnings("rawtypes")
