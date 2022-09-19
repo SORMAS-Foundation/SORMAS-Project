@@ -58,6 +58,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionFlagsDto;
 import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -93,6 +94,7 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -131,7 +133,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
-public class ContactService extends AbstractCoreAdoService<Contact> {
+public class ContactService extends AbstractCoreAdoService<Contact>
+	implements JurisdictionFlagsService<Contact, ContactJurisdictionFlagsDto, ContactJoins, ContactQueryContext> {
 
 	@EJB
 	private CaseService caseService;
@@ -1587,14 +1590,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
 	}
 
-	public ContactJurisdictionFlagsDto getJurisdictionFlags(Contact contact) {
+	@Override
+	public ContactJurisdictionFlagsDto getJurisdictionFlags(Contact entity) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ContactJurisdictionFlagsDto> cq = cb.createQuery(ContactJurisdictionFlagsDto.class);
-		Root<Contact> root = cq.from(Contact.class);
-		cq.multiselect(getJurisdictionSelections(new ContactQueryContext(cb, cq, root)));
-		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return getJurisdictionsFlags(Collections.singletonList(entity)).get(entity.getId());
+	}
+
+	@Override
+	public Map<Long, ContactJurisdictionFlagsDto> getJurisdictionsFlags(List<Contact> entities) {
+
+		return getSelectionAttributes(
+			entities,
+			(cb, cq, from) -> getJurisdictionSelections(new ContactQueryContext(cb, cq, from)),
+			e -> new ContactJurisdictionFlagsDto(e));
 	}
 
 	@Override
@@ -1602,6 +1610,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return inJurisdictionOrOwned(new ContactQueryContext(cb, query, from));
 	}
 
+	@Override
 	public Predicate inJurisdictionOrOwned(ContactQueryContext contactQueryContext) {
 		return inJurisdictionOrOwned(contactQueryContext, userService.getCurrentUser());
 	}
@@ -1617,7 +1626,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (Boolean.FALSE.equals(getJurisdictionFlags(contact).getInJurisdiction())) {
+		if (!inJurisdictionOrOwned(contact)) {
 			return EditPermissionType.REFUSED;
 		}
 
@@ -1628,6 +1637,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return super.getEditPermissionType(contact);
 	}
 
+	@Override
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();

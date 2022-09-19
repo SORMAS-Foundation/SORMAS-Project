@@ -67,7 +67,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -85,6 +84,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionFlagsDto;
 import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -1532,8 +1532,50 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public void pseudonymizeDto(Contact source, ContactDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected List<ContactDto> toPseudonymizedDtos(List<Contact> entities) {
 
+		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(entities);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		List<ContactDto> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
+		return dtos;
+	}
+
+	@Override
+	public ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		ContactJurisdictionFlagsDto jurisdictionFlags = service.getJurisdictionFlags(source);
+		return convertToDto(source, pseudonymizer, jurisdictionFlags);
+	}
+
+	@Deprecated
+	@Override
+	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
+		throw new UnsupportedOperationException("Use variant with jurisdictionFlags parameter");
+	}
+
+	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
+
+		ContactDto dto = toDto(source);
+		pseudonymizeDto(source, dto, pseudonymizer, jurisdictionFlags);
+		return dto;
+	}
+
+	@Deprecated
+	@Override
+	protected void pseudonymizeDto(Contact source, ContactDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
+		throw new UnsupportedOperationException("Use variant with jurisdictionFlags parameter");
+	}
+
+	protected void pseudonymizeDto(Contact source, ContactDto dto, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
+
+		boolean inJurisdiction = jurisdictionFlags.getInJurisdiction();
 		if (dto != null) {
 			User currentUser = userService.getCurrentUser();
 
@@ -1542,9 +1584,7 @@ public class ContactFacadeEjb
 					.pseudonymizeUser(ContactDto.class, ContactDto.REPORTING_USER, source.getReportingUser(), currentUser, dto::setReportingUser);
 
 				if (c.getCaze() != null) {
-					// XXX Calls database per linked case, so partly still a 1:n problem
-					final ContactJurisdictionFlagsDto contactJurisdictionFlagsDto = service.getJurisdictionFlags(source);
-					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), contactJurisdictionFlagsDto.getCaseInJurisdiction(), null);
+					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), jurisdictionFlags.getCaseInJurisdiction(), null);
 				}
 
 				pseudonymizer.pseudonymizeDto(
@@ -1561,9 +1601,9 @@ public class ContactFacadeEjb
 
 	@Override
 	protected void restorePseudonymizedDto(ContactDto dto, ContactDto existingContactDto, Contact existingContact, Pseudonymizer pseudonymizer) {
+
 		if (existingContactDto != null) {
-			final ContactJurisdictionFlagsDto contactJurisdictionFlagsDto = service.getJurisdictionFlags(existingContact);
-			boolean isInJurisdiction = contactJurisdictionFlagsDto.getInJurisdiction();
+			boolean isInJurisdiction = service.inJurisdictionOrOwned(existingContact);
 			User currentUser = userService.getCurrentUser();
 
 			String followUpComment = null;
