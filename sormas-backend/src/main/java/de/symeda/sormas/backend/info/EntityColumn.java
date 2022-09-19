@@ -177,11 +177,7 @@ public enum EntityColumn {
 
 	private static String getNotNull(FieldData fieldData) {
 		// todo(@JonasCir) remove this once #4959 is implemented
-		if (fieldData.getField().getAnnotation(Required.class) == null) {
-			return null;
-		}
-
-		if (fieldData.getField().getAnnotation(NotNull.class) == null) {
+		if (fieldData.getField().getAnnotation(Required.class) == null && fieldData.getField().getAnnotation(NotNull.class) == null) {
 			return null;
 		}
 
