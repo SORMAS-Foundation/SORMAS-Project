@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.utils.pseudonymization;
 
+import static java.util.Objects.nonNull;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +28,6 @@ import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.DefaultValuePseudonymizer;
 
-import static java.util.Objects.nonNull;
-
 public class DtoPseudonymizer {
 
 	protected FieldAccessCheckers inJurisdictionCheckers;
@@ -35,7 +35,7 @@ public class DtoPseudonymizer {
 
 	private final String stringValuePlaceholder;
 
-	private final boolean pseudonymizeMandatoryFields;
+	protected final boolean pseudonymizeMandatoryFields;
 
 	protected DtoPseudonymizer(
 		FieldAccessCheckers inJurisdictionCheckers,

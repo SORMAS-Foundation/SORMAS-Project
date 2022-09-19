@@ -34,7 +34,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -53,6 +52,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -1133,6 +1133,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setWithImmunizations(true);
+		options.setComment("Test comment");
 
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 
