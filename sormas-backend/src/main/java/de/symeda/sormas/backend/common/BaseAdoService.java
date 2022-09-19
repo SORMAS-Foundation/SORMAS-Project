@@ -51,6 +51,7 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.slf4j.Logger;
@@ -265,8 +266,15 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			List<Long> ids = batchEntities.stream().map(ADO::getId).collect(Collectors.toList());
 			cq.where(cb.and(cb.in(root.get(ADO.ID)).value(ids)));
 			List<Object[]> resultList = em.createQuery(cq).getResultList();
+			Map<Long, S> batchResult = resultList.stream().collect(Collectors.toMap(e -> (Long) e[0], e -> attributesConverter.apply(e)));
 
-			result.putAll(resultList.stream().collect(Collectors.toMap(e -> (Long) e[0], e -> attributesConverter.apply(e))));
+			// Check that a result for every queried id was provided
+			if (CollectionUtils.containsAll(batchResult.keySet(), ids)) {
+				result.putAll(batchResult);
+			} else {
+				throw new IllegalArgumentException(
+					String.format("No result found some of the queried ids: %s", CollectionUtils.subtract(ids, batchResult.keySet())));
+			}
 		});
 
 		return result;
