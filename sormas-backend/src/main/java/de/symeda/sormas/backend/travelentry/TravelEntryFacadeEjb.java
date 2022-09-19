@@ -151,7 +151,12 @@ public class TravelEntryFacadeEjb
 			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					TravelEntryDto.class,
+					TravelEntryDto.REPORTING_USER,
+					source.getReportingUser(),
+					currentUser,
+					dto::setReportingUser);
 			});
 		}
 	}
