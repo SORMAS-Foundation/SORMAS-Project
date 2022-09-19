@@ -2591,7 +2591,6 @@ public class EditCaseSteps implements En {
           } catch (Throwable ignored) {
             elementVisible = false;
           }
-          System.out.print("Element visible = " + elementVisible);
           softly.assertFalse(elementVisible, "Vaccination ID is visible!");
           softly.assertAll();
         });
