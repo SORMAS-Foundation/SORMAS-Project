@@ -544,12 +544,15 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Join<Event, EventParticipant> eventParticipantJoin = eventFrom.join(Event.EVENT_PERSONS, JoinType.LEFT);
 		Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantJoin.join(EventParticipant.SAMPLES, JoinType.LEFT);
 
-		builder = super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION)
-			.add(eventFrom, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES)
-			.add(eventActionJoin)
-			.add(eventParticipantJoin)
-			.add(eventParticipantSampleJoin);
+		builder = super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION);
+
+		if (includeExtendedChangeDateFilters) {
+			builder.add(eventFrom, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
+				.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES)
+				.add(eventActionJoin)
+				.add(eventParticipantJoin)
+				.add(eventParticipantSampleJoin);
+		}
 
 		return builder;
 	}
