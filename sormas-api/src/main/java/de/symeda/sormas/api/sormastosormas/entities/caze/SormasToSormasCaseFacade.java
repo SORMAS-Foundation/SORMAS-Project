@@ -13,22 +13,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.externalmessage;
-
-import java.util.List;
+package de.symeda.sormas.api.sormastosormas.entities.caze;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityInterface;
 
 @Remote
-public interface SormasToSormasExternalMessageFacade {
-
-	void sendExternalMessages(List<String> uuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void saveExternalMessages(SormasToSormasEncryptedDataDto labMessages) throws SormasToSormasValidationException, SormasToSormasException;
+public interface SormasToSormasCaseFacade extends SormasToSormasEntityInterface {
 }

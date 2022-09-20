@@ -13,12 +13,29 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.event;
+package de.symeda.sormas.api.sormastosormas.entities;
 
-import javax.ejb.Remote;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
+import java.io.Serializable;
 
-@Remote
-public interface SormasToSormasEventFacade extends SormasToSormasEntityInterface {
+import javax.validation.Valid;
+
+public abstract class SormasToSormasEntityDto<T extends SormasToSormasShareableDto> implements Serializable {
+
+	private static final long serialVersionUID = -1142043326721172412L;
+
+	@Valid
+	private T entity;
+
+	protected SormasToSormasEntityDto() {
+	}
+
+	protected SormasToSormasEntityDto(T entity) {
+		this.entity = entity;
+	}
+
+	public T getEntity() {
+		return entity;
+	}
 }

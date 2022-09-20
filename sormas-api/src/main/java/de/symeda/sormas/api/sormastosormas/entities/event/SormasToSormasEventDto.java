@@ -13,30 +13,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.contact;
+package de.symeda.sormas.api.sormastosormas.entities.event;
 
-import javax.validation.Valid;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+public class SormasToSormasEventDto extends SormasToSormasEntityDto<EventDto> {
 
-public class SormasToSormasContactDto extends SormasToSormasEntityDto<ContactDto> {
+	private static final long serialVersionUID = 5998850723108574369L;
 
-	private static final long serialVersionUID = 7414547678077858460L;
-
-	@Valid
-	private PersonDto person;
-
-	public SormasToSormasContactDto() {
+	public SormasToSormasEventDto() {
 	}
 
-	public SormasToSormasContactDto(PersonDto person, ContactDto contact) {
-		super(contact);
-		this.person = person;
-	}
-
-	public PersonDto getPerson() {
-		return person;
+	public SormasToSormasEventDto(EventDto data) {
+		super(data);
 	}
 }
