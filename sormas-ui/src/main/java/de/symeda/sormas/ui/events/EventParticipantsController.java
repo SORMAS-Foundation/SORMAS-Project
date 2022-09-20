@@ -18,7 +18,9 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -117,6 +119,10 @@ public class EventParticipantsController {
 									} else {
 										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
 										EventParticipantDto savedDto = eventParticipantFacade.save(dto);
+										if (FacadeProvider.getEventFacade().isArchived(eventRef.getUuid()))
+										{
+											eventParticipantFacade.archive(Collections.singletonList(dto.getUuid()));
+										}
 
 										Notification notification = new Notification(
 											I18nProperties.getString(Strings.messagePersonAddedAsEventParticipant),
@@ -140,6 +146,10 @@ public class EventParticipantsController {
 						throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 					}
 					EventParticipantDto savedDto = eventParticipantFacade.save(dto);
+					if (FacadeProvider.getEventFacade().isArchived(eventRef.getUuid()))
+					{
+						eventParticipantFacade.archive(Collections.singletonList(dto.getUuid()));
+					}
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (navigateOnCommit) {
 						navigateToData(savedDto.getUuid());
