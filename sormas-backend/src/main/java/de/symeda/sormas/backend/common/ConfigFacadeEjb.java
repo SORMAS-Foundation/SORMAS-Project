@@ -66,7 +66,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
 	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
-	private static final String MAP_TILES_URL = "map.tiles.url";
+	public static final String MAP_TILES_URL = "map.tiles.url";
 	private static final String MAP_TILES_ATTRIBUTION = "map.tiles.attribution";
 	private static final String MAP_ZOOM = "map.zoom";
 
@@ -126,7 +126,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
-	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
+	public static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
 	private static final String GEOCODING_EPSG4326_WKT = "geocodingEPSG4326_WKT";
@@ -582,9 +582,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			patientDiaryConfig.getAuthUrl(),
 			patientDiaryConfig.getFrontendAuthUrl(),
 			getAppUrl(),
-			getUiUrl());
+			getUiUrl(),
+			getSormasStatsUrl());
 
-		List<String> allowHttp = Lists.newArrayList(getExternalSurveillanceToolGatewayUrl(), getSormasStatsUrl());
+		List<String> allowHttp = Lists.newArrayList(getExternalSurveillanceToolGatewayUrl());
 
 		// separately as they are interpolated
 		if (!StringUtils.isBlank(s2sConfig.getOidcServer())) {
@@ -595,6 +596,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			if (!StringUtils.isBlank(s2sConfig.getOidcRealm())) {
 				enforceHttps.add(s2sConfig.getOidcRealmUrl());
 			}
+		}
+
+		String geocodingUrl = getGeocodingServiceUrlTemplate();
+		if (!StringUtils.isBlank(geocodingUrl)) {
+			enforceHttps.add(geocodingUrl);
+		}
+
+		String mapTilersUrl = getMapTilersUrl();
+		if (!StringUtils.isBlank(mapTilersUrl)) {
+			enforceHttps.add(mapTilersUrl);
 		}
 
 		UrlValidator enforceHttpsValidator = new UrlValidator(
@@ -621,21 +632,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			String invalid = String.join(",\n\t", invalidUrls);
 			throw new IllegalArgumentException(String.format("Invalid URLs in property file:\n\t%s", invalid));
 		}
-
-		String geocodingUrl = getGeocodingServiceUrlTemplate();
-		if (!StringUtils.isBlank(geocodingUrl)) {
-			if (!geocodingUrl.startsWith("https://")) {
-				throw new IllegalArgumentException("geocodingServiceUrlTemplate property is required to be HTTPS");
-			}
-		}
-
-		String mapTilersUrl = getMapTilersUrl();
-		if (!StringUtils.isBlank(mapTilersUrl)) {
-			if (!mapTilersUrl.startsWith("https://")) {
-				throw new IllegalArgumentException("map.tiles.url property is required to be HTTPS");
-			}
-		}
-
 	}
 
 	@Override
@@ -770,11 +766,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
 	}
 
-	@Override public void setRequestContext(RequestContextTO requestContext) {
+	@Override
+	public void setRequestContext(RequestContextTO requestContext) {
 		RequestContextHolder.setRequestContext(requestContext);
 	}
 
-	@Override public void resetRequestContext() {
+	@Override
+	public void resetRequestContext() {
 		RequestContextHolder.reset();
 	}
 

@@ -31,7 +31,6 @@ import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import org.apache.commons.lang3.StringUtils;
 
-@SuppressWarnings("serial")
 public class AbstractStatisticsView extends AbstractSubNavigationView<Component> {
 
 	public static final String ROOT_VIEW_NAME = "statistics";
