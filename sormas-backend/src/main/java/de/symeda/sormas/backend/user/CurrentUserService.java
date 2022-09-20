@@ -74,7 +74,7 @@ public class CurrentUserService {
 			return false;
 		}
 
-		return UserRightsFacadeEjb.hasUserRight(getCurrentUser(), userRight); // todo cache this?
+		return getCurrentUser().hasUserRight(userRight); // todo cache this?
 	}
 
 	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion

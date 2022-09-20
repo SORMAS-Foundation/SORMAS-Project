@@ -321,7 +321,7 @@ public class KeycloakService {
 		// Please note that this cannot be done via the client representation directly as Keycloak is very strict about
 		// resource creation. Currently, we only use this function to assign the sormas-stats-access client role to a
 		// sormasUser if the sormasUser has the STATISTICS_ACCESS right.
-		if (sormasUser.isActive() && UserRightsFacadeEjb.hasUserRight(sormasUser, UserRight.STATISTICS_ACCESS)) {
+		if (sormasUser.isActive() && sormasUser.hasUserRight(UserRight.STATISTICS_ACCESS)) {
 			UsersResource usersResource = keycloak.realm(REALM_NAME).users();
 			UserResource userResource = usersResource.get(userResourceId);
 
