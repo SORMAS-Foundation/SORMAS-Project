@@ -46,6 +46,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -238,6 +239,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	public TravelEntry getLastTravelEntry() {
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<TravelEntry> query = cb.createQuery(TravelEntry.class);
 		final Root<TravelEntry> from = query.from(TravelEntry.class);
@@ -245,8 +247,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 		query.where(cb.and(createDefaultFilter(cb, from), cb.lessThanOrEqualTo(from.get(TravelEntry.CREATION_DATE), new Date())));
 		query.orderBy(cb.desc(from.get(TravelEntry.CREATION_DATE)));
 
-		final TypedQuery<TravelEntry> q = em.createQuery(query);
-		return q.getResultList().stream().findFirst().orElse(null);
+		return QueryHelper.getFirstResult(em, query);
 	}
 
 	private Predicate buildCriteriaFilter(TravelEntryCriteria criteria, TravelEntryQueryContext travelEntryQueryContext) {
