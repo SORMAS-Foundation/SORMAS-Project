@@ -120,7 +120,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 		contact1.setFollowUpUntil(DateHelper.subtractDays(now, 20));
 		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 		getContactFacade().save(contact1);
 		getContactFacade().save(contact2);
 
@@ -167,7 +167,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 		loginWith(externalVisitsUser);
 		getPersonFacade().setSymptomJournalStatus(person.getUuid(), SymptomJournalStatus.REGISTERED);
 
-		PersonDto updatedPerson = getPersonFacade().getPersonByUuid(person.getUuid());
+		PersonDto updatedPerson = getPersonFacade().getByUuid(person.getUuid());
 
 		assertEquals(SymptomJournalStatus.REGISTERED, updatedPerson.getSymptomJournalStatus());
 	}
