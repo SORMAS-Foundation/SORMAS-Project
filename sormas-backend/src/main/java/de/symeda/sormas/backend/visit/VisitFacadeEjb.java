@@ -224,24 +224,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		FacadeHelper.checkCreateAndEditRights(existingVisit, userService, UserRight.VISIT_CREATE, UserRight.VISIT_EDIT);
 
-		final VisitDto existingDto = toDto(existingVisit);
-
-		restorePseudonymizedDto(dto, existingVisit, existingDto);
-
-		this.validate(dto);
-
-		if (dto.getVisitStatus().equals(VisitStatus.COOPERATIVE)) {
-			SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-		} else {
-			dto.getSymptoms().setSymptomatic(null);
-		}
-		Visit entity = fromDto(dto, true);
-
-		visitService.ensurePersisted(entity);
-
-		onVisitChanged(existingDto, entity);
-
-		return convertToDto(entity, Pseudonymizer.getDefault(userService::hasRight));
+		return doSaveVisit(dto, existingVisit);
 	}
 
 	@Override
@@ -264,7 +247,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			dto.getReportLatLonAccuracy(),
 			VisitOrigin.EXTERNAL_JOURNAL);
 
-		saveVisit(visitDto);
+		doSaveVisit(visitDto, null);
 
 		return ExternalVisitDto.build(
 			personUuid,
@@ -276,6 +259,27 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitDto.getReportLat(),
 			visitDto.getReportLon(),
 			visitDto.getReportLatLonAccuracy());
+	}
+
+	private VisitDto doSaveVisit(@Valid VisitDto dto, Visit existingVisit) {
+		final VisitDto existingDto = toDto(existingVisit);
+
+		restorePseudonymizedDto(dto, existingVisit, existingDto);
+
+		this.validate(dto);
+
+		if (dto.getVisitStatus().equals(VisitStatus.COOPERATIVE)) {
+			SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
+		} else {
+			dto.getSymptoms().setSymptomatic(null);
+		}
+		Visit entity = fromDto(dto, true);
+
+		visitService.ensurePersisted(entity);
+
+		onVisitChanged(existingDto, entity);
+
+		return convertToDto(entity, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override

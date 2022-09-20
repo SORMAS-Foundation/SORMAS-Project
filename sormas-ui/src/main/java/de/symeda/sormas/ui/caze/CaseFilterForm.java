@@ -621,8 +621,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 				FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
 				List<PresentCondition> validValues = Arrays.stream(PresentCondition.values())
-						.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
-						.collect(Collectors.toList());
+					.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+					.collect(Collectors.toList());
 				PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
 				if (currentValue != null && !validValues.contains(currentValue)) {
 					validValues.add(currentValue);
@@ -735,7 +735,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			clearAndDisableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
 		}
 
-		getField(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY).setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+			getField(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY).setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);
+		}
 
 		// Date/Epi week filter
 		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
