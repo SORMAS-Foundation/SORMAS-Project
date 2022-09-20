@@ -783,8 +783,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			"Signal foo",
 			"A long description for this event",
 			user.toReference(),
-			eventDto -> {
-			});
+			null,
+			null);
 
 		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
 		EventParticipantDto event1Participant2 = creator.createEventParticipant(event1.toReference(), person2, user.toReference());
@@ -2085,17 +2085,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 		creator.createVaccinationWithDetails(
-				followUser.toReference(),
-				followImmunizationDto.toReference(),
-				healthConditions,
-				calendar.getTime(),
-				Vaccine.COMIRNATY,
-				VaccineManufacturer.BIONTECH_PFIZER,
-				VaccinationInfoSource.ORAL_COMMUNICATION,
-				null,
-				null,
-				"abc",
-				null);
+			followUser.toReference(),
+			followImmunizationDto.toReference(),
+			healthConditions,
+			calendar.getTime(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER,
+			VaccinationInfoSource.ORAL_COMMUNICATION,
+			null,
+			null,
+			"abc",
+			null);
 		creator.createVaccinationWithDetails(
 			followUser.toReference(),
 			followImmunizationDto.toReference(),

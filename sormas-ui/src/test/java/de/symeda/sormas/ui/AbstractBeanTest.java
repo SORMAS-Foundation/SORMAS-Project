@@ -86,7 +86,6 @@ import info.novatec.beantest.api.BaseBeanTest;
 public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator();
-
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.

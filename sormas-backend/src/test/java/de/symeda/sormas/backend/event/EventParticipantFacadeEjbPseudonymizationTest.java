@@ -172,7 +172,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 	}
 
 	private EventParticipantDto createEventParticipant(UserDto user, TestDataCreator.RDCF rdcf) {
-		EventDto event = creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "", "", user.toReference(), e -> {
+		EventDto event = creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "", "", user.toReference(),null, e -> {
 			e.getEventLocation().setRegion(rdcf.region);
 			e.getEventLocation().setDistrict(rdcf.district);
 			e.getEventLocation().setCommunity(rdcf.community);

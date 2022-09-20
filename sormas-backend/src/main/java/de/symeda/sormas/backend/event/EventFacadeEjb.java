@@ -276,10 +276,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingEvent, pseudonymizer);
 
-		if (dto.getReportDateTime() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
-		}
-
+		validate(dto);
 		Event event = fillOrBuildEntity(dto, existingEvent, checkChangeDate);
 		service.ensurePersisted(event);
 
@@ -993,22 +990,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public void validate(@Valid EventDto event) throws ValidationRuntimeException {
 
-		// Check whether any required field that does not have a not null constraint in
-		// the database is empty
-		if (event.getEventStatus() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventStatus));
-		}
-		if (event.getEventInvestigationStatus() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventInvestigationStatus));
-		}
-		if (StringUtils.isEmpty(event.getEventTitle())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventTitle));
-		}
-
 		LocationDto location = event.getEventLocation();
-		if (location == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validLocation));
-		}
+
 		if (location.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}

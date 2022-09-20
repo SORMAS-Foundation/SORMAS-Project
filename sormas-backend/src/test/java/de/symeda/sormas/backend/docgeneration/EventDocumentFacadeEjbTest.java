@@ -68,7 +68,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.CORONAVIRUS,
-			rdcf.district);
+			rdcf);
 
 		PersonDto personDto1 = PersonDto.build();
 		personDto1.setFirstName("Isidore");

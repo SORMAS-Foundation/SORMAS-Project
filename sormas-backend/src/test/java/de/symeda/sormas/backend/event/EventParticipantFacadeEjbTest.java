@@ -458,6 +458,6 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 	}
 }
