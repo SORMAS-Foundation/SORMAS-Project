@@ -248,13 +248,12 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 		Date date = DateHelper.parseDate(dateInput.getText().toString(), dateFormat);
 		Date time = !StringUtils.isEmpty(timeInput.getText().toString()) ? DateHelper.parseTime(timeInput.getText().toString()) : null;
 
-//		if (time != null) {
-//			LocalDate localDate = UtilDate.toLocalDate(date);
-//			LocalTime localTime = UtilDate.toLocalTime(time);
-//			LocalDateTime localDateTime = localDate.atTime(localTime);
-//			return UtilDate.from(localDateTime);
-//		} else
-			{
+		if (time != null) {
+			LocalDate localDate = UtilDate.toLocalDate(date);
+			LocalTime localTime = UtilDate.toLocalTime(time);
+			LocalDateTime localDateTime = localDate.atTime(localTime);
+			return UtilDate.from(localDateTime);
+		} else {
 			return date;
 		}
 	}
