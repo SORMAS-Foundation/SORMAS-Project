@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.user.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -57,8 +58,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.user.DefaultUserRole;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -79,6 +78,13 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		super.init();
 
+		UserRoleReferenceDto newUserRole = creator.createUserRole(
+				"NoEventNoCaseView",
+				JurisdictionLevel.DISTRICT,
+				UserRight.CASE_CLINICIAN_VIEW,
+				UserRight.CASE_VIEW
+		);
+
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		user1 = creator.createUser(
 			rdcf1.region.getUuid(),
@@ -86,7 +92,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER), newUserRole);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(
@@ -95,7 +101,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER), newUserRole);
 		rdcf2NewCommunity = creator.createCommunity("New community", rdcf2.district);
 		rdcf2NewFacility = creator.createFacility("New facility", rdcf2.region, rdcf2.district, rdcf2NewCommunity.toReference());
 		rdcf2NewPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf2.region, rdcf2.district);
@@ -423,9 +429,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getRegion(), is(rdcf1.region));
 		assertThat(caze.getDistrict(), is(rdcf1.district));
 		assertThat(caze.getCommunity(), is(nullValue()));
-		assertThat(caze.getHealthFacility(), notNullValue());
+		assertThat(caze.getHealthFacility(), is(nullValue()));
 		assertThat(caze.getHealthFacilityDetails(), is(isEmptyString()));
-		assertThat(caze.getPointOfEntry(), notNullValue());
+		assertThat(caze.getPointOfEntry(), is(nullValue()));
 		assertThat(caze.getPointOfEntryDetails(), is(isEmptyString()));
 		assertThat(caze.getPerson().getFirstName(), is(isEmptyString()));
 		assertThat(caze.getPerson().getLastName(), is(isEmptyString()));

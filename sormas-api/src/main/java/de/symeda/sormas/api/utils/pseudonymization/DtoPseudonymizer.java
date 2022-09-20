@@ -197,13 +197,14 @@ public class DtoPseudonymizer {
 					Class<? extends ValuePseudonymizer> psudonomyzerClass =
 						pseudonymizerAnnotation != null ? pseudonymizerAnnotation.value() : defaultPseudonymizerClass;
 
-					didPseudonymization = pseudonymizeDto(
-						(Class<Object>) embeddedField.getType(),
-						embeddedField.get(dto),
-						inJurisdiction,
-						psudonomyzerClass,
-						null,
-						skipEmbeddedFields);
+                    if (pseudonymizeDto((Class<Object>) embeddedField.getType(),
+                            embeddedField.get(dto),
+                            inJurisdiction,
+                            psudonomyzerClass,
+                            null,
+                            skipEmbeddedFields)) {
+                        didPseudonymization = true;
+                    }
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(
 						"Failed to pseudonymize embedded field " + dto.getClass().getName() + "." + embeddedField.getName(),
@@ -232,9 +233,7 @@ public class DtoPseudonymizer {
 
 			ValuePseudonymizer<?> pseudonymizer = getPseudonymizer(field, pseudonymizerClass);
 			Object emptyValue = pseudonymizer.pseudonymize(field.get(dto));
-			if (!(nonNull(field.getAnnotation(SensitiveData.class)) && field.getAnnotation(SensitiveData.class).mandatoryField())) {
-				field.set(dto, emptyValue);
-			}
+            field.set(dto, emptyValue);
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new RuntimeException(e);
 		} finally {
