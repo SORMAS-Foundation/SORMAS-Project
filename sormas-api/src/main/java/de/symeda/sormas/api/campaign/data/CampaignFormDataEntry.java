@@ -22,11 +22,14 @@ import java.util.Objects;
 
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.JsonDataEntry;
 
+@AuditedClass
 public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 
 	private static final long serialVersionUID = -3096020120349257398L;
@@ -35,6 +38,7 @@ public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 	public static final String VALUE = "value";
 
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@AuditInclude
 	private String id;
 	private Object value;
 

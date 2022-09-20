@@ -21,11 +21,16 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public abstract class SormasToSormasEntityDto<T extends SormasToSormasShareableDto> implements Serializable {
 
 	private static final long serialVersionUID = -1142043326721172412L;
 
 	@Valid
+	@AuditInclude
 	private T entity;
 
 	protected SormasToSormasEntityDto() {

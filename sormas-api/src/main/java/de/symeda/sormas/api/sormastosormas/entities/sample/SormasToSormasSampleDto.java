@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -31,12 +32,15 @@ public class SormasToSormasSampleDto extends SormasToSormasEntityDto<SampleDto> 
 	private static final long serialVersionUID = 5867733293483599601L;
 
 	@Valid
+	@AuditInclude
 	private final List<PathogenTestDto> pathogenTests;
 
 	@Valid
+	@AuditInclude
 	private final List<AdditionalTestDto> additionalTests;
 
 	@Valid
+	@AuditInclude
 	private final List<SormasToSormasExternalMessageDto> externalMessages;
 
 	public SormasToSormasSampleDto() {

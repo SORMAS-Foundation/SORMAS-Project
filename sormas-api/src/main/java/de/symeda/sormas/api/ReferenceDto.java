@@ -21,10 +21,13 @@ import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.uuid.HasUuid;
 
+@AuditedClass
 public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
 
 	public static final String CAPTION = "caption";
@@ -32,6 +35,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 
 	@Required
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
+	@AuditInclude
 	private String uuid;
 	private String caption;
 

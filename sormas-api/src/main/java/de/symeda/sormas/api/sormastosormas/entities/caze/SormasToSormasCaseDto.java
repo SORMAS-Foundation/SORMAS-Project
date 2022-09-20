@@ -17,6 +17,7 @@ package de.symeda.sormas.api.sormastosormas.entities.caze;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
@@ -26,6 +27,7 @@ public class SormasToSormasCaseDto extends SormasToSormasEntityDto<CaseDataDto> 
 	private static final long serialVersionUID = 1811907980150876134L;
 
 	@Valid
+	@AuditInclude
 	private PersonDto person;
 
 	public SormasToSormasCaseDto() {

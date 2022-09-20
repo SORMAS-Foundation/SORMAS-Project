@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -78,6 +79,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Required
+	@AuditInclude
 	private SampleReferenceDto sample;
 	@Required
 	private Disease testedDisease;

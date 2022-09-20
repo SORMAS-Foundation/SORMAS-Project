@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.report;
 
 import java.io.Serializable;
@@ -5,9 +20,12 @@ import java.util.Date;
 import java.util.Objects;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
+@AuditedClass
 public class AggregateCaseCountDto implements Serializable {
 
 	public static final String I18N_PREFIX = "AggregateReport";
@@ -31,21 +49,30 @@ public class AggregateCaseCountDto implements Serializable {
 	public static final String REPORTING_USER = "reportingUser";
 	private static final long serialVersionUID = -6857559727281292882L;
 	private String regionName;
+	@AuditInclude
 	private Long regionId;
 	private String districtName;
+	@AuditInclude
 	private Long districtId;
 	private String healthFacilityName;
+	@AuditInclude
 	private Long healthFacilityId;
 	private String pointOfEntryName;
+	@AuditInclude
 	private Long pointOfEntryId;
+	@AuditInclude
 	private int year;
+	@AuditInclude
 	private int epiWeek;
+	@AuditInclude
 	private Disease disease;
 	private long newCases;
 	private long labConfirmations;
 	private long deaths;
 	private String ageGroup;
+	@AuditInclude
 	private UserReferenceDto reportingUser;
+	@AuditInclude
 	private Date changeDate;
 
 	public AggregateCaseCountDto() {

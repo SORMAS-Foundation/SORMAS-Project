@@ -1,7 +1,10 @@
 package de.symeda.sormas.api.dashboard;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 
+@AuditedClass
 public class DashboardContactStoppedFollowUpDto implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207652L;

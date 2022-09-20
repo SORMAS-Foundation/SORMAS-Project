@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
@@ -27,24 +29,32 @@ import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventPar
 import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 
+@AuditedClass
 public class SormasToSormasDto implements Serializable {
 
 	private static final long serialVersionUID = 3226296154450214227L;
 
 	@Valid
+	@AuditInclude
 	private SormasToSormasOriginInfoDto originInfo;
 
 	@Valid
+	@AuditInclude
 	private List<SormasToSormasCaseDto> cases;
 	@Valid
+	@AuditInclude
 	private List<SormasToSormasContactDto> contacts;
 	@Valid
+	@AuditInclude
 	private List<SormasToSormasSampleDto> samples;
 	@Valid
+	@AuditInclude
 	private List<SormasToSormasEventDto> events;
 	@Valid
+	@AuditInclude
 	private List<SormasToSormasEventParticipantDto> eventParticipants;
 	@Valid
+	@AuditInclude
 	private List<SormasToSormasImmunizationDto> immunizations;
 
 	public SormasToSormasOriginInfoDto getOriginInfo() {

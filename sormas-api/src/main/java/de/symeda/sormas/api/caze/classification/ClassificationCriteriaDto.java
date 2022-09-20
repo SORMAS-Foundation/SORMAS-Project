@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -53,6 +54,8 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 	@JsonSubTypes.Type(value = ClassificationXOfCriteriaDto.class, name = "ClassificationXOfCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationAllSymptomsCriteriaDto.class, name = "ClassificationAllSymptomsCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationEventClusterCriteriaDto.class, name = "ClassificationEventClusterCriteriaDto") })
+@AuditedClass
+// todo what should we do here?
 public abstract class ClassificationCriteriaDto implements Serializable {
 
 	protected String type = getClass().getSimpleName();
