@@ -358,6 +358,7 @@ public class EventParticipantFacadeEjb
 		validate(dto);
 
 		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
+		entity.setArchived(event.isArchived());
 		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
