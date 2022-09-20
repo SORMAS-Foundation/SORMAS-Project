@@ -15,7 +15,6 @@ import java.util.Set;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.uuid.HasUuid;
 import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -28,6 +27,8 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
+
+import de.symeda.sormas.api.uuid.HasUuid;
 
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = "de.symeda.sormas.api")
