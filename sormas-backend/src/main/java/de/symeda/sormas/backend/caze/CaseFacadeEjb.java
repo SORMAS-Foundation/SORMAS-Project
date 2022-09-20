@@ -4191,7 +4191,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		SymptomsDto caseSymptoms = cazeDto.getSymptoms();
 		SymptomsHelper.updateSymptoms(SymptomsFacadeEjb.toDto(visit.getSymptoms()), caseSymptoms);
 
-		save(cazeDto, true);
+		caseSave(cazeDto, true, visit.getCaze(), cazeDto, true, true);
 	}
 
 	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {
