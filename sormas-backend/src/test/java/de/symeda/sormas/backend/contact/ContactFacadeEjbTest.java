@@ -113,6 +113,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -130,7 +131,6 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest {
@@ -423,7 +423,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		TaskDto task = tasks.get(0);
 		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
 		assertEquals(TaskStatus.PENDING, task.getTaskStatus());
-		assertEquals(LocalDate.now(), DateHelper8.toLocalDate(task.getDueDate()));
+		assertEquals(LocalDate.now(), UtilDate.toLocalDate(task.getDueDate()));
 		assertEquals(contactOfficer.toReference(), task.getAssigneeUser());
 
 		// task should not be generated multiple times 

@@ -18,8 +18,6 @@ package de.symeda.sormas.app.contact.list;
 import java.util.List;
 import java.util.Random;
 
-import org.joda.time.DateTime;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
@@ -135,12 +133,6 @@ public class ContactListActivity extends PagedBaseListActivity {
 			showPreloader();
 			model.getContacts().getValue().getDataSource().invalidate();
 		};
-	}
-
-	@Override
-	public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
-		//TODO: Call database and retrieve notification count
-		return (int) (new Random(DateTime.now().getMillis() * 1000).nextInt() / 10000000);
 	}
 
 	@Override

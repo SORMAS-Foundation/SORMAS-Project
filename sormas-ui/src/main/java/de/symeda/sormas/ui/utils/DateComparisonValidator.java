@@ -20,14 +20,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.function.Supplier;
 
-import org.joda.time.DateTimeComparator;
-
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.AbstractValidator;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DateComparator;
 
 /**
  * Compares the value of a date field to a supplied reference date.
@@ -84,8 +83,8 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 			return true;
 		}
 
+		DateComparator comparator = dateOnly ? DateComparator.getDateInstance() : DateComparator.getDateTimeInstance();
 		if (earlierOrSame) {
-			DateTimeComparator comparator = dateOnly ? DateTimeComparator.getDateOnlyInstance() : DateTimeComparator.getInstance();
 			if (comparator.compare(date, referenceDate) <= 0) {
 				if (changeInvalidCommitted) {
 					dateField.setInvalidCommitted(true);
@@ -98,7 +97,6 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 				return false;
 			}
 		} else {
-			DateTimeComparator comparator = dateOnly ? DateTimeComparator.getDateOnlyInstance() : DateTimeComparator.getInstance();
 			if (comparator.compare(date, referenceDate) >= 0) {
 				if (changeInvalidCommitted) {
 					dateField.setInvalidCommitted(true);

@@ -150,8 +150,6 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
 		return R.layout.activity_root_list_layout;
 	}
 
-	public abstract int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
-
 	public abstract void addFiltersToPageMenu();
 
 	@Override

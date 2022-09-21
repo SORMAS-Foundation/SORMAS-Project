@@ -27,6 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
@@ -34,7 +35,6 @@ import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLi
 import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
 import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
@@ -189,10 +189,10 @@ public class LineListingLayout extends VerticalLayout {
 			contact.setDisease(sharedInfoField.getValue().getDisease());
 			contact.setRegion(sharedInfoField.getValue().getRegion());
 			contact.setDistrict(sharedInfoField.getValue().getDistrict());
-			contact.setReportDateTime(DateHelper8.toDate(layoutBean.getLineField().getDateOfReport()));
+			contact.setReportDateTime(UtilDate.from(layoutBean.getLineField().getDateOfReport()));
 			contact.setMultiDayContact(layoutBean.getLineField().getMultiDaySelector().isMultiDay());
-			contact.setFirstContactDate(DateHelper8.toDate(layoutBean.getLineField().getMultiDaySelector().getStartDate()));
-			contact.setLastContactDate(DateHelper8.toDate(layoutBean.getLineField().getMultiDaySelector().getEndDate()));
+			contact.setFirstContactDate(UtilDate.from(layoutBean.getLineField().getMultiDaySelector().getStartDate()));
+			contact.setLastContactDate(UtilDate.from(layoutBean.getLineField().getMultiDaySelector().getEndDate()));
 			contact.setContactProximity(layoutBean.getLineField().getTypeOfContact());
 			contact.setRelationToCase(layoutBean.getLineField().getRelationToCase());
 			if (UserProvider.getCurrent() != null) {
