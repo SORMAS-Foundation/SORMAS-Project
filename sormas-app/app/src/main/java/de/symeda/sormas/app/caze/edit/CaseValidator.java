@@ -74,32 +74,26 @@ final class CaseValidator {
         }
 
         ResultCallback<Boolean> departureCallback = () -> {
-            if (contentBinding.portHealthInfoDepartureDateTime.getValue() != null
-                    && contentBinding.portHealthInfoArrivalDateTime.getValue() != null) {
-                if (DateHelper.isDateAfter(contentBinding.portHealthInfoDepartureDateTime.getValue(), contentBinding.portHealthInfoArrivalDateTime.getValue())) {
-                    contentBinding.portHealthInfoDepartureDateTime.enableErrorState(
-                            I18nProperties.getValidationError(
-                                    Validations.beforeDate,
-                                    contentBinding.portHealthInfoDepartureDateTime.getCaption(),
-                                    contentBinding.portHealthInfoArrivalDateTime.getCaption()));
-                    return true;
-                }
+            if (DateHelper.isDateAfter(contentBinding.portHealthInfoDepartureDateTime.getValue(), contentBinding.portHealthInfoArrivalDateTime.getValue())) {
+                contentBinding.portHealthInfoDepartureDateTime.enableErrorState(
+                        I18nProperties.getValidationError(
+                                Validations.beforeDate,
+                                contentBinding.portHealthInfoDepartureDateTime.getCaption(),
+                                contentBinding.portHealthInfoArrivalDateTime.getCaption()));
+                return true;
             }
 
             return false;
         };
 
         ResultCallback<Boolean> arrivalCallback = () -> {
-            if (contentBinding.portHealthInfoArrivalDateTime.getValue() != null
-                    && contentBinding.portHealthInfoDepartureDateTime.getValue() != null) {
-                if (DateHelper.isDateAfter(contentBinding.portHealthInfoArrivalDateTime.getValue(), contentBinding.portHealthInfoDepartureDateTime.getValue())) {
-                    contentBinding.portHealthInfoArrivalDateTime.enableErrorState(
-                            I18nProperties.getValidationError(
-                                    Validations.beforeDate,
-                                    contentBinding.portHealthInfoArrivalDateTime.getCaption(),
-                                    contentBinding.portHealthInfoDepartureDateTime.getCaption()));
-                    return true;
-                }
+            if (DateHelper.isDateBefore(contentBinding.portHealthInfoArrivalDateTime.getValue(), contentBinding.portHealthInfoDepartureDateTime.getValue())) {
+                contentBinding.portHealthInfoArrivalDateTime.enableErrorState(
+                        I18nProperties.getValidationError(
+                                Validations.afterDate,
+                                contentBinding.portHealthInfoArrivalDateTime.getCaption(),
+                                contentBinding.portHealthInfoDepartureDateTime.getCaption()));
+                return true;
             }
 
             return false;
@@ -115,7 +109,7 @@ final class CaseValidator {
 
     static void initializeHospitalizationValidation(final FragmentCaseEditHospitalizationLayoutBinding contentBinding, final Case caze) {
         contentBinding.caseHospitalizationAdmissionDate.addValueChangedListener(field -> {
-            if (DateHelper.isDateBefore((Date)field.getValue(), caze.getSymptoms().getOnsetDate())) {
+            if (DateHelper.isDateBefore((Date) field.getValue(), caze.getSymptoms().getOnsetDate())) {
                 contentBinding.caseHospitalizationAdmissionDate.enableWarningState(
                         I18nProperties.getValidationError(
                                 Validations.afterDateSoft,
@@ -127,7 +121,7 @@ final class CaseValidator {
         });
 
         ResultCallback<Boolean> admissionDateCallback = () -> {
-            if (DateHelper.isDateBefore(
+            if (DateHelper.isDateAfter(
                     contentBinding.caseHospitalizationAdmissionDate.getValue(),
                     contentBinding.caseHospitalizationDischargeDate.getValue())) {
                 contentBinding.caseHospitalizationAdmissionDate.enableErrorState(
@@ -138,7 +132,7 @@ final class CaseValidator {
                 return true;
             }
 
-            if (DateHelper.isDateBefore(
+            if (DateHelper.isDateAfter(
                     contentBinding.caseHospitalizationAdmissionDate.getValue(),
                     contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue())) {
                 contentBinding.caseHospitalizationAdmissionDate.enableErrorState(

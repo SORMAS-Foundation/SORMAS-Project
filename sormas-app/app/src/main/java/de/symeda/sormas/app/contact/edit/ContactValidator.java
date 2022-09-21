@@ -107,7 +107,7 @@ public final class ContactValidator {
 		Date firstContactDate = firstContactDateField.getValue();
 		Date lastContactDate = lastContactDateField.getValue();
 
-		if (DateHelper.isDateBefore(firstContactDate, lastContactDate)) {
+		if (DateHelper.isDateBefore(lastContactDate, firstContactDate)) {
 			lastContactDateField.enableErrorState(
 					I18nProperties.getValidationError(
 							Validations.afterDate,
