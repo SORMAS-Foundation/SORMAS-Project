@@ -495,35 +495,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
-		return getAllActiveCasesAfter(date, false);
-	}
-
-	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters) {
-		return getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, null, null);
-	}
-
-	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		return getAllActiveCasesAfter(date, false, batchSize, lastSynchronizedUuid);
-	}
-
-	private List<CaseDataDto> getAllActiveCasesAfter(
-		Date date,
-		boolean includeExtendedChangeDateFilters,
-		Integer batchSize,
-		String lastSynchronizedUuid) {
+	public List<CaseDataDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
-		return service.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
+	}
+
+	@Override
+	protected Pseudonymizer createPseudonymizer() {
+		return getPseudonymizerForDtoWithClinician("");
 	}
 
 	@Override
@@ -674,8 +657,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			Boolean isInJurisdiction = caze.getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(CaseIndexDetailedDto.class, caze, isInJurisdiction, c -> {
 				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
-				pseudonymizer
-					.pseudonymizeUser(userService.getByUuid(caze.getReportingUser().getUuid()), userService.getCurrentUser(), caze::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					CaseDataDto.class,
+					CaseDataDto.REPORTING_USER,
+					userService.getByUuid(caze.getReportingUser().getUuid()),
+					userService.getCurrentUser(),
+					caze::setReportingUser);
 			});
 		}
 
@@ -1344,12 +1331,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid) {
 
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
-
-		return service.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		List<Case> entities = service.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false);
+		return toPseudonymizedDtos(entities);
 	}
 
 	@Override
@@ -1430,7 +1413,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), getPseudonymizerForDtoWithClinician(""));
+		return convertToDto(service.getByUuid(uuid), createPseudonymizer());
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
@@ -1618,7 +1601,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
 	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		Case caze = service.getByUuid(dto.getUuid());
 		caze.setFollowUpComment(dto.getFollowUpComment());
 		service.ensurePersisted(caze);
@@ -1635,7 +1619,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		throws ValidationRuntimeException {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 
 		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, pseudonymizer);
 
@@ -2661,14 +2645,19 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
+	public void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
+		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
-				pseudonymizer.pseudonymizeUser(source.getClassificationUser(), currentUser, dto::setClassificationUser);
+				pseudonymizer
+					.pseudonymizeUser(CaseDataDto.class, CaseDataDto.REPORTING_USER, source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					CaseDataDto.class,
+					CaseDataDto.CLASSIFICATION_USER,
+					source.getClassificationUser(),
+					currentUser,
+					dto::setClassificationUser);
 
 				pseudonymizer.pseudonymizeDto(
 					EpiDataDto.class,
@@ -4160,7 +4149,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		return service.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -4179,7 +4169,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		SymptomsDto caseSymptoms = cazeDto.getSymptoms();
 		SymptomsHelper.updateSymptoms(SymptomsFacadeEjb.toDto(visit.getSymptoms()), caseSymptoms);
 
-		save(cazeDto, true);
+		caseSave(cazeDto, true, visit.getCaze(), cazeDto, true, true);
 	}
 
 	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {

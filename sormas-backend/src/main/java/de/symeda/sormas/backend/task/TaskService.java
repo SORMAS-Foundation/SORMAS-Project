@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.ejb.EJB;
@@ -64,6 +65,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -85,7 +87,8 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
-public class TaskService extends AdoServiceWithUserFilter<Task> {
+public class TaskService extends AdoServiceWithUserFilter<Task>
+	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext> {
 
 	@EJB
 	private CaseService caseService;
@@ -104,29 +107,18 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		super(Task.class);
 	}
 
-	public List<Task> getAllActiveTasksAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
-		Root<Task> from = cq.from(getElementClass());
 		final TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, from);
-
 		Predicate filter = buildActiveTasksFilter(taskQueryContext);
 
-		if (user != null) {
-			Predicate userFilter = createUserFilter(taskQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(taskQueryContext));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
-			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -717,17 +709,24 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	public TaskJurisdictionFlagsDto inJurisdictionOrOwned(Task task) {
+	@Override
+	public TaskJurisdictionFlagsDto getJurisdictionFlags(Task entity) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TaskJurisdictionFlagsDto> cq = cb.createQuery(TaskJurisdictionFlagsDto.class);
-		Root<Task> root = cq.from(Task.class);
-		cq.multiselect(getJurisdictionSelections(new TaskQueryContext(cb, cq, root)));
-		cq.where(cb.equal(root.get(Task.UUID), task.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return getJurisdictionsFlags(Collections.singletonList(entity)).get(entity.getId());
 	}
 
+	@Override
+	public Map<Long, TaskJurisdictionFlagsDto> getJurisdictionsFlags(List<Task> selectedEntities) {
+
+		return getSelectionAttributes(
+			selectedEntities,
+			(cb, cq, from) -> getJurisdictionSelections(new TaskQueryContext(cb, cq, from)),
+			e -> new TaskJurisdictionFlagsDto(e));
+	}
+
+	@Override
 	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {
+
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		final TaskJoins joins = qc.getJoins();
 
@@ -761,6 +760,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					travelEntryService.inJurisdictionOrOwned(new TravelEntryQueryContext(cb, qc.getQuery(), joins.getTravelEntryJoins())))));
 	}
 
+	@Override
 	public Predicate inJurisdictionOrOwned(TaskQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		return TaskJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();

@@ -1015,7 +1015,7 @@ public class TestDataCreator {
 
 	public EventDto createEvent(UserReferenceDto reportingUser, EventStatus status) {
 
-		return createEvent(status, EventInvestigationStatus.PENDING, "eventTitle", "description", reportingUser, null);
+		return createEvent(status, EventInvestigationStatus.PENDING, "eventTitle", "description", reportingUser, null, null);
 	}
 
 	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease) {
@@ -1038,10 +1038,11 @@ public class TestDataCreator {
 
 	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease, Consumer<EventDto> customConfig) {
 
-		return createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "title", "description", reportingUser, (event) -> {
+		return createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "title", "description", reportingUser, null, (event) -> {
 			event.setReportDateTime(new Date());
 			event.setReportingUser(reportingUser);
 			event.setDisease(disease);
+
 			customConfig.accept(event);
 		});
 	}
@@ -1079,9 +1080,9 @@ public class TestDataCreator {
 		UserReferenceDto reportingUser,
 		UserReferenceDto responsibleUser,
 		Disease disease,
-		DistrictReferenceDto district) {
+		RDCF rdcf) {
 
-		return createEvent(eventStatus, eventInvestigationStatus, eventTitle, eventDesc, reportingUser, (event) -> {
+		return createEvent(eventStatus, eventInvestigationStatus, eventTitle, eventDesc, reportingUser, rdcf, (event) -> {
 			event.setSrcFirstName(srcFirstName);
 			event.setSrcLastName(srcLastName);
 			event.setSrcTelNo(srcTelNo);
@@ -1091,7 +1092,7 @@ public class TestDataCreator {
 			event.setReportingUser(reportingUser);
 			event.setResponsibleUser(responsibleUser);
 			event.setDisease(disease);
-			event.getEventLocation().setDistrict(district);
+
 		});
 	}
 
@@ -1101,6 +1102,7 @@ public class TestDataCreator {
 		String eventTitle,
 		String eventDesc,
 		UserReferenceDto reportingUser,
+		RDCF rdcf,
 		Consumer<EventDto> customSettings) {
 
 		EventDto event = EventDto.build();
@@ -1109,6 +1111,13 @@ public class TestDataCreator {
 		event.setEventTitle(eventTitle);
 		event.setEventDesc(eventDesc);
 		event.setReportingUser(reportingUser);
+
+		if (rdcf == null) {
+			rdcf = createRDCF();
+		}
+
+		event.getEventLocation().setRegion(rdcf.region);
+		event.getEventLocation().setDistrict(rdcf.district);
 
 		if (customSettings != null) {
 			customSettings.accept(event);

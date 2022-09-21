@@ -133,6 +133,7 @@ public interface Descriptions {
 	String Person_sex = "Person.sex";
 	String Sample_associatedLabMessages = "Sample.associatedLabMessages";
 	String Sample_sampleDateTime = "Sample.sampleDateTime";
+	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
 	String Symptoms_bloodInStool = "Symptoms.bloodInStool";
 	String Symptoms_confusedDisoriented = "Symptoms.confusedDisoriented";

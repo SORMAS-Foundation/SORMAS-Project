@@ -1825,6 +1825,7 @@ public interface Captions {
 	String registerInPatientDiaryButton = "registerInPatientDiaryButton";
 	String remove = "remove";
 	String reportingUser = "reportingUser";
+	String requiredUserRights = "requiredUserRights";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_additionalTestingStatus = "Sample.additionalTestingStatus";
@@ -2423,8 +2424,8 @@ public interface Captions {
 	String userRight = "userRight";
 	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";
-	String UserRight_jurisdiction = "UserRight.jurisdiction";
-	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
+	String UserRight_requiredUserRights = "UserRight.requiredUserRights";
+	String UserRight_userRightGroup = "UserRight.userRightGroup";
 	String userRights = "userRights";
 	String UserRole = "UserRole";
 	String userrole_applyUserRoleTemplate = "userrole.applyUserRoleTemplate";

@@ -92,6 +92,21 @@ public class RestAssuredClient {
         .filters(Arrays.asList(filters).get(0));
   }
 
+  public RequestSpecification getCustomisableClient(String userName, String userPassword) {
+    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    final String restEndpoint = "/sormas-rest";
+    RestAssured.baseURI = runningConfiguration.getEnvironmentUrlForMarket(locale) + restEndpoint;
+    requestSpecification = RestAssured.given().auth().preemptive().basic(userName, userPassword);
+    return requestSpecification
+        .config(
+            RestAssured.config()
+                .encoderConfig(
+                    EncoderConfig.encoderConfig()
+                        .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON);
+  }
+
   @SneakyThrows
   public void sendRequest(Request request) {
     Response response;
@@ -132,7 +147,7 @@ public class RestAssuredClient {
         response = authorization.delete(request.getPath()).then().extract().response();
         break;
       default:
-        throw new IllegalAccessException("Incorrect calling method");
+        throw new IllegalAccessException("Incorrect provided API method");
     }
     apiState.setResponse(response);
   }

@@ -17,10 +17,6 @@ package de.symeda.sormas.api.utils;
 
 import static java.util.stream.Collectors.joining;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -44,7 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.base.CharMatcher;
 
 import de.symeda.sormas.api.AgeGroup;
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;

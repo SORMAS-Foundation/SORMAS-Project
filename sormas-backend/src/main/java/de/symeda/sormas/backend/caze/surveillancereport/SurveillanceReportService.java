@@ -18,10 +18,12 @@ package de.symeda.sormas.backend.caze.surveillancereport;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -29,15 +31,22 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
-public class SurveillanceReportService extends BaseAdoService<SurveillanceReport> {
+public class SurveillanceReportService extends BaseAdoService<SurveillanceReport> implements JurisdictionCheckService<SurveillanceReport> {
+
+	@EJB
+	private CaseService caseService;
 
 	public SurveillanceReportService() {
 		super(SurveillanceReport.class);
@@ -68,5 +77,20 @@ public class SurveillanceReportService extends BaseAdoService<SurveillanceReport
 		});
 
 		return reports;
+	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(SurveillanceReport entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<SurveillanceReport> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, SurveillanceReport> from) {
+
+		return caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, query, new CaseJoins(from.join(SurveillanceReport.CAZE))));
 	}
 }

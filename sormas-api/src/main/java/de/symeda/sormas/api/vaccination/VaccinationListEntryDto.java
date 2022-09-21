@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.vaccination;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -25,9 +24,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-import org.apache.commons.lang3.StringUtils;
 
-public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Cloneable {
 
 	private static final long serialVersionUID = 5665903874736291912L;
 
@@ -37,6 +35,10 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 	private Disease disease;
 	private boolean isRelevant;
 	private String nonRelevantMessage;
+
+	public VaccinationListEntryDto(String uuid) {
+		super(uuid);
+	}
 
 	public Vaccine getVaccineName() {
 		return vaccineName;
@@ -95,12 +97,12 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 		String date = DateFormatHelper.formatLocalDate(vaccinationDate);
 
 		final String vaccine;
-		if(vaccineName != null) {
+		if (vaccineName != null) {
 			vaccine = vaccineName != Vaccine.OTHER ? vaccineName.toString() : otherVaccineName;
 		} else {
 			vaccine = I18nProperties.getString(Strings.labelNoVaccineName);
 		}
 
-		return (date.isEmpty() ? "" : date + " - ") + vaccine + " (" + DataHelper.getShortUuid(getUuid()) +")";
+		return (date.isEmpty() ? "" : date + " - ") + vaccine + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 }

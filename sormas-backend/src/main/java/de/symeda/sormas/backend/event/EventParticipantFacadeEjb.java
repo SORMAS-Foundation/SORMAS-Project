@@ -230,23 +230,14 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date) {
-		return getAllActiveEventParticipantsAfter(date, null, null);
-	}
-
-	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<EventParticipantDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllAfter(date, user, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -479,7 +470,7 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
 		Join<EventParticipant, Event> event = joins.getEvent();
-		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
+		final Join<EventParticipant, Sample> samples = joins.getSamples();
 		samples.on(
 			cb.and(
 				cb.isFalse(samples.get(DeletableAdo.DELETED)),
@@ -533,8 +524,6 @@ public class EventParticipantFacadeEjb
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
 
-		cq.distinct(true);
-
 		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
 		Predicate latestSamplePredicate =
 			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
@@ -562,11 +551,9 @@ public class EventParticipantFacadeEjb
 				case EventParticipantIndexDto.LAST_NAME:
 				case SampleIndexDto.PATHOGEN_TEST_RESULT:
 					expression = joins.getSamples().get(SampleIndexDto.PATHOGEN_TEST_RESULT);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
 				case SampleIndexDto.SAMPLE_DATE_TIME:
 					expression = joins.getSamples().get(SampleIndexDto.SAMPLE_DATE_TIME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
 				case EventParticipantIndexDto.FIRST_NAME:
 					expression = person.get(sortProperty.propertyName);
@@ -980,12 +967,11 @@ public class EventParticipantFacadeEjb
 		return target;
 	}
 
-	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
+	@Override
+	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		if (source != null) {
 			validate(dto);
-
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
@@ -1168,5 +1154,4 @@ public class EventParticipantFacadeEjb
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
 	}
-
 }

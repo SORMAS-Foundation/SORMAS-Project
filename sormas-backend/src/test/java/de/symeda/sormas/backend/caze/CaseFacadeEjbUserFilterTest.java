@@ -185,21 +185,21 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		loginWith(districtUser1);
 
 		Date yesterday = UtilDate.yesterday();
-		List<CaseDataDto> allActiveCasesAfter = getCaseFacade().getAllActiveCasesAfter(yesterday);
+		List<CaseDataDto> allActiveCasesAfter = getCaseFacade().getAllAfter(yesterday);
 		assertThat(allActiveCasesAfter, hasSize(4));
 		Assert.assertFalse(allActiveCasesAfter.contains(case11));
 		Assert.assertFalse(allActiveCasesAfter.contains(case12));
 
 		loginWith(districtUser11);
 
-		List<CaseDataDto> allActiveCasesAfter2 = getCaseFacade().getAllActiveCasesAfter(yesterday);
+		List<CaseDataDto> allActiveCasesAfter2 = getCaseFacade().getAllAfter(yesterday);
 		assertThat(allActiveCasesAfter2, hasSize(4));
 		Assert.assertFalse(allActiveCasesAfter2.contains(case2));
 		Assert.assertFalse(allActiveCasesAfter2.contains(case11));
 
 		loginWith(districtUser12);
 
-		List<CaseDataDto> allActiveCasesAfter3 = getCaseFacade().getAllActiveCasesAfter(yesterday);
+		List<CaseDataDto> allActiveCasesAfter3 = getCaseFacade().getAllAfter(yesterday);
 		assertThat(allActiveCasesAfter3, hasSize(3));
 		Assert.assertFalse(allActiveCasesAfter3.contains(case2));
 		Assert.assertFalse(allActiveCasesAfter3.contains(case11));

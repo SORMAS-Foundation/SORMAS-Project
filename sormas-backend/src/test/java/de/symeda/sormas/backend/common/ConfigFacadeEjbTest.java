@@ -21,40 +21,53 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
+
+import java.time.Duration;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
-
-import java.time.Duration;
 
 public class ConfigFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testValidateExternalUrls() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
-		getConfigFacade().validateConfigUrls();
+		final ConfigFacade configFacade = getConfigFacade();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
-		getConfigFacade().validateConfigUrls();
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.example.com");
+		configFacade.validateConfigUrls();
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.example.com");
+		configFacade.validateConfigUrls();
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://my-docker-service:12345/route/path");
-		getConfigFacade().validateConfigUrls();
+		configFacade.validateConfigUrls();
 
-		try {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS_STATS_URL, "http://my-stats-service:12345/route/path");
-			getConfigFacade().validateConfigUrls();
-		} catch (IllegalArgumentException ignored) {
-		}
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS_STATS_URL, "http://my-stats-service.org:12345/route/path");
+		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS_STATS_URL, "https://my-stats-service.org:12345/route/path");
+		configFacade.validateConfigUrls();
 
-		try {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "htps://www.google.com#");
-		} catch (IllegalArgumentException ignored) {
-		}
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "htps://www.google.com#");
+		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
+		configFacade.validateConfigUrls();
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, "http://www.example.com");
+		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, "https://www.example.com");
+		configFacade.validateConfigUrls();
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, "http://www.example.com");
+		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, "https://www.example.com");
+		configFacade.validateConfigUrls();
 	}
 
 	@Test
