@@ -598,16 +598,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			}
 		}
 
-		String geocodingUrl = getGeocodingServiceUrlTemplate();
-		if (!StringUtils.isBlank(geocodingUrl)) {
-			enforceHttps.add(geocodingUrl);
-		}
-
-		String mapTilersUrl = getMapTilersUrl();
-		if (!StringUtils.isBlank(mapTilersUrl)) {
-			enforceHttps.add(mapTilersUrl);
-		}
-
 		UrlValidator enforceHttpsValidator = new UrlValidator(
 			new String[] {
 				"https" },
@@ -631,6 +621,19 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		if (!invalidUrls.isEmpty()) {
 			String invalid = String.join(",\n\t", invalidUrls);
 			throw new IllegalArgumentException(String.format("Invalid URLs in property file:\n\t%s", invalid));
+		}
+
+		// the following two checks cannot be collapsed with the general HTTPS check because they are not valid URLs
+		// as they contain placeholders
+
+		String geocodingUrl = getGeocodingServiceUrlTemplate();
+		if (!StringUtils.isBlank(geocodingUrl) && !geocodingUrl.startsWith("https://")) {
+			throw new IllegalArgumentException("geocodingServiceUrlTemplate property is required to be HTTPS");
+		}
+
+		String mapTilersUrl = getMapTilersUrl();
+		if (!StringUtils.isBlank(mapTilersUrl) && !mapTilersUrl.startsWith("https://")) {
+			throw new IllegalArgumentException("map.tiles.url property is required to be HTTPS");
 		}
 	}
 
