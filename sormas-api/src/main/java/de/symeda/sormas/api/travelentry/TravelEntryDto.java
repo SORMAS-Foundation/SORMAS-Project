@@ -105,7 +105,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private PointOfEntryReferenceDto pointOfEntry;
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
-	@NotBlank(message = Validations.validPointOfEntryDetails)
+	@NotBlank(message = Validations.required)
 	private String pointOfEntryDetails;
 	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase;
