@@ -26,6 +26,10 @@ public class TaskJurisdictionFlagsDto implements Serializable {
 	private Boolean isEventInJurisdiction;
 	private Boolean isTravelEntryInJurisdiction;
 
+	public TaskJurisdictionFlagsDto(Object[] flags) {
+		this((boolean) flags[1], (boolean) flags[2], (boolean) flags[3], (boolean) flags[4], (boolean) flags[5], (boolean) flags[6]);
+	}
+
 	public TaskJurisdictionFlagsDto(
 		boolean isInJurisdiction,
 		boolean isCaseInJurisdiction,
@@ -33,6 +37,7 @@ public class TaskJurisdictionFlagsDto implements Serializable {
 		boolean isContactCaseInJurisdiction,
 		boolean isEventInJurisdiction,
 		boolean isTravelEntryInJurisdiction) {
+
 		this.isInJurisdiction = isInJurisdiction;
 		this.isCaseInJurisdiction = isCaseInJurisdiction;
 		this.isContactInJurisdiction = isContactInJurisdiction;

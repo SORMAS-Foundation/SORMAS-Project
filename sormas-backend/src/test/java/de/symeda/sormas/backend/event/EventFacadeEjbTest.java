@@ -308,7 +308,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
 		assertEquals(1, getEventFacade().getAllAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
-		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(1, getEventParticipantFacade().getAllAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
 		stubFor(
@@ -324,7 +324,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
 		assertEquals(0, getEventFacade().getAllAfter(null).size());
 		assertEquals(0, getEventFacade().getAllActiveUuids().size());
-		assertEquals(0, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(0, getEventParticipantFacade().getAllAfter(null).size());
 		assertEquals(0, getEventParticipantFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 1
@@ -335,7 +335,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
 		assertEquals(1, getEventFacade().getAllAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
-		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(1, getEventParticipantFacade().getAllAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 0
