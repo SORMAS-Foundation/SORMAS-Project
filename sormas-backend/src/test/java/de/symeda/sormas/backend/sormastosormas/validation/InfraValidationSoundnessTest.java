@@ -36,8 +36,8 @@ import com.fasterxml.classmate.members.ResolvedField;
 import com.fasterxml.classmate.members.ResolvedMember;
 import com.fasterxml.classmate.types.ResolvedPrimitiveType;
 
-import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
@@ -536,7 +536,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 			assertEquals(
 				"SormasToSormasExternalMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
 					+ "Other types are not expected to be completely empty.",
-				"de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto",
+					SormasToSormasExternalMessageDto.class.getTypeName(),
 				typeResolver.resolve(entity.getClass()).getTypeName());
 			return;
 		}
