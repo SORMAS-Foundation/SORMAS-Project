@@ -25,6 +25,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.time.Duration;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -59,14 +60,37 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
 		configFacade.validateConfigUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, "http://www.example.com");
+		String mapTilesUrlWithPlaceholders;
+		mapTilesUrlWithPlaceholders = "http://www.example.com";
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
 		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, "https://www.example.com");
+
+		mapTilesUrlWithPlaceholders = "https://www.example.com";
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
 		configFacade.validateConfigUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, "http://www.example.com");
+		mapTilesUrlWithPlaceholders = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
+		configFacade.validateConfigUrls();
+
+		String geocodingUrlWithPlaceholders;
+		geocodingUrlWithPlaceholders = "http://www.example.com";
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
 		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, "https://www.example.com");
+
+		geocodingUrlWithPlaceholders = "https://www.example.com";
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
+		configFacade.validateConfigUrls();
+
+		geocodingUrlWithPlaceholders = String.format(
+			"https://sg.geodatenzentrum.de/gdz_geokodierung_bund__%s/geosearch.json?query=${street}+${houseNumber},${postalCode}+${city}&filter=typ:haus&count1",
+			UUID.randomUUID().toString());
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
+		configFacade.validateConfigUrls();
+
+		geocodingUrlWithPlaceholders =
+			"https://api-adresse.data.gouv.fr/search?q=${houseNumber}+${street},${postalCode}+${city}&type=housenumber&limit=1";
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
 		configFacade.validateConfigUrls();
 	}
 
