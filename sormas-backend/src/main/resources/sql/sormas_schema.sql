@@ -12050,7 +12050,7 @@ CREATE TABLE samplereport_history (LIKE samplereport);
 ALTER TABLE samplereport ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
 
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON samplereport
+    BEFORE INSERT OR UPDATE ON samplereport
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samplereport_history', true);
 
 CREATE TRIGGER delete_history_trigger
