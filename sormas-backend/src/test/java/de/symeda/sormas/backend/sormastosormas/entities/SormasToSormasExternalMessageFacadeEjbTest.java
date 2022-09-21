@@ -46,7 +46,7 @@ public class SormasToSormasExternalMessageFacadeEjbTest extends SormasToSormasTe
 	public void testSendLabMessage() throws SormasToSormasException {
 		Date dateNow = new Date();
 
-		ExternalMessageDto labMessage = creator.createLabMessage((lm) -> setLabMessageFields(lm, dateNow));
+		ExternalMessageDto labMessage = creator.createExternalMessage((lm) -> setLabMessageFields(lm, dateNow));
 
 		Mockito
 			.when(

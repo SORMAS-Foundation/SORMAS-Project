@@ -44,7 +44,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByReportIdWithCornerCaseInput() {
 		String reportId = "123456789";
-		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+		creator.createExternalMessage((lm) -> lm.setReportId(reportId));
 
 		List<ExternalMessageDto> list = getExternalMessageFacade().getByReportId(null);
 
@@ -61,11 +61,11 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	public void testGetByReportIdWithOneMessage() {
 
 		String reportId = "123456789";
-		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+		creator.createExternalMessage((lm) -> lm.setReportId(reportId));
 
 		// create noise
-		creator.createLabMessage(null);
-		creator.createLabMessage((lm) -> lm.setReportId("some-other-id"));
+		creator.createExternalMessage(null);
+		creator.createExternalMessage((lm) -> lm.setReportId("some-other-id"));
 
 		List<ExternalMessageDto> list = getExternalMessageFacade().getByReportId(reportId);
 
@@ -78,7 +78,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByUuid() {
 
-		ExternalMessageDto labMessage = creator.createLabMessage(null);
+		ExternalMessageDto labMessage = creator.createExternalMessage(null);
 
 		ExternalMessageDto result = getExternalMessageFacade().getByUuid(labMessage.getUuid());
 		assertThat(result, equalTo(labMessage));
@@ -90,16 +90,16 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		String reportId = "1234";
 
 		// create noise
-		creator.createLabMessage((lm) -> lm.setStatus(ExternalMessageStatus.FORWARDED));
+		creator.createExternalMessage((lm) -> lm.setStatus(ExternalMessageStatus.FORWARDED));
 
 		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(reportId));
 		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(null));
 
-		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+		creator.createExternalMessage((lm) -> lm.setReportId(reportId));
 
 		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(reportId));
 
-		ExternalMessageDto forwardedMessage = creator.createLabMessage((lm) -> {
+		ExternalMessageDto forwardedMessage = creator.createExternalMessage((lm) -> {
 			lm.setReportId(reportId);
 			lm.setStatus(ExternalMessageStatus.FORWARDED);
 		});

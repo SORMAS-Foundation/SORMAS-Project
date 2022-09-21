@@ -403,7 +403,7 @@ public class PathogenTestController {
 		List<DiseaseVariant> relatedVariants = FacadeProvider.getSampleFacade().getAssociatedDiseaseVariants(savedTest.getSample().getUuid());
 		AtomicInteger savedTestsWithSameVariant = new AtomicInteger();
 		relatedVariants.forEach(v -> {
-			if (v.equals(savedTest.getTestedDiseaseVariant())) {
+			if (v != null && v.equals(savedTest.getTestedDiseaseVariant())) {
 				savedTestsWithSameVariant.getAndIncrement();
 			}
 		});

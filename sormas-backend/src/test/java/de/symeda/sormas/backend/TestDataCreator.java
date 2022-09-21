@@ -1947,20 +1947,20 @@ public class TestDataCreator {
 		return systemEvent;
 	}
 
-	public ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> customSettings) {
-		ExternalMessageDto labMessage = ExternalMessageDto.build();
+	public ExternalMessageDto createExternalMessage(Consumer<ExternalMessageDto> customSettings) {
+		ExternalMessageDto message = ExternalMessageDto.build();
 
 		if (customSettings != null) {
-			customSettings.accept(labMessage);
+			customSettings.accept(message);
 		}
 
-		beanTest.getExternalMessageFacade().save(labMessage);
+		beanTest.getExternalMessageFacade().save(message);
 
-		return labMessage;
+		return message;
 	}
 
 	public ExternalMessageDto createLabMessageWithTestReport(SampleReferenceDto sample) {
-		ExternalMessageDto labMessage = createLabMessage(lm -> lm.setType(ExternalMessageType.LAB_MESSAGE));
+		ExternalMessageDto labMessage = createExternalMessage(lm -> lm.setType(ExternalMessageType.LAB_MESSAGE));
 		SampleReportDto sampleReport = createSampleReport(labMessage, sample);
 		createTestReport(sampleReport);
 		return labMessage;
@@ -1993,6 +1993,13 @@ public class TestDataCreator {
 		beanTest.getSampleReportFacade().saveSampleReport(sampleReport);
 
 		return testReport;
+	}
+
+	public ExternalMessageDto createPhysiciansReportWithCase(CaseReferenceDto caze) {
+		return createExternalMessage(m -> {
+			m.setType(ExternalMessageType.PHYSICIANS_REPORT);
+			m.setCaze(caze);
+		});
 	}
 
 //	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {

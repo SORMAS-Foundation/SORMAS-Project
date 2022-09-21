@@ -68,7 +68,8 @@ public class SampleReportFacadeEjbMappingTest extends TestCase {
 		labMessage.setUuid("labmessage-uuid");
 		ExternalMessageReferenceDto labMessageReference = ExternalMessageFacadeEjb.toReferenceDto(labMessage);
 		when(externalMessageService.getByReferenceDto(labMessageReference)).thenReturn(labMessage);
-		when(sampleReportService.getByUuid("UUID")).thenReturn(null);
+
+		when(sampleReportService.getByUuid("sampleReport-uuid")).thenReturn(null);
 
 		TestReport testReport = new TestReport();
 		testReport.setUuid("testreport-uuid");

@@ -84,7 +84,6 @@ public class SampleReportFacadeEjb implements SampleReportFacade {
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
-		target.setLabMessage(externalMessageService.getByReferenceDto(source.getLabMessage()));
 		if (source.getSample() != null) {
 			target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		}
