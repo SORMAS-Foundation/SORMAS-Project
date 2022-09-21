@@ -85,7 +85,7 @@ public class PerformanceLogAnalysisGenerator {
 	public static final int TIME_TRESHOLD_ORANGE = 300;
 	public static final int TIME_TRESHOLD_RED = 1000;
 
-	public static String OUTPUT_DIRECTORY = "target/performanceLogAnalysis/";
+	public String outputDirectory = "target/performanceLogAnalysis/";
 
 	private Map<String, Stack<String>> callstacks;
 
@@ -102,10 +102,12 @@ public class PerformanceLogAnalysisGenerator {
 		if (!logFile.exists()) {
 			return;
 		} else if (logFile.isDirectory()) {
-			OUTPUT_DIRECTORY = logFile.getAbsolutePath() + "/";
+			String outputDirectory = logFile.getAbsolutePath() + "/";
 			for (File singleLogFile : logFile.listFiles()) {
 				if (singleLogFile.getName().endsWith(".debug")) {
-					new PerformanceLogAnalysisGenerator().analyzePerformanceLog(singleLogFile);
+					PerformanceLogAnalysisGenerator performanceLogAnalysisGenerator = new PerformanceLogAnalysisGenerator();
+					performanceLogAnalysisGenerator.outputDirectory = outputDirectory;
+					performanceLogAnalysisGenerator.analyzePerformanceLog(singleLogFile);
 				}
 			}
 		} else {
@@ -159,22 +161,22 @@ public class PerformanceLogAnalysisGenerator {
 			List<MethodStats> allMethodStats = new ArrayList<>(allStats.subcalls.values());
 			Collections.sort(allMethodStats);
 
-			File directory = new File(OUTPUT_DIRECTORY);
+			File directory = new File(outputDirectory);
 			if (!directory.exists()) {
 				directory.mkdirs();
 			}
 
-			FileWriter txtFileWriter = new FileWriter(new File(OUTPUT_DIRECTORY + logFilebasename + ".txt"));
+			FileWriter txtFileWriter = new FileWriter(new File(outputDirectory + logFilebasename + ".txt"));
 			for (MethodStats method : allMethodStats) {
 				txtFileWriter.write(method + "\n");
 			}
 			txtFileWriter.close();
 
-			FileWriter csvFileWriter = new FileWriter(new File(OUTPUT_DIRECTORY + logFilebasename + ".csv"));
+			FileWriter csvFileWriter = new FileWriter(new File(outputDirectory + logFilebasename + ".csv"));
 			csvFileWriter.write(allStats.getSubCallsCsv());
 			csvFileWriter.close();
 
-			FileWriter htmlFileWriter = new FileWriter(new File(OUTPUT_DIRECTORY + logFilebasename + ".html"));
+			FileWriter htmlFileWriter = new FileWriter(new File(outputDirectory + logFilebasename + ".html"));
 			htmlFileWriter.append(HTML_HEADER);
 			htmlFileWriter.write("<h2>Performance Log <span style=\"background:#eee;\">&nbsp;" + logFile.toURI() + "&nbsp;</span></h2>\n\n");
 			htmlFileWriter.write("<h3>Methods started but not finished in this log:</h3>\n\n");
