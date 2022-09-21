@@ -188,7 +188,12 @@ public class DocumentFacadeEjb implements DocumentFacade {
 				DocumentDto.class,
 				dto,
 				inJurisdiction,
-				(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
+				(e) -> pseudonymizer.pseudonymizeUser(
+					DocumentDto.class,
+					DocumentDto.UPLOADING_USER,
+					document.getUploadingUser(),
+					userService.getCurrentUser(),
+					dto::setUploadingUser));
 		}
 	}
 
@@ -199,7 +204,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			return caseService.inJurisdictionOrOwned(caze);
 		case CONTACT:
 			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
-			return contactService.inJurisdictionOrOwned(contact).getInJurisdiction();
+			return contactService.inJurisdictionOrOwned(contact);
 		case EVENT:
 			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
 			return eventService.inJurisdictionOrOwned(event);

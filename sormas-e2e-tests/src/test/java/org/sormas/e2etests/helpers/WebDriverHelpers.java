@@ -472,6 +472,25 @@ public class WebDriverHelpers {
     return true;
   }
 
+  public boolean isElementChecked(By elementLocator) {
+    scrollToElement(elementLocator);
+    boolean isChecked = elementContainsAttribute(elementLocator, "checked");
+    if (isChecked) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean elementContainsAttribute(By elementLocator, String attribute) {
+    scrollToElement(elementLocator);
+    boolean result = false;
+    String value = baseSteps.getDriver().findElement(elementLocator).getAttribute(attribute);
+    if (value != null) {
+      result = true;
+    }
+    return result;
+  }
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info(PID + "Clicking on element: {}", byObject);

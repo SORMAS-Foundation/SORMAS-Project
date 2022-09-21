@@ -170,27 +170,32 @@ public class ContactController {
 	}
 
 	public void openLineListingWindow(EventDto eventDto, Set<EventParticipantIndexDto> eventParticipantIndexDtos) {
-		if (eventParticipantIndexDtos == null || eventParticipantIndexDtos.isEmpty()) {
-			return;
+		if (eventParticipantIndexDtos.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+				I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+
+			Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
+
+			List<String> uuids = eventParticipantIndexDtos.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList());
+			List<EventParticipantDto> eventParticipantDtos = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
+
+			LineListingLayout lineListingForm = new LineListingLayout(window, eventDto, eventParticipantDtos);
+			lineListingForm.setSaveCallback(contacts -> saveContactsFromEventParticipantsLineListing(lineListingForm, contacts));
+
+			lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+
+			window.setContent(lineListingForm);
+			window.setModal(true);
+			window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
+			window.setPositionY(70);
+			window.setResizable(false);
+
+			UI.getCurrent().addWindow(window);
 		}
-
-		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
-
-		List<String> uuids = eventParticipantIndexDtos.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList());
-		List<EventParticipantDto> eventParticipantDtos = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
-
-		LineListingLayout lineListingForm = new LineListingLayout(window, eventDto, eventParticipantDtos);
-		lineListingForm.setSaveCallback(contacts -> saveContactsFromEventParticipantsLineListing(lineListingForm, contacts));
-
-		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
-
-		window.setContent(lineListingForm);
-		window.setModal(true);
-		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
-		window.setPositionY(70);
-		window.setResizable(false);
-
-		UI.getCurrent().addWindow(window);
 	}
 
 	private void saveContactsFromEventParticipantsLineListing(LineListingLayout lineListingForm, LinkedList<LineDto<ContactDto>> contacts) {

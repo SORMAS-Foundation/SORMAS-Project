@@ -42,7 +42,7 @@ public class ShareRequestGridComponent extends VerticalLayout {
 		grid.setSizeFull();
 
 		VerticalLayout gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createFilterBar(filterChangeHandler, filterResetHandler));
+		gridLayout.addComponent(createFilterBar(viewConfiguration.getViewType(), filterChangeHandler, filterResetHandler));
 
 		gridLayout.addComponent(grid);
 
@@ -62,13 +62,13 @@ public class ShareRequestGridComponent extends VerticalLayout {
 		grid.reload();
 	}
 
-	public HorizontalLayout createFilterBar(Runnable filterChangeHandler, Runnable filterResetHandler) {
+	public HorizontalLayout createFilterBar(ShareRequestViewType viewType, Runnable filterChangeHandler, Runnable filterResetHandler) {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		filterForm = new ShareRequestFilterForm();
+		filterForm = new ShareRequestFilterForm(viewType);
 		filterForm.addResetHandler((e) -> filterResetHandler.run());
 		filterForm.addApplyHandler(e -> filterChangeHandler.run());
 

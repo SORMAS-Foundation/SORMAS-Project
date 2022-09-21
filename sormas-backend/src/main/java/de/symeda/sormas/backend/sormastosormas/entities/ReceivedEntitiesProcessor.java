@@ -29,12 +29,12 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -81,7 +81,8 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasCaseDto> cases = receivedData.getCases();
 		if (CollectionUtils.isNotEmpty(cases)) {
 			cases.forEach(c -> {
-				ValidationErrors caseErrors = caseProcessor.processReceivedData(c, existingEntities.getCases().get(c.getEntity().getUuid()), originInfo);
+				ValidationErrors caseErrors =
+					caseProcessor.processReceivedData(c, existingEntities.getCases().get(c.getEntity().getUuid()), originInfo);
 
 				if (caseErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildCaseValidationGroupName(c.getEntity()), caseErrors));
@@ -92,7 +93,8 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasContactDto> contacts = receivedData.getContacts();
 		if (CollectionUtils.isNotEmpty(contacts)) {
 			contacts.forEach(c -> {
-				ValidationErrors contactErrors = contactProcessor.processReceivedData(c, existingEntities.getContacts().get(c.getEntity().getUuid()), originInfo);
+				ValidationErrors contactErrors =
+					contactProcessor.processReceivedData(c, existingEntities.getContacts().get(c.getEntity().getUuid()), originInfo);
 
 				if (contactErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildContactValidationGroupName(c.getEntity()), contactErrors));
@@ -103,7 +105,8 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasEventDto> events = receivedData.getEvents();
 		if (CollectionUtils.isNotEmpty(events)) {
 			events.forEach(e -> {
-				ValidationErrors eventErrors = eventProcessor.processReceivedData(e, existingEntities.getEvents().get(e.getEntity().getUuid()), originInfo);
+				ValidationErrors eventErrors =
+					eventProcessor.processReceivedData(e, existingEntities.getEvents().get(e.getEntity().getUuid()), originInfo);
 
 				if (eventErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildEventValidationGroupName(e.getEntity()), eventErrors));
@@ -114,8 +117,8 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasEventParticipantDto> eventParticipants = receivedData.getEventParticipants();
 		if (CollectionUtils.isNotEmpty(eventParticipants)) {
 			eventParticipants.forEach(ep -> {
-				ValidationErrors eventParticipantErrors =
-					eventParticipantProcessor.processReceivedData(ep, existingEntities.getEventParticipants().get(ep.getEntity().getUuid()), originInfo);
+				ValidationErrors eventParticipantErrors = eventParticipantProcessor
+					.processReceivedData(ep, existingEntities.getEventParticipants().get(ep.getEntity().getUuid()), originInfo);
 
 				if (eventParticipantErrors.hasError()) {
 					validationErrors
@@ -127,7 +130,8 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasSampleDto> samples = receivedData.getSamples();
 		if (CollectionUtils.isNotEmpty(samples)) {
 			samples.forEach(s -> {
-				ValidationErrors contactErrors = sampleProcessor.processReceivedData(s, existingEntities.getSamples().get(s.getEntity().getUuid()), originInfo);
+				ValidationErrors contactErrors =
+					sampleProcessor.processReceivedData(s, existingEntities.getSamples().get(s.getEntity().getUuid()), originInfo);
 
 				if (contactErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildSampleValidationGroupName(s.getEntity()), contactErrors));
@@ -199,21 +203,27 @@ public class ReceivedEntitiesProcessor {
 	private ValidationErrors validateOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
 			return ValidationErrors
-					.create(new ValidationErrorGroup(validationGroupCaption), new ValidationErrorMessage(Validations.sormasToSormasShareInfoMissing));
+				.create(new ValidationErrorGroup(validationGroupCaption), new ValidationErrorMessage(Validations.sormasToSormasShareInfoMissing));
 		}
 
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		if (originInfo.getOrganizationId() == null) {
 			validationErrors.add(
-					new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
-					new ValidationErrorMessage(Validations.sormasToSormasOrganizationIdMissing));
+				new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+				new ValidationErrorMessage(Validations.sormasToSormasOrganizationIdMissing));
 		}
 
 		if (DataHelper.isNullOrEmpty(originInfo.getSenderName())) {
 			validationErrors.add(
-					new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
-					new ValidationErrorMessage(Validations.sormasToSormasSenderNameMissing));
+				new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+				new ValidationErrorMessage(Validations.sormasToSormasSenderNameMissing));
+		}
+
+		if (DataHelper.isNullOrEmpty(originInfo.getComment())) {
+			validationErrors.add(
+				new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+				new ValidationErrorMessage(Validations.sormasToSormasCommentMissing));
 		}
 
 		return validationErrors;

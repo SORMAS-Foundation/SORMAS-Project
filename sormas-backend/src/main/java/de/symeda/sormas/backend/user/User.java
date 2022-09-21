@@ -51,6 +51,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -351,6 +352,17 @@ public class User extends AbstractDomainObject {
 
 	public boolean hasAnyUserRole(Collection<UserRole> userRoles) {
 		return userRoles.stream().anyMatch(getUserRoles()::contains);
+	}
+
+	/**
+	 * Checks if the User possesses the given access right.
+	 *
+	 * @param userRight
+	 *            the access right in question
+	 * @return true if the user has the access right, false otherwise
+	 */
+	public boolean hasUserRight(UserRight userRight) {
+		return this.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight));
 	}
 
 	public static String buildCaptionForNotification(User user) {
