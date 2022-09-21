@@ -294,15 +294,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<ADO> getBatchedQueryResults(CriteriaBuilder cb, CriteriaQuery<ADO> cq, From<?, ADO> from, Integer batchSize) {
-
-		// Ordering by UUID is relevant if a batch includes some, but not all objects with the same timestamp.
-		// the next batch can then resume with the same timestamp and the next UUID in lexicographical order.y
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)), cb.asc(from.get(AbstractDomainObject.UUID)));
-
-		return createQuery(cq, 0, batchSize).getResultList();
-	}
-
 	public List<AdoAttributes> getBatchedAttributesQueryResults(
 		CriteriaBuilder cb,
 		CriteriaQuery<AdoAttributes> cq,
@@ -335,7 +326,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	 * @return List of <strong>read-only</strong> entities. Sorts also by {@value AbstractDomainObject#CHANGE_DATE},
 	 *         {@value AbstractDomainObject#UUID}, {@value AbstractDomainObject#ID} ASC
 	 *         to match sorting for {@code getAllAfter} pattern (to be in sync with
-	 *         {@link #getBatchedQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)} and
 	 *         {@link #getBatchedAttributesQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)}).
 	 */
 	public List<ADO> getByIds(List<Long> ids) {
