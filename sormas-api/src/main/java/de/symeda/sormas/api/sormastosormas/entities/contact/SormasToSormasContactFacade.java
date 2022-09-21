@@ -13,12 +13,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.caze;
+package de.symeda.sormas.api.sormastosormas.entities.contact;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityInterface;
 
 @Remote
-public interface SormasToSormasCaseFacade extends SormasToSormasEntityInterface {
+public interface SormasToSormasContactFacade extends SormasToSormasEntityInterface {
 }

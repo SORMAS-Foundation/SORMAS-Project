@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.entities;
+package de.symeda.sormas.api.sormastosormas.entities;
 
 import java.io.Serializable;
 

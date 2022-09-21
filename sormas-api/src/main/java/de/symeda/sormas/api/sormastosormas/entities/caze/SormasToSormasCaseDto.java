@@ -13,13 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.caze;
+package de.symeda.sormas.api.sormastosormas.entities.caze;
 
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 
 public class SormasToSormasCaseDto extends SormasToSormasEntityDto<CaseDataDto> {
 

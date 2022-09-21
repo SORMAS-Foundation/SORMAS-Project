@@ -13,12 +13,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.contact;
+package de.symeda.sormas.api.sormastosormas.entities.contact;
 
-import javax.ejb.Remote;
+import javax.validation.Valid;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 
-@Remote
-public interface SormasToSormasContactFacade extends SormasToSormasEntityInterface {
+public class SormasToSormasContactDto extends SormasToSormasEntityDto<ContactDto> {
+
+	private static final long serialVersionUID = 7414547678077858460L;
+
+	@Valid
+	private PersonDto person;
+
+	public SormasToSormasContactDto() {
+	}
+
+	public SormasToSormasContactDto(PersonDto person, ContactDto contact) {
+		super(contact);
+		this.person = person;
+	}
+
+	public PersonDto getPerson() {
+		return person;
+	}
 }

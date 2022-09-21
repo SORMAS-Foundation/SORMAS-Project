@@ -13,27 +13,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.api.sormastosormas.entities.externalmessage;
 
-import java.io.Serializable;
+import java.util.List;
 
+import javax.ejb.Remote;
 import javax.validation.Valid;
 
-public abstract class SormasToSormasEntityDto<T extends SormasToSormasShareableDto> implements Serializable {
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
-	private static final long serialVersionUID = -1142043326721172412L;
+@Remote
+public interface SormasToSormasExternalMessageFacade {
 
-	@Valid
-	private T entity;
+	void sendExternalMessages(List<String> uuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
 
-	protected SormasToSormasEntityDto() {
-	}
-
-	protected SormasToSormasEntityDto(T entity) {
-		this.entity = entity;
-	}
-
-	public T getEntity() {
-		return entity;
-	}
+	void saveExternalMessages(SormasToSormasEncryptedDataDto labMessages) throws SormasToSormasValidationException, SormasToSormasException;
 }

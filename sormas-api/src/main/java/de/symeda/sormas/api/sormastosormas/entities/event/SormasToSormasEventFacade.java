@@ -13,19 +13,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.event;
+package de.symeda.sormas.api.sormastosormas.entities.event;
 
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import javax.ejb.Remote;
 
-public class SormasToSormasEventParticipantDto extends SormasToSormasEntityDto<EventParticipantDto> {
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityInterface;
 
-	private static final long serialVersionUID = -3568483795717699454L;
-
-	public SormasToSormasEventParticipantDto() {
-	}
-
-	public SormasToSormasEventParticipantDto(EventParticipantDto entity) {
-		super(entity);
-	}
+@Remote
+public interface SormasToSormasEventFacade extends SormasToSormasEntityInterface {
 }

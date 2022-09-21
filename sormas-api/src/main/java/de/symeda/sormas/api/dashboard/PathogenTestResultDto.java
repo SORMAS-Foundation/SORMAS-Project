@@ -1,11 +1,11 @@
-package de.symeda.sormas.backend.dashboard;
+package de.symeda.sormas.api.dashboard;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 
-class PathogenTestResultDto implements Serializable {
+public class PathogenTestResultDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
