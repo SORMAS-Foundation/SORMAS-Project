@@ -1001,9 +1001,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		if (event.getEventInvestigationStatus() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventInvestigationStatus));
 		}
-		if (StringUtils.isEmpty(event.getEventTitle())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventTitle));
-		}
 
 		LocationDto location = event.getEventLocation();
 		if (location == null) {
