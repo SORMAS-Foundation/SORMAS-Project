@@ -696,9 +696,9 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		personWithEmail.getPersonContactDetails().add(secondaryEmail);
 		getPersonFacade().save(personWithEmail);
 
-		final Date startOfDay = DateHelper.getStartOfDay(new Date());
-		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithEmail, new DateTime(startOfDay).minusDays(1).toDate());
-		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutEmail, new DateTime(startOfDay).minusDays(1).toDate());
+		Date endDate = UtilDate.from(LocalDate.now().minusDays(1));
+		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithEmail, endDate);
+		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutEmail, endDate);
 
 		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 		List<ImmunizationIndexDto> immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
@@ -731,9 +731,9 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		personWithPhone.getPersonContactDetails().add(secondaryEmail);
 		getPersonFacade().save(personWithPhone);
 
-		final Date startOfDay = DateHelper.getStartOfDay(new Date());
-		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithPhone, new DateTime(startOfDay).minusDays(1).toDate());
-		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutPhone, new DateTime(startOfDay).minusDays(1).toDate());
+		Date endDate = UtilDate.from(LocalDate.now().minusDays(1));
+		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithPhone, endDate);
+		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutPhone, endDate);
 
 		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 		List<ImmunizationIndexDto> immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
@@ -766,11 +766,9 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		personWithOtherDetail.getPersonContactDetails().add(secondaryEmail);
 		getPersonFacade().save(personWithOtherDetail);
 
-		final Date startOfDay = DateHelper.getStartOfDay(new Date());
-		ImmunizationDto immunizationDto1 =
-			createOngoingImmunizationWithEndDate(personWithOtherDetail, new DateTime(startOfDay).minusDays(1).toDate());
-		ImmunizationDto immunizationDto2 =
-			createOngoingImmunizationWithEndDate(personWithoutOtherDetail, new DateTime(startOfDay).minusDays(1).toDate());
+		Date endDate = UtilDate.from(LocalDate.now().minusDays(1));
+		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithOtherDetail, endDate);
+		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutOtherDetail, endDate);
 
 		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 		List<ImmunizationIndexDto> immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
