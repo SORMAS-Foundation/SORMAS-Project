@@ -101,7 +101,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	public boolean pullAndPushEntities(Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
-		pullEntities(false, context, syncCallbacks);
+		pullEntities(false, context, syncCallbacks, false);
 
 		return pushEntities(false, syncCallbacks);
 	}
@@ -306,6 +306,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		}
 
 		if (modifiedDtos.isEmpty()) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 			return false;
 		}
 
