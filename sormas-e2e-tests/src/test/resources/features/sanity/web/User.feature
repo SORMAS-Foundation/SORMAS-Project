@@ -179,3 +179,14 @@ Feature: Create user
     Then I click on logout button from navbar
     And I login with last edited user
     Then I click on logout button from navbar
+
+  @#7470 @env_main
+  Scenario: Check User active inactive functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create a new disabled National User in the Create New User page
+    When I search for created user in the User Management Page
+    Then I verify that the Active value is Checked in the User Management Page
+    When I select first user from list
+    Then I click on the Active checkbox in the Edit User Page
+    Then I verify that the Active value is Unchecked in the User Management Page

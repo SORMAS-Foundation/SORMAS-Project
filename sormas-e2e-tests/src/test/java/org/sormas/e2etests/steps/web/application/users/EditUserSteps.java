@@ -63,6 +63,14 @@ public class EditUserSteps implements En {
                   .build();
           webDriverHelpers.clickOnWebElementBySelector(CLOSE_PASSWORD_POPUP_BUTTON);
         });
+
+    Then(
+        "I click on the Active checkbox in the Edit User Page",
+        () -> {
+          webDriverHelpers.scrollToElementUntilIsVisible(ACTIVE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EDIT_USER);
+        });
   }
 
   private User collectEditUserData() {

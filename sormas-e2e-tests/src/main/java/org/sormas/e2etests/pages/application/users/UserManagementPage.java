@@ -31,4 +31,8 @@ public class UserManagementPage {
   public static final By SYNC_USERS_BUTTON = By.id("syncUsers");
   public static final By SYNC_POPUP_BUTTON = By.id("import-step-1");
   public static final By SYNC_SUCCESS_DE = By.xpath("//*[text()='Synchronisation erfolgreich!']");
+  public static final By ACTIVE_CHECKBOX_USER_MANAGEMENT =
+      By.cssSelector("[class*='check_square']");
+  public static final By INACTIVE_CHECKBOX_USER_MANAGEMENT =
+      By.cssSelector("[class*='thin_square']");
 }

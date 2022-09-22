@@ -62,6 +62,12 @@ public class UserManagementSteps implements En {
         });
 
     When(
+        "I search for created user in the User Management Page",
+        () -> {
+          searchForUser(CreateNewUserSteps.user.getUserName());
+        });
+
+    When(
         "^I search for recently edited user$",
         () -> {
           searchForUser(CreateNewUserSteps.editUser.getUserName());
@@ -94,6 +100,23 @@ public class UserManagementSteps implements En {
                         webDriverHelpers.isElementVisibleWithTimeout(SYNC_SUCCESS_DE, 5),
                         "Sync of users failed"),
                 10));
+
+    When(
+        "^I verify that the Active value is ([^\"]*) in the User Management Page",
+        (String option) -> {
+          switch (option) {
+            case "Checked":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  ACTIVE_CHECKBOX_USER_MANAGEMENT);
+              break;
+            case "Unchecked":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  INACTIVE_CHECKBOX_USER_MANAGEMENT);
+              break;
+            default:
+              break;
+          }
+        });
   }
 
   private void searchForUser(String userName) {
