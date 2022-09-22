@@ -20,6 +20,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -54,6 +55,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -70,6 +72,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -148,6 +151,47 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 
 	public Person createPerson() {
 		return new Person();
+	}
+
+	public List<PersonAssociation> getPermittedAssociations() {
+
+		return Arrays.stream(PersonAssociation.values()).filter(e -> isPermittedAssociation(e)).collect(Collectors.toList());
+	}
+
+	public boolean isPermittedAssociation(@NotNull PersonAssociation association) {
+
+		final boolean allowed;
+		switch (association) {
+		case ALL:
+			allowed = isPermitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW);
+			break;
+		case CASE:
+			allowed = isPermitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW);
+			break;
+		case CONTACT:
+			allowed = isPermitted(FeatureType.CONTACT_TRACING, UserRight.CONTACT_VIEW);
+			break;
+		case EVENT_PARTICIPANT:
+			allowed = isPermitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW);
+			break;
+		case IMMUNIZATION:
+			allowed = isPermitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
+				&& !featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
+			break;
+		case TRAVEL_ENTRY:
+			allowed = isPermitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
+				&& configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
+			break;
+		default:
+			throw new IllegalArgumentException("Unexpected association: " + association.name());
+		}
+
+		return allowed;
+	}
+
+	private boolean isPermitted(FeatureType featureType, UserRight userRight) {
+
+		return getCurrentUser().hasUserRight(userRight) && featureConfigurationFacade.isFeatureEnabled(featureType);
 	}
 
 	@Override
