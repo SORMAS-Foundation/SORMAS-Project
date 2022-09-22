@@ -7,7 +7,9 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
+import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
@@ -39,8 +41,11 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
+import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
@@ -50,14 +55,37 @@ import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.info.InfoFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.ClientInfraSyncFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -76,12 +104,10 @@ public class ArchitectureTest {
 	 * @RolesAllowed annotation was replaced by @RightsAllowed for performance reasons
 	 */
 	@ArchTest
-	public static final ArchRule dontUseRolesAllowedClassAnnotationRule =
-		classes().should().notBeAnnotatedWith(RolesAllowed.class);
+	public static final ArchRule dontUseRolesAllowedClassAnnotationRule = classes().should().notBeAnnotatedWith(RolesAllowed.class);
 
 	@ArchTest
-	public static final ArchRule dontUseRolesAllowedMethodAnnotationRule =
-		methods().should().notBeAnnotatedWith(RolesAllowed.class);
+	public static final ArchRule dontUseRolesAllowedMethodAnnotationRule = methods().should().notBeAnnotatedWith(RolesAllowed.class);
 
 	private static final DescribedPredicate<JavaClass> classesInDataDictionary =
 		new DescribedPredicate<JavaClass>("are used as data dictionary entity") {
@@ -243,7 +269,12 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(
 			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-			Arrays.asList("fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "deleteExternalMessage", "deleteExternalMessages"),
+			Arrays.asList(
+				"getExternalMessagesAdapterVersion",
+				"fetchAndSaveExternalMessages",
+				"bulkAssignExternalMessages",
+				"deleteExternalMessage",
+				"deleteExternalMessages"),
 			classes);
 	}
 
@@ -272,6 +303,136 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(TaskFacadeEjb.class, classes);
 	}
 
+	@ArchTest
+	public void testUserFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(UserFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testAbstractInfrastructureFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(AbstractInfrastructureFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testContinentFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ContinentFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testSubcontinentFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SubcontinentFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testCountryFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(CountryFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testAreaFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(AreaFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testRegionFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(RegionFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testDistrictFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(DistrictFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testCommunityFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(CommunityFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testFacilityFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(FacilityFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testPointOfEntryFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(PointOfEntryFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testClientInfraSyncFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ClientInfraSyncFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testPopulationDataFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(PopulationDataFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testAbstractSormasToSormasInterfaceAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(AbstractSormasToSormasInterface.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasCaseFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasCaseFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasContactFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasContactFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasEventFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasEventFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasExternalMessageFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasExternalMessageFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasShareInfoFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasShareInfoFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasShareRequestFacadeEJBAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasShareRequestFacadeEJB.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasOriginInfoFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasOriginInfoFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testShareRequestInfoFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ShareRequestInfoFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testDocumentFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(DocumentFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testDocumentTemplateFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(DocumentTemplateFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testAbstractBaseEjbNoAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(AbstractBaseEjb.class, AuthMode.NONE, classes);
+	}
+
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
 		assertFacadeEjbAnnotated(facadeEjbClass, AuthMode.CLASS_AND_METHODS, Collections.emptyList(), classes);
 	}
@@ -281,21 +442,35 @@ public class ArchitectureTest {
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, AuthMode authMode, @NotNull List<String> exceptedMethods, JavaClasses classes) {
-		if (authMode != AuthMode.METHODS_ONLY) {
+		if (authMode == AuthMode.METHODS_ONLY || authMode == AuthMode.NONE) {
+			ArchRuleDefinition.theClass(facadeEjbClass).should().notBeAnnotatedWith(RightsAllowed.class).check(classes);
+		} else {
 			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RightsAllowed.class).check(classes);
 		}
 
-		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
+		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic().and().areNotStatic();
 		String exceptedMethodsMatcher = "^(" + String.join("|", exceptedMethods) + ")$";
 
-		if (authMode == AuthMode.CLASS_ONLY) {
-			methods.and().haveNameNotMatching(exceptedMethodsMatcher).should().notBeAnnotatedWith(RightsAllowed.class).check(classes);
-			methods.and().haveNameMatching(exceptedMethodsMatcher).should().beAnnotatedWith(RightsAllowed.class).check(classes);
+		Function<GivenMethodsConjunction, MethodsShouldConjunction> annotatedRule = (m) -> m.should()
+			.beAnnotatedWith(RightsAllowed.class)
+			.orShould()
+			.beAnnotatedWith(PermitAll.class)
+			.orShould()
+			.beAnnotatedWith(DenyAll.class);
+
+		Function<GivenMethodsConjunction, MethodsShouldConjunction> notAnnotatedRule = (m) -> m.should()
+			.notBeAnnotatedWith(RightsAllowed.class)
+			.andShould()
+			.notBeAnnotatedWith(PermitAll.class)
+			.andShould()
+			.notBeAnnotatedWith(DenyAll.class);
+
+		if (authMode == AuthMode.CLASS_ONLY || authMode == AuthMode.NONE) {
+			notAnnotatedRule.apply(methods.and().haveNameNotMatching(exceptedMethodsMatcher)).check(classes);
+			annotatedRule.apply(methods.and().haveNameMatching(exceptedMethodsMatcher)).check(classes);
 		} else {
 			// TODO - add exceptedMethods handling when needed
-
-			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RightsAllowed.class).orShould().beAnnotatedWith(PermitAll.class);
-
+			MethodsShouldConjunction methodChecks = annotatedRule.apply(methods);
 			if (authMode == AuthMode.CLASS_AND_METHODS) {
 				methodChecks = methodChecks.orShould()
 					.haveNameMatching(
@@ -309,6 +484,7 @@ public class ArchitectureTest {
 	private enum AuthMode {
 		CLASS_AND_METHODS,
 		CLASS_ONLY,
-		METHODS_ONLY
+		METHODS_ONLY,
+		NONE,
 	}
 }

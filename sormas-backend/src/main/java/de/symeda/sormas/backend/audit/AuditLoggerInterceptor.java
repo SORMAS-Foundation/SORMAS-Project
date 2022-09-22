@@ -19,7 +19,7 @@ import javax.ejb.LocalBean;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;

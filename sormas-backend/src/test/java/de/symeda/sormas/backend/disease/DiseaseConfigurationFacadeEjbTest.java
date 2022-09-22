@@ -19,12 +19,12 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllDiseases() {
 
-		creator.updateDiseaseConfiguration(Disease.EVD, true, true, true, false);
-		creator.updateDiseaseConfiguration(Disease.CHOLERA, true, false, true, false);
-		creator.updateDiseaseConfiguration(Disease.DENGUE, false, true, true, false);
-		creator.updateDiseaseConfiguration(Disease.LASSA, false, false, false, true);
-		creator.updateDiseaseConfiguration(Disease.DIPHTERIA, true, false, false, true);
-		creator.updateDiseaseConfiguration(Disease.MALARIA, true, true, false, true); // invalid
+		creator.updateDiseaseConfiguration(Disease.EVD, true, true, true, false, null);
+		creator.updateDiseaseConfiguration(Disease.CHOLERA, true, false, true, false, null);
+		creator.updateDiseaseConfiguration(Disease.DENGUE, false, true, true, false, null);
+		creator.updateDiseaseConfiguration(Disease.LASSA, false, false, false, true, null);
+		creator.updateDiseaseConfiguration(Disease.DIPHTERIA, true, false, false, true, null);
+		creator.updateDiseaseConfiguration(Disease.MALARIA, true, true, false, true, null); // invalid
 		getBean(DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
 		List<Disease> diseases = getDiseaseConfigurationFacade().getAllDiseases(true, true, true);

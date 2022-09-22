@@ -133,6 +133,7 @@ public interface Descriptions {
 	String Person_sex = "Person.sex";
 	String Sample_associatedLabMessages = "Sample.associatedLabMessages";
 	String Sample_sampleDateTime = "Sample.sampleDateTime";
+	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
 	String Symptoms_bloodInStool = "Symptoms.bloodInStool";
 	String Symptoms_confusedDisoriented = "Symptoms.confusedDisoriented";
@@ -167,6 +168,7 @@ public interface Descriptions {
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
 	String userRoleNotifications = "userRoleNotifications";
 	String userRoleTemplate = "userRoleTemplate";
+	String userRoleVersionUpdate = "userRoleVersionUpdate";
 	String Visit_visitDateTime = "Visit.visitDateTime";
 	String Visit_visitRemarks = "Visit.visitRemarks";
 	String Visit_visitStatus = "Visit.visitStatus";

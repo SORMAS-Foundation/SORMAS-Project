@@ -23,9 +23,8 @@ import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
 public class UserRoleView extends AbstractUserRoleView {
 
-	private static final long serialVersionUID = -9114105065249694196L;
-
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/main";
+	private static final long serialVersionUID = -9114105065249694196L;
 
 	public UserRoleView() {
 		super(VIEW_NAME);
@@ -43,11 +42,19 @@ public class UserRoleView extends AbstractUserRoleView {
 		CommitDiscardWrapperComponent<UserRoleEditForm> editComponent =
 			ControllerProvider.getUserRoleController().getUserRoleEditComponent(getReference());
 
+		UserRoleEditForm wrappedComponent = editComponent.getWrappedComponent();
+		userRoleTemplateSelectionField.setUserRoleEditForm(wrappedComponent);
+
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
 
 		container.addComponent(editComponent);
+	}
+
+	@Override
+	protected AbstractUserRoleForm getForm() {
+		return userRoleTemplateSelectionField.getUserRoleEditForm();
 	}
 }

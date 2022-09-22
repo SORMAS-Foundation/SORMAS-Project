@@ -35,6 +35,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -268,11 +269,11 @@ public class CreateNewContactSteps implements En {
           fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
           selectMultiDayContact();
           fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.ENGLISH);
-          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           fillCaseOrEventInformation(contact.getCaseOrEventInformation());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           selectTypeOfContact(contact.getTypeOfContact());
           //          fillAdditionalInformationOnTheTypeOfContact(
           //              contact.getAdditionalInformationOnContactType());
@@ -446,6 +447,11 @@ public class CreateNewContactSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
             TimeUnit.SECONDS.sleep(1);
           }
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
@@ -531,6 +537,19 @@ public class CreateNewContactSteps implements En {
         "^I click on Discard button in Create New Contact form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
+        });
+
+    And(
+        "^I fill a new Contact form with specific data for DE version with date (\\d+) days ago$",
+        (Integer daysAgo) -> {
+          contact = contactService.buildGeneratedContactDE();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(LocalDate.now().minusDays(daysAgo), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
         });
   }
 

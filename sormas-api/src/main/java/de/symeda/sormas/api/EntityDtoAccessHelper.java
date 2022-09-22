@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.symeda.sormas.api.uuid.HasUuid;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.BirthDateDto;

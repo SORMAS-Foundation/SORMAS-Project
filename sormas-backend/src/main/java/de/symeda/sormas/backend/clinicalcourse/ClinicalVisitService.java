@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -16,7 +15,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -24,12 +22,13 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit> {
+public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit> implements JurisdictionCheckService<ClinicalVisit> {
 
 	@EJB
 	private CaseService caseService;
@@ -54,31 +53,26 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ClinicalVisit> cq = cb.createQuery(getElementClass());
-		Root<ClinicalVisit> from = cq.from(getElementClass());
-		from.fetch(ClinicalVisit.SYMPTOMS);
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		Join<ClinicalCourse, Case> caze = clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT);
 
 		Predicate filter = caseService.createActiveCasesFilter(cb, caze);
 
 		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
-		}
+		return filter;
+	}
 
-		cq.where(filter);
-		cq.distinct(true);
+	@Override
+	protected void fetchReferences(From<?, ClinicalVisit> from) {
 
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		from.fetch(ClinicalVisit.SYMPTOMS);
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -134,5 +128,21 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT))));
+	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(ClinicalVisit entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<ClinicalVisit> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ClinicalVisit> from) {
+
+		return caseService.inJurisdictionOrOwned(
+			new CaseQueryContext(cb, query, new CaseJoins(from.join(ClinicalVisit.CLINICAL_COURSE).join(ClinicalCourse.CASE))));
 	}
 }

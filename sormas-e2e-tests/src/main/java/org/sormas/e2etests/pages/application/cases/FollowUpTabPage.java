@@ -142,4 +142,5 @@ public class FollowUpTabPage {
       By.cssSelector("[id='otherNonHemorrhagicSymptomsText']");
   public static final By CONTACT_PERSONS_PHONE_NUMBER =
       By.xpath("//div[@class='v-link v-widget v-has-width']//span");
+  public static final By EXPORT_FOLLOW_UP_BUTTON = By.id("export");
 }

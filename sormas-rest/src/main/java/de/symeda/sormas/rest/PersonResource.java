@@ -60,7 +60,7 @@ public class PersonResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<PersonDto> getAllPersons(@PathParam("since") long since) {
-		return FacadeProvider.getPersonFacade().getPersonsAfter(new Date(since));
+		return FacadeProvider.getPersonFacade().getAllAfter(new Date(since));
 	}
 
 	@GET
@@ -69,7 +69,7 @@ public class PersonResource extends EntityDtoResource {
 		@PathParam("since") long since,
 		@PathParam("size") int size,
 		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
-		return FacadeProvider.getPersonFacade().getPersonsAfter(new Date(since), size, lastSynchronizedUuid);
+		return FacadeProvider.getPersonFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST
@@ -87,7 +87,7 @@ public class PersonResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postPersons(@Valid List<PersonDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getPersonFacade()::savePerson);
+		return savePushedDto(dtos, FacadeProvider.getPersonFacade()::save);
 	}
 
 	@GET
@@ -99,7 +99,7 @@ public class PersonResource extends EntityDtoResource {
 	@GET
 	@Path("/{uuid}")
 	public PersonDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getPersonFacade().getPersonByUuid(uuid);
+		return FacadeProvider.getPersonFacade().getByUuid(uuid);
 	}
 
 	@POST

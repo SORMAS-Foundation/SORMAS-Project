@@ -24,13 +24,14 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -42,9 +43,17 @@ public class ProcessedEventDataPersister extends ProcessedDataPersister<EventDto
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
 		return shareInfoService;
+	}
+
+	@Override
+	protected SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade() {
+		return originInfoFacade;
 	}
 
 	@Override

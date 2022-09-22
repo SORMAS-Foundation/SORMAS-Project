@@ -45,12 +45,15 @@ public class CreateNewTaskPage {
   public static final By TASK_STATUS_OPTIONS =
       By.cssSelector(".v-window #taskStatus .v-radiobutton label");
   public static final By SAVE_BUTTON = By.cssSelector(".v-window #commit");
+  public static final By NOTIFICATION_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By SELECTED_TASK_CONTEXT = By.cssSelector(".v-window [id='taskContext']");
   public static final By OBSERVER_USER_INPUT =
       By.xpath("//*[@id='observerUsers']//div[@role='combobox']//input");
   public static final By SELECTED_OBSERVER_USER =
       By.xpath("//*[@id='observerUsers']//div[@class='v-label v-widget v-has-width']");
   public static final By DISCARD_BUTTON = By.id("discard");
+  public static final By PENDING_TASK_STATUS_OPTION =
+      By.xpath("//*[@id='taskStatus']/span[contains(label, 'pending')]");
 
   public static By getDeleteIconByUser(String user) {
     return By.xpath(

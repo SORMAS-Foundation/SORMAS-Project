@@ -126,6 +126,7 @@ public interface Validations {
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
+	String jurisdictionChangeUserAssignment = "jurisdictionChangeUserAssignment";
 	String missingRequiredUserRights = "missingRequiredUserRights";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
@@ -177,6 +178,7 @@ public interface Validations {
 	String sormasToSormasAcceptContactHasNoCase = "sormasToSormasAcceptContactHasNoCase";
 	String sormasToSormasAcceptContactWithoutCaseShared = "sormasToSormasAcceptContactWithoutCaseShared";
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
+	String sormasToSormasCommentMissing = "sormasToSormasCommentMissing";
 	String sormasToSormasCommunity = "sormasToSormasCommunity";
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactCaseNotShared = "sormasToSormasContactCaseNotShared";

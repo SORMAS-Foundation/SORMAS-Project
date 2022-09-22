@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.user;
 
 import com.vaadin.navigator.ViewChangeListener;
+
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -39,11 +40,19 @@ public class UserRoleNotificationsView extends AbstractUserRoleView {
 		CommitDiscardWrapperComponent<UserRoleNotificationsForm> editComponent =
 			ControllerProvider.getUserRoleController().getUserRoleNotificationsEditComponent(getReference());
 
+		UserRoleNotificationsForm wrappedComponent = editComponent.getWrappedComponent();
+		userRoleTemplateSelectionField.setUserRoleNotificationsForm(wrappedComponent);
+
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
 
 		container.addComponent(editComponent);
+	}
+
+	@Override
+	protected AbstractUserRoleForm getForm() {
+		return userRoleTemplateSelectionField.getUserRoleNotificationsForm();
 	}
 }

@@ -177,9 +177,9 @@ public class UserRoleController {
 	}
 
 	public CommitDiscardWrapperComponent<UserRoleNotificationsForm> getUserRoleNotificationsEditComponent(UserRoleReferenceDto userRoleRef) {
-		UserRoleNotificationsForm form = new UserRoleNotificationsForm();
-
 		UserRoleDto userRole = FacadeProvider.getUserRoleFacade().getByUuid(userRoleRef.getUuid());
+		UserRoleNotificationsForm form = new UserRoleNotificationsForm(userRole.getLinkedDefaultUserRole());
+
 		form.setValue(userRole);
 
 		final CommitDiscardWrapperComponent<UserRoleNotificationsForm> editView =

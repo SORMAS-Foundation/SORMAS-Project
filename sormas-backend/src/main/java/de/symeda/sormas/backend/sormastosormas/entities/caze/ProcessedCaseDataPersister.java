@@ -25,14 +25,16 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -44,10 +46,17 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
 		return shareInfoService;
+	}
+
+	@Override
+	protected SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade() {
+		return originInfoFacade;
 	}
 
 	@Override
@@ -67,7 +76,7 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 		if (isCreate) {
 			// save person first during creation
 			handleValidationError(
-				() -> personFacade.savePerson(person, false, false, false),
+				() -> personFacade.save(person, false, false, false),
 				Captions.Person,
 				buildCaseValidationGroupName(caze),
 				person);
@@ -86,7 +95,7 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 				buildCaseValidationGroupName(caze),
 				caze);
 			handleValidationError(
-				() -> personFacade.savePerson(person, false, false, false),
+				() -> personFacade.save(person, false, false, false),
 				Captions.Person,
 				buildCaseValidationGroupName(caze),
 				person);

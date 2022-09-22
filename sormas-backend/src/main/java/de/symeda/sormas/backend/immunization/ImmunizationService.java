@@ -46,7 +46,6 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -60,9 +59,9 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryD
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -128,7 +127,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.START_DATE),
 			immunization.get(Immunization.END_DATE),
 			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(immunizationQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(immunizationQueryContext)));
 
 		final Predicate criteriaFilter = buildCriteriaFilter(personId, disease, immunizationQueryContext);
 		if (criteriaFilter != null) {
@@ -144,7 +143,13 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			.getResultList();
 	}
 
-	private Predicate isInJurisdictionOrOwned(ImmunizationQueryContext qc) {
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> from) {
+		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, query, from));
+	}
+
+	public Predicate inJurisdictionOrOwned(ImmunizationQueryContext qc) {
+
 		final User currentUser = userService.getCurrentUser();
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter;
@@ -160,11 +165,13 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return filter;
 	}
 
+	@Override
 	public boolean inJurisdictionOrOwned(Immunization immunization) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Immunization> root = cq.from(Immunization.class);
+		// Deviation from super implementation: createUserFilter
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(Immunization.UUID), immunization.getUuid()));
 		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
@@ -207,33 +214,15 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	@Override
-	public List<Immunization> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Immunization> cq = cb.createQuery(getElementClass());
-		Root<Immunization> from = cq.from(getElementClass());
-		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, from);
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> from) {
 
 		Predicate filter = createDefaultFilter(cb, from);
-
 		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(immunizationQueryContext);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	@Override
@@ -504,7 +493,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			return null;
 		}
 
-		Predicate filter = isInJurisdictionOrOwned(qc);
+		Predicate filter = inJurisdictionOrOwned(qc);
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		if (currentUser.getLimitedDisease() != null) {
@@ -563,7 +552,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Immunization immunization) {
+	public EditPermissionType getEditPermissionType(Immunization immunization) {
 
 		if (!userService.hasRight(UserRight.IMMUNIZATION_EDIT)) {
 			return EditPermissionType.REFUSED;

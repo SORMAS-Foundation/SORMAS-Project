@@ -46,7 +46,7 @@ import org.hibernate.annotations.TypeDef;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;

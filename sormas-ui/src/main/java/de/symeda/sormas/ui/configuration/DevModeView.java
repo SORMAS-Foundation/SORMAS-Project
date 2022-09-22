@@ -97,6 +97,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -104,7 +105,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DateHelper8;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -972,7 +972,7 @@ public class DevModeView extends AbstractConfigurationView {
 				caze.setReportLon(healthFacility.getLongitude());
 			}
 
-			FacadeProvider.getPersonFacade().savePerson(person);
+			FacadeProvider.getPersonFacade().save(person);
 			FacadeProvider.getCaseFacade().save(caze);
 		}
 
@@ -1175,7 +1175,7 @@ public class DevModeView extends AbstractConfigurationView {
 			PersonDto person;
 			if (config.isCreateMultipleContactsPerPerson() && !personUuids.isEmpty() && randomPercent(25)) {
 				String personUuid = random(personUuids);
-				person = FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
+				person = FacadeProvider.getPersonFacade().getByUuid(personUuid);
 			} else {
 				person = PersonDto.build();
 				fillEntity(person, referenceDateTime);
@@ -1226,7 +1226,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// description
 			contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 
-			FacadeProvider.getPersonFacade().savePerson(person);
+			FacadeProvider.getPersonFacade().save(person);
 			contact = FacadeProvider.getContactFacade().save(contact);
 
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())) {
@@ -1248,14 +1248,14 @@ public class DevModeView extends AbstractConfigurationView {
 					List<LocalDateTime> followUpDates = new ArrayList<>();
 					for (int day : followUpDays) {
 						followUpDates.add(
-							DateHelper8.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
+							UtilDate.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
 					}
 
 					for (LocalDateTime date : followUpDates) {
 						VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease(), VisitOrigin.USER);
 						fillEntity(visit, date);
 						visit.setVisitUser(userReference);
-						visit.setVisitDateTime(DateHelper8.toDate(date));
+						visit.setVisitDateTime(UtilDate.from(date));
 						visit.setDisease(contact.getDisease());
 						if (visit.getVisitStatus() == null) {
 							visit.setVisitStatus(VisitStatus.COOPERATIVE);
@@ -1350,7 +1350,7 @@ public class DevModeView extends AbstractConfigurationView {
 				fillEntity(person, referenceDateTime);
 				person.setSymptomJournalStatus(null);
 				setPersonName(person);
-				FacadeProvider.getPersonFacade().savePerson(person);
+				FacadeProvider.getPersonFacade().save(person);
 				eventParticipant.setPerson(person);
 				eventParticipant.setInvolvementDescription("Participant");
 

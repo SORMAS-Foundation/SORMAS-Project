@@ -18,7 +18,7 @@ Feature: Edit Persons
     And While on Person edit page, I will edit all fields with new values
     And I edit all Person primary contact details and save
     Then I click on save button from Edit Person page
-    And I check that previous edited person is correctly displayed in Edit Person page
+    And I check that new edited person is correctly displayed in Edit Person page
 
   @tmsLink=SORDEV-8466 @env_main
   Scenario: Check Filters on Person page work as expected
@@ -150,6 +150,9 @@ Feature: Edit Persons
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created via api Person page via URL
     And I check General comment field is enabled on Edit Person page
@@ -188,7 +191,7 @@ Feature: Edit Persons
     And I fill new case form with chosen data without personal data on Case directory page for DE
     And I click on the person search button in new case form
     And I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window
-    And I open the first found result in the popup of Select Person window for DE version
+    And I open the first found result in the popup of Select Person window
     Then I click on Save button in Case form
     And I collect uuid of the case
     Then I click on the Contacts button from navbar
@@ -196,7 +199,7 @@ Feature: Edit Persons
     Then I fill a new contact form for DE version without person data
     And I click on the person search button in create new contact form
     And I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window
-    And I open the first found result in the popup of Select Person window for DE version
+    And I open the first found result in the popup of Select Person window
     And I click on SAVE new contact button
     And I collect contact UUID displayed on Edit Contact Page
     And I click on the Persons button from navbar
@@ -281,4 +284,24 @@ Feature: Edit Persons
     And I click on Travel Entry aggregation button in Person Directory for DE specific
     And I check that number of displayed Person results is 0
 
+  @#7751 @env_main
+  Scenario: Verify map functionality in the Edit Person Page
+    Given I log in as a National User
+    When I click on the Persons button from navbar
+    And I filter for persons who are alive
+    And I apply on the APPLY FILTERS button
+    And I click on first person in person directory
+    And I clear the GPS Latitude and Longitude Fields from the Edit Person Page
+    Then I Verify The Eye Icon opening the Map is disabled in the Edit Person Page
+    And I Add the GPS Latitude and Longitude Values in the Edit Person Page
+    Then I Verify The Eye Icon opening the Map is enabled in the Edit Person Page
+    And I click on the The Eye Icon located in the Edit Person Page
+    Then I verify that the Map Container is now Visible in the Edit Person Page
 
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Person Page
+    Given I log in as a National User
+    When I click on the Persons button from navbar
+    And I click on first person in person directory
+    Then I check that Citizenship is not visible in Contact Information section for DE version
+    And I check that Country of birth is not visible in Contact Information section for DE version

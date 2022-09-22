@@ -146,12 +146,17 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
+	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		if (dto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					TravelEntryDto.class,
+					TravelEntryDto.REPORTING_USER,
+					source.getReportingUser(),
+					currentUser,
+					dto::setReportingUser);
 			});
 		}
 	}

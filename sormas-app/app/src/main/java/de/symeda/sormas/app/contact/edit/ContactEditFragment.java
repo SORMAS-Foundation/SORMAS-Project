@@ -171,7 +171,11 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		allDistricts = InfrastructureDaoHelper.loadAllDistricts();
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
-		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+		List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
+		diseaseList = DataUtils.toItems(diseases);
+		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
+			diseaseList.add(DataUtils.toItem(record.getDisease()));
+		}
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
 		contactIdentificationSources = DataUtils.getEnumItems(ContactIdentificationSource.class, true);
 		tracingApps = DataUtils.getEnumItems(TracingApp.class, true);

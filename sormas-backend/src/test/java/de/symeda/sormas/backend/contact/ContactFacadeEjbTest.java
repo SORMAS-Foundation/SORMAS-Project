@@ -42,6 +42,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -54,7 +56,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
@@ -87,7 +88,6 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -113,6 +113,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -130,7 +131,6 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest {
@@ -423,7 +423,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		TaskDto task = tasks.get(0);
 		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
 		assertEquals(TaskStatus.PENDING, task.getTaskStatus());
-		assertEquals(LocalDate.now(), DateHelper8.toLocalDate(task.getDueDate()));
+		assertEquals(LocalDate.now(), UtilDate.toLocalDate(task.getDueDate()));
 		assertEquals(contactOfficer.toReference(), task.getAssigneeUser());
 
 		// task should not be generated multiple times 
@@ -804,8 +804,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			"Signal foo",
 			"A long description for this event",
 			user.toReference(),
-			eventDto -> {
-			});
+			null,
+			null);
 
 		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
 		creator.createEventParticipant(event1.toReference(), person2, user.toReference());
@@ -1120,7 +1120,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
 		ContactDto contact = createContact(user, caze, rdcf);
 
-		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		PersonDto contactPerson = getPersonFacade().getByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		EpiDataDto epiData = contact.getEpiData();
 		epiData.setExposureDetailsKnown(YesNoUnknown.YES);
@@ -1142,7 +1142,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setHouseNumber("Test number");
 		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
-		getPersonFacade().savePerson(contactPerson);
+		getPersonFacade().save(contactPerson);
 
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
@@ -1264,7 +1264,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
 		ContactDto contact = createContact(user, caze, rdcf);
 
-		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		PersonDto contactPerson = getPersonFacade().getByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		EpiDataDto epiData = contact.getEpiData();
 		epiData.setExposureDetailsKnown(YesNoUnknown.YES);
@@ -1286,7 +1286,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setHouseNumber("Test number");
 		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
-		getPersonFacade().savePerson(contactPerson);
+		getPersonFacade().save(contactPerson);
 
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
@@ -1792,7 +1792,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonContactDetailDto leadContactDetail =
 			creator.createPersonContactDetail(leadPerson.toReference(), true, PersonContactDetailType.PHONE, "123");
 		leadPerson.setPersonContactDetails(Collections.singletonList(leadContactDetail));
-		getPersonFacade().savePerson(leadPerson);
+		getPersonFacade().save(leadPerson);
 		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
 		RDCF leadRdcf = creator.createRDCF();
 		CaseDataDto sourceCase = creator.createCase(
@@ -1827,7 +1827,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			creator.createPersonContactDetail(otherPerson.toReference(), true, PersonContactDetailType.PHONE, "456");
 		otherPerson.setPersonContactDetails(Collections.singletonList(otherContactDetail));
 		otherPerson.setBirthWeight(2);
-		getPersonFacade().savePerson(otherPerson);
+		getPersonFacade().save(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF();
 		ContactDto otherContact = creator.createContact(
@@ -1890,7 +1890,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
 
-		PersonDto mergedPerson = getPersonFacade().getPersonByUuid(mergedContact.getPerson().getUuid());
+		PersonDto mergedPerson = getPersonFacade().getByUuid(mergedContact.getPerson().getUuid());
 
 		// Check no values
 		assertNull(mergedPerson.getBirthdateDD());

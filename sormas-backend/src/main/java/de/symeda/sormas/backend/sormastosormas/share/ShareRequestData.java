@@ -18,7 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.share;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.ShareRequestPreviews;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.ShareRequestPreviews;
 
 public class ShareRequestData implements Serializable {
 

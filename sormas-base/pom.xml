@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.75.0</version>
+	<version>1.76.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -286,7 +286,7 @@
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
-				<version>1.28</version>
+				<version>1.32</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -394,13 +394,6 @@
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
 				<version>1.2</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>2.10.13</version>
 				<scope>provided</scope>
 			</dependency>
 

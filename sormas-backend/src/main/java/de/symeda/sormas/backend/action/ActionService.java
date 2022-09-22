@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.action;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -63,26 +62,16 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		super(Action.class);
 	}
 
-	public List<Action> getAllAfter(Date since, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Action> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
-		Root<Action> root = cq.from(getElementClass());
-
-		ActionQueryContext queryContext = new ActionQueryContext(cb, cq, root);
+		ActionQueryContext queryContext = new ActionQueryContext(cb, cq, from);
 
 		Predicate filter = createActiveFilter(cb, queryContext.getJoins().getEvent());
 		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(queryContext));
-		if (since != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, root, since, lastSynchronizedUuid));
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
 
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, root, batchSize);
+		return filter;
 	}
 
 	public List<String> getAllActiveUuids() {

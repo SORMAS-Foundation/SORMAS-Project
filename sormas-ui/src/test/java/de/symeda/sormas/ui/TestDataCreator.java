@@ -160,7 +160,7 @@ public class TestDataCreator {
 		cazePerson.setFirstName(firstName);
 		cazePerson.setLastName(lastName);
 		cazePerson.setSex(sex);
-		cazePerson = FacadeProvider.getPersonFacade().savePerson(cazePerson);
+		cazePerson = FacadeProvider.getPersonFacade().save(cazePerson);
 
 		return cazePerson;
 	}
@@ -392,7 +392,7 @@ public class TestDataCreator {
 		return report;
 	}
 
-	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease) {
+	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease, RDCF rdcf) {
 		return createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -407,7 +407,7 @@ public class TestDataCreator {
 			reportingUser,
 			null,
 			disease,
-			null);
+			rdcf);
 	}
 
 	public EventDto createEvent(
@@ -424,9 +424,9 @@ public class TestDataCreator {
 		UserReferenceDto reportingUser,
 		UserReferenceDto responsibleUser,
 		Disease disease,
-		DistrictReferenceDto district) {
+		RDCF rdcf) {
 
-		return createEvent(eventStatus, eventInvestigationStatus, eventTitle, eventDesc, reportingUser, (event) -> {
+		return createEvent(eventStatus, eventInvestigationStatus, eventTitle, eventDesc, reportingUser, rdcf, (event) -> {
 			event.setSrcFirstName(srcFirstName);
 			event.setSrcLastName(srcLastName);
 			event.setSrcTelNo(srcTelNo);
@@ -436,7 +436,6 @@ public class TestDataCreator {
 			event.setReportingUser(reportingUser);
 			event.setResponsibleUser(responsibleUser);
 			event.setDisease(disease);
-			event.getEventLocation().setDistrict(district);
 		});
 	}
 
@@ -446,6 +445,7 @@ public class TestDataCreator {
 		String eventTitle,
 		String eventDesc,
 		UserReferenceDto reportingUser,
+		RDCF rdcf,
 		Consumer<EventDto> customSettings) {
 
 		EventDto event = EventDto.build();
@@ -458,6 +458,13 @@ public class TestDataCreator {
 		if (customSettings != null) {
 			customSettings.accept(event);
 		}
+
+		if (rdcf == null) {
+			rdcf = createRDCF();
+		}
+
+		event.getEventLocation().setRegion(rdcf.region.toReference());
+		event.getEventLocation().setDistrict(rdcf.district.toReference());
 
 		event = FacadeProviderMock.getEventFacade().save(event);
 
@@ -476,6 +483,7 @@ public class TestDataCreator {
 		Date reportDateTime,
 		UserReferenceDto reportingUser,
 		UserReferenceDto responsibleUser,
+		RDCF rdcf,
 		Disease disease) {
 
 		EventDto event = EventDto.build();
@@ -491,6 +499,13 @@ public class TestDataCreator {
 		event.setReportingUser(reportingUser);
 		event.setResponsibleUser(responsibleUser);
 		event.setDisease(disease);
+
+		if (rdcf == null) {
+			rdcf = createRDCF();;
+		}
+
+		event.getEventLocation().setRegion(rdcf.region.toReference());
+		event.getEventLocation().setDistrict(rdcf.district.toReference());
 
 		event = FacadeProvider.getEventFacade().save(event);
 
@@ -611,6 +626,7 @@ public class TestDataCreator {
 	}
 
 	public RegionDto createRegion(String regionName) {
+
 
 		RegionDto region = RegionDto.build();
 		region.setUuid(DataHelper.createUuid());

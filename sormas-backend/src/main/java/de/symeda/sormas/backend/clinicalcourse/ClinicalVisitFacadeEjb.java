@@ -286,11 +286,16 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			return Collections.emptyList();
 		}
 
+		return toPseudonymizedDtos(service.getAllAfter(date, batchSize, lastSynchronizedUuid));
+	}
+
+	private List<ClinicalVisitDto> toPseudonymizedDtos(List<ClinicalVisit> entities) {
+
+		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActiveClinicalVisitsAfter(date, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(t -> convertToDto(t, pseudonymizer))
-			.collect(Collectors.toList());
+		List<ClinicalVisitDto> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
+		return dtos;
 	}
 
 	@Override
@@ -368,16 +373,25 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	public ClinicalVisitDto convertToDto(ClinicalVisit source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		boolean inJurisdiction = service.inJurisdictionOrOwned(source);
+		return convertToDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	private ClinicalVisitDto convertToDto(ClinicalVisit source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		ClinicalVisitDto dto = toDto(source);
-
-		pseudonymizeDto(source, dto, pseudonymizer);
-
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
 		return dto;
 	}
 
-	private void pseudonymizeDto(ClinicalVisit source, ClinicalVisitDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonymizeDto(ClinicalVisit source, ClinicalVisitDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		if (source != null && dto != null) {
-			Boolean inJurisdiction = caseService.inJurisdictionOrOwned(source.getClinicalCourse().getCaze());
 			pseudonymizer.pseudonymizeDto(ClinicalVisitDto.class, dto, inJurisdiction, v -> {
 				pseudonymizer.pseudonymizeDto(SymptomsDto.class, dto.getSymptoms(), inJurisdiction, null);
 			});

@@ -37,7 +37,6 @@ public class TravelEntryService {
 
   private String firstName;
   private String lastName;
-  private final String emailDomain = "@CONTACT.com";
 
   @Inject
   public TravelEntryService(Faker faker) {
@@ -45,8 +44,8 @@ public class TravelEntryService {
   }
 
   public TravelEntry buildGeneratedEntryDE() {
-    firstName = faker.name().firstName() + "a";
-    lastName = faker.name().lastName() + "b";
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
 
     return TravelEntry.builder()
         .reportDate(LocalDate.now())
@@ -60,7 +59,7 @@ public class TravelEntryService {
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .disease("COVID-19")
         .pointOfEntry(getRandomPointOfEntryDE())
-        .pointOfEntryDetails("Automated test dummy description")
+        .pointOfEntryDetails("Automated test dummy description " + LocalDate.now())
         .build();
   }
 
@@ -78,7 +77,7 @@ public class TravelEntryService {
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .disease("COVID-19")
         .pointOfEntry(getRandomPointOfEntryDE())
-        .pointOfEntryDetails("Automated test dummy description")
+        .pointOfEntryDetails("Automated test dummy description " + LocalDate.now())
         .build();
   }
 
@@ -103,8 +102,8 @@ public class TravelEntryService {
   }
 
   public TravelEntry buildGeneratedEntryWithDifferentPointOfEntryDE() {
-    firstName = faker.name().firstName() + "a";
-    lastName = faker.name().lastName() + "b";
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
 
     return TravelEntry.builder()
         .reportDate(LocalDate.now())
@@ -120,7 +119,7 @@ public class TravelEntryService {
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .disease("COVID-19")
         .pointOfEntry("Anderer Einreiseort")
-        .pointOfEntryDetails("Automated test dummy description")
+        .pointOfEntryDetails("Automated test dummy description " + LocalDate.now())
         .build();
   }
 }
