@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
@@ -55,18 +56,25 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
+import de.symeda.sormas.backend.immunization.ImmunizationJoins;
+import de.symeda.sormas.backend.immunization.ImmunizationQueryContext;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 
 @Stateless
 @LocalBean
-public class VaccinationService extends BaseAdoService<Vaccination> {
+public class VaccinationService extends BaseAdoService<Vaccination> implements JurisdictionCheckService<Vaccination> {
 
 	public static final int REPORT_DATE_RELEVANT_DAYS = 14;
+
+	@EJB
+	private ImmunizationService immunizationService;
 
 	public VaccinationService() {
 		super(Vaccination.class);
@@ -344,4 +352,19 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		return vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
 	}
 
+	@Override
+	public boolean inJurisdictionOrOwned(Vaccination entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<Vaccination> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Vaccination> from) {
+
+		return immunizationService
+			.inJurisdictionOrOwned(new ImmunizationQueryContext(cb, query, new ImmunizationJoins(from.join(Vaccination.IMMUNIZATION))));
+	}
 }

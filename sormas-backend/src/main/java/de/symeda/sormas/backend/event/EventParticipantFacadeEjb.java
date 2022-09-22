@@ -230,23 +230,14 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date) {
-		return getAllActiveEventParticipantsAfter(date, null, null);
-	}
-
-	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<EventParticipantDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllAfter(date, user, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -976,12 +967,11 @@ public class EventParticipantFacadeEjb
 		return target;
 	}
 
-	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
+	@Override
+	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		if (source != null) {
 			validate(dto);
-
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
@@ -1164,5 +1154,4 @@ public class EventParticipantFacadeEjb
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
 	}
-
 }

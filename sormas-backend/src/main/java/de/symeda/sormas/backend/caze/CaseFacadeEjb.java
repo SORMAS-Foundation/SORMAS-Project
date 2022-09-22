@@ -73,7 +73,6 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,6 +207,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
@@ -495,35 +495,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
-		return getAllActiveCasesAfter(date, false);
-	}
-
-	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters) {
-		return getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, null, null);
-	}
-
-	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		return getAllActiveCasesAfter(date, false, batchSize, lastSynchronizedUuid);
-	}
-
-	private List<CaseDataDto> getAllActiveCasesAfter(
-		Date date,
-		boolean includeExtendedChangeDateFilters,
-		Integer batchSize,
-		String lastSynchronizedUuid) {
+	public List<CaseDataDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
-		return service.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
+	}
+
+	@Override
+	protected Pseudonymizer createPseudonymizer() {
+		return getPseudonymizerForDtoWithClinician("");
 	}
 
 	@Override
@@ -1348,12 +1331,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid) {
 
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
-
-		return service.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		List<Case> entities = service.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false);
+		return toPseudonymizedDtos(entities);
 	}
 
 	@Override
@@ -1434,7 +1413,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), getPseudonymizerForDtoWithClinician(""));
+		return convertToDto(service.getByUuid(uuid), createPseudonymizer());
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
@@ -1622,7 +1601,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
 	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		Case caze = service.getByUuid(dto.getUuid());
 		caze.setFollowUpComment(dto.getFollowUpComment());
 		service.ensurePersisted(caze);
@@ -1639,7 +1619,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		throws ValidationRuntimeException {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 
 		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, pseudonymizer);
 
@@ -2158,7 +2138,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		// Update completeness value
-		newCase.setCompleteness(null);
+		service.clearCompleteness(newCase);
 
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
@@ -2665,10 +2645,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
+	public void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
+		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer
@@ -4108,23 +4087,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					and(cb, personPredicate, or(cb, cb.isNull(person.get(Person.SEX)), cb.equal(person.get(Person.SEX), searchPerson.getSex())));
 			}
 
-			Predicate reportDatePredicate;
-
+			final Predicate reportDatePredicate;
 			if (reportDateThreshold == 0) {
 				// threshold is zero: we want to get exact matches
 				reportDatePredicate = cb.equal(
-					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-					cb.function("date", Date.class, cb.literal(searchCaze.getReportDate())));
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(searchCaze.getReportDate())));
 			} else {
 				// threshold is nonzero: apply time range of threshold to the reportDate
 				Date reportDate = casePerson.getCaze().getReportDate();
-				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
-				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();
-
+				Date dateBefore = DateHelper.subtractDays(reportDate, reportDateThreshold);
+				Date dateAfter = DateHelper.addDays(reportDate, reportDateThreshold);
 				reportDatePredicate = cb.between(
-					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-					cb.function("date", Date.class, cb.literal(dateBefore)),
-					cb.function("date", Date.class, cb.literal(dateAfter)));
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateBefore)),
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateAfter)));
 			}
 
 			Predicate districtPredicate = CriteriaBuilderHelper.or(
@@ -4172,7 +4149,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
-		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		return service.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 

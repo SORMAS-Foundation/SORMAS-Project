@@ -170,7 +170,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		List<DashboardEventDto> dashboardEventDtos = getDashboardFacade().getNewEvents(
 			new DashboardCriteria().region(event.getEventLocation().getRegion())

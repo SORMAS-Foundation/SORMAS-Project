@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.therapy;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -25,11 +24,12 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
+public class TreatmentService extends AdoServiceWithUserFilter<Treatment> implements JurisdictionCheckService<Treatment> {
 
 	@EJB
 	private CaseService caseService;
@@ -55,30 +55,19 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 		return resultList;
 	}
 
-	public List<Treatment> getAllActiveTreatmentsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Treatment> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Treatment> cq = cb.createQuery(getElementClass());
-		Root<Treatment> from = cq.from(getElementClass());
 		Join<Treatment, Therapy> therapy = from.join(Treatment.THERAPY, JoinType.LEFT);
 		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
-
 		Predicate filter = caseService.createActiveCasesFilter(cb, caze);
 
-		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
-			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -148,5 +137,20 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 		criteriaUpdate.where(from.get(Treatment.UUID).in(treatmentUuids));
 
 		this.em.createQuery(criteriaUpdate).executeUpdate();
+	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(Treatment entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<Treatment> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Treatment> from) {
+
+		return caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, query, new CaseJoins(from.join(Treatment.THERAPY).join(Therapy.CASE))));
 	}
 }

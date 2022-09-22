@@ -1,5 +1,10 @@
 package de.symeda.sormas.backend.campaign;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -18,6 +23,29 @@ import de.symeda.sormas.backend.TestDataCreator;
 public class CampaignFacadeEjbTest extends AbstractBeanTest {
 
 	public static final int ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
+
+	@Test
+	public void testGetAllAfter() {
+
+		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		loginWith(user);
+
+		// 0. no data
+		assertThat(getCampaignFacade().getAllAfter(null), is(empty()));
+
+		// 1. One campaign
+		CampaignDto campaign1 = creator.createCampaign(user);
+		campaign1.setStartDate(new Date(System.currentTimeMillis()));
+		campaign1 = getCampaignFacade().save(campaign1);
+		assertThat(getCampaignFacade().getAllAfter(null), contains(campaign1));
+
+		// 2. Two campaigns
+		CampaignDto campaign2 = creator.createCampaign(user);
+		campaign2.setStartDate(new Date(System.currentTimeMillis()));
+		campaign2 = getCampaignFacade().save(campaign2);
+		assertThat(getCampaignFacade().getAllAfter(null), contains(campaign1, campaign2));
+	}
 
 	@Test
 	public void testGetLastStartedCampaign() {

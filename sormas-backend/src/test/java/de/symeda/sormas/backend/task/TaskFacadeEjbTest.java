@@ -195,7 +195,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		creator.createTask(
 			TaskContext.GENERAL,
@@ -288,7 +288,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		creator.createTask(
 			TaskContext.GENERAL,
