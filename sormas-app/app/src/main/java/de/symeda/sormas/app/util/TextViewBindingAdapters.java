@@ -38,8 +38,6 @@ import android.widget.TextView;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableList;
 
-import com.google.common.base.Strings;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
