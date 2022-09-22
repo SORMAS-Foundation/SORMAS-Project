@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -372,8 +371,8 @@ public class ContactFacadeEjb
 
 		validateUserRights(dto, existingContactDto);
 		validate(dto);
-		dto.setReportDateTime(simplyDate(dto.getReportDateTime()));
-		dto.setLastContactDate(simplyDate(dto.getLastContactDate()));
+		dto.setReportDateTime(DataHelper.removeTime(dto.getReportDateTime()));
+		dto.setLastContactDate(DataHelper.removeTime(dto.getLastContactDate()));
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
@@ -2313,20 +2312,6 @@ public class ContactFacadeEjb
 
 	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
 		return vaccination != null ? vaccination.getVaccineDose() : "";
-	}
-
-	private Date simplyDate(Date date) {
-		Date shortDate = date;
-		if (date != null) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(date);
-			calendar.set(Calendar.HOUR_OF_DAY, 0);
-			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 0);
-			calendar.set(Calendar.MILLISECOND, 0);
-			shortDate = calendar.getTime();
-		}
-		return shortDate;
 	}
 
 	public User getRandomRegionContactResponsible(Region region) {
