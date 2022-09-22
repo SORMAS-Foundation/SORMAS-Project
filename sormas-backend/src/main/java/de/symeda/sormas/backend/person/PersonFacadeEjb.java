@@ -81,7 +81,6 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -1020,10 +1019,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
 			// Fetch Person.id per association and find the distinct count.
 			Set<Long> distinctPersonIds = new HashSet<>();
-			boolean immunizationModuleReduced =
-				featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
 			Arrays.stream(PersonAssociation.getSingleAssociations())
-				.filter(e -> !(immunizationModuleReduced && e == PersonAssociation.IMMUNIZATION))
+				.filter(e -> service.isPermittedAssociation(e))
 				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
 				.forEach(distinctPersonIds::addAll);
 			count = distinctPersonIds.size();

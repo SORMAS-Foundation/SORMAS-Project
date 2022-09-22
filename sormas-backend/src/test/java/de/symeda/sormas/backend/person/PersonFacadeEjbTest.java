@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -73,6 +75,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
@@ -121,6 +124,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(user);
+
+		// TravelEntry only active for Germany
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 
 		// 1a. Test for all available PersonAssociations
 		for (PersonAssociation pa : PersonAssociation.values()) {
@@ -1029,6 +1035,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testUserWithLimitedDiseaseSeeOnlyLimitedTravelEntry() {
+
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
 
@@ -1051,6 +1058,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.region,
 			rdcf.district,
 			rdcf.pointOfEntry);
+
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 
 		//National User with no restrictions can see all the travel entries
 		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);

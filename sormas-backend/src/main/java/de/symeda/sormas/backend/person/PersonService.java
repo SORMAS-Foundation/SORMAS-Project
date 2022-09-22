@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -295,73 +294,100 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 		throw new UnsupportedOperationException("Should not be called -> obsolete!");
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(PersonQueryContext personQueryContext, PersonCriteria personCriteria) {
+	public Predicate createUserFilter(PersonQueryContext queryContext, PersonCriteria personCriteria) {
 
-		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
-		final CriteriaQuery cq = personQueryContext.getQuery();
-		final PersonJoins joins = personQueryContext.getJoins();
-
-		final boolean fullImmunizationModuleUsed =
-			!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
-
-		// 1. Define filters per association lazy to avoid superfluous joins
-		final Supplier<Predicate> caseFilter = () -> CriteriaBuilderHelper.and(
-			cb,
-			caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), new CaseUserFilterCriteria()),
-			caseService.createDefaultFilter(cb, joins.getCaze()));
-		final Supplier<Predicate> contactFilter = () -> {
-			final Predicate contactUserFilter = contactService.createUserFilter(
-				new ContactQueryContext(cb, cq, joins.getContactJoins()),
-				new ContactCriteria().includeContactsFromOtherJurisdictions(false));
-			return CriteriaBuilderHelper.and(cb, contactUserFilter, contactService.createDefaultFilter(cb, joins.getContact()));
-		};
-		final Supplier<Predicate> eventParticipantFilter = () -> CriteriaBuilderHelper.and(
-			cb,
-			eventParticipantService.createUserFilter(
-				new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()),
-				new EventUserFilterCriteria().includeUserCaseAndEventParticipantFilter(false).forceRegionJurisdiction(true)),
-			eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
-		final Supplier<Predicate> immunizationFilter = fullImmunizationModuleUsed
-			? () -> CriteriaBuilderHelper.and(
-				cb,
-				immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
-				immunizationService.createDefaultFilter(cb, joins.getImmunization()))
-			: () -> null;
-		final Supplier<Predicate> travelEntryFilter = () -> CriteriaBuilderHelper.and(
-			cb,
-			travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
-			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
-
-		// 2. Define the Joins on associations where needed
-		PersonAssociation personAssociation =
+		/*
+		 * Creates a combined filter only if no filtering on a specific association is given.
+		 */
+		final Predicate userFilter;
+		final PersonAssociation personAssociation =
 			Optional.ofNullable(personCriteria).map(e -> e.getPersonAssociation()).orElse(PersonCriteria.DEFAULT_ASSOCIATION);
 		switch (personAssociation) {
 		case ALL:
-			return CriteriaBuilderHelper.or(
-				cb,
-				caseFilter.get(),
-				contactFilter.get(),
-				eventParticipantFilter.get(),
-				fullImmunizationModuleUsed ? immunizationFilter.get() : null,
-				travelEntryFilter.get());
+			// Combine all associations that are permitted
+			userFilter = CriteriaBuilderHelper.or(
+				queryContext.getCriteriaBuilder(),
+				createAssociationPredicate(queryContext, PersonAssociation.CASE),
+				createAssociationPredicate(queryContext, PersonAssociation.CONTACT),
+				createAssociationPredicate(queryContext, PersonAssociation.EVENT_PARTICIPANT),
+				createAssociationPredicate(queryContext, PersonAssociation.IMMUNIZATION),
+				createAssociationPredicate(queryContext, PersonAssociation.TRAVEL_ENTRY));
+			break;
 		case CASE:
-			return caseFilter.get();
 		case CONTACT:
-			return contactFilter.get();
 		case EVENT_PARTICIPANT:
-			return eventParticipantFilter.get();
 		case IMMUNIZATION:
-			if (!fullImmunizationModuleUsed) {
-				throw new UnsupportedOperationException(
-					"Filtering persons by immunizations is not supported when the reduced immunization module is used.");
-			}
-			return immunizationFilter.get();
 		case TRAVEL_ENTRY:
-			return travelEntryFilter.get();
+			userFilter = createAssociationPredicate(queryContext, personAssociation);
+			break;
 		default:
 			throw new IllegalArgumentException(personAssociation.toString());
 		}
+
+		if (userFilter == null) {
+			throw new IllegalArgumentException("No filter compiled for persons by association " + personAssociation.name());
+		}
+
+		return userFilter;
+	}
+
+	/**
+	 * @return {@code null}, if the association is not permitted to query,
+	 *         otherwise an appropriate {@link Predicate} for the given {@link PersonAssociation}.
+	 * @see #isPermittedAssociation(PersonAssociation)
+	 */
+	private Predicate createAssociationPredicate(@NotNull PersonQueryContext queryContext, @NotNull PersonAssociation personAssociation) {
+
+		if (!isPermittedAssociation(personAssociation)) {
+			// association not permitted: cancel rest of logic
+			return null;
+		}
+
+		final CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		final CriteriaQuery<?> cq = queryContext.getQuery();
+		final PersonJoins joins = queryContext.getJoins();
+		final Predicate associationPredicate;
+		switch (personAssociation) {
+		case CASE:
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), new CaseUserFilterCriteria()),
+				caseService.createDefaultFilter(cb, joins.getCaze()));
+			break;
+		case CONTACT:
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				contactService.createUserFilter(
+					new ContactQueryContext(cb, cq, joins.getContactJoins()),
+					new ContactCriteria().includeContactsFromOtherJurisdictions(false)),
+				contactService.createDefaultFilter(cb, joins.getContact()));
+			break;
+		case EVENT_PARTICIPANT:
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				eventParticipantService.createUserFilter(
+					new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()),
+					new EventUserFilterCriteria().includeUserCaseAndEventParticipantFilter(false).forceRegionJurisdiction(true)),
+				eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
+			break;
+		case IMMUNIZATION:
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
+				immunizationService.createDefaultFilter(cb, joins.getImmunization()));
+			break;
+		case TRAVEL_ENTRY:
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
+				travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
+			break;
+		case ALL:
+		default:
+			throw new IllegalArgumentException(personAssociation.toString());
+		}
+
+		return associationPredicate;
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
@@ -605,6 +631,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 	}
 
 	public Predicate inJurisdictionOrOwned(PersonQueryContext personQueryContext) {
+
 		final User currentUser = userService.getCurrentUser();
 		return PersonJurisdictionPredicateValidator
 			.of(
@@ -612,7 +639,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 				personQueryContext.getCriteriaBuilder(),
 				personQueryContext.getJoins(),
 				currentUser,
-				!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED))
+				getPermittedAssociations())
 			.inJurisdictionOrOwned();
 	}
 
