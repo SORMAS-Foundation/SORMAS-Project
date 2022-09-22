@@ -68,7 +68,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	private int allowedDaysInFuture;
 	private Date cachedTime;
 
-	private boolean simpleDate;
+	private boolean dateWithoutTime;
 
 	// Constructors
 
@@ -386,7 +386,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
 	public static Date getValue(ControlDateField view) {
 		Date viewDate = view.getFieldValue();
-		if (view.isSimpleDate() && viewDate != null) {
+		if (view.isDateWithoutTime() && viewDate != null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(viewDate);
 			calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -408,11 +408,11 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 		field.dateFormat = dateFormat;
 	}
 
-	public boolean isSimpleDate() {
-		return simpleDate;
+	public boolean isDateWithoutTime() {
+		return dateWithoutTime;
 	}
 
-	public void setSimpleDate(boolean simpleDate) {
-		this.simpleDate = simpleDate;
+	public void setDateWithoutTime(boolean dateWithoutTime) {
+		this.dateWithoutTime = dateWithoutTime;
 	}
 }

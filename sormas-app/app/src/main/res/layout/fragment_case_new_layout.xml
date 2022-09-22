@@ -272,7 +272,7 @@
                     android:id="@+id/caseData_reportDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:required="true"
-                    app:simpleDate="@{true}"
+                    app:dateWithoutTime="@{true}"
                     app:value="@={data.reportDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
