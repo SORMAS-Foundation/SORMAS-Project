@@ -17,8 +17,6 @@ package de.symeda.sormas.app.symptoms;
 
 import java.util.Date;
 
-import org.joda.time.DateTimeComparator;
-
 import android.view.View;
 
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -26,6 +24,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
@@ -45,9 +44,8 @@ final class SymptomsValidator {
 
 		if (ado instanceof Case) {
 			contentBinding.symptomsOnsetDate.addValueChangedListener(field -> {
-				Date value = (Date) field.getValue();
-				if (((Case) ado).getHospitalization().getAdmissionDate() != null
-					&& DateTimeComparator.getDateOnlyInstance().compare(value, ((Case) ado).getHospitalization().getAdmissionDate()) >= 0) {
+				// sympton onset should be before admission
+				if (DateHelper.isDateAfter((Date) field.getValue(), ((Case) ado).getHospitalization().getAdmissionDate())) {
 					contentBinding.symptomsOnsetDate.enableWarningState(
 						I18nProperties.getValidationError(
 							Validations.beforeDateSoft,

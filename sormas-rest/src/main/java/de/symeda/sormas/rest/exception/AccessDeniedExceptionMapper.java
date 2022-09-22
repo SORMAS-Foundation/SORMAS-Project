@@ -18,15 +18,15 @@
 
 package de.symeda.sormas.rest.exception;
 
-import javax.ejb.EJBAccessException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import org.apache.http.HttpStatus;
+
+import de.symeda.sormas.api.utils.AccessDeniedException;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

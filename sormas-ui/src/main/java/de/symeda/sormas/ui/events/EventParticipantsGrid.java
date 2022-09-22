@@ -175,7 +175,10 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			deselectAll();
 		}
 
+		if (ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
-		setEagerDataProvider();
 	}
 }

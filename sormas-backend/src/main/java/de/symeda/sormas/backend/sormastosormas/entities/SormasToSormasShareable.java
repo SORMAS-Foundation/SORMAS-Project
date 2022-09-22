@@ -17,7 +17,7 @@ package de.symeda.sormas.backend.sormastosormas.entities;
 
 import java.util.List;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;

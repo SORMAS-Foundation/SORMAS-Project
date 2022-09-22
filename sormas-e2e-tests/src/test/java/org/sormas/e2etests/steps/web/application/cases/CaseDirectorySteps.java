@@ -40,7 +40,6 @@ import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPOR
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_DETAILED_EXPORT_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV;
@@ -50,6 +49,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
@@ -162,6 +162,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -498,14 +499,14 @@ public class CaseDirectorySteps implements En {
         "I click on new entry button from Epidemiological Data tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
 
     Then(
         "I click on new entry button from Epidemiological Data tab for DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
 
     And(

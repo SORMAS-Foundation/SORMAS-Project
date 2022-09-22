@@ -67,10 +67,12 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -403,6 +405,37 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(PathogenTestResultType.NEGATIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
 		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
 	}
+	
+	@Test
+	public void testEventParticipantIndexListSorting() {
+		RDCF rdcf = new RDCF(creator.createRDCFEntities());
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		EventDto event = creator.createEvent(user.toReference());
+		PersonDto person = creator.createPerson();
+
+		EventParticipantDto eventParticipant1 = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		EventParticipantDto eventParticipant2 = creator.createEventParticipant(event.toReference(), person, user.toReference());
+
+		Calendar calendarDay1 = Calendar.getInstance();
+		calendarDay1.set(2022, 7, 1);
+
+		creator.createSample(
+			eventParticipant1.toReference(),
+			calendarDay1.getTime(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(event.toReference());
+		SortProperty sortProperty = new SortProperty(SampleIndexDto.SAMPLE_DATE_TIME, false);
+		List<EventParticipantIndexDto> eventParticipantIndexDtos =
+			getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, Arrays.asList(sortProperty));
+		assertEquals(2, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipant1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+	}
 
 	@Test
 	public void searchEventParticipantsByPersonPhone() {
@@ -544,6 +577,6 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 	}
 }

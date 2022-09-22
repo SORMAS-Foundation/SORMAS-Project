@@ -671,8 +671,8 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 				c.setSormasToSormasOriginInfo(savedOriginInfo);
 			});
 
-		EventDto event =
-			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, (e) -> {
+		EventDto event = creator
+			.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, null, (e) -> {
 				e.getEventLocation().setRegion(rdcf.region);
 				e.getEventLocation().setDistrict(rdcf.district);
 				e.setSormasToSormasOriginInfo(savedOriginInfo);

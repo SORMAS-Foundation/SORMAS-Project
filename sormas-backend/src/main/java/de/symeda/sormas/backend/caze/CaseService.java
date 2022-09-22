@@ -252,11 +252,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Case> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
-		Root<Case> from = cq.from(getElementClass());
+		Predicate filter = createActiveCasesFilter(cb, from);
+
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
+		}
+
+		return filter;
+	}
+
+	@Override
+	protected void fetchReferences(From<?, Case> from) {
+
 		from.fetch(Case.SYMPTOMS);
 		from.fetch(Case.THERAPY);
 		from.fetch(Case.HEALTH_CONDITIONS);
@@ -264,28 +275,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		from.fetch(Case.EPI_DATA);
 		from.fetch(Case.PORT_HEALTH_INFO);
 		from.fetch(Case.MATERNAL_HISTORY);
-
-		Predicate filter = createActiveCasesFilter(cb, from);
-
-		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
-		}
-
-		if (date != null) {
-			Predicate dateFilter =
-				createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeExtendedChangeDateFilters, lastSynchronizedUuid);
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -974,10 +963,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return cb.and(cb.isFalse(root.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
 	}
 
-	public Predicate createActiveCasesFilter(CriteriaBuilder cb, Join<?, Case> join) {
-		return cb.and(cb.isFalse(join.get(Case.ARCHIVED)), cb.isFalse(join.get(Case.DELETED)));
-	}
-
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link CaseCriteria}.
 	 * This essentially removes {@link DeletableAdo#isDeleted()} cases from the queries.
@@ -1075,31 +1060,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			try {
-				externalSurveillanceToolGatewayFacade
-					.sendCases(externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids), archived);
-			} catch (ExternalSurveillanceToolException e) {
-				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			List<String> sharedCaseUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids);
+
+			if (!sharedCaseUuids.isEmpty()) {
+				try {
+					externalSurveillanceToolGatewayFacade.sendCases(sharedCaseUuids, archived);
+				} catch (ExternalSurveillanceToolException e) {
+					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+				}
 			}
 		}
 	}
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
-		Case caze = getByUuid(entityUuid);
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
-			&& externalShareInfoService.isCaseShared(caze.getId())
-			&& !hasShareInfoWithDeletedStatus(entityUuid)) {
-			try {
-				externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), archived);
-			} catch (ExternalSurveillanceToolException e) {
-				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-			}
-		}
-	}
-
-	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
-		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
-		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
+		setArchiveInExternalSurveillanceToolForEntities(Collections.singletonList(entityUuid), archived);
 	}
 
 	@Override
@@ -1602,12 +1576,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	}
 
-	@Override
-	public EditPermissionType isEditAllowed(Case entity) {
-		// todo compared to ContactService this seems strange.
-		return getEditPermissionType(entity);
-	}
-
 	public boolean inJurisdiction(Case caze, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1620,18 +1588,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
-	public boolean inJurisdictionOrOwned(Case caze, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Case> root = cq.from(Case.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
-		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
-	}
-
-	public boolean inJurisdictionOrOwned(Case caze) {
-		return inJurisdictionOrOwned(caze, userService.getCurrentUser());
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
+		return inJurisdictionOrOwned(new CaseQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(CaseQueryContext qc) {
@@ -2049,6 +2008,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
 		Root<Case> root = cu.from(Case.class);
 		cu.set(root.get(Case.COMPLETENESS), completeness);
+		cu.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		em.createQuery(cu).executeUpdate();
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void clearCompleteness(Case caze) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+		cu.set(root.get(Case.COMPLETENESS), (Float) null);
 		cu.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
 		em.createQuery(cu).executeUpdate();
 	}

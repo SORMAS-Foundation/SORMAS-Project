@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -187,34 +188,28 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return sampleService.getAllActiveSamplesAfter(date, user, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(e -> convertToDto(e, pseudonymizer))
-			.collect(Collectors.toList());
+		return toPseudonymizedDtos(sampleService.getAllAfter(date, batchSize, lastSynchronizedUuid));
 	}
 
 	@Override
 	public List<SampleDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return sampleService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(sampleService.getByUuids(uuids));
 	}
 
 	@Override
 	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return sampleService.getByCaseUuids(caseUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(sampleService.getByCaseUuids(caseUuids));
 	}
 
 	@Override
 	public List<SampleDto> getByContactUuids(List<String> contactUuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return sampleService.getByContactUuids(contactUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(sampleService.getByContactUuids(contactUuids));
 	}
 
 	@Override
@@ -254,13 +249,11 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.where(filter);
 		}
 
-		List<Sample> samples = em.createQuery(cq).getResultList();
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(em.createQuery(cq).getResultList());
 	}
 
 	public List<SampleDto> getSamplesByCriteria(SampleCriteria criteria) {
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
@@ -276,8 +269,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		List<Sample> samples = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(samples);
 	}
 
 	@Override
@@ -287,15 +279,12 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleDto> getByEventParticipantUuids(List<String> eventParticipantUuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return sampleService.getByEventParticipantUuids(eventParticipantUuids)
-			.stream()
-			.map(s -> convertToDto(s, pseudonymizer))
-			.collect(Collectors.toList());
+		return toPseudonymizedDtos(sampleService.getByEventParticipantUuids(eventParticipantUuids));
 	}
 
 	@Override
 	public List<SampleDto> getByLabSampleId(String labSampleId) {
+
 		if (labSampleId == null) {
 			return new ArrayList<>();
 		}
@@ -339,7 +328,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleDto getSampleByUuid(String uuid) {
-		return convertToDto(sampleService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(sampleService.getByUuid(uuid), createPseudonymizer());
 	}
 
 	@Override
@@ -358,7 +347,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingSample, userService, UserRight.SAMPLE_CREATE, UserRight.SAMPLE_EDIT);
 
-		if (internal && existingSample != null && !sampleService.isSampleEditAllowed(existingSample)) {
+		if (internal && existingSample != null && !sampleService.isEditAllowed(existingSample)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
 		}
 
@@ -409,26 +398,28 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	public List<SampleDto> getPositiveOrLatest(SampleCriteria criteria, Function<Sample, AbstractDomainObject> associatedObjectFn) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
-		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
+		Collection<Sample> entities = sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
+			.collect(
+				Collectors.toMap(
+					s -> associatedObjectFn.apply(s).getUuid(),
+					s -> s,
+					(s1, s2) -> {
 
-				// keep the positive one
-				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s1;
-				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s2;
-				}
+						// keep the positive one
+						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
 
-				// ordered by creation date by default, so always keep the first one
-				return s1;
-			}))
-			.values()
-			.stream()
-			.map(s -> convertToDto(s, pseudonymizer))
-			.collect(Collectors.toList());
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
+			.values();
+
+		return toPseudonymizedDtos(new ArrayList<>(entities));
 	}
 
 	@Override
@@ -815,36 +806,58 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	public SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer) {
 
+		if (source == null) {
+			return null;
+		}
+
+		return convertToDto(source, pseudonymizer, sampleService.getJurisdictionFlags(source));
+	}
+
+	private SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
+
 		SampleDto dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer);
+		pseudonymizeDto(source, dto, pseudonymizer, jurisdictionFlags);
 
 		return dto;
 	}
 
-	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer pseudonymizer) {
+	private List<SampleDto> toPseudonymizedDtos(List<Sample> entities) {
+
+		Map<Long, SampleJurisdictionFlagsDto> jurisdictionFlags = sampleService.getJurisdictionsFlags(entities);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		List<SampleDto> dtos = entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
+		return dtos;
+	}
+
+	private Pseudonymizer createPseudonymizer() {
+		return Pseudonymizer.getDefault(userService::hasRight);
+	}
+
+	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
+
 		if (dto != null) {
-			final SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto = sampleService.inJurisdictionOrOwned(source);
 			User currentUser = userService.getCurrentUser();
 
-			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, sampleJurisdictionFlagsDto.getInJurisdiction(), s -> {
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
+			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, jurisdictionFlags.getInJurisdiction(), s -> {
+				pseudonymizer
+					.pseudonymizeUser(SampleDto.class, SampleDto.REPORTING_USER, source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					s.getAssociatedCase(),
 					s.getAssociatedContact(),
 					s.getAssociatedEventParticipant(),
 					pseudonymizer,
-					sampleJurisdictionFlagsDto);
+					jurisdictionFlags);
 			});
 		}
 	}
 
 	private void restorePseudonymizedDto(SampleDto dto, Sample existingSample, SampleDto existingSampleDto) {
+
 		if (existingSampleDto != null) {
-			boolean inJurisdiction = sampleService.inJurisdictionOrOwned(existingSample).getInJurisdiction();
+			boolean inJurisdiction = sampleService.getJurisdictionFlags(existingSample).getInJurisdiction();
 			User currentUser = userService.getCurrentUser();
 
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-
+			Pseudonymizer pseudonymizer = createPseudonymizer();
 			pseudonymizer.restoreUser(existingSample.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(SampleDto.class, dto, existingSampleDto, inJurisdiction);
 		}
@@ -1044,10 +1057,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		return count > 0;
 	}
 
-	public Boolean isSampleEditAllowed(String sampleUuid) {
-		Sample sample = sampleService.getByUuid(sampleUuid);
-
-		return sampleService.isSampleEditAllowed(sample);
+	@Override
+	public Boolean isEditAllowed(String uuid) {
+		Sample sample = sampleService.getByUuid(uuid);
+		return sampleService.isEditAllowed(sample);
 	}
 
 	@RightsAllowed({

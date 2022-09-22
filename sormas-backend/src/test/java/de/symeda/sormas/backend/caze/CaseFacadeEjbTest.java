@@ -62,7 +62,6 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -168,6 +167,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -183,7 +183,6 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 public class CaseFacadeEjbTest extends AbstractBeanTest {
@@ -475,7 +474,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// Follow-up status and duration should be set to the requirements for EVD
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21), UtilDate.toLocalDate(contact.getFollowUpUntil()));
 
 		caze.setDisease(Disease.MEASLES);
 		getCaseFacade().save(caze);
@@ -784,8 +783,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			"Signal foo",
 			"A long description for this event",
 			user.toReference(),
-			eventDto -> {
-			});
+			null,
+			null);
 
 		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
 		EventParticipantDto event1Participant2 = creator.createEventParticipant(event1.toReference(), person2, user.toReference());
@@ -1550,7 +1549,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Date testStartDate = new Date();
 
 		// getAllActiveCases and getAllUuids should return length 1
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(1, getCaseFacade().getAllAfter(null).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
 		stubFor(
@@ -1563,7 +1562,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveCases and getAllUuids should return length 0
-		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(0, getCaseFacade().getAllAfter(null).size());
 		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 1
@@ -1572,7 +1571,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveCases and getAllUuids should return length 1
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(1, getCaseFacade().getAllAfter(null).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 0
@@ -1580,7 +1579,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersSample() throws InterruptedException {
+	public void testGetAllActiveCasesDoesNotIncludeExtendedChangeDateFiltersSample() throws InterruptedException {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
@@ -1609,102 +1608,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		sample.setComment("one comment");
 		getSampleFacade().saveSample(sample);
 
-		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
-	}
-
-	@Test
-	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersPathogenTest() throws InterruptedException {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-
-		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		PathogenTestDto pathogenTestDto = creator.createPathogenTest(sample.toReference(), caze);
-
-		Date date = new Date();
-		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
-		Thread.sleep(10L);
-
-		pathogenTestDto.setTestResultText("test result changed");
-		getPathogenTestFacade().savePathogenTest(pathogenTestDto);
-
-		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
-	}
-
-	@Test
-	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersPatientTest() throws InterruptedException {
-
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-
-		Date date = new Date();
-		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
-		Thread.sleep(10L);
-
-		cazePerson.setBurialDate(new Date());
-		getPersonFacade().save(cazePerson);
-
-		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
-	}
-
-	@Test
-	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersLocationTest() throws InterruptedException {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = useSurveillanceOfficerLogin(rdcf);
-
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			creator.createPerson("Case", "Person").toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-
-		Date date = new Date();
-		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
-		Thread.sleep(10L);
-
-		PersonDto cazePerson = getPersonFacade().getByUuid(caze.getPerson().getUuid());
-		cazePerson.getAddress().setStreet("new Street");
-		cazePerson.getAddress().setHouseNumber("new Number");
-		cazePerson.getAddress().setAdditionalInformation("new Information");
-		getPersonFacade().save(cazePerson);
-
-		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
+		assertEquals(0, getCaseFacade().getAllAfter(date).size());
 	}
 
 	@Test
@@ -2086,17 +1990,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 		creator.createVaccinationWithDetails(
-				followUser.toReference(),
-				followImmunizationDto.toReference(),
-				healthConditions,
-				calendar.getTime(),
-				Vaccine.COMIRNATY,
-				VaccineManufacturer.BIONTECH_PFIZER,
-				VaccinationInfoSource.ORAL_COMMUNICATION,
-				null,
-				null,
-				"abc",
-				null);
+			followUser.toReference(),
+			followImmunizationDto.toReference(),
+			healthConditions,
+			calendar.getTime(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER,
+			VaccinationInfoSource.ORAL_COMMUNICATION,
+			null,
+			null,
+			"abc",
+			null);
 		creator.createVaccinationWithDetails(
 			followUser.toReference(),
 			followImmunizationDto.toReference(),
@@ -2684,8 +2588,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetDuplicatesWithReportDateThreshold() {
+
 		RDCF rdcf = creator.createRDCF();
-		Date now = new Date();
+		LocalDateTime now = LocalDateTime.now();
+
 		//case and person matching for asserts
 		PersonDto person = creator.createPerson("Fname", "Lname", (p) -> {
 			p.setBirthdateDD(12);
@@ -2708,7 +2614,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user, rdcf, (c) -> {
 			c.setPerson(person2.toReference());
 			c.setDisease(Disease.CORONAVIRUS);
-			c.setReportDate(new DateTime(now).minusDays(1).toDate());
+			c.setReportDate(UtilDate.from(now.minusDays(1)));
 		});
 
 		CasePersonDto casePerson = new CasePersonDto();
@@ -2777,7 +2683,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21), UtilDate.toLocalDate(caze.getFollowUpUntil()));
 
 		VisitDto visit = creator
 			.createVisit(caze.getDisease(), cazePerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE, VisitOrigin.USER);
@@ -2785,7 +2691,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// Follow-up until should be increased by one day
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21 + 1), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21 + 1), UtilDate.toLocalDate(caze.getFollowUpUntil()));
 
 		visit.setVisitStatus(VisitStatus.COOPERATIVE);
 		visit = getVisitFacade().saveVisit(visit);
@@ -2793,7 +2699,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// Follow-up until should be back at the original date and follow-up should be completed
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(FollowUpStatus.COMPLETED, caze.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21), UtilDate.toLocalDate(caze.getFollowUpUntil()));
 
 		// Manually overwrite and increase the follow-up until date
 		caze.setFollowUpUntil(DateUtils.addDays(new Date(), 23));
@@ -2816,7 +2722,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.getSymptoms().setOnsetDate(DateHelper.addDays(caze.getSymptoms().getOnsetDate(), 10));
 		caze = getCaseFacade().save(caze);
 		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21 + 10), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21 + 10), UtilDate.toLocalDate(caze.getFollowUpUntil()));
 	}
 
 	@Test

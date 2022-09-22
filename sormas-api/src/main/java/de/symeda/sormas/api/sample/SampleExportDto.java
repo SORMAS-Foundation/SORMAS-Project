@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.sample;
 
 import java.io.Serializable;
@@ -31,15 +46,15 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class SampleExportDto implements Serializable {
+public class SampleExportDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = -3027326087594387560L;
 
 	public static final String I18N_PREFIX = "SampleExport";
 
 	private long id;
-	private String uuid;
 	private String labSampleID;
 	private String epidNumber;
 	@EmbeddedPersonalData
@@ -136,9 +151,8 @@ public class SampleExportDto implements Serializable {
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
 						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String labUuid, String caseHealthFacilityUuid, boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
-
+		super(uuid);
 		this.id = id;
-		this.uuid = uuid;
 		this.labSampleID = labSampleId;
 		this.epidNumber = epidNumber;
 		this.sampleReportDate = sampleReportDate;
@@ -248,11 +262,11 @@ public class SampleExportDto implements Serializable {
 		this.contactStatus = contactStatus;
 
 		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
-				isInJurisdiction,
-				isCaseInJurisdiction,
-				isContactInJurisdiction,
-				isContactCaseInJurisdiction,
-				isEventParticipantInJurisdiction);
+			isInJurisdiction,
+			isCaseInJurisdiction,
+			isContactInJurisdiction,
+			isContactCaseInJurisdiction,
+			isEventParticipantInJurisdiction);
 	}
 
 	@Order(0)
@@ -266,11 +280,7 @@ public class SampleExportDto implements Serializable {
 
 	@Order(1)
 	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+		return super.getUuid();
 	}
 
 	@Order(2)

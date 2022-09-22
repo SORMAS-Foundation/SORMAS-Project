@@ -44,8 +44,8 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -158,20 +158,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public boolean inJurisdictionOrOwned(TravelEntry travelEntry) {
-		return inJurisdictionOrOwned(travelEntry, getCurrentUser());
-	}
-
-	public boolean inJurisdictionOrOwned(TravelEntry travelEntry, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<TravelEntry> root = cq.from(TravelEntry.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(TravelEntry.UUID), travelEntry.getUuid()));
-		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
-	}
-
 	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
 		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
 	}
@@ -196,7 +182,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(TravelEntry travelEntry) {
+	public EditPermissionType getEditPermissionType(TravelEntry travelEntry) {
 
 		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) || !inJurisdictionOrOwned(travelEntry)) {
 			return EditPermissionType.REFUSED;
@@ -238,6 +224,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	public TravelEntry getLastTravelEntry() {
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<TravelEntry> query = cb.createQuery(TravelEntry.class);
 		final Root<TravelEntry> from = query.from(TravelEntry.class);
@@ -245,8 +232,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 		query.where(cb.and(createDefaultFilter(cb, from), cb.lessThanOrEqualTo(from.get(TravelEntry.CREATION_DATE), new Date())));
 		query.orderBy(cb.desc(from.get(TravelEntry.CREATION_DATE)));
 
-		final TypedQuery<TravelEntry> q = em.createQuery(query);
-		return q.getResultList().stream().findFirst().orElse(null);
+		return QueryHelper.getFirstResult(em, query);
 	}
 
 	private Predicate buildCriteriaFilter(TravelEntryCriteria criteria, TravelEntryQueryContext travelEntryQueryContext) {
