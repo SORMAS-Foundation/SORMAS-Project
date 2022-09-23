@@ -239,28 +239,28 @@ public final class TimeAgo {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance == TimeMinutes.ONE.getValue();
+				return distance == TimeMinutes.ONE_MINUTE.getValue();
 			}
 		}),
 		XMINUTES_PAST(R.string.time_past_x_minutes, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= TimeMinutes.TWO.getValue() && distance < TimeMinutes.FORTY_FIVE_MINUTES.getValue();
+				return distance >= TimeMinutes.TWO_MINUTES.getValue() && distance < TimeMinutes.FORTY_FIVE_MINUTES.getValue();
 			}
 		}),
 		ABOUTANHOUR_PAST(R.string.time_past_one_hour, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= TimeMinutes.FORTY_FIVE_MINUTES.getValue() && distance < TimeMinutes.ONE_HOUR_AND_HALF.getValue();
+				return distance >= TimeMinutes.FORTY_FIVE_MINUTES.getValue() && distance < TimeMinutes.ONE_HOUR_AND_A_HALF.getValue();
 			}
 		}),
 		XHOURS_PAST(R.string.time_past_x_hours, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= TimeMinutes.ONE_HOUR_AND_HALF.getValue() && distance < TimeMinutes.ONE_DAY.getValue();
+				return distance >= TimeMinutes.ONE_HOUR_AND_A_HALF.getValue() && distance < TimeMinutes.ONE_DAY.getValue();
 			}
 		}),
 
@@ -332,21 +332,21 @@ public final class TimeAgo {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= TimeMinutes.time(635, 0) && distance < TimeMinutes.TWO_YEAR.getValue();
+				return distance >= TimeMinutes.time(635, 0) && distance < TimeMinutes.TWO_YEARS.getValue();
 			}
 		}),
 		XYEARS_PAST(R.string.time_past_x_years, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return Math.round(distance / TimeMinutes.ONE_YEAR.getValue()) > TimeMinutes.ONE.getNegativeValue();
+				return Math.round(distance / TimeMinutes.ONE_YEAR.getValue()) > TimeMinutes.ONE_MINUTE.getNegativeValue();
 			}
 		}),
 		ONEMINUTE_FUTURE(R.string.time_future_one_minute, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance == TimeMinutes.ONE.getNegativeValue();
+				return distance == TimeMinutes.ONE_MINUTE.getNegativeValue();
 			}
 		}),
 		XMINUTES_FUTURE(R.string.time_future_x_minutes, new DistancePredicate() {

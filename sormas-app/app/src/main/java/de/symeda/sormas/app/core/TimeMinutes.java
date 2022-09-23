@@ -6,11 +6,11 @@ package de.symeda.sormas.app.core;
 public enum TimeMinutes {
 
 	NO_MINUTES(0),
-	ONE(1),
-	TWO(2),
+	ONE_MINUTE(1),
+	TWO_MINUTES(2),
 	FORTY_FIVE_MINUTES(45),
 	ONE_HOUR(60),
-	ONE_HOUR_AND_HALF(90),
+	ONE_HOUR_AND_A_HALF(90),
 	ONE_DAY(1440),
 	//30 days
 	ONE_MONTH(43200),
@@ -19,7 +19,7 @@ public enum TimeMinutes {
 	//365 days
 	ONE_YEAR(525600),
 	//730 days
-	TWO_YEAR(1051200);
+	TWO_YEARS(1051200);
 
 	private long minutes;
 

@@ -44,6 +44,7 @@ import androidx.fragment.app.FragmentManager;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -387,13 +388,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	public static Date getValue(ControlDateField view) {
 		Date viewDate = view.getFieldValue();
 		if (view.isDateWithoutTime() && viewDate != null) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(viewDate);
-			calendar.set(Calendar.HOUR_OF_DAY, 0);
-			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 0);
-			calendar.set(Calendar.MILLISECOND, 0);
-			viewDate = calendar.getTime();
+			viewDate = DataHelper.removeTime(viewDate);
 		}
 		return viewDate;
 	}
