@@ -113,6 +113,36 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.responsibleCommunity = responsibleCommunity;
 	}
 
+	public CaseIndexDetailedDto(
+		long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken,
+		String personUuid, String personFirstName, String personLastName,
+		Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails,
+		CaseClassification caseClassification, InvestigationStatus investigationStatus, PresentCondition presentCondition,
+		Date reportDate, Date creationDate,
+		String regionUuid, String districtUuid,
+		String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
+		String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid,
+		CaseOutcome outcome, Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
+		Sex sex, Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
+		SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, Date changeDate, Long facilityId,
+		String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction,
+		//detailed fields
+		YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation,
+		String postalCode, String phone, String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName,
+		Date symptomOnsetDate, String responsibleRegion, String responsibleCommunity, int visitCount,
+		Date latestSampleDateTime, long sampleCount, Date latestChangedDate) {
+		this(id, uuid, epidNumber, externalID, externalToken, internalToken, personUuid, personFirstName, personLastName,
+				disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus, presentCondition,
+				reportDate, creationDate, regionUuid, districtUuid, healthFacilityUuid, healthFacilityName,
+				healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid,
+				outcome, age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo, completeness,
+				followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, changeDate, facilityId,
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction, reInfection,
+				city, street, houseNumber, additionalInformation, postalCode, phone, reportingUserUuid,
+				reportingUserFirstName, reportingUserLastName, symptomOnsetDate, responsibleRegion, responsibleCommunity,
+				visitCount, 0, latestSampleDateTime, sampleCount, latestChangedDate);
+	}
+
 	public YesNoUnknown getReInfection() {
 		return reInfection;
 	}
