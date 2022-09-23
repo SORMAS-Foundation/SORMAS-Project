@@ -26,6 +26,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 
 public final class TimeAgo {
@@ -90,7 +91,7 @@ public final class TimeAgo {
 	 * @see TimeAgoMessages
 	 */
 	public String with(final long time, final boolean detailLevelDays, final TimeAgoMessages resources) {
-		final long dim = getTimeDistanceInMinutes(time);
+		final long dim = getTimeDistanceInMinutes(time, detailLevelDays);
 		final StringBuilder timeAgo = buildTimeagoText(resources, dim, detailLevelDays);
 		return timeAgo.toString();
 	}
@@ -104,7 +105,7 @@ public final class TimeAgo {
 	}
 
 	public String with(Date date, boolean detailLevelDays, TimeAgoMessages resources) {
-		final long dim = getTimeDistanceInMinutes(date.getTime());
+		final long dim = getTimeDistanceInMinutes(date.getTime(), detailLevelDays);
 		final StringBuilder timeAgo = buildTimeagoText(resources, dim, detailLevelDays);
 		return timeAgo.toString();
 	}
@@ -212,10 +213,17 @@ public final class TimeAgo {
 	 *
 	 * @param time
 	 *            the date time
+	 * @param detailLevelDays
+	 *            restriction if the current hour should be taken in considerations
 	 * @return the time distance in minutes
 	 */
-	private static long getTimeDistanceInMinutes(long time) {
-		long timeDistance = System.currentTimeMillis() - time;
+	private static long getTimeDistanceInMinutes(long time, boolean detailLevelDays) {
+		long nowInMilliseconds = System.currentTimeMillis();
+		if (detailLevelDays) {
+			Date nowDate = DataHelper.removeTime(new Date());
+			nowInMilliseconds = nowDate.getTime();
+		}
+		long timeDistance = nowInMilliseconds - time;
 		return Math.round((timeDistance / 1000) / 60);
 	}
 
