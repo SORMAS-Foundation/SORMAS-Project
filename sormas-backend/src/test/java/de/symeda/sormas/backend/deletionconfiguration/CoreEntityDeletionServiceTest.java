@@ -36,6 +36,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.task.TaskContext;
@@ -642,7 +643,6 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		UserDto user = creator
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		PersonDto person = creator.createPerson();
 
 		SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
 		originInfo.setUuid(DataHelper.createUuid());
@@ -655,10 +655,16 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
 		shareRequest.setUuid(DataHelper.createUuid());
 		shareRequest.setOriginInfo(savedOriginInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
 		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
 
 		assertEquals(1, getSormasToSormasShareRequestService().count());
 
+		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setSurveillanceOfficer(officer);
@@ -677,6 +683,11 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 				e.getEventLocation().setDistrict(rdcf.district);
 				e.setSormasToSormasOriginInfo(savedOriginInfo);
 			});
+
+		SormasToSormasShareRequestDto sormasToSormasShareRequestDto =
+			getSormasToSormasShareRequestFacade().getShareRequestByUuid(shareRequest.getUuid());
+		sormasToSormasShareRequestDto.setStatus(ShareRequestStatus.ACCEPTED);
+		getSormasToSormasShareRequestFacade().saveShareRequest(sormasToSormasShareRequestDto);
 
 		assertEquals(1, getCaseService().count());
 		assertEquals(1, getContactService().count());
@@ -746,8 +757,6 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		createDeletionConfigurations();
 
 		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
-		DeletionConfiguration contactDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
-		DeletionConfiguration eventDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();

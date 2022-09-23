@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.contact;
 
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1097,6 +1098,8 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		CaseJoins caseJoins = joins.getCaseJoins();
 		Join<Contact, Case> resultingCase = joins.getResultingCase();
 
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cqc.getQuery(), joins.getPersonJoins());
+
 		if (contactCriteria.getReportingUserRole() != null) {
 			Join<Contact, User> reportingUser = joins.getReportingUser();
 			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
@@ -1279,7 +1282,10 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, cqc.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
