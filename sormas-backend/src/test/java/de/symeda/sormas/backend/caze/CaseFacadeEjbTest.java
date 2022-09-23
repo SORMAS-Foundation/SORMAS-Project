@@ -82,6 +82,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
+import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -3021,6 +3022,114 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(updateComment, updateCase.getFollowUpComment());
 		resultCaseDto = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(updateComment, resultCaseDto.getFollowUpComment());
+	}
+
+	@Test
+	public void searchCasesByPersonEmail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
+		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
+
+		PersonContactDetailDto primaryEmail =
+			creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+		PersonContactDetailDto secondaryEmail =
+			creator.createPersonContactDetail(personWithEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+
+		personWithEmail.getPersonContactDetails().add(primaryEmail);
+		personWithEmail.getPersonContactDetails().add(secondaryEmail);
+		getPersonFacade().save(personWithEmail);
+
+		CaseDataDto caze1 = creator.createCase(user.toReference(), personWithEmail.toReference(), rdcf);
+		CaseDataDto caze2 = creator.createCase(user.toReference(), personWithoutEmail.toReference(), rdcf);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		List<CaseIndexDetailedDto> caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(2, caseIndexDetailedDtos.size());
+		List<String> uuids = caseIndexDetailedDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(caze1.getUuid()));
+		assertTrue(uuids.contains(caze2.getUuid()));
+
+		caseCriteria.setPersonLike("test1@email.com");
+		caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(1, caseIndexDetailedDtos.size());
+		assertEquals(caze1.getUuid(), caseIndexDetailedDtos.get(0).getUuid());
+
+		caseCriteria.setPersonLike("test2@email.com");
+		caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(0, caseIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void searchCasesByPersonPhone() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
+		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+
+		personWithPhone.getPersonContactDetails().add(primaryPhone);
+		personWithPhone.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithPhone);
+
+		CaseDataDto caze1 = creator.createCase(user.toReference(), personWithPhone.toReference(), rdcf);
+		CaseDataDto caze2 = creator.createCase(user.toReference(), personWithoutPhone.toReference(), rdcf);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		List<CaseIndexDetailedDto> caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(2, caseIndexDetailedDtos.size());
+		List<String> uuids = caseIndexDetailedDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(caze1.getUuid()));
+		assertTrue(uuids.contains(caze2.getUuid()));
+
+		caseCriteria.setPersonLike("111222333");
+		caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(1, caseIndexDetailedDtos.size());
+		assertEquals(caze1.getUuid(), caseIndexDetailedDtos.get(0).getUuid());
+
+		caseCriteria.setPersonLike("444555666");
+		caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(0, caseIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void searchCasesByPersonOtherDetail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
+		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
+
+		PersonContactDetailDto primaryOtherDetail =
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+		PersonContactDetailDto secondaryOtherDetail =
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+
+		personWithOtherDetail.getPersonContactDetails().add(primaryOtherDetail);
+		personWithOtherDetail.getPersonContactDetails().add(secondaryOtherDetail);
+		getPersonFacade().save(personWithOtherDetail);
+
+		CaseDataDto caze1 = creator.createCase(user.toReference(), personWithOtherDetail.toReference(), rdcf);
+		CaseDataDto caze2 = creator.createCase(user.toReference(), personWithoutOtherDetail.toReference(), rdcf);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		List<CaseIndexDetailedDto> caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(2, caseIndexDetailedDtos.size());
+		List<String> uuids = caseIndexDetailedDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(caze1.getUuid()));
+		assertTrue(uuids.contains(caze2.getUuid()));
+
+		caseCriteria.setPersonLike("detail1");
+		caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(1, caseIndexDetailedDtos.size());
+		assertEquals(caze1.getUuid(), caseIndexDetailedDtos.get(0).getUuid());
+
+		caseCriteria.setPersonLike("detail2");
+		caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
+		assertEquals(0, caseIndexDetailedDtos.size());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

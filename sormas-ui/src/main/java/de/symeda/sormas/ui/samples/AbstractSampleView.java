@@ -118,7 +118,7 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 
 	public void setSampleEditPermission(Component component) {
 
-		if (isEditAllowed()) {
+		if (!isEditAllowed()) {
 			component.setEnabled(false);
 		}
 	}
