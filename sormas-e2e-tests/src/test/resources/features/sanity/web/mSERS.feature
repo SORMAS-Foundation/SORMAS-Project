@@ -348,17 +348,20 @@ Feature: mSERS functionalities
     And I set Epi week to filter to "Wk 6-2005 (1/31 - 2/6)" in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 1
+    And I check if displayed numbers of suspected cases are equal to those previously entered for first result in mSers directory page
     When I click on the NEW AGGREGATE REPORT button
     Then I click on SPECIFY Radiobutton in Create Aggregated Report form
     And I fill a new aggregate report with specific data for duplicates with jurisdiction
     Then I check if message about duplicated reports is visible
     And I click to save aggregated report
     And I check if there number of results in grid in mSers directory is 1
+    And I check if displayed numbers of suspected cases are equal to those previously entered for first result in mSers directory page
     And I click on the NEW AGGREGATE REPORT button
     Then I click on SPECIFY Radiobutton in Create Aggregated Report form
     And I fill a new aggregate report with specific data for duplicates with jurisdiction
     And I click to save aggregated report
     And I check if there number of results in grid in mSers directory is 1
+    And I check if displayed numbers of suspected cases are equal to those previously entered for first result in mSers directory page
     And I navigate to Report data tab
     And I set Epi Year from filter to "2005" in mSers directory page
     Then I set Epi week from filter to "Wk 6-2005 (1/31 - 2/6)" in mSers directory page
