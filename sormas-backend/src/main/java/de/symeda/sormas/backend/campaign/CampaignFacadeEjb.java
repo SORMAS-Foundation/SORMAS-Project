@@ -359,18 +359,13 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(Campaign source, CampaignDto dto, Pseudonymizer pseudonymizer) {
-
+	protected void pseudonymizeDto(Campaign source, CampaignDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+		// No pseudonymization for Campaign entities
 	}
 
 	@Override
 	protected void restorePseudonymizedDto(CampaignDto dto, CampaignDto existingDto, Campaign entity, Pseudonymizer pseudonymizer) {
-
-	}
-
-	@Override
-	public List<CampaignDto> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
+		// No pseudonymization for Campaign entities
 	}
 
 	@Override

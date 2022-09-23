@@ -86,12 +86,27 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return getAllAfter(date, null, null);
 	}
 
+	@Override
 	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+
+		List<ADO> entities = service.getAllAfter(date, batchSize, lastSynchronizedUuid);
+		List<DTO> dtos = toPseudonymizedDtos(entities);
+
+		return dtos;
+	}
+
+	protected Pseudonymizer createPseudonymizer() {
+
+		return Pseudonymizer.getDefault(userService::hasRight);
+	}
+
+	protected List<DTO> toPseudonymizedDtos(List<ADO> entities) {
+
+		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		List<DTO> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
+		return dtos;
 	}
 
 	@DenyAll
@@ -131,8 +146,18 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	public DTO convertToDto(ADO source, Pseudonymizer pseudonymizer) {
 
+		if (source == null) {
+			return null;
+		}
+
+		boolean inJurisdiction = service.inJurisdictionOrOwned(source);
+		return convertToDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	protected DTO convertToDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		DTO dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer);
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
 		return dto;
 	}
 
@@ -236,7 +261,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	protected abstract CoreEntityType getCoreEntityType();
 
-	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer);
+	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction);
 
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 

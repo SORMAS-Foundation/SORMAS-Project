@@ -4,14 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -49,5 +47,10 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 		enumValues = getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, null);
 		assertEquals(1, enumValues.size());
 
+	}
+
+	@Test(expected = CustomEnumNotFoundException.class)
+	public void tetGetUnknownDiseaseVariantWithNullDisease() throws CustomEnumNotFoundException {
+		getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, "any", null);
 	}
 }

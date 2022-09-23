@@ -1,23 +1,19 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.api.caze;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,6 +67,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 /**
@@ -83,7 +80,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
  * recommended to remove properties that are removed from this file from existing export configurations.
  */
 @ExportEntity(CaseDataDto.class)
-public class CaseExportDto implements Serializable {
+public class CaseExportDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 8581579464816945555L;
 
@@ -123,7 +120,7 @@ public class CaseExportDto implements Serializable {
 	private long hospitalizationId;
 	private long symptomsId;
 	private long healthConditionsId;
-	private String uuid;
+
 	private String epidNumber;
 	private Disease disease;
 	private String diseaseDetails;
@@ -262,9 +259,9 @@ public class CaseExportDto implements Serializable {
 	private int numberOfPrescriptions;
 	private int numberOfTreatments;
 	private int numberOfClinicalVisits;
-	private EmbeddedSampleExportDto sample1 = new EmbeddedSampleExportDto();
-	private EmbeddedSampleExportDto sample2 = new EmbeddedSampleExportDto();
-	private EmbeddedSampleExportDto sample3 = new EmbeddedSampleExportDto();
+	private EmbeddedSampleExportDto sample1 = new EmbeddedSampleExportDto(null);
+	private EmbeddedSampleExportDto sample2 = new EmbeddedSampleExportDto(null);
+	private EmbeddedSampleExportDto sample3 = new EmbeddedSampleExportDto(null);
 	private List<EmbeddedSampleExportDto> otherSamples = new ArrayList<>();
 
 	private Boolean nosocomialOutbreak;
@@ -394,7 +391,7 @@ public class CaseExportDto implements Serializable {
 						 String associatedWithOutbreak, boolean isInJurisdiction
 	) {
 		//@formatter:on
-
+		super(uuid);
 		this.id = id;
 		this.personId = personId;
 		this.addressGpsCoordinates = LocationHelper.buildGpsCoordinatesCaption(personAddressLatitude, personAddressLongitude, personAddressLatLonAcc);
@@ -402,7 +399,6 @@ public class CaseExportDto implements Serializable {
 		this.symptomsId = symptomsId;
 		this.hospitalizationId = hospitalizationId;
 		this.healthConditionsId = healthConditionsId;
-		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.armedForcesRelationType = ArmedForcesRelationType;
 		this.disease = disease;
@@ -499,7 +495,7 @@ public class CaseExportDto implements Serializable {
 		this.trimester = trimester;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
-		
+
 		this.eventCount = eventCount;
 		this.numberOfPrescriptions = prescriptionCount != null ? prescriptionCount.intValue() : 0;
 		this.numberOfTreatments = treatmentCount != null ? treatmentCount.intValue() : 0;
@@ -533,7 +529,7 @@ public class CaseExportDto implements Serializable {
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, firstName, lastName);
+		return new CaseReferenceDto(getUuid(), firstName, lastName);
 	}
 
 	public Boolean getInJurisdiction() {
@@ -586,8 +582,9 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
+	@Override
 	public String getUuid() {
-		return uuid;
+		return super.getUuid();
 	}
 
 	@Order(3)
@@ -2404,10 +2401,6 @@ public class CaseExportDto implements Serializable {
 
 	public void setHospitalizationId(long hospitalizationId) {
 		this.hospitalizationId = hospitalizationId;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public void setEpidNumber(String epidNumber) {

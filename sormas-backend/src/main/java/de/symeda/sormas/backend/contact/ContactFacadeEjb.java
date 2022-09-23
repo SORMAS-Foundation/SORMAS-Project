@@ -67,7 +67,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -85,6 +84,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionFlagsDto;
 import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -131,6 +131,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -195,7 +196,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -454,7 +454,7 @@ public class ContactFacadeEjb
 
 	private void createInvestigationTask(Contact entity) {
 		LocalDate now = LocalDate.now();
-		LocalDate reportDate = DateHelper8.toLocalDate(entity.getReportDateTime());
+		LocalDate reportDate = UtilDate.toLocalDate(entity.getReportDateTime());
 		if (DAYS.between(reportDate, now) <= 30) {
 			try {
 				User assignee = taskService.getTaskAssignee(entity);
@@ -1258,7 +1258,12 @@ public class ContactFacadeEjb
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		User currentUser = userService.getCurrentUser();
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
-			pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c::setReportingUser);
+			pseudonymizer.pseudonymizeUser(
+				ContactIndexDetailedDto.class,
+				ContactIndexDetailedDto.REPORTING_USER,
+				userService.getByUuid(c.getReportingUser().getUuid()),
+				currentUser,
+				c::setReportingUser);
 			if (c.getCaze() != null) {
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
 			}
@@ -1338,14 +1343,13 @@ public class ContactFacadeEjb
 		// use only date, not time
 		target.setMultiDayContact(source.isMultiDayContact());
 		if (source.isMultiDayContact()) {
-			target.setFirstContactDate(
-				source.getFirstContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) : null);
+			target
+				.setFirstContactDate(source.getFirstContactDate() != null ? UtilDate.from(UtilDate.toLocalDate(source.getFirstContactDate())) : null);
 		} else {
 			target.setFirstContactDate(null);
 		}
 
-		target.setLastContactDate(
-			source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
+		target.setLastContactDate(source.getLastContactDate() != null ? UtilDate.from(UtilDate.toLocalDate(source.getLastContactDate())) : null);
 
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
@@ -1526,25 +1530,68 @@ public class ContactFacadeEjb
 		return service.getFollowUpUntilCount(contactCriteria, user);
 	}
 
-	public void pseudonymizeDto(Contact source, ContactDto dto, Pseudonymizer pseudonymizer) {
+	@Override
+	protected List<ContactDto> toPseudonymizedDtos(List<Contact> entities) {
+
+		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(entities);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		List<ContactDto> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
+		return dtos;
+	}
+
+	@Override
+	public ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		ContactJurisdictionFlagsDto jurisdictionFlags = service.getJurisdictionFlags(source);
+		return convertToDto(source, pseudonymizer, jurisdictionFlags);
+	}
+
+	@Deprecated
+	@Override
+	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
+		throw new UnsupportedOperationException("Use variant with jurisdictionFlags parameter");
+	}
+
+	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
+
+		ContactDto dto = toDto(source);
+		pseudonymizeDto(source, dto, pseudonymizer, jurisdictionFlags);
+		return dto;
+	}
+
+	@Deprecated
+	@Override
+	protected void pseudonymizeDto(Contact source, ContactDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
+		throw new UnsupportedOperationException("Use variant with jurisdictionFlags parameter");
+	}
+
+	protected void pseudonymizeDto(Contact source, ContactDto dto, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
+
+		boolean inJurisdiction = jurisdictionFlags.getInJurisdiction();
 		if (dto != null) {
-			final ContactJurisdictionFlagsDto contactJurisdictionFlagsDto = service.inJurisdictionOrOwned(source);
-			boolean isInJurisdiction = contactJurisdictionFlagsDto.getInJurisdiction();
 			User currentUser = userService.getCurrentUser();
 
-			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, inJurisdiction, (c) -> {
+				pseudonymizer
+					.pseudonymizeUser(ContactDto.class, ContactDto.REPORTING_USER, source.getReportingUser(), currentUser, dto::setReportingUser);
 
 				if (c.getCaze() != null) {
-					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), contactJurisdictionFlagsDto.getCaseInJurisdiction(), null);
+					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), jurisdictionFlags.getCaseInJurisdiction(), null);
 				}
 
 				pseudonymizer.pseudonymizeDto(
 					EpiDataDto.class,
 					dto.getEpiData(),
-					isInJurisdiction,
+					inJurisdiction,
 					e -> pseudonymizer
-						.pseudonymizeDtoCollection(ExposureDto.class, e.getExposures(), exp -> isInJurisdiction, (exp, expInJurisdiction) -> {
+						.pseudonymizeDtoCollection(ExposureDto.class, e.getExposures(), exp -> inJurisdiction, (exp, expInJurisdiction) -> {
 							pseudonymizer.pseudonymizeDto(LocationDto.class, exp.getLocation(), expInJurisdiction, null);
 						}));
 			});
@@ -1553,9 +1600,9 @@ public class ContactFacadeEjb
 
 	@Override
 	protected void restorePseudonymizedDto(ContactDto dto, ContactDto existingContactDto, Contact existingContact, Pseudonymizer pseudonymizer) {
+
 		if (existingContactDto != null) {
-			final ContactJurisdictionFlagsDto contactJurisdictionFlagsDto = service.inJurisdictionOrOwned(existingContact);
-			boolean isInJurisdiction = contactJurisdictionFlagsDto.getInJurisdiction();
+			boolean isInJurisdiction = service.inJurisdictionOrOwned(existingContact);
 			User currentUser = userService.getCurrentUser();
 
 			String followUpComment = null;
@@ -1582,13 +1629,12 @@ public class ContactFacadeEjb
 	private ContactReferenceDto convertToReferenceDto(Contact source) {
 
 		ContactReferenceDto dto = toReferenceDto(source);
-
 		if (source != null && dto != null) {
-			final ContactJurisdictionFlagsDto contactJurisdictionFlagsDto = service.inJurisdictionOrOwned(source);
-			boolean isInJurisdiction = contactJurisdictionFlagsDto.getInJurisdiction();
+			final ContactJurisdictionFlagsDto contactJurisdictionFlagsDto = service.getJurisdictionFlags(source);
+			boolean inJurisdiction = contactJurisdictionFlagsDto.getInJurisdiction();
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
-			pseudonymizer.pseudonymizeDto(ContactReferenceDto.class, dto, isInJurisdiction, (c) -> {
+			pseudonymizer.pseudonymizeDto(ContactReferenceDto.class, dto, inJurisdiction, (c) -> {
 				if (source.getCaze() != null) {
 					pseudonymizer.pseudonymizeDto(
 						ContactReferenceDto.PersonName.class,
@@ -1597,7 +1643,7 @@ public class ContactFacadeEjb
 						null);
 				}
 
-				pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), inJurisdiction, null);
 			});
 		}
 
@@ -1743,7 +1789,7 @@ public class ContactFacadeEjb
 		// get all contacts that are followed up
 		LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
 		LocalDateTime toDateTime = fromDateTime.plusDays(1);
-		List<Contact> contacts = service.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
+		List<Contact> contacts = service.getFollowUpBetween(UtilDate.from(fromDateTime), UtilDate.from(toDateTime));
 
 		for (Contact contact : contacts) {
 			// Only generate tasks for contacts that are under follow-up
@@ -1774,7 +1820,7 @@ public class ContactFacadeEjb
 
 			TaskCriteria dayTaskCriteria = new TaskCriteria().contact(contact.toReference())
 				.taskType(TaskType.CONTACT_FOLLOW_UP)
-				.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
+				.dueDateBetween(UtilDate.from(fromDateTime), UtilDate.from(toDateTime));
 			List<Task> dayTasks = taskService.findBy(dayTaskCriteria, true);
 
 			if (!dayTasks.isEmpty()) {
@@ -1789,12 +1835,13 @@ public class ContactFacadeEjb
 	}
 
 	private Task createContactTask(TaskType taskType, LocalDateTime fromDateTime, LocalDateTime toDateTime, Contact contact, User assignee) {
+
 		Task task = taskService.buildTask(null);
 		task.setTaskContext(TaskContext.CONTACT);
 		task.setContact(contact);
 		task.setTaskType(taskType);
-		task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
-		task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+		task.setSuggestedStart(UtilDate.from(fromDateTime));
+		task.setDueDate(UtilDate.from(toDateTime.minusMinutes(1)));
 		task.setAssigneeUser(assignee);
 
 		if (contact.isHighPriority()) {

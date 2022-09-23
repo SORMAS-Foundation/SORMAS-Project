@@ -1813,3 +1813,47 @@ Feature: Case end to end tests
     And I navigate to case person tab
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
+
+
+  @tmsLink=SORDEV-9789 @env_de
+  Scenario: Test Move health conditions from clinical course to the case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that "diabetes" Pre-existing condition is visible on page
+    And I check that "immunodeficiencyIncludingHiv" Pre-existing condition is visible on page
+    And I check that "chronicLiverDisease" Pre-existing condition is visible on page
+    And I check that "malignancyChemotherapy" Pre-existing condition is visible on page
+    And I check that "chronicPulmonaryDisease" Pre-existing condition is visible on page
+    And I check that "chronicKidneyDisease" Pre-existing condition is visible on page
+    And I check that "chronicNeurologicCondition" Pre-existing condition is visible on page
+    And I check that "cardiovascularDiseaseIncludingHypertension" Pre-existing condition is visible on page
+    Then I click on Clinical Course tab from Edit Case page
+    Then I check that Clinical Assessments heading is visible in DE
+
+  @tmsLink=SORDEV-9789 @env_de
+  Scenario: Test health conditions document template export
+    Given I log in as a Admin User
+    Then I click on the Cases button from navbar
+    And I click on the Import button from Case directory
+    And I click on the detailed button from import Case tab
+    Then I select the "PreExistingCondition_DetailedImport_Test.csv" CSV file in the file picker
+    And I click on the "DATENIMPORT STARTEN" button from the Import Case popup
+    Then I click to create new person from the Case Import popup
+    And I check that an import success notification appears in the Import Case popup
+    Then I close Import Cases form
+    And I filter by "Margret Schmitt" as a Person's full name on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open last created case
+    When I get the case person UUID displayed on Edit case page
+    And I click on the Create button from Case Document Templates in DE
+    And I select "preExistingConditions.docx" from documents templates list
+    Then I click download in case document create page in DE
+    When I check if downloaded docx file is correct
+
+
