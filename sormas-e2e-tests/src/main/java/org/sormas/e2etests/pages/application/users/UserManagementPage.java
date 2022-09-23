@@ -35,4 +35,6 @@ public class UserManagementPage {
       By.cssSelector("[class*='check_square']");
   public static final By INACTIVE_CHECKBOX_USER_MANAGEMENT =
       By.cssSelector("[class*='thin_square']");
+  public static final By USERS_COUNTER_USER_MANAGEMENT =
+      By.cssSelector("[class*='v-label-align-right v-label-undef-w']");
 }

@@ -190,3 +190,9 @@ Feature: Create user
     When I select first user from list
     Then I click on the Active checkbox in the Edit User Page
     Then I verify that the Active value is Unchecked in the User Management Page
+
+  @#7470 @env_main
+  Scenario: User active filter functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I Verify the number of Active, Inactive and Total users in the user Management Page

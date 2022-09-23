@@ -114,8 +114,27 @@ public class UserManagementSteps implements En {
                   INACTIVE_CHECKBOX_USER_MANAGEMENT);
               break;
             default:
-              break;
+              throw new IllegalArgumentException("No valid Switch options were provided");
           }
+        });
+
+    When(
+        "I Verify the number of Active, Inactive and Total users in the user Management Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USERS_COUNTER_USER_MANAGEMENT);
+          Integer numberOfTotalUsers = Integer.parseInt(webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Active");
+          TimeUnit.SECONDS.sleep(2);
+          Integer numberOfActiveUsers = Integer.parseInt(webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Inactive");
+          TimeUnit.SECONDS.sleep(2);
+          Integer numberOfInactiveUsers = Integer.parseInt(webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          assertHelpers.assertWithPoll(
+            () ->
+              Assert.assertTrue(
+                numberOfTotalUsers == numberOfActiveUsers + numberOfInactiveUsers,
+                "Sync of users failed in User Management Page"),
+                10);
         });
   }
 
