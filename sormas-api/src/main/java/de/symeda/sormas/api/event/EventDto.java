@@ -137,7 +137,6 @@ public class EventDto extends SormasToSormasShareableDto {
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
-	@NotEmpty(message = Validations.validEventTitle)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@NotBlank(message = Validations.requiredField)
 	private String eventTitle;
