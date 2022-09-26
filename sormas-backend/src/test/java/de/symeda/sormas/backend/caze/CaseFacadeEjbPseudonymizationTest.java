@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -81,12 +82,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		super.init();
 
-		UserRoleReferenceDto newUserRole = creator.createUserRole(
-				"NoEventNoCaseView",
-				JurisdictionLevel.DISTRICT,
-				UserRight.CASE_CLINICIAN_VIEW,
-				UserRight.CASE_VIEW
-		);
+		UserRoleReferenceDto newUserRole =
+			creator.createUserRole("NoEventNoCaseView", JurisdictionLevel.DISTRICT, UserRight.CASE_CLINICIAN_VIEW, UserRight.CASE_VIEW);
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		user1 = creator.createUser(
@@ -95,7 +92,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER), newUserRole);
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER),
+			newUserRole);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(
@@ -104,7 +102,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER), newUserRole);
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER),
+			newUserRole);
 		rdcf2NewCommunity = creator.createCommunity("New community", rdcf2.district);
 		rdcf2NewFacility = creator.createFacility("New facility", rdcf2.region, rdcf2.district, rdcf2NewCommunity.toReference());
 		rdcf2NewPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf2.region, rdcf2.district);
@@ -323,6 +322,70 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(followup3.getLastName(), is("Smith"));
 	}
 
+	@Test
+	public void testPseudonymizeGpsCoordinates() {
+		CaseDataDto caze = creator.createCase(
+			user1.toReference(),
+			createPerson().toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.NOT_CLASSIFIED,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf1,
+			(c) -> {
+				c.setReportingUser(user1.toReference());
+
+				c.setReportLat(46.432);
+				c.setReportLon(23.234);
+				c.setReportLatLonAccuracy(10F);
+			});
+
+		CaseDataDto pseudonymizedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertThat(pseudonymizedCase.getReportLat(), is(not(caze.getReportLat())));
+		assertThat(pseudonymizedCase.getReportLat().toString(), startsWith("46."));
+		assertThat(pseudonymizedCase.getReportLon(), is(not(caze.getReportLon())));
+		assertThat(pseudonymizedCase.getReportLon().toString(), startsWith("23."));
+
+		assertThat(pseudonymizedCase.getReportLatLonAccuracy(), is(caze.getReportLatLonAccuracy()));
+	}
+
+	@Test
+	public void testUpdateGpsCoordinatesWithPseudonymizedData() {
+		CaseDataDto caze = creator.createCase(
+			user2.toReference(),
+			createPerson().toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.NOT_CLASSIFIED,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf2,
+			(c) -> {
+				c.setReportingUser(user2.toReference());
+
+				c.setReportLat(46.432);
+				c.setReportLon(23.234);
+				c.setReportLatLonAccuracy(10F);
+			});
+
+		caze.setPseudonymized(true);
+		caze.setReportLat(44.432);
+		caze.setReportLon(22.234);
+
+		CaseDataDto savedCase = getCaseFacade().save(caze);
+
+		/**
+		 * Expected to save the updated data because, it is a really rare edge case that is not handled at the moment.
+		 * Probably won't be a need to handle it.
+		 * 
+		 * @see de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer#isValuePseudonymized(Double)
+		 *      and
+		 * @see de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer#isValuePseudonymized(Double)
+		 */
+		assertThat(savedCase.getReportLat(), is(44.432));
+		assertThat(savedCase.getReportLon(), is(22.234));
+	}
+
 	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser) {
 		return createCase(rdcf, createPerson().toReference(), reportingUser);
 	}
@@ -347,10 +410,6 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 				c.setHealthFacilityDetails("Test Facility details");
 				c.setPointOfEntryDetails("Test point of entry details");
-
-//				c.setReportLat(46.432);
-//				c.setReportLon(23.234);
-//				c.setReportLatLonAccuracy(10F);
 
 				c.setFollowUpComment("Test comment");
 			});
@@ -447,13 +506,6 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getClassificationUser(), is(nullValue()));
 
 		assertThat(caze.getFollowUpComment(), is(emptyString()));
-
-//		assertThat(caze.getReportLat(), is(not(46.233)));
-//		assertThat(caze.getReportLat().toString(), startsWith("46."));
-//		assertThat(caze.getReportLon(), is(not(23.234)));
-//		assertThat(caze.getReportLon().toString(), startsWith("23."));
-//
-//		assertThat(caze.getReportLatLonAccuracy(), is(10F));
 	}
 
 	private void updateCase(CaseDataDto caze, UserDto user) {
