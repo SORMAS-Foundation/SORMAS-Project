@@ -129,11 +129,6 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
     }
 
     @Override
-    public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
-        return 0;
-    }
-
-    @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         return CampaignFormDataListFragment.newInstance();
     }

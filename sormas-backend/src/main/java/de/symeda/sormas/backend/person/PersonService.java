@@ -20,7 +20,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -86,6 +85,7 @@ import de.symeda.sormas.backend.common.ChangeDateUuidComparator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
@@ -117,7 +117,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
-public class PersonService extends AdoServiceWithUserFilter<Person> {
+public class PersonService extends AdoServiceWithUserFilter<Person> implements JurisdictionCheckService<Person> {
 
 	@EJB
 	private UserService userService;
@@ -349,6 +349,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
 					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
@@ -364,11 +366,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		filter = andEquals(cb, () -> personJoins.getAddressJoins().getCommunity(), filter, personCriteria.getCommunity());
 
 		return filter;
-	}
-
-	@Override
-	public List<Person> getAllAfter(Date date) {
-		return getAllAfter(date, null, null);
 	}
 
 	@Override
@@ -553,26 +550,14 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return result;
 	}
 
-	public List<Long> getInJurisdictionIDs(final List<Person> selectedEntities) {
-		if (selectedEntities.size() == 0) {
-			return Collections.emptyList();
-		}
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<Person> personRoot = inJurisdictionQuery.from(Person.class);
-
-		inJurisdictionQuery.select(personRoot.get(Person.ID));
-
-		final Predicate isFromSelectedPersons =
-			cb.in(personRoot.get(Person.ID)).value(selectedEntities.stream().map(Person::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, inJurisdictionOrOwned(new PersonQueryContext(cb, inJurisdictionQuery, personRoot))));
-
-		return em.createQuery(inJurisdictionQuery).getResultList();
+	@Override
+	public List<Long> getInJurisdictionIds(List<Person> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(new PersonQueryContext(cb, cq, from)));
 	}
 
-	public boolean inJurisdictionOrOwned(Person person) {
-		return !getInJurisdictionIDs(Arrays.asList(person)).isEmpty();
+	@Override
+	public boolean inJurisdictionOrOwned(Person entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(new PersonQueryContext(cb, cq, from)));
 	}
 
 	public Predicate inJurisdictionOrOwned(PersonQueryContext personQueryContext) {
@@ -667,7 +652,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		}
 
 		List<Person> persons = query.getResultList();
-		List<Long> personsInJurisdiction = getInJurisdictionIDs(persons);
+		List<Long> personsInJurisdiction = getInJurisdictionIds(persons);
 		return persons.stream().filter(p -> personsInJurisdiction.contains(p.getId())).map(this::toSimilarPersonDto).collect(Collectors.toList());
 	}
 

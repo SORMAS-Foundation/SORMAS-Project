@@ -373,7 +373,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 			if (!isVaccinationVisible) {
 				numberOfDosesField.clear();
-				numberOfDosesDetailsField.clear();
 			}
 
 			if (!isRecoveryVisible) {
