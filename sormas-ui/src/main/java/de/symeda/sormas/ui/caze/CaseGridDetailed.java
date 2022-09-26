@@ -16,10 +16,8 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -61,10 +59,6 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	@Override
 	public Stream<String> getEventColumns() {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
-			return Stream.empty();
-		}
-
 		return Stream.of(
 			CaseIndexDetailedDto.EVENT_COUNT,
 			CaseIndexDetailedDto.LATEST_EVENT_ID,
@@ -125,19 +119,16 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 		getColumn(CaseIndexDetailedDto.HOUSE_NUMBER).setWidth(50);
 		getColumn(CaseIndexDetailedDto.ADDITIONAL_INFORMATION).setWidth(200);
 		getColumn(CaseIndexDetailedDto.PHONE).setWidth(100);
+		getColumn(CaseIndexDetailedDto.EVENT_COUNT).setWidth(80).setSortable(false);
+		getColumn(CaseIndexDetailedDto.LATEST_EVENT_ID).setWidth(80).setSortable(false);
+		getColumn(CaseIndexDetailedDto.LATEST_EVENT_STATUS).setWidth(80).setSortable(false);
+		getColumn(CaseIndexDetailedDto.LATEST_EVENT_TITLE).setWidth(150).setSortable(false);
 
-		if (this.getEventColumns().findAny().isPresent()) {
-			getColumn(CaseIndexDetailedDto.EVENT_COUNT).setWidth(80).setSortable(false);
-			getColumn(CaseIndexDetailedDto.LATEST_EVENT_ID).setWidth(80).setSortable(false);
-			getColumn(CaseIndexDetailedDto.LATEST_EVENT_STATUS).setWidth(80).setSortable(false);
-			getColumn(CaseIndexDetailedDto.LATEST_EVENT_TITLE).setWidth(150).setSortable(false);
-			((Column<CaseIndexDetailedDto, String>) getColumn(CaseIndexDetailedDto.LATEST_EVENT_ID)).setRenderer(new UuidRenderer());
-			addItemClickListener(
-					new ShowDetailsListener<>(
-							CaseIndexDetailedDto.LATEST_EVENT_ID,
-							c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
-		}
-
+		((Column<CaseIndexDetailedDto, String>) getColumn(CaseIndexDetailedDto.LATEST_EVENT_ID)).setRenderer(new UuidRenderer());
+		addItemClickListener(
+			new ShowDetailsListener<>(
+				CaseIndexDetailedDto.LATEST_EVENT_ID,
+				c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
 
 		((Column<CaseIndexDetailedDto, AgeAndBirthDateDto>) getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE)).setRenderer(
 			value -> value == null
