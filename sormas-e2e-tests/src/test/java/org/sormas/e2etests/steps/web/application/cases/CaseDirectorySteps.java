@@ -99,6 +99,7 @@ import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -163,6 +164,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
         });
 
     When(
