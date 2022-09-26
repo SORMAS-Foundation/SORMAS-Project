@@ -15,15 +15,12 @@
 
 package de.symeda.sormas.api.utils.pseudonymization;
 
-import static java.util.Objects.nonNull;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.DefaultValuePseudonymizer;
@@ -83,13 +80,7 @@ public class DtoPseudonymizer {
 				isInJurisdiction ? embeddedFieldsInJurisdiction : embeddedFieldsOutsideJurisdiction,
 				isInJurisdiction,
 				null,
-				customPseudonymization == null ? null : new CustomPseudonymization<DTO>() {
-
-					@Override
-					public void pseudonymize(DTO d) {
-						customPseudonymization.pseudonymize(dto, isInJurisdiction);
-					}
-				},
+				customPseudonymization == null ? null : (CustomPseudonymization<DTO>) d -> customPseudonymization.pseudonymize(dto, isInJurisdiction),
 				skipEmbeddedFields);
 		}
 	}
@@ -120,8 +111,13 @@ public class DtoPseudonymizer {
 		List<Field> embeddedFields = getEmbeddedFields(type, isInJurisdiction);
 
 		for (Field pseudonymizedField : pseudonymizableFields) {
-			if (!getFieldAccessCheckers(isInJurisdiction).isAccessible(pseudonymizedField, pseudonymizeMandatoryFields) || dto.isPseudonymized()) {
-				restoreOriginalValue(dto, pseudonymizedField, originalDto);
+			try {
+				if (!getFieldAccessCheckers(isInJurisdiction).isAccessible(pseudonymizedField, pseudonymizeMandatoryFields)
+					|| dto.isPseudonymized() && isFieldValuePseudonymized(pseudonymizedField, dto)) {
+					restoreOriginalValue(dto, pseudonymizedField, originalDto);
+				}
+			} catch (IllegalAccessException | InstantiationException e) {
+				throw new RuntimeException(e);
 			}
 		}
 		for (Field embeddedField : embeddedFields) {
@@ -144,6 +140,21 @@ public class DtoPseudonymizer {
 				}
 			}
 		}
+	}
+
+	private <DTO extends Pseudonymizable> boolean isFieldValuePseudonymized(Field pseudonymizedField, DTO dto)
+		throws IllegalAccessException, InstantiationException {
+
+		ValuePseudonymizer<Object> pseudonymizer = (ValuePseudonymizer<Object>) getPseudonymizer(pseudonymizedField, null);
+
+		boolean accessible = pseudonymizedField.isAccessible();
+		pseudonymizedField.setAccessible(true);
+
+		Object fieldValue = pseudonymizedField.get(dto);
+
+		pseudonymizedField.setAccessible(accessible);
+
+		return pseudonymizer.isValuePseudonymized(fieldValue);
 	}
 
 	private <DTO> boolean pseudonymizeDto(

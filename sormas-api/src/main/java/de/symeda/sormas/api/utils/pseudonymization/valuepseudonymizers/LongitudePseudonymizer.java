@@ -34,4 +34,12 @@ public class LongitudePseudonymizer extends ValuePseudonymizer<Double> {
 
 		return x + centerLon;
 	}
+
+	@Override
+	// TODO - Well known issue: could lead to data loss for the really rare edge case
+	//  when changing the jusrisdiction of a mobile app user and for some reasons the app doesn't re-synchronize 
+	//  If this happens the restore of the changed data can be done using the history tables
+	public boolean isValuePseudonymized(Double value) {
+		return false;
+	}
 }

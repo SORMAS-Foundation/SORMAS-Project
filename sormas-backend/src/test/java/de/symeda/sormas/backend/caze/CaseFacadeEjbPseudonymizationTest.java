@@ -18,12 +18,11 @@
 package de.symeda.sormas.backend.caze;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -31,7 +30,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.user.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -58,6 +56,11 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -280,9 +283,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setSurveillanceOfficer(null);
 		caze.setClassificationUser(null);
 
-		caze.setReportLat(null);
-		caze.setReportLon(null);
-		caze.setReportLatLonAccuracy(20F);
+		caze.setFollowUpComment(null);
 
 		getCaseFacade().save(caze);
 
@@ -347,9 +348,11 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 				c.setHealthFacilityDetails("Test Facility details");
 				c.setPointOfEntryDetails("Test point of entry details");
 
-				c.setReportLat(46.432);
-				c.setReportLon(23.234);
-				c.setReportLatLonAccuracy(10F);
+//				c.setReportLat(46.432);
+//				c.setReportLon(23.234);
+//				c.setReportLatLonAccuracy(10F);
+
+				c.setFollowUpComment("Test comment");
 			});
 	}
 
@@ -366,9 +369,10 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			c -> {
 				c.setResultingCaseUser(reportingUser.toReference());
 
-				c.setReportLat(46.432);
-				c.setReportLon(23.234);
-				c.setReportLatLonAccuracy(10F);
+//				c.setReportLat(46.432);
+//				c.setReportLon(23.234);
+//				c.setReportLatLonAccuracy(10F);
+				c.setFollowUpComment("Test comment");
 			});
 	}
 
@@ -416,9 +420,10 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getSurveillanceOfficer().getUuid(), is(user2.getUuid()));
 		assertThat(caze.getClassificationUser().getUuid(), is(user2.getUuid()));
 
-		assertThat(caze.getReportLat(), is(46.432));
-		assertThat(caze.getReportLon(), is(23.234));
-		assertThat(caze.getReportLatLonAccuracy(), is(10F));
+		assertThat(caze.getFollowUpComment(), is("Test comment"));
+//		assertThat(caze.getReportLat(), is(46.432));
+//		assertThat(caze.getReportLon(), is(23.234));
+//		assertThat(caze.getReportLatLonAccuracy(), is(10F));
 	}
 
 	private void assertPseudonymized(CaseDataDto caze) {
@@ -441,12 +446,14 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getSurveillanceOfficer(), is(nullValue()));
 		assertThat(caze.getClassificationUser(), is(nullValue()));
 
-		assertThat(caze.getReportLat(), is(not(46.233)));
-		assertThat(caze.getReportLat().toString(), startsWith("46."));
-		assertThat(caze.getReportLon(), is(not(23.234)));
-		assertThat(caze.getReportLon().toString(), startsWith("23."));
+		assertThat(caze.getFollowUpComment(), is(emptyString()));
 
-		assertThat(caze.getReportLatLonAccuracy(), is(10F));
+//		assertThat(caze.getReportLat(), is(not(46.233)));
+//		assertThat(caze.getReportLat().toString(), startsWith("46."));
+//		assertThat(caze.getReportLon(), is(not(23.234)));
+//		assertThat(caze.getReportLon().toString(), startsWith("23."));
+//
+//		assertThat(caze.getReportLatLonAccuracy(), is(10F));
 	}
 
 	private void updateCase(CaseDataDto caze, UserDto user) {
@@ -460,6 +467,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setReportingUser(user.toReference());
 		caze.setSurveillanceOfficer(user.toReference());
 		caze.setClassificationUser(user.toReference());
+
+		caze.setFollowUpComment("Updated Comment");
 
 		caze.setReportLat(46.432);
 		caze.setReportLon(23.234);
@@ -481,6 +490,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getSurveillanceOfficer(), is(user1));
 		assertThat(caze.getClassificationUser(), is(user1));
 
+		caze.setFollowUpComment("Updated Comment");
+
 		assertThat(caze.getReportLat(), is(46.432));
 		assertThat(caze.getReportLon(), is(23.234));
 		assertThat(caze.getReportLatLonAccuracy(), is(20F));
@@ -499,8 +510,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getSurveillanceOfficer(), is(user));
 		assertThat(caze.getClassificationUser(), is(user));
 
-		assertThat(caze.getReportLat(), is(46.432));
-		assertThat(caze.getReportLon(), is(23.234));
-		assertThat(caze.getReportLatLonAccuracy(), is(20F));
+		assertThat(caze.getFollowUpComment(), is("Test comment"));
+//		assertThat(caze.getReportLat(), is(46.432));
+//		assertThat(caze.getReportLon(), is(23.234));
+//		assertThat(caze.getReportLatLonAccuracy(), is(20F));
 	}
 }
