@@ -88,7 +88,6 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -987,14 +986,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
 		Root<Visit> visitRoot = cd.from(Visit.class);
-		Subquery<Long> contactVisitsSubquery = getContactVisitsSubqueryForDelete(cb, cd, visitRoot);
+		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
+		visitSubquery(cb, visitRoot, contactVisitsSubquery);
 		cd.where(cb.and(cb.equal(visitRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.not(cb.exists(contactVisitsSubquery))));
 		em.createQuery(cd).executeUpdate();
 
 		CriteriaUpdate<Visit> cu = cb.createCriteriaUpdate(Visit.class);
 		Root<Visit> updateRoot = cu.from(Visit.class);
 		cu.set(Visit.CAZE, null);
-		Subquery<Long> updateVisitsSubquery = getContactVisitsSubqueryForUpdate(cb, cu, updateRoot);
+		Subquery<Long> updateVisitsSubquery = cu.subquery(Long.class);
+		visitSubquery(cb, visitRoot, updateVisitsSubquery);
 		cu.where(cb.and(cb.equal(updateRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.exists(updateVisitsSubquery)));
 		em.createQuery(cu).executeUpdate();
 
@@ -1046,22 +1047,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		super.deletePermanent(caze);
 	}
 
-	private Subquery<Long> getContactVisitsSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot) {
-		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
+	private void visitSubquery(CriteriaBuilder cb, Root<Visit> visitRoot, Subquery<Long> contactVisitsSubquery) {
 		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
 		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
 		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
 		contactVisitsSubquery.select(visitContactJoin.get(Visit.ID));
-		return contactVisitsSubquery;
-	}
-
-	private Subquery<Long> getContactVisitsSubqueryForUpdate(CriteriaBuilder cb, CriteriaUpdate<Visit> cu, Root<Visit> visitRoot) {
-		Subquery<Long> contactVisitsSubquery = cu.subquery(Long.class);
-		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
-		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
-		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
-		contactVisitsSubquery.select(visitContactJoin.get(Visit.ID));
-		return contactVisitsSubquery;
 	}
 
 	@Override
