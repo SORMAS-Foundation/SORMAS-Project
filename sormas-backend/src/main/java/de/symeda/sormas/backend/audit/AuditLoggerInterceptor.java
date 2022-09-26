@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -37,12 +38,12 @@ public class AuditLoggerInterceptor {
 	/**
 	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
 	 */
-	private final static Map<Class<?>, Boolean> shouldIgnoreClassCache = new HashMap<>();
+	private static final Map<Class<?>, Boolean> shouldIgnoreClassCache = new HashMap<>();
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
 	 */
-	private final static Set<Class<?>> ignoreAuditClasses = Collections.unmodifiableSet(
+	private static final Set<Class<?>> ignoreAuditClasses = Collections.unmodifiableSet(
 		new HashSet<>(
 			Arrays.asList(
 				ConfigFacadeEjb.class,
@@ -69,6 +70,14 @@ public class AuditLoggerInterceptor {
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@AroundTimeout
+	public Object logTimeout(InvocationContext context) throws Exception {
+		if (AuditLoggerEjb.isLoggingDisabled()) {
+			return context.proceed();
+		}
+		return backendAuditing(context, context.getMethod());
 	}
 
 	@AroundInvoke
@@ -102,19 +111,20 @@ public class AuditLoggerInterceptor {
 			return context.proceed();
 		}
 
-		// start auditing
+		return backendAuditing(context, calledMethod);
+	}
 
-		// AuditContextProducer
+	private Object backendAuditing(InvocationContext context, Method calledMethod) throws Exception {
+
 		List<String> parameters = getParameters(context);
-
-		// do the actual call
 		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
+
 		Object result = context.proceed();
+
 		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		String returnValue = printObject(result);
 
 		auditLogger.logBackendCall(calledMethod, parameters, returnValue, start, end);
-
 		return result;
 	}
 
