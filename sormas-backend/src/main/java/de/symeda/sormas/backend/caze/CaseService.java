@@ -36,6 +36,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
@@ -991,14 +992,19 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		caze.getVisits().stream().forEach(visit -> {
-			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {
-				visitService.deletePermanent(visit);
-			} else {
-				visit.setCaze(null);
-				visitService.ensurePersisted(visit);
-			}
-		});
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
+		Root<Visit> visitRoot = cd.from(Visit.class);
+		Subquery<Long> contactVisitsSubquery = getContactVisitsSubqueryForDelete(cb, cd, visitRoot);
+		cd.where(cb.and(cb.equal(visitRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.not(cb.exists(contactVisitsSubquery))));
+		em.createQuery(cd).executeUpdate();
+
+		CriteriaUpdate<Visit> cu = cb.createCriteriaUpdate(Visit.class);
+		Root<Visit> updateRoot = cu.from(Visit.class);
+		cu.set(Visit.CAZE, null);
+		Subquery<Long> updateVisitsSubquery = getContactVisitsSubqueryForUpdate(cb, cu, updateRoot);
+		cu.where(cb.and(cb.equal(updateRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.exists(updateVisitsSubquery)));
+		em.createQuery(cu).executeUpdate();
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
@@ -1046,6 +1052,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+	}
+
+	private Subquery<Long> getContactVisitsSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot) {
+		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
+		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
+		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
+		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
+		contactVisitsSubquery.select(visitContactJoin.get(Visit.ID));
+		return contactVisitsSubquery;
+	}
+
+	private Subquery<Long> getContactVisitsSubqueryForUpdate(CriteriaBuilder cb, CriteriaUpdate<Visit> cu, Root<Visit> visitRoot) {
+		Subquery<Long> contactVisitsSubquery = cu.subquery(Long.class);
+		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
+		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
+		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
+		contactVisitsSubquery.select(visitContactJoin.get(Visit.ID));
+		return contactVisitsSubquery;
 	}
 
 	@Override

@@ -996,6 +996,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void deletePermanentByUuids(List<String> uuids) {
 
 		visitService.deletePersonVisits(uuids);
