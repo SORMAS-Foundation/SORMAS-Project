@@ -224,20 +224,27 @@ public class PersonsView extends AbstractView {
 
 		associationButtons = new HashMap<>();
 		for (PersonAssociation association : PersonAssociation.values()) {
-			if (association == PersonAssociation.IMMUNIZATION
-				&& (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-					|| FacadeProvider.getFeatureConfigurationFacade()
-						.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED))
-				|| association == PersonAssociation.TRAVEL_ENTRY
-					&& (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TRAVEL_ENTRIES)
-						|| !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY))
-				|| association == PersonAssociation.CONTACT
-					&& (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
-						|| !UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW))
-				|| association == PersonAssociation.CASE
-					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
-				|| association == PersonAssociation.EVENT_PARTICIPANT
-					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)) {
+			boolean hasImmunizationRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+				&& !FacadeProvider.getFeatureConfigurationFacade()
+					.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW);
+			boolean hasTravelRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
+				&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+			boolean hasContactRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW);
+			boolean hadCaseRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW);
+			boolean hadEventRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW);
+
+			if ((association == PersonAssociation.ALL
+				&& !(hasImmunizationRight && hasTravelRight && hasContactRight && hadCaseRight && hadEventRight))
+				|| association == PersonAssociation.IMMUNIZATION && !hasImmunizationRight
+				|| association == PersonAssociation.TRAVEL_ENTRY && !hasTravelRight
+				|| association == PersonAssociation.CONTACT && !hasContactRight
+				|| association == PersonAssociation.CASE && !hadCaseRight
+				|| association == PersonAssociation.EVENT_PARTICIPANT && !hadEventRight) {
 				continue;
 			}
 
