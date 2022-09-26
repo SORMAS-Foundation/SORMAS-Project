@@ -2551,6 +2551,7 @@ public class EditCaseSteps implements En {
         "^I click on edit task icon of the (\\d+) displayed task on Edit Case page$",
         (Integer taskNumber) -> {
           webDriverHelpers.clickOnWebElementBySelector(getEditTaskButtonByNumber(taskNumber - 1));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }
 
