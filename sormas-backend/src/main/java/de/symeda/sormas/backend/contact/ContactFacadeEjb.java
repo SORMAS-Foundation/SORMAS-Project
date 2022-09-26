@@ -371,6 +371,8 @@ public class ContactFacadeEjb
 
 		validateUserRights(dto, existingContactDto);
 		validate(dto);
+		dto.setReportDateTime(DataHelper.removeTime(dto.getReportDateTime()));
+		dto.setLastContactDate(DataHelper.removeTime(dto.getLastContactDate()));
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
