@@ -61,7 +61,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	@Override
 	public Stream<String> getEventColumns() {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 			return Stream.empty();
 		}
 

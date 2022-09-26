@@ -107,7 +107,7 @@ public class CaseListCriteriaBuilder {
 
 		if (detailed) {
 			// Events count subquery
-			if (!currentUserService.hasUserRight(UserRight.EVENT_VIEW)) {
+			if (currentUserService.hasUserRight(UserRight.EVENT_VIEW)) {
 				Subquery<Long> eventCountSq = cq.subquery(Long.class);
 				Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
 				Join<EventParticipant, Event> event = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
