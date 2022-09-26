@@ -18,9 +18,11 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
+@AuditedClass
 public class TreatmentIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 8736174497617079947L;
@@ -33,7 +35,6 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 	public static final String TREATMENT_ROUTE = "treatmentRoute";
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
 
-	private String uuid;
 	private TreatmentIndexType treatmentIndexType;
 	private Date treatmentDateTime;
 	private String dose;
