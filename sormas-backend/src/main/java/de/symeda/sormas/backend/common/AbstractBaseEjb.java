@@ -65,11 +65,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	}
 
 	@Override
-	public List<DTO> getAllAfter(Date date) {
-		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date)).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<String> getObsoleteUuidsSince(Date since) {
 
 		if (userService.getCurrentUser() == null) {

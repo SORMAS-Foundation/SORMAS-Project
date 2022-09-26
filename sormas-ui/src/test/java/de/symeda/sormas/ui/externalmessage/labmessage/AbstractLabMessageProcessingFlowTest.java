@@ -997,7 +997,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
 		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 		pickOrCreateEventResult.setEvent(selectedEvent);
@@ -1040,7 +1040,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
 		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 		pickOrCreateEventResult.setEvent(selectedEvent);
@@ -1075,7 +1075,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		doAnswer((invocation) -> {
 			// pick event
 			PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
@@ -1114,7 +1114,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		doAnswer((invocation) -> {
 			// pick event for the  first time
 			PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
@@ -1160,7 +1160,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
 		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 		pickOrCreateEventResult.setEvent(selectedEvent);
@@ -1540,7 +1540,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 		doAnswer(invocation -> {
 			List<SimilarEventParticipantDto> eventParticipants = invocation.getArgument(2);
@@ -1581,7 +1581,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 		doAnswer(invocation -> {
 			List<SimilarEventParticipantDto> eventParticipants = invocation.getArgument(2);

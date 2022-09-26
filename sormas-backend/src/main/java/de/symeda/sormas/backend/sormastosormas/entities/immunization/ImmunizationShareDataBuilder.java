@@ -21,7 +21,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.immunization.ImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;

@@ -22,7 +22,7 @@ import javax.inject.Inject;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;

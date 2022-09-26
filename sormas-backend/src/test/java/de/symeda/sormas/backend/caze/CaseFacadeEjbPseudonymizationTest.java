@@ -151,7 +151,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
-		List<CaseDataDto> cases = getCaseFacade().getAllActiveCasesAfter(calendar.getTime());
+		List<CaseDataDto> cases = getCaseFacade().getAllAfter(calendar.getTime());
 
 		assertPseudonymized(cases.stream().filter(c -> c.getUuid().equals(caze1.getUuid())).findFirst().get());
 		assertNotPseudonymized(cases.stream().filter(c -> c.getUuid().equals(caze2.getUuid())).findFirst().get());

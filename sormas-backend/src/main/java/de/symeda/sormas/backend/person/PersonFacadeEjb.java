@@ -1524,7 +1524,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		final List<Long> inJurisdictionIDs = service.getInJurisdictionIDs(persons);
+		final List<Long> inJurisdictionIDs = service.getInJurisdictionIds(persons);
 
 		return persons.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
 	}

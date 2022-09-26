@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1709,9 +1709,6 @@ public enum DefaultUserRole {
 	public static DefaultUserRole getByCaption(String caption) {
 		Optional<DefaultUserRole> defaultUserRole =
 			Arrays.stream(values()).filter(dur -> dur.name().equals(caption) || I18nProperties.getEnumCaption(dur).equals(caption)).findAny();
-		if (defaultUserRole.isPresent()) {
-			return defaultUserRole.get();
-		}
-		return null;
+		return defaultUserRole.orElse(null);
 	}
 }

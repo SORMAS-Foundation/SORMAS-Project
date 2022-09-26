@@ -21,10 +21,6 @@ import java.util.List;
 
 import android.view.View;
 
-import org.joda.time.DateTimeComparator;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;

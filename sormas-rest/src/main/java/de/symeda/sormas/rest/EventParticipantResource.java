@@ -54,7 +54,7 @@ public class EventParticipantResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<EventParticipantDto> getAllEventParticipantsAfter(@PathParam("since") long since) {
-		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since));
+		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllAfter(new Date(since));
 		return result;
 	}
 
@@ -64,8 +64,7 @@ public class EventParticipantResource extends EntityDtoResource {
 		@PathParam("since") long since,
 		@PathParam("size") int size,
 		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
-		List<EventParticipantDto> result =
-			FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since), size, lastSynchronizedUuid);
+		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 		return result;
 	}
 

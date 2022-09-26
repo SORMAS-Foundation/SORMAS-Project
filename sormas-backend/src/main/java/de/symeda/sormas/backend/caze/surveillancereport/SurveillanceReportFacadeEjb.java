@@ -137,11 +137,12 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 		List<SurveillanceReport> resultList = QueryHelper.getResultList(em, cq, first, max);
 		List<SurveillanceReportDto> reports = resultList.stream().map(SurveillanceReportFacadeEjb::toDto).collect(Collectors.toList());
 
+		List<Long> inJurisdictionIds = service.getInJurisdictionIds(resultList);
 		User currentUser = userService.getCurrentUser();
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(SurveillanceReportDto.class, reports, reportDto -> {
 			Optional<SurveillanceReport> report = resultList.stream().filter(r -> r.getUuid().equals(r.getUuid())).findFirst();
-			return report.isPresent() ? caseService.inJurisdictionOrOwned(report.get().getCaze()) : false;
+			return report.isPresent() ? inJurisdictionIds.contains(report.get().getId()) : false;
 		}, (reportDto, inJurisdiction) -> {
 			Optional<SurveillanceReport> report = resultList.stream().filter(r -> r.getUuid().equals(r.getUuid())).findFirst();
 			report.ifPresent(
@@ -163,7 +164,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 	private void restorePseudonymizedDto(SurveillanceReportDto dto, SurveillanceReport existingReport, SurveillanceReportDto existingDto) {
 		if (existingDto != null) {
-			boolean inJurisdiction = caseService.inJurisdictionOrOwned(existingReport.getCaze());
+			boolean inJurisdiction = service.inJurisdictionOrOwned(existingReport);
 			User currentUser = userService.getCurrentUser();
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
