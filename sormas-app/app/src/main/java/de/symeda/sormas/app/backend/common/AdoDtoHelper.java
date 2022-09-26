@@ -103,7 +103,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 		pullEntities(false, context, syncCallbacks, false);
 
-		return pushEntities(false, syncCallbacks);
+		return pushEntities(false, syncCallbacks, isViewAllowed());
 	}
 
 	public void pullEntities(final boolean markAsRead, Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
@@ -291,7 +291,19 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	public boolean pushEntities(boolean onlyNewEntities, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
+		return pushEntities(onlyNewEntities, syncCallbacks, false);
+	}
+
+	public boolean pushEntities(
+		boolean onlyNewEntities,
+		Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks,
+		boolean forceLoadNext)
+		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
+
 		if (!isEditAllowed()) {
+			if (forceLoadNext) {
+				syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			}
 			return false;
 		}
 
