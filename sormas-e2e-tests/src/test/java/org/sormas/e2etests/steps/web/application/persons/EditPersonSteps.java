@@ -522,7 +522,6 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
-
         });
     When(
         "I check if added travel Entry appeared on Edit Person Page",
