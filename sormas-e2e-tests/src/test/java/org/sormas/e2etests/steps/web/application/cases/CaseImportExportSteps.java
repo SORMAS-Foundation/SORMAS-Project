@@ -289,20 +289,35 @@ public class CaseImportExportSteps implements En {
         "I check if downloaded docx file is correct",
         () -> {
           String uuidFirstChars = EditCaseSteps.caseUuid.substring(0, 6);
-           String file = String.format("./downloads/%s-preExistingConditions.docx",
-           uuidFirstChars);
+          String file = String.format("./downloads/%s-preExistingConditions.docx", uuidFirstChars);
           FileInputStream docx = new FileInputStream(file);
           XWPFDocument document = new XWPFDocument(docx);
           XWPFWordExtractor document_extracted = new XWPFWordExtractor(document);
           String docx_string = document_extracted.getText();
-          Assert.assertTrue(docx_string.contains("Diabetes: Ja"), "There is no expected Pre Existing Condition value in docx file!");
-          Assert.assertTrue(docx_string.contains("Immunodeficiency including HIV: Ja"), "There is no expected Pre Existing Condition value in docx file!");
-          Assert.assertTrue(docx_string.contains("Liver disease: Nein"), "There is no expected Pre Existing Condition value in docx file!");
-          Assert.assertTrue(docx_string.contains("Malignancy: Unbekannt"), "There is no expected Pre Existing Condition value in docx file!");
-          Assert.assertTrue(docx_string.contains("Chronic pulmonary disease\u00A0: Ja"), "There is no expected Pre Existing Condition value in docx file!");
-          Assert.assertTrue(docx_string.contains("Renal disease: Ja"), "There is no expected Pre Existing Condition value in docx file!");
-          Assert.assertTrue(docx_string.contains("Chronic neurologic / neuromuscular disease: Ja"), "There is no expected Pre Existing Condition value in docx file!");
-          Assert.assertTrue(docx_string.contains("Chardiovascular disesase including hypertension: Ja"), "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(
+              docx_string.contains("Diabetes: Ja"),
+              "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(
+              docx_string.contains("Immunodeficiency including HIV: Ja"),
+              "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(
+              docx_string.contains("Liver disease: Nein"),
+              "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(
+              docx_string.contains("Malignancy: Unbekannt"),
+              "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(
+              docx_string.contains("Chronic pulmonary disease\u00A0: Ja"),
+              "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(
+              docx_string.contains("Renal disease: Ja"),
+              "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(
+              docx_string.contains("Chronic neurologic / neuromuscular disease: Ja"),
+              "There is no expected Pre Existing Condition value in docx file!");
+          Assert.assertTrue(
+              docx_string.contains("Chardiovascular disesase including hypertension: Ja"),
+              "There is no expected Pre Existing Condition value in docx file!");
           Files.delete(Paths.get(file));
         });
   }
