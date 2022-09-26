@@ -58,6 +58,9 @@ public class UserRoleFormHelper {
 		fieldGroup.getField(UserRoleDto.JURISDICTION_LEVEL).addValueChangeListener(e -> {
 			CheckBox portHealthUserCb = (CheckBox) fieldGroup.getField(UserRoleDto.PORT_HEALTH_USER);
 			portHealthUserCb.setValue(e.getProperty().getValue() == JurisdictionLevel.POINT_OF_ENTRY);
+
+			CheckBox optionalHealthFacilityCb = (CheckBox) fieldGroup.getField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY);
+			optionalHealthFacilityCb.setValue(e.getProperty().getValue() != JurisdictionLevel.HEALTH_FACILITY);
 		});
 	}
 
