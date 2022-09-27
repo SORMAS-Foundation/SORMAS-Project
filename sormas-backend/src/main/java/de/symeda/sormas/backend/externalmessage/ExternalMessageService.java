@@ -221,7 +221,7 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ExternalMessage> messageRoot = cq.from(ExternalMessage.class);
-		Join<ExternalMessage, Case> caseJoin = messageRoot.join(ExternalMessage.CASE, JoinType.LEFT);
+		Join<ExternalMessage, Case> caseJoin = messageRoot.join(ExternalMessage.CAZE, JoinType.LEFT);
 
 		cq.where(cb.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid));
 		cq.select(cb.countDistinct(messageRoot));

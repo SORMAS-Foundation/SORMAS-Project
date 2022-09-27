@@ -31,6 +31,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -101,7 +102,7 @@ public class ExternalMessageProcessingUIHelper {
 	public static CompletionStage<Boolean> showMultipleSamplesPopup() {
 		return VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.externalMessageMultipleSampleReports),
-			new Label(I18nProperties.getString(Strings.messageMultipleSampleReports)),
+			new Label(I18nProperties.getString(Strings.messageMultipleSampleReports), ContentMode.HTML),
 			I18nProperties.getCaption(Captions.actionYes),
 			I18nProperties.getCaption(Captions.actionCancel));
 	}

@@ -1298,9 +1298,9 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
 		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
-		EventIndexDto selectedEvent = new EventIndexDto();
+		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
 		selectedEvent.setUuid(event.getUuid());
 		pickOrCreateEventResult.setEvent(selectedEvent);
 		doAnswer((invocation) -> {

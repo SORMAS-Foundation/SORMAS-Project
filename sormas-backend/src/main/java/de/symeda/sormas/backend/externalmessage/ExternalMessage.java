@@ -29,10 +29,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.user.User;
@@ -69,7 +65,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
 	public static final String ASSIGNEE = "assignee";
-	public static final String CASE = "caze";
+	public static final String CAZE = "caze";
 
 	private ExternalMessageType type;
 	private Disease testedDisease;
