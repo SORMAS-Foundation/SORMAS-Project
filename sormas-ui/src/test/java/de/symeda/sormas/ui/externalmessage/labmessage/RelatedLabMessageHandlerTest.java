@@ -266,7 +266,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
+		labMessageToProcess.getSampleReportsNullSave().get(0).setLabSampleId(labSampleId);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities, is(nullValue()));
@@ -331,14 +331,13 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.addSampleReport(SampleReportDto.build());
-		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setExternalId(sampleExternalId);
 		SampleReportDto sampleReport = SampleReportDto.build();
 		sampleReport.addTestReport(testReport);
 		labMessageToProcess.addSampleReport(sampleReport);
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getPathogenTests(), hasSize(1));
