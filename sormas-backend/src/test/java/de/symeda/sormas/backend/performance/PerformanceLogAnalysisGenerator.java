@@ -85,9 +85,18 @@ public class PerformanceLogAnalysisGenerator {
 	public static final int TIME_TRESHOLD_ORANGE = 300;
 	public static final int TIME_TRESHOLD_RED = 1000;
 
-	public String outputDirectory = "target/performanceLogAnalysis/";
+	public static String DEFAULT_OUTPUT_DIRECTORY = "target/performanceLogAnalysis/";
 
 	private Map<String, Stack<String>> callstacks;
+	private String outputDirectory;
+
+	public PerformanceLogAnalysisGenerator() {
+		this(DEFAULT_OUTPUT_DIRECTORY);
+	}
+
+	public PerformanceLogAnalysisGenerator(String outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
 
 	public static void main(String[] args) throws IOException, URISyntaxException {
 
@@ -102,12 +111,10 @@ public class PerformanceLogAnalysisGenerator {
 		if (!logFile.exists()) {
 			return;
 		} else if (logFile.isDirectory()) {
-			String outputDirectory = logFile.getAbsolutePath() + "/";
+			String logFileDirectory = logFile.getAbsolutePath() + "/";
 			for (File singleLogFile : logFile.listFiles()) {
 				if (singleLogFile.getName().endsWith(".debug")) {
-					PerformanceLogAnalysisGenerator performanceLogAnalysisGenerator = new PerformanceLogAnalysisGenerator();
-					performanceLogAnalysisGenerator.outputDirectory = outputDirectory;
-					performanceLogAnalysisGenerator.analyzePerformanceLog(singleLogFile);
+					new PerformanceLogAnalysisGenerator(logFileDirectory).analyzePerformanceLog(singleLogFile);
 				}
 			}
 		} else {
