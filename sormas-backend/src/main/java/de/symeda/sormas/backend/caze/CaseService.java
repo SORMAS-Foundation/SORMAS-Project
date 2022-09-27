@@ -987,7 +987,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
 		Root<Visit> visitRoot = cd.from(Visit.class);
 		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
-		visitSubquery(cb, visitRoot, contactVisitsSubquery);
+		initVisitSubqueryForDeletion(cb, visitRoot, contactVisitsSubquery);
 		cd.where(cb.and(cb.equal(visitRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.not(cb.exists(contactVisitsSubquery))));
 		em.createQuery(cd).executeUpdate();
 
@@ -995,7 +995,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Root<Visit> updateRoot = cu.from(Visit.class);
 		cu.set(Visit.CAZE, null);
 		Subquery<Long> updateVisitsSubquery = cu.subquery(Long.class);
-		visitSubquery(cb, visitRoot, updateVisitsSubquery);
+		initVisitSubqueryForDeletion(cb, visitRoot, updateVisitsSubquery);
 		cu.where(cb.and(cb.equal(updateRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.exists(updateVisitsSubquery)));
 		em.createQuery(cu).executeUpdate();
 
@@ -1047,7 +1047,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		super.deletePermanent(caze);
 	}
 
-	private void visitSubquery(CriteriaBuilder cb, Root<Visit> visitRoot, Subquery<Long> contactVisitsSubquery) {
+	private void initVisitSubqueryForDeletion(CriteriaBuilder cb, Root<Visit> visitRoot, Subquery<Long> contactVisitsSubquery) {
 		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
 		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
 		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
