@@ -164,7 +164,7 @@ public class ExternalMessageMapper {
 		PathogenTestResultType pathogenTestResult = null;
 		if (externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleOverallTestResult() != null) {
 			pathogenTestResult = externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getSampleOverallTestResult();
-		} else if (homogenousTestResultTypesIn(externalMessage)) {
+		} else if (homogenousTestResultTypesIn(externalMessage, sampleReportIndex)) {
 			pathogenTestResult = externalMessage.getSampleReportsNullSave().get(sampleReportIndex).getTestReports().get(0).getTestResult();
 		}
 
@@ -390,8 +390,8 @@ public class ExternalMessageMapper {
 		}
 	}
 
-	private boolean homogenousTestResultTypesIn(ExternalMessageDto labMessage) {
-		List<TestReportDto> testReports = labMessage.getSampleReportsNullSave().get(0).getTestReports();
+	private boolean homogenousTestResultTypesIn(ExternalMessageDto labMessage, int sampleReportIndex) {
+		List<TestReportDto> testReports = labMessage.getSampleReportsNullSave().get(sampleReportIndex).getTestReports();
 		if (testReports != null && !testReports.isEmpty()) {
 			List<PathogenTestResultType> testResultTypes = testReports.stream().map(TestReportDto::getTestResult).collect(Collectors.toList());
 			return testResultTypes.stream().distinct().count() <= 1;
