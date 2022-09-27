@@ -1,10 +1,11 @@
 package de.symeda.sormas.api.task;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
 
@@ -15,12 +16,18 @@ public class TaskHelperTest {
 	@Test
 	public void testGetDefaultSuggestedStart() {
 
-		assertThat(ChronoUnit.SECONDS.between(UtilDate.toLocalDateTime(TaskHelper.getDefaultSuggestedStart()), LocalDateTime.now()), equalTo(0L));
+		assertEquals(UtilDate.toLocalDateTime(TaskHelper.getDefaultSuggestedStart()), LocalDateTime.now());
 	}
 
 	@Test
-	public void testGetDefaultDueDate() throws Exception {
+	public void testGetDefaultDueDate() {
 
-		assertThat(ChronoUnit.MINUTES.between(LocalDateTime.now(), UtilDate.toLocalDateTime(TaskHelper.getDefaultDueDate())), equalTo(1439L));
+		assertEquals(UtilDate.toLocalDateTime(TaskHelper.getDefaultDueDate()), LocalDateTime.now().plusDays(1));
+	}
+
+	private static void assertEquals(LocalDateTime value, LocalDateTime expectedValue) {
+
+		// Create a range of time of +/- 1s to respect different execution times of the unit test
+		assertThat(value, allOf(greaterThan(expectedValue.minusSeconds(1)), lessThan(expectedValue.plusSeconds(1))));
 	}
 }
