@@ -14,7 +14,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 public class UserRoleFacadeEjbTest extends AbstractBeanTest {
 
     @Test
-    public void testSaveUserRole() {
+    public void testChangeJurisdictionOfAssignedUserRole() {
 
         UserRoleDto userRole = UserRoleDto.build();
         userRole.setJurisdictionLevel(JurisdictionLevel.NATION);
@@ -23,7 +23,6 @@ public class UserRoleFacadeEjbTest extends AbstractBeanTest {
 
         creator.createUser(creator.createRDCF(), userRole.toReference());
 
-        // Test to change jurisdiction of assigned UserRole
         userRole.setJurisdictionLevel(JurisdictionLevel.COMMUNITY);
         UserRoleDto finalUserRole = userRole;
         assertThrows(I18nProperties.getValidationError(Validations.jurisdictionChangeUserAssignment), ValidationRuntimeException.class, () -> getUserRoleFacade().saveUserRole(finalUserRole));
