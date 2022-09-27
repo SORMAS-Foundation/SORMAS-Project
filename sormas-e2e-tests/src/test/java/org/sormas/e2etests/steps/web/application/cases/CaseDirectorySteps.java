@@ -164,9 +164,6 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              EditCasePage.UUID_INPUT, 40);
         });
 
     When(

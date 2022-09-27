@@ -266,5 +266,6 @@ Feature: Tasks functionalities
     And I click on the Cases button from navbar
     And Search for Case using Case UUID from the created Task
     When I open last created case
+    And I check that I get navigated to the Edit Case page
     And I click on first edit Task
     Then I check the created task is correctly displayed on Edit task page
