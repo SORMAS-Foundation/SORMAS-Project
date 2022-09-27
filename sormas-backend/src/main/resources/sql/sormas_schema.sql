@@ -12023,4 +12023,10 @@ CREATE INDEX IF NOT EXISTS idx_weeklyreport_changedate_uuid_id ON weeklyreport U
 INSERT INTO schema_version (version_number, comment) VALUES (491, 'Add hash indices to improve getAllAfter fetch #9320');
 
 
+-- 2022-09-27 S2S_New Right_ S2S_Process #10084 - revoke S2S rights
+
+DELETE FROM userroles_userrights where userright = 'SORMAS_TO_SORMAS_SHARE' or userright = 'SORMAS_TO_SORMAS_PROCESS';
+
+INSERT INTO schema_version (version_number, comment) VALUES (492, 'S2S_New Right_ S2S_Process #10084 - revoke S2S rights');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
