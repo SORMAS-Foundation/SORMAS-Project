@@ -2026,7 +2026,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void clearCompleteness(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

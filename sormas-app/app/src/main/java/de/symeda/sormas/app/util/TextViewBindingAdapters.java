@@ -921,16 +921,16 @@ public class TextViewBindingAdapters {
 
 	@BindingAdapter(value = {
 		"timeAgoValue",
+		"timeAgoDetailLevelDays",
 		"valueFormat",
 		"defaultValue" }, requireAll = false)
-	public static void setTimeAgoValue(TextView textField, Date dateValue, String valueFormat, String defaultValue) {
+	public static void setTimeAgoValue(TextView textField, Date dateValue, boolean timeAgoDetailLevelDays, String valueFormat, String defaultValue) {
 		String val = defaultValue;
 
 		if (dateValue == null) {
 			textField.setText(val);
 		} else {
-			val = TimeAgo.using(textField.getContext()).with(dateValue);
-
+			val = TimeAgo.using(textField.getContext()).with(dateValue, timeAgoDetailLevelDays);
 			if (valueFormat != null && valueFormat.trim() != "") {
 				textField.setText(String.format(valueFormat, val));
 			} else {
