@@ -25,7 +25,9 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	public static final String EDIT_AGGREGATE_REPORT = "showAggregateReport";
 	public static final String DELETE_AGGREGATE_REPORT = "deleteAggregateReport";
 
-	public ReportDataGrid(AggregateReportCriteria criteria) {
+	private final Runnable editCallback;
+
+	public ReportDataGrid(AggregateReportCriteria criteria, Runnable editCallback) {
 		super(AggregateReportDto.class);
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
@@ -35,6 +37,7 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 		addEditColumn();
 		addDeleteColumn();
 		addDefaultColumns();
+		this.editCallback = editCallback;
 
 		for (Column<AggregateReportDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.findPrefixCaptionWithDefault(column.getId(), column.getCaption(), AggregateReportDto.I18N_PREFIX));
@@ -79,7 +82,7 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 			editButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
 			editButton.addClickListener(clickEvent -> {
 				ControllerProvider.getAggregateReportController()
-					.openEditOrCreateWindow(() -> navigateTo(getCriteria(), true), true, aggregateReport);
+					.openEditOrCreateWindow( editCallback, true, aggregateReport);
 				reload();
 			});
 			return editButton;
@@ -102,43 +105,6 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 			return deleteButton;
 		}
 		return null;
-	}
-
-	public boolean navigateTo(BaseCriteria criteria, boolean force) {
-
-		Navigator navigator = SormasUI.get().getNavigator();
-
-		String state = navigator.getState();
-		String newState = buildNavigationState(state, criteria);
-
-		boolean didNavigate = false;
-		if (!newState.equals(state) || force) {
-			navigator.navigateTo(newState);
-
-			didNavigate = true;
-		}
-		return didNavigate;
-	}
-
-	private String buildNavigationState(String currentState, BaseCriteria criteria) {
-		String newState = currentState;
-		int paramsIndex = newState.lastIndexOf('?');
-		if (paramsIndex >= 0) {
-			newState = newState.substring(0, paramsIndex);
-		}
-
-		if (criteria != null) {
-			String params = criteria.toUrlParams();
-			if (!DataHelper.isNullOrEmpty(params)) {
-				if (newState.charAt(newState.length() - 1) != '/') {
-					newState += "/";
-				}
-
-				newState += "?" + params;
-			}
-		}
-
-		return newState;
 	}
 
 	public void reload() {
