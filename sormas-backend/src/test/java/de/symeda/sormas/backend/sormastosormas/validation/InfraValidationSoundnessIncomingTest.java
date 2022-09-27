@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.sormastosormas.validation;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;

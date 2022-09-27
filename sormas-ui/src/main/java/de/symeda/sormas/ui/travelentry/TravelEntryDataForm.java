@@ -332,6 +332,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		setRequired(true, TravelEntryDto.REPORT_DATE, TravelEntryDto.POINT_OF_ENTRY, TravelEntryDto.DISEASE);
 

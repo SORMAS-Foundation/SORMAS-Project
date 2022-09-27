@@ -712,6 +712,7 @@ public class CreateNewCaseSteps implements En {
               PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
           webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
         });
 
@@ -962,7 +963,7 @@ public class CreateNewCaseSteps implements En {
     When(
         "I check if ([^\"]*) file is downloaded correctly",
         (String fileType) -> {
-          String file = "./downloads/testCase_" + fileType + "." + fileType;
+          String file = "testCase_" + fileType + "." + fileType;
           FilesHelper.waitForFileToDownload(file, 40);
           FilesHelper.deleteFile(file);
         });

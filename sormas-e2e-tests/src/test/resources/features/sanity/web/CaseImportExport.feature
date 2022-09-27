@@ -162,3 +162,26 @@ Feature: Case import and export tests
     And I click on the Export case button
     When I click on the Detailed Case Export button
     And I check if citizenship and country of birth is not present in Detailed Case export file
+
+  @tmsLink=SORDEV-9789 @env_de
+  Scenario: Test health conditions from imported case
+    Given I log in as a Admin User
+    Then I click on the Cases button from navbar
+    And I click on the Import button from Case directory
+    And I click on the detailed button from import Case tab
+    Then I select the "PreExistingCondition_DetailedImport_Test.csv" CSV file in the file picker
+    And I click on the "DATENIMPORT STARTEN" button from the Import Case popup
+    Then I click to create new person from the Case Import popup
+    And I check that an import success notification appears in the Import Case popup
+    Then I close Import Cases form
+    And I filter by "Margret Schmitt" as a Person's full name on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open last created case
+    And I check that "diabetes" Pre-existing condition have "Ja" selected
+    And I check that "immunodeficiencyIncludingHiv" Pre-existing condition have "Ja" selected
+    And I check that "chronicLiverDisease" Pre-existing condition have "Nein" selected
+    And I check that "malignancyChemotherapy" Pre-existing condition have "Unbekannt" selected
+    And I check that "chronicPulmonaryDisease" Pre-existing condition have "Ja" selected
+    And I check that "chronicKidneyDisease" Pre-existing condition have "Ja" selected
+    And I check that "chronicNeurologicCondition" Pre-existing condition have "Ja" selected
+    And I check that "cardiovascularDiseaseIncludingHypertension" Pre-existing condition have "Ja" selected

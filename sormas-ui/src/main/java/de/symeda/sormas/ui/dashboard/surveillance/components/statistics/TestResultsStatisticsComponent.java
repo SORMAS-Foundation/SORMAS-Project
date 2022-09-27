@@ -29,11 +29,13 @@ public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComp
 	}
 
 	public void update(Map<PathogenTestResultType, Long> testResults) {
-		updateTotalLabel(((Long) testResults.values().stream().mapToLong(Long::longValue).sum()).toString());
+		if (testResults != null) {
+			updateTotalLabel(((Long) testResults.values().stream().mapToLong(Long::longValue).sum()).toString());
 
-		testResultPositive.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.POSITIVE, 0L).toString());
-		testResultNegative.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NEGATIVE, 0L).toString());
-		testResultPending.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.PENDING, 0L).toString());
-		testResultIndeterminate.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L).toString());
+			testResultPositive.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.POSITIVE, 0L).toString());
+			testResultNegative.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NEGATIVE, 0L).toString());
+			testResultPending.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.PENDING, 0L).toString());
+			testResultIndeterminate.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L).toString());
+		}
 	}
 }

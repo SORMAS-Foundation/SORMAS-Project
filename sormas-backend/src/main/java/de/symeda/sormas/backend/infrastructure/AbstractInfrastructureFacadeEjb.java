@@ -63,7 +63,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	@Override
 	@PermitAll
 	public List<DTO> getAllAfter(Date date) {
-		return super.getAllAfter(date);
+		return service.getAllAfter(date).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

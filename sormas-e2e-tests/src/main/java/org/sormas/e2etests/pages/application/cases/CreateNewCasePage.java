@@ -87,7 +87,7 @@ public class CreateNewCasePage {
   public static final By CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new person']");
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
-      By.xpath("//div[@class='v-window v-widget']//following::div[@id='commit']");
+      By.xpath("//div[@class='v-window v-widget']//following::div[@id='commit'][2]");
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
       By.xpath(
           "//div[@class='v-grid v-widget v-has-width']//div[@class='v-grid-tablewrapper']/table/tbody[@class='v-grid-body']/tr[@class='v-grid-row v-grid-row-has-data']");
