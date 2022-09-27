@@ -30,7 +30,7 @@ public class RelatedSamplesReportsAndPathogenTests {
 	private Map<SampleReportDto, SampleDto> relatedSampleReports = Collections.checkedMap(new HashMap<>(), SampleReportDto.class, SampleDto.class);
 	private List<PathogenTestDto> pathogenTests = new ArrayList<>();
 
-	public Map<SampleReportDto, SampleDto> getRelatedSampleReports() {
+	public Map<SampleReportDto, SampleDto> getRelatedSampleReportsWithSamples() {
 		return this.relatedSampleReports;
 	}
 

@@ -131,7 +131,7 @@ public class ExternalMessageController {
 				if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
 					showCorrectionsSavedPopup();
 				} else if (status == ProcessingResultStatus.DONE) {
-					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReports());
+					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples());
 					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 				}
 

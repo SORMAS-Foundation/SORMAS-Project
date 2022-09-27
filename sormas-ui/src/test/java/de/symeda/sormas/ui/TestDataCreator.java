@@ -571,6 +571,14 @@ public class TestDataCreator {
 
 	public SampleDto createSample(
 		EventParticipantReferenceDto associatedEventParticipant,
+		UserReferenceDto reportingUser,
+		FacilityDto lab,
+		Consumer<SampleDto> customConfig) {
+		return createSample(associatedEventParticipant, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab.toReference(), customConfig);
+	}
+
+	public SampleDto createSample(
+		EventParticipantReferenceDto associatedEventParticipant,
 		Date sampleDateTime,
 		Date reportDateTime,
 		UserReferenceDto reportingUser,
