@@ -26,6 +26,8 @@ public class UserManagementPage {
   public static final By FIRST_EDIT_BUTTON_FROM_LIST =
       By.cssSelector(".v-grid-body tr:nth-child(1) .v-icon.v-icon-edit");
   public static final By ACTIVE_INACTIVE_COMBOBOX = By.cssSelector("#active div");
+  public static final By USER_ROLES_COMBOBOX = By.cssSelector("#userRoles div");
+  public static final By REGION_COMBOBOX_USER_MANAGEMENT = By.cssSelector("#region div");
   public static final By USER_NUMBER =
       By.xpath("(//div[contains(@class,'v-label v-widget bold')])[2]");
   public static final By SYNC_USERS_BUTTON = By.id("syncUsers");
@@ -33,6 +35,7 @@ public class UserManagementPage {
   public static final By SYNC_SUCCESS_DE = By.xpath("//*[text()='Synchronisation erfolgreich!']");
   public static final By ACTIVE_CHECKBOX_USER_MANAGEMENT =
       By.cssSelector("[class*='check_square']");
+
   public static final By INACTIVE_CHECKBOX_USER_MANAGEMENT =
       By.cssSelector("[class*='thin_square']");
   public static final By USERS_COUNTER_USER_MANAGEMENT =

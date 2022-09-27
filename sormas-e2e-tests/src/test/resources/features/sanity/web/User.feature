@@ -181,7 +181,7 @@ Feature: Create user
     Then I click on logout button from navbar
 
   @#7470 @env_main
-  Scenario: Check User active inactive functionality
+  Scenario: Verify user set active set inactive functionality
     Given I log in as a Admin User
     And I click on the Users from navbar
     When I create a new disabled National User in the Create New User page
@@ -192,7 +192,30 @@ Feature: Create user
     Then I verify that the Active value is Unchecked in the User Management Page
 
   @#7470 @env_main
-  Scenario: User active filter functionality
+  Scenario: Verify active user filter functionality
     Given I log in as a Admin User
     And I click on the Users from navbar
-    And I Verify the number of Active, Inactive and Total users in the user Management Page
+    Then I Verify the number of Active, Inactive and Total users in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Verify User Roles filter functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    Then I Verify The User Role filter in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Verify User Roles filter functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    Then I Verify The User Role filter in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Verify Region filter functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    Then I Verify Region filter in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Validate that non-admin users can't access users directory
+    Given I log in as a National User
+    Then I Verify Users Navigation link is not present in the navigation bar

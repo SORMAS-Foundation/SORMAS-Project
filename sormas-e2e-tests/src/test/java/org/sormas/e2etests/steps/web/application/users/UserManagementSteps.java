@@ -118,23 +118,77 @@ public class UserManagementSteps implements En {
           }
         });
 
-    When(
-        "I Verify the number of Active, Inactive and Total users in the user Management Page",
+    Then(
+        "I Verify the number of Active, Inactive and Total users in the User Management Page",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USERS_COUNTER_USER_MANAGEMENT);
-          Integer numberOfTotalUsers = Integer.parseInt(webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              USERS_COUNTER_USER_MANAGEMENT);
+          Integer numberOfTotalUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Active");
+          // TODO Remove sleep
           TimeUnit.SECONDS.sleep(2);
-          Integer numberOfActiveUsers = Integer.parseInt(webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          Integer numberOfActiveUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Inactive");
           TimeUnit.SECONDS.sleep(2);
-          Integer numberOfInactiveUsers = Integer.parseInt(webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          Integer numberOfInactiveUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           assertHelpers.assertWithPoll(
-            () ->
-              Assert.assertTrue(
-                numberOfTotalUsers == numberOfActiveUsers + numberOfInactiveUsers,
-                "Sync of users failed in User Management Page"),
-                10);
+              () ->
+                  Assert.assertTrue(
+                      numberOfTotalUsers == numberOfActiveUsers + numberOfInactiveUsers,
+                      "Sync of users failed in User Management Page"),
+              10);
+        });
+
+    Then(
+        "I Verify The User Role filter in the User Management Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              USERS_COUNTER_USER_MANAGEMENT);
+          Integer numberOfTotalUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, "National User");
+          // TODO Remove sleep
+          TimeUnit.SECONDS.sleep(2);
+          Integer numberOfSpecificUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, "");
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertFalse(
+                      numberOfTotalUsers == numberOfSpecificUsers,
+                      "User Roles Filer ComboBox failed in User Management Page"),
+              10);
+        });
+
+    Then(
+        "I Verify Region filter in the User Management Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              USERS_COUNTER_USER_MANAGEMENT);
+          Integer numberOfTotalUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_USER_MANAGEMENT, "Bayern");
+          // TODO Remove sleep
+          TimeUnit.SECONDS.sleep(2);
+          Integer numberOfSpecificUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_USER_MANAGEMENT, "");
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertFalse(
+                      numberOfTotalUsers == numberOfSpecificUsers,
+                      "User Roles Filer ComboBox failed in User Management Page"),
+              10);
         });
   }
 
