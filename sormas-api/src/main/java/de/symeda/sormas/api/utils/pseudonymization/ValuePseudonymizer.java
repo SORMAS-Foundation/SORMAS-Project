@@ -29,4 +29,7 @@ public abstract class ValuePseudonymizer<T> {
 	}
 
 	protected abstract T pseudonymizeValue(T value);
+
+	public abstract boolean isValuePseudonymized(T value);
+
 }
