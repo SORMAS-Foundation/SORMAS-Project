@@ -321,33 +321,33 @@ public class KeycloakService {
 		// Please note that this cannot be done via the client representation directly as Keycloak is very strict about
 		// resource creation. Currently, we only use this function to assign the sormas-stats-access client role to a
 		// sormasUser if the sormasUser has the STATISTICS_ACCESS right.
+
+		UsersResource usersResource = keycloak.realm(REALM_NAME).users();
+		UserResource userResource = usersResource.get(userResourceId);
+
+		Optional<ClientRepresentation> clientRepresentation =
+			keycloak.realm(REALM_NAME).clients().findAll().stream().filter(client -> client.getClientId().equals(CLIENT_ID_SORMAS_STATS)).findFirst();
+		if (!clientRepresentation.isPresent()) {
+			logger.error("Cannot find client with id {}", CLIENT_ID_SORMAS_STATS);
+			return;
+		}
+
+		final String clientRepId = clientRepresentation.get().getId();
+
+		ClientResource clientResource = keycloak.realm(REALM_NAME).clients().get(clientRepId);
+		Optional<RoleRepresentation> roleRepresentation =
+			clientResource.roles().list().stream().filter(element -> element.getName().equals(KEYCLOAK_ROLE_SORMAS_STATS_ACCESS)).findFirst();
+
+		if (!roleRepresentation.isPresent()) {
+			logger.error("Cannot find role with name {}", KEYCLOAK_ROLE_SORMAS_STATS_ACCESS);
+			return;
+		}
+		// we cannot add the role directly to the user in an update of the representation, we have to do it separately
 		if (sormasUser.isActive() && sormasUser.hasUserRight(UserRight.STATISTICS_ACCESS)) {
-			UsersResource usersResource = keycloak.realm(REALM_NAME).users();
-			UserResource userResource = usersResource.get(userResourceId);
-
-			Optional<ClientRepresentation> clientRepresentation = keycloak.realm(REALM_NAME)
-				.clients()
-				.findAll()
-				.stream()
-				.filter(client -> client.getClientId().equals(CLIENT_ID_SORMAS_STATS))
-				.findFirst();
-			if (!clientRepresentation.isPresent()) {
-				logger.error("Cannot find client with id {}", CLIENT_ID_SORMAS_STATS);
-				return;
-			}
-
-			final String clientRepId = clientRepresentation.get().getId();
-
-			ClientResource clientResource = keycloak.realm(REALM_NAME).clients().get(clientRepId);
-			Optional<RoleRepresentation> roleRepresentation =
-				clientResource.roles().list().stream().filter(element -> element.getName().equals(KEYCLOAK_ROLE_SORMAS_STATS_ACCESS)).findFirst();
-
-			if (!roleRepresentation.isPresent()) {
-				logger.error("Cannot find role with name {}", KEYCLOAK_ROLE_SORMAS_STATS_ACCESS);
-				return;
-			}
-
 			userResource.roles().clientLevel(clientRepId).add(Collections.singletonList(roleRepresentation.get()));
+		} else {
+			// we cannot remove the role directly from the user in an update operation, we have to do it explicitly
+			userResource.roles().clientLevel(clientRepId).remove(Collections.singletonList(roleRepresentation.get()));
 		}
 	}
 
