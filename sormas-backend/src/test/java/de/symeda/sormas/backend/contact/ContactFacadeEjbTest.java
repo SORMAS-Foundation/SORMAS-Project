@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -28,7 +29,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -957,12 +957,27 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		List<Long> ids;
 
-		// test with some random id: returns 0,0,0
+		// 0. test with some random id: returns 0,0,0
 		ids = Arrays.asList(5555L);
 		int[] result = getContactFacade().getContactCountsByCasesForDashboard(ids);
 		assertThat(result[0], equalTo(0));
 		assertThat(result[1], equalTo(0));
 		assertThat(result[2], equalTo(0));
+
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = useNationalAdminLogin();
+
+		// 1. Test with one contact
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
+		ContactDto contact = createContact(user, caze, rdcf);
+		ids = Arrays.asList(getContactService().getByUuid(contact.getUuid()).getId());
+		result = getContactFacade().getContactCountsByCasesForDashboard(ids);
+
+		assertThat(result[0], equalTo(1));
+		assertThat(result[1], equalTo(1));
+		assertThat(result[2], equalTo(1));
 	}
 
 	@Test
