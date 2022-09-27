@@ -523,7 +523,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			"Case",
 			"Officer",
 			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
-		UserDto user = useSurveillanceOfficerLogin(rdcf);
+
+		UserDto user = creator.createUser(
+				rdcf.region.getUuid(),
+				rdcf.district.getUuid(),
+				rdcf.facility.getUuid(),
+				"Surv",
+				"Off",
+				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		loginWith(user);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
