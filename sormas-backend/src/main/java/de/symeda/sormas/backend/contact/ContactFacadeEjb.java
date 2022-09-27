@@ -371,6 +371,8 @@ public class ContactFacadeEjb
 
 		validateUserRights(dto, existingContactDto);
 		validate(dto);
+		dto.setReportDateTime(DataHelper.removeTime(dto.getReportDateTime()));
+		dto.setLastContactDate(DataHelper.removeTime(dto.getLastContactDate()));
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
@@ -1294,7 +1296,7 @@ public class ContactFacadeEjb
 			Root<Contact> contact2 = cq2.from(Contact.class);
 			cq2.groupBy(contact2.get(Contact.CAZE));
 
-			cq2.where(contact2.get(Contact.CAZE).in(caseIds));
+			cq2.where(contact2.get(Contact.CAZE).get(Case.ID).in(caseIds));
 			cq2.select(cb.count(contact2.get(Contact.ID)));
 
 			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();

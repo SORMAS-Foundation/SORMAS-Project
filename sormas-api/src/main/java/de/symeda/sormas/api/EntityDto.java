@@ -25,6 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -39,6 +41,7 @@ import de.symeda.sormas.api.uuid.HasUuid;
  *              will reduce data transferred to something between 20% and 50% -
  *              especially for fields that are not needed for all diseases
  */
+@AuditedClass
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
@@ -54,6 +57,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	@Outbreaks
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
+	@AuditInclude
 	private String uuid;
 
 	protected EntityDto() {

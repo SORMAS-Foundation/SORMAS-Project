@@ -585,6 +585,7 @@
     <string name="time_future_x_years">entro %1$s anni</string>
     <string name="time_now">adesso</string>
     <string name="time_past_almost_two_years">quasi due anni fa</string>
+    <string name="time_past_today">today</string>
     <string name="time_past_one_day">ieri</string>
     <string name="time_past_one_hour">circa un\'ora fa</string>
     <string name="time_past_one_minute">un minuto fa</string>

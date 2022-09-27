@@ -585,6 +585,7 @@
     <string name="time_future_x_years">%1$s سال کے اندر</string>
     <string name="time_now">ابھی ابھی</string>
     <string name="time_past_almost_two_years">تقریبا دو سال پہلے</string>
+    <string name="time_past_today">today</string>
     <string name="time_past_one_day">گزشتہ روز</string>
     <string name="time_past_one_hour">تقریبا ایک گھنٹے پہلے</string>
     <string name="time_past_one_minute">ایک منٹ پہلے</string>
