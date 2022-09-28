@@ -90,4 +90,6 @@ public interface SampleFacade {
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);
 
 	List<SampleDto> getByLabSampleId(String labSampleId);
+
+	Date getEarliestPositiveSampleDate(String contactUuid);
 }
