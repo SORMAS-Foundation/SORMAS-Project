@@ -235,7 +235,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 	}
 
 	private CaseDataDto createCaseDataDto() {

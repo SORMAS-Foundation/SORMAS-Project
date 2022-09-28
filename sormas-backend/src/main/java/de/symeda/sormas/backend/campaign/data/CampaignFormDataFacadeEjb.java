@@ -343,7 +343,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-		return campaignFormDataService.getAllActiveAfter(date).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		return campaignFormDataService.getAllAfter(date).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
 	}
 
 	public List<CampaignDiagramDataDto> getDiagramDataByAgeGroup(

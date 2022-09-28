@@ -25,17 +25,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,7 +53,6 @@ import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Row;
@@ -67,7 +62,6 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -149,6 +143,9 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		UserRole entity = fromDto(dto, true);
 
 		userRoleService.ensurePersisted(entity);
+
+		userService.getAllWithRole(entity).forEach(user -> userService.syncUserAsync(user));
+
 		return toDto(entity);
 	}
 
@@ -173,7 +170,9 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		}
 
 		UserRoleDto existingUserRole = getByUuid(source.getUuid());
-		if (existingUserRole != null && source.getJurisdictionLevel() != existingUserRole.getJurisdictionLevel() && userService.countWithRole(source.toReference()) > 0) {
+		if (existingUserRole != null
+			&& source.getJurisdictionLevel() != existingUserRole.getJurisdictionLevel()
+			&& userService.countWithRole(source.toReference()) > 0) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.jurisdictionChangeUserAssignment));
 		}
 
@@ -341,15 +340,6 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public Map<UserRoleDto, Set<UserRight>> getUserRoleRights() {
-		HashMap map = new HashMap<>();
-
-		getAll().forEach(c -> map.put(c, c.getUserRights()));
-
-		return map;
-	}
-
-	@Override
 	public long count(UserRoleCriteria userRoleCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -423,8 +413,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		}
 
 		try (OutputStream fos = Files.newOutputStream(documentPath)) {
-			TreeMap<UserRoleDto, Set<UserRight>> userRolesRights = getSortedUserRolesRights();
-			generateUserRolesDocument(userRolesRights, fos);
+			generateUserRolesDocument(fos);
 		} catch (IOException e) {
 			Files.deleteIfExists(documentPath);
 			throw e;
@@ -433,44 +422,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		return documentPath.toString();
 	}
 
-	private void generateUserRolesDocument(Map<UserRoleDto, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
+	private void generateUserRolesDocument(OutputStream outStream) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
-
-		// Create User Role sheet
-		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.UserRole));
-		XSSFSheet sheet = workbook.createSheet(safeName);
-
-		// Define colors
-		final XSSFColor green = XssfHelper.createColor(0, 153, 0);
-		final XSSFColor red = XssfHelper.createColor(255, 0, 0);
-		final XSSFColor black = XssfHelper.createColor(0, 0, 0);
-
-		// Initialize cell styles
-		// Authorized style
-		XSSFCellStyle authorizedStyle = workbook.createCellStyle();
-		authorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		authorizedStyle.setFillForegroundColor(green);
-		authorizedStyle.setBorderBottom(BorderStyle.THIN);
-		authorizedStyle.setBorderLeft(BorderStyle.THIN);
-		authorizedStyle.setBorderTop(BorderStyle.THIN);
-		authorizedStyle.setBorderRight(BorderStyle.THIN);
-		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, black);
-		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.LEFT, black);
-		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.TOP, black);
-		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, black);
-
-		// Unauthorized style
-		XSSFCellStyle unauthorizedStyle = workbook.createCellStyle();
-		unauthorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		unauthorizedStyle.setFillForegroundColor(red);
-		unauthorizedStyle.setBorderBottom(BorderStyle.THIN);
-		unauthorizedStyle.setBorderLeft(BorderStyle.THIN);
-		unauthorizedStyle.setBorderTop(BorderStyle.THIN);
-		unauthorizedStyle.setBorderRight(BorderStyle.THIN);
-		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, black);
-		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.LEFT, black);
-		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.TOP, black);
-		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, black);
 
 		// Bold style
 		XSSFFont boldFont = workbook.createFont();
@@ -478,119 +431,199 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		XSSFCellStyle boldStyle = workbook.createCellStyle();
 		boldStyle.setFont(boldFont);
 
-		int rowCounter = 0;
-
-		// Header
-		Row headerRow = sheet.createRow(rowCounter++);
-
-		Cell userRightHeadlineCell = headerRow.createCell(0);
-		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole));
-		userRightHeadlineCell.setCellStyle(boldStyle);
-
-		Cell captionHeadlineCell = headerRow.createCell(1);
-		captionHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_jurisdictionLevel));
-		captionHeadlineCell.setCellStyle(boldStyle);
-
-		Cell descHeadlineCell = headerRow.createCell(2);
-		descHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_description));
-		descHeadlineCell.setCellStyle(boldStyle);
-
-		sheet.setColumnWidth(0, 256 * 35);
-		sheet.setColumnWidth(1, 256 * 50);
-		sheet.setColumnWidth(2, 256 * 50);
-		sheet.createFreezePane(2, 2, 2, 2);
-
-		int columnIndex = 3;
-
-		for (UserRight userRight : UserRight.values()) {
-			String columnCaption = userRight.name();
-			Cell headerCell = headerRow.createCell(columnIndex);
-			headerCell.setCellValue(columnCaption);
-			headerCell.setCellStyle(boldStyle);
-			sheet.setColumnWidth(columnIndex, 256 * 14);
-			columnIndex++;
-		}
-
-		Cell uuidHeadlineCell = headerRow.createCell(columnIndex++);
-		uuidHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_uuid));
-		uuidHeadlineCell.setCellStyle(boldStyle);
-
-		Cell portHealthUserHeadlineCell = headerRow.createCell(columnIndex++);
-		portHealthUserHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_portHealthUser));
-		portHealthUserHeadlineCell.setCellStyle(boldStyle);
-
-		Cell hasAssociatedDistrictUserHeadlineCell = headerRow.createCell(columnIndex++);
-		hasAssociatedDistrictUserHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_hasAssociatedDistrictUser));
-		hasAssociatedDistrictUserHeadlineCell.setCellStyle(boldStyle);
-
-		Cell hasOptionalHealthFacilityHeadlineCell = headerRow.createCell(columnIndex++);
-		hasOptionalHealthFacilityHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_hasOptionalHealthFacility));
-		hasOptionalHealthFacilityHeadlineCell.setCellStyle(boldStyle);
-
-		Cell enabledHeadlineCell = headerRow.createCell(columnIndex++);
-		enabledHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_enabled));
-		enabledHeadlineCell.setCellStyle(boldStyle);
-
-		//User roles rows
-		for (UserRoleDto userRole : userRoleRights.keySet()) {
-			Row row = sheet.createRow(rowCounter++);
-
-			Cell nameCell = row.createCell(0);
-			nameCell.setCellValue(userRole.getCaption());
-			nameCell.setCellStyle(boldStyle);
-
-			Cell captionCell = row.createCell(1);
-			captionCell.setCellValue(userRole.getJurisdictionLevel().toString());
-
-			Cell descCell = row.createCell(2);
-			descCell.setCellValue(userRole.getDescription());
-
-			columnIndex = 3;
-			for (UserRight userRight : UserRight.values()) {
-				Cell roleRightCell = row.createCell(columnIndex);
-
-				if (hasUserRight(Collections.singletonList(userRole), userRight)) {
-					roleRightCell.setCellStyle(authorizedStyle);
-					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));
-				} else {
-					roleRightCell.setCellStyle(unauthorizedStyle);
-					roleRightCell.setCellValue(I18nProperties.getString(Strings.no));
-				}
-				columnIndex++;
-			}
-
-			Cell uuidCell = row.createCell(columnIndex++);
-			uuidCell.setCellValue(userRole.getUuid());
-
-			Cell portHealthUserCell = row.createCell(columnIndex++);
-			portHealthUserCell.setCellValue(getTranslationForBoolean(userRole.isPortHealthUser()));
-
-			Cell hasAssociatedDistrictUserCell = row.createCell(columnIndex++);
-			hasAssociatedDistrictUserCell.setCellValue(getTranslationForBoolean(userRole.getHasAssociatedDistrictUser()));
-
-			Cell hasOptionalHealthFacilityCell = row.createCell(columnIndex++);
-			hasOptionalHealthFacilityCell.setCellValue(getTranslationForBoolean(userRole.getHasOptionalHealthFacility()));
-
-			Cell enabledCell = row.createCell(columnIndex++);
-			enabledCell.setCellValue(getTranslationForBoolean(userRole.isEnabled()));
-		}
-
+		addUserRolesSheet(boldStyle, workbook);
+		addUserRightsSheet(boldStyle, workbook);
 		XssfHelper.addAboutSheet(workbook);
 
 		workbook.write(outStream);
 		workbook.close();
 	}
 
-	private TreeMap<UserRoleDto, Set<UserRight>> getSortedUserRolesRights() {
-		Map<UserRoleDto, Set<UserRight>> userRoleRights = getUserRoleRights();
-		TreeMap<UserRoleDto, Set<UserRight>> sortedMap = new TreeMap<>(Comparator.comparing(UserRoleDto::getCaption));
-		sortedMap.putAll(userRoleRights);
+	private void addUserRolesSheet(XSSFCellStyle boldStyle, XSSFWorkbook workbook) {
+		List<UserRole> userRoles = userRoleService.getAll(UserRole.CAPTION, true);
 
-		return sortedMap;
+		// Create User Role sheet
+		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.UserRole));
+		XSSFSheet sheet = workbook.createSheet(safeName);
+
+		// Define colors
+		final XSSFColor greenBackground = XssfHelper.createColor(0xc6, 0xef, 0xce);
+		final XSSFColor greenFont = XssfHelper.createColor(0x0, 0x61, 0x00);
+
+		// Initialize cell styles
+		// Authorized style
+		XSSFCellStyle authorizedStyle = workbook.createCellStyle();
+		authorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		authorizedStyle.setFillForegroundColor(greenBackground);
+		XSSFFont authorizedFont = workbook.createFont();
+		authorizedFont.setColor(greenFont);
+		authorizedStyle.setFont(authorizedFont);
+
+		int rowCounter = 0;
+
+		// Header
+		Row headerRow = sheet.createRow(rowCounter++);
+		int columnIndex = -1;
+
+		Cell userRightHeadlineCell = headerRow.createCell(++columnIndex);
+		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole));
+		userRightHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 35);
+
+		Cell captionHeadlineCell = headerRow.createCell(++columnIndex);
+		captionHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_jurisdictionLevel));
+		captionHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 50);
+
+		Cell descHeadlineCell = headerRow.createCell(++columnIndex);
+		descHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_description));
+		descHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 50);
+
+		// lock the first twe columns and the header row
+		sheet.createFreezePane(2, 1, 2, 1);
+
+		for (UserRight userRight : UserRight.values()) {
+			String columnCaption = userRight.name();
+			Cell headerCell = headerRow.createCell(++columnIndex);
+			headerCell.setCellValue(columnCaption);
+			headerCell.setCellStyle(boldStyle);
+			sheet.setColumnWidth(columnIndex, 256 * 14);
+		}
+
+		Cell uuidHeadlineCell = headerRow.createCell(++columnIndex);
+		uuidHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_uuid));
+		uuidHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 20);
+
+		Cell portHealthUserHeadlineCell = headerRow.createCell(++columnIndex);
+		portHealthUserHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_portHealthUser));
+		portHealthUserHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 14);
+
+		Cell hasAssociatedDistrictUserHeadlineCell = headerRow.createCell(++columnIndex);
+		hasAssociatedDistrictUserHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_hasAssociatedDistrictUser));
+		hasAssociatedDistrictUserHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 14);
+
+		Cell hasOptionalHealthFacilityHeadlineCell = headerRow.createCell(++columnIndex);
+		hasOptionalHealthFacilityHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_hasOptionalHealthFacility));
+		hasOptionalHealthFacilityHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 14);
+
+		Cell enabledHeadlineCell = headerRow.createCell(++columnIndex);
+		enabledHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_enabled));
+		enabledHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 14);
+
+		//User roles rows
+		for (UserRole userRole : userRoles) {
+			Row row = sheet.createRow(rowCounter++);
+			columnIndex = 0;
+
+			Cell nameCell = row.createCell(columnIndex++);
+			nameCell.setCellValue(userRole.getCaption());
+			nameCell.setCellStyle(boldStyle);
+
+			Cell captionCell = row.createCell(columnIndex++);
+			captionCell.setCellValue(userRole.getJurisdictionLevel().toString());
+
+			Cell descCell = row.createCell(columnIndex++);
+			descCell.setCellValue(userRole.getDescription());
+
+			for (UserRight userRight : UserRight.values()) {
+				Cell roleRightCell = row.createCell(columnIndex++);
+				setBooleanCellValue(roleRightCell, userRole.getUserRights().contains(userRight), authorizedStyle);
+			}
+
+			Cell uuidCell = row.createCell(columnIndex++);
+			uuidCell.setCellValue(userRole.getUuid());
+
+			Cell portHealthUserCell = row.createCell(columnIndex++);
+			setBooleanCellValue(portHealthUserCell, userRole.isPortHealthUser(), authorizedStyle);
+
+			Cell hasAssociatedDistrictUserCell = row.createCell(columnIndex++);
+			setBooleanCellValue(hasAssociatedDistrictUserCell, userRole.getHasAssociatedDistrictUser(), authorizedStyle);
+
+			Cell hasOptionalHealthFacilityCell = row.createCell(columnIndex++);
+			setBooleanCellValue(hasOptionalHealthFacilityCell, userRole.getHasOptionalHealthFacility(), authorizedStyle);
+
+			Cell enabledCell = row.createCell(columnIndex++);
+			setBooleanCellValue(enabledCell, userRole.isEnabled(), authorizedStyle);
+		}
 	}
 
-	private String getTranslationForBoolean(boolean value) {
-		return value ? I18nProperties.getString(Strings.yes) : I18nProperties.getString(Strings.no);
+	private void addUserRightsSheet(XSSFCellStyle boldStyle, XSSFWorkbook workbook) {
+		// Create User Rights sheet
+		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRights));
+		XSSFSheet sheet = workbook.createSheet(safeName);
+
+		int rowCounter = 0;
+
+		// Header
+		Row headerRow = sheet.createRow(rowCounter++);
+		int columnIndex = -1;
+
+		Cell userRightHeadlineCell = headerRow.createCell(++columnIndex);
+		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.userRight));
+		userRightHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 35);
+
+		Cell groupHeadlineCell = headerRow.createCell(++columnIndex);
+		groupHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_userRightGroup));
+		groupHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 35);
+
+		Cell captionHeadlineCell = headerRow.createCell(++columnIndex);
+		captionHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_caption));
+		captionHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 50);
+
+		Cell descHeadlineCell = headerRow.createCell(++columnIndex);
+		descHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_description));
+		descHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 75);
+
+		Cell requiredRightsHeadlineCell = headerRow.createCell(++columnIndex);
+		requiredRightsHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_requiredUserRights));
+		requiredRightsHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 100);
+
+		// lock the first column and the header row
+		sheet.createFreezePane(1, 1, 1, 1);
+
+		// User right rows
+		for (UserRight userRight : UserRight.values()) {
+			Row row = sheet.createRow(rowCounter++);
+			columnIndex = 0;
+
+			Cell nameCell = row.createCell(columnIndex++);
+			nameCell.setCellValue(userRight.name());
+			nameCell.setCellStyle(boldStyle);
+
+			Cell groupCell = row.createCell(columnIndex++);
+			groupCell.setCellValue(userRight.getUserRightGroup().toString());
+
+			Cell captionCell = row.createCell(columnIndex++);
+			captionCell.setCellValue(userRight.toString());
+
+			Cell descCell = row.createCell(columnIndex++);
+			descCell.setCellValue(userRight.getDescription());
+
+			Cell requiredUserRightsCell = row.createCell(columnIndex++);
+			requiredUserRightsCell.setCellValue(
+				UserRight.getRequiredUserRights(Collections.singleton(userRight)).stream().map(UserRight::name).collect(Collectors.joining(", ")));
+
+		}
+	}
+
+	private void setBooleanCellValue(Cell cell, boolean value, XSSFCellStyle authorizedStyle) {
+		if (value) {
+			cell.setCellStyle(authorizedStyle);
+			cell.setCellValue(I18nProperties.getString(Strings.yes));
+		} else {
+			cell.setCellValue(I18nProperties.getString(Strings.no));
+		}
 	}
 
 	private Path generateUserRolesDocumentTempPath() {

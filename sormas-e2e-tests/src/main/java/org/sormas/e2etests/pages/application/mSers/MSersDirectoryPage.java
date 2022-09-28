@@ -45,4 +45,8 @@ public class MSersDirectoryPage {
   public static By getColumnSelectorByName(String name) {
     return By.xpath(String.format("//div[text()=\"%s\"]", name));
   }
+
+  public static By getNumberOfSuspectedCasesByIndex(int idx) {
+    return By.xpath(String.format("//tbody//tr[%x]//td[7]", idx));
+  }
 }

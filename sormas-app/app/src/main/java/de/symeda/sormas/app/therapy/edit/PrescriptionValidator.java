@@ -15,51 +15,42 @@
 
 package de.symeda.sormas.app.therapy.edit;
 
-import org.joda.time.DateTimeComparator;
-
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.databinding.FragmentPrescriptionEditLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
 public final class PrescriptionValidator {
 
-	public static void initializeValidation(final FragmentPrescriptionEditLayoutBinding contentBinding) {
-		ResultCallback<Boolean> prescriptionStartCallback = () -> {
-			if (contentBinding.prescriptionPrescriptionStart.getValue() != null && contentBinding.prescriptionPrescriptionEnd.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.prescriptionPrescriptionStart.getValue(), contentBinding.prescriptionPrescriptionEnd.getValue())
-					> 0) {
-					contentBinding.prescriptionPrescriptionStart.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.beforeDate,
-							contentBinding.prescriptionPrescriptionStart.getCaption(),
-							contentBinding.prescriptionPrescriptionEnd.getCaption()));
-					return true;
-				}
-			}
+    public static void initializeValidation(final FragmentPrescriptionEditLayoutBinding contentBinding) {
+        ResultCallback<Boolean> prescriptionStartCallback = () -> {
+            if (DateHelper.isDateAfter(contentBinding.prescriptionPrescriptionStart.getValue(), contentBinding.prescriptionPrescriptionEnd.getValue())) {
+                contentBinding.prescriptionPrescriptionStart.enableErrorState(
+                        I18nProperties.getValidationError(
+                                Validations.beforeDate,
+                                contentBinding.prescriptionPrescriptionStart.getCaption(),
+                                contentBinding.prescriptionPrescriptionEnd.getCaption()));
+                return true;
+            }
 
-			return false;
-		};
+            return false;
+        };
 
-		ResultCallback<Boolean> prescriptionEndCallback = () -> {
-			if (contentBinding.prescriptionPrescriptionStart.getValue() != null && contentBinding.prescriptionPrescriptionEnd.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.prescriptionPrescriptionEnd.getValue(), contentBinding.prescriptionPrescriptionStart.getValue())
-					< 0) {
-					contentBinding.prescriptionPrescriptionEnd.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.afterDate,
-							contentBinding.prescriptionPrescriptionEnd.getCaption(),
-							contentBinding.prescriptionPrescriptionStart.getCaption()));
-					return true;
-				}
-			}
+        ResultCallback<Boolean> prescriptionEndCallback = () -> {
+            if (DateHelper.isDateBefore(contentBinding.prescriptionPrescriptionEnd.getValue(), contentBinding.prescriptionPrescriptionStart.getValue())) {
+                contentBinding.prescriptionPrescriptionEnd.enableErrorState(
+                        I18nProperties.getValidationError(
+                                Validations.afterDate,
+                                contentBinding.prescriptionPrescriptionEnd.getCaption(),
+                                contentBinding.prescriptionPrescriptionStart.getCaption()));
+                return true;
+            }
 
-			return false;
-		};
+            return false;
+        };
 
-		contentBinding.prescriptionPrescriptionStart.setValidationCallback(prescriptionStartCallback);
-		contentBinding.prescriptionPrescriptionEnd.setValidationCallback(prescriptionEndCallback);
-	}
+        contentBinding.prescriptionPrescriptionStart.setValidationCallback(prescriptionStartCallback);
+        contentBinding.prescriptionPrescriptionEnd.setValidationCallback(prescriptionEndCallback);
+    }
 }
