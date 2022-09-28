@@ -292,6 +292,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 				List<SampleDto> similarSamples,
 				List<SampleDto> otherSamples,
 				ExternalMessageDto externalMessageDto,
+				int sampleReportIndex,
 				HandlerCallback<PickOrCreateSampleResult> callback) {
 				handlePickOrCreateSample.handle(similarSamples, otherSamples, callback);
 			}

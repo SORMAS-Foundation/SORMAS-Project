@@ -28,9 +28,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -48,6 +51,7 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -300,9 +304,28 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		List<SampleDto> similarSamples,
 		List<SampleDto> otherSamples,
 		ExternalMessageDto labMessage,
+		int sampleReportIndex,
 		HandlerCallback<PickOrCreateSampleResult> callback) {
+
+		HorizontalLayout sampleDetailsLayout = new HorizontalLayout();
+		sampleDetailsLayout.setSpacing(true);
+
+		SampleReportDto sampleReport = labMessage.getSampleReportsNullSave().get(sampleReportIndex);
+
+		addLabelIfAvailable(
+			sampleDetailsLayout,
+			sampleReport.getSampleDateTime().toString(),
+			ExternalMessageDto.I18N_PREFIX,
+			SampleReportDto.SAMPLE_DATE_TIME);
+		addLabelIfAvailable(sampleDetailsLayout, sampleReport.getLabSampleId(), ExternalMessageDto.I18N_PREFIX, SampleReportDto.LAB_SAMPLE_ID);
+		addLabelIfAvailable(
+			sampleDetailsLayout,
+			sampleReport.getSampleMaterial().toString(),
+			ExternalMessageDto.I18N_PREFIX,
+			SampleReportDto.SAMPLE_MATERIAL);
+
 		SampleSelectionField selectField =
-			new SampleSelectionField(similarSamples, otherSamples, I18nProperties.getString(Strings.infoPickOrCreateSample));
+			new SampleSelectionField(similarSamples, otherSamples, I18nProperties.getString(Strings.infoPickOrCreateSample), sampleDetailsLayout);
 
 		Window window = VaadinUiUtil.createPopupWindow();
 
@@ -327,6 +350,16 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		selectionField.getCommitButton().setEnabled(false);
 
 		showFormWithLabMessage(labMessage, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
+	}
+
+	private void addLabelIfAvailable(HorizontalLayout layout, String text, String i18nPrefix, String captionKey) {
+		if (StringUtils.isBlank(text)) {
+			return;
+		}
+		Label label = new Label(text);
+		label.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
+		label.setWidthUndefined();
+		layout.addComponent(label);
 	}
 
 	@Override

@@ -591,7 +591,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		}
 
 		HandlerCallback<PickOrCreateSampleResult> callback = new HandlerCallback<>();
-		handlePickOrCreateSample(similarSamples, otherSamples, labMessage, callback);
+		handlePickOrCreateSample(similarSamples, otherSamples, labMessage, sampleReportIndex, callback);
 
 		return callback.futureResult;
 	}
@@ -600,6 +600,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		List<SampleDto> similarSamples,
 		List<SampleDto> otherSamples,
 		ExternalMessageDto labMessage,
+		int sampleReportIndex,
 		HandlerCallback<PickOrCreateSampleResult> callback);
 
 	private SampleSimilarityCriteria createSampleSimilarCriteria(SampleReportDto sampleReport) {
