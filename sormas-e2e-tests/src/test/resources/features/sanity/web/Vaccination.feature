@@ -719,7 +719,6 @@ Feature: Vaccination tests
     And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
     And I check that displayed vaccination name is "enabled" on Edit case page
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
-    #Step5
     And I click on the Edit Vaccination icon on vaccination card on Edit Case page
     And I click Delete button in Vaccination form
     And I choose the reason of deletion in popup for Vaccination for DE version
@@ -731,7 +730,6 @@ Feature: Vaccination tests
     And I create a new case with specific data for DE version with date 14 days ago
     And I click SAVE button on Create New Case form
     And I check if date of report is set for 14 day ago from today on Edit Case page for DE version
-    #Step7
     And I click NEW VACCINATION button for DE
     And I change the report vaccination date for minus 17 day from today
     And I fill new vaccination data in new Vaccination form for DE
@@ -739,7 +737,6 @@ Feature: Vaccination tests
     And I click SAVE button in new Vaccination form
     And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
     And I check that displayed vaccination name is "enabled" on Edit case page
-    #
     And I click NEW VACCINATION button for DE
     And I change the report vaccination date for minus 16 day from today
     And I fill new vaccination data in new Vaccination form for DE
@@ -747,7 +744,6 @@ Feature: Vaccination tests
     And I click SAVE button in new Vaccination form
     And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
     And I check that displayed vaccination name is "enabled" on Edit case page
-    #
     And I click NEW VACCINATION button for DE
     And I change the report vaccination date for minus 0 day from today
     And I fill new vaccination data in new Vaccination form for DE
@@ -756,17 +752,14 @@ Feature: Vaccination tests
     And I check that displayed vaccination name is equal to "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)" on Edit case page
     And I check that displayed vaccination name is "greyed out" on Edit case page
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
-    #Step8
     And I click on the Edit Vaccination icon on vaccination card on Edit Case page
     And I click Delete button in Vaccination form
     And I choose the reason of deletion in popup for Vaccination for DE version
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
-    #Step9
     And I click on the Edit Vaccination icon on vaccination card on Edit Case page
     And I click Delete button in Vaccination form
     And I choose the reason of deletion in popup for Vaccination for DE version
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
-    #Step10
     And I click on the Edit Vaccination icon on vaccination card on Edit Case page
     And I click Delete button in Vaccination form
     And I choose the reason of deletion in popup for Vaccination for DE version
