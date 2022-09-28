@@ -143,6 +143,9 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		UserRole entity = fromDto(dto, true);
 
 		userRoleService.ensurePersisted(entity);
+
+		userService.getAllWithRole(entity).forEach(user -> userService.syncUserAsync(user));
+
 		return toDto(entity);
 	}
 
@@ -167,7 +170,9 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		}
 
 		UserRoleDto existingUserRole = getByUuid(source.getUuid());
-		if (existingUserRole != null && source.getJurisdictionLevel() != existingUserRole.getJurisdictionLevel() && userService.countWithRole(source.toReference()) > 0) {
+		if (existingUserRole != null
+			&& source.getJurisdictionLevel() != existingUserRole.getJurisdictionLevel()
+			&& userService.countWithRole(source.toReference()) > 0) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.jurisdictionChangeUserAssignment));
 		}
 
