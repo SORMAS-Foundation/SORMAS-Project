@@ -96,7 +96,9 @@ public class EventController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
 		navigator.addView(EventDataView.VIEW_NAME, EventDataView.class);
-		navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+			navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
+		}
 		navigator.addView(EventActionsView.VIEW_NAME, EventActionsView.class);
 	}
 
@@ -613,8 +615,10 @@ public class EventController {
 
 					linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
 					SormasUI.refreshView();
-				} else {
+				} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
 					navigateToParticipants(dto.getUuid());
+				} else {
+					navigateToData(dto.getUuid());
 				}
 			}
 		});
