@@ -103,7 +103,7 @@ public class ExternalMessageProcessingUIHelper {
 		return VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.externalMessageMultipleSampleReports),
 			new Label(I18nProperties.getString(Strings.messageMultipleSampleReports), ContentMode.HTML),
-			I18nProperties.getCaption(Captions.actionYes),
+			I18nProperties.getCaption(Captions.actionContinue),
 			I18nProperties.getCaption(Captions.actionCancel));
 	}
 
