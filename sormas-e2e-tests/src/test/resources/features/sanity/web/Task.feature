@@ -258,9 +258,6 @@ Feature: Tasks functionalities
     And I create a new task with "Nat USER" as a assigned user
     And I click on logout button from navbar
     And I log in as a National User
-    And I click on the Cases button from navbar
-    And Search for Case using Case UUID from the created Task
-    When I open last created case
     And I click on edit task icon of the 2 displayed task on Edit Case page
     Then I change all Task's fields and save
     And I click on the Cases button from navbar
