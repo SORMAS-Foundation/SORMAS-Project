@@ -113,7 +113,7 @@ public class SampleDto extends SormasToSormasShareableDto {
 	private SamplePurpose samplePurpose;
 
 	private FacilityReferenceDto lab;
-	@SensitiveData(mandatoryField = true)
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
 	private Date shipmentDate;

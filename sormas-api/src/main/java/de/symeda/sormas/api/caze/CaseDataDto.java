@@ -508,6 +508,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
+	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
@@ -574,6 +575,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private boolean notACaseReasonOther;
 
 	@HideForCountriesExcept
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String notACaseReasonDetails;
 	private Date followUpStatusChangeDate;
@@ -592,6 +594,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private Map<String, String> externalData;
 	private boolean deleted;
 	private DeletionReason deletionReason;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 

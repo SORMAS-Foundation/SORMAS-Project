@@ -28,6 +28,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
@@ -35,6 +36,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -219,13 +221,19 @@ public class VisitService extends BaseAdoService<Visit> implements JurisdictionC
 	public void deletePersonVisits(List<String> personUuids) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
-		Root<Visit> visitRoot = cq.from(Visit.class);
-		Join<Visit, Person> visitPersonJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
 
-		cq.where(visitPersonJoin.get(AbstractDomainObject.UUID).in(personUuids));
+		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
+		Root<Visit> visitRoot = cd.from(Visit.class);
 
-		em.createQuery(cq).getResultList().forEach(this::deletePermanent);
+		Subquery<Long> personSubquery = cd.subquery(Long.class);
+		Root<Visit> subqueryRoot = personSubquery.from(Visit.class);
+		Join<Visit, Person> visitPersonJoin = subqueryRoot.join(Visit.PERSON, JoinType.INNER);
+		personSubquery.where(visitPersonJoin.get(AbstractDomainObject.UUID).in(personUuids));
+		personSubquery.select(subqueryRoot.get(Visit.ID));
+
+		cd.where(cb.equal(visitRoot.get(Visit.ID), personSubquery));
+
+		em.createQuery(cd).executeUpdate();
 	}
 
 	/**

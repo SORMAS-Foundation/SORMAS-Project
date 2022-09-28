@@ -36,6 +36,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
@@ -87,7 +88,6 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -983,14 +983,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		caze.getVisits().stream().forEach(visit -> {
-			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {
-				visitService.deletePermanent(visit);
-			} else {
-				visit.setCaze(null);
-				visitService.ensurePersisted(visit);
-			}
-		});
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
+		Root<Visit> visitRoot = cd.from(Visit.class);
+		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
+		initVisitSubqueryForDeletion(cb, visitRoot, contactVisitsSubquery);
+		cd.where(cb.and(cb.equal(visitRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.not(cb.exists(contactVisitsSubquery))));
+		em.createQuery(cd).executeUpdate();
+
+		CriteriaUpdate<Visit> cu = cb.createCriteriaUpdate(Visit.class);
+		Root<Visit> updateRoot = cu.from(Visit.class);
+		cu.set(Visit.CAZE, null);
+		Subquery<Long> updateVisitsSubquery = cu.subquery(Long.class);
+		initVisitSubqueryForDeletion(cb, visitRoot, updateVisitsSubquery);
+		cu.where(cb.and(cb.equal(updateRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.exists(updateVisitsSubquery)));
+		em.createQuery(cu).executeUpdate();
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
@@ -1038,6 +1045,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+	}
+
+	private void initVisitSubqueryForDeletion(CriteriaBuilder cb, Root<Visit> visitRoot, Subquery<Long> contactVisitsSubquery) {
+		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
+		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
+		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
+		contactVisitsSubquery.select(visitContactJoin.get(Visit.ID));
 	}
 
 	@Override
@@ -2012,7 +2026,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void clearCompleteness(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

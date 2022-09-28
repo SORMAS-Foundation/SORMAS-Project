@@ -15,6 +15,12 @@
 
 package de.symeda.sormas.app.component.controls;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,14 +42,9 @@ import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 import androidx.fragment.app.FragmentManager;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -67,6 +68,8 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	private SimpleDateFormat dateFormat;
 	private int allowedDaysInFuture;
 	private Date cachedTime;
+
+	private boolean dateWithoutTime;
 
 	// Constructors
 
@@ -383,7 +386,11 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
 	public static Date getValue(ControlDateField view) {
-		return view.getFieldValue();
+		Date viewDate = view.getFieldValue();
+		if (view.isDateWithoutTime() && viewDate != null) {
+			viewDate = DataHelper.removeTime(viewDate);
+		}
+		return viewDate;
 	}
 
 	@BindingAdapter("valueAttrChanged")
@@ -394,5 +401,13 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	@BindingAdapter("dateFormat")
 	public static void setDateFormat(ControlDateField field, SimpleDateFormat dateFormat) {
 		field.dateFormat = dateFormat;
+	}
+
+	public boolean isDateWithoutTime() {
+		return dateWithoutTime;
+	}
+
+	public void setDateWithoutTime(boolean dateWithoutTime) {
+		this.dateWithoutTime = dateWithoutTime;
 	}
 }
