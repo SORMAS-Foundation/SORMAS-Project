@@ -56,15 +56,23 @@ public class PersonsView extends AbstractView {
 	public PersonsView() {
 		super(VIEW_NAME);
 
-		// Avoid calling ALL associations at view start because the query tends to take long time
-		PersonCriteria defaultCriteria = new PersonCriteria().personAssociation(PersonAssociation.CASE);
-		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, defaultCriteria);
-		grid = new PersonGrid(criteria);
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		final HorizontalLayout associationFilterBar = createAssociationFilterBar();
 		gridLayout.addComponent(associationFilterBar);
 		gridLayout.setComponentAlignment(associationFilterBar, Alignment.MIDDLE_RIGHT);
+
+		String associationString = String.valueOf(associationFilterBar.getComponent(0).getCaption()).toUpperCase();
+		PersonCriteria defaultCriteria;
+		if (associationString.equals("EVENT PARTICIPANT"))
+			defaultCriteria = new PersonCriteria().personAssociation(PersonAssociation.EVENT_PARTICIPANT);
+		// Avoid calling ALL associations at view start because the query tends to take long time
+		else if (associationString.equals("ALL"))
+			defaultCriteria = new PersonCriteria().personAssociation(PersonAssociation.CASE);
+		else
+			defaultCriteria = new PersonCriteria().personAssociation(PersonAssociation.valueOf(associationString));
+		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, defaultCriteria);
+		grid = new PersonGrid(criteria);
 		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(true);
@@ -233,18 +241,19 @@ public class PersonsView extends AbstractView {
 				&& UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 			boolean hasContactRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW);
-			boolean hadCaseRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			boolean hasCaseRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW);
-			boolean hadEventRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			boolean hasEventRight = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW);
-
+			if (!hasImmunizationRight && !hasTravelRight && !hasContactRight && !hasCaseRight && !hasEventRight)
+				hasCaseRight = true;
 			if ((association == PersonAssociation.ALL
-				&& !(hasImmunizationRight && hasTravelRight && hasContactRight && hadCaseRight && hadEventRight))
+				&& !(hasImmunizationRight && hasTravelRight && hasContactRight && hasCaseRight && hasEventRight))
 				|| association == PersonAssociation.IMMUNIZATION && !hasImmunizationRight
 				|| association == PersonAssociation.TRAVEL_ENTRY && !hasTravelRight
 				|| association == PersonAssociation.CONTACT && !hasContactRight
-				|| association == PersonAssociation.CASE && !hadCaseRight
-				|| association == PersonAssociation.EVENT_PARTICIPANT && !hadEventRight) {
+				|| association == PersonAssociation.CASE && !hasCaseRight
+				|| association == PersonAssociation.EVENT_PARTICIPANT && !hasEventRight) {
 				continue;
 			}
 
