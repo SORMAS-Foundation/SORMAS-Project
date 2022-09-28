@@ -219,3 +219,15 @@ Feature: Create user
   Scenario: Validate that non-admin users can't access users directory
     Given I log in as a National User
     Then I Verify Users Navigation link is not present in the navigation bar
+
+  @#7470 @env_main
+  Scenario: Validate create new password functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create 1 new users with National User via UI
+    When I search for created user
+    When I click Create New Password in Edit User page
+    Then I click the Cancel button in the Update Password Modal located in the Edit User Page
+    When I click Create New Password in Edit User page
+    Then I click the Update button in the Update Password Modal located in the Edit User Page
+    Then I Verify the New Password Modal in the Edit User Page

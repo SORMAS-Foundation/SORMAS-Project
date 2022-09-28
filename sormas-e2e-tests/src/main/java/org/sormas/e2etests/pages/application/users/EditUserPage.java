@@ -25,6 +25,7 @@ public class EditUserPage {
   public static final By LAST_NAME_OF_USER_INPUT = By.id("lastName");
   public static final By CREATE_NEW_PASSWORD_BUTTON = By.id("userResetPassword");
   public static final By CONFIRM_NEW_PASSWORD_BUTTON = By.id("actionConfirm");
+  public static final By CANCEL_NEW_PASSWORD_BUTTON = By.id("actionCancel");
   public static final By NEW_GENERATED_PASSWORD_TEXT =
       By.xpath("//div[@class='v-window-wrap']//div[contains(@class,\"h2 v-label-undef-w\")]");
   public static final By CLOSE_PASSWORD_POPUP_BUTTON =
