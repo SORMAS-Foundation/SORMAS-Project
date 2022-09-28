@@ -1376,44 +1376,17 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		ProcessingResult<RelatedSamplesReportsAndPathogenTests> result = runFlow(standardLabMessage);
 
+		verifyStandardEditingAndCreationOfSample(
+			standardLabMessage,
+			editedSampleCaptor,
+			editedTestsCaptor,
+			lastSampleArgsEdit,
+			createdSampleArgs,
+			createdPathogenTestsArgs,
+			entityCreatedArgs,
+			lastSampleArgsCreate);
+
 		assertThat(result.getStatus(), is(DONE));
-
-		// sample not changed when calling edit handler
-		assertThat(editedSampleCaptor.getValue().getSampleMaterial(), is(SampleMaterial.CRUST));
-		assertThat(editedSampleCaptor.getValue().getSpecimenCondition(), is(SpecimenCondition.ADEQUATE));
-
-		// test reports converted to pathogen test
-		assertThat(editedTestsCaptor.getValue(), hasSize(2));
-		assertThat(
-			editedTestsCaptor.getValue().get(0).getTestType(),
-			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(0).getTestType()));
-		assertThat(
-			editedTestsCaptor.getValue().get(0).getTestResult(),
-			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(0).getTestResult()));
-		assertThat(
-			editedTestsCaptor.getValue().get(1).getTestType(),
-			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(1).getTestType()));
-		assertThat(
-			editedTestsCaptor.getValue().get(1).getTestResult(),
-			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(1).getTestResult()));
-
-		assertThat(lastSampleArgsEdit.getAllValues().get(0), is(false));
-
-		// verify sample creation
-		SampleDto argSample = createdSampleArgs.getValue();
-		assertThat(argSample.getSampleDateTime(), is(standardLabMessage.getSampleReports().get(1).getSampleDateTime()));
-		assertThat(argSample.getSampleMaterial(), is(SampleMaterial.CRUST));
-		assertThat(argSample.getReportingUser(), is(user.toReference()));
-
-		List<PathogenTestDto> argPathogenTests = createdPathogenTestsArgs.getValue();
-		assertThat(argPathogenTests, hasSize(1));
-		assertThat(argPathogenTests.get(0).getTestType(), is(standardLabMessage.getSampleReports().get(1).getTestReports().get(0).getTestType()));
-		assertThat(argPathogenTests.get(0).getTestResult(), is(standardLabMessage.getSampleReports().get(1).getTestReports().get(0).getTestResult()));
-
-		assertThat(entityCreatedArgs.getValue(), is(false));
-
-		assertThat(lastSampleArgsCreate.getValue(), is(true));
-
 		// test that changes in handler are kept
 		assertThat(
 			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(0)).getSamplingReason(),
@@ -1759,45 +1732,19 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		ProcessingResult<RelatedSamplesReportsAndPathogenTests> result = runFlow(standardLabMessage);
 
-		assertThat(result.getStatus(), is(DONE));
-
-		verify(handleEditSample, times(1)).handle(any(), any(), any(), any());
 		assertThat(result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(0)), is(sample));
-		// sample not changed when calling edit handler
-		assertThat(editedSampleCaptor.getValue().getSampleMaterial(), is(SampleMaterial.CRUST));
-		assertThat(editedSampleCaptor.getValue().getSpecimenCondition(), is(SpecimenCondition.ADEQUATE));
+		verifyStandardEditingAndCreationOfSample(
+			standardLabMessage,
+			editedSampleCaptor,
+			editedTestsCaptor,
+			lastSampleArgsEdit,
+			createdSampleArgs,
+			createdPathogenTestsArgs,
+			entityCreatedArgs,
+			lastSampleArgsCreate);
 
-		// test reports converted to pathogen test
-		assertThat(editedTestsCaptor.getValue(), hasSize(2));
-		assertThat(
-			editedTestsCaptor.getValue().get(0).getTestType(),
-			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(0).getTestType()));
-		assertThat(
-			editedTestsCaptor.getValue().get(0).getTestResult(),
-			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(0).getTestResult()));
-		assertThat(
-			editedTestsCaptor.getValue().get(1).getTestType(),
-			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(1).getTestType()));
-		assertThat(
-			editedTestsCaptor.getValue().get(1).getTestResult(),
-			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(1).getTestResult()));
-
-		assertThat(lastSampleArgsEdit.getAllValues().get(0), is(false));
-
-		// verify sample creation
-		SampleDto argSample = createdSampleArgs.getValue();
-		assertThat(argSample.getSampleDateTime(), is(standardLabMessage.getSampleReports().get(1).getSampleDateTime()));
-		assertThat(argSample.getSampleMaterial(), is(SampleMaterial.CRUST));
-		assertThat(argSample.getReportingUser(), is(user.toReference()));
-
-		List<PathogenTestDto> argPathogenTests = createdPathogenTestsArgs.getValue();
-		assertThat(argPathogenTests, hasSize(1));
-		assertThat(argPathogenTests.get(0).getTestType(), is(standardLabMessage.getSampleReports().get(1).getTestReports().get(0).getTestType()));
-		assertThat(argPathogenTests.get(0).getTestResult(), is(standardLabMessage.getSampleReports().get(1).getTestReports().get(0).getTestResult()));
-
-		assertThat(entityCreatedArgs.getValue(), is(false));
-
-		assertThat(lastSampleArgsCreate.getValue(), is(true));
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(0)), is(sample));
 
 		// test that changes in handler are kept
 		assertThat(
@@ -2077,6 +2024,118 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		verify(handleEditSample, times(1)).handle(any(), any(), eq(true), any());
 		assertThat(result.getData().getRelatedSampleReportsWithSamples().get(sampleReport), is(sample));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testPickExistingContactAndPickExistingSampleAndCreateSample() throws ExecutionException, InterruptedException {
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS, rdcf);
+		doAnswer(invocation -> {
+			List<SimilarContactDto> contacts = invocation.getArgument(1);
+
+			PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
+			pickOrCreateEntryResult.setContact(contacts.get(0));
+
+			//noinspection unchecked
+			((HandlerCallback<PickOrCreateEntryResult>) invocation.getArgument(3)).done(pickOrCreateEntryResult);
+
+			return null;
+		}).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
+
+		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
+			s.setLabSampleID("test-lab-sample-id");
+			s.setSampleMaterial(SampleMaterial.CRUST);
+			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+		});
+
+		AtomicBoolean firstInvocation = new AtomicBoolean(true);
+		doAnswer((invocation) -> {
+			PickOrCreateSampleResult result;
+			if (firstInvocation.get()) {
+				firstInvocation.set(false);
+				List<SampleDto> samples = invocation.getArgument(0);
+				result = new PickOrCreateSampleResult();
+				result.setSample(samples.get(0));
+			} else {
+				result = new PickOrCreateSampleResult();
+				result.setNewSample(true);
+			}
+			getCallbackParam(invocation).done(result);
+			return null;
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
+
+		ArgumentCaptor<SampleDto> editedSampleCaptor = ArgumentCaptor.forClass(SampleDto.class);
+		ArgumentCaptor<List<PathogenTestDto>> editedTestsCaptor = ArgumentCaptor.forClass(List.class);
+		ArgumentCaptor<Boolean> lastSampleArgsEdit = ArgumentCaptor.forClass(Boolean.class);
+
+		doAnswer((invocation) -> {
+			SampleDto editedSample = invocation.getArgument(0);
+			editedSample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
+
+			List<PathogenTestDto> editedTests = invocation.getArgument(1);
+			editedTests.get(0).setTestResultText("Dummy test result text");
+
+			getCallbackParam(invocation).done(new SampleAndPathogenTests(editedSample, editedTests));
+			return null;
+		}).when(handleEditSample).handle(editedSampleCaptor.capture(), editedTestsCaptor.capture(), lastSampleArgsEdit.capture(), any());
+
+		ArgumentCaptor<SampleDto> createdSampleArgs = ArgumentCaptor.forClass(SampleDto.class);
+		ArgumentCaptor<List<PathogenTestDto>> createdPathogenTestsArgs = ArgumentCaptor.forClass(List.class);
+		ArgumentCaptor<Boolean> entityCreatedArgs = ArgumentCaptor.forClass(Boolean.class);
+		ArgumentCaptor<Boolean> lastSampleArgsCreate = ArgumentCaptor.forClass(Boolean.class);
+
+		doAnswer((invocation) -> {
+			SampleDto createdSample = invocation.getArgument(0);
+			createdSample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
+
+			List<PathogenTestDto> pathogenTests = invocation.getArgument(1);
+			pathogenTests.get(0).setTestResultText("Dummy test result text");
+
+			getCallbackParam(invocation).done(new SampleAndPathogenTests(sample, pathogenTests));
+			return null;
+		}).when(handleCreateSampleAndPathogenTests)
+			.handle(
+				createdSampleArgs.capture(),
+				createdPathogenTestsArgs.capture(),
+				entityCreatedArgs.capture(),
+				lastSampleArgsCreate.capture(),
+				any());
+
+		ExternalMessageDto standardLabMessage = createStandardLabMessageWithTwoSampleReports();
+		ProcessingResult<RelatedSamplesReportsAndPathogenTests> result = runFlow(standardLabMessage);
+
+		verifyStandardEditingAndCreationOfSample(
+			standardLabMessage,
+			editedSampleCaptor,
+			editedTestsCaptor,
+			lastSampleArgsEdit,
+			createdSampleArgs,
+			createdPathogenTestsArgs,
+			entityCreatedArgs,
+			lastSampleArgsCreate);
+
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(0)), is(sample));
+
+		// test that changes in handler are kept
+		assertThat(
+			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(0)).getSamplingReason(),
+			is(SamplingReason.PROFESSIONAL_REASON));
+		assertThat(result.getData().getPathogenTests().get(0).getTestResultText(), is("Dummy test result text"));
+		assertThat(
+			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(1)).getSampleMaterial(),
+			is(SampleMaterial.CRUST));
+
+		assertThat(
+			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(0)).getAssociatedContact(),
+			is(contact.toReference()));
+		assertThat(
+			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(1)).getAssociatedContact(),
+			is(contact.toReference()));
 	}
 
 	@Test
@@ -2401,10 +2460,52 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		ExternalMessageDto standardLabMessage,
 		ArgumentCaptor<SampleDto> editedSampleCaptor,
 		ArgumentCaptor<List<PathogenTestDto>> editedTestsCaptor,
-		ArgumentCaptor<SampleDto> sampleArgs,
-		ArgumentCaptor<List> pathogenTestsArgs,
+		ArgumentCaptor<Boolean> lastSampleArgsEdit,
+		ArgumentCaptor<SampleDto> createdSampleArgs,
+		ArgumentCaptor<List<PathogenTestDto>> createdPathogenTestsArgs,
 		ArgumentCaptor<Boolean> entityCreatedArgs,
-		ArgumentCaptor<Boolean> lastSampleArgs) {
+		ArgumentCaptor<Boolean> lastSampleArgsCreate) {
+
+		verify(multipleSamplesConfirmationHandler, times(1)).get();
+		verify(handleEditSample, times(1)).handle(any(), any(), any(), any());
+		verify(handleCreateSampleAndPathogenTests, times(1)).handle(any(), any(), any(), any(), any());
+
+		//// verify sample edit
+		// sample not changed when calling edit handler
+		assertThat(editedSampleCaptor.getValue().getSampleMaterial(), is(SampleMaterial.CRUST));
+		assertThat(editedSampleCaptor.getValue().getSpecimenCondition(), is(SpecimenCondition.ADEQUATE));
+
+		// test reports converted to pathogen test
+		assertThat(editedTestsCaptor.getValue(), hasSize(2));
+		assertThat(
+			editedTestsCaptor.getValue().get(0).getTestType(),
+			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(0).getTestType()));
+		assertThat(
+			editedTestsCaptor.getValue().get(0).getTestResult(),
+			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(0).getTestResult()));
+		assertThat(
+			editedTestsCaptor.getValue().get(1).getTestType(),
+			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(1).getTestType()));
+		assertThat(
+			editedTestsCaptor.getValue().get(1).getTestResult(),
+			is(standardLabMessage.getSampleReports().get(0).getTestReports().get(1).getTestResult()));
+
+		assertThat(lastSampleArgsEdit.getValue(), is(false));
+
+		//// verify sample creation
+		SampleDto argSample = createdSampleArgs.getValue();
+		assertThat(argSample.getSampleDateTime(), is(standardLabMessage.getSampleReports().get(1).getSampleDateTime()));
+		assertThat(argSample.getSampleMaterial(), is(SampleMaterial.CRUST));
+		assertThat(argSample.getReportingUser(), is(user.toReference()));
+
+		List<PathogenTestDto> argPathogenTests = createdPathogenTestsArgs.getValue();
+		assertThat(argPathogenTests, hasSize(1));
+		assertThat(argPathogenTests.get(0).getTestType(), is(standardLabMessage.getSampleReports().get(1).getTestReports().get(0).getTestType()));
+		assertThat(argPathogenTests.get(0).getTestResult(), is(standardLabMessage.getSampleReports().get(1).getTestReports().get(0).getTestResult()));
+
+		assertThat(entityCreatedArgs.getValue(), is(false));
+
+		assertThat(lastSampleArgsCreate.getValue(), is(true));
 
 	}
 
