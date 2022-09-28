@@ -325,6 +325,14 @@ public class KeycloakService {
 		UsersResource usersResource = keycloak.realm(REALM_NAME).users();
 		UserResource userResource = usersResource.get(userResourceId);
 
+		assignSormasStatsRole(keycloak, sormasUser, userResource);
+	}
+
+	private void assignSormasStatsRole(Keycloak keycloak, User sormasUser, UserResource userResource) {
+		if (StringUtils.isBlank(configFacade.getSormasStatsUrl())) {
+			return;
+		}
+
 		Optional<ClientRepresentation> clientRepresentation =
 			keycloak.realm(REALM_NAME).clients().findAll().stream().filter(client -> client.getClientId().equals(CLIENT_ID_SORMAS_STATS)).findFirst();
 		if (!clientRepresentation.isPresent()) {
