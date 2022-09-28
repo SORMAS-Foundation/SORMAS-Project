@@ -1290,115 +1290,6 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPickExistingEventWithExistingEventParticipantPickExistingSampleAndCreateSample() throws ExecutionException, InterruptedException {
-
-		PersonDto person = creator.createPerson();
-		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
-
-		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
-		pickOrCreateEntryResult.setNewEventParticipant(true);
-		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
-
-		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
-		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
-		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
-		selectedEvent.setUuid(event.getUuid());
-		pickOrCreateEventResult.setEvent(selectedEvent);
-		doAnswer((invocation) -> {
-			getCallbackParam(invocation).done(pickOrCreateEventResult);
-			return null;
-		}).when(handlePickOrCreateEvent).accept(any());
-
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		when(confirmPickExistingEventParticipant.get()).thenReturn(CompletableFuture.completedFuture(true));
-
-		SampleDto sample = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSampleMaterial(SampleMaterial.CRUST);
-			s.setLabSampleID("test-lab-sample-id");
-			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
-		});
-
-		AtomicBoolean firstInvocation = new AtomicBoolean(true);
-		doAnswer((invocation) -> {
-			PickOrCreateSampleResult result;
-			if (firstInvocation.get()) {
-				firstInvocation.set(false);
-				List<SampleDto> samples = invocation.getArgument(0);
-				result = new PickOrCreateSampleResult();
-				result.setSample(samples.get(0));
-			} else {
-				result = new PickOrCreateSampleResult();
-				result.setNewSample(true);
-			}
-			getCallbackParam(invocation).done(result);
-			return null;
-		}).when(handlePickOrCreateSample).handle(any(), any(), any());
-
-		ArgumentCaptor<SampleDto> editedSampleCaptor = ArgumentCaptor.forClass(SampleDto.class);
-		@SuppressWarnings("unchecked")
-		ArgumentCaptor<List<PathogenTestDto>> editedTestsCaptor = ArgumentCaptor.forClass(List.class);
-		ArgumentCaptor<Boolean> lastSampleArgsEdit = ArgumentCaptor.forClass(Boolean.class);
-
-		doAnswer((invocation) -> {
-			SampleDto editedSample = invocation.getArgument(0);
-			editedSample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
-
-			List<PathogenTestDto> editedTests = invocation.getArgument(1);
-			editedTests.get(0).setTestResultText("Dummy test result text");
-
-			getCallbackParam(invocation).done(new SampleAndPathogenTests(editedSample, editedTests));
-			return null;
-		}).when(handleEditSample).handle(editedSampleCaptor.capture(), editedTestsCaptor.capture(), lastSampleArgsEdit.capture(), any());
-
-		ArgumentCaptor<SampleDto> createdSampleArgs = ArgumentCaptor.forClass(SampleDto.class);
-		ArgumentCaptor<List<PathogenTestDto>> createdPathogenTestsArgs = ArgumentCaptor.forClass(List.class);
-		ArgumentCaptor<Boolean> entityCreatedArgs = ArgumentCaptor.forClass(Boolean.class);
-		ArgumentCaptor<Boolean> lastSampleArgsCreate = ArgumentCaptor.forClass(Boolean.class);
-
-		doAnswer((invocation) -> {
-			SampleDto newSample = invocation.getArgument(0);
-			newSample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
-
-			List<PathogenTestDto> pathogenTests = invocation.getArgument(1);
-			pathogenTests.get(0).setTestResultText("Dummy test result text");
-
-			getCallbackParam(invocation).done(new SampleAndPathogenTests(newSample, pathogenTests));
-			return null;
-		}).when(handleCreateSampleAndPathogenTests)
-			.handle(
-				createdSampleArgs.capture(),
-				createdPathogenTestsArgs.capture(),
-				entityCreatedArgs.capture(),
-				lastSampleArgsCreate.capture(),
-				any());
-
-		ExternalMessageDto standardLabMessage = createStandardLabMessageWithTwoSampleReports();
-
-		ProcessingResult<RelatedSamplesReportsAndPathogenTests> result = runFlow(standardLabMessage);
-
-		verifyStandardEditingAndCreationOfSample(
-			standardLabMessage,
-			editedSampleCaptor,
-			editedTestsCaptor,
-			lastSampleArgsEdit,
-			createdSampleArgs,
-			createdPathogenTestsArgs,
-			entityCreatedArgs,
-			lastSampleArgsCreate);
-
-		assertThat(result.getStatus(), is(DONE));
-		// test that changes in handler are kept
-		assertThat(
-			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(0)).getSamplingReason(),
-			is(SamplingReason.PROFESSIONAL_REASON));
-		assertThat(result.getData().getPathogenTests().get(0).getTestResultText(), is("Dummy test result text"));
-		assertThat(
-			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(1)).getSamplingReason(),
-			is(SamplingReason.PROFESSIONAL_REASON));
-		assertThat(result.getData().getPathogenTests().get(2).getTestResultText(), is("Dummy test result text"));
-	}
-
-	@Test
 	public void testPickExistingEventWithExistingEventParticipantAndCancel() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
@@ -1586,6 +1477,116 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			result.getData().getRelatedSampleReportsWithSamples().get(sampleReport).getSamplingReason(),
 			is(SamplingReason.PROFESSIONAL_REASON));
 		assertThat(result.getData().getPathogenTests().get(0).getTestResultText(), is("Dummy test result text"));
+	}
+
+	@Test
+	public void testPickExistingEventAndPickExistingEventParticipantPickExistingSampleAndCreateSample()
+		throws ExecutionException, InterruptedException {
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+
+		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
+		pickOrCreateEntryResult.setNewEventParticipant(true);
+		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
+
+		EventDto event = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, rdcf);
+		PickOrCreateEventResult pickOrCreateEventResult = new PickOrCreateEventResult();
+		EventIndexDto selectedEvent = new EventIndexDto(event.getUuid());
+		selectedEvent.setUuid(event.getUuid());
+		pickOrCreateEventResult.setEvent(selectedEvent);
+		doAnswer((invocation) -> {
+			getCallbackParam(invocation).done(pickOrCreateEventResult);
+			return null;
+		}).when(handlePickOrCreateEvent).accept(any());
+
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		when(confirmPickExistingEventParticipant.get()).thenReturn(CompletableFuture.completedFuture(true));
+
+		SampleDto sample = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSampleMaterial(SampleMaterial.CRUST);
+			s.setLabSampleID("test-lab-sample-id");
+			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+		});
+
+		AtomicBoolean firstInvocation = new AtomicBoolean(true);
+		doAnswer((invocation) -> {
+			PickOrCreateSampleResult result;
+			if (firstInvocation.get()) {
+				firstInvocation.set(false);
+				List<SampleDto> samples = invocation.getArgument(0);
+				result = new PickOrCreateSampleResult();
+				result.setSample(samples.get(0));
+			} else {
+				result = new PickOrCreateSampleResult();
+				result.setNewSample(true);
+			}
+			getCallbackParam(invocation).done(result);
+			return null;
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
+
+		ArgumentCaptor<SampleDto> editedSampleCaptor = ArgumentCaptor.forClass(SampleDto.class);
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<List<PathogenTestDto>> editedTestsCaptor = ArgumentCaptor.forClass(List.class);
+		ArgumentCaptor<Boolean> lastSampleArgsEdit = ArgumentCaptor.forClass(Boolean.class);
+
+		doAnswer((invocation) -> {
+			SampleDto editedSample = invocation.getArgument(0);
+			editedSample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
+
+			List<PathogenTestDto> editedTests = invocation.getArgument(1);
+			editedTests.get(0).setTestResultText("Dummy test result text");
+
+			getCallbackParam(invocation).done(new SampleAndPathogenTests(editedSample, editedTests));
+			return null;
+		}).when(handleEditSample).handle(editedSampleCaptor.capture(), editedTestsCaptor.capture(), lastSampleArgsEdit.capture(), any());
+
+		ArgumentCaptor<SampleDto> createdSampleArgs = ArgumentCaptor.forClass(SampleDto.class);
+		ArgumentCaptor<List<PathogenTestDto>> createdPathogenTestsArgs = ArgumentCaptor.forClass(List.class);
+		ArgumentCaptor<Boolean> entityCreatedArgs = ArgumentCaptor.forClass(Boolean.class);
+		ArgumentCaptor<Boolean> lastSampleArgsCreate = ArgumentCaptor.forClass(Boolean.class);
+
+		doAnswer((invocation) -> {
+			SampleDto newSample = invocation.getArgument(0);
+			newSample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
+
+			List<PathogenTestDto> pathogenTests = invocation.getArgument(1);
+			pathogenTests.get(0).setTestResultText("Dummy test result text");
+
+			getCallbackParam(invocation).done(new SampleAndPathogenTests(newSample, pathogenTests));
+			return null;
+		}).when(handleCreateSampleAndPathogenTests)
+			.handle(
+				createdSampleArgs.capture(),
+				createdPathogenTestsArgs.capture(),
+				entityCreatedArgs.capture(),
+				lastSampleArgsCreate.capture(),
+				any());
+
+		ExternalMessageDto standardLabMessage = createStandardLabMessageWithTwoSampleReports();
+
+		ProcessingResult<RelatedSamplesReportsAndPathogenTests> result = runFlow(standardLabMessage);
+
+		verifyStandardEditingAndCreationOfSample(
+			standardLabMessage,
+			editedSampleCaptor,
+			editedTestsCaptor,
+			lastSampleArgsEdit,
+			createdSampleArgs,
+			createdPathogenTestsArgs,
+			entityCreatedArgs,
+			lastSampleArgsCreate);
+
+		assertThat(result.getStatus(), is(DONE));
+		// test that changes in handler are kept
+		assertThat(
+			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(0)).getSamplingReason(),
+			is(SamplingReason.PROFESSIONAL_REASON));
+		assertThat(result.getData().getPathogenTests().get(0).getTestResultText(), is("Dummy test result text"));
+		assertThat(
+			result.getData().getRelatedSampleReportsWithSamples().get(standardLabMessage.getSampleReports().get(1)).getSamplingReason(),
+			is(SamplingReason.PROFESSIONAL_REASON));
+		assertThat(result.getData().getPathogenTests().get(2).getTestResultText(), is("Dummy test result text"));
 	}
 
 	@Test
