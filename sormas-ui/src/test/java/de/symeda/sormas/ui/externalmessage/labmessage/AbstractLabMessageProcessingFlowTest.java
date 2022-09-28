@@ -2329,6 +2329,75 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testEditSampleAndCreateSampleCancel() throws ExecutionException, InterruptedException {
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		doAnswer(invocation -> {
+			List<CaseSelectionDto> cases = invocation.getArgument(0);
+
+			PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
+			pickOrCreateEntryResult.setCaze(cases.get(0));
+
+			//noinspection unchecked
+			((HandlerCallback<PickOrCreateEntryResult>) invocation.getArgument(3)).done(pickOrCreateEntryResult);
+
+			return null;
+		}).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
+
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> s.setLabSampleID("test-lab-sample-id"));
+
+		PickOrCreateSampleResult pickOrCreateSampleResult = new PickOrCreateSampleResult();
+		pickOrCreateSampleResult.setSample(sample);
+
+		AtomicBoolean firstInvocation = new AtomicBoolean(true);
+		doAnswer((invocation) -> {
+			PickOrCreateSampleResult result;
+			if (firstInvocation.get()) {
+				firstInvocation.set(false);
+				List<SampleDto> samples = invocation.getArgument(0);
+				result = new PickOrCreateSampleResult();
+				result.setSample(samples.get(0));
+			} else {
+				result = new PickOrCreateSampleResult();
+				result.setNewSample(true);
+			}
+			getCallbackParam(invocation).done(result);
+			return null;
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
+
+		doAnswer((invocation) -> {
+			SampleDto editedSample = invocation.getArgument(0);
+			editedSample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
+
+			List<PathogenTestDto> editedTests = invocation.getArgument(1);
+			editedTests.get(0).setTestResultText("Dummy test result text");
+
+			getCallbackParam(invocation).done(new SampleAndPathogenTests(editedSample, editedTests));
+			return null;
+		}).when(handleEditSample).handle(any(), any(), any(), any());
+
+		doAnswer((invocation) -> {
+			getCallbackParam(invocation).cancel();
+			return null;
+		}).when(handleCreateSampleAndPathogenTests).handle(any(), any(), any(), any(), any());
+
+		ProcessingResult<RelatedSamplesReportsAndPathogenTests> result = runFlow(createStandardLabMessageWithTwoSampleReports());
+
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
+	}
+
 	private ProcessingResult<RelatedSamplesReportsAndPathogenTests> runFlow(ExternalMessageDto labMessage)
 		throws ExecutionException, InterruptedException {
 
