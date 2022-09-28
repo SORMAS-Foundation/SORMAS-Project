@@ -15,6 +15,8 @@ public class AggregateReport {
   String pointOfEntry;
   String epiWeek;
   String year;
+  String region;
+  String district;
   int acuteViralHepatitisCases;
   int acuteViralHepatitisLabConfirmations;
   int acuteViralHepatitisDeaths;
