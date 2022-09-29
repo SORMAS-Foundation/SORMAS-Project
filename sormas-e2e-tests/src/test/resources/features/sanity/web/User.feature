@@ -231,3 +231,13 @@ Feature: Create user
     When I click Create New Password in Edit User page
     Then I click the Update button in the Update Password Modal located in the Edit User Page
     Then I Verify the New Password Modal in the Edit User Page
+
+  @#7470_1 @env_main
+  Scenario: Validate phone number field
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create 1 new users with National User via UI
+    When I search for created user
+    When I fill phone number with a wrong format in the Edit User Page
+    And I click on the Save button in the Edit User Page
+    Then I verify the error message is displayed in the Edit User Page

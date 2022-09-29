@@ -88,6 +88,13 @@ public class EditUserSteps implements En {
           }
         });
 
+    When(
+        "I fill phone number with a wrong format in the Edit User Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PHONE_INPUT);
+          webDriverHelpers.fillInWebElement(PHONE_INPUT, "random404");
+        });
+
     Then(
         "I Verify the New Password Modal in the Edit User Page",
         () -> {
@@ -96,10 +103,24 @@ public class EditUserSteps implements En {
         });
 
     Then(
+        "I verify the error message is displayed in the Edit User Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NOTIFICATION_CAPTION_EDIT_USER);
+        });
+
+    Then(
         "I click on the Active checkbox in the Edit User Page",
         () -> {
           webDriverHelpers.scrollToElementUntilIsVisible(ACTIVE_LABEL);
           webDriverHelpers.clickOnWebElementBySelector(ACTIVE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EDIT_USER);
+        });
+
+    Then(
+        "I click on the Save button in the Edit User Page",
+        () -> {
+          webDriverHelpers.scrollToElementUntilIsVisible(SAVE_BUTTON_EDIT_USER);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EDIT_USER);
         });
   }
