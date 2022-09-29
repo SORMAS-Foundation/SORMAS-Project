@@ -21,7 +21,6 @@ import java.util.Set;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.ImportIgnore;
@@ -109,7 +108,6 @@ public class SampleDto extends SormasToSormasShareableDto {
 	private SampleMaterial sampleMaterial;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@NotBlank(message = Validations.requiredField)
 	private String sampleMaterialText;
 	@Required
 	private SamplePurpose samplePurpose;
