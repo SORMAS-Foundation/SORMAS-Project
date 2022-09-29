@@ -2011,6 +2011,12 @@ public class EditCaseSteps implements En {
         });
 
     And(
+        "I fill comment in share popup with ([^\"]*)",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, comment);
+        });
+
+    And(
         "I fill in the Internal Token field in Edit Case page with ([^\"]*)",
         (String token) -> {
           webDriverHelpers.scrollToElementUntilIsVisible(INTERNAL_TOKEN_INPUT);
@@ -2464,7 +2470,11 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(
               SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
         });
-
+    When(
+        "I click to hand over the ownership of the case in Share popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX);
+        });
     When(
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {

@@ -205,5 +205,12 @@ public class CaseDirectoryPage {
             uuid.substring(0, 6).toUpperCase()));
   }
 
+  public static By getMergeDuplicatesButtonByIdDeSpecific(String uuid) {
+    return By.xpath(
+        String.format(
+            "//span[text()='%s']/../../../../../..//div[@id=\"actionMerge\"]",
+            uuid.substring(0, 6).toUpperCase()));
+  }
+
   public static By CONFIRM_POPUP = By.cssSelector(".popupContent #actionConfirm");
 }

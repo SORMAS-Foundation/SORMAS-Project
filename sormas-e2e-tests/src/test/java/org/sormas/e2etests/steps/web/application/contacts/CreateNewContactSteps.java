@@ -223,6 +223,30 @@ public class CreateNewContactSteps implements En {
           fillDescriptionOfHowContactTookPlace(
               samePersonDataContact.getDescriptionOfHowContactTookPlace());
         });
+    When(
+        "^I fill a new contact form with same person data for S2S DE version$",
+        () -> {
+          fillFirstName(samePersonDataContact.getFirstName());
+          fillLastName(samePersonDataContact.getLastName());
+          fillDateOfBirth(samePersonDataContact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(samePersonDataContact.getSex());
+          fillPrimaryPhoneNumber(samePersonDataContact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(samePersonDataContact.getPrimaryEmailAddress());
+          selectReturningTraveler(samePersonDataContact.getReturningTraveler());
+          fillDateOfReport(samePersonDataContact.getReportDate(), Locale.GERMAN);
+          selectMultiDayContact();
+          fillDateOfFirstContact(samePersonDataContact.getDateOfFirstContact(), Locale.GERMAN);
+          fillDateOfLastContact(samePersonDataContact.getDateOfLastContact(), Locale.GERMAN);
+          selectResponsibleRegion("Baden-W\u00FCrttemberg");
+          selectResponsibleDistrict("LK Alb-Donau-Kreis");
+          selectTypeOfContact(samePersonDataContact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              samePersonDataContact.getAdditionalInformationOnContactType());
+          selectContactCategory(samePersonDataContact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(samePersonDataContact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(
+              samePersonDataContact.getDescriptionOfHowContactTookPlace());
+        });
 
     When(
         "^I fill a new contact form with specific person data$",

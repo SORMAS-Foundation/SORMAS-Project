@@ -173,6 +173,26 @@ public class CaseReinfectionSteps implements En {
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
         });
+    When(
+        "I fill a new case form with only person details for duplicates for S2S DE version",
+        () -> {
+          LocalDate reportDate = LocalDate.now();
+          caze =
+              caseService.buildGeneratedCaseDEForOnePerson(
+                  firstName, lastName, dateOfBirth, reportDate, personSex);
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDisease(caze.getDisease());
+          fillDiseaseVariant(caze.getDiseaseVariant());
+          selectResponsibleRegion("Baden-W\u00FCrttemberg");
+          selectResponsibleDistrict("LK Alb-Donau-Kreis");
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
 
     When(
         "I create a new case with specific data for DE version with saved person details",

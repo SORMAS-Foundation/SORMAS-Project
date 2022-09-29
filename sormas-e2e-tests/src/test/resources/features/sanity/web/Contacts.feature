@@ -1195,3 +1195,54 @@ Feature: Contacts end to end tests
     Then I open Contact Person tab
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
+
+  @tmsLink=SORDEV-12094 @env_s2s_1
+  Scenario: Try merging contacts without handing ownership
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as Admin User in Keycloak enabled environment
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form with same person data for S2S DE version
+    And I click on SAVE button in create contact form
+    And I collect uuid of the contact
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I click on SAVE new contact button
+    Then I click on share contact button
+    And I select organization to share with "s2s_2"
+#    And I click to hand over the ownership of the contact in Share popup
+    And I fill comment in share popup with TEST
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as Admin User in Keycloak enabled environment
+    And I click on the Shares button from navbar
+    And I accept first contact in Shares Page
+    Then I click on the Cases button from navbar
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form with same person data for S2S DE version
+    And I click on SAVE button in create contact form
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I collect uuid of the contact
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on Merge button of leading contact accepted from other sormas to sormas instance in Merge Duplicate Contacts page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I check if error popup is displayed with message Ein Problem ist aufgetreten
+    And I close error popup in Merge Duplicates directory
+    Then I click to Discard action in Merge Duplicates Cases popup
+    Then I click on Merge button of new created duplicate contact in sormas to sormas instance in Merge Duplicate Contacts page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I check if error popup is displayed with message Ein Fehler ist aufgetreten
+
+

@@ -1856,4 +1856,82 @@ Feature: Case end to end tests
     Then I click download in case document create page in DE
     When I check if downloaded docx file is correct
 
+  @tmsLink=SORDEV-12094 @env_s2s_1
+  Scenario: Try merging cases without handing ownership
+    Given I log in as Admin User in Keycloak enabled environment
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with only person details for duplicates for S2S DE version
+    And I click on Save button in Case form
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with TEST
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as Admin User in Keycloak enabled environment
+    And I click on the Shares button from navbar
+    Then I click on the The Eye Icon located in the Shares Page
+    And I check if received case id is equal with sent
+    Then I close popup after export in Case Contacts directory
+    And I accept first case in Shares Page
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with only person details for duplicates for S2S DE version
+    And I click on Save button in Case form
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I collect uuid of the case
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I apply Report on onset date type filter to "Fallmeldedatum" on Merge duplicate cases page
+    And I fill date from input to today on Merge Duplicate Cases page
+    Then I click to CONFIRM FILTERS on Merge Duplicate Cases page
+    And I click on Merge button of leading case accepted from other sormas to sormas instance in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I check if error popup is displayed with message Ein Problem ist aufgetreten
+    And I close error popup in Merge Duplicates directory
+    Then I click to Discard action in Merge Duplicates Cases popup
+    Then I click on Merge button of new created duplicate case in sormas to sormas instance in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I check if error popup is displayed with message Ein Fehler ist aufgetreten
 
+  @tmsLink=SORDEV-12094 @env_s2s_1
+  Scenario: Try merging cases with handing ownership
+    Given I log in as Admin User in Keycloak enabled environment
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with only person details for duplicates for S2S DE version
+    And I click on Save button in Case form
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with TEST
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as Admin User in Keycloak enabled environment
+    And I click on the Shares button from navbar
+    Then I click on the The Eye Icon located in the Shares Page
+    And I check if received case id is equal with sent
+    Then I close popup after export in Case Contacts directory
+    And I accept first case in Shares Page
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with only person details for duplicates for S2S DE version
+    And I click on Save button in Case form
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I collect uuid of the case
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I apply Report on onset date type filter to "Fallmeldedatum" on Merge duplicate cases page
+    And I fill date from input to today on Merge Duplicate Cases page
+    Then I click to CONFIRM FILTERS on Merge Duplicate Cases page
+    Then I click on Merge button of new created duplicate case in sormas to sormas instance in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I check if error popup is displayed with message Ein Fehler ist aufgetreten
+    And I close error popup in Merge Duplicates directory
+    Then I click to Discard action in Merge Duplicates Cases popup
+    And I click on Merge button of leading case accepted from other sormas to sormas instance in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup

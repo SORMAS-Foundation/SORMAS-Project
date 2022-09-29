@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonByIdDeSpecific;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
@@ -339,6 +340,21 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               getMergeDuplicatesButtonById(leadingContactUUID));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    And(
+        "I click on Merge button of leading contact accepted from other sormas to sormas instance in Merge Duplicate Contacts page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonByIdDeSpecific(EditContactSteps.contactsUUID.get(0)));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    And(
+        "I click on Merge button of new created duplicate contact in sormas to sormas instance in Merge Duplicate Contacts page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonByIdDeSpecific(EditContactSteps.contactsUUID.get(1)));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
 
