@@ -3,7 +3,10 @@ package de.symeda.sormas.ui.person;
 import static java.util.Objects.nonNull;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -11,6 +14,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -49,77 +53,90 @@ public class PersonsView extends AbstractView {
 
 	private final PersonCriteria criteria;
 	private final FilteredGrid<?, PersonCriteria> grid;
-	private HashMap<Button, String> associationButtons;
+	private Label noAccessLabel;
+	private LinkedHashMap<Button, String> associationButtons;
 	private Button activeAssociationButton;
 	private PersonFilterForm filterForm;
+	private final Map<PersonAssociation, Boolean> associationAllowedValues = new EnumMap<>(PersonAssociation.class);
+	private final Map<PersonAssociation, Boolean> associationActiveValues = new EnumMap<>(PersonAssociation.class);
 
 	public PersonsView() {
 		super(VIEW_NAME);
 
 		// Avoid calling ALL associations at view start because the query tends to take long time
-		PersonCriteria defaultCriteria = new PersonCriteria().personAssociation(PersonAssociation.CASE);
-		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, defaultCriteria);
-		grid = new PersonGrid(criteria);
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		final HorizontalLayout associationFilterBar = createAssociationFilterBar();
 		gridLayout.addComponent(associationFilterBar);
 		gridLayout.setComponentAlignment(associationFilterBar, Alignment.MIDDLE_RIGHT);
-		gridLayout.addComponent(grid);
 
-		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
-		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(grid, 1);
-		gridLayout.setStyleName("crud-main-layout");
+		PersonAssociation defaultAssociation = getFirstAllowedPersonAssociation();
+		if (defaultAssociation != null) {
+			PersonCriteria defaultCriteria = new PersonCriteria().personAssociation(defaultAssociation);
+			criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, defaultCriteria);
+			grid = new PersonGrid(criteria);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EXPORT)) {
-			VerticalLayout exportLayout = new VerticalLayout();
-			exportLayout.setSpacing(true);
-			exportLayout.setMargin(true);
-			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			exportLayout.setWidth(200, Unit.PIXELS);
+			gridLayout.addComponent(grid);
+			gridLayout.setMargin(true);
+			gridLayout.setSpacing(false);
+			gridLayout.setSizeFull();
+			gridLayout.setExpandRatio(grid, 1);
+			gridLayout.setStyleName("crud-main-layout");
 
-			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
-			addHeaderComponent(exportButton);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EXPORT)) {
+				VerticalLayout exportLayout = new VerticalLayout();
+				exportLayout.setSpacing(true);
+				exportLayout.setMargin(true);
+				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+				exportLayout.setWidth(200, Unit.PIXELS);
 
-			Button basicExportButton = ButtonHelper.createIconButton(Captions.exportBasic, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
-			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
-			basicExportButton.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(basicExportButton);
-			StreamResource streamResource =
-				GridExportStreamResource.createStreamResourceWithSelectedItems(grid, Collections::emptySet, ExportEntityName.PERSONS);
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(basicExportButton);
+				PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+				addHeaderComponent(exportButton);
 
-			StreamResource extendedExportStreamResource = PersonDownloadUtil.createPersonExportResource(grid.getCriteria(), null);
-			addExportButton(
-				extendedExportStreamResource,
-				exportButton,
-				exportLayout,
-				VaadinIcons.FILE_TEXT,
-				Captions.exportDetailed,
-				Strings.infoDetailedExport);
+				Button basicExportButton = ButtonHelper.createIconButton(Captions.exportBasic, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+				basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
+				basicExportButton.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(basicExportButton);
+				StreamResource streamResource =
+					GridExportStreamResource.createStreamResourceWithSelectedItems(grid, Collections::emptySet, ExportEntityName.PERSONS);
+				FileDownloader fileDownloader = new FileDownloader(streamResource);
+				fileDownloader.extend(basicExportButton);
 
-			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
-				ControllerProvider.getCustomExportController().openPersonExportWindow(grid.getCriteria());
-				exportButton.setPopupVisible(false);
-			}, ValoTheme.BUTTON_PRIMARY);
-			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
-			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(btnCustomExport);
+				StreamResource extendedExportStreamResource = PersonDownloadUtil.createPersonExportResource(grid.getCriteria(), null);
+				addExportButton(
+					extendedExportStreamResource,
+					exportButton,
+					exportLayout,
+					VaadinIcons.FILE_TEXT,
+					Captions.exportDetailed,
+					Strings.infoDetailedExport);
+
+				Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
+					ControllerProvider.getCustomExportController().openPersonExportWindow(grid.getCriteria());
+					exportButton.setPopupVisible(false);
+				}, ValoTheme.BUTTON_PRIMARY);
+				btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
+				btnCustomExport.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(btnCustomExport);
+			}
+
+			if (FacadeProvider.getGeocodingFacade().isEnabled()) {
+				Button setMissingCoordinatesButton = ButtonHelper.createIconButton(
+					I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
+					VaadinIcons.MAP_MARKER,
+					e -> showMissingCoordinatesPopUp(),
+					ValoTheme.BUTTON_PRIMARY);
+				addHeaderComponent(setMissingCoordinatesButton);
+			}
+
+			grid.getDataProvider().addDataProviderListener(e -> updateAssociationButtons());
+		} else {
+			criteria = new PersonCriteria();
+			grid = null;
+			noAccessLabel =
+				new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoNoAccessToPersonEntities), ContentMode.HTML);
+			gridLayout.addComponent(noAccessLabel);
 		}
-
-		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
-			Button setMissingCoordinatesButton = ButtonHelper.createIconButton(
-				I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
-				VaadinIcons.MAP_MARKER,
-				e -> showMissingCoordinatesPopUp(),
-				ValoTheme.BUTTON_PRIMARY);
-			addHeaderComponent(setMissingCoordinatesButton);
-		}
-
-		grid.getDataProvider().addDataProviderListener(e -> updateAssociationButtons());
 
 		addComponent(gridLayout);
 	}
@@ -145,7 +162,7 @@ public class PersonsView extends AbstractView {
 			I18nProperties.getCaption(Captions.actionCancel),
 			640,
 			confirmed -> {
-				if (confirmed) {
+				if (Boolean.TRUE.equals(confirmed)) {
 					long changedPersons = FacadeProvider.getPersonFacade().setMissingGeoCoordinates(popupCheckbox.getValue());
 					Notification.show(
 						I18nProperties.getCaption(Captions.personsUpdated),
@@ -170,6 +187,11 @@ public class PersonsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
+		if (criteria.getPersonAssociation() != null && !isPersonAssociationAllowed(criteria.getPersonAssociation())) {
+			PersonAssociation firstAllowedAssociation = getFirstAllowedPersonAssociation();
+			criteria.setPersonAssociation(firstAllowedAssociation != null ? firstAllowedAssociation : PersonCriteria.DEFAULT_ASSOCIATION);
+		}
+
 		updateAssociationButtons();
 
 		filterForm.setValue(criteria);
@@ -181,7 +203,7 @@ public class PersonsView extends AbstractView {
 
 		associationButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-			b.setCaption(associationButtons.get(b));
+			b.setCaption(PersonAssociation.valueOf(associationButtons.get(b)).toString());
 			if (b.getData() == criteria.getPersonAssociation()) {
 				activeAssociationButton = b;
 			}
@@ -189,7 +211,8 @@ public class PersonsView extends AbstractView {
 		if (activeAssociationButton != null) {
 			CssStyles.removeStyles(activeAssociationButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeAssociationButton.setCaption(
-				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				PersonAssociation.valueOf(associationButtons.get(activeAssociationButton))
+					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
 
@@ -209,7 +232,9 @@ public class PersonsView extends AbstractView {
 			ViewModelProviders.of(PersonsView.class).remove(PersonCriteria.class);
 			navigateTo(null, true);
 		});
-		filterForm.addApplyHandler(e -> ((PersonGrid) grid).reload());
+		if (grid != null) {
+			filterForm.addApplyHandler(e -> ((PersonGrid) grid).reload());
+		}
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
@@ -222,22 +247,10 @@ public class PersonsView extends AbstractView {
 		associationFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		associationFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
-		associationButtons = new HashMap<>();
+		associationButtons = new LinkedHashMap<>();
+
 		for (PersonAssociation association : PersonAssociation.values()) {
-			if (association == PersonAssociation.IMMUNIZATION
-				&& (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-					|| FacadeProvider.getFeatureConfigurationFacade()
-						.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED))
-				|| association == PersonAssociation.TRAVEL_ENTRY
-					&& (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TRAVEL_ENTRIES)
-						|| !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY))
-				|| association == PersonAssociation.CONTACT
-					&& (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
-						|| !UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW))
-				|| association == PersonAssociation.CASE
-					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
-				|| association == PersonAssociation.EVENT_PARTICIPANT
-					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)) {
+			if (!isPersonAssociationAllowed(association)) {
 				continue;
 			}
 
@@ -252,7 +265,7 @@ public class PersonsView extends AbstractView {
 						I18nProperties.getString(Strings.no),
 						640,
 						ee -> {
-							if (ee.booleanValue() == true) {
+							if (Boolean.TRUE.equals(ee)) {
 								criteria.personAssociation(association);
 								navigateTo(criteria);
 							}
@@ -267,7 +280,7 @@ public class PersonsView extends AbstractView {
 
 			associationFilterLayout.addComponent(associationButton);
 			associationFilterLayout.setComponentAlignment(associationButton, Alignment.MIDDLE_LEFT);
-			associationButtons.put(associationButton, association.toString());
+			associationButtons.put(associationButton, association.name());
 		}
 
 		Label emptyLabel = new Label("");
@@ -277,4 +290,54 @@ public class PersonsView extends AbstractView {
 
 		return associationFilterLayout;
 	}
+
+	private PersonAssociation getFirstAllowedPersonAssociation() {
+
+		Iterator<String> associationsIterator = associationButtons.values().iterator();
+		PersonAssociation defaultAssociation = associationsIterator.hasNext() ? PersonAssociation.valueOf(associationsIterator.next()) : null;
+		if (defaultAssociation == PersonAssociation.ALL) {
+			defaultAssociation = associationsIterator.hasNext() ? PersonAssociation.valueOf(associationsIterator.next()) : null;
+		}
+		return defaultAssociation;
+	}
+
+	private boolean isPersonAssociationAllowed(PersonAssociation personAssociation) {
+
+		if (associationAllowedValues.isEmpty()) {
+			associationAllowedValues.put(PersonAssociation.IMMUNIZATION, UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW));
+			associationActiveValues.put(
+				PersonAssociation.IMMUNIZATION,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+					&& !FacadeProvider.getFeatureConfigurationFacade()
+						.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
+			associationAllowedValues.put(PersonAssociation.TRAVEL_ENTRY, UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW));
+			associationActiveValues.put(
+				PersonAssociation.TRAVEL_ENTRY,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
+					&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY));
+			associationAllowedValues.put(PersonAssociation.CONTACT, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW));
+			associationActiveValues
+				.put(PersonAssociation.CONTACT, FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING));
+			associationAllowedValues.put(PersonAssociation.CASE, UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW));
+			associationActiveValues
+				.put(PersonAssociation.CASE, FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE));
+			associationAllowedValues
+				.put(PersonAssociation.EVENT_PARTICIPANT, UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW));
+			associationActiveValues.put(
+				PersonAssociation.EVENT_PARTICIPANT,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE));
+		}
+
+		if (personAssociation == PersonAssociation.ALL) {
+			return (associationAllowedValues.get(PersonAssociation.IMMUNIZATION) || !associationActiveValues.get(PersonAssociation.IMMUNIZATION))
+				&& (associationAllowedValues.get(PersonAssociation.TRAVEL_ENTRY) || !associationActiveValues.get(PersonAssociation.TRAVEL_ENTRY))
+				&& (associationAllowedValues.get(PersonAssociation.CONTACT) || !associationActiveValues.get(PersonAssociation.CONTACT))
+				&& (associationAllowedValues.get(PersonAssociation.CASE) || !associationActiveValues.get(PersonAssociation.CASE))
+				&& (associationAllowedValues.get(PersonAssociation.EVENT_PARTICIPANT)
+					|| !associationActiveValues.get(PersonAssociation.EVENT_PARTICIPANT));
+		} else {
+			return (associationAllowedValues.get(personAssociation) && associationActiveValues.get(personAssociation));
+		}
+	}
+
 }
