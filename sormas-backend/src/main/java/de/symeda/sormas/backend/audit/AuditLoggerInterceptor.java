@@ -142,7 +142,7 @@ public class AuditLoggerInterceptor {
 			// ignore certain classes for audit altogether. Statically populated cache.
 			return context.proceed();
 		}
-		Method calledMethod = context.getMethod();
+
 
 		// with this we ignore EJB calls which definitely originate from within the backend
 		// as they can never be called direct from outside (i.e., remote) of the backend
@@ -153,6 +153,8 @@ public class AuditLoggerInterceptor {
 			// ignore local beans
 			return context.proceed();
 		}
+
+		Method calledMethod = context.getMethod();
 
 		if (ignoreAuditMethods.contains(calledMethod) || !allowedLocalAuditMethods.contains(calledMethod)) {
 			// ignore certain methods for audit altogether. Statically populated cache.
