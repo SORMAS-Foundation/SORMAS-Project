@@ -482,12 +482,14 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		From<?, EventParticipant> eventParticipantFrom,
 		boolean includeExtendedChangeDateFilters) {
 
-		Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantFrom.join(EventParticipant.SAMPLES, JoinType.LEFT);
-
 		builder = super.addChangeDates(builder, eventParticipantFrom, includeExtendedChangeDateFilters)
 			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES)
-			.add(eventParticipantSampleJoin);
+			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES);
+
+		if (includeExtendedChangeDateFilters) {
+			Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantFrom.join(EventParticipant.SAMPLES, JoinType.LEFT);
+			builder.add(eventParticipantSampleJoin).add(eventParticipantSampleJoin, Sample.PATHOGENTESTS);
+		}
 
 		return builder;
 	}

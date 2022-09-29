@@ -1178,9 +1178,11 @@ public class TextViewBindingAdapters {
 			if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
 				sb.append(", " + record.getEvent().getEventLocation().getCity());
 			}
-			sb.append(
-				", " + StringUtils.substring(record.getEvent().getEventDesc(), 0, 15)
-					+ (record.getEvent().getEventDesc().length() > 15 ? "..." : ""));
+			if (StringUtils.isNotBlank(record.getEvent().getEventDesc())) {
+				sb.append(
+					", " + StringUtils.substring(record.getEvent().getEventDesc(), 0, 15)
+						+ (record.getEvent().getEventDesc().length() > 15 ? "..." : ""));
+			}
 			result = sb.toString();
 		}
 
