@@ -62,7 +62,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 		criteria.setCampaign(campaignSelector.getValue());
 		// criteria.setGroupingLevel(null);
-		criteria.setGroupingLevel(CampaignJurisdictionLevel.NONE);
+		criteria.setGroupingLevel(CampaignJurisdictionLevel.COUNTRY);
 		addHeaderComponent(campaignSelector);
 		grid = new CampaignStatisticsGrid(criteria);
 
@@ -110,11 +110,11 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		jurisdictionSelector.addValueChangeListener(e -> {
 			CampaignJurisdictionLevel groupingValue = null;
 			String selectorValue = e.getValue().toString();
-			System.out.println("+++++++++++++++++++}}}}}}}}}}}}}}}} "+selectorValue);
+			System.out.println("++++++++++++++----+++++}}}}}}}}}}}}}}}} "+selectorValue);
 			switch (selectorValue) {
-			case "None": //This is a temporary fix, the caption should be set so the condition passes 
-				groupingValue = CampaignJurisdictionLevel.NONE;
-				System.out.println("+++++++++++++++++++"+groupingValue.toString());
+			case "I18nProperties.getCaption(Captions.Country)":
+				groupingValue = CampaignJurisdictionLevel.COUNTRY;
+				System.out.println("+++++++++++----++++++++"+groupingValue.toString());
 			case "I18nProperties.getCaption(Captions.Campaign_area)":
 				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.AREA);
 			case "I18nProperties.getCaption(Captions.Campaign_region)":

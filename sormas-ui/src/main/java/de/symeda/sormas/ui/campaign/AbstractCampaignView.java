@@ -37,13 +37,13 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, String params) { //National User
+	public void refreshMenu(SubMenu menu, String params) { 
 		menu.removeAllViews();
 
-		menu.addView(
-				CampaignStatisticsView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", CampaignStatisticsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				params);
+//		menu.addView(
+//				CampaignStatisticsView.VIEW_NAME,
+//				I18nProperties.getPrefixCaption("View", CampaignStatisticsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+//				params);
 		menu.addView(
 			CampaignDataView.VIEW_NAME,
 			I18nProperties.getPrefixCaption("View", CampaignDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -55,7 +55,7 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 	}
 
 	public static void registerViews(Navigator navigator) {
-		navigator.addView(CampaignStatisticsView.VIEW_NAME, CampaignStatisticsView.class);
+		//navigator.addView(CampaignStatisticsView.VIEW_NAME, CampaignStatisticsView.class);
 		navigator.addView(CampaignDataView.VIEW_NAME, CampaignDataView.class);
 		navigator.addView(CampaignFormDataView.VIEW_NAME, CampaignFormDataView.class);
 		navigator.addView(CampaignsView.VIEW_NAME, CampaignsView.class);

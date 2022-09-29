@@ -5,7 +5,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 
 public enum CampaignJurisdictionLevel {
 	
-	NONE,
+	COUNTRY,
 	AREA,
 	REGION,
 	DISTRICT,
@@ -14,8 +14,8 @@ public enum CampaignJurisdictionLevel {
 	public static CampaignJurisdictionLevel getByJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 		switch (jurisdictionLevel) {
 
-		case NONE:
-			return NONE;
+		case COUNTRY:
+			return COUNTRY;
 		case AREA:
 			return AREA;
 		case REGION:
@@ -25,7 +25,7 @@ public enum CampaignJurisdictionLevel {
 		case COMMUNITY:
 			return COMMUNITY;
 		default:
-			return NONE;
+			return AREA;
 		}
 	}
 

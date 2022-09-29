@@ -209,6 +209,7 @@ public interface Captions {
 	String Campaign_phase = "Campaign.phase";
 	String Campaign_none = "Campaign.none";
 	String Campaign_area = "Campaign.area";
+	String Campaign_country = "Campaign.country";
 	String Campaign_community = "Campaign.community";
 	String Campaign_creatingUser = "Campaign.creatingUser";
 	String Campaign_description = "Campaign.description";

@@ -37,7 +37,7 @@ public enum UserRole
 	implements
 	StatisticsGroupingKey {
 
-	ADMIN(false, false, false, false, JurisdictionLevel.NONE),
+	ADMIN(false, false, false, false, JurisdictionLevel.NATION),
 	NATIONAL_USER(false, false, false, false, JurisdictionLevel.NATION),
 	NATIONAL_OBSERVER(false, false, false, false, JurisdictionLevel.NATION),
 	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION),

@@ -374,6 +374,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
+		System.out.println(newVersion+": TRACKING DB UPGRADE!!!!! +++++++++++++++++++ old version = "+oldVersion);
 
 		if (oldVersion < 91) {
 			upgradeFromUnupgradableVersion(db, connectionSource, oldVersion);
@@ -2870,6 +2871,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseVariantDetails varchar(512);");
 				getDao(Case.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseVariantDetails varchar(512);");
 				getDao(Case.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariantDetails varchar(512);");
+
+			case 323:
+					currentVersion = 323;
+					getDao(CampaignFormData.class).executeRaw("CREATE UNIQUE INDEX campaignFormDataPreventDuplicate ON campaignFormData(campaign, campaignformmeta, community);");
 
 				// ATTENTION: break should only be done after last version
 				break;

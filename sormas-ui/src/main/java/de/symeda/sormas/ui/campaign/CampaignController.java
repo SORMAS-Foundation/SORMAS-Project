@@ -18,6 +18,9 @@ package de.symeda.sormas.ui.campaign;
 import static com.vaadin.v7.data.Validator.InvalidValueException;
 import static de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria.CAMPAIGN;
 
+import com.vaadin.server.ConnectorResource;
+import com.vaadin.shared.ApplicationConstants;
+import com.vaadin.shared.ui.BrowserWindowOpenerState;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -436,9 +439,18 @@ public class CampaignController {
 	}
 	
 	public void navigateToFormDataView(String camPuuid, String formUUID) {
-		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		String navigationState = CampaignFormDataView.VIEW_NAME + "/"+camPuuid+","+formUUID;
-		SormasUI.get().getNavigator().navigateTo(navigationState);
+		//SormasUI.get().getNavigator().navigateTo(navigationState);
+		
+		String generatedURL = ApplicationConstants.APP_PATH+"/"+ConnectorResource.CONNECTOR_PATH+"/"+
+                UI.getCurrent().getUIId()+"/"+
+                BrowserWindowOpenerState.locationResource+"/"+navigationState;
+		
+		System.out.println("____________________________________________________________________"+generatedURL);
+		
+//Page.getCurrent().open(generatedURL, "_blank");
+
+	//	SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
 	public void navigateToCampaignData(String campaignUuid) {

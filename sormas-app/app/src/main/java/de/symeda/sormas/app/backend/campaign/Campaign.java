@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -147,9 +148,12 @@ public class Campaign extends PseudonymizableAdo {
 
 			for (CampaignFormMetaReferenceDto formMetaReferenceDto : campaignFormMetaReferenceDtos) {
 				final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().getByReferenceDto(formMetaReferenceDto);
-				campaignFormMetas.add(campaignFormMeta);
+				if(campaignFormMeta != null) {
+					campaignFormMetas.add(campaignFormMeta);
+				}
 			}
 		}
+		campaignFormMetas.stream().filter(ee -> ee.getFormName() != null).collect(Collectors.toList());
 		return campaignFormMetas;
 	}
 

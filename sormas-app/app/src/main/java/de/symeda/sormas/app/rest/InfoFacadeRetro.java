@@ -26,7 +26,7 @@ import retrofit2.http.Query;
 public interface InfoFacadeRetro {
 
 	@GET("info/version")
-	Call<String> getVersion();
+	Call<String> getVersion(); 
 
 	@GET("info/appurl")
 	Call<String> getAppUrl(@Query("appVersion") String appVersion);

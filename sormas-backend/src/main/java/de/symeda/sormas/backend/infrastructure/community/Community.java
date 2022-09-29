@@ -79,7 +79,7 @@ public class Community extends InfrastructureAdo {
 	}
 
 	public void setExternalId(Long externalId) {
-		this.externalId = this.getId();
+		this.externalId = externalId;
 	}
 
 	public Integer getClusterNumber() {

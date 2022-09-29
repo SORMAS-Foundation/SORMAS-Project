@@ -28,6 +28,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -139,7 +141,9 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		query.select(from);
 		query.where(cb.and(campaignService.createActiveCampaignsFilter(cb, from), cb.lessThanOrEqualTo(from.get(Campaign.START_DATE), new Date())));
 		query.orderBy(cb.desc(from.get(Campaign.START_DATE)));
-
+		
+	//	System.out.println(new Date() + " DEBUGGER r567ujhgty8ijyu8dfrf  "+SQLExtractor.from(em.createQuery(query)));
+		
 		final TypedQuery<Campaign> q = em.createQuery(query);
 		final Campaign lastStartedCampaign = q.getResultList().stream().findFirst().orElse(null);
 
@@ -593,6 +597,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
+		
+		
 
 		return campaignService.getAllActiveUuids();
 	}

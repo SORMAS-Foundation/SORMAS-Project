@@ -61,40 +61,47 @@
 					</div>
 				</div>
 				<div class="feedback-form" style="width: 100%;">
-					<!-- <h3 style="color: green; margin-bottom: 20px;">Feedback Form</h3> -->
+					<!-- <h3 style="color: green; margin-bottom: 20px;">Feedback Form</h3>  dadada-->
 					<form method="post" id="my-form"
-						action="https://script.google.com/macros/s/AKfycbyetFZBdzt_uqvu9DLadoIaftp4hvR47n0xBrLXc8IdPgkjKlLGvM0ZsVu6AVs6YVFY/exec">
-						<div class="fullname" style="display: flex; padding-bottom: 10px;">
-							<div class="firstname" style="width: 45%; margin-right: 10%;">
-								<label for="First_Name" style="font-size: 14px;">First
-									Name</label><br> <input id="First_Name" name="First_Name"
-									type="name" placeholder="First Name"
-									style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;"
-									required>
-							</div>
-							<div class="lastname" style="width: 45%;">
-								<label for="Last_Name" style="font-size: 14px;">Last
-									Name</label><br> <input id="Last_Name" name="Last_Name"
-									type="text" placeholder="Last Name"
-									style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;">
-							</div>
-						</div>
+                   action="https://script.google.com/macros/s/AKfycbwgjF-V0I8LU-LIbJ7EN7xpX6LxIat2CQ9zp9QyhUtWFJRlHnOpStbWJ1xyhOvG1luERA/exec">
 
-						<label for="Email" style="font-size: 14px; padding-bottom: 10px;">Email</label><br>
-						<input id="Email" name="Email" type="email"
-							placeholder="Your Email Address" required
-							style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;"><br>
-						<br> <label for="Comment"
-							style="font-size: 14px; padding-bottom: 10px;">Feedback</label><br>
-						<textarea id="Comment" name="Comment" type="text"
-							placeholder="Enter your feedback here" required
-							style="width: 100%; height: 20vh; margin-top: 5px; border-radius: 5px; border: 1px solid #dadada;"
-							cols="" rows=""></textarea>
-						<br>
-						<button type="submit" value="Submit" id="submiAbout"
-							style="color: white; background-color: green; border: 2px solid green; border-radius: 5px; height: 40px; font-size: 14px"
-							onclick="my_button_click_handler">Submit Feedback</button>
-					</form>
+                   <label for="Timestamp" style="display: none;">Feedback</label><br>
+                   <input id="Timestamp" name="Timestamp" type="Timestamp" value="=setTimestamp(x)"
+                       style="display: none;">
+
+                   <div class="fullname" style="display: flex;">
+
+                       <div class="firstname" style=" width: 45%; margin-right: 10%;">
+                           <label for="First_Name" style="font-size: 14px; font-family: system-ui;">First
+                               Name</label><br>
+                           <input id="First_Name" name="First_Name" type="name" placeholder="First Name"
+                               style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;"
+                               required>
+                       </div>
+                       <div class="lastname" style="width: 45%;
+                       ">
+                           <label for="Last_Name" style="font-size: 14px; font-family: system-ui;">Last
+                               Name</label><br>
+                           <input id="Last_Name" name="Last_Name" type="text" placeholder="Last Name"
+                               style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;">
+                       </div>
+                   </div>
+
+                   <label for="Email" style="font-size: 14px; font-family: system-ui;">Email</label><br>
+                   <input id="Email" name="Email" type="email" placeholder="Your Email Address" required
+                       style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;"><br>
+
+                   <label for="Comment" style="font-size: 14px; font-family: system-ui;">Feedback</label><br>
+                   <textarea id="Comment" name="Comment" type="comment" placeholder="Enter your feedback here"
+                       required
+                       style=" width: 100%; height: 20vh;margin-top: 5px;border-radius: 5px;border: 1px solid #dadada;"></textarea>
+
+                   <br>
+                   
+                   <button type="submit" value="Submit"
+                       style="color: white; background-color: green; border: 2px solid green; border-radius: 5px; height: 40px; font-size: 14px">Submit
+                       Feedback</button>
+               </form>
 				</div>
 			</div>
 		</div>

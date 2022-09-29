@@ -73,31 +73,34 @@ public class CampaignFormDataFragmentUtils {
             Boolean isDisIgnore) {
         try {
             final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
+            String valuex = expressionValue+"";
+            System.out.println("))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) "+valuex);
+            if(!valuex.isEmpty() && valuex != "" && expressionValue != null) {
 
-            if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
-                if (type == CampaignFormElementType.YES_NO) {
-                    ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, (Boolean) expressionValue);
-                } else if (type == CampaignFormElementType.RANGE) {
-                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
+                if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
+                    if (type == CampaignFormElementType.YES_NO) {
+                        ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, (Boolean) expressionValue);
+                    } else if (type == CampaignFormElementType.RANGE) {
+                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
 
-                } else if (type == CampaignFormElementType.NUMBER) {
-                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? "0" : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
+                    } else if (type == CampaignFormElementType.NUMBER) {
+                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? "0" : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
 
-                } else if (expressionValue.getClass().isAssignableFrom(Boolean.class)) {
-                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, (Double) (!Double.isFinite((double) expressionValue) ? 0 : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : df.format((double) expressionValue)));
-                } else {
-                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null : expressionValue.toString());
+                    } else if (expressionValue.getClass().isAssignableFrom(Boolean.class)) {
+                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, (Double) (!Double.isFinite((double) expressionValue) ? 0 : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : df.format((double) expressionValue)));
+                    } else {
+                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null : expressionValue.toString());
+                    }
+
+                    //  if (type == CampaignFormElementType.RANGE) {
+
+                    //  } else {
+                    //     dynamicField.setEnabled(isDisIgnore);
+                    // }
                 }
 
-              //  if (type == CampaignFormElementType.RANGE) {
 
-              //  } else {
-               //     dynamicField.setEnabled(isDisIgnore);
-               // }
             }
-
-
-
 
 
 
@@ -282,7 +285,12 @@ public class CampaignFormDataFragmentUtils {
             Integer maxVal,
             Boolean isExpression,
             Boolean warnOnError) {
+
+        System.out.println(context+" --------------------- running range stage 1 : "+isExpression);
+        final boolean isExpressionx = isExpression;
         return new ControlTextEditField(context) {
+
+
 
             @Override
             protected String getPrefixDescription() {
@@ -311,7 +319,7 @@ public class CampaignFormDataFragmentUtils {
 
             @Override
             public int getMaxLength() {
-                return 7;
+                return 8;
             }
 
             @Override
@@ -325,7 +333,7 @@ public class CampaignFormDataFragmentUtils {
                 super.inflateView(context, attrs, defStyle);
                 initLabel();
                 initLabelAndValidationListeners();
-                initInput(isIntegerField, isRequired, true, minVal, maxVal, isExpression, warnOnError);
+                initInput(isIntegerField, isRequired, true, minVal, maxVal, isExpressionx, warnOnError);
             }
         };
     }

@@ -120,6 +120,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 				R.layout.control_spinner_dropdown_item_layout,
 				R.id.text,
 				excludeEmptyItem));
+
 		setFieldValue(selectedValue);
 	}
 
@@ -180,7 +181,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
 	@Override
 	protected void setFieldValue(Object value) {
-		System.out.println("+!@@@@@@@@@@@@@@@@@@@@@@@@@@!!@! "+value);
+
 		if (input == null) {
 			return;
 		}

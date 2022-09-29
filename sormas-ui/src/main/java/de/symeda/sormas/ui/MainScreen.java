@@ -61,7 +61,7 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
-import de.symeda.sormas.ui.campaign.campaignstatistics.CampaignStatisticsView;
+//import de.symeda.sormas.ui.campaign.campaignstatistics.CampaignStatisticsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
@@ -217,7 +217,7 @@ public class MainScreen extends HorizontalLayout {
 
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.CAMPAIGN_VIEW)) {
 			AbstractCampaignView.registerViews(navigator);
-			menu.addView(CampaignStatisticsView.class, AbstractCampaignView.ROOT_VIEW_NAME,
+			menu.addView(CampaignDataView.class, AbstractCampaignView.ROOT_VIEW_NAME,
 					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
 		}
 
@@ -368,7 +368,7 @@ public class MainScreen extends HorizontalLayout {
 	private static Set<String> initKnownViews() {
 		final Set<String> views = new HashSet<>(Arrays.asList(TasksView.VIEW_NAME, CasesView.VIEW_NAME,
 				ContactsView.VIEW_NAME, EventsView.VIEW_NAME, EventGroupDataView.VIEW_NAME, SamplesView.VIEW_NAME,
-				CampaignsView.VIEW_NAME, CampaignDataView.VIEW_NAME, CampaignStatisticsView.VIEW_NAME,
+				CampaignsView.VIEW_NAME, CampaignDataView.VIEW_NAME, //CampaignStatisticsView.VIEW_NAME,
 				ReportsView.VIEW_NAME, StatisticsView.VIEW_NAME, PersonsView.VIEW_NAME, UsersView.VIEW_NAME,
 				OutbreaksView.VIEW_NAME, RegionsView.VIEW_NAME, DistrictsView.VIEW_NAME, CommunitiesView.VIEW_NAME,
 				FacilitiesView.VIEW_NAME, PointsOfEntryView.VIEW_NAME, ContinentsView.VIEW_NAME,

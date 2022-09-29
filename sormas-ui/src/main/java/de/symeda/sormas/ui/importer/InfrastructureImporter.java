@@ -68,11 +68,11 @@ public class InfrastructureImporter extends DataImporter {
 
 		switch (type) {
 		case COMMUNITY:
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$55555555555555555555555555555555555555555555%%%%%%%%%%%");		
+			//System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$55555555555555555555555555555555555555555555%%%%%%%%%%%");		
 			newEntityDto = CommunityDto.build();
 			break;
 		case DISTRICT:
-			System.out.println("$$$$$$$$$$$$$$==================55555%%%%%%%%%%%");		
+			//System.out.println("$$$$$$$$$$$$$$==================55555%%%%%%%%%%%");		
 			newEntityDto = DistrictDto.build();
 			break;
 		case FACILITY:
@@ -103,7 +103,7 @@ public class InfrastructureImporter extends DataImporter {
 			try {
 				// If the cell entry is not empty, try to insert it into the current infrastructure object
 				if (!StringUtils.isEmpty(cellData.getValue())) {
-					System.out.println(cellData.getEntityPropertyPath()+ " trying to send data to db importer "+cellData.getValue()+"  == "+newEntityDto);
+					//System.out.println(cellData.getEntityPropertyPath()+ " trying to send data to db importer "+cellData.getValue()+"  == "+newEntityDto.getUuid());
 					insertColumnEntryIntoData(newEntityDto, cellData.getValue(), cellData.getEntityPropertyPath());
 				}
 			} catch (ImportErrorException | InvalidColumnException e) {
@@ -116,7 +116,7 @@ public class InfrastructureImporter extends DataImporter {
 		// Save the infrastructure object into the database if the import has no errors or throw an error
 		// if there is already an infrastructure object with this name in the database
 		
-		System.out.println("$$$$$$$$$$$$$$$$$$$$$$$=======555555555555555555555555%%%%%%%%%%% iHasImportError= "+iHasImportError);
+		//System.out.println("$$$$$$$$$$$$$$$$$$$$$$$=======555555555555555555555555%%%%%%%%%%% iHasImportError= "+iHasImportError);
 		if (!iHasImportError) {
 			try {
 				switch (type) {
@@ -170,9 +170,9 @@ public class InfrastructureImporter extends DataImporter {
 			try {
 				if (i != entityPropertyPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
-					System.out.println("come000000000000");
+					//System.out.println("come000000000000");
 				} else {
-					System.out.println("come111111111111111");
+					//System.out.println("come111111111111111");
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
@@ -181,13 +181,13 @@ public class InfrastructureImporter extends DataImporter {
 					// is referenced in the imported object does not exist in the database
 					if (!executeDefaultInvoke(pd, currentElement, value, entityPropertyPath)) { 
 						if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
-							System.out.println("c!!!!!!!!!!!!!!!!!!!!!ome here to fix the for district..........................................");
+							//System.out.println("c!!!!!!!!!!!!!!!!!!!!!ome here to fix the for district..........................................");
 							
 							
 							List<DistrictReferenceDto> district;
 							switch (type) {
 							case COMMUNITY:
-								System.out.println("c!!!!!!!!!");
+								//System.out.println("c!!!!!!!!!");
 								district = FacadeProvider.getDistrictFacade().getByExternalID(Long.parseLong(value), ((CommunityDto) newEntityDto).getRegion(), false);
 								break;
 							case FACILITY:
@@ -211,11 +211,11 @@ public class InfrastructureImporter extends DataImporter {
 									I18nProperties
 										.getValidationError(Validations.importDistrictNotUnique, value, buildEntityProperty(entityPropertyPath)));
 							} else {
-								System.out.println("SCUCESSSSSSSSSS DISTRTICT RETRIEVED!!! = "+district.get(0).getCaption());
+								//System.out.println("SCUCESSSSSSSSSS DISTRTICT RETRIEVED!!! = "+district.get(0).getCaption());
 								pd.getWriteMethod().invoke(currentElement, district.get(0));
 							}
 						} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-							System.out.println("c!!!!!!!!!!!!!!!!!!!!!ome here to fix the uuid for comm..........................................");
+							//System.out.println("c!!!!!!!!!!!!!!!!!!!!!ome here to fix the uuid for comm..........................................");
 							
 							List<CommunityReferenceDto> community;
 							if (type == InfrastructureType.FACILITY) {
@@ -231,6 +231,7 @@ public class InfrastructureImporter extends DataImporter {
 										value,
 										buildEntityProperty(entityPropertyPath)));
 							} else if (community.size() > 1) {
+								//System.out.println("c!!!!!!!!!!!!!!!ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRORRRRRRRRRRRRRRRRr......................................");
 								throw new ImportErrorException(
 									I18nProperties
 										.getValidationError(Validations.importDistrictNotUnique, value, buildEntityProperty(entityPropertyPath)));

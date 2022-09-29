@@ -70,6 +70,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		addItemClickListener(new ShowDetailsListener<>(UserDto.NAME, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_EMAIL, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_ORGANISATION, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_POSITION, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.AREA, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.REGION, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.DISTRICT, e -> ControllerProvider.getUserController().edit(e)));
@@ -88,10 +89,11 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.NAME,
 			UserDto.USER_EMAIL,
 			UserDto.USER_ORGANISATION,
+			UserDto.USER_POSITION,
 			UserDto.AREA,
 			UserDto.REGION,
-			UserDto.DISTRICT,
-			UserDto.USER_POSITION);
+			UserDto.DISTRICT
+			);
 
 	//	((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES))

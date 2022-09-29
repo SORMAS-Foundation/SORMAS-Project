@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
@@ -36,7 +38,7 @@ public class CampaignStatisticsService {
 	private EntityManager em;
 
 	public List<CampaignStatisticsDto> getCampaignStatistics(CampaignStatisticsCriteria criteria) {
-
+		//System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + buildStatisticsQuery(criteria));//SQLExtractor.from(em.createNativeQuery(buildStatisticsQuery(criteria))));
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		final CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
 		Map<CampaignStatisticsGroupingDto, CampaignStatisticsDto> results = new LinkedHashMap<>();
@@ -44,12 +46,11 @@ public class CampaignStatisticsService {
 			CampaignStatisticsGroupingDto campaignStatisticsGroupingDto = new CampaignStatisticsGroupingDto(
 				(String) result[1],
 				(String) result[2],
-				
 				shouldIncludeNone(groupingLevel) ? (String) result[3] : "",
-				shouldIncludeArea(groupingLevel) ? (String) result[4] : "",
-				shouldIncludeRegion(groupingLevel) ? (String) result[5] : "",
-				shouldIncludeDistrict(groupingLevel) ? (String) result[6] : "",
-				shouldIncludeCommunity(groupingLevel) ? (String) result[7] : "");
+				shouldIncludeArea(groupingLevel) ? (String) result[3] : "",
+				shouldIncludeRegion(groupingLevel) ? (String) result[4] : "",
+				shouldIncludeDistrict(groupingLevel) ? (String) result[5] : "",
+				shouldIncludeCommunity(groupingLevel) ? (String) result[6] : "");
 			if (!results.containsKey(campaignStatisticsGroupingDto)) {
 				CampaignStatisticsDto campaignStatisticsDto =
 					new CampaignStatisticsDto(campaignStatisticsGroupingDto, result[0] != null ? ((Number) result[0]).intValue() : null);
@@ -92,7 +93,7 @@ public class CampaignStatisticsService {
 		
 		queryBuilder.append(buildGroupByExpression(criteria)).append(buildJsonGroupByExpression()).append(buildOrderByExpression(criteria));
 		
-	//	System.out.println(">>>>>>>>>>>>>>>>>>> xxxxxxxxxxxxxxxxxxxxx"+queryBuilder.toString()); 
+		System.out.println(">>>>>>>>>>>>>>>>>>> xxxxxxxxxxxxxxxxxxxxx"+queryBuilder.toString()); 
 
 		return queryBuilder.toString();
 	}
@@ -123,7 +124,7 @@ public class CampaignStatisticsService {
 		}
 		
 		
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>!!!!!!!!!!!################3333333333333");
+		System.out.println(selectBuilder.toString());
 		return selectBuilder.toString();
 	}
 
@@ -275,7 +276,7 @@ public class CampaignStatisticsService {
 	}
 
 	private boolean shouldIncludeNone(CampaignJurisdictionLevel groupingLevel) {
-		return CampaignJurisdictionLevel.NONE.equals(groupingLevel);
+		return CampaignJurisdictionLevel.COUNTRY.equals(groupingLevel);
 	}
 	
 	private boolean shouldIncludeArea(CampaignJurisdictionLevel groupingLevel) {

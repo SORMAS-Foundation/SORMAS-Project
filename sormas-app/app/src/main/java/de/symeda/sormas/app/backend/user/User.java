@@ -217,7 +217,7 @@ public class User extends AbstractDomainObject {
 	}
 
 	public void setLimitedDisease(Disease limitedDisease) {
-		this.limitedDisease = limitedDisease;
+		this.limitedDisease = limitedDisease; //form method
 	}
 
 	public Language getLanguage() {

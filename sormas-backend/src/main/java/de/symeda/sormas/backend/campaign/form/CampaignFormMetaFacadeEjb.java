@@ -18,6 +18,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -43,6 +47,7 @@ import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -188,10 +193,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	public List<CampaignFormMetaDto> getAllAfter(Date date) {
 		 List<CampaignFormMeta> allAfter = service.getAllAfter(date, userService.getCurrentUser());
 		List<CampaignFormMeta> filtered = new ArrayList<>();
-		
-		
 		allAfter.removeIf(e -> e.getFormCategory() == null);
-
+		
 		for (FormAccess n : userService.getCurrentUser().getFormAccess()) {
 			boolean yn = allAfter.stream().filter(e -> !e.getFormCategory().equals(null))
 					.filter(ee -> ee.getFormCategory().equals(n)).collect(Collectors.toList()).size() > 0;
@@ -204,9 +207,22 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		return filtered.stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getAllUuids() {
-		return service.getAllUuids();
+		String rawStr = userService.getCurrentUser().getFormAccess().toString();
+		String nQuery = "select uuid from campaignformmeta where formcategory in ('"+rawStr.replace("]", "").replace("[", "").replace(",", "','").replaceAll(" ", "")+"')";
+		System.out.println(nQuery);
+		Query campaignsStatisticsQuery = em.createNativeQuery(nQuery);
+		for(Object str : campaignsStatisticsQuery.getResultList()) {
+			System.out.println(str);
+			
+		}
+		
+		return campaignsStatisticsQuery.getResultList();
+		
+		
+	//	return service.getAllUuids();
 	}
 
 	@Override
