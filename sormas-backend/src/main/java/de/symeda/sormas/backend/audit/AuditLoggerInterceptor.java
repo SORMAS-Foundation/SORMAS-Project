@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.audit;
 
+import static org.reflections.scanners.Scanners.SubTypes;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -7,9 +9,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -17,36 +21,28 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.reflections.Reflections;
 
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
-import de.symeda.sormas.backend.campaign.CampaignService;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.i18n.I18nFacadeEjb;
-import de.symeda.sormas.backend.immunization.DirectoryImmunizationService;
-import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
-import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.travelentry.services.TravelEntryListService;
-import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 public class AuditLoggerInterceptor {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 	@EJB
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
+
+	private static final Reflections reflections = new Reflections("de.symeda.sormas.backend", SubTypes);
+
+	private static final Set<Class<?>> adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
 
 	/**
 	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
@@ -55,17 +51,7 @@ public class AuditLoggerInterceptor {
 	static {
 		Map<Class<?>, Boolean> map = new HashMap<>();
 		// explicitly add all services doing deletion here to bypass the local bean check
-		map.put(CaseService.class, false);
-		map.put(CampaignService.class, false);
-		map.put(ContactService.class, false);
-		map.put(DirectoryImmunizationService.class, false);
-		map.put(EventParticipantService.class, false);
-		map.put(EventService.class, false);
-		map.put(ImmunizationService.class, false);
-		map.put(PathogenTestService.class, false);
-		map.put(SampleService.class, false);
-		map.put(TravelEntryListService.class, false);
-		map.put(TravelEntryService.class, false);
+		adoServiceClasses.forEach(clazz -> map.put(clazz, false));
 		shouldIgnoreClassCache = map;
 	}
 
@@ -107,28 +93,32 @@ public class AuditLoggerInterceptor {
 	 */
 	private static final Set<Method> allowedLocalAuditMethods;
 
-	public static final String DELETE_PERMANENT = "deletePermanent";
+	private static final String DELETE_PERMANENT = "deletePermanent";
+
+	private static final String DELETE_PERMANENT_BY_UUIDS = "deletePermanentByUuids";
 
 	static {
-		try {
-			allowedLocalAuditMethods = Collections.unmodifiableSet(
-				new HashSet<>(
-					Arrays.asList(
-						CaseService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						CampaignService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						ContactService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						DirectoryImmunizationService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						EventParticipantService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						EventService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						ImmunizationService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						PathogenTestService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						SampleService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						TravelEntryListService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class),
-						TravelEntryService.class.getMethod(DELETE_PERMANENT, AbstractDomainObject.class)
-					)));
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
+		// explicitly add all local methods which should be explicitly audited. Please note that this is a set of
+		// methods, therefore, its cardinality may be smaller than the size of the deletableAdoServiceClasses list as 
+		// some service classes just use the super class implementation of the deletePermanent method.
+		Set<Method> deletePermanentMethods = adoServiceClasses.stream().map(clazz -> {
+			try {
+				return clazz.getMethod(DELETE_PERMANENT, AbstractDomainObject.class);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException(e);
+			}
+		}).collect(Collectors.toSet());
+
+		Set<Method> deletePermanentByUuids = adoServiceClasses.stream().map(clazz -> {
+			try {
+				return clazz.getMethod(DELETE_PERMANENT_BY_UUIDS, List.class);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException(e);
+			}
+		}).collect(Collectors.toSet());
+
+		deletePermanentMethods.addAll(deletePermanentByUuids);
+		allowedLocalAuditMethods = Collections.unmodifiableSet(deletePermanentMethods);
 	}
 
 	@AroundTimeout
