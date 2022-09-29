@@ -18,7 +18,6 @@ package de.symeda.sormas.app.login;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -41,6 +40,7 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -57,7 +57,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 	private ActivityLoginLayoutBinding binding;
 
-	private ProgressDialog progressDialog = null;
+	private SynchronizationDialog synchronizationDialog = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +130,8 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 	@Override
 	protected void onDestroy() {
-		if (progressDialog != null && progressDialog.isShowing()) {
-			progressDialog.dismiss();
+		if (synchronizationDialog != null && synchronizationDialog.isShowing()) {
+			synchronizationDialog.dismiss();
 		}
 
 		super.onDestroy();
@@ -191,13 +191,9 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 		if (ConfigProvider.getPassword() == null)
 			return;
 
-		if (progressDialog == null || !progressDialog.isShowing()) {
-			boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
-			progressDialog = ProgressDialog.show(
-				this,
-				getString(R.string.heading_synchronization),
-				getString(isInitialSync ? R.string.info_initial_synchronization : R.string.info_synchronizing),
-				true);
+		if (synchronizationDialog == null || !synchronizationDialog.isShowing()) {
+			synchronizationDialog = new SynchronizationDialog(this);
+			synchronizationDialog.create();
 		}
 
 		RetroProvider.connectAsyncHandled(this, true, true, result -> {
@@ -206,36 +202,40 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 				boolean needsSync = ConfigProvider.getUser() == null || DatabaseHelper.getCaseDao().isEmpty();
 
 				if (needsSync) {
-					SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, getApplicationContext(), (syncFailed, syncFailedMessage) -> {
+					SynchronizeDataAsync.call(
+						SynchronizeDataAsync.SyncMode.Changes,
+						getApplicationContext(),
+						synchronizationDialog.getSyncCallbacks(),
+						(syncFailed, syncFailedMessage) -> {
 
-						RetroProvider.disconnect();
+							RetroProvider.disconnect();
 
-						if (syncFailed) {
-							NotificationHelper.showNotification(LoginActivity.this, NotificationType.ERROR, syncFailedMessage);
-						}
-
-						if (progressDialog != null && progressDialog.isShowing()) {
-							progressDialog.dismiss();
-							progressDialog = null;
-						}
-
-						if (ConfigProvider.getUser() != null) {
-							initializeFirebase();
-							if (ConfigProvider.getUser().getLanguage() != null) {
-								setNewLocale(this, ConfigProvider.getUser().getLanguage());
+							if (syncFailed) {
+								NotificationHelper.showNotification(LoginActivity.this, NotificationType.ERROR, syncFailedMessage);
 							}
-							openLandingActivity();
-						} else {
-							binding.signInLayout.setVisibility(View.VISIBLE);
-						}
-					});
+
+							if (synchronizationDialog != null && synchronizationDialog.isShowing()) {
+								synchronizationDialog.dismiss();
+								synchronizationDialog = null;
+							}
+
+							if (ConfigProvider.getUser() != null) {
+								initializeFirebase();
+								if (ConfigProvider.getUser().getLanguage() != null) {
+									setNewLocale(this, ConfigProvider.getUser().getLanguage());
+								}
+								openLandingActivity();
+							} else {
+								binding.signInLayout.setVisibility(View.VISIBLE);
+							}
+						});
 				} else {
 
 					RetroProvider.disconnect();
 
-					if (progressDialog != null && progressDialog.isShowing()) {
-						progressDialog.dismiss();
-						progressDialog = null;
+					if (synchronizationDialog != null && synchronizationDialog.isShowing()) {
+						synchronizationDialog.dismiss();
+						synchronizationDialog = null;
 					}
 
 					initializeFirebase();
@@ -245,9 +245,9 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 					openLandingActivity();
 				}
 			} else {
-				if (progressDialog != null && progressDialog.isShowing()) {
-					progressDialog.dismiss();
-					progressDialog = null;
+				if (synchronizationDialog != null && synchronizationDialog.isShowing()) {
+					synchronizationDialog.dismiss();
+					synchronizationDialog = null;
 				}
 
 				if (ConfigProvider.getUser() != null) {

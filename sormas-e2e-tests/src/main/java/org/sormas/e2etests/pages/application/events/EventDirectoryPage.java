@@ -81,12 +81,10 @@ public class EventDirectoryPage {
   public static final By LINKED_EVENT_GROUP_ID =
       By.xpath("//div[@location = 'event-groups']//div[contains(@class, 'v-slot')]//a");
   public static final By SAVE_BUTTON_IN_LINK_FORM = By.cssSelector(".popupContent #commit");
+  public static final By CHOOSE_OR_CREATE_EVENT_HEADER_DE =
+      By.cssSelector("//*[text()='Ereignisse ausw\u00E4hlen oder erstellen']");
   public static final By FILTERED_EVENT_LINK_EVENT_FORM = By.xpath("//tr[@role='row']");
   public static final By FIRST_EVENT_GROUP = By.xpath("//tr[@role='row']");
-  /*public static By getByEventUuid(String eventUuid) {
-    return By.cssSelector("a[title=" + eventUuid + "]");
-  }*/
-
   public static final By EVENT_GROUP_ID_IN_GRID = By.xpath("//tr[@role='row']//td[15]/a");
   public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By CREATE_CASE_BUTTON =

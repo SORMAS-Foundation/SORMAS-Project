@@ -40,8 +40,6 @@ public interface EventParticipantFacade
 
 	List<EventParticipantDto> getAllActiveEventParticipantsByEvent(String eventUuid);
 
-	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date);
-
 	EventParticipantDto getEventParticipantByUuid(String uuid);
 
 	EventParticipantDto save(@Valid @NotNull EventParticipantDto dto);
@@ -61,8 +59,6 @@ public interface EventParticipantFacade
 	boolean exists(String personUuid, String eventUUID);
 
 	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
-
-	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	List<String> getArchivedUuidsSince(Date since);
 

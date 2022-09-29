@@ -147,6 +147,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
 	private String personLike;
+	private Boolean withOwnership;
 
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
@@ -757,5 +758,14 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public CaseCriteria personLike(String personLike) {
 		setPersonLike(personLike);
 		return this;
+	}
+
+	@IgnoreForUrl
+	public Boolean getWithOwnership() {
+		return withOwnership;
+	}
+
+	public void setWithOwnership(Boolean withOwnership) {
+		this.withOwnership = withOwnership;
 	}
 }

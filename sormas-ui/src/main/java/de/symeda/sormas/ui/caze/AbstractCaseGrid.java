@@ -53,6 +53,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
@@ -159,8 +160,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
-		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
-			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		if (externalSurveillanceToolShareEnabled) {
 			Column<CaseIndexDto, Date> shareDateColumn = ((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE));

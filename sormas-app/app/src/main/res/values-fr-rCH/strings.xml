@@ -257,6 +257,17 @@
     <string name="caption_aggregate_deaths_abbr">D</string>
     <string name="caption_start_date_existing">Existing start date</string>
     <string name="caption_end_date_existing">Existing end date</string>
+    <string name="caption_sync_send_new">%1$s. Sending new data…</string>
+    <string name="caption_sync_pull_infrastructure">%1$s. Pulling infrastructure data…</string>
+    <string name="caption_sync_clear_up_infrastructure">%1$s. Clearing up infrastructure data…</string>
+    <string name="caption_sync_delete_obsolete">%1$s. Deleting obsolete data…</string>
+    <string name="caption_sync_clear_up">%1$s. Clearing up data…</string>
+    <string name="caption_sync_synchronize">%1$s. Synchronizing data…</string>
+    <string name="caption_sync_pull_modified">%1$s. Pulling modified data…</string>
+    <string name="caption_sync_repull">%1$s. Repulling all data…</string>
+    <string name="caption_sync_pulled">%1$s pulled</string>
+    <string name="caption_sync_pushed">%1$s/%2$s pushed</string>
+    <string name="caption_sync_deleted">%1$s deleted</string>
     <string name="confirmation_action">Êtes-vous sûr de vouloir faire cela ?</string>
     <string name="confirmation_delete">Voulez-vous vraiment supprimer cet enregistrement ?</string>
     <string name="confirmation_pick_gps">Êtes-vous dans cet endroit maintenant?</string>
@@ -386,7 +397,7 @@
     <string name="heading_surveillance_outbreak">Épidémie de surveillance</string>
     <string name="heading_symptoms">Symptoms</string>
     <string name="heading_sync_conflicts">Conflit de synchronisation</string>
-    <string name="heading_synchronization">Synchronisation</string>
+    <string name="heading_synchronization">Synchronizing with server…</string>
     <string name="heading_task_edit">Tâches</string>
     <string name="heading_task_notification">Vérifier la tâche sormas</string>
     <string name="heading_task_read">Lire la tâche</string>
@@ -496,6 +507,7 @@
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Déjà en train de sauvegarder..</string>
     <string name="message_aggregate_report_found">Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.</string>
+    <string name="message_aggregate_report_expired_age_groups">Age groups marked \"Expired\" are based on existing data for an age group that is no longer used.</string>
     <string name="message_case_infrastructure_data_changed">Vous avez modifié les données d\'infrastructure de ce cas. Voulez-vous transférer le cas vers le nouvel établissement de santé (les données d\'hospitalisation seront mises à jour) ou voulez-vous seulement modifier les données pour corriger une erreur ?</string>
     <string name="message_download_app_failed">Le téléchargement de la nouvelle version de SORMAS a échoué. Veuillez vous assurer que vous disposez de la meilleure connexion Internet possible et réessayez ou informez un superviseur si vous continuez à obtenir cette erreur malgré une bonne connexion Internet.</string>
     <string name="message_empty_password">Veuillez entrer un mot de passe.</string>
@@ -573,6 +585,7 @@
     <string name="time_future_x_years">dans les %1$s ans</string>
     <string name="time_now">à l’instant</string>
     <string name="time_past_almost_two_years">il y a presque deux ans</string>
+    <string name="time_past_today">today</string>
     <string name="time_past_one_day">hier</string>
     <string name="time_past_one_hour">il y a environ une heure</string>
     <string name="time_past_one_minute">il y a une minute</string>

@@ -158,7 +158,7 @@ Feature: Create events
     And I click on edit task icon of the first created task
     And I check the created task is correctly displayed on Edit task page
 
-  @env_main
+  @#5840 @env_main
   Scenario: Add a New Groups Event from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -169,6 +169,11 @@ Feature: Create events
     And I create a new event group
     When I am accessing the event tab using the created event via api
     Then I am checking event group name and id is correctly displayed
+    Then I click on the Events button from navbar
+    And I click on GROUPS Radiobutton on Event Directory Page
+    Then I search last created groups Event by "GROUP_ID" option filter in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I open the first event group from events list group
 
   @tmsLink=SORDEV-5496 @env_main
   Scenario: Generate and download Event document
@@ -317,7 +322,7 @@ Feature: Create events
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant appears in the event participants list
 
-  @tmsLink=SORDEV-7138  @env_main
+  @tmsLink=SORDEV-7138 @env_main
   Scenario: Add a participant to an event and bulk create contacts
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -329,6 +334,7 @@ Feature: Create events
     And I collect the UUID displayed on Edit event page
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
+    And I click Enter Bulk Edit Mode on Event directory page
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
     And I click checkbox to choose all Event Participants results in Event Participant Tab
@@ -1229,6 +1235,7 @@ Feature: Create events
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
     Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click Enter Bulk Edit Mode on Event directory page
     And I select first 2 results in grid in Event Participant Directory
     And I click on Bulk Actions combobox in Event Parcitipant Tab
     And I click on Create Quarantine Order from Bulk Actions combobox on Event Participant Directory Page
@@ -1279,3 +1286,65 @@ Feature: Create events
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"
     Then I check if Present condition of person combobox has no value "Buried"
+
+  @tmsLink=SORDEV-12439 @env_main
+  Scenario: Test set 'All Event Participants' as the default value when an event is active
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I am accessing the event tab using the created event via api
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I check event participant filter dropdown on event participant page when event is active
+
+  @tmsLink=SORDEV-12439 @env_main
+  Scenario: Test set 'Active event participants' as the default value when an event is archived
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I am accessing the event tab using the created event via api
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I check event participant filter dropdown on event participant page when event is archived
+
+  @env_main @#7750
+  Scenario: Check the map functionality in the Edit Event Page
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a National User
+    Then I am accessing the event tab using the created event via api
+    Then I Verify The Eye Icon opening the Map is disabled in the Edit Event Page
+    And I Add the GPS Latitude and Longitude Values in the Edit Event Page
+    Then I Verify The Eye Icon opening the Map is enabled in the Edit Event Page
+    And I click on the The Eye Icon located in the Edit Event Page
+    Then I verify that the Map Container is now Visible in the Edit Event Page
+
+  @env_main @#8559
+  Scenario: Confirm navigation' pop-up is triggered when a user creates a new entry for 'Contact information' and tries to navigate to another page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    When I open the last created event via api
+    When I click on the Event participant tab
+    When I add a participant to the event
+    Then I click on new entry button from Contact Information section
+    When I click the Done button in Person Contact Details popup
+    When I click on the Tasks button from navbar
+    Then I click the Cancel Action button from the Unsaved Changes pop-up located in the Event Participant Page
+    And I click on the NEW IMMUNIZATION button in Edit event participant
+    Then I click the Cancel Action button from the Unsaved Changes pop-up located in the Event Participant Page
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Event Participant Person Page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE

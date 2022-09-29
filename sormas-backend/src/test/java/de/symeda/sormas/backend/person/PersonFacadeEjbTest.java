@@ -72,6 +72,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
@@ -239,7 +240,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcfEntities);
-		getPersonFacade().savePerson(person1);
+		getPersonFacade().save(person1);
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria().presentCondition(PresentCondition.DEAD), null, null, null).size());
 		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
@@ -272,7 +273,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcfEntities);
-		getPersonFacade().savePerson(person1);
+		getPersonFacade().save(person1);
 
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setNameAddressPhoneEmailLike("James");
@@ -507,7 +508,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		contact1.setFollowUpUntil(DateHelper.subtractDays(now, 20));
 		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 		getContactFacade().save(contact1);
 		getContactFacade().save(contact2);
 
@@ -645,38 +646,38 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		Date t1 = new Date();
 
 		// 0. Make sure that empty result works
-		assertThat(getPersonFacade().getPersonsAfter(t1), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, null), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t1), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, null), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 
 		// 1. Check one persons with two timestamps
 		PersonDto person1 = creator.createPerson("First", "Person");
 		creator.createContact(nationalUser.toReference(), person1.toReference());
 
-		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, null), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, person1.getUuid()), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(person1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(t1), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, null), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, person1.getUuid()), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(person1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
 		{
-			List<PersonDto> result = getPersonFacade().getPersonsAfter(t1, batchSize, person1.getUuid());
+			List<PersonDto> result = getPersonFacade().getAllAfter(t1, batchSize, person1.getUuid());
 			assertThat(result, contains(person1));
-			assertThat(getPersonFacade().getPersonsAfter(result.get(0).getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+			assertThat(getPersonFacade().getAllAfter(result.get(0).getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
 			// person1 still in result because of Contact reference
-			assertThat(getPersonFacade().getPersonsAfter(result.get(0).getChangeDate(), batchSize, person1.getUuid()), contains(person1));
+			assertThat(getPersonFacade().getAllAfter(result.get(0).getChangeDate(), batchSize, person1.getUuid()), contains(person1));
 		}
 
 		Date t2 = new Date();
-		assertThat(getPersonFacade().getPersonsAfter(t2), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(t2, batchSize, null), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(t2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t2), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t2, batchSize, null), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 
 		// 2. Check two persons with two timestamps
 		PersonDto person2 = creator.createPerson("Second", "Person");
 		creator.createContact(nationalUser.toReference(), person2.toReference());
 
-		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1, person2));
-		assertThat(getPersonFacade().getPersonsAfter(t2), contains(person2));
+		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2));
+		assertThat(getPersonFacade().getAllAfter(t2), contains(person2));
 
 		// 3. Check with third person with TravelEntry
 		Date t3 = new Date();
@@ -685,29 +686,29 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
 		// 3a. Found by TravelEntry
-		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1, person2, person3));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
-		assertThat(getPersonFacade().getPersonsAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
+		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2, person3));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
+		assertThat(getPersonFacade().getAllAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
 
 		// 3b. Exclude TravelEntries from mobileSync
 		MockProducer.setMobileSync(true);
 		List<PersonDto> personsAfterT1;
-		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID);
+		personsAfterT1 = getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID);
 		assertThat(personsAfterT1, contains(person1, person2));
 
 		// 4. Test retrieval of persons for mobileSync with different changeDates and uuids
 		PersonDto personRead1 = personsAfterT1.get(0);
 		PersonDto personRead2 = personsAfterT1.get(1);
 
-		assertThat(getPersonFacade().getPersonsAfter(t1, 1, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
-		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t1, 1, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(personRead1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
+		assertThat(getPersonFacade().getAllAfter(personRead2.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 		Date changeDateBeforePerson2 = new Date(personRead2.getChangeDate().getTime() - 1L);
-		assertThat(getPersonFacade().getPersonsAfter(changeDateBeforePerson2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
+		assertThat(getPersonFacade().getAllAfter(changeDateBeforePerson2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
 
-		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, "AAAAAA-AAAAAA-AAAAAA-AAAAAA"), contains(person2));
-		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, "ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ"), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, personRead2.getUuid()), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(personRead2.getChangeDate(), batchSize, "AAAAAA-AAAAAA-AAAAAA-AAAAAA"), contains(person2));
+		assertThat(getPersonFacade().getAllAfter(personRead2.getChangeDate(), batchSize, "ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ"), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(personRead2.getChangeDate(), batchSize, personRead2.getUuid()), is(empty()));
 	}
 
 	@Test
@@ -719,7 +720,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person.setAddress(new LocationDto());
 		person.setAddresses(Collections.singletonList(new LocationDto()));
 
-		PersonDto savedPerson = getPersonFacade().savePerson(person);
+		PersonDto savedPerson = getPersonFacade().save(person);
 
 		assertThat(savedPerson.getUuid(), not(isEmptyOrNullString()));
 		assertThat(savedPerson.getAddress().getUuid(), not(isEmptyOrNullString()));
@@ -790,8 +791,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson.setPersonContactDetails(Collections.singletonList(leadContactDetail));
 		otherPerson.setPersonContactDetails(Collections.singletonList(otherContactDetail));
 
-		leadPerson = getPersonFacade().savePerson(leadPerson);
-		otherPerson = getPersonFacade().savePerson(otherPerson);
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
 
 		getPersonFacade().mergePerson(leadPerson, otherPerson);
 
@@ -1138,5 +1139,113 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getImmunizationFacade().delete(immunizationDto.getUuid(), new DeletionDetails());
 		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
 		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void searchPersonsByPersonPhone() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
+		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
+
+		creator.createCase(user.toReference(), personWithPhone.toReference(), rdcf);
+		creator.createCase(user.toReference(), personWithoutPhone.toReference(), rdcf);
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+
+		personWithPhone.getPersonContactDetails().add(primaryPhone);
+		personWithPhone.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithPhone);
+
+		PersonCriteria personCriteria = new PersonCriteria();
+		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(2, personIndexDtos.size());
+		List<String> uuids = personIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(personWithPhone.getUuid()));
+		assertTrue(uuids.contains(personWithoutPhone.getUuid()));
+
+		personCriteria.setNameAddressPhoneEmailLike("111222333");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(1, personIndexDtos.size());
+		assertEquals(personWithPhone.getUuid(), personIndexDtos.get(0).getUuid());
+
+		personCriteria.setNameAddressPhoneEmailLike("444555666");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(0, personIndexDtos.size());
+	}
+
+	@Test
+	public void searchPersonsByPersonEmail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
+		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
+
+		creator.createCase(user.toReference(), personWithEmail.toReference(), rdcf);
+		creator.createCase(user.toReference(), personWithoutEmail.toReference(), rdcf);
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+
+		personWithEmail.getPersonContactDetails().add(primaryPhone);
+		personWithEmail.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithEmail);
+
+		PersonCriteria personCriteria = new PersonCriteria();
+		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(2, personIndexDtos.size());
+		List<String> uuids = personIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(personWithEmail.getUuid()));
+		assertTrue(uuids.contains(personWithoutEmail.getUuid()));
+
+		personCriteria.setNameAddressPhoneEmailLike("test1@email.com");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(1, personIndexDtos.size());
+		assertEquals(personWithEmail.getUuid(), personIndexDtos.get(0).getUuid());
+
+		personCriteria.setNameAddressPhoneEmailLike("test2@email.com");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(0, personIndexDtos.size());
+	}
+
+	@Test
+	public void searchPersonsByPersonOtherDetail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
+		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
+
+		creator.createCase(user.toReference(), personWithOtherDetail.toReference(), rdcf);
+		creator.createCase(user.toReference(), personWithoutOtherDetail.toReference(), rdcf);
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+
+		personWithOtherDetail.getPersonContactDetails().add(primaryPhone);
+		personWithOtherDetail.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithOtherDetail);
+
+		PersonCriteria personCriteria = new PersonCriteria();
+		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(2, personIndexDtos.size());
+		List<String> uuids = personIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(personWithOtherDetail.getUuid()));
+		assertTrue(uuids.contains(personWithoutOtherDetail.getUuid()));
+
+		personCriteria.setNameAddressPhoneEmailLike("detail1");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(1, personIndexDtos.size());
+		assertEquals(personWithOtherDetail.getUuid(), personIndexDtos.get(0).getUuid());
+
+		personCriteria.setNameAddressPhoneEmailLike("detail2");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(0, personIndexDtos.size());
 	}
 }

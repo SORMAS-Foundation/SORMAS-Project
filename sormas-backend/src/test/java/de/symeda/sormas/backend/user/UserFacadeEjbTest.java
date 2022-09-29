@@ -105,7 +105,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		// given different region and right
 		Region region2 = creator.createRegion("region2");
-		result = getUserFacade().getUsersByRegionAndRights(regionFacade.toRefDto(region2), null, UserRight.EXTERNAL_MESSAGE_VIEW);
+		result = getUserFacade().getUsersByRegionAndRights(RegionFacadeEjb.toReferenceDto(region2), null, UserRight.EXTERNAL_MESSAGE_VIEW);
 
 		assertTrue(result.isEmpty());
 
@@ -123,7 +123,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		// given different region and multiple rights
 		result = getUserFacade().getUsersByRegionAndRights(
-			regionFacade.toRefDto(region2),
+			RegionFacadeEjb.toReferenceDto(region2),
 			null,
 			UserRight.EXTERNAL_MESSAGE_VIEW,
 			UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);

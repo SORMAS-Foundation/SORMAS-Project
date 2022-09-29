@@ -28,12 +28,14 @@ public class EventStatisticsComponent extends DiseaseSectionStatisticsComponent 
 	}
 
 	public void update(Map<EventStatus, Long> events) {
-		updateTotalLabel(((Long) events.values().stream().mapToLong(Long::longValue).sum()).toString());
+		if (events != null) {
+			updateTotalLabel(((Long) events.values().stream().mapToLong(Long::longValue).sum()).toString());
 
-		eventStatusCluster.updateCountLabel(events.getOrDefault(EventStatus.CLUSTER, 0L).toString());
-		eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.EVENT, 0L).toString());
-		eventStatusPossible.updateCountLabel(events.getOrDefault(EventStatus.SIGNAL, 0L).toString());
-		eventStatusScreening.updateCountLabel(events.getOrDefault(EventStatus.SCREENING, 0L).toString());
-		eventStatusNotAnEvent.updateCountLabel(events.getOrDefault(EventStatus.DROPPED, 0L).toString());
+			eventStatusCluster.updateCountLabel(events.getOrDefault(EventStatus.CLUSTER, 0L).toString());
+			eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.EVENT, 0L).toString());
+			eventStatusPossible.updateCountLabel(events.getOrDefault(EventStatus.SIGNAL, 0L).toString());
+			eventStatusScreening.updateCountLabel(events.getOrDefault(EventStatus.SCREENING, 0L).toString());
+			eventStatusNotAnEvent.updateCountLabel(events.getOrDefault(EventStatus.DROPPED, 0L).toString());
+		}
 	}
 }

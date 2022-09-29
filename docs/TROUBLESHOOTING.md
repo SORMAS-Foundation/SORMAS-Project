@@ -33,10 +33,24 @@ Performance logging can be used to find out which part of the code or system mig
 Performance logs can be analyzed in detail using the `PerformanceLogAnalysisGenerator`. To use this tool, set the `PerformanceLoggingInterceptor`'s log level
 to `TRACE` as described above and reproduce the scenario you want to investigate on the server instance.
 
-After this, process the debug log file (default path: `/opt/domains/sormas/logs/application.debug`) using the `PerformanceLogAnalysisGenerator`. This will
+After this, process the debug log file (default path: `/opt/domains/sormas/logs/application.debug`) using the `PerformanceLogAnalysisGenerator`.
+The log file's path is specified as the program argument when calling `PerformanceLogAnalysisGenerator`'s `main` method. Processing the log file will
 generate three files (`<logfileName>.csv`, `<logfileName>.txt`, `<logfileName>.html`) to further investigate method runtimes.
 
 `<logfileName>.html` provides a navigable overview of methods along with runtime statistics (total, min, max and average time) and calls to sub methods.
+
+Sometimes it is convenient to analyze a number of different scenarios in a row. To do so, produce snippets of the `application.debug` log using `tail` for each
+of the scenarios to be investigated:
+
+1. start `tail -f <logfileName> > <snippetDirectory>/<snippet.debug>`
+
+2. replay the steps to be analyzed
+
+3. stop `tail -f`
+
+The `PerformanceLogAnalysisGenerator` can now batch process all of the snippets by pointing to the directory instead of a log file.
+Calling `PerformanceLogAnalysisGenerator.main` with argument `<snippetDirectory>` generates the analysis files (`.csv`, `.txt`, `.html`)
+for each file `*.debug` in this directory. The generated files will be placed in `<snippetDirectory>`, too.
 
 ### Log Slow SQL Queries in PostgreSQL
 

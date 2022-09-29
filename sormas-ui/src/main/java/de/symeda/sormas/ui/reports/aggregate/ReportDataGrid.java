@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.reports.aggregate;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -11,7 +12,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.utils.AgeGroupUtils;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -21,7 +25,9 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	public static final String EDIT_AGGREGATE_REPORT = "showAggregateReport";
 	public static final String DELETE_AGGREGATE_REPORT = "deleteAggregateReport";
 
-	public ReportDataGrid(AggregateReportCriteria criteria) {
+	private final Runnable editCallback;
+
+	public ReportDataGrid(AggregateReportCriteria criteria, Runnable editCallback) {
 		super(AggregateReportDto.class);
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
@@ -31,6 +37,7 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 		addEditColumn();
 		addDeleteColumn();
 		addDefaultColumns();
+		this.editCallback = editCallback;
 
 		for (Column<AggregateReportDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.findPrefixCaptionWithDefault(column.getId(), column.getCaption(), AggregateReportDto.I18N_PREFIX));
@@ -74,7 +81,8 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 			Button editButton = ButtonHelper.createIconButton(VaadinIcons.EDIT);
 			editButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
 			editButton.addClickListener(clickEvent -> {
-				ControllerProvider.getAggregateReportController().openEditOrCreateWindow(this::reload, true, aggregateReport);
+				ControllerProvider.getAggregateReportController()
+					.openEditOrCreateWindow( editCallback, true, aggregateReport);
 				reload();
 			});
 			return editButton;
@@ -100,7 +108,6 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	}
 
 	public void reload() {
-
 		ListDataProvider<AggregateReportDto> dataProvider =
 			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getAggregateReports(getCriteria()).stream().map(aggregatedReportDto -> {
 				if (aggregatedReportDto.getAgeGroup() != null) {

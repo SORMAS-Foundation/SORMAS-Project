@@ -31,7 +31,7 @@ public class TravelEntryPersonView extends AbstractTravelEntryView {
 				null);
 		setSubComponent(travelEntryPersonComponent);
 
-		setTravelEntryEditPermission(travelEntryPersonComponent);
+		setEditPermission(travelEntryPersonComponent);
 	}
 
 }

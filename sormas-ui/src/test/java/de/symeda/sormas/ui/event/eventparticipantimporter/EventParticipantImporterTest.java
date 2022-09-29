@@ -21,7 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import de.symeda.sormas.api.person.PresentCondition;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -60,6 +59,7 @@ import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -102,6 +102,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 
@@ -146,12 +147,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 		final String EXISTING_PERSON_LAST_NAME = "Heinz";
 		PersonDto person = creator.createPerson("Günther", EXISTING_PERSON_LAST_NAME);
 		person.setPresentCondition(PresentCondition.UNKNOWN);
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 
 		creator.createCase(
 			user.toReference(),
@@ -190,7 +192,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		EventParticipantIndexDto importedEventParticipant =
 			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
-		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedEventParticipant.getPersonUuid());
+		PersonDto importedPerson = getPersonFacade().getByUuid(importedEventParticipant.getPersonUuid());
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
@@ -228,6 +230,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+				rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 		PersonDto person = creator.createPerson("Günther", "Heinz");
@@ -295,6 +298,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 		PersonDto person = creator.createPerson("Günther", "Heinze");
@@ -347,6 +351,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 
@@ -397,6 +402,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 
@@ -435,6 +441,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+				rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 
@@ -498,6 +505,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			null,
 			Disease.CORONAVIRUS);
 
 		// Successful import of 5 event participant

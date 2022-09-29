@@ -37,7 +37,7 @@
             android:id="@+id/disease_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.4"
+            android:layout_weight="0.3"
             android:textSize="16sp"
             android:textColor="@color/listActivityRowTertiaryText"
             android:fontFamily="sans-serif-medium"
@@ -51,7 +51,7 @@
             android:id="@+id/aggregateReport_newCases"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.18"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
             android:layout_marginBottom="12dp"
@@ -65,7 +65,7 @@
             android:id="@+id/aggregateReport_labConfirmations"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.18"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
             android:layout_marginBottom="12dp"
@@ -79,7 +79,7 @@
             android:id="@+id/aggregateReport_deaths"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.18"
             android:paddingStart="2dp"
             android:layout_marginBottom="12dp"
             android:layout_marginTop="12dp"
@@ -87,6 +87,20 @@
             app:slim="true"
             app:value="@={data.deaths}"
             app:showCaption="false" />
+
+        <TextView
+            android:id="@+id/placeholder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.16"
+            android:textSize="16sp"
+            android:textColor="@color/listActivityRowTertiaryText"
+            android:fontFamily="sans-serif-medium"
+            android:ellipsize="none"
+            android:scrollHorizontally="false"
+            android:paddingTop="18dp"
+            android:paddingEnd="8dp"
+            app:value="" />
 
     </LinearLayout>
 

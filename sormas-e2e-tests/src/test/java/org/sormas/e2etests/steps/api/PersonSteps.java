@@ -17,7 +17,6 @@
  */
 package org.sormas.e2etests.steps.api;
 
-import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +32,7 @@ public class PersonSteps implements En {
 
   @Inject
   public PersonSteps(
-      PersonsHelper personsHelper,
-      PersonApiService personApiService,
-      ApiState apiState,
-      Faker faker) {
+      PersonsHelper personsHelper, PersonApiService personApiService, ApiState apiState) {
 
     When(
         "API: I receive the person",
@@ -48,6 +44,15 @@ public class PersonSteps implements En {
         "API: I create a new person",
         () -> {
           Person createPersonObject = personApiService.buildGeneratedPerson();
+          apiState.setLastCreatedPerson(createPersonObject);
+          personsHelper.createNewPerson(createPersonObject);
+        });
+
+    When(
+        "API: I create a new person with {string} region and {string} district",
+        (String region, String district) -> {
+          Person createPersonObject =
+              personApiService.buildGeneratedPersonParamRegionAndDistrict(region, district);
           apiState.setLastCreatedPerson(createPersonObject);
           personsHelper.createNewPerson(createPersonObject);
         });

@@ -15,25 +15,39 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import com.vaadin.v7.ui.ComboBox;
+
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 
 public class ShareRequestFilterForm extends AbstractFilterForm<ShareRequestCriteria> {
 
 	private static final long serialVersionUID = 1551296359856190303L;
 
-	protected ShareRequestFilterForm() {
-		super(ShareRequestCriteria.class, SormasToSormasShareRequestDto.I18N_PREFIX);
+	private final ShareRequestViewType viewType;
+
+	protected ShareRequestFilterForm(ShareRequestViewType viewType) {
+		super(ShareRequestCriteria.class, SormasToSormasShareRequestDto.I18N_PREFIX, false);
+
+		this.viewType = viewType;
+		addFields();
 	}
 
 	@Override
 	protected String[] getMainFilterLocators() {
-		return new String[0];
+		return new String[] {
+			ShareRequestCriteria.STATUS };
 	}
 
 	@Override
 	protected void addFields() {
+		ComboBox statusFiled = addField(ShareRequestCriteria.STATUS);
 
+		if (viewType == ShareRequestViewType.INCOMING) {
+			statusFiled.removeItem(ShareRequestStatus.REJECTED);
+			statusFiled.removeItem(ShareRequestStatus.REVOKED);
+		}
 	}
 }

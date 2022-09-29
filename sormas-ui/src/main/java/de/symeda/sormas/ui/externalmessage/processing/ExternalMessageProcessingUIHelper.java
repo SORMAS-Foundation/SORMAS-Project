@@ -106,7 +106,7 @@ public class ExternalMessageProcessingUIHelper {
 					if (selectedPersonRef.getUuid().equals(person.getUuid())) {
 						selectedPersonDto = person;
 					} else {
-						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonRef.getUuid());
+						selectedPersonDto = FacadeProvider.getPersonFacade().getByUuid(selectedPersonRef.getUuid());
 					}
 				}
 
@@ -149,7 +149,7 @@ public class ExternalMessageProcessingUIHelper {
 			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
 			LabMessageProcessingHelper.updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+				FacadeProvider.getPersonFacade().getByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
 				labMessage);
 
 			callback.done(caseCreateComponent.getWrappedComponent().getValue());

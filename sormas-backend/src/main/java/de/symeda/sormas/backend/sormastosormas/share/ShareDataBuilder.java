@@ -22,7 +22,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -30,7 +30,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 
 public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, ADO extends SormasToSormasShareable, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
 

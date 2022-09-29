@@ -208,6 +208,8 @@ public interface Strings {
 	String entityCampaign = "entityCampaign";
 	String entityCampaignData = "entityCampaignData";
 	String entityCampaignDataForm = "entityCampaignDataForm";
+	String entityCampaignFormData = "entityCampaignFormData";
+	String entityCampaignFormMeta = "entityCampaignFormMeta";
 	String entityCampaigns = "entityCampaigns";
 	String entityCase = "entityCase";
 	String entityCaseManagement = "entityCaseManagement";
@@ -220,9 +222,13 @@ public interface Strings {
 	String entityContactFollowUps = "entityContactFollowUps";
 	String entityContacts = "entityContacts";
 	String entityContactVisits = "entityContactVisits";
+	String entityContinents = "entityContinents";
 	String entityCountries = "entityCountries";
+	String entityCustomizableEnumValues = "entityCustomizableEnumValues";
 	String entityDataDictionary = "entityDataDictionary";
 	String entityDataProtectionDictionary = "entityDataProtectionDictionary";
+	String entityDiseaseClassifications = "entityDiseaseClassifications";
+	String entityDiseaseConfigurations = "entityDiseaseConfigurations";
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
@@ -235,9 +241,11 @@ public interface Strings {
 	String entityEvents = "entityEvents";
 	String entityExposure = "entityExposure";
 	String entityFacilities = "entityFacilities";
+	String entityFeatureConfigurations = "entityFeatureConfigurations";
 	String entityGathering = "entityGathering";
 	String entityImmunization = "entityImmunization";
 	String entityImmunizations = "entityImmunizations";
+	String entityOutbreaks = "entityOutbreaks";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPersonContactDetail = "entityPersonContactDetail";
 	String entityPersons = "entityPersons";
@@ -250,6 +258,7 @@ public interface Strings {
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
 	String entityStatistics = "entityStatistics";
+	String entitySubcontinents = "entitySubcontinents";
 	String entityTask = "entityTask";
 	String entityTasks = "entityTasks";
 	String entityTravelEntries = "entityTravelEntries";
@@ -258,7 +267,10 @@ public interface Strings {
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
 	String entityUserRoles = "entityUserRoles";
+	String entityUsers = "entityUsers";
 	String entityVaccinations = "entityVaccinations";
+	String entityVisits = "entityVisits";
+	String entityWeeklyReports = "entityWeeklyReports";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
@@ -315,6 +327,7 @@ public interface Strings {
 	String errorSormasToSormasAcceptContactsWithoutCaseShared = "errorSormasToSormasAcceptContactsWithoutCaseShared";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasDataMissing = "errorSormasToSormasDataMissing";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasDeleteFromExternalSurveillanceTool = "errorSormasToSormasDeleteFromExternalSurveillanceTool";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
@@ -768,6 +781,7 @@ public interface Strings {
 	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
+	String infoDocumentOverride = "infoDocumentOverride";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadDocumentTemplateImportGuide = "infoDownloadDocumentTemplateImportGuide";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
@@ -897,11 +911,13 @@ public interface Strings {
 	String listOf = "listOf";
 	String mapOf = "mapOf";
 	String max = "max";
+	String messageAcceptRequestToNavigate = "messageAcceptRequestToNavigate";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregatedReportEpiWeekFilterNotFilled = "messageAggregatedReportEpiWeekFilterNotFilled";
 	String messageAggregateReportDelete = "messageAggregateReportDelete";
+	String messageAggregateReportExpiredAgeGroups = "messageAggregateReportExpiredAgeGroups";
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAllCampaignFormsValid = "messageAllCampaignFormsValid";
 	String messageAllCasesAlreadyInEvent = "messageAllCasesAlreadyInEvent";
@@ -1019,6 +1035,7 @@ public interface Strings {
 	String messageDistrictsDearchivingNotPossible = "messageDistrictsDearchivingNotPossible";
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
+	String messageEntityNotFound = "messageEntityNotFound";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";

@@ -58,6 +58,6 @@ public class LabMessageProcessingHelper {
 			&& personDto.getAddress().getStreet() == null) {
 			ExternalMessageMapper.forLabMessage(labMessageDto).mapToLocation(personDto.getAddress());
 		}
-		FacadeProvider.getPersonFacade().savePerson(personDto);
+		FacadeProvider.getPersonFacade().save(personDto);
 	}
 }

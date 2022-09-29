@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.report;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -163,6 +164,20 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		return createAggregateReport(epiWeek, ageGroup, rdcf.region, rdcf.district, rdcf.facility, rdcf.pointOfEntry, 1, 3, 2);
 	}
 
+	private AggregateReportDto createAggregateReport(Disease disease, String ageGroup, Integer cases, Integer deaths, Integer labConfirmations) {
+		return createAggregateReportDto(
+			disease,
+			DateHelper.getEpiWeek(new Date()),
+			ageGroup,
+			rdcf.region,
+			rdcf.district,
+			null,
+			null,
+			cases,
+			deaths,
+			labConfirmations);
+	}
+
 	private AggregateReportDto createAggregateReport(
 		Integer cases,
 		Integer deaths,
@@ -193,8 +208,22 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		int newCases,
 		int deaths,
 		int labConfirmations) {
+		return createAggregateReportDto(Disease.HIV, epiWeek, ageGroup, region, district, facility, pointOfEntry, newCases, deaths, labConfirmations);
+	}
+
+	private AggregateReportDto createAggregateReportDto(
+		Disease disease,
+		EpiWeek epiWeek,
+		String ageGroup,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		FacilityReferenceDto facility,
+		PointOfEntryReferenceDto pointOfEntry,
+		int newCases,
+		int deaths,
+		int labConfirmations) {
 		AggregateReportDto aggregateReportDto = AggregateReportDto.build();
-		aggregateReportDto.setDisease(Disease.HIV);
+		aggregateReportDto.setDisease(disease);
 		aggregateReportDto.setReportingUser(informant1.toReference());
 		aggregateReportDto.setNewCases(newCases);
 		aggregateReportDto.setDeaths(deaths);
@@ -327,5 +356,57 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexList.size());
 		Assert.assertEquals(1, indexList.get(0).getNewCases());
+	}
+
+	@Test
+	public void testAggregateReportGetEditData() {
+		useNationalUserLogin();
+		Disease disease = Disease.ACUTE_VIRAL_HEPATITIS;
+		creator.updateDiseaseConfiguration(disease, false, false, false, true, null);
+
+		createAggregateReport(disease, null, 1, 1, 1);
+		AggregateReportDto selectedAggregateReport = createAggregateReport(disease, null, 2, 2, 2);
+
+		List<AggregateReportDto> similarAggregateReports = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
+
+		Assert.assertEquals(1, similarAggregateReports.size());
+		Assert.assertEquals(2, similarAggregateReports.get(0).getNewCases().intValue());
+		Assert.assertFalse(similarAggregateReports.get(0).isExpiredAgeGroup());
+
+		creator.updateDiseaseConfiguration(disease, false, false, false, true, Arrays.asList("0D_28D", "1M_12M", "1Y_5Y", "6Y"));
+
+		createAggregateReport(disease, "0D_28D", 3, 3, 3);
+		createAggregateReport(disease, "1M_12M", 4, 4, 4);
+		createAggregateReport(disease, "1Y_5Y", 5, 5, 5);
+		createAggregateReport(disease, "6Y", 6, 6, 6);
+
+		createAggregateReport(disease, "0D_28D", 31, 31, 31);
+		AggregateReportDto selectedAggregateReport2 = createAggregateReport(disease, "1M_12M", 41, 41, 41);
+		createAggregateReport(disease, "1Y_5Y", 51, 51, 51);
+		createAggregateReport(disease, "6Y", 61, 61, 61);
+
+		List<AggregateReportDto> similarAggregateReports2 = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
+		Assert.assertEquals(5, similarAggregateReports2.size());
+		Assert.assertTrue(similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
+		Assert.assertFalse(similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
+		Assert.assertEquals(41, similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport2)).getNewCases().intValue());
+
+		creator.updateDiseaseConfiguration(disease, false, false, false, true, Arrays.asList("0D_2Y", "3Y_10Y", "11Y"));
+		createAggregateReport(disease, "0D_2Y", 7, 7, 7);
+		AggregateReportDto selectedAggregateReport3 = createAggregateReport(disease, "3Y_10Y", 8, 8, 8);
+		createAggregateReport(disease, "11Y", 9, 9, 9);
+
+		List<AggregateReportDto> similarAggregateReports3 = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
+		Assert.assertEquals(8, similarAggregateReports3.size());
+		Assert.assertTrue(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
+		Assert.assertTrue(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
+		Assert.assertFalse(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport3)).isExpiredAgeGroup());
+
+		creator.updateDiseaseConfiguration(disease, false, false, false, true, null);
+		List<AggregateReportDto> similarAggregateReports4 = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
+		Assert.assertEquals(8, similarAggregateReports3.size());
+		Assert.assertFalse(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
+		Assert.assertTrue(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
+		Assert.assertTrue(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport3)).isExpiredAgeGroup());
 	}
 }

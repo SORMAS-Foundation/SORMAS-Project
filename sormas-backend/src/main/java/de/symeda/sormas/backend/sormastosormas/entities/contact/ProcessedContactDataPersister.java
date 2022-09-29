@@ -25,15 +25,16 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -45,10 +46,17 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
 		return shareInfoService;
+	}
+
+	@Override
+	protected SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade() {
+		return originInfoFacade;
 	}
 
 	@Override
@@ -68,13 +76,13 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 		final PersonDto person = processedData.getPerson();
 		if (isCreate) {
 			// save person first during creation
-			handleValidationError(() -> personFacade.savePerson(person, false, false, false), Captions.Person, contactValidationGroupName, person);
+			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, person);
 
 			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName, contact);
 		} else {
 			//save contact first during update
 			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName, contact);
-			handleValidationError(() -> personFacade.savePerson(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
+			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
 		}
 	}
 }
