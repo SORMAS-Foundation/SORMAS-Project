@@ -351,13 +351,13 @@ public class EventParticipantFacadeEjb
 		validate(dto);
 
 		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
-		entity.setArchived(event.isArchived());
 		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
 			// The Event Participant is newly created, let's check if the related person is related to other events
 			// In that case, let's notify corresponding responsible Users of this relation
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
+			entity.setArchived(event.isArchived());
 		}
 
 		onEventParticipantChanged(eventFacade.toDto(entity.getEvent()), existingDto, entity, internal);
