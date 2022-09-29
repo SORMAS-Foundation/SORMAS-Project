@@ -28,13 +28,9 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
-import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
@@ -44,15 +40,11 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "externalmessage";
 
+	public static final String SAMPLE_REPORTS = "sampleReports";
+
 	public static final String TYPE = "type";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
-	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
-	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
-	public static final String LAB_SAMPLE_ID = "labSampleId";
-	public static final String SAMPLE_MATERIAL = "sampleMaterial";
-	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
-	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -72,20 +64,12 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String REPORTER_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
-	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
-	public static final String SAMPLE = "sample";
-	public static final String CAZE = "caze";
 	public static final String ASSIGNEE = "assignee";
+	public static final String CAZE = "caze";
 
 	private ExternalMessageType type;
 	private Disease testedDisease;
 	private Date messageDateTime;
-	private Date sampleDateTime;
-	private Date sampleReceivedDate;
-	private String labSampleId;
-	private SampleMaterial sampleMaterial;
-	private String sampleMaterialText;
-	private SpecimenCondition specimenCondition;
 
 	private String reporterName;
 	private List<String> reporterExternalIds;
@@ -105,16 +89,15 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personHouseNumber;
 	private String personPhone;
 	private String personEmail;
-	private List<TestReport> testReports;
 	private String externalMessageDetails;
 	//External messages related to each other should have the same reportId
 	private String reportId;
-	private PathogenTestResultType sampleOverallTestResult;
-	private Sample sample;
-	private Case caze;
 
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 	private User assignee;
+
+	private List<SampleReport> sampleReports;
+	private Case caze;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -141,60 +124,6 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setMessageDateTime(Date messageDateTime) {
 		this.messageDateTime = messageDateTime;
-	}
-
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getSampleDateTime() {
-		return sampleDateTime;
-	}
-
-	public void setSampleDateTime(Date sampleDateTime) {
-		this.sampleDateTime = sampleDateTime;
-	}
-
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getSampleReceivedDate() {
-		return sampleReceivedDate;
-	}
-
-	public void setSampleReceivedDate(Date sampleReceivedDate) {
-		this.sampleReceivedDate = sampleReceivedDate;
-	}
-
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getLabSampleId() {
-		return labSampleId;
-	}
-
-	public void setLabSampleId(String labSampleId) {
-		this.labSampleId = labSampleId;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public SampleMaterial getSampleMaterial() {
-		return sampleMaterial;
-	}
-
-	public void setSampleMaterial(SampleMaterial sampleMaterial) {
-		this.sampleMaterial = sampleMaterial;
-	}
-
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getSampleMaterialText() {
-		return sampleMaterialText;
-	}
-
-	public void setSampleMaterialText(String sampleMaterialText) {
-		this.sampleMaterialText = sampleMaterialText;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public SpecimenCondition getSpecimenCondition() {
-		return specimenCondition;
-	}
-
-	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
-		this.specimenCondition = specimenCondition;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -369,15 +298,6 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.status = status;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = TestReport.LAB_MESSAGE, fetch = FetchType.LAZY)
-	public List<TestReport> getTestReports() {
-		return testReports;
-	}
-
-	public void setTestReports(List<TestReport> testReports) {
-		this.testReports = testReports;
-	}
-
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getReportId() {
 		return reportId;
@@ -385,15 +305,6 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setReportId(String reportId) {
 		this.reportId = reportId;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public PathogenTestResultType getSampleOverallTestResult() {
-		return sampleOverallTestResult;
-	}
-
-	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
-		this.sampleOverallTestResult = sampleOverallTestResult;
 	}
 
 	@ManyToOne
@@ -407,20 +318,20 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	public Sample getSample() {
-		return sample;
-	}
-
-	public void setSample(Sample sample) {
-		this.sample = sample;
-	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
 	public Case getCaze() {
 		return caze;
 	}
 
 	public void setCaze(Case caze) {
 		this.caze = caze;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = SampleReport.LAB_MESSAGE, fetch = FetchType.LAZY)
+	public List<SampleReport> getSampleReports() {
+		return sampleReports;
+	}
+
+	public void setSampleReports(List<SampleReport> sampleReports) {
+		this.sampleReports = sampleReports;
 	}
 }

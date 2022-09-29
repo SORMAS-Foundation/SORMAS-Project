@@ -21,6 +21,7 @@ import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -380,7 +381,9 @@ public class PathogenTestController {
 		CaseDataDto caze,
 		boolean suppressNavigateToCase,
 		Consumer<CaseDataDto> callback) {
-		if (test.getTestedDiseaseVariant() != null && !DataHelper.equal(test.getTestedDiseaseVariant(), caze.getDiseaseVariant())) {
+		if (test.getTestedDiseaseVariant() != null
+			&& !DataHelper.equal(test.getTestedDiseaseVariant(), caze.getDiseaseVariant())
+			&& isNotYetRelatedDiseaseVariant(test)) {
 			showCaseUpdateWithNewDiseaseVariantDialog(caze, test.getTestedDiseaseVariant(), test.getTestedDiseaseVariantDetails(), yes -> {
 				if (yes && !suppressNavigateToCase) {
 					ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
@@ -394,6 +397,17 @@ public class PathogenTestController {
 		} else {
 			callback.accept(caze);
 		}
+	}
+
+	private boolean isNotYetRelatedDiseaseVariant(PathogenTestDto savedTest) {
+		List<DiseaseVariant> relatedVariants = FacadeProvider.getSampleFacade().getAssociatedDiseaseVariants(savedTest.getSample().getUuid());
+		AtomicInteger savedTestsWithSameVariant = new AtomicInteger();
+		relatedVariants.forEach(v -> {
+			if (v != null && v.equals(savedTest.getTestedDiseaseVariant())) {
+				savedTestsWithSameVariant.getAndIncrement();
+			}
+		});
+		return savedTestsWithSameVariant.get() <= 1; // one occurrence is the saved test's one
 	}
 
 	private void handleCaseCreationFromContactOrEventParticipant(boolean caseCreated, PathogenTestDto pathogenTest) {

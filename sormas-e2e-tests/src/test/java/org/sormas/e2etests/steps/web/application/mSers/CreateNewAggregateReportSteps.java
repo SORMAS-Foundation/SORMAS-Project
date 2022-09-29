@@ -36,6 +36,7 @@ public class CreateNewAggregateReportSteps implements En {
   protected static AggregateReport report;
   protected static AggregateReport collectedReport;
   protected static AggregateReport duplicateReport;
+  protected static AggregateReport duplicateReportWithJurisdiction;
 
   @Inject
   public CreateNewAggregateReportSteps(
@@ -44,6 +45,8 @@ public class CreateNewAggregateReportSteps implements En {
       AggregateReportService aggregateReportService) {
     this.webDriverHelpers = webDriverHelpers;
     duplicateReport = aggregateReportService.buildAggredateReportsForDuplicates();
+    duplicateReportWithJurisdiction =
+        aggregateReportService.buildAggregateReportsForDuplicatesWithJurisdiction();
     When(
         "I check if Region combobox is set to {string} and is not editable in Create New Aggregate Report popup",
         (String region) -> {
@@ -200,6 +203,11 @@ public class CreateNewAggregateReportSteps implements En {
               "District combobox is enabled");
           softly.assertAll();
         });
+    And(
+        "^I fill a new aggregate report with specific data for duplicates with jurisdiction$",
+        () -> {
+          fillFieldsForDuplicateReportWithJurisdiction(duplicateReportWithJurisdiction);
+        });
   }
 
   private void fillAllFieldsForEditAggregateReport(AggregateReport report) {
@@ -287,6 +295,14 @@ public class CreateNewAggregateReportSteps implements En {
     fillYear(report.getYear());
     fillEpiWeek(report.getEpiWeek());
     fillCasesFor("Acute Viral Hepatitis", report.getAcuteViralHepatitisCases());
+  }
+
+  private void fillFieldsForDuplicateReportWithJurisdiction(AggregateReport report) {
+    fillYear(report.getYear());
+    fillEpiWeek(report.getEpiWeek());
+    fillRegion(report.getRegion());
+    fillDistrict(report.getDistrict());
+    fillCasesFor("Malaria", report.getMalariaCases());
   }
 
   private void fillFieldsForDuplicateReportWithDifferentDisease(AggregateReport report) {
@@ -1024,5 +1040,13 @@ public class CreateNewAggregateReportSteps implements En {
 
   private void fillEpiWeek(String epiWeek) {
     webDriverHelpers.selectFromCombobox(EPI_WEEK_COMBOBOX_POPUP, epiWeek);
+  }
+
+  private void fillRegion(String region) {
+    webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_POPUP_DIV, region);
+  }
+
+  private void fillDistrict(String district) {
+    webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX_POPUP_DIV, district);
   }
 }

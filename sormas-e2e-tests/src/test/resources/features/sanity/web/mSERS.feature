@@ -333,3 +333,50 @@ Feature: mSERS functionalities
     And I click to delete aggregated report
     And I check if exported aggregate report for last created report is correct
     And I delete exported report
+
+  @tmsLink=SORDEV-12130 @env_main
+  Scenario: Verify that the Aggregate Report View does not sum the Aggregate Report Numbers with those of sub jurisdictions
+    Given I log in as a Admin User
+    When I click on the mSERS button from navbar
+    And I click on the NEW AGGREGATE REPORT button
+    Then I click on SPECIFY Radiobutton in Create Aggregated Report form
+    And I fill a new aggregate report with specific data for duplicates with jurisdiction
+    And I click to save aggregated report
+    And I set Epi Year from filter to "2005" in mSers directory page
+    Then I set Epi week from filter to "Wk 6-2005 (1/31 - 2/6)" in mSers directory page
+    And I set Epi Year to filter to "2005" in mSers directory page
+    And I set Epi week to filter to "Wk 6-2005 (1/31 - 2/6)" in mSers directory page
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 1
+    And I check if displayed numbers of suspected cases are equal to those previously entered for first result in mSers directory page
+    When I click on the NEW AGGREGATE REPORT button
+    Then I click on SPECIFY Radiobutton in Create Aggregated Report form
+    And I fill a new aggregate report with specific data for duplicates with jurisdiction
+    Then I check if message about duplicated reports is visible
+    And I click to save aggregated report
+    And I check if there number of results in grid in mSers directory is 1
+    And I check if displayed numbers of suspected cases are equal to those previously entered for first result in mSers directory page
+    And I click on the NEW AGGREGATE REPORT button
+    Then I click on SPECIFY Radiobutton in Create Aggregated Report form
+    And I fill a new aggregate report with specific data for duplicates with jurisdiction
+    And I click to save aggregated report
+    And I check if there number of results in grid in mSers directory is 1
+    And I check if displayed numbers of suspected cases are equal to those previously entered for first result in mSers directory page
+    And I navigate to Report data tab
+    And I set Epi Year from filter to "2005" in mSers directory page
+    Then I set Epi week from filter to "Wk 6-2005 (1/31 - 2/6)" in mSers directory page
+    And I set Epi Year to filter to "2005" in mSers directory page
+    And I set Epi week to filter to "Wk 6-2005 (1/31 - 2/6)" in mSers directory page
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 3
+    Then I check if there are delete and edit buttons for report and duplicates in the grid
+    And I delete first duplicated result in grid
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 2
+    And I delete first duplicated result in grid
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 1
+    Then I click to edit 1 result in mSers directory page
+    And I click to delete aggregated report
+    And I click on the APPLY FILTERS button
+    Then I check if there number of results in grid in mSers directory is 0
