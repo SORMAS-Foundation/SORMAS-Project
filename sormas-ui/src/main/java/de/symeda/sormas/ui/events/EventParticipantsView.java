@@ -250,7 +250,10 @@ public class EventParticipantsView extends AbstractEventView {
 			}
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
-
+			if (shouldDisableButton())
+			{
+				bulkOperationsDropdown.setEnabled(false);
+			}
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
 		}
