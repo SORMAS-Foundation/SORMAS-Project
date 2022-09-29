@@ -12118,6 +12118,8 @@ ALTER TABLE testreport
 ALTER TABLE testreport_history
     ADD COLUMN samplereport_id bigint;
 
+ALTER TABLE testreport
+    ADD CONSTRAINT fk_testreport_samplereport_id FOREIGN KEY (samplereport_id) REFERENCES samplereport (id);
 
 UPDATE testreport
 SET samplereport_id = (SELECT s.id

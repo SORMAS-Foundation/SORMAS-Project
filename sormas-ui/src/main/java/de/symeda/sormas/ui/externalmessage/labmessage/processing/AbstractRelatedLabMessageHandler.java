@@ -113,7 +113,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 
 			for (PathogenTestDto p : relatedEntities.pathogenTests) {
 				Optional<TestReportDto> testReport =
-					labMessage.getSampleReportsNullSave().get(0).getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
+					labMessage.getSampleReportsNullSafe().get(0).getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
 				if (testReport.isPresent()) {
 					correctionFlow = correctionFlow.thenCompose(
 						testCorrectionResult -> doPathogenTestCorrection(
@@ -337,12 +337,12 @@ public abstract class AbstractRelatedLabMessageHandler {
 	// related entities
 	public RelatedEntities getRelatedEntities(ExternalMessageDto labMessage) {
 		// TODO It may be possible to use related entities for multiple sample reports, but this is not yet thought through
-		if (labMessage.getSampleReportsNullSave().size() > 1) {
+		if (labMessage.getSampleReportsNullSafe().size() > 1) {
 			return null;
 		}
 
 		String reportId = labMessage.getReportId();
-		String labSampleId = labMessage.getSampleReportsNullSave().get(0).getLabSampleId();
+		String labSampleId = labMessage.getSampleReportsNullSafe().get(0).getLabSampleId();
 
 		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId))
 
@@ -378,7 +378,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		List<TestReportDto> unmatchedTestReports = new ArrayList<>();
 		boolean pathogenTestMisMatch = false;
 
-		List<TestReportDto> testReports = labMessage.getSampleReportsNullSave().get(0).getTestReports();
+		List<TestReportDto> testReports = labMessage.getSampleReportsNullSafe().get(0).getTestReports();
 		List<PathogenTestDto> samplePathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference());
 
 		for (TestReportDto testReport : testReports) {

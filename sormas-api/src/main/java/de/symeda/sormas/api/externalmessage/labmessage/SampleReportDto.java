@@ -57,6 +57,7 @@ public class SampleReportDto extends EntityDto {
 
 	@Valid
 	private List<TestReportDto> testReports = new ArrayList<>();
+	@Valid
 	private SampleReferenceDto sample;
 	@Valid
 	private ExternalMessageReferenceDto labMessage;
@@ -135,26 +136,18 @@ public class SampleReportDto extends EntityDto {
 	 * @param testReports
 	 */
 	public void setTestReports(List<TestReportDto> testReports) {
-		this.testReports = testReports;
+
+		this.testReports = new ArrayList<>(testReports);
 	}
 
 	public void addTestReport(TestReportDto testReport) {
 
 		testReport.setSampleReport(this.toReference());
 		if (this.testReports == null) {
-			List<TestReportDto> testReports = new ArrayList();
-			testReports.add(testReport);
-			this.testReports = testReports;
-		} else {
-			try {
-				this.testReports.add(testReport);
-			} catch (UnsupportedOperationException e) {
-				ArrayList<TestReportDto> newList = new ArrayList<>(this.testReports);
-				newList.add(testReport);
-				this.testReports = newList;
-			}
-
+			testReports = new ArrayList<>();
 		}
+		this.testReports.add(testReport);
+
 	}
 
 	public SampleReferenceDto getSample() {

@@ -324,7 +324,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	 * 
 	 * @return List containing related sample reports or a newly built sample report
 	 */
-	public List<SampleReportDto> getSampleReportsNullSave() {
+	public List<SampleReportDto> getSampleReportsNullSafe() {
 		if (sampleReports == null) {
 			sampleReports = new ArrayList<>();
 		}
@@ -338,7 +338,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	/**
 	 * Please note that this method may return null as a valid behaviour.
-	 * Alternatively {@link ExternalMessageDto#getSampleReportsNullSave()} can be used.
+	 * Alternatively {@link ExternalMessageDto#getSampleReportsNullSafe()} can be used.
 	 * 
 	 * @return List of related sample reports (if any)
 	 */
@@ -353,7 +353,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	 *
 	 */
 	public void setSampleReports(List<SampleReportDto> sampleReports) {
-		this.sampleReports = sampleReports;
+
+		this.sampleReports = new ArrayList<>(sampleReports);
 	}
 
 	public void addSampleReport(SampleReportDto sampleReport) {
@@ -362,14 +363,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		if (sampleReports == null) {
 			sampleReports = new ArrayList<>();
 		}
+		sampleReports.add(sampleReport);
 
-		try {
-			sampleReports.add(sampleReport);
-		} catch (UnsupportedOperationException e) {
-			ArrayList<SampleReportDto> newList = new ArrayList<>(this.sampleReports);
-			newList.add(sampleReport);
-			this.sampleReports = newList;
-		}
 	}
 
 	public CaseReferenceDto getCaze() {

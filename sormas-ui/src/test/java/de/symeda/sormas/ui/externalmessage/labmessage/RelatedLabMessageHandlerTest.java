@@ -266,7 +266,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.getSampleReportsNullSave().get(0).setLabSampleId(labSampleId);
+		labMessageToProcess.getSampleReportsNullSafe().get(0).setLabSampleId(labSampleId);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities, is(nullValue()));

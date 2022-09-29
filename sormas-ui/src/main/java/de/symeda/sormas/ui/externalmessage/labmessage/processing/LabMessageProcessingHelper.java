@@ -37,7 +37,7 @@ public class LabMessageProcessingHelper {
 
 	public static List<PathogenTestDto> buildPathogenTests(SampleDto sample, int sampleReportIndex, ExternalMessageDto labMessage, UserDto user) {
 		ArrayList<PathogenTestDto> pathogenTests = new ArrayList<>();
-		for (TestReportDto testReport : labMessage.getSampleReportsNullSave().get(sampleReportIndex).getTestReports()) {
+		for (TestReportDto testReport : labMessage.getSampleReportsNullSafe().get(sampleReportIndex).getTestReports()) {
 			pathogenTests.add(buildPathogenTest(testReport, labMessage, sample, user));
 		}
 

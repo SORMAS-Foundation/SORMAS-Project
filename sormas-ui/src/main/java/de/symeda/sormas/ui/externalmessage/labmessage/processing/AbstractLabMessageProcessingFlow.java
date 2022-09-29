@@ -197,7 +197,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		FlowThen<?> flow,
 		ExternalMessageDto labMessage) {
 
-		List<SampleReportDto> sampleReports = labMessage.getSampleReportsNullSave();
+		List<SampleReportDto> sampleReports = labMessage.getSampleReportsNullSafe();
 		if (sampleReports.size() > 1) {
 			flow = flow.then(
 				result -> handleMultipleSampleConfirmation().thenCompose(
@@ -207,24 +207,18 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		}
 
 		RelatedSamplesReportsAndPathogenTests allSamplesAndPathogenTests = new RelatedSamplesReportsAndPathogenTests();
-		FlowThen<SampleAndPathogenTests> currentFlow = null;
 		int i = 0;
 		do {
 			int currentSampleReportIndex = i;
-			currentFlow = doSinglePickOrCreateSampleFlow(
-				addSampleSearchCriteria,
-				createSampleAndPathogenTests,
-				currentFlow == null ? flow : currentFlow,
-				i,
-				labMessage).then(r -> {
-					allSamplesAndPathogenTests.add(sampleReports.get(currentSampleReportIndex), r.getData());
-					return ProcessingResult.continueWith(r.getData()).asCompletedFuture();
-				});
+			flow = doSinglePickOrCreateSampleFlow(addSampleSearchCriteria, createSampleAndPathogenTests, flow, i, labMessage).then(r -> {
+				allSamplesAndPathogenTests.add(sampleReports.get(currentSampleReportIndex), r.getData());
+				return ProcessingResult.continueWith(r.getData()).asCompletedFuture();
+			});
 			i += 1;
 		}
 		while (i < sampleReports.size());
 
-		return currentFlow.then(ignored -> ProcessingResult.continueWith(allSamplesAndPathogenTests).asCompletedFuture());
+		return flow.then(ignored -> ProcessingResult.continueWith(allSamplesAndPathogenTests).asCompletedFuture());
 	}
 
 	private FlowThen<RelatedSamplesReportsAndPathogenTests> doCaseSelectedFlow(
@@ -304,7 +298,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		ExternalMessageDto labMessage) {
 
 		// TODO currently, related messages handling is just done if one sample report exists. That's why this works.
-		SampleReportDto firstSampleReport = labMessage.getSampleReportsNullSave().get(0);
+		SampleReportDto firstSampleReport = labMessage.getSampleReportsNullSafe().get(0);
 		return relatedLabMessageHandler.handle(labMessage).thenCompose(result -> {
 			AbstractRelatedLabMessageHandler.HandlerResultStatus status = result.getStatus();
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.CANCELED) {
@@ -431,7 +425,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		int sampleReportIndex,
 		boolean entityCreated) {
 
-		ExternalMessageMapper.forLabMessage(labMessage).mapToSample(sample, sampleReportIndex);
+		ExternalMessageMapper.forLabMessage(labMessage).mapToSample(sample, labMessage.getSampleReportsNullSafe().get(sampleReportIndex));
 		List<PathogenTestDto> pathogenTests = LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, labMessage, user);
 		HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
 		handleCreateSampleAndPathogenTests(
@@ -577,7 +571,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		int sampleReportIndex,
 		ExternalMessageDto labMessage) {
 
-		SampleSimilarityCriteria sampleSimilarityCriteria = createSampleSimilarCriteria(labMessage.getSampleReportsNullSave().get(sampleReportIndex));
+		SampleSimilarityCriteria sampleSimilarityCriteria = createSampleSimilarCriteria(labMessage.getSampleReportsNullSafe().get(sampleReportIndex));
 		addSampleSearchCriteria.accept(sampleSimilarityCriteria);
 
 		List<SampleDto> selectableSamples = FacadeProvider.getSampleFacade().getSamplesByCriteria(sampleSimilarityCriteria.getSampleCriteria());
@@ -626,10 +620,10 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 	}
 
 	private boolean isLastSample(ExternalMessageDto labMessage, int sampleReportIndex) {
-		if (sampleReportIndex >= labMessage.getSampleReportsNullSave().size()) {
+		if (sampleReportIndex >= labMessage.getSampleReportsNullSafe().size()) {
 			throw new IllegalArgumentException("The sample report index is out of bounds.");
 		}
-		return labMessage.getSampleReportsNullSave().size() == sampleReportIndex + 1;
+		return labMessage.getSampleReportsNullSafe().size() == sampleReportIndex + 1;
 	}
 
 	protected abstract void handleEditSample(

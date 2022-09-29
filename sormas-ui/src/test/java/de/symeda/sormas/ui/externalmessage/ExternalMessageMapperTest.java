@@ -49,7 +49,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		ExternalMessageMapper oneSampleReportMessageMapper = ExternalMessageMapper.forLabMessage(oneSampleReportMessage);
 
 		SampleDto sample1 = new SampleDto();
-		oneSampleReportMessageMapper.mapToSample(sample1, 0);
+		oneSampleReportMessageMapper.mapToSample(sample1, oneSampleReportMessage.getSampleReportsNullSafe().get(0));
 
 		assertNull(sample1.getPathogenTestResult());
 
@@ -59,10 +59,10 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		ExternalMessageMapper twoSampleReportsMessageMapper = ExternalMessageMapper.forLabMessage(twoSampleReportsMessage);
 
 		SampleDto sample2 = new SampleDto();
-		twoSampleReportsMessageMapper.mapToSample(sample2, 0);
+		twoSampleReportsMessageMapper.mapToSample(sample2, twoSampleReportsMessage.getSampleReportsNullSafe().get(0));
 
 		SampleDto sample3 = new SampleDto();
-		twoSampleReportsMessageMapper.mapToSample(sample3, 1);
+		twoSampleReportsMessageMapper.mapToSample(sample3, twoSampleReportsMessage.getSampleReportsNullSafe().get(1));
 
 		assertNull(sample2.getPathogenTestResult());
 		assertNull(sample3.getPathogenTestResult());
@@ -76,14 +76,14 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.getSampleReportsNullSave().get(0).addTestReport(testReport1);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.getSampleReportsNullSave().get(0).addTestReport(testReport2);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport2);
 
 		SampleDto sample = new SampleDto();
-		mapper.mapToSample(sample, 0);
+		mapper.mapToSample(sample, labMessage.getSampleReportsNullSafe().get(0));
 
 		assertEquals(PathogenTestResultType.POSITIVE, sample.getPathogenTestResult());
 	}
@@ -94,20 +94,20 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.getSampleReportsNullSave().get(0).addTestReport(testReport1);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.getSampleReportsNullSave().get(0).addTestReport(testReport2);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport2);
 
 		TestReportDto testReport3 = TestReportDto.build();
 		testReport3.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.getSampleReportsNullSave().get(0).addTestReport(testReport3);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport3);
 
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
 
 		SampleDto sample = new SampleDto();
-		mapper.mapToSample(sample, 0);
+		mapper.mapToSample(sample, labMessage.getSampleReportsNullSafe().get(0));
 
 		assertNull(sample.getPathogenTestResult());
 	}

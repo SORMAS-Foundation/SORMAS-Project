@@ -310,7 +310,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		HorizontalLayout sampleDetailsLayout = new HorizontalLayout();
 		sampleDetailsLayout.setSpacing(true);
 
-		SampleReportDto sampleReport = labMessage.getSampleReportsNullSave().get(sampleReportIndex);
+		SampleReportDto sampleReport = labMessage.getSampleReportsNullSafe().get(sampleReportIndex);
 
 		addLabelIfAvailable(
 			sampleDetailsLayout,
