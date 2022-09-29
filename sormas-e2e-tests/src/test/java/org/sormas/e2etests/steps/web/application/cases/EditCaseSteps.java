@@ -2584,13 +2584,8 @@ public class EditCaseSteps implements En {
         "^I check that vaccination is removed from vaccination card on Edit Case page$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-          boolean elementVisible = true;
-
-          try {
-            webDriverHelpers.isElementEnabled(EDIT_VACCINATION_BUTTON);
-          } catch (Throwable ignored) {
-            elementVisible = false;
-          }
+          boolean elementVisible =
+              webDriverHelpers.isElementVisibleWithTimeout(EDIT_VACCINATION_BUTTON, 5);
           softly.assertFalse(elementVisible, "Vaccination ID is visible!");
           softly.assertAll();
         });
