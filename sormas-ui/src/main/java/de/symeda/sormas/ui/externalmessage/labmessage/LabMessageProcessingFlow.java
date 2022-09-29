@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProc
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -58,6 +59,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -312,15 +314,18 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 		SampleReportDto sampleReport = labMessage.getSampleReportsNullSafe().get(sampleReportIndex);
 
+		Date sampleDateTime = sampleReport.getSampleDateTime();
 		addLabelIfAvailable(
 			sampleDetailsLayout,
-			sampleReport.getSampleDateTime().toString(),
+			sampleDateTime == null ? null : sampleDateTime.toString(),
 			ExternalMessageDto.I18N_PREFIX,
 			SampleReportDto.SAMPLE_DATE_TIME);
 		addLabelIfAvailable(sampleDetailsLayout, sampleReport.getLabSampleId(), ExternalMessageDto.I18N_PREFIX, SampleReportDto.LAB_SAMPLE_ID);
+
+		SampleMaterial sampleMaterial = sampleReport.getSampleMaterial();
 		addLabelIfAvailable(
 			sampleDetailsLayout,
-			sampleReport.getSampleMaterial().toString(),
+			sampleMaterial == null ? null : sampleMaterial.toString(),
 			ExternalMessageDto.I18N_PREFIX,
 			SampleReportDto.SAMPLE_MATERIAL);
 
