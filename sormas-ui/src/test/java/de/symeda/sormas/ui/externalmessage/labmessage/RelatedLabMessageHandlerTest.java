@@ -45,6 +45,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -213,19 +214,20 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
 		labMessage.setReportId(null);
-		labMessage.setLabSampleId(null);
+		labMessage.addSampleReport(SampleReportDto.build());
+		labMessage.getSampleReports().get(0).setLabSampleId(null);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessage);
 		assertThat(relatedEntities, is(nullValue()));
 
 		labMessage.setReportId("repId");
-		labMessage.setLabSampleId(null);
+		labMessage.getSampleReports().get(0).setLabSampleId(null);
 
 		relatedEntities = handler.getRelatedEntities(labMessage);
 		assertThat(relatedEntities, is(nullValue()));
 
 		labMessage.setReportId(null);
-		labMessage.setLabSampleId("labSampleId");
+		labMessage.getSampleReports().get(0).setLabSampleId("labSampleId");
 
 		relatedEntities = handler.getRelatedEntities(labMessage);
 		assertThat(relatedEntities, is(nullValue()));
@@ -237,8 +239,9 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		SampleDto sample = createProcessedLabMessage();
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getSample(), equalTo(sample));
@@ -256,14 +259,14 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		//create a processed lab message with same report id
 		creator.createLabMessage((lm) -> {
 			lm.setReportId(reportId);
-			lm.setLabSampleId(labSampleId);
+			lm.addSampleReport(creator.createSampleReport(sample2.toReference()));
+			lm.getSampleReports().get(0).setLabSampleId(labSampleId);
 			lm.setStatus(ExternalMessageStatus.PROCESSED);
-			lm.setSample(sample2.toReference());
 		});
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.getSampleReportsNullSafe().get(0).setLabSampleId(labSampleId);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities, is(nullValue()));
@@ -275,7 +278,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getPerson(), equalTo(person));
@@ -293,14 +297,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		//create a processed lab message with same report id
 		creator.createLabMessage((lm) -> {
 			lm.setReportId(reportId);
-			lm.setLabSampleId(labSampleId);
+			lm.addSampleReport(creator.createSampleReport(sample.toReference()));
+			lm.getSampleReports().get(0).setLabSampleId(labSampleId);
 			lm.setStatus(ExternalMessageStatus.PROCESSED);
-			lm.setSample(sample.toReference());
 		});
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getPerson(), equalTo(person));
@@ -318,19 +323,21 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		//create a processed lab message with same report id
 		creator.createLabMessage((lm) -> {
+			lm.addSampleReport(creator.createSampleReport(sample.toReference()));
 			lm.setReportId(reportId);
-			lm.setLabSampleId(labSampleId);
+			lm.getSampleReports().get(0).setLabSampleId(labSampleId);
 			lm.setStatus(ExternalMessageStatus.PROCESSED);
-			lm.setSample(sample.toReference());
 		});
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
 
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setExternalId(sampleExternalId);
-		labMessageToProcess.setTestReports(Collections.singletonList(testReport));
+		SampleReportDto sampleReport = SampleReportDto.build();
+		sampleReport.addTestReport(testReport);
+		labMessageToProcess.addSampleReport(sampleReport);
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getPathogenTests(), hasSize(1));
@@ -350,12 +357,13 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setExternalId("external");
 
-		labMessageToProcess.setTestReports(Collections.singletonList(testReport1));
+		labMessageToProcess.getSampleReports().get(0).setTestReports(Collections.singletonList(testReport1));
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getUnmatchedTestReports(), hasSize(1));
@@ -377,7 +385,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setExternalId("external2");
@@ -385,7 +394,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setExternalId(null);
 
-		labMessageToProcess.setTestReports(Arrays.asList(testReport1, testReport2));
+		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getUnmatchedTestReports(), hasSize(2));
@@ -400,7 +409,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId + "1");
-		labMessageToProcess.setLabSampleId(labSampleId + "1");
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId + "1");
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
@@ -420,7 +430,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(correctionFlowConfirmation).get();
 
@@ -443,7 +454,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(correctionFlowConfirmation).get();
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(shortcutConfirmation).apply(Mockito.any());
@@ -467,7 +479,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName(person.getFirstName());
 		labMessageToProcess.setPersonLastName("NewLastName");
 		labMessageToProcess.setPersonSex(person.getSex());
@@ -505,11 +518,12 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
-		labMessageToProcess.setSampleMaterial(SampleMaterial.BLOOD);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(SampleMaterial.BLOOD);
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
-		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
-		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
+		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
+		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
 		Mockito.doAnswer(invocation -> {
 			SampleDto originalSample = invocation.getArgument(1);
@@ -549,14 +563,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName(person.getFirstName());
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
-		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(sample.getSampleMaterial());
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
-		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
-		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
+		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
+		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setExternalId("test-external-id");
@@ -564,7 +579,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		testReport.setTestResultVerified(pathogenTest.getTestResultVerified());
 		testReport.setTestDateTime(pathogenTest.getTestDateTime());
 		testReport.setTestType(PathogenTestType.RAPID_TEST);
-		labMessageToProcess.setTestReports(Collections.singletonList(testReport));
+		labMessageToProcess.getSampleReports().get(0).setTestReports(Collections.singletonList(testReport));
 
 		Mockito.doAnswer(invocation -> {
 			PathogenTestDto originalTest = invocation.getArgument(1);
@@ -616,14 +631,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName(person.getFirstName());
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
-		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(sample.getSampleMaterial());
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
-		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
-		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
+		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
+		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setExternalId("test-external-id-1");
@@ -639,7 +655,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		testReport2.setTestDateTime(pathogenTest2.getTestDateTime());
 		testReport2.setTestType(pathogenTest2.getTestType());
 
-		labMessageToProcess.setTestReports(Arrays.asList(testReport1, testReport2));
+		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
 		Mockito.doAnswer(invocation -> {
 			PathogenTestDto originalTest = invocation.getArgument(1);
@@ -693,14 +709,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName(person.getFirstName() + " Changed");
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
-		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(sample.getSampleMaterial());
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
-		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
-		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
+		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
+		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setExternalId("test-external-id-1");
@@ -717,7 +734,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		testReport2.setTestDateTime(newTestDateTime);
 		testReport2.setTestType(PathogenTestType.RAPID_TEST);
 
-		labMessageToProcess.setTestReports(Arrays.asList(testReport1, testReport2));
+		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
 		Mockito.doAnswer(invocation -> {
 			TestReportDto testReport = invocation.getArgument(1);
@@ -751,14 +768,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName(person.getFirstName());
 		labMessageToProcess.setPersonLastName(person.getLastName() + " Changed");
 		labMessageToProcess.setPersonSex(person.getSex());
-		labMessageToProcess.setSampleMaterial(SampleMaterial.BLOOD);
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(SampleMaterial.BLOOD);
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
-		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
-		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
+		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
+		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setExternalId("test-external-id");
@@ -770,7 +788,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setExternalId("test-external-id-2");
 
-		labMessageToProcess.setTestReports(Arrays.asList(testReport1, testReport2));
+		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(correctionFlowConfirmation).get();
 
@@ -793,14 +811,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName(person.getFirstName() + "Changed");
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
-		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(sample.getSampleMaterial());
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
-		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
-		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
+		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
+		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(correctionFlowConfirmation).get();
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(true)).when(shortcutConfirmation).apply(Mockito.any());
@@ -828,14 +847,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName(person.getFirstName() + " Changed");
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
-		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(sample.getSampleMaterial());
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
-		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
-		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
+		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
+		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
@@ -854,14 +874,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName(person.getFirstName());
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
-		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(sample.getSampleMaterial());
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
-		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
-		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
+		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
+		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
@@ -884,7 +905,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 
 		Mockito.doAnswer(invocation -> {
@@ -906,9 +928,10 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
-		labMessageToProcess.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(SampleMaterial.RECTAL_SWAB);
 
 		Mockito.doAnswer(invocation -> {
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).cancel();
@@ -931,9 +954,10 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
-		labMessageToProcess.setSampleOverallTestResult(PathogenTestResultType.POSITIVE);
+		labMessageToProcess.getSampleReports().get(0).setSampleOverallTestResult(PathogenTestResultType.POSITIVE);
 
 		Mockito.doAnswer(invocation -> {
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).next(false);
@@ -965,7 +989,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 
 		Mockito.doAnswer(invocation -> {
@@ -990,9 +1015,10 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
-		labMessageToProcess.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
+		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(SampleMaterial.RECTAL_SWAB);
 
 		Mockito.doAnswer(invocation -> {
 			throw new TestException();
@@ -1017,7 +1043,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false))
@@ -1039,11 +1066,12 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		});
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
-		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.addSampleReport(SampleReportDto.build());
+		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setExternalId("external 2");
-		labMessageToProcess.setTestReports(Collections.singletonList(testReport));
+		labMessageToProcess.getSampleReports().get(0).setTestReports(Collections.singletonList(testReport));
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
@@ -1070,9 +1098,9 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		//create a processed lab message with same report id
 		creator.createLabMessage((lm) -> {
 			lm.setReportId(reportId);
-			lm.setLabSampleId(labSampleId);
+			lm.addSampleReport(creator.createSampleReport(sample.toReference()));
+			lm.getSampleReports().get(0).setLabSampleId(labSampleId);
 			lm.setStatus(ExternalMessageStatus.PROCESSED);
-			lm.setSample(sample.toReference());
 		});
 		return sample;
 	}

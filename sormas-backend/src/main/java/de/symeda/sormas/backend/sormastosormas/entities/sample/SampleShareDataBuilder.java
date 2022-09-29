@@ -32,6 +32,7 @@ import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSorm
 import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
@@ -84,7 +85,8 @@ public class SampleShareDataBuilder
 
 		List<SormasToSormasExternalMessageDto> externalMessages = Collections.emptyList();
 		if (ownerShipHandedOver) {
-			externalMessages = sample.getExternalMessages().stream().map(m -> {
+			externalMessages = sample.getSampleReports().stream().map(r -> {
+				ExternalMessage m = r.getLabMessage();
 				ExternalMessageDto externalMessageDto = externalMessageFacade.toDto(m);
 				externalMessageDto.setAssignee(null);
 

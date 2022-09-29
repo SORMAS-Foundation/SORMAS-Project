@@ -12029,4 +12029,118 @@ DELETE FROM userroles_userrights where userright = 'SORMAS_TO_SORMAS_SHARE' or u
 
 INSERT INTO schema_version (version_number, comment) VALUES (492, 'S2S_New Right_ S2S_Process #10084 - revoke S2S rights');
 
+
+-- 2022-08-11 Introduce sample reports #9109
+CREATE TABLE samplereport
+(
+    id                      bigint      not null,
+    uuid                    varchar(36) not null unique,
+    changedate              timestamp   not null,
+    creationdate            timestamp   not null,
+    sys_period              tstzrange   not null,
+    change_user_id          BIGINT,
+    sampledatetime          timestamp,
+    samplereceiveddate      timestamp,
+    labsampleid             text,
+    samplematerial          varchar(255),
+    samplematerialtext      varchar(255),
+    specimencondition       varchar(255),
+    sampleoveralltestresult varchar(255),
+    sample_id               bigint,
+    labmessage_id           bigint      not null,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE samplereport_history (LIKE samplereport);
+
+ALTER TABLE samplereport ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON samplereport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samplereport_history', true);
+
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON samplereport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('samplereport_history', 'id');
+
+ALTER TABLE samplereport
+    OWNER TO sormas_user;
+ALTER TABLE samplereport_history
+    OWNER TO sormas_user;
+
+
+ALTER TABLE samplereport
+    ADD CONSTRAINT fk_samplereport_labmessage_id FOREIGN KEY (labmessage_id) REFERENCES externalmessage (id);
+ALTER TABLE samplereport
+    ADD CONSTRAINT fk_samplereport_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
+
+DO $$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id,
+                          uuid,
+                          sampledatetime,
+                          samplereceiveddate,
+                          labsampleid,
+                          samplematerial,
+                          samplematerialtext,
+                          specimencondition,
+                          sampleoveralltestresult
+                   FROM externalmessage
+            LOOP
+                INSERT INTO samplereport(id, uuid, changedate, creationdate, sampledatetime, samplereceiveddate,
+                                         labsampleid, samplematerial, samplematerialtext, specimencondition,
+                                         sampleoveralltestresult, labmessage_id)
+                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.sampledatetime,
+                        rec.samplereceiveddate, rec.labsampleid, rec.samplematerial, rec.samplematerialtext,
+                        rec.specimencondition, rec.sampleoveralltestresult, rec.id);
+            END LOOP;
+    END;
+    $$ LANGUAGE plpgsql;
+
+ALTER TABLE externalmessage
+    DROP COLUMN sampledatetime,
+    DROP COLUMN samplereceiveddate,
+    DROP COLUMN labsampleid,
+    DROP COLUMN samplematerial,
+    DROP COLUMN samplematerialtext,
+    DROP COLUMN specimencondition,
+    DROP COLUMN sampleoveralltestresult,
+    DROP COLUMN sample_id;
+
+ALTER TABLE externalmessage_history
+    DROP COLUMN sampledatetime,
+    DROP COLUMN samplereceiveddate,
+    DROP COLUMN labsampleid,
+    DROP COLUMN samplematerial,
+    DROP COLUMN samplematerialtext,
+    DROP COLUMN specimencondition,
+    DROP COLUMN sampleoveralltestresult,
+    DROP COLUMN sample_id;
+
+ALTER TABLE testreport
+    ADD COLUMN samplereport_id bigint;
+ALTER TABLE testreport_history
+    ADD COLUMN samplereport_id bigint;
+
+ALTER TABLE testreport
+    ADD CONSTRAINT fk_testreport_samplereport_id FOREIGN KEY (samplereport_id) REFERENCES samplereport (id);
+
+UPDATE testreport
+SET samplereport_id = (SELECT s.id
+                       FROM samplereport s
+                                LEFT JOIN externalmessage ON s.labmessage_id = externalmessage.id
+                       WHERE externalmessage.id = testreport.labmessage_id);
+
+ALTER TABLE testreport
+    ALTER COLUMN samplereport_id SET not null;
+
+ALTER TABLE testreport
+    DROP COLUMN labmessage_id;
+ALTER TABLE testreport_history
+    DROP COLUMN labmessage_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (493, 'Introduce sample reports #9109');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -49,7 +49,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
-import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -62,8 +62,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
-import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -87,7 +87,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		ExternalMessageIndexDto.REPORTER_POSTAL_CODE,
 		ExternalMessageIndexDto.MESSAGE_DATE_TIME,
 		ExternalMessageIndexDto.STATUS,
-		ExternalMessageIndexDto.SAMPLE_OVERALL_TEST_RESULT,
 		ExternalMessageIndexDto.TESTED_DISEASE);
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -97,12 +96,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@EJB
 	private ExternalMessageService externalMessageService;
-	@EJB
-	private TestReportFacadeEjb.TestReportFacadeEjbLocal testReportFacade;
+
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
+	@EJB
+	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -116,7 +116,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
-		target.setLabSampleId(source.getLabSampleId());
 		target.setTestedDisease(source.getTestedDisease());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
@@ -131,34 +130,26 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonPresentCondition(source.getPersonPresentCondition());
 		target.setPersonStreet(source.getPersonStreet());
 		target.setStatus(source.getStatus());
-		target.setSampleDateTime(source.getSampleDateTime());
-		target.setSampleMaterial(source.getSampleMaterial());
-		target.setSampleMaterialText(source.getSampleMaterialText());
-		target.setSampleReceivedDate(source.getSampleReceivedDate());
-		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
 		target.setReporterCity(source.getReporterCity());
 		target.setReporterExternalIds(source.getReporterExternalIds());
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
-		if (source.getTestReports() != null) {
-			List<TestReport> testReports = new ArrayList<>();
-			for (TestReportDto t : source.getTestReports()) {
-				TestReport testReport = testReportFacade.fromDto(t, target, false);
-				testReports.add(testReport);
-			}
-			target.setTestReports(testReports);
-		}
+
 		target.setReportId(source.getReportId());
-		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 		if (source.getAssignee() != null) {
 			target.setAssignee(userService.getByReferenceDto(source.getAssignee()));
 		} else {
 			target.setAssignee(null);
 		}
-		if (source.getSample() != null) {
-			target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		if (source.getSampleReports() != null) {
+			List<SampleReport> sampleReports = new ArrayList<>();
+			for (SampleReportDto s : source.getSampleReports()) {
+				SampleReport sampleReport = sampleReportFacade.fromDto(s, target, false);
+				sampleReports.add(sampleReport);
+			}
+			target.setSampleReports(sampleReports);
 		}
 		if (source.getCaze() != null) {
 			target.setCaze(caseService.getByReferenceDto(source.getCaze()));
@@ -213,7 +204,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
-		target.setLabSampleId(source.getLabSampleId());
 		target.setTestedDisease(source.getTestedDisease());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
@@ -234,18 +224,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		target.setStatus(source.getStatus());
-		target.setSampleDateTime(source.getSampleDateTime());
-		target.setSampleMaterial(source.getSampleMaterial());
-		target.setSampleMaterialText(source.getSampleMaterialText());
-		target.setSampleReceivedDate(source.getSampleReceivedDate());
-		target.setSpecimenCondition(source.getSpecimenCondition());
-		if (source.getTestReports() != null) {
-			target.setTestReports(source.getTestReports().stream().map(TestReportFacadeEjb::toDto).collect(toList()));
-		}
+
 		target.setReportId(source.getReportId());
-		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
-		if (source.getSample() != null) {
-			target.setSample(source.getSample().toReference());
+		if (source.getSampleReports() != null) {
+			target.setSampleReports(source.getSampleReports().stream().map(sampleReportFacade::toDto).collect(toList()));
 		}
 		if (source.getCaze() != null) {
 			target.setCaze(source.getCaze().toReference());
@@ -350,7 +332,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			labMessage.get(ExternalMessage.REPORTER_NAME),
 			labMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
 			labMessage.get(ExternalMessage.TESTED_DISEASE),
-			labMessage.get(ExternalMessage.SAMPLE_OVERALL_TEST_RESULT),
 			labMessage.get(ExternalMessage.PERSON_FIRST_NAME),
 			labMessage.get(ExternalMessage.PERSON_LAST_NAME),
 			labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),
