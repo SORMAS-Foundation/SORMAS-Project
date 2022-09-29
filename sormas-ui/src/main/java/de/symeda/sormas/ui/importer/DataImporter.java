@@ -438,7 +438,6 @@ public abstract class DataImporter {
 			if (occupationType == null) {
 				throw new IllegalArgumentException();
 			}
-
 			pd.getWriteMethod().invoke(element, occupationType);
 
 			return true;
