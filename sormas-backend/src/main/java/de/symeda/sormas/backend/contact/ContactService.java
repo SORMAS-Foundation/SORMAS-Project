@@ -33,6 +33,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
@@ -58,6 +59,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionFlagsDto;
 import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -74,6 +76,7 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -92,6 +95,7 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -106,12 +110,15 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -128,7 +135,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
-public class ContactService extends AbstractCoreAdoService<Contact> {
+public class ContactService extends AbstractCoreAdoService<Contact>
+	implements JurisdictionFlagsService<Contact, ContactJurisdictionFlagsDto, ContactJoins, ContactQueryContext> {
 
 	@EJB
 	private CaseService caseService;
@@ -182,29 +190,16 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Override
-	public List<Contact> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
-		Root<Contact> from = cq.from(getElementClass());
-
-		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, from);
 		Predicate filter = createActiveContactsFilter(cb, from);
 
 		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(contactQueryContext, null);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
-			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	@Override
@@ -231,16 +226,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Contact> contactFrom, boolean includeExtendedChangeDateFilters) {
 		Join<Object, HealthConditions> healthCondition = contactFrom.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
 		Join<Object, EpiData> epiData = contactFrom.join(Contact.EPI_DATA, JoinType.LEFT);
-		Join<Contact, Sample> contactSampleJoin = contactFrom.join(Contact.SAMPLES, JoinType.LEFT);
-		Join<Contact, Visit> contactVisitJoin = contactFrom.join(Contact.VISITS, JoinType.LEFT);
 
 		builder = super.addChangeDates(builder, contactFrom, includeExtendedChangeDateFilters).add(healthCondition)
 			.add(contactFrom, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES)
-			.add(contactSampleJoin)
-			.add(contactVisitJoin);
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES);
 
 		builder = epiDataService.addChangeDates(builder, epiData);
+
+		if (includeExtendedChangeDateFilters) {
+			Join<Contact, Sample> contactSampleJoin = contactFrom.join(Contact.SAMPLES, JoinType.LEFT);
+			Join<Contact, Visit> contactVisitJoin = contactFrom.join(Contact.VISITS, JoinType.LEFT);
+			builder.add(contactSampleJoin).add(contactSampleJoin, Sample.PATHOGENTESTS).add(contactVisitJoin);
+		}
 
 		return builder;
 	}
@@ -1104,6 +1101,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CaseJoins caseJoins = joins.getCaseJoins();
 		Join<Contact, Case> resultingCase = joins.getResultingCase();
 
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cqc.getQuery(), joins.getPersonJoins());
+
 		if (contactCriteria.getReportingUserRole() != null) {
 			Join<Contact, User> reportingUser = joins.getReportingUser();
 			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
@@ -1286,7 +1285,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, cqc.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
@@ -1410,6 +1413,55 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getDiseaseVariant() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT), contactCriteria.getDiseaseVariant()));
 		}
+		if (contactCriteria.getWithOwnership() != null) {
+			Subquery<Boolean> sharesQuery = cqc.getQuery().subquery(Boolean.class);
+			Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
+			sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
+
+			Subquery<Number> latestRequestDateQuery = cqc.getQuery().subquery(Number.class);
+			Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+			latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+			latestRequestDateQuery.where(
+				cb.equal(
+					shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+					shareInfoFrom.get(SormasToSormasShareInfo.ID)));
+
+			Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
+			sharesQuery.where(
+				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.CONTACT), from.get(Contact.ID)),
+				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
+				cb.equal(
+					requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
+						.get(ShareRequestInfo.REQUEST_STATUS),
+					ShareRequestStatus.ACCEPTED));
+
+			if (Boolean.TRUE.equals(contactCriteria.getWithOwnership())) {
+				filter =
+					CriteriaBuilderHelper.and(
+						cb,
+						filter,
+						cb.and(
+							cb.or(
+								cb.isNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+								cb.equal(
+									from.join(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
+										.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+									true)),
+							cb.not(cb.exists(sharesQuery))));
+			} else {
+				filter =
+					CriteriaBuilderHelper
+						.and(
+							cb,
+							filter,
+							cb.or(
+								cb.equal(
+									from.join(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
+										.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+									false),
+								cb.exists(sharesQuery)));
+			}
+		}
 
 		return filter;
 	}
@@ -1450,18 +1502,16 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		// Delete all visits that are only associated with this contact and Remove the deleted contact from contact_visits
-		contact.getVisits().forEach(visit -> {
-			if (visit.getCaze() == null && visit.getContacts().size() <= 1) {
-				visitService.deletePermanent(visit);
-			} else {
-				Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
-				visit.getContacts().clear();
-				visit.getContacts()
-					.addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
-				visitService.ensurePersisted(visit);
-			}
-		});
+		// Delete all visits that are only associated with this contact
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
+		Root<Visit> visitRoot = cd.from(Visit.class);
+		Subquery<Long> visitContactSubquery = getVisitsContactSubqueryForDelete(cb, cd, visitRoot);
+		cd.where(cb.and(cb.isNull(visitRoot.get(Visit.CAZE).get(Case.ID)), cb.lessThanOrEqualTo(visitContactSubquery, 1L)));
+		em.createQuery(cd).executeUpdate();
+
+		// Remove the contact that will be deleted from contact_visits
+		em.createNativeQuery("delete from contacts_visits cv where cv.contact_id = ?1").setParameter(1, contact.getId()).executeUpdate();
 
 		// Delete documents related to this contact
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
@@ -1483,6 +1533,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		super.deletePermanent(contact);
 	}
 
+	private Subquery<Long> getVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot) {
+		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
+		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
+		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
+		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
+
+		contactVisitsSubquery.select(cb.count(visitContactJoin.get(Contact.ID)));
+
+		return contactVisitsSubquery;
+	}
+
 	private void deleteContactLinks(Contact contact) {
 		// Remove the contact from any sample that is also connected to other entities
 		contact.getSamples().stream().filter(s -> s.getAssociatedCase() != null || s.getAssociatedEventParticipant() != null).forEach(s -> {
@@ -1499,7 +1560,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);
 
-		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF), contact.getId()));
+		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF).get(Contact.ID), contact.getId()));
 		cu.set(Contact.DUPLICATE_OF, null);
 
 		em.createQuery(cu).executeUpdate();
@@ -1548,26 +1609,27 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
 	}
 
-	public boolean inJurisdictionOrOwned(Contact contact, User user) {
+	@Override
+	public ContactJurisdictionFlagsDto getJurisdictionFlags(Contact entity) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Contact> root = cq.from(Contact.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new ContactQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
-		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
+		return getJurisdictionsFlags(Collections.singletonList(entity)).get(entity.getId());
 	}
 
-	public ContactJurisdictionFlagsDto inJurisdictionOrOwned(Contact contact) {
+	@Override
+	public Map<Long, ContactJurisdictionFlagsDto> getJurisdictionsFlags(List<Contact> entities) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ContactJurisdictionFlagsDto> cq = cb.createQuery(ContactJurisdictionFlagsDto.class);
-		Root<Contact> root = cq.from(Contact.class);
-		cq.multiselect(getJurisdictionSelections(new ContactQueryContext(cb, cq, root)));
-		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return getSelectionAttributes(
+			entities,
+			(cb, cq, from) -> getJurisdictionSelections(new ContactQueryContext(cb, cq, from)),
+			e -> new ContactJurisdictionFlagsDto(e));
 	}
 
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> from) {
+		return inJurisdictionOrOwned(new ContactQueryContext(cb, query, from));
+	}
+
+	@Override
 	public Predicate inJurisdictionOrOwned(ContactQueryContext contactQueryContext) {
 		return inJurisdictionOrOwned(contactQueryContext, userService.getCurrentUser());
 	}
@@ -1577,23 +1639,28 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Contact contact) {
+	public EditPermissionType getEditPermissionType(Contact contact) {
 
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(contact).getInJurisdiction() || sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+		if (!inJurisdictionOrOwned(contact)) {
 			return EditPermissionType.REFUSED;
 		}
 
-		return getEditPermissionType(contact);
+		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+			return EditPermissionType.DOCUMENTS_ONLY;
+		}
+
+		return super.getEditPermissionType(contact);
 	}
 
+	@Override
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		final ContactJoins joins = (ContactJoins) qc.getJoins();
+		final ContactJoins joins = qc.getJoins();
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc, userService.getCurrentUser())),
 			JurisdictionHelper.booleanSelector(
@@ -1663,7 +1730,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			: null;
 
 		cu.where(
-			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Contact.PERSON), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(root.get(Contact.PERSON).get(Person.ID), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}

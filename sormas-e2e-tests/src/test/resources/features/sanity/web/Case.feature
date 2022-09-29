@@ -1129,9 +1129,9 @@ Feature: Case end to end tests
     And I click on the Cases button from navbar
     Then I click on the NEW CASE button
     And I click on the person search button in new case form
-    Then I check that National Health ID is not visible in Person search popup
-    And I check that Passport Number is not visible in Person search popup
-    And I check that Nickname is not visible in Person search popup
+    Then I check that Krankenversicherungsnummer is not visible in Person search popup
+    And I check that Reisepassnummer is not visible in Person search popup
+    And I check that Spitzname is not visible in Person search popup
 
   @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
@@ -1677,7 +1677,7 @@ Feature: Case end to end tests
     And I select last created API result in grid in Case Directory for Bulk Action
     And I click on Bulk Actions combobox on Case Directory Page
     And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
-    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory for DE
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory
     And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Case directory
     And I click on Create button in Create Quarantine Order form DE
     And I click on close button in Create Quarantine Order form
@@ -1742,3 +1742,118 @@ Feature: Case end to end tests
     Then I create a new case with specific data and Bayern region
     And I click on New Task from Case page
     And I check that there is only user with Bayern region for task
+
+   @8558 @env_main
+   Scenario: Verify that Page can not be saved if a future date is set for Date of symptom onset
+     Given API: I create a new person
+     And API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given API: I create a new case
+     Then API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given I log in as a National User
+     Then I navigate to the last created case via the url
+     And I navigate to symptoms tab
+     Then I set Fever Symptoms to YES
+     And I set First Symptom as Fever
+     And I set Date of symptom onset to 7 days into the future
+     When I click on save case button in Symptoms tab
+     Then I Verify popup message from Symptoms Tab Contains "Date of symptom onset cannot be in the future"
+
+   @tmsLink=SORQA-478 @env_s2s_1
+     Scenario: Test send case to another instance using S2S connection
+     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+     And API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+     Then API: I check that POST call body is "OK"
+     And API: I check that POST call status code is 200
+     Given I log in as Admin User in Keycloak enabled environment
+     Then I navigate to the last created case via the url
+     And I collect uuid of the case
+     Then I click on share case button
+     And I select organization to share with "s2s_2"
+     Then I click on share button in s2s share popup and wait for share to finish
+     Then I navigate to "s2s_2" environment
+     Given I log in as Admin User in Keycloak enabled environment
+     And I click on the Shares button from navbar
+     Then I click on the The Eye Icon located in the Shares Page
+     And I check if received case id is equal with sent
+
+   @tmsLink=SORDEV-10230 @env_main
+      Scenario: Test Archived entities should always be read-only
+      Then I log in as a Admin User
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      When I create a new case with specific data
+      Then I check the created data is correctly displayed on Edit case page
+      And I collect uuid of the case
+      Then I click on the Cases button from navbar
+      And I apply "Active cases" to combobox on Case Directory Page
+      Then I filter with first Case ID
+      And I click on the first Case ID from Case Directory
+      Then I click on the Archive case button
+      Then I check the end of processing date in the archive popup and select Archive contacts checkbox
+      And I back to the cases list from edit case
+      And I apply "Archived cases" to combobox on Case Directory Page
+      And I check that number of displayed cases results is 1
+      And I apply "All cases" to combobox on Case Directory Page
+      And I check that number of displayed cases results is 1
+
+  @tmsLink=SORDEV-12441 @env_de
+  Scenario: Hide citizenship and country of birth on Edit Case Person page
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I navigate to case person tab
+    Then I check that Citizenship is not visible in Contact Information section for DE version
+    And I check that Country of birth is not visible in Contact Information section for DE version
+
+
+  @tmsLink=SORDEV-9789 @env_de
+  Scenario: Test Move health conditions from clinical course to the case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that "diabetes" Pre-existing condition is visible on page
+    And I check that "immunodeficiencyIncludingHiv" Pre-existing condition is visible on page
+    And I check that "chronicLiverDisease" Pre-existing condition is visible on page
+    And I check that "malignancyChemotherapy" Pre-existing condition is visible on page
+    And I check that "chronicPulmonaryDisease" Pre-existing condition is visible on page
+    And I check that "chronicKidneyDisease" Pre-existing condition is visible on page
+    And I check that "chronicNeurologicCondition" Pre-existing condition is visible on page
+    And I check that "cardiovascularDiseaseIncludingHypertension" Pre-existing condition is visible on page
+    Then I click on Clinical Course tab from Edit Case page
+    Then I check that Clinical Assessments heading is visible in DE
+
+  @tmsLink=SORDEV-9789 @env_de
+  Scenario: Test health conditions document template export
+    Given I log in as a Admin User
+    Then I click on the Cases button from navbar
+    And I click on the Import button from Case directory
+    And I click on the detailed button from import Case tab
+    Then I select the "PreExistingCondition_DetailedImport_Test.csv" CSV file in the file picker
+    And I click on the "DATENIMPORT STARTEN" button from the Import Case popup
+    Then I click to create new person from the Case Import popup
+    And I check that an import success notification appears in the Import Case popup
+    Then I close Import Cases form
+    And I filter by "Margret Schmitt" as a Person's full name on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open last created case
+    When I get the case person UUID displayed on Edit case page
+    And I click on the Create button from Case Document Templates in DE
+    And I select "preExistingConditions.docx" from documents templates list
+    Then I click download in case document create page in DE
+    When I check if downloaded docx file is correct
+
+

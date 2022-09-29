@@ -98,4 +98,13 @@ public class Case {
   String city;
   String areaType;
   String country;
+  String investigatedDate;
+  String quarantineHelpNeeded;
+  String symptoms_temperatureclinicianName;
+  String clinicianPhone;
+  String clinicianEmail;
+  String reportingUserName;
+  String reportingUserRoles;
+  String followUpStatusChangeUserName;
+  String followUpStatusChangeUserRoles;
 }

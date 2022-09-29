@@ -22,7 +22,7 @@ Feature: Country end to end tests
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
     When I navigate to countries tab in Configuration
-    Then I check that number of countries is at least 203
+    Then I check that number of countries is at least 195
     And I check that Albania is correctly displayed
 
   @tmsLink=SORQA-344 @env_de @precon
@@ -30,5 +30,5 @@ Feature: Country end to end tests
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
     When I navigate to countries tab in Configuration
-    Then I check that number of countries is at least 203
+    Then I check that number of countries is at least 195
     And I check that Albania is correctly displayed in German

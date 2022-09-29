@@ -45,8 +45,6 @@ public interface DistrictFacade extends GeoLocationFacade<DistrictDto, DistrictI
 
 	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities);
 
-	List<String> getNamesByIds(List<Long> districtIds);
-
 	String getFullEpidCodeForDistrict(String districtUuid);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids);

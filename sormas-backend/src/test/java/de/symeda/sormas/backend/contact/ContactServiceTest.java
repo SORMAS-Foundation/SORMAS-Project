@@ -31,13 +31,13 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.util.DateHelper8;
 
 public class ContactServiceTest extends AbstractBeanTest {
 
@@ -158,7 +158,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21), UtilDate.toLocalDate(contact.getFollowUpUntil()));
 
 		VisitDto visit = creator.createVisit(
 			caze.getDisease(),
@@ -170,7 +170,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 		// Follow-up until should be increased by one day
 		contact = getContactFacade().getByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21 + 1), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21 + 1), UtilDate.toLocalDate(contact.getFollowUpUntil()));
 
 		visit.setVisitStatus(VisitStatus.COOPERATIVE);
 		visit = getVisitFacade().saveVisit(visit);
@@ -178,7 +178,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 		// Follow-up until should be back at the original date and follow-up should be completed
 		contact = getContactFacade().getByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.COMPLETED, contact.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21), UtilDate.toLocalDate(contact.getFollowUpUntil()));
 
 		// Manually overwrite and increase the follow-up until date
 		contact.setFollowUpUntil(DateUtils.addDays(new Date(), 23));
@@ -207,7 +207,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 		contact.setLastContactDate(DateHelper.addDays(contact.getLastContactDate(), 10));
 		contact = getContactFacade().save(contact);
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
-		assertEquals(LocalDate.now().plusDays(21 + 10), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+		assertEquals(LocalDate.now().plusDays(21 + 10), UtilDate.toLocalDate(contact.getFollowUpUntil()));
 
 		PersonDto person2 = creator.createPerson();
 		ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());

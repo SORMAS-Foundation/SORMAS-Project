@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -77,7 +78,7 @@ public interface SampleFacade {
 
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
 
-	Boolean isSampleEditAllowed(String sampleUuid);
+	Boolean isEditAllowed(String uuid);
 
 	List<SampleDto> getByContactUuids(List<String> contactUuids);
 
@@ -90,4 +91,6 @@ public interface SampleFacade {
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);
 
 	List<SampleDto> getByLabSampleId(String labSampleId);
+
+	List<DiseaseVariant> getAssociatedDiseaseVariants(String sampleUuid);
 }

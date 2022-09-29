@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -28,7 +29,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -113,6 +113,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -130,7 +131,6 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest {
@@ -423,7 +423,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		TaskDto task = tasks.get(0);
 		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
 		assertEquals(TaskStatus.PENDING, task.getTaskStatus());
-		assertEquals(LocalDate.now(), DateHelper8.toLocalDate(task.getDueDate()));
+		assertEquals(LocalDate.now(), UtilDate.toLocalDate(task.getDueDate()));
 		assertEquals(contactOfficer.toReference(), task.getAssigneeUser());
 
 		// task should not be generated multiple times 
@@ -804,8 +804,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			"Signal foo",
 			"A long description for this event",
 			user.toReference(),
-			eventDto -> {
-			});
+			null,
+			null);
 
 		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
 		creator.createEventParticipant(event1.toReference(), person2, user.toReference());
@@ -957,12 +957,27 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		List<Long> ids;
 
-		// test with some random id: returns 0,0,0
+		// 0. test with some random id: returns 0,0,0
 		ids = Arrays.asList(5555L);
 		int[] result = getContactFacade().getContactCountsByCasesForDashboard(ids);
 		assertThat(result[0], equalTo(0));
 		assertThat(result[1], equalTo(0));
 		assertThat(result[2], equalTo(0));
+
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = useNationalAdminLogin();
+
+		// 1. Test with one contact
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
+		ContactDto contact = createContact(user, caze, rdcf);
+		ids = Arrays.asList(getContactService().getByUuid(contact.getUuid()).getId());
+		result = getContactFacade().getContactCountsByCasesForDashboard(ids);
+
+		assertThat(result[0], equalTo(1));
+		assertThat(result[1], equalTo(1));
+		assertThat(result[2], equalTo(1));
 	}
 
 	@Test
@@ -1120,7 +1135,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
 		ContactDto contact = createContact(user, caze, rdcf);
 
-		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		PersonDto contactPerson = getPersonFacade().getByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		EpiDataDto epiData = contact.getEpiData();
 		epiData.setExposureDetailsKnown(YesNoUnknown.YES);
@@ -1142,7 +1157,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setHouseNumber("Test number");
 		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
-		getPersonFacade().savePerson(contactPerson);
+		getPersonFacade().save(contactPerson);
 
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
@@ -1264,7 +1279,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
 		ContactDto contact = createContact(user, caze, rdcf);
 
-		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		PersonDto contactPerson = getPersonFacade().getByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		EpiDataDto epiData = contact.getEpiData();
 		epiData.setExposureDetailsKnown(YesNoUnknown.YES);
@@ -1286,7 +1301,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setHouseNumber("Test number");
 		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
-		getPersonFacade().savePerson(contactPerson);
+		getPersonFacade().save(contactPerson);
 
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
@@ -1792,7 +1807,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonContactDetailDto leadContactDetail =
 			creator.createPersonContactDetail(leadPerson.toReference(), true, PersonContactDetailType.PHONE, "123");
 		leadPerson.setPersonContactDetails(Collections.singletonList(leadContactDetail));
-		getPersonFacade().savePerson(leadPerson);
+		getPersonFacade().save(leadPerson);
 		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
 		RDCF leadRdcf = creator.createRDCF();
 		CaseDataDto sourceCase = creator.createCase(
@@ -1827,7 +1842,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			creator.createPersonContactDetail(otherPerson.toReference(), true, PersonContactDetailType.PHONE, "456");
 		otherPerson.setPersonContactDetails(Collections.singletonList(otherContactDetail));
 		otherPerson.setBirthWeight(2);
-		getPersonFacade().savePerson(otherPerson);
+		getPersonFacade().save(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF();
 		ContactDto otherContact = creator.createContact(
@@ -1890,7 +1905,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
 
-		PersonDto mergedPerson = getPersonFacade().getPersonByUuid(mergedContact.getPerson().getUuid());
+		PersonDto mergedPerson = getPersonFacade().getByUuid(mergedContact.getPerson().getUuid());
 
 		// Check no values
 		assertNull(mergedPerson.getBirthdateDD());
@@ -1970,6 +1985,115 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertTrue(userReferenceDtos.contains(userDto));
 		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
 		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+	}
+
+
+	@Test
+	public void searchContactsByPersonPhone() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
+		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+
+		personWithPhone.getPersonContactDetails().add(primaryPhone);
+		personWithPhone.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithPhone);
+
+		ContactDto contactDto1 = creator.createContact(rdcf, user.toReference(), personWithPhone.toReference());
+		ContactDto contactDto2 = creator.createContact(rdcf, user.toReference(), personWithoutPhone.toReference());
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		List<ContactIndexDetailedDto> contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(2, contactIndexDetailedDtos.size());
+		List<String> uuids = contactIndexDetailedDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(contactDto1.getUuid()));
+		assertTrue(uuids.contains(contactDto2.getUuid()));
+
+		contactCriteria.setPersonLike("111222333");
+		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(1, contactIndexDetailedDtos.size());
+		assertEquals(contactDto1.getUuid(), contactIndexDetailedDtos.get(0).getUuid());
+
+		contactCriteria.setPersonLike("444555666");
+		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(0, contactIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void searchContactsByPersonEmail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
+		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
+
+		PersonContactDetailDto primaryEmail =
+			creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+		PersonContactDetailDto secondaryEmail =
+			creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+
+		personWithEmail.getPersonContactDetails().add(primaryEmail);
+		personWithEmail.getPersonContactDetails().add(secondaryEmail);
+		getPersonFacade().save(personWithEmail);
+
+		ContactDto contactDto1 = creator.createContact(rdcf, user.toReference(), personWithEmail.toReference());
+		ContactDto contactDto2 = creator.createContact(rdcf, user.toReference(), personWithoutEmail.toReference());
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		List<ContactIndexDetailedDto> contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(2, contactIndexDetailedDtos.size());
+		List<String> uuids = contactIndexDetailedDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(contactDto1.getUuid()));
+		assertTrue(uuids.contains(contactDto2.getUuid()));
+
+		contactCriteria.setPersonLike("test1@email.com");
+		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(1, contactIndexDetailedDtos.size());
+		assertEquals(contactDto1.getUuid(), contactIndexDetailedDtos.get(0).getUuid());
+
+		contactCriteria.setPersonLike("test2@email.com");
+		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(0, contactIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void searchContactsByPersonOtherDetail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
+		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
+
+		PersonContactDetailDto primarOtherDetail =
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+		PersonContactDetailDto secondaryOtherDetail =
+			creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+
+		personWithOtherDetail.getPersonContactDetails().add(primarOtherDetail);
+		personWithOtherDetail.getPersonContactDetails().add(secondaryOtherDetail);
+		getPersonFacade().save(personWithOtherDetail);
+
+		ContactDto contactDto1 = creator.createContact(rdcf, user.toReference(), personWithOtherDetail.toReference());
+		ContactDto contactDto2 = creator.createContact(rdcf, user.toReference(), personWithoutOtherDetail.toReference());
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		List<ContactIndexDetailedDto> contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(2, contactIndexDetailedDtos.size());
+		List<String> uuids = contactIndexDetailedDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(contactDto1.getUuid()));
+		assertTrue(uuids.contains(contactDto2.getUuid()));
+
+		contactCriteria.setPersonLike("detail1");
+		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(1, contactIndexDetailedDtos.size());
+		assertEquals(contactDto1.getUuid(), contactIndexDetailedDtos.get(0).getUuid());
+
+		contactCriteria.setPersonLike("detail2");
+		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
+		assertEquals(0, contactIndexDetailedDtos.size());
 	}
 
 	private CaseDataDto createCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcf) {

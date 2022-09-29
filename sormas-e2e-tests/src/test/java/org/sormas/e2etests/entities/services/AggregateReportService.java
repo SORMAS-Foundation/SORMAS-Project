@@ -3,6 +3,8 @@ package org.sormas.e2etests.entities.services;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.AggregateReport;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 
 public class AggregateReportService {
   private final Faker faker;
@@ -16,12 +18,18 @@ public class AggregateReportService {
     return AggregateReport.builder()
         .year("2003")
         .epiWeek("Wk 1-2003 (12/30 - 1/5)")
+        .acuteRespiratoryInfectionsCases(faker.number().numberBetween(2, 12))
+        .acuteRespiratoryInfectionsLabConfirmations(faker.number().numberBetween(2, 12))
+        .acuteRespiratoryInfectionsDeaths(faker.number().numberBetween(2, 12))
         .acuteViralHepatitisCases(faker.number().numberBetween(2, 12))
         .acuteViralHepatitisLabConfirmations(faker.number().numberBetween(2, 12))
         .acuteViralHepatitisDeaths(faker.number().numberBetween(2, 12))
         .buruliUlcerCases(faker.number().numberBetween(2, 12))
         .buruliUlcerLabConfirmations(faker.number().numberBetween(2, 12))
         .buruliUlcerDeaths(faker.number().numberBetween(2, 12))
+        .chikungunyaCases(faker.number().numberBetween(2, 12))
+        .chikungunyaLabConfirmations(faker.number().numberBetween(2, 12))
+        .chikungunyaDeaths(faker.number().numberBetween(2, 12))
         .diarrheaBloodCases(faker.number().numberBetween(2, 12))
         .diarrheaBloodLabConfirmations(faker.number().numberBetween(2, 12))
         .diarrheaBloodDeaths(faker.number().numberBetween(2, 12))
@@ -31,6 +39,9 @@ public class AggregateReportService {
         .diphteriaCases(faker.number().numberBetween(2, 12))
         .diphteriaLabConfirmations(faker.number().numberBetween(2, 12))
         .diphteriaDeaths(faker.number().numberBetween(2, 12))
+        .functionalHypothalamicAmenorrheaCases(faker.number().numberBetween(2, 12))
+        .functionalHypothalamicAmenorrheaLabConfirmations(faker.number().numberBetween(2, 12))
+        .functionalHypothalamicAmenorrheaDeaths(faker.number().numberBetween(2, 12))
         .hivCases(faker.number().numberBetween(2, 12))
         .hivLabConfirmations(faker.number().numberBetween(2, 12))
         .hivDeaths(faker.number().numberBetween(2, 12))
@@ -61,6 +72,12 @@ public class AggregateReportService {
         .pertussisCases(faker.number().numberBetween(2, 12))
         .pertussisDeaths(faker.number().numberBetween(2, 12))
         .pertussisLabConfirmations(faker.number().numberBetween(2, 12))
+        .postImmunizationAdverseEventsMildCases(faker.number().numberBetween(2, 12))
+        .postImmunizationAdverseEventsMildLabConfirmations(faker.number().numberBetween(2, 12))
+        .postImmunizationAdverseEventsMildDeaths(faker.number().numberBetween(2, 12))
+        .postImmunizationAdverseEventsSevereCases(faker.number().numberBetween(2, 12))
+        .postImmunizationAdverseEventsSevereLabConfirmations(faker.number().numberBetween(2, 12))
+        .postImmunizationAdverseEventsSevereDeaths(faker.number().numberBetween(2, 12))
         .rubellaCases(faker.number().numberBetween(2, 12))
         .rubellaLabConfirmations(faker.number().numberBetween(2, 12))
         .rubellaDeaths(faker.number().numberBetween(2, 12))
@@ -173,12 +190,24 @@ public class AggregateReportService {
         .year("2004")
         .epiWeek("Wk 1-2004 (12/29 - 1/4)")
         .acuteViralHepatitisCases(faker.number().numberBetween(2, 12))
+        .buruliUlcerCases(faker.number().numberBetween(2, 12))
         .build();
   }
 
   public AggregateReport buildAggredateReportsForOneDisease() {
     return AggregateReport.builder()
         .acuteViralHepatitisCases(faker.number().numberBetween(2, 12))
+        .build();
+  }
+
+  public AggregateReport buildAggregateReportsForDuplicatesWithJurisdiction() {
+    return AggregateReport.builder()
+        .year("2005")
+        .epiWeek("Wk 6-2005 (1/31 - 2/6)")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .malariaCases(faker.number().numberBetween(2, 12))
+        .tuberculosisDeaths(faker.number().numberBetween(2, 12))
         .build();
   }
 }

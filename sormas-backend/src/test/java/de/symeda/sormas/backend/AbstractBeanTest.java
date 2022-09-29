@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
@@ -77,11 +79,11 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
-import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageFacade;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseFacade;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactFacade;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacade;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -138,6 +140,8 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
@@ -201,11 +205,11 @@ import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSor
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SormasToSormasSampleDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
-import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestService;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
@@ -221,7 +225,6 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleService;
@@ -670,6 +673,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
 	}
 
+	public SormasToSormasOriginInfoFacadeEjbLocal getSormasToSormasOriginInfoFacade() {
+		return getBean(SormasToSormasOriginInfoFacadeEjbLocal.class);
+	}
+
 	public SormasToSormasShareInfoFacadeEjbLocal getSormasToSormasShareInfoFacade() {
 		return getBean(SormasToSormasShareInfoFacadeEjbLocal.class);
 	}
@@ -686,11 +693,11 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasEventFacadeEjbLocal.class);
 	}
 
-	public ExternalMessageFacade getLabMessageFacade() {
+	public ExternalMessageFacade getExternalMessageFacade() {
 		return getBean(ExternalMessageFacadeEjbLocal.class);
 	}
 
-	public ExternalMessageService getLabMessageService() {
+	public ExternalMessageService getExternalMessageService() {
 		return getBean(ExternalMessageService.class);
 	}
 
@@ -806,7 +813,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 		return natUser;
 	}
-
 
 	protected UserDto useNationalAdminLogin() {
 		UserDto natUser = creator.createUser(
@@ -956,5 +962,13 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public TaskService getTaskService() {
 		return getBean(TaskService.class);
+	}
+
+	public SampleReportFacade getSampleReportFacade() {
+		return getBean(SampleReportFacadeEjb.SampleReportFacadeEjbLocal.class);
+	}
+
+	public SampleReportService getSampleReportService() {
+		return getBean(SampleReportService.class);
 	}
 }

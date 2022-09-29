@@ -11446,33 +11446,35 @@ ALTER TABLE userroles ADD COLUMN porthealthuser boolean default false;
 ALTER TABLE userroles_history ADD COLUMN porthealthuser boolean default false;
 ALTER TABLE userroles ADD COLUMN jurisdictionlevel varchar(255);
 ALTER TABLE userroles_history ADD COLUMN jurisdictionlevel varchar(255);
+ALTER TABLE userroles ADD COLUMN linkeddefaultuserrole varchar(255);
+ALTER TABLE userroles_history ADD COLUMN linkeddefaultuserrole varchar(255);
 
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'HOSPITAL_INFORMANT');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_INFORMANT');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EVENT_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'LAB_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EXTERNAL_LAB_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_OBSERVER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'STATE_OBSERVER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISTRICT_OBSERVER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_CLINICIAN');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_INFORMANT');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_NATIONAL_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'IMPORT_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'REST_EXTERNAL_VISITS_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SORMAS_TO_SORMAS_CLIENT');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'BAG_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN', 'ADMIN');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_USER', 'NATIONAL_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_SUPERVISOR', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN_SUPERVISOR', 'ADMIN_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_OFFICER', 'SURVEILLANCE_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'HOSPITAL_INFORMANT', 'HOSPITAL_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_OFFICER', 'COMMUNITY_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_INFORMANT', 'COMMUNITY_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_SUPERVISOR', 'CASE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_OFFICER', 'CASE_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_SUPERVISOR', 'CONTACT_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_OFFICER', 'CONTACT_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EVENT_OFFICER', 'EVENT_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'LAB_USER', 'LAB_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EXTERNAL_LAB_USER', 'EXTERNAL_LAB_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_OBSERVER', 'NATIONAL_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'STATE_OBSERVER', 'STATE_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISTRICT_OBSERVER', 'DISTRICT_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_CLINICIAN', 'NATIONAL_CLINICIAN');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_INFORMANT', 'POE_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_SUPERVISOR', 'POE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_NATIONAL_USER', 'POE_NATIONAL_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'IMPORT_USER', 'IMPORT_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'REST_EXTERNAL_VISITS_USER', 'REST_EXTERNAL_VISITS_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SORMAS_TO_SORMAS_CLIENT', 'SORMAS_TO_SORMAS_CLIENT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'BAG_USER', 'BAG_USER');
 
 ALTER TABLE users_userroles ADD COLUMN userrole_id bigint;
 ALTER TABLE ONLY users_userroles RENAME CONSTRAINT fk_userroles_user_id TO fk_users_userroles_user_id;
@@ -11899,5 +11901,246 @@ UPDATE person_history SET citizenship_id = NULL WHERE citizenship_id IS NOT NULL
 UPDATE person_history SET birthcountry_id = NULL WHERE birthcountry_id IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (486, 'Hide citizenship and country of birth #9598');
+
+-- 2022-08-08 Automatic deletion for S2S share info, origin and requests #8010
+ALTER TABLE immunization_history DROP CONSTRAINT fk_immunization_history_sormastosormasorigininfo_id;
+INSERT INTO schema_version (version_number, comment) VALUES (487, 'Automatic deletion for S2S share info, origin and requests #8010');
+
+-- 2022-08-11 User roles should have optional link to default user role #9645
+
+CREATE OR REPLACE FUNCTION add_column_if_not_exists(in_table TEXT, in_column TEXT, column_type TEXT, in_schema TEXT DEFAULT 'public') RETURNS BOOLEAN AS $_$
+BEGIN
+    PERFORM * FROM information_schema.columns WHERE table_name = in_table AND column_name = in_column AND table_schema = in_schema;
+    IF FOUND THEN
+        RETURN FALSE;
+    ELSE
+        EXECUTE format('ALTER TABLE %s ADD COLUMN %s %s', in_table, in_column, column_type);
+        RETURN TRUE;
+    END IF;
+END
+$_$ LANGUAGE plpgsql VOLATILE;
+
+DO $$ BEGIN
+   PERFORM add_column_if_not_exists( 'userroles', 'linkeddefaultuserrole', 'varchar(255)');
+   PERFORM add_column_if_not_exists( 'userroles_history', 'linkeddefaultuserrole', 'varchar(255)');
+END $$;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (488, 'User roles should have optional link to default user role #9645', true);
+
+-- 2022-08-11 S2S_New Right_ S2S_Process #10084
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'SORMAS_TO_SORMAS_PROCESS' FROM userroles_userrights WHERE userright = 'SORMAS_TO_SORMAS_SHARE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (489, 'S2S_New Right_ S2S_Process #10084');
+
+-- 2022-09-05 #8543 Add backend checks to access documents
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id FROM userroles
+            LOOP
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright in ('CASE_VIEW', 'CONTACT_VIEW', 'EVENT_VIEW', 'ACTION_EDIT', 'TRAVEL_ENTRY_VIEW'))) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('DOCUMENT_VIEW')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright in ('CASE_EDIT', 'CONTACT_EDIT', 'EVENT_EDIT', 'ACTION_EDIT', 'TRAVEL_ENTRY_EDIT'))) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('DOCUMENT_UPLOAD')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright in ('CASE_DELETE', 'CONTACT_DELETE', 'EVENT_DELETE', 'ACTION_DELETE', 'TRAVEL_ENTRY_DELETE'))) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('DOCUMENT_DELETE')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (490, '#8543 Add backend checks to access documents');
+
+
+-- 2022-09-07 Add hash indices to improve getAllAfter fetch #9320
+-- Hint: You can use CREATE INDEX CONCURRENTLY IF NOT EXISTS ... if indices are created before update on running instance to not block other transactions.
+-- DeletableAdo
+CREATE INDEX IF NOT EXISTS idx_campaigns_changedate_uuid_id ON campaigns USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_cases_changedate_uuid_id ON cases USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_contact_changedate_uuid_id ON contact USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_changedate_uuid_id ON eventparticipant USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_events_changedate_uuid_id ON events USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_immunization_changedate_uuid_id ON immunization USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_travelentry_changedate_uuid_id ON travelentry USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_pathogentest_changedate_uuid_id ON pathogentest USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_samples_changedate_uuid_id ON samples USING btree (changedate ASC, uuid ASC, id ASC);
+-- InfrastructureAdo
+CREATE INDEX IF NOT EXISTS idx_areas_changedate_uuid_id ON areas USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_community_changedate_uuid_id ON community USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_continent_changedate_uuid_id ON continent USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_country_changedate_uuid_id ON country USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_district_changedate_uuid_id ON district USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_facility_changedate_uuid_id ON facility USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_pointofentry_changedate_uuid_id ON pointofentry USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_region_changedate_uuid_id ON region USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_subcontinent_changedate_uuid_id ON subcontinent USING btree (changedate ASC, uuid ASC, id ASC);
+-- BaseAdo
+CREATE INDEX IF NOT EXISTS idx_action_changedate_uuid_id ON action USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_additionaltest_changedate_uuid_id ON additionaltest USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_aggregatereport_changedate_uuid_id ON aggregatereport USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_campaigndiagramdefinition_changedate_uuid_id ON campaigndiagramdefinition USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_campaignformdata_changedate_uuid_id ON campaignformdata USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_campaignformmeta_changedate_uuid_id ON campaignformmeta USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_clinicalvisit_changedate_uuid_id ON clinicalvisit USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_customizableenumvalue_changedate_uuid_id ON customizableenumvalue USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_diseaseconfiguration_changedate_uuid_id ON diseaseconfiguration USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_documents_changedate_uuid_id ON documents USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_eventgroups_changedate_uuid_id ON eventgroups USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_externalmessage_changedate_uuid_id ON externalmessage USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_externalshareinfo_changedate_uuid_id ON externalshareinfo USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_featureconfiguration_changedate_uuid_id ON featureconfiguration USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_outbreak_changedate_uuid_id ON outbreak USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_person_changedate_uuid_id ON person USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_populationdata_changedate_uuid_id ON populationdata USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_prescription_changedate_uuid_id ON prescription USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_sharerequestinfo_changedate_uuid_id ON sharerequestinfo USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_sormastosormasorigininfo_changedate_uuid_id ON sormastosormasorigininfo USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_sormastosormasshareinfo_changedate_uuid_id ON sormastosormasshareinfo USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_sormastosormassharerequest_changedate_uuid_id ON sormastosormassharerequest USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_task_changedate_uuid_id ON task USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_treatment_changedate_uuid_id ON treatment USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_userroles_changedate_uuid_id ON userroles USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_users_changedate_uuid_id ON users USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_weeklyreportentry_changedate_uuid_id ON weeklyreportentry USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_weeklyreport_changedate_uuid_id ON weeklyreport USING btree (changedate ASC, uuid ASC, id ASC);
+
+INSERT INTO schema_version (version_number, comment) VALUES (491, 'Add hash indices to improve getAllAfter fetch #9320');
+
+
+-- 2022-09-27 S2S_New Right_ S2S_Process #10084 - revoke S2S rights
+
+DELETE FROM userroles_userrights where userright = 'SORMAS_TO_SORMAS_SHARE' or userright = 'SORMAS_TO_SORMAS_PROCESS';
+
+INSERT INTO schema_version (version_number, comment) VALUES (492, 'S2S_New Right_ S2S_Process #10084 - revoke S2S rights');
+
+
+-- 2022-08-11 Introduce sample reports #9109
+CREATE TABLE samplereport
+(
+    id                      bigint      not null,
+    uuid                    varchar(36) not null unique,
+    changedate              timestamp   not null,
+    creationdate            timestamp   not null,
+    sys_period              tstzrange   not null,
+    change_user_id          BIGINT,
+    sampledatetime          timestamp,
+    samplereceiveddate      timestamp,
+    labsampleid             text,
+    samplematerial          varchar(255),
+    samplematerialtext      varchar(255),
+    specimencondition       varchar(255),
+    sampleoveralltestresult varchar(255),
+    sample_id               bigint,
+    labmessage_id           bigint      not null,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE samplereport_history (LIKE samplereport);
+
+ALTER TABLE samplereport ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON samplereport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samplereport_history', true);
+
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON samplereport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('samplereport_history', 'id');
+
+ALTER TABLE samplereport
+    OWNER TO sormas_user;
+ALTER TABLE samplereport_history
+    OWNER TO sormas_user;
+
+
+ALTER TABLE samplereport
+    ADD CONSTRAINT fk_samplereport_labmessage_id FOREIGN KEY (labmessage_id) REFERENCES externalmessage (id);
+ALTER TABLE samplereport
+    ADD CONSTRAINT fk_samplereport_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
+
+DO $$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id,
+                          uuid,
+                          sampledatetime,
+                          samplereceiveddate,
+                          labsampleid,
+                          samplematerial,
+                          samplematerialtext,
+                          specimencondition,
+                          sampleoveralltestresult
+                   FROM externalmessage
+            LOOP
+                INSERT INTO samplereport(id, uuid, changedate, creationdate, sampledatetime, samplereceiveddate,
+                                         labsampleid, samplematerial, samplematerialtext, specimencondition,
+                                         sampleoveralltestresult, labmessage_id)
+                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.sampledatetime,
+                        rec.samplereceiveddate, rec.labsampleid, rec.samplematerial, rec.samplematerialtext,
+                        rec.specimencondition, rec.sampleoveralltestresult, rec.id);
+            END LOOP;
+    END;
+    $$ LANGUAGE plpgsql;
+
+ALTER TABLE externalmessage
+    DROP COLUMN sampledatetime,
+    DROP COLUMN samplereceiveddate,
+    DROP COLUMN labsampleid,
+    DROP COLUMN samplematerial,
+    DROP COLUMN samplematerialtext,
+    DROP COLUMN specimencondition,
+    DROP COLUMN sampleoveralltestresult,
+    DROP COLUMN sample_id;
+
+ALTER TABLE externalmessage_history
+    DROP COLUMN sampledatetime,
+    DROP COLUMN samplereceiveddate,
+    DROP COLUMN labsampleid,
+    DROP COLUMN samplematerial,
+    DROP COLUMN samplematerialtext,
+    DROP COLUMN specimencondition,
+    DROP COLUMN sampleoveralltestresult,
+    DROP COLUMN sample_id;
+
+ALTER TABLE testreport
+    ADD COLUMN samplereport_id bigint;
+ALTER TABLE testreport_history
+    ADD COLUMN samplereport_id bigint;
+
+ALTER TABLE testreport
+    ADD CONSTRAINT fk_testreport_samplereport_id FOREIGN KEY (samplereport_id) REFERENCES samplereport (id);
+
+UPDATE testreport
+SET samplereport_id = (SELECT s.id
+                       FROM samplereport s
+                                LEFT JOIN externalmessage ON s.labmessage_id = externalmessage.id
+                       WHERE externalmessage.id = testreport.labmessage_id);
+
+ALTER TABLE testreport
+    ALTER COLUMN samplereport_id SET not null;
+
+ALTER TABLE testreport
+    DROP COLUMN labmessage_id;
+ALTER TABLE testreport_history
+    DROP COLUMN labmessage_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (493, 'Introduce sample reports #9109');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

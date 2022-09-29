@@ -14,12 +14,13 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 
 @Stateless
 @LocalBean
@@ -98,7 +99,8 @@ public class SormasToSormasEntitiesHelper {
 
 	public void updateSampleOnShare(Sample sample, SormasToSormasShareInfo sareInfo) {
 		if (sareInfo.isOwnershipHandedOver()) {
-			sample.getExternalMessages().forEach(m -> {
+			sample.getSampleReports().forEach(r -> {
+				ExternalMessage m = r.getLabMessage();
 				m.setStatus(ExternalMessageStatus.FORWARDED);
 				externalMessageService.ensurePersisted(m);
 			});

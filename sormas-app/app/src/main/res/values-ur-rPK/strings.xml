@@ -257,6 +257,17 @@
     <string name="caption_aggregate_deaths_abbr">D</string>
     <string name="caption_start_date_existing">موجودہ آغاز کی تاریخ</string>
     <string name="caption_end_date_existing">موجودہ اختتامی تاریخ</string>
+    <string name="caption_sync_send_new">%1$s. Sending new data…</string>
+    <string name="caption_sync_pull_infrastructure">%1$s. Pulling infrastructure data…</string>
+    <string name="caption_sync_clear_up_infrastructure">%1$s. Clearing up infrastructure data…</string>
+    <string name="caption_sync_delete_obsolete">%1$s. Deleting obsolete data…</string>
+    <string name="caption_sync_clear_up">%1$s. Clearing up data…</string>
+    <string name="caption_sync_synchronize">%1$s. Synchronizing data…</string>
+    <string name="caption_sync_pull_modified">%1$s. Pulling modified data…</string>
+    <string name="caption_sync_repull">%1$s. Repulling all data…</string>
+    <string name="caption_sync_pulled">%1$s pulled</string>
+    <string name="caption_sync_pushed">%1$s/%2$s pushed</string>
+    <string name="caption_sync_deleted">%1$s deleted</string>
     <string name="confirmation_action">کیا آپ واقعی یہ کرنا چاہتے ہیں؟</string>
     <string name="confirmation_delete">کیا آپ واقعی اس ریکارڈ کو مٹا دین اچاہتے ہیں؟</string>
     <string name="confirmation_pick_gps">کیا آپ ابھی اس جگہ پر ہیں؟</string>
@@ -386,7 +397,7 @@
     <string name="heading_surveillance_outbreak"> پھیلاوکی نگرانی</string>
     <string name="heading_symptoms">نشانات و علامات</string>
     <string name="heading_sync_conflicts">مطابقت پذیری کے تنازعات</string>
-    <string name="heading_synchronization">مطابقت پذیری</string>
+    <string name="heading_synchronization">Synchronizing with server…</string>
     <string name="heading_task_edit">کام</string>
     <string name="heading_task_notification">سورماس والےکام چیک کریں</string>
     <string name="heading_task_read">کام کر پڑھیں</string>
@@ -496,6 +507,7 @@
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">پہلے ہی محفوظ کر رہا ہے..</string>
     <string name="message_aggregate_report_found">دھیان دیں: مندرجہ بالا معیار کے لیے ڈپلیکیٹ رپورٹس مل گئی ہیں۔ سرخ نشان زدہ بیماریوں کی رپورٹس پہلے سے موجود ہیں۔</string>
+    <string name="message_aggregate_report_expired_age_groups">عمر کے گروپوں کو \"میعاد ختم\" کے طور پر نشان زد کیا گیا ہے جو عمر کے ایسے گروپ کے موجودہ ڈیٹا پر مبنی ہیں جو اب استعمال نہیں کیا جاتا ہے۔</string>
     <string name="message_case_infrastructure_data_changed">آپ نے اس کیس کا انفراسٹرکچر ڈیٹا تبدیل کر دیا ہے۔ کیا آپ کیس کو صحت کی نئی سہولت گاہ میں منتقل کرنا چاہتے ہیں (اسپتال میں داخے کا ڈیٹا اپ ڈیٹ کیا جائے گا) یا آپ صرف غلطی کو درست کرنے کے لیے ڈیٹا میں ترمیم کرنا چاہتے ہیں؟</string>
     <string name="message_download_app_failed">نئے سورماس ورژن کا ڈاؤن لوڈ ناکام ہو گیا۔ براہ مہربانی یقینی بنائیں کہ آپ کے پاس ممکنہ طور پر بہترین انٹرنیٹ کنکشن ہے اور دوبارہ کوشش کریں یا کسی سپروائزر کو مطلع کریں اگر آپ اچھے انٹرنیٹ کنکشن کے باوجود یہ خرابی ملتی رہتی ہے۔</string>
     <string name="message_empty_password">براہ مہربانی پاس ورڈ درج کریں۔</string>
@@ -573,6 +585,7 @@
     <string name="time_future_x_years">%1$s سال کے اندر</string>
     <string name="time_now">ابھی ابھی</string>
     <string name="time_past_almost_two_years">تقریبا دو سال پہلے</string>
+    <string name="time_past_today">today</string>
     <string name="time_past_one_day">گزشتہ روز</string>
     <string name="time_past_one_hour">تقریبا ایک گھنٹے پہلے</string>
     <string name="time_past_one_minute">ایک منٹ پہلے</string>

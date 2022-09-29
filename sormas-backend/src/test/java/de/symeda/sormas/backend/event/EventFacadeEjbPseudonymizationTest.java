@@ -139,10 +139,11 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {
-		return creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user.toReference(), e -> {
-			e.setResponsibleUser(user.toReference());
-			e.setConnectionNumber("Connect No.");
-		});
+		return creator
+			.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user.toReference(), null, e -> {
+				e.setResponsibleUser(user.toReference());
+				e.setConnectionNumber("Connect No.");
+			});
 	}
 
 	private void assertNotPseudonymized(EventDto event) {

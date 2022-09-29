@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.user.DefaultUserRole;
 import org.junit.After;
 import org.mockito.Mockito;
 
@@ -58,10 +57,11 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -74,8 +74,8 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class SormasToSormasTest extends AbstractBeanTest {
@@ -130,8 +130,27 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		source.setOrganizationId(serverId);
 		source.setSenderName("John doe");
 		source.setOwnershipHandedOver(ownershipHandedOver);
+		source.setComment("Test comment");
 
 		return source;
+	}
+
+	protected SormasToSormasOriginInfoDto createAndSaveSormasToSormasOriginInfo(
+		String serverId,
+		boolean ownershipHandedOver,
+		Consumer<SormasToSormasOriginInfoDto> extraConfig) {
+		SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setSenderName("Test Name");
+		originInfo.setSenderEmail("test@email.com");
+		originInfo.setOrganizationId(serverId);
+		originInfo.setOwnershipHandedOver(ownershipHandedOver);
+
+		if (extraConfig != null) {
+			extraConfig.accept(originInfo);
+		}
+
+		return getSormasToSormasOriginInfoFacade().saveOriginInfo(originInfo);
 	}
 
 	protected PersonDto createPersonDto(TestDataCreator.RDCF rdcf) {

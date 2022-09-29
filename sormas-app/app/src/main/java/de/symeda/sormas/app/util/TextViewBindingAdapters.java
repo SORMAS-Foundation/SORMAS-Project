@@ -921,16 +921,16 @@ public class TextViewBindingAdapters {
 
 	@BindingAdapter(value = {
 		"timeAgoValue",
+		"timeAgoDetailLevelDays",
 		"valueFormat",
 		"defaultValue" }, requireAll = false)
-	public static void setTimeAgoValue(TextView textField, Date dateValue, String valueFormat, String defaultValue) {
+	public static void setTimeAgoValue(TextView textField, Date dateValue, boolean timeAgoDetailLevelDays, String valueFormat, String defaultValue) {
 		String val = defaultValue;
 
 		if (dateValue == null) {
 			textField.setText(val);
 		} else {
-			val = TimeAgo.using(textField.getContext()).with(dateValue);
-
+			val = TimeAgo.using(textField.getContext()).with(dateValue, timeAgoDetailLevelDays);
 			if (valueFormat != null && valueFormat.trim() != "") {
 				textField.setText(String.format(valueFormat, val));
 			} else {
@@ -1178,9 +1178,11 @@ public class TextViewBindingAdapters {
 			if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
 				sb.append(", " + record.getEvent().getEventLocation().getCity());
 			}
-			sb.append(
-				", " + StringUtils.substring(record.getEvent().getEventDesc(), 0, 15)
-					+ (record.getEvent().getEventDesc().length() > 15 ? "..." : ""));
+			if (StringUtils.isNotBlank(record.getEvent().getEventDesc())) {
+				sb.append(
+					", " + StringUtils.substring(record.getEvent().getEventDesc(), 0, 15)
+						+ (record.getEvent().getEventDesc().length() > 15 ? "..." : ""));
+			}
 			result = sb.toString();
 		}
 

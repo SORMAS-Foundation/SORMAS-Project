@@ -88,6 +88,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -128,7 +129,8 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -170,7 +172,7 @@ public class EventParticipantFacadeEjb
 	@EJB
 	private NotificationService notificationService;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
@@ -228,23 +230,14 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date) {
-		return getAllActiveEventParticipantsAfter(date, null, null);
-	}
-
-	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<EventParticipantDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllAfter(date, user, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -334,7 +327,7 @@ public class EventParticipantFacadeEjb
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		FacadeHelper.checkCreateAndEditRights(existingParticipant, userService, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT);
 
-		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
 		}
 
@@ -478,7 +471,7 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
 		Join<EventParticipant, Event> event = joins.getEvent();
-		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
+		final Join<EventParticipant, Sample> samples = joins.getSamples();
 		samples.on(
 			cb.and(
 				cb.isFalse(samples.get(DeletableAdo.DELETED)),
@@ -517,6 +510,8 @@ public class EventParticipantFacadeEjb
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			joins.getSamples().get(Sample.PATHOGEN_TEST_RESULT),
+			joins.getSamples().get(Sample.SAMPLE_DATE_TIME),
 			eventParticipant.get(EventParticipant.VACCINATION_STATUS),
 			joins.getEventParticipantReportingUser().get(User.ID),
 			joins.getEventParticipantReportingUser().get(User.UUID),
@@ -555,6 +550,12 @@ public class EventParticipantFacadeEjb
 				case EventParticipantIndexDto.APPROXIMATE_AGE:
 				case EventParticipantIndexDto.SEX:
 				case EventParticipantIndexDto.LAST_NAME:
+				case SampleIndexDto.PATHOGEN_TEST_RESULT:
+					expression = joins.getSamples().get(SampleIndexDto.PATHOGEN_TEST_RESULT);
+					break;
+				case SampleIndexDto.SAMPLE_DATE_TIME:
+					expression = joins.getSamples().get(SampleIndexDto.SAMPLE_DATE_TIME);
+					break;
 				case EventParticipantIndexDto.FIRST_NAME:
 					expression = person.get(sortProperty.propertyName);
 					break;
@@ -957,7 +958,7 @@ public class EventParticipantFacadeEjb
 		target.setVaccinationStatus(source.getVaccinationStatus());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
 		}
 
 		target.setDeleted(source.isDeleted());
@@ -967,12 +968,11 @@ public class EventParticipantFacadeEjb
 		return target;
 	}
 
-	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
+	@Override
+	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		if (source != null) {
 			validate(dto);
-
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
@@ -1005,7 +1005,7 @@ public class EventParticipantFacadeEjb
 
 		target.setReportingUser(source.getReportingUser().toReference());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
+		target.setPerson(PersonFacadeEjb.toPersonDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
@@ -1023,7 +1023,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
+	protected EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
 		return toReferenceDto(eventParticipant);
 	}
 
@@ -1155,5 +1155,4 @@ public class EventParticipantFacadeEjb
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
 	}
-
 }

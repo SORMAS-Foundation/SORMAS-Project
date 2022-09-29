@@ -16,27 +16,31 @@
 package de.symeda.sormas.backend.travelentry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -112,7 +116,7 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.district,
 			rdcf1.pointOfEntry);
 		creator.createTravelEntry(person.toReference(), nationalUser.toReference(), Disease.DENGUE, rdcf2.region, rdcf2.district, rdcf2.pointOfEntry);
-		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
+		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(UtilDate.yesterday());
 		assertEquals(2, allAfter.size());
 	}
 
@@ -133,7 +137,7 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			.createTravelEntry(person.toReference(), nationalUser.toReference(), Disease.DENGUE, rdcf2.region, rdcf2.district, rdcf2.pointOfEntry);
 
 		loginWith(districtUser1);
-		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
+		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(UtilDate.yesterday());
 		assertEquals(1, allAfter.size());
 		TravelEntryDto travelEntryDto = allAfter.get(0);
 		assertEquals(seenTravelEntry.getUuid(), travelEntryDto.getUuid());
@@ -243,4 +247,53 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 
+	@Test
+	public void testGetDeaContentOfLastTravelEntry() throws InterruptedException {
+
+		loginWith(nationalUser);
+
+		// 0. No data available
+		assertNull(getTravelEntryFacade().getDeaContentOfLastTravelEntry());
+
+		// 1. First travel entry
+		{
+			PersonDto personDto = creator.createPerson();
+			TravelEntryDto travelEntry = creator.createTravelEntry(
+				personDto.toReference(),
+				nationalUser.toReference(),
+				Disease.CORONAVIRUS,
+				rdcf1.region,
+				rdcf1.district,
+				rdcf1.pointOfEntry);
+			travelEntry.setDeaContent(Collections.singletonList(new DeaContentEntry("Something", "feels strange")));
+			getTravelEntryFacade().save(travelEntry);
+
+			List<DeaContentEntry> result = getTravelEntryFacade().getDeaContentOfLastTravelEntry();
+			assertThat(result, hasSize(1));
+			assertThat(result.get(0).getCaption(), equalTo("Something"));
+			assertThat(result.get(0).getValue(), equalTo("feels strange"));
+		}
+
+		// Make sure creationDate is distinct
+		Thread.sleep(1);
+
+		// 2. Second travel entry
+		{
+			PersonDto personDto = creator.createPerson();
+			TravelEntryDto travelEntry = creator.createTravelEntry(
+				personDto.toReference(),
+				nationalUser.toReference(),
+				Disease.CORONAVIRUS,
+				rdcf1.region,
+				rdcf1.district,
+				rdcf1.pointOfEntry);
+			travelEntry.setDeaContent(Collections.singletonList(new DeaContentEntry("Hello", "World")));
+			getTravelEntryFacade().save(travelEntry);
+
+			List<DeaContentEntry> result = getTravelEntryFacade().getDeaContentOfLastTravelEntry();
+			assertThat(result, hasSize(1));
+			assertThat(result.get(0).getCaption(), equalTo("Hello"));
+			assertThat(result.get(0).getValue(), equalTo("World"));
+		}
+	}
 }

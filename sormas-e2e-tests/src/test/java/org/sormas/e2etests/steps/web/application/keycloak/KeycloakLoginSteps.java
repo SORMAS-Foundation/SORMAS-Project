@@ -65,7 +65,7 @@ public class KeycloakLoginSteps implements En {
           webDriverHelpers.fillInWebElement(USERNAME_INPUT, user.getUsername());
           webDriverHelpers.fillInWebElement(PASSWORD_INPUT, user.getPassword());
           webDriverHelpers.clickOnWebElementBySelector(LOGIN_KEYCLOAK_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(USERNAME_TEXT);
         });
     Given(
         "^I am logged in with ([^\"]*) in Keycloak Administrator Page$",

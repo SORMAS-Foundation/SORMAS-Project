@@ -40,6 +40,7 @@ public enum UserRightGroup {
 	STATISTICS,
 	USER,
 	INFRASTRUCTURE,
+	DOCUMENT,
 
 	EXPORT,
 	CONFIGURATION,

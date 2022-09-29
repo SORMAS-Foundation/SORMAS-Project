@@ -179,7 +179,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 					pathogenTestReference,
 					vaccinationReference,
 					readAdditionalVariables(),
-					checkBoxUploadGeneratedDoc.getValue());
+					shouldUploadGeneratedDocument());
 
 				new Notification(
 					I18nProperties.getString(Strings.headingDocumentCreated),
