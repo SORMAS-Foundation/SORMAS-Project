@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.importer;
 
-import de.symeda.sormas.api.importexport.ImportCellData;
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
@@ -29,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJBException;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -49,10 +48,13 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportCellData;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -64,6 +66,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -423,6 +426,23 @@ public abstract class DataImporter {
 
 			return true;
 		}
+
+		if (propertyType.isAssignableFrom(OccupationType.class)) {
+			OccupationType occupationType = null;
+			try {
+				occupationType = FacadeProvider.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, entry);
+			} catch (EJBException e) {
+				//ignore, occupationType will remain null
+			}
+
+			if (occupationType == null) {
+				throw new IllegalArgumentException();
+			}
+			pd.getWriteMethod().invoke(element, occupationType);
+
+			return true;
+		}
+
 		if (propertyType.isAssignableFrom(Date.class)) {
 			String dateFormat = I18nProperties.getUserLanguage().getDateFormat();
 			try {
