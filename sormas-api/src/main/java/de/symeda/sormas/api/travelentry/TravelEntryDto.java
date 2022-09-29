@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -105,7 +104,6 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private PointOfEntryReferenceDto pointOfEntry;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
-	@NotBlank(message = Validations.requiredField)
 	private String pointOfEntryDetails;
 	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase;
