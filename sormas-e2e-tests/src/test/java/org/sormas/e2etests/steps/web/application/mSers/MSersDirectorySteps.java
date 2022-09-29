@@ -27,6 +27,8 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEA
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_INPUT;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getColumnSelectorByName;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getEditButtonByIndex;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getNumberOfSuspectedCasesByIndex;
+import static org.sormas.e2etests.steps.web.application.mSers.CreateNewAggregateReportSteps.duplicateReportWithJurisdiction;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -278,6 +280,22 @@ public class MSersDirectorySteps implements En {
               FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    And(
+        "^I check if displayed numbers of suspected cases are equal to those previously entered for first result in mSers directory page$",
+        () -> {
+          String expectedSuspectedCases =
+              Integer.toString(duplicateReportWithJurisdiction.getMalariaCases());
+          String actualSuspectedCases =
+              webDriverHelpers.getTextFromWebElement(getNumberOfSuspectedCasesByIndex(1));
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      actualSuspectedCases,
+                      expectedSuspectedCases,
+                      "Number of suspected cases visible in grid is different than expected"),
+              10);
         });
   }
 

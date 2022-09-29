@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.backend.contact;
 
-import de.symeda.sormas.backend.person.PersonQueryContext;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +33,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
@@ -110,6 +110,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -225,16 +226,18 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Contact> contactFrom, boolean includeExtendedChangeDateFilters) {
 		Join<Object, HealthConditions> healthCondition = contactFrom.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
 		Join<Object, EpiData> epiData = contactFrom.join(Contact.EPI_DATA, JoinType.LEFT);
-		Join<Contact, Sample> contactSampleJoin = contactFrom.join(Contact.SAMPLES, JoinType.LEFT);
-		Join<Contact, Visit> contactVisitJoin = contactFrom.join(Contact.VISITS, JoinType.LEFT);
 
 		builder = super.addChangeDates(builder, contactFrom, includeExtendedChangeDateFilters).add(healthCondition)
 			.add(contactFrom, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES)
-			.add(contactSampleJoin)
-			.add(contactVisitJoin);
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES);
 
 		builder = epiDataService.addChangeDates(builder, epiData);
+
+		if (includeExtendedChangeDateFilters) {
+			Join<Contact, Sample> contactSampleJoin = contactFrom.join(Contact.SAMPLES, JoinType.LEFT);
+			Join<Contact, Visit> contactVisitJoin = contactFrom.join(Contact.VISITS, JoinType.LEFT);
+			builder.add(contactSampleJoin).add(contactSampleJoin, Sample.PATHOGENTESTS).add(contactVisitJoin);
+		}
 
 		return builder;
 	}
@@ -1283,7 +1286,8 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
 					CriteriaBuilderHelper
 						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
@@ -1498,18 +1502,16 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		// Delete all visits that are only associated with this contact and Remove the deleted contact from contact_visits
-		contact.getVisits().forEach(visit -> {
-			if (visit.getCaze() == null && visit.getContacts().size() <= 1) {
-				visitService.deletePermanent(visit);
-			} else {
-				Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
-				visit.getContacts().clear();
-				visit.getContacts()
-					.addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
-				visitService.ensurePersisted(visit);
-			}
-		});
+		// Delete all visits that are only associated with this contact
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
+		Root<Visit> visitRoot = cd.from(Visit.class);
+		Subquery<Long> visitContactSubquery = getVisitsContactSubqueryForDelete(cb, cd, visitRoot);
+		cd.where(cb.and(cb.isNull(visitRoot.get(Visit.CAZE).get(Case.ID)), cb.lessThanOrEqualTo(visitContactSubquery, 1L)));
+		em.createQuery(cd).executeUpdate();
+
+		// Remove the contact that will be deleted from contact_visits
+		em.createNativeQuery("delete from contacts_visits cv where cv.contact_id = ?1").setParameter(1, contact.getId()).executeUpdate();
 
 		// Delete documents related to this contact
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
@@ -1529,6 +1531,17 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		deleteContactLinks(contact);
 
 		super.deletePermanent(contact);
+	}
+
+	private Subquery<Long> getVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot) {
+		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
+		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
+		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
+		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
+
+		contactVisitsSubquery.select(cb.count(visitContactJoin.get(Contact.ID)));
+
+		return contactVisitsSubquery;
 	}
 
 	private void deleteContactLinks(Contact contact) {

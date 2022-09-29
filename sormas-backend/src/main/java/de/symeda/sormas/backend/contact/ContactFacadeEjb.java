@@ -371,6 +371,8 @@ public class ContactFacadeEjb
 
 		validateUserRights(dto, existingContactDto);
 		validate(dto);
+		dto.setReportDateTime(DataHelper.removeTime(dto.getReportDateTime()));
+		dto.setLastContactDate(DataHelper.removeTime(dto.getLastContactDate()));
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
@@ -496,6 +498,8 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
@@ -504,6 +508,8 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public List<MapContactDto> getContactsForMap(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
@@ -1294,7 +1300,7 @@ public class ContactFacadeEjb
 			Root<Contact> contact2 = cq2.from(Contact.class);
 			cq2.groupBy(contact2.get(Contact.CAZE));
 
-			cq2.where(contact2.get(Contact.CAZE).in(caseIds));
+			cq2.where(contact2.get(Contact.CAZE).get(Case.ID).in(caseIds));
 			cq2.select(cb.count(contact2.get(Contact.ID)));
 
 			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
@@ -1309,6 +1315,8 @@ public class ContactFacadeEjb
 
 	@SuppressWarnings("JpaQueryApiInspection")
 	@Override
+	@RightsAllowed({
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public int getNonSourceCaseCountForDashboard(List<String> caseUuids) {
 
 		AtomicInteger totalCount = new AtomicInteger();
@@ -1486,6 +1494,8 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public List<DashboardContactDto> getContactsForDashboard(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
@@ -1505,6 +1515,8 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria) {
 
 		User user = userService.getCurrentUser();
@@ -1512,12 +1524,16 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
 
 		return service.getNewContactCountPerClassification(contactCriteria);
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
 
 		return service.getNewContactCountPerFollowUpStatus(contactCriteria);

@@ -1291,6 +1291,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return service.getAllActiveUuids();
 	}
 
+	@RightsAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW, })
 	public Long countCasesForMap(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
@@ -1305,6 +1307,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW, })
 	public List<MapCaseDto> getCasesForMap(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
