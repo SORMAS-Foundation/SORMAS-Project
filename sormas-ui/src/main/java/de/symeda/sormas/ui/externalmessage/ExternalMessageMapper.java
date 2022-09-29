@@ -33,6 +33,7 @@ import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -114,39 +115,42 @@ public class ExternalMessageMapper {
 				Mapping.of(location::setCity, location.getCity(), externalMessage.getPersonCity(), PersonDto.ADDRESS, LocationDto.CITY)));
 	}
 
-	public List<String[]> mapToSample(SampleDto sample) {
+	public List<String[]> mapFirstSampleReportToSample(SampleDto sample) {
+		return mapToSample(sample, externalMessage.getSampleReportsNullSafe().get(0));
+	}
+
+	public List<String[]> mapToSample(SampleDto sample, SampleReportDto sampleReport) {
 		List<String[]> changedFields = map(
 			Stream.of(
-				Mapping.of(sample::setSampleDateTime, sample.getSampleDateTime(), externalMessage.getSampleDateTime(), SampleDto.SAMPLE_DATE_TIME),
-				Mapping.of(sample::setSampleMaterial, sample.getSampleMaterial(), externalMessage.getSampleMaterial(), SampleDto.SAMPLE_MATERIAL),
+				Mapping.of(sample::setSampleDateTime, sample.getSampleDateTime(), sampleReport.getSampleDateTime(), SampleDto.SAMPLE_DATE_TIME),
+				Mapping.of(sample::setSampleMaterial, sample.getSampleMaterial(), sampleReport.getSampleMaterial(), SampleDto.SAMPLE_MATERIAL),
 				Mapping.of(
 					sample::setSampleMaterialText,
 					sample.getSampleMaterialText(),
-					externalMessage.getSampleMaterialText(),
+					sampleReport.getSampleMaterialText(),
 					SampleDto.SAMPLE_MATERIAL_TEXT),
 				Mapping.of(
 					sample::setSpecimenCondition,
 					sample.getSpecimenCondition(),
-					externalMessage.getSpecimenCondition(),
+					sampleReport.getSpecimenCondition(),
 					SampleDto.SPECIMEN_CONDITION),
 				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
-		if (externalMessage.getSampleReceivedDate() != null) {
+		if (sampleReport.getSampleReceivedDate() != null) {
 			changedFields.addAll(
 				map(
 					Stream.of(
 						Mapping.of(sample::setReceived, sample.isReceived(), true, SampleDto.RECEIVED),
-						Mapping
-							.of(sample::setReceivedDate, sample.getReceivedDate(), externalMessage.getSampleReceivedDate(), SampleDto.RECEIVED_DATE),
-						Mapping.of(sample::setLabSampleID, sample.getLabSampleID(), externalMessage.getLabSampleId(), SampleDto.LAB_SAMPLE_ID))));
+						Mapping.of(sample::setReceivedDate, sample.getReceivedDate(), sampleReport.getSampleReceivedDate(), SampleDto.RECEIVED_DATE),
+						Mapping.of(sample::setLabSampleID, sample.getLabSampleID(), sampleReport.getLabSampleId(), SampleDto.LAB_SAMPLE_ID))));
 		}
 
 		PathogenTestResultType pathogenTestResult = null;
-		if (externalMessage.getSampleOverallTestResult() != null) {
-			pathogenTestResult = externalMessage.getSampleOverallTestResult();
-		} else if (homogenousTestResultTypesIn(externalMessage)) {
-			pathogenTestResult = externalMessage.getTestReports().get(0).getTestResult();
+		if (sampleReport.getSampleOverallTestResult() != null) {
+			pathogenTestResult = sampleReport.getSampleOverallTestResult();
+		} else if (homogenousTestResultTypesIn(sampleReport)) {
+			pathogenTestResult = sampleReport.getTestReports().get(0).getTestResult();
 		}
 
 		changedFields.addAll(
@@ -371,8 +375,8 @@ public class ExternalMessageMapper {
 		}
 	}
 
-	private boolean homogenousTestResultTypesIn(ExternalMessageDto labMessage) {
-		List<TestReportDto> testReports = labMessage.getTestReports();
+	private boolean homogenousTestResultTypesIn(SampleReportDto sampleReport) {
+		List<TestReportDto> testReports = sampleReport.getTestReports();
 		if (testReports != null && !testReports.isEmpty()) {
 			List<PathogenTestResultType> testResultTypes = testReports.stream().map(TestReportDto::getTestResult).collect(Collectors.toList());
 			return testResultTypes.stream().distinct().count() <= 1;

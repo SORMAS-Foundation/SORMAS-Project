@@ -15,14 +15,16 @@
 
 package de.symeda.sormas.api.externalmessage.labmessage;
 
-import javax.ejb.Remote;
-import javax.validation.Valid;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
-@Remote
-public interface TestReportFacade {
+@DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
+public class SampleReportReferenceDto extends ReferenceDto {
 
-	TestReportDto getByUuid(String uuid);
+	private static final long serialVersionUID = -5497058456244885735L;
 
-	TestReportDto saveTestReport(@Valid TestReportDto dto);
-
+	public SampleReportReferenceDto(String uuid) {
+		setUuid(uuid);
+	}
 }
