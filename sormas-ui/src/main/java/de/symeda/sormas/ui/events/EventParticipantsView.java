@@ -256,17 +256,17 @@ public class EventParticipantsView extends AbstractEventView {
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
-      if (shouldDisableButton())
-			{
-				bulkOperationsDropdown.setEnabled(false);
-			}
+			bulkOperationsDropdown.setEnabled(false);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
 
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-
+			if(shouldDisableButton())
+			{
+				btnEnterBulkEditMode.setEnabled(false);
+			}
 			addHeaderComponent(btnEnterBulkEditMode);
 
 			Button btnLeaveBulkEditMode =
