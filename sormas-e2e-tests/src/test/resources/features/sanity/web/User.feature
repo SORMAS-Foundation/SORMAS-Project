@@ -204,12 +204,6 @@ Feature: Create user
     Then I Verify The User Role filter in the User Management Page
 
   @#7470 @env_main
-  Scenario: Verify User Roles filter functionality
-    Given I log in as a Admin User
-    And I click on the Users from navbar
-    Then I Verify The User Role filter in the User Management Page
-
-  @#7470 @env_main
   Scenario: Verify Region filter functionality
     Given I log in as a Admin User
     And I click on the Users from navbar
