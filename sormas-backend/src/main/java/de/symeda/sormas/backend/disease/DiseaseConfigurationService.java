@@ -8,6 +8,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
@@ -31,6 +32,23 @@ public class DiseaseConfigurationService extends AdoServiceWithUserFilter<Diseas
 
 		cq.select(root);
 		return em.createQuery(cq).setParameter(diseaseParam, disease).getResultList().stream().findFirst().orElse(null);
+	}
+
+	public Subquery<Long> existActiveDisease(CriteriaQuery cq, CriteriaBuilder cb, Root<?> root, String diseaseFieldName) {
+		Subquery sub = cq.subquery(Long.class);
+		Root subRoot = sub.from(DiseaseConfiguration.class);
+
+		sub.select(cb.count(subRoot));
+
+		sub.where(
+			cb.and(
+				cb.equal(subRoot.get(DiseaseConfiguration.DISEASE), root.get(diseaseFieldName)),
+				cb.or(cb.isNull(subRoot.get(DiseaseConfiguration.PRIMARY_DISEASE)), cb.isTrue(subRoot.get(DiseaseConfiguration.PRIMARY_DISEASE))),
+				cb.or(
+					cb.isNull(subRoot.get(DiseaseConfiguration.CASE_SURVEILLANCE_ENABLED)),
+					cb.isTrue(subRoot.get(DiseaseConfiguration.CASE_SURVEILLANCE_ENABLED)))));
+
+		return sub;
 	}
 
 	@SuppressWarnings("rawtypes")
