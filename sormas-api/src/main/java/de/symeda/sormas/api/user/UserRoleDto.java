@@ -62,7 +62,7 @@ public class UserRoleDto extends EntityDto {
 	private String description;
 	private boolean hasOptionalHealthFacility = true;
 	private boolean hasAssociatedDistrictUser = true;
-	private boolean portHealthUser = true;
+	private boolean portHealthUser = false;
 	private JurisdictionLevel jurisdictionLevel;
 	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
 	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();

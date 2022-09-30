@@ -341,8 +341,6 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		contact.setReportingUser(null);
 		contact.setContactOfficer(null);
 		contact.setResultingCaseUser(null);
-		contact.setReportLat(null);
-		contact.setReportLon(null);
 		contact.setReportLatLonAccuracy(20F);
 
 		getContactFacade().save(contact);
