@@ -232,7 +232,7 @@ Feature: Create user
     Then I click the Update button in the Update Password Modal located in the Edit User Page
     Then I Verify the New Password Modal in the Edit User Page
 
-  @#7470_1 @env_main
+  @#7470 @env_main
   Scenario: Validate phone number field
     Given I log in as a Admin User
     And I click on the Users from navbar
