@@ -54,7 +54,7 @@ public class PersonsView extends AbstractView {
 	private final PersonCriteria criteria;
 	private final FilteredGrid<?, PersonCriteria> grid;
 	private Label noAccessLabel;
-	private LinkedHashMap<Button, String> associationButtons;
+	private LinkedHashMap<Button, PersonAssociation> associationButtons;
 	private Button activeAssociationButton;
 	private PersonFilterForm filterForm;
 	private final Map<PersonAssociation, Boolean> associationAllowedValues = new EnumMap<>(PersonAssociation.class);
@@ -189,6 +189,8 @@ public class PersonsView extends AbstractView {
 
 		if (criteria.getPersonAssociation() != null && !isPersonAssociationAllowed(criteria.getPersonAssociation())) {
 			PersonAssociation firstAllowedAssociation = getFirstAllowedPersonAssociation();
+			// The following line is needed because we want to correct the value in PersonCriteria in order to have a consistent state; setting the default association is 
+			// necessary because calling PersonCriteria.setPersonAssociation with null throws an exception.
 			criteria.setPersonAssociation(firstAllowedAssociation != null ? firstAllowedAssociation : PersonCriteria.DEFAULT_ASSOCIATION);
 		}
 
@@ -203,7 +205,7 @@ public class PersonsView extends AbstractView {
 
 		associationButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-			b.setCaption(PersonAssociation.valueOf(associationButtons.get(b)).toString());
+			b.setCaption(associationButtons.get(b).toString());
 			if (b.getData() == criteria.getPersonAssociation()) {
 				activeAssociationButton = b;
 			}
@@ -211,8 +213,7 @@ public class PersonsView extends AbstractView {
 		if (activeAssociationButton != null) {
 			CssStyles.removeStyles(activeAssociationButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeAssociationButton.setCaption(
-				PersonAssociation.valueOf(associationButtons.get(activeAssociationButton))
-					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
 
@@ -280,7 +281,7 @@ public class PersonsView extends AbstractView {
 
 			associationFilterLayout.addComponent(associationButton);
 			associationFilterLayout.setComponentAlignment(associationButton, Alignment.MIDDLE_LEFT);
-			associationButtons.put(associationButton, association.name());
+			associationButtons.put(associationButton, association);
 		}
 
 		Label emptyLabel = new Label("");
@@ -293,10 +294,10 @@ public class PersonsView extends AbstractView {
 
 	private PersonAssociation getFirstAllowedPersonAssociation() {
 
-		Iterator<String> associationsIterator = associationButtons.values().iterator();
-		PersonAssociation defaultAssociation = associationsIterator.hasNext() ? PersonAssociation.valueOf(associationsIterator.next()) : null;
+		Iterator<PersonAssociation> associationsIterator = associationButtons.values().iterator();
+		PersonAssociation defaultAssociation = associationsIterator.hasNext() ? associationsIterator.next() : null;
 		if (defaultAssociation == PersonAssociation.ALL) {
-			defaultAssociation = associationsIterator.hasNext() ? PersonAssociation.valueOf(associationsIterator.next()) : null;
+			defaultAssociation = associationsIterator.hasNext() ? associationsIterator.next() : null;
 		}
 		return defaultAssociation;
 	}
