@@ -2454,7 +2454,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					caseCriteria.setPerson(existingPerson.toReference());
 					caseCriteria.setOutcome(CaseOutcome.DECEASED);
 					if (count(caseCriteria, true) == 0) {
-						newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
+						newCase.getPerson().setPresentCondition(newCase.getOutcome() == CaseOutcome.NO_OUTCOME ? PresentCondition.UNKNOWN : PresentCondition.ALIVE);
 						newCase.getPerson().setBurialDate(null);
 						newCase.getPerson().setDeathDate(null);
 						newCase.getPerson().setDeathPlaceDescription(null);
