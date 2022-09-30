@@ -177,7 +177,7 @@ public class DashboardDataProvider {
 		setCaseWithReferenceDefinitionFulfilledCount(Long.valueOf(casesWithReferenceDefinitionFulfilled.size()));
 	}
 
-	private void refreshDataForSelectedDisease() {
+	public void refreshDataForSelectedDisease() {
 
 		// Update the entities lists according to the filters
 
@@ -358,8 +358,6 @@ public class DashboardDataProvider {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
-
-		this.refreshDataForSelectedDisease();
 	}
 
 	public Date getFromDate() {

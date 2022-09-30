@@ -826,6 +826,7 @@ public interface Strings {
 	String infoMergingMergeDescription = "infoMergingMergeDescription";
 	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoMoreDetailsAboutHospitalization = "infoMoreDetailsAboutHospitalization";
+	String infoNoAccessToPersonEntities = "infoNoAccessToPersonEntities";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
