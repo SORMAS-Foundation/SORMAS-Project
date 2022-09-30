@@ -20,13 +20,6 @@ import static de.symeda.sormas.api.audit.Constants.deletePrefix;
 import static de.symeda.sormas.api.audit.Constants.executePrefix;
 import static de.symeda.sormas.api.audit.Constants.readPrefix;
 import static de.symeda.sormas.api.audit.Constants.updatePrefix;
-import static org.reflections.ReflectionUtils.Fields;
-import static org.reflections.ReflectionUtils.Methods;
-import static org.reflections.scanners.Scanners.FieldsAnnotated;
-import static org.reflections.scanners.Scanners.MethodsAnnotated;
-import static org.reflections.scanners.Scanners.SubTypes;
-import static org.reflections.scanners.Scanners.TypesAnnotated;
-import static org.reflections.util.ReflectionUtilsPredicates.withAnnotation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -35,12 +28,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -61,15 +52,12 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.AuditEntityType;
 import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
-import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
-import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
@@ -92,7 +80,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	private FhirContext fhirContext;
 	private IParser fhirJsonParser;
 	private String auditSourceSite;
-	private Reflections reflections;
+//	private Reflections reflections;
 	private Map<String, AuditEvent.AuditEventAction> actionBackendMap;
 	private static final Map<String, AuditEvent.AuditEventAction> actionRestMap = new HashMap<String, AuditEvent.AuditEventAction>() {
 
@@ -145,7 +133,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		fhirContext = FhirContext.forR4();
 		fhirJsonParser = fhirContext.newJsonParser();
-		reflections = new Reflections("de.symeda.sormas.api", SubTypes, TypesAnnotated, FieldsAnnotated, MethodsAnnotated);
+		// FIXME #10377: Checking if reflections causes blocking deployment
+//		reflections = new Reflections("de.symeda.sormas.api", SubTypes, TypesAnnotated, FieldsAnnotated, MethodsAnnotated);
 	}
 
 	private void accept(AuditEvent event) {
@@ -664,28 +653,36 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	private String getClassNameAnnotatedWithAuditedClass(final Class<?> type) {
-		return cachedClassName.computeIfAbsent(type, k -> {
-			Optional<Class<?>> foundName =
-				reflections.get(SubTypes.of(TypesAnnotated.with(AuditedClass.class)).asClass()).stream().filter(c -> c.equals(type)).findFirst();
-			return foundName.map(Class::getSimpleName).orElse(null);
 
-		});
+		// FIXME #10377: Checking if reflections causes blocking deployment
+		return null;
+//		return cachedClassName.computeIfAbsent(type, k -> {
+//			Optional<Class<?>> foundName =
+//				reflections.get(SubTypes.of(TypesAnnotated.with(AuditedClass.class)).asClass()).stream().filter(c -> c.equals(type)).findFirst();
+//			return foundName.map(Class::getSimpleName).orElse(null);
+//		});
 	}
 
 	private List<Field> getFieldsAnnotatedWithAuditInclude(Class<?> type) {
-		return cachedAnnotatedFields.computeIfAbsent(type, k -> {
-			Set<Field> fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditInclude.class)));
-			final ArrayList<Field> fields = new ArrayList<>(fieldsFound);
-			return fields.stream().sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
-		});
+
+		// FIXME #10377: Checking if reflections causes blocking deployment
+		return new ArrayList<>();
+//		return cachedAnnotatedFields.computeIfAbsent(type, k -> {
+//			Set<Field> fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditInclude.class)));
+//			final ArrayList<Field> fields = new ArrayList<>(fieldsFound);
+//			return fields.stream().sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
+//		});
 	}
 
 	private List<Method> getMethodsAnnotatedWithAuditInclude(final Class<?> type) {
-		return cachedAnnotatedMethods.computeIfAbsent(type, k -> {
-			Set<Method> methodsFound = reflections.get(Methods.of(type).filter(withAnnotation(AuditInclude.class)));
-			final ArrayList<Method> methods = new ArrayList<>(methodsFound);
-			return methods.stream().sorted(Comparator.comparing(Method::getName)).collect(Collectors.toList());
-		});
+
+		// FIXME #10377: Checking if reflections causes blocking deployment
+		return new ArrayList<>();
+//		return cachedAnnotatedMethods.computeIfAbsent(type, k -> {
+//			Set<Method> methodsFound = reflections.get(Methods.of(type).filter(withAnnotation(AuditInclude.class)));
+//			final ArrayList<Method> methods = new ArrayList<>(methodsFound);
+//			return methods.stream().sorted(Comparator.comparing(Method::getName)).collect(Collectors.toList());
+//		});
 	}
 
 	private class AgentDetails {
