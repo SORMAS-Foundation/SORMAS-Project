@@ -272,16 +272,27 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	private void fillImportDropdown(Panel containerPanel) {
-
+		
+		
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
-		if (campaignReferenceDto != null) {
+		
+		String phase = campaignFormPhaseSelector.getValue();
+		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
+		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
+
+		if (phase != null && campaignReferenceDto != null) {
+			
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences;
 			if (UserProvider.getCurrent().getUser().getUsertype().equals(UserType.WHO_USER)) {
 				campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
-						.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
+						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(campaignReferenceDto.getUuid());
+						
 			} else {
+				String phases = "pre-campaign";
 				campagaignFormReferences =  FacadeProvider.getCampaignFormMetaFacade()
-						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(campaignReferenceDto.getUuid());;
+						.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phases,
+								campaignReferenceDto.getUuid(), userFormAccess);
+						
 			}
 
 			Collections.sort(campagaignFormReferences);
@@ -317,14 +328,14 @@ public class CampaignDataView extends AbstractCampaignView {
 	private void fillNewFormDropdown(Panel containerPanel) {
 
 		CampaignReferenceDto campaignReferenceDtx = campaignSelector.getValue();
-		String campaignReferenceDto = campaignFormPhaseSelector.getValue();
+		String phase = campaignFormPhaseSelector.getValue();
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
 		
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
 
-		if (campaignReferenceDto != null && campaignReferenceDtx != null) {
+		if (phase != null && campaignReferenceDtx != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
-					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(campaignReferenceDto.toLowerCase(),
+					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
 							campaignReferenceDtx.getUuid(), userFormAccess);
 		
 			

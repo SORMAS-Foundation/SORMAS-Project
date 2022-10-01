@@ -186,7 +186,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 	}
 
 	public Set<Community> getByReferenceDto(Set<CommunityReferenceDto> community) {
-		Set<Community> communities = new HashSet<Community>();
+		Set<Community> communities = new HashSet<Community>(); 
 		for (CommunityReferenceDto com : community) {
 			if (com != null && com.getUuid() != null) {
 				Community result = getByUuid(com.getUuid());

@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.campaign.campaigndata;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.text.WordUtils;
@@ -29,6 +30,7 @@ import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.campaign.CampaignPhase;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
@@ -39,6 +41,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.ui.UserProvider;
@@ -124,10 +127,10 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 						.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM_META),
 						200));
 		// add filter based on user type
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
-			System.out.println("11111111111111111111111111111111111111");
-			cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
-		}
+//		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+//			System.out.println("11111111111111111111111111111111111111");
+//			//cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+//		}
 
 		FieldHelper.addSoftRequiredStyle(cbCampaignForm);
 
@@ -250,36 +253,42 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	@Override
 	protected void applyDependenciesOnNewValue(CampaignFormDataCriteria criteria) {
 		cbCampaignForm.removeAllItems();
-
+CampaignReferenceDto campaignReferenceDto = criteria.getCampaign();
+		
+		String phase = criteria.getFormType();
+		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
 		if (criteria.getCampaign() != null && getPhaseFilterContent() == null) { // set the value of the campaign form
 																					// dropdown
-			if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
+			//if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
-						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(criteria.getCampaign().getUuid()));
-			} else {
-				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
-						.getCampaignFormMetasAsReferencesByCampaign(criteria.getCampaign().getUuid()));
-			}
+						.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
+								campaignReferenceDto.getUuid(), userFormAccess));
+//			} else {
+//				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
+//						.getCampaignFormMetasAsReferencesByCampaign(criteria.getCampaign().getUuid()));
+//			}
 		} else if (criteria.getCampaign() != null && getPhaseFilterContent() != null
 				&& !"ALL PHASES".equals(getPhaseFilterContent())) {
-			if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
+			//if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 
-				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
-						.getAllCampaignFormMetasAsReferencesByRoundandCampaign(getPhaseFilterContent().toLowerCase(),
-								criteria.getCampaign().getUuid()));
-			}
-		} else if (getPhaseFilterContent() != null && criteria.getCampaign() == null) {
-			if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
-
-				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
-						.getAllCampaignFormMetasAsReferencesByRound(getPhaseFilterContent().toLowerCase()));
-			}
-		} else {
-			if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
-				cbCampaignForm
-						.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
-			}
+			cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
+					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
+							campaignReferenceDto.getUuid(), userFormAccess));
+				/*
+				 * } } else if (getPhaseFilterContent() != null && criteria.getCampaign() ==
+				 * null) { if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
+				 * 
+				 * cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
+				 * .getAllCampaignFormMetasAsReferencesByRound(getPhaseFilterContent().
+				 * toLowerCase())); }
+				 */
 		}
+				//else {
+//			if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
+//				cbCampaignForm
+//						.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+//			}
+//		}
 	}
 
 	public void setFormMetaChangedCallback(Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback) {

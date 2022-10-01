@@ -71,6 +71,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private static final String USER_DATA_HEADING_LOC = "userDataHeadingLoc";
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
+	private String communityUUID;
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -86,7 +87,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					
                     loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
-                    fluidRowLocs(UserDto.USER_NAME) +
+                    fluidRowLocs(UserDto.USER_NAME, "") +
                     fluidRowLocs(UserDto.FORM_ACCESS, UserDto.USER_ROLES) +
                     fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT) +
                     fluidRowLocs(UserDto.COMMUNITY) +
@@ -161,45 +162,55 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         
         ComboBox area = addInfrastructureField(UserDto.AREA);
         ComboBox region = addInfrastructureField(UserDto.REGION);
+        ComboBox district = addInfrastructureField(UserDto.DISTRICT);
         
         addField(UserDto.COMMUNITY, OptionGroup.class);
+        
         OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
      // Lay the items out horizontally
         community.addStyleName("horizontal");
         community.setMultiSelect(true);
         community.setWidthFull();
-     //   community.setValue(UserDto.COMMUNITY);
+       // community.setValue(UserDto.COMMUNITY);
         
-        ComboBox district = addInfrastructureField(UserDto.DISTRICT);
+        
+      //  UserDto userDtoxx = FacadeProvider.getUserFacade().getByUuid(communityUUID);
+        System.out.println(communityUUID+" :))))))))(((((((((((dddddddddddddddd: ");
 
-        community.setValue("11111111111");
+       // community.setValue(userDtoxx.getCommunity());
         
         area.addValueChangeListener(e -> {
-        	community.clear();
+        	//community.clear();
             FieldHelper.removeItems(region);
             AreaReferenceDto areaDto = (AreaReferenceDto) e.getProperty().getValue();
             FieldHelper
                     .updateItems(region, areaDto != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(areaDto.getUuid()) : null);
         });
         
-       
+        System.out.println("ddddddddddddddddddddddddddddregion setting event chNGER!!ssssssssssefasdfa");
         region.addValueChangeListener(e -> {
-        	
+        	System.out.println("ddddddddddddddddddddddddddddregion CHANGES!!ssssssssssefasdfa");
         	FieldHelper.removeItems(district);
             RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
+            System.out.println("ddddddddddddddddddddddddddddregion CHANGES!!ssssssssssefasdfa");
             FieldHelper
                     .updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
         });
         
         district.addValueChangeListener(e -> {
-            DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+        	  DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+        	  System.out.println(districtDto+" vvvvvvvddddddDISTRICT CHANGES!!ssssssssssefasdfa:"+ e.getProperty().getValue());
+              
+      		
             community.clear();
             
             UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
+          //  FacadeProvider.getUserFacade().getByUuid(userUuid);
             Set<CommunityReferenceDto> data = Collections.<CommunityReferenceDto>emptySet();
             currentUser.setCommunity(data);
             FacadeProvider.getUserFacade().saveUser(currentUser);
-            
+        	  System.out.println(districtDto+" ddddddddddddddddddddddddddddDISTRICT CHANGES!!ssssssssssefasdfa:"+ e.getProperty().getValue());
+              
 			if (districtDto != null) {
 				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade()
 						.getAllActiveByDistrict(districtDto.getUuid());
@@ -212,6 +223,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         });
         
        community.addValueChangeListener(e -> {
+    	  // System.out.println("dddddddddddddddddddddddddddd communityDto CHANGES!!ssssssssssefasdfa:"+ e.getProperty().getValue());
     	  // CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
      });
         		
@@ -220,25 +232,25 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
         ComboBox healthFacility = addInfrastructureField(UserDto.HEALTH_FACILITY);
         ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY); //white-space: nowrap;
-        
-        district.addValueChangeListener(e -> {
-            FieldHelper.removeItems(healthFacility);
-            FieldHelper.removeItems(associatedOfficer);
-            FieldHelper.removeItems(cbPointOfEntry);
-            DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-            //FieldHelper.updateItems(
-              //      community,
-                //    districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-            FieldHelper.updateItems(
-                    healthFacility,
-                    districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
-            FieldHelper.updateItems(
-                    associatedOfficer,
-                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
-            FieldHelper.updateItems(
-                    cbPointOfEntry,
-                    districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
-        });
+//        
+//        district.addValueChangeListener(e -> {
+//            FieldHelper.removeItems(healthFacility);
+//            FieldHelper.removeItems(associatedOfficer);
+//            FieldHelper.removeItems(cbPointOfEntry);
+//            DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+//            //FieldHelper.updateItems(
+//              //      community,
+//                //    districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+//            FieldHelper.updateItems(
+//                    healthFacility,
+//                    districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
+//            FieldHelper.updateItems(
+//                    associatedOfficer,
+//                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
+//            FieldHelper.updateItems(
+//                    cbPointOfEntry,
+//                    districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
+//        });
 
         ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
@@ -253,7 +265,30 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
         addFieldListeners(UserDto.LAST_NAME, e -> suggestUserName());
         addFieldListeners(UserDto.USER_ROLES, e -> updateFieldsByUserRole());
+       // addFieldListeners(UserDto.DISTRICT, e -> updateCommunityFields());
         updateFieldsByUserRole();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void updateCommunityFields() {
+    	final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
+		final Set<UserRole> userRoles = (Set<UserRole>) userRolesField.getValue();
+    	final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(userRoles);
+    	final boolean hasAssociatedOfficer = UserRole.hasAssociatedOfficer(userRoles);
+    	final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
+		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity;
+		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
+		final boolean useArea = jurisdictionLevel == JurisdictionLevel.AREA || useRegion;
+		
+		final OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
+		community.setVisible(useCommunity);
+		setRequired(useCommunity, UserDto.COMMUNITY);
+		System.out.println("))))))))))))))))))(((((((((((((((( : "+useCommunity);
+		
+		if (useCommunity) {
+			community.clear();
+		}	
+
     }
 
     @SuppressWarnings("unchecked")
@@ -363,7 +398,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
     @Override
     public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
-
+    	 System.out.println(userDto.getCommunity()+" ddddddddddddddddSET VALUESsssssssefasdf");
+    	 
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.removeAllItems();
         userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
@@ -371,7 +407,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
         formAccess.removeAllItems();
         formAccess.addItems(UserUiHelper.getAssignableForms());
-
 
         super.setValue(userDto);
     }

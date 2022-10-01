@@ -602,6 +602,7 @@ public final class FieldHelper {
 		if (items != null) {
 			select.setItems(items);
 		}
+		System.out.println("_+_+rrrrrrrrrrrrrrrr_+_+_+++++++++++++++: "+value);
 		//select.setValue(value);
 		select.setReadOnly(readOnly);
 	}
@@ -620,6 +621,7 @@ public final class FieldHelper {
 		} else {
 			removeItems(select);
 		}
+		System.out.println("_+_cccccccccccccccccc_+_+_+++++++++++++++: "+value);
 		select.setReadOnly(readOnly);
 	}
 
