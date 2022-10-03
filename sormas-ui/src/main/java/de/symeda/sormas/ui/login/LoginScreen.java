@@ -345,7 +345,16 @@ public class LoginScreen extends CssLayout {
 
 	private void login(String username, String password) {
 		if (LoginHelper.login(username, password)) {
-			loginListener.loginSuccessful();
+			if (LoginHelper.hasApplicationRight()) {
+				loginListener.loginSuccessful();
+			} else {
+				showNotification(
+					new Notification(
+						I18nProperties.getString(Strings.headingLoginFailed),
+						I18nProperties.getString(Strings.errorNoAccessToWeb),
+						Notification.Type.WARNING_MESSAGE));
+			}
+
 		} else {
 			showNotification(
 				new Notification(
