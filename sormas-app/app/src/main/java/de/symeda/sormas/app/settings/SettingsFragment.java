@@ -128,6 +128,7 @@ public class SettingsFragment extends BaseLandingFragment {
 				try {
 					User user = ConfigProvider.getUser() != null ? DatabaseHelper.getUserDao().queryUuid(ConfigProvider.getUser().getUuid()) : null;
 					if (user != null) {
+						DatabaseHelper.getUserDao().loadUserRoles(user);
 						DatabaseHelper.getUserDao().saveAndSnapshot(user);
 					}
 					if (newLanguage != null) {
