@@ -32,16 +32,10 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRightGroup;
 import de.symeda.sormas.api.user.UserRoleDto;
 
 public class UserProvider {
-
-	private static final List configurationUserRoles = Arrays.asList(
-		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
-		UserRight.INFRASTRUCTURE_VIEW,
-		UserRight.LINE_LISTING_CONFIGURE,
-		UserRight.OUTBREAK_VIEW,
-		UserRight.POPULATION_MANAGE);
 
 	private static final List userUserRoles = Arrays.asList(UserRight.USER_VIEW, UserRight.USER_ROLE_VIEW);
 
@@ -86,7 +80,7 @@ public class UserProvider {
 
 	public boolean hasConfigurationAccess() {
 		Set<UserRight> currentUserRights = getUserRights();
-		return configurationUserRoles.stream().anyMatch(currentUserRights::contains);
+		return UserRight.getUserRightsOfGroup(UserRightGroup.CONFIGURATION).stream().anyMatch(currentUserRights::contains);
 	}
 
 	public boolean hasUserAccess() {
