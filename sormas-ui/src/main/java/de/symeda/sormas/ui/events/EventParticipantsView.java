@@ -263,8 +263,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-			if(shouldDisableButton())
-			{
+			if (shouldDisableButton()) {
 				btnEnterBulkEditMode.setEnabled(false);
 			}
 			addHeaderComponent(btnEnterBulkEditMode);
