@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
@@ -60,11 +59,6 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoCampaignsDashboard));
 		dashboardLayout.setExpandRatio(filterLayout, 0);
 		dashboardLayout.setSizeFull();
-	}
-
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		refreshDashboard();
 	}
 
 	@SuppressWarnings("deprecation")
