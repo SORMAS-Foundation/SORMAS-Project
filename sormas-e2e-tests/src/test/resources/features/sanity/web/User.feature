@@ -232,8 +232,8 @@ Feature: Create user
     And I click on the Users from navbar
     When I go to USER ROLES tab
     Then I get row count from User Roles tab
-    Then I set enabled filter to Enabled in User Roles tab
-    Then I set enabled filter to Disabled in User Roles tab
+    Then I set enabled filter to Aktiviert in User Roles tab
+    Then I set enabled filter to Deaktiviert in User Roles tab
     Then I compare that actual row coutner is less than first one
 
   @tmsLink=SORDEV-12437 @env_de

@@ -137,18 +137,11 @@ public class UserManagementSteps implements En {
     When(
         "I check if downloaded xlsx file is correct",
         () -> {
-          String file = String.format("./downloads/sormas_benutzerrollen_%s_.xlsx", java.time.LocalDate.now());
-
-          /*
-            String file =
+          String file =
               String.format(
-                  "c:\\Users\\lukas\\Downloads\\sormas_benutzerrollen_%s_.xlsx",
-                  java.time.LocalDate.now());
-
-           */
+                  "./downloads/sormas_benutzerrollen_%s_.xlsx", java.time.LocalDate.now());
           System.out.println(java.time.LocalDate.now());
           String firstRow = "";
-
           FileInputStream xlsx = new FileInputStream(file);
           Workbook document = new XSSFWorkbook(xlsx);
           Sheet dataSheet = document.getSheetAt(0);
@@ -156,11 +149,8 @@ public class UserManagementSteps implements En {
           Row currentRow = iterator.next();
           Iterator<Cell> cellIterator = currentRow.iterator();
           while (cellIterator.hasNext()) {
-
             Cell currentCell = cellIterator.next();
-
             firstRow = firstRow.concat(currentCell.getStringCellValue() + " ");
-            // System.out.println(currentCell.getStringCellValue() + " ");
           }
           System.out.println(firstRow);
           Assert.assertTrue(
