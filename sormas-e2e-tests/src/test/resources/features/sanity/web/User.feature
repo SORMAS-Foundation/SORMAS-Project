@@ -241,5 +241,6 @@ Feature: Create user
     Given I log in as a Admin User
     And I click on the Users from navbar
     When I go to USER ROLES tab
-    Then I export user rolex xslx file
+    Then I export user roles xlsx file
+    When I check if downloaded xlsx file is correct
 
