@@ -127,13 +127,14 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Active");
-          // TODO Remove sleep
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfActiveUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Inactive");
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfInactiveUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
@@ -154,8 +155,8 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, "National User");
-          // TODO Remove sleep
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfSpecificUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
@@ -177,8 +178,8 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_USER_MANAGEMENT, "Bayern");
-          // TODO Remove sleep
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfSpecificUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));

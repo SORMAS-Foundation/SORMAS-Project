@@ -40,4 +40,5 @@ public class UserManagementPage {
       By.cssSelector("[class*='thin_square']");
   public static final By USERS_COUNTER_USER_MANAGEMENT =
       By.cssSelector("[class*='v-label-align-right v-label-undef-w']");
+  public static final By LOADING_INDICATOR = By.cssSelector("[class='v-loading-indicator first']");
 }
