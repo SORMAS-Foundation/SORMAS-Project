@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.pseudonymization.ValuePseudonymizer;
 
 public class DefaultValuePseudonymizer<T> extends ValuePseudonymizer<T> {
@@ -27,6 +28,15 @@ public class DefaultValuePseudonymizer<T> extends ValuePseudonymizer<T> {
 
 	@Override
 	public T pseudonymizeValue(T value) {
-		return value instanceof String ? (T) stringValuePlaceholder : null;
+		return getPseudonymizedValue(value);
+	}
+
+	@Override
+	public boolean isValuePseudonymized(T value) {
+		return DataHelper.equal(value, getPseudonymizedValue(value));
+	}
+
+	private T getPseudonymizedValue(T originalValue) {
+		return originalValue instanceof String ? (T) stringValuePlaceholder : null;
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.event;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -30,9 +29,10 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
 @ExportEntity(EventDto.class)
-public class EventExportDto implements Serializable {
+public class EventExportDto extends AbstractUuidDto {
 
 	public static final String I18N_PREFIX = "EventExport";
 
@@ -44,7 +44,6 @@ public class EventExportDto implements Serializable {
 	public static final String CONTACT_COUNT = "contactCount";
 	public static final String CONTACT_COUNT_SOURCE_IN_EVENT = "contactCountSourceInEvent";
 
-	private String uuid;
 	private String externalId;
 	private String externalToken;
 	private String internalToken;
@@ -155,7 +154,7 @@ public class EventExportDto implements Serializable {
 		boolean isInJurisdictionOrOwned,
 		EventManagementStatus eventManagementStatus,
 		EventIdentificationSource eventIdentificationSource) {
-		this.uuid = uuid;
+		super(uuid);
 		this.externalId = externalId;
 		this.externalToken = externalToken;
 		this.internalToken = internalToken;
@@ -206,12 +205,9 @@ public class EventExportDto implements Serializable {
 	@Order(0)
 	@ExportProperty(EventDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
+	@Override
 	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+		return super.getUuid();
 	}
 
 	@Order(1)

@@ -1,16 +1,11 @@
 package de.symeda.sormas.backend.travelentry.services;
 
-import java.util.Date;
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -30,12 +25,17 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 		super(TravelEntry.class);
 	}
 
-	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
-		return TravelEntryJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> from) {
+		return inJurisdictionOrOwned(new TravelEntryQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc) {
 		return inJurisdictionOrOwned(qc, userService.getCurrentUser());
+	}
+	
+	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
+		return TravelEntryJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
@@ -61,37 +61,16 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 		return filter;
 	}
 
-	public List<TravelEntry> getAllActiveAfter(Date date) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TravelEntry> cq = cb.createQuery(getElementClass());
-		Root<TravelEntry> from = cq.from(getElementClass());
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> from) {
 
 		Predicate filter = createDefaultFilter(cb, from);
-		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, from);
-
 		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(travelEntryQueryContext);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(TravelEntry.CHANGE_DATE)));
-		cq.distinct(true);
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	@Override
-	public List<TravelEntry> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		return getAllActiveAfter(date);
+		return filter;
 	}
 
 	@Override
@@ -102,5 +81,4 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 
 		return super.addChangeDates(builder, travelEntryFrom, includeExtendedChangeDateFilters);
 	}
-
 }

@@ -21,7 +21,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.Event;

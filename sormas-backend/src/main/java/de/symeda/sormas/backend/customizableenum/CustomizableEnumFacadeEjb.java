@@ -132,7 +132,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			.findFirst()
 			.orElseThrow(
 				() -> new CustomEnumNotFoundException(
-					"Invalid enum value " + value + " for customizable enum type " + type.toString() + "and disease " + disease.toString()));
+					"Invalid enum value " + value + " for customizable enum type " + type + " and disease " + disease));
 	}
 
 	/**

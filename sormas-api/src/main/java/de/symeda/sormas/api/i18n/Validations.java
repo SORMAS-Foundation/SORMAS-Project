@@ -178,6 +178,7 @@ public interface Validations {
 	String sormasToSormasAcceptContactHasNoCase = "sormasToSormasAcceptContactHasNoCase";
 	String sormasToSormasAcceptContactWithoutCaseShared = "sormasToSormasAcceptContactWithoutCaseShared";
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
+	String sormasToSormasCommentMissing = "sormasToSormasCommentMissing";
 	String sormasToSormasCommunity = "sormasToSormasCommunity";
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactCaseNotShared = "sormasToSormasContactCaseNotShared";

@@ -346,6 +346,7 @@ public interface Strings {
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String errorWritingTemplate = "errorWritingTemplate";
+	String externalMessageMultipleSampleReports = "externalMessageMultipleSampleReports";
 	String ExternalSurveillanceToolGateway_confirmDeleteCase = "ExternalSurveillanceToolGateway.confirmDeleteCase";
 	String ExternalSurveillanceToolGateway_confirmDeleteEvent = "ExternalSurveillanceToolGateway.confirmDeleteEvent";
 	String ExternalSurveillanceToolGateway_confirmSendCase = "ExternalSurveillanceToolGateway.confirmSendCase";
@@ -825,6 +826,7 @@ public interface Strings {
 	String infoMergingMergeDescription = "infoMergingMergeDescription";
 	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoMoreDetailsAboutHospitalization = "infoMoreDetailsAboutHospitalization";
+	String infoNoAccessToPersonEntities = "infoNoAccessToPersonEntities";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
@@ -1120,6 +1122,7 @@ public interface Strings {
 	String messageMissingCases = "messageMissingCases";
 	String messageMissingDateFilter = "messageMissingDateFilter";
 	String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
+	String messageMultipleSampleReports = "messageMultipleSampleReports";
 	String messageNoCaseFound = "messageNoCaseFound";
 	String messageNoCaseFoundToLinkImmunization = "messageNoCaseFoundToLinkImmunization";
 	String messageNoCasesSelected = "messageNoCasesSelected";

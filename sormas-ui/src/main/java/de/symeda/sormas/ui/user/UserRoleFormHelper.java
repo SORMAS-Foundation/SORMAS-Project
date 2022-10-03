@@ -47,10 +47,21 @@ public class UserRoleFormHelper {
 			Arrays.asList(JurisdictionLevel.COMMUNITY, JurisdictionLevel.HEALTH_FACILITY),
 			true);
 		FieldHelper
+			.setDisabledWhen(
+				fieldGroup,
+				UserRoleDto.JURISDICTION_LEVEL,
+				JurisdictionLevel.HEALTH_FACILITY,
+				UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY,
+				false);
+		FieldHelper
 			.setDisabledWhen(fieldGroup, UserRoleDto.JURISDICTION_LEVEL, JurisdictionLevel.POINT_OF_ENTRY, UserRoleDto.PORT_HEALTH_USER, false);
 		fieldGroup.getField(UserRoleDto.JURISDICTION_LEVEL).addValueChangeListener(e -> {
 			CheckBox portHealthUserCb = (CheckBox) fieldGroup.getField(UserRoleDto.PORT_HEALTH_USER);
 			portHealthUserCb.setValue(e.getProperty().getValue() == JurisdictionLevel.POINT_OF_ENTRY);
+
+			CheckBox optionalHealthFacilityCb = (CheckBox) fieldGroup.getField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY);
+			//initial default false should be set for any jurisdiction level
+			optionalHealthFacilityCb.setValue(false);
 		});
 	}
 

@@ -20,7 +20,7 @@ package de.symeda.sormas.backend.common;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public class AdoAttributes implements Serializable, HasUuid {
 

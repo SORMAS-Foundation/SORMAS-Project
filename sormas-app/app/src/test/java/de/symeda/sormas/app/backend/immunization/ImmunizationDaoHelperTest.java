@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.app.backend.immunization;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,6 +24,8 @@ import java.util.List;
 
 import static de.symeda.sormas.app.backend.immunization.ImmunizationDaoHelper.overlappingDateRangeImmunizations;
 
+import de.symeda.sormas.api.utils.DateHelper;
+
 public class ImmunizationDaoHelperTest {
 
 	@Test
@@ -32,55 +33,56 @@ public class ImmunizationDaoHelperTest {
 		final Date now = new Date();
 		final List<Immunization> immunizations = getImmunizationListOfOneEntryWithDateRange(null, null);
 
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, now, new DateTime().plusDays(5).toDate()).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, now, DateHelper.addDays(now, 5)).size());
 		Assert.assertEquals(
 			1,
-			overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(10).toDate(), new DateTime().minusDays(5).toDate()).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(10).toDate(), null).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(30).toDate(), null).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, new DateTime().minusDays(10).toDate()).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, new DateTime().minusDays(30).toDate()).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, new DateTime().plusDays(1).toDate(), null).size());
+			overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 10), DateHelper.subtractDays(now, 5)).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 10), null).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 30), null).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, DateHelper.subtractDays(now, 10)).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, DateHelper.subtractDays(now, 30)).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.addDays(now, 1), null).size());
 		Assert.assertEquals(
 			1,
-			overlappingDateRangeImmunizations(immunizations, new DateTime().plusDays(1).toDate(), new DateTime().plusDays(100).toDate()).size());
+			overlappingDateRangeImmunizations(immunizations, DateHelper.addDays(now, 1), DateHelper.addDays(now, 100)).size());
 	}
 
 	@Test
 	public void testOverlappingDateRangeImmunizationsForExistingRange() {
 		final Date now = new Date();
-		final List<Immunization> immunizations = getImmunizationListOfOneEntryWithDateRange(new DateTime().minusDays(20).toDate(), now);
+		final List<Immunization> immunizations = getImmunizationListOfOneEntryWithDateRange(DateHelper.subtractDays(now, 20), now);
 
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, now, new DateTime().plusDays(5).toDate()).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, now, DateHelper.addDays(now, 5)).size());
 		Assert.assertEquals(
-			1,
-			overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(10).toDate(), new DateTime().minusDays(5).toDate()).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(10).toDate(), null).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(30).toDate(), null).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, new DateTime().minusDays(10).toDate()).size());
-		Assert.assertEquals(0, overlappingDateRangeImmunizations(immunizations, null, new DateTime().minusDays(30).toDate()).size());
-		Assert.assertEquals(0, overlappingDateRangeImmunizations(immunizations, new DateTime().plusDays(1).toDate(), null).size());
+				1,
+				overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 10), DateHelper.subtractDays(now, 5)).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 10), null).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 30), null).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, DateHelper.subtractDays(now, 10)).size());
+		Assert.assertEquals(0, overlappingDateRangeImmunizations(immunizations, null, DateHelper.subtractDays(now, 30)).size());
+		Assert.assertEquals(0, overlappingDateRangeImmunizations(immunizations, DateHelper.addDays(now, 1), null).size());
 		Assert.assertEquals(
-			0,
-			overlappingDateRangeImmunizations(immunizations, new DateTime().plusDays(1).toDate(), new DateTime().plusDays(100).toDate()).size());
+				0,
+				overlappingDateRangeImmunizations(immunizations, DateHelper.addDays(now, 1), DateHelper.addDays(now, 100)).size());
 	}
 
 	@Test
 	public void testOverlappingDateRangeImmunizationsForExistingStartDate() {
 		final Date now = new Date();
-		final List<Immunization> immunizations = getImmunizationListOfOneEntryWithDateRange(new DateTime().minusDays(20).toDate(), null);
+		final List<Immunization> immunizations = getImmunizationListOfOneEntryWithDateRange(DateHelper.subtractDays(now, 20), null);
 
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, now, new DateTime().plusDays(5).toDate()).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, now, DateHelper.addDays(now, 5)).size());
 		Assert.assertEquals(
-			1,
-			overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(10).toDate(), new DateTime().minusDays(5).toDate()).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(10).toDate(), null).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, new DateTime().minusDays(10).toDate()).size());
-		Assert.assertEquals(0, overlappingDateRangeImmunizations(immunizations, null, new DateTime().minusDays(30).toDate()).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, new DateTime().plusDays(1).toDate(), null).size());
+				1,
+				overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 10), DateHelper.subtractDays(now, 5)).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 10), null).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 30), null).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, DateHelper.subtractDays(now, 10)).size());
+		Assert.assertEquals(0, overlappingDateRangeImmunizations(immunizations, null, DateHelper.subtractDays(now, 30)).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.addDays(now, 1), null).size());
 		Assert.assertEquals(
-			1,
-			overlappingDateRangeImmunizations(immunizations, new DateTime().plusDays(1).toDate(), new DateTime().plusDays(100).toDate()).size());
+				1,
+				overlappingDateRangeImmunizations(immunizations, DateHelper.addDays(now, 1), DateHelper.addDays(now, 100)).size());
 	}
 
 	@Test
@@ -88,17 +90,17 @@ public class ImmunizationDaoHelperTest {
 		final Date now = new Date();
 		final List<Immunization> immunizations = getImmunizationListOfOneEntryWithDateRange(null, now);
 
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, now, new DateTime().plusDays(5).toDate()).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, now, DateHelper.addDays(now, 5)).size());
 		Assert.assertEquals(
-			1,
-			overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(10).toDate(), new DateTime().minusDays(5).toDate()).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, new DateTime().minusDays(10).toDate(), null).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, new DateTime().minusDays(10).toDate()).size());
-		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, new DateTime().minusDays(30).toDate()).size());
-		Assert.assertEquals(0, overlappingDateRangeImmunizations(immunizations, new DateTime().plusDays(1).toDate(), null).size());
+				1,
+				overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 10), DateHelper.subtractDays(now, 5)).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, DateHelper.subtractDays(now, 10), null).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, DateHelper.subtractDays(now, 10)).size());
+		Assert.assertEquals(1, overlappingDateRangeImmunizations(immunizations, null, DateHelper.subtractDays(now, 30)).size());
+		Assert.assertEquals(0, overlappingDateRangeImmunizations(immunizations, DateHelper.addDays(now, 1), null).size());
 		Assert.assertEquals(
-			0,
-			overlappingDateRangeImmunizations(immunizations, new DateTime().plusDays(1).toDate(), new DateTime().plusDays(100).toDate()).size());
+				0,
+				overlappingDateRangeImmunizations(immunizations, DateHelper.addDays(now, 1), DateHelper.addDays(now, 100)).size());
 	}
 
 	private List<Immunization> getImmunizationListOfOneEntryWithDateRange(Date startDate, Date endDate) {

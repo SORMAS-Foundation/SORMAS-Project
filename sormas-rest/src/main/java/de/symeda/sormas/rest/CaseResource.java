@@ -61,7 +61,7 @@ public class CaseResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<CaseDataDto> getAllCases(@PathParam("since") long since) {
-		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since));
+		return FacadeProvider.getCaseFacade().getAllAfter(new Date(since));
 	}
 
 	@GET
@@ -70,7 +70,7 @@ public class CaseResource extends EntityDtoResource {
 		@PathParam("since") long since,
 		@PathParam("size") int size,
 		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
-		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since), size, lastSynchronizedUuid);
+		return FacadeProvider.getCaseFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST

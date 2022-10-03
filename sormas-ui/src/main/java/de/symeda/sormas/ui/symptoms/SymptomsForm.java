@@ -42,8 +42,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.joda.time.DateTimeComparator;
-
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
@@ -80,6 +78,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.utils.DateComparator;
 import de.symeda.sormas.api.utils.SymptomGroup;
 import de.symeda.sormas.api.utils.SymptomGrouping;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -257,8 +256,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			// If the symptom onset date is after the hospital admission date, show a warning but don't prevent the user from saving
 			onsetDateField.addValueChangeListener(event -> {
 				if (caze.getHospitalization().getAdmissionDate() != null
-					&& DateTimeComparator.getDateOnlyInstance().compare(caze.getHospitalization().getAdmissionDate(), onsetDateField.getValue())
-						< 0) {
+					&& DateComparator.getDateInstance().compare(caze.getHospitalization().getAdmissionDate(), onsetDateField.getValue()) < 0) {
 					onsetDateField.setComponentError(new ErrorMessage() {
 
 						@Override

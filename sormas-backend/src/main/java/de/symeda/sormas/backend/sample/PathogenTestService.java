@@ -43,13 +43,13 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
@@ -57,7 +57,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class PathogenTestService extends AbstractDeletableAdoService<PathogenTest> {
+public class PathogenTestService extends AbstractDeletableAdoService<PathogenTest> implements JurisdictionCheckService<PathogenTest> {
 
 	@EJB
 	private SampleService sampleService;
@@ -66,28 +66,17 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		super(PathogenTest.class);
 	}
 
-	public List<PathogenTest> getAllActivePathogenTestsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());
-		Root<PathogenTest> from = cq.from(getElementClass());
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PathogenTest> from) {
 
 		Predicate filter = createActiveTestsFilter(cb, cq, from);
 
-		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -253,7 +242,9 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		return getBySampleUuids(Collections.singletonList(sampleUuid), ordered);
 	}
 
-	public Predicate buildCriteriaFilter(PathogenTestCriteria pathogenTestCriteria, CriteriaBuilder cb, CriteriaQuery cq, Root<PathogenTest> from) {
+	@SuppressWarnings("rawtypes")
+	private Predicate buildCriteriaFilter(PathogenTestCriteria pathogenTestCriteria, CriteriaBuilder cb, CriteriaQuery cq, Root<PathogenTest> from) {
+
 		Predicate filter = createActiveTestsFilter(cb, cq, from);
 
 		if (pathogenTestCriteria.getSample() != null) {
@@ -329,7 +320,8 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
 	 * {@link EventParticipant#deleted}
 	 */
-	public Predicate createActiveTestsFilter(CriteriaBuilder cb, CriteriaQuery cq, Root<PathogenTest> root) {
+	@SuppressWarnings("rawtypes")
+	private Predicate createActiveTestsFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PathogenTest> root) {
 
 		Join<PathogenTest, Sample> sample = root.join(PathogenTest.SAMPLE, JoinType.LEFT);
 		return sampleService.createActiveSamplesFilter(new SampleQueryContext(cb, cq, sample));
@@ -360,5 +352,20 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		cu.where(root.get(PathogenTest.UUID).in(pathogenTestUuids));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(PathogenTest entity) {
+		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<PathogenTest> entities) {
+		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, PathogenTest> from) {
+
+		return sampleService.inJurisdictionOrOwned(new SampleQueryContext(cb, query, from.join(PathogenTest.SAMPLE)));
 	}
 }

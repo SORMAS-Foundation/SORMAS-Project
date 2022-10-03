@@ -15,10 +15,9 @@
 
 package de.symeda.sormas.app.sample.edit;
 
-import org.joda.time.DateTimeComparator;
-
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
@@ -27,17 +26,13 @@ public class SampleValidator {
 	static void initializeSampleValidation(final FragmentSampleEditLayoutBinding contentBinding) {
 		ResultCallback<Boolean> sampleDateCallback = () -> {
 			// Must not be after date of shipment
-			if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.sampleSampleDateTime.getValue(), contentBinding.sampleShipmentDate.getValue())
-					> 0) {
-					contentBinding.sampleSampleDateTime.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.beforeDate,
-							contentBinding.sampleSampleDateTime.getCaption(),
-							contentBinding.sampleShipmentDate.getCaption()));
-					return true;
-				}
+			if (DateHelper.isDateAfter(contentBinding.sampleSampleDateTime.getValue(), contentBinding.sampleShipmentDate.getValue())) {
+				contentBinding.sampleSampleDateTime.enableErrorState(
+					I18nProperties.getValidationError(
+						Validations.beforeDate,
+						contentBinding.sampleSampleDateTime.getCaption(),
+						contentBinding.sampleShipmentDate.getCaption()));
+				return true;
 			}
 
 			return false;
@@ -45,17 +40,13 @@ public class SampleValidator {
 
 		ResultCallback<Boolean> shipmentDateCallback = () -> {
 			// Must not be before sample date
-			if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.sampleShipmentDate.getValue(), contentBinding.sampleSampleDateTime.getValue())
-					< 0) {
-					contentBinding.sampleShipmentDate.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.afterDate,
-							contentBinding.sampleShipmentDate.getCaption(),
-							contentBinding.sampleSampleDateTime.getCaption()));
-					return true;
-				}
+			if (DateHelper.isDateBefore(contentBinding.sampleShipmentDate.getValue(), contentBinding.sampleSampleDateTime.getValue())) {
+				contentBinding.sampleShipmentDate.enableErrorState(
+					I18nProperties.getValidationError(
+						Validations.afterDate,
+						contentBinding.sampleShipmentDate.getCaption(),
+						contentBinding.sampleSampleDateTime.getCaption()));
+				return true;
 			}
 
 			return false;

@@ -21,12 +21,9 @@ import java.util.Collection;
 import java.util.List;
 
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.DefaultValuePseudonymizer;
-
-import static java.util.Objects.nonNull;
 
 public class DtoPseudonymizer {
 
@@ -35,7 +32,7 @@ public class DtoPseudonymizer {
 
 	private final String stringValuePlaceholder;
 
-	private final boolean pseudonymizeMandatoryFields;
+	protected final boolean pseudonymizeMandatoryFields;
 
 	protected DtoPseudonymizer(
 		FieldAccessCheckers inJurisdictionCheckers,
@@ -83,13 +80,7 @@ public class DtoPseudonymizer {
 				isInJurisdiction ? embeddedFieldsInJurisdiction : embeddedFieldsOutsideJurisdiction,
 				isInJurisdiction,
 				null,
-				customPseudonymization == null ? null : new CustomPseudonymization<DTO>() {
-
-					@Override
-					public void pseudonymize(DTO d) {
-						customPseudonymization.pseudonymize(dto, isInJurisdiction);
-					}
-				},
+				customPseudonymization == null ? null : (CustomPseudonymization<DTO>) d -> customPseudonymization.pseudonymize(dto, isInJurisdiction),
 				skipEmbeddedFields);
 		}
 	}
@@ -120,8 +111,13 @@ public class DtoPseudonymizer {
 		List<Field> embeddedFields = getEmbeddedFields(type, isInJurisdiction);
 
 		for (Field pseudonymizedField : pseudonymizableFields) {
-			if (!getFieldAccessCheckers(isInJurisdiction).isAccessible(pseudonymizedField, pseudonymizeMandatoryFields) || dto.isPseudonymized()) {
-				restoreOriginalValue(dto, pseudonymizedField, originalDto);
+			try {
+				if (!getFieldAccessCheckers(isInJurisdiction).isAccessible(pseudonymizedField, pseudonymizeMandatoryFields)
+					|| dto.isPseudonymized() && isFieldValuePseudonymized(pseudonymizedField, dto)) {
+					restoreOriginalValue(dto, pseudonymizedField, originalDto);
+				}
+			} catch (IllegalAccessException | InstantiationException e) {
+				throw new RuntimeException(e);
 			}
 		}
 		for (Field embeddedField : embeddedFields) {
@@ -144,6 +140,21 @@ public class DtoPseudonymizer {
 				}
 			}
 		}
+	}
+
+	private <DTO extends Pseudonymizable> boolean isFieldValuePseudonymized(Field pseudonymizedField, DTO dto)
+		throws IllegalAccessException, InstantiationException {
+
+		ValuePseudonymizer<Object> pseudonymizer = (ValuePseudonymizer<Object>) getPseudonymizer(pseudonymizedField, null);
+
+		boolean accessible = pseudonymizedField.isAccessible();
+		pseudonymizedField.setAccessible(true);
+
+		Object fieldValue = pseudonymizedField.get(dto);
+
+		pseudonymizedField.setAccessible(accessible);
+
+		return pseudonymizer.isValuePseudonymized(fieldValue);
 	}
 
 	private <DTO> boolean pseudonymizeDto(
@@ -197,13 +208,14 @@ public class DtoPseudonymizer {
 					Class<? extends ValuePseudonymizer> psudonomyzerClass =
 						pseudonymizerAnnotation != null ? pseudonymizerAnnotation.value() : defaultPseudonymizerClass;
 
-					didPseudonymization = pseudonymizeDto(
-						(Class<Object>) embeddedField.getType(),
-						embeddedField.get(dto),
-						inJurisdiction,
-						psudonomyzerClass,
-						null,
-						skipEmbeddedFields);
+                    if (pseudonymizeDto((Class<Object>) embeddedField.getType(),
+                            embeddedField.get(dto),
+                            inJurisdiction,
+                            psudonomyzerClass,
+                            null,
+                            skipEmbeddedFields)) {
+                        didPseudonymization = true;
+                    }
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(
 						"Failed to pseudonymize embedded field " + dto.getClass().getName() + "." + embeddedField.getName(),
@@ -232,9 +244,7 @@ public class DtoPseudonymizer {
 
 			ValuePseudonymizer<?> pseudonymizer = getPseudonymizer(field, pseudonymizerClass);
 			Object emptyValue = pseudonymizer.pseudonymize(field.get(dto));
-			if (!(nonNull(field.getAnnotation(SensitiveData.class)) && field.getAnnotation(SensitiveData.class).mandatoryField())) {
-				field.set(dto, emptyValue);
-			}
+            field.set(dto, emptyValue);
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new RuntimeException(e);
 		} finally {

@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -38,8 +39,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
@@ -98,7 +99,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 
 	@Override
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
-	public void share(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public void share(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (!userService.hasRight(UserRight.EVENT_EDIT)
 			|| (options.isWithEventParticipants() && !userService.hasRight(UserRight.EVENTPARTICIPANT_EDIT))
 			|| (options.isWithSamples() && !userService.hasRight(UserRight.SAMPLE_EDIT))

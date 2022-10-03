@@ -398,13 +398,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>2.10.13</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>4.5.13</version>
@@ -646,6 +639,13 @@
 				<artifactId>docx4j-docx-anon</artifactId>
 				<version>${docx4j.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.10.2</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.docx4j</groupId>
 				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
@@ -966,7 +966,6 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-inline</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<build>

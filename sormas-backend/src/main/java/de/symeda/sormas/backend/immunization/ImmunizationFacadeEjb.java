@@ -373,12 +373,18 @@ public class ImmunizationFacadeEjb
 		return convertToDto(immunization, pseudonymizer);
 	}
 
-	protected void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer) {
+	@Override
+	protected void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		if (dto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					ImmunizationDto.class,
+					ImmunizationDto.REPORTING_USER,
+					source.getReportingUser(),
+					currentUser,
+					dto::setReportingUser);
 				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
 			});
 		}
