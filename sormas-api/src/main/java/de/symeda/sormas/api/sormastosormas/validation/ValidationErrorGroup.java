@@ -24,15 +24,18 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasI18nMessageError;
 
+@AuditedClass
 public class ValidationErrorGroup extends SormasToSormasI18nMessageError implements Serializable {
 
 	private static final long serialVersionUID = 2075921523238507571L;
 
 	private String i18nTag;
-
+	@AuditInclude
 	private String uuid;
 
 	private List<ValidationErrorMessage> messages = new ArrayList<>();
