@@ -883,18 +883,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 		return changeDateFilterBuilder.add(persons).add(address).build();
 	}
 
-	private Predicate createChangeDateFilter(PersonQueryContext personQueryContext, Timestamp date, String lastSynchronizedUuid) {
-		final From<?, Person> persons = personQueryContext.getRoot();
-		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
-		final PersonJoins joins = personQueryContext.getJoins();
-		final Join<Person, Location> address = joins.getAddress();
-
-		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
-			? new ChangeDateFilterBuilder(cb, date)
-			: new ChangeDateFilterBuilder(cb, date, persons, lastSynchronizedUuid);
-		return changeDateFilterBuilder.add(persons).add(address).build();
-	}
-
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public long updateGeoLocation(List<String> personUuids, boolean overwriteExistingCoordinates) {
 
