@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -307,7 +306,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@PermitAll
+	@RightsAllowed({
+		UserRight._CONTACT_VIEW,
+		UserRight._CASE_VIEW,
+		UserRight._EVENTPARTICIPANT_VIEW })
 	public Date getEarliestPositiveSampleDate(String contactUuid) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
