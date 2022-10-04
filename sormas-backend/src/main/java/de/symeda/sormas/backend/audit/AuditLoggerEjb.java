@@ -62,6 +62,7 @@ import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.AuditEntityType;
 import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,34 +81,36 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	private static final Logger logger = LoggerFactory.getLogger(AuditLoggerEjb.class);
 	public static final String VALUESET_AUDIT_EVENT_TYPE_HTML = "https://hl7.org/fhir/R4/valueset-audit-event-type.html";
 	public static final String VALUESET_PARTICIPATION_ROLE_TYPE_HTML = "https://www.hl7.org/fhir/valueset-participation-role-type.html";
+
+	public static final String VALUESET_AUDIT_EVENT_SUB_TYPE_HTML = "https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html";
 	public static final Coding USER_AUTHENTICATION_CODING = new Coding(VALUESET_AUDIT_EVENT_TYPE_HTML, "110114", "User Authentication");
 	public static final Coding IMPORT_CODING = new Coding(VALUESET_AUDIT_EVENT_TYPE_HTML, "110107", "Import");
 	public static final Coding EXPORT_CODING = new Coding(VALUESET_AUDIT_EVENT_TYPE_HTML, "110106", "Export");
 
-	public static final Coding LOGIN_CODING = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110122", "Login");
+	public static final Coding LOGIN_CODING = new Coding(VALUESET_AUDIT_EVENT_SUB_TYPE_HTML, "110122", "Login");
 	public static final Reference LAB_MESSAGE_CONVERT_TO_PDF = new Reference("convertToPDF");
 	public static final Reference LAB_MESSAGE_CONVERT_TO_HTML = new Reference("convertToHTML");
 	public static final Reference GET_EXTERNAL_LAB_MESSAGES = new Reference("getExternalLabMessages");
 
-	private FhirContext fhirContext;
 	private IParser fhirJsonParser;
 	private String auditSourceSite;
 	private Reflections reflections;
 	private Map<String, AuditEvent.AuditEventAction> actionBackendMap;
-	private static final Map<String, AuditEvent.AuditEventAction> actionRestMap = new HashMap<String, AuditEvent.AuditEventAction>() {
+	private static final Map<String, AuditEvent.AuditEventAction> actionRestMap;
 
-		{
-			put("PUT", AuditEvent.AuditEventAction.C);
-			put("GET", AuditEvent.AuditEventAction.R);
-			put("POST", AuditEvent.AuditEventAction.U);
-			put("DELETE", AuditEvent.AuditEventAction.D);
-		}
-	};
+	static {
+		Map<String, AuditEvent.AuditEventAction> map = new HashMap<>();
+		map.put("PUT", AuditEvent.AuditEventAction.C);
+		map.put("GET", AuditEvent.AuditEventAction.R);
+		map.put("POST", AuditEvent.AuditEventAction.U);
+		map.put("DELETE", AuditEvent.AuditEventAction.D);
+		actionRestMap = Collections.unmodifiableMap(map);
+	}
 
-	private Map<Class<?>, String> cachedClassName = new HashMap<>();
+	private final Map<Class<?>, String> cachedClassName = new HashMap<>();
 
-	private Map<Class<?>, List<Field>> cachedAnnotatedFields = new HashMap<>();
-	private Map<Class<?>, List<Method>> cachedAnnotatedMethods = new HashMap<>();
+	private final Map<Class<?>, List<Field>> cachedAnnotatedFields = new HashMap<>();
+	private final Map<Class<?>, List<Method>> cachedAnnotatedMethods = new HashMap<>();
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
@@ -143,9 +146,13 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		actionBackendMap = new HashMap<>();
 
-		fhirContext = FhirContext.forR4();
+		FhirContext fhirContext = FhirContext.forR4();
 		fhirJsonParser = fhirContext.newJsonParser();
-		reflections = new Reflections("de.symeda.sormas.api", SubTypes, TypesAnnotated, FieldsAnnotated, MethodsAnnotated);
+		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+		configurationBuilder.forPackages("de.symeda.sormas.api")
+			.addScanners(SubTypes, TypesAnnotated, FieldsAnnotated, MethodsAnnotated)
+			.setParallel(false);
+		reflections = new Reflections(configurationBuilder);
 	}
 
 	private void accept(AuditEvent event) {
@@ -154,13 +161,13 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	public void logApplicationStart() {
-		Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110120", "Application Start");
+		Coding subtype = new Coding(VALUESET_AUDIT_EVENT_SUB_TYPE_HTML, "110120", "Application Start");
 		String outcomeDesc = "Application starting";
 		logApplicationLifecycle(subtype, outcomeDesc);
 	}
 
 	public void logApplicationStop() {
-		Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110121", "Application Stop");
+		Coding subtype = new Coding(VALUESET_AUDIT_EVENT_SUB_TYPE_HTML, "110121", "Application Stop");
 		String outcomeDesc = "Application stopping";
 		logApplicationLifecycle(subtype, outcomeDesc);
 	}
