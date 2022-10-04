@@ -56,6 +56,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "TravelEntryFacade")
 @RightsAllowed(UserRight._TRAVEL_ENTRY_VIEW)
@@ -256,6 +257,11 @@ public class TravelEntryFacadeEjb
 		}
 		if (travelEntryDto.getPointOfEntry() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
+		} else {
+			if (travelEntryDto.getPointOfEntry().isOtherPointOfEntry() && StringUtils.isEmpty(travelEntryDto.getPointOfEntryDetails())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+						I18nProperties.getPrefixCaption(TravelEntryDto.I18N_PREFIX, TravelEntryDto.POINT_OF_ENTRY_DETAILS)));
+			}
 		}
 		if (travelEntryDto.getDateOfArrival() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDateOfArrival));
