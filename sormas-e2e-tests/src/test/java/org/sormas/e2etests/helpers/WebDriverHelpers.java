@@ -1091,4 +1091,9 @@ public class WebDriverHelpers {
           "Popup do not contains expected list of items!");
     }
   }
+
+  public void refreshCurrentPage() {
+    baseSteps.refreshCurrentPage();
+    waitForPageLoadingSpinnerToDisappear(10);
+  }
 }
