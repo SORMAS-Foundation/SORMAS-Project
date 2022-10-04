@@ -151,7 +151,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 		configurationBuilder.forPackages("de.symeda.sormas.api")
 			.addScanners(SubTypes, TypesAnnotated, FieldsAnnotated, MethodsAnnotated)
-			.setParallel(false);
+			.setParallel(false); // <-- DO NOT USE PARALLEL SCANNING: Blocks deployment in some cases
+
 		reflections = new Reflections(configurationBuilder);
 	}
 
