@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.LoginPage.FAILED_LOGIN_ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
@@ -728,6 +729,21 @@ public class CaseDirectorySteps implements En {
               getMergeDuplicatesButtonById(EditCaseSteps.aCase.getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
+    And(
+        "I click on Merge button of leading case accepted from other sormas to sormas instance in Merge Duplicate Cases page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonByIdDeSpecific(CreateNewCaseSteps.casesUUID.get(0)));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    And(
+        "I click on Merge button of new created duplicate case in sormas to sormas instance in Merge Duplicate Cases page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonByIdDeSpecific(CreateNewCaseSteps.casesUUID.get(1)));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
     When(
         "I collect the leading case UUID displayed on Case Directory Page",
         () -> leadingCaseUUID = getCaseIDByIndex(1));
@@ -901,6 +917,17 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(500);
+        });
+    When(
+        "I click to Discard action in Merge Duplicates Cases popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(500);
+        });
+    When(
+        "I close error popup in Merge Duplicates directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FAILED_LOGIN_ERROR_MESSAGE);
         });
     And(
         "I apply Year filter different than Person has on Case directory page",
