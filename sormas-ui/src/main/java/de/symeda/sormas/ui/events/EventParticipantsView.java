@@ -130,12 +130,18 @@ public class EventParticipantsView extends AbstractEventView {
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEventParticipant));
 				popupWindow.addCloseListener(c -> this.grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
+			if (shouldDisableButton()) {
+				importButton.setEnabled(false);
+			}
 
 			addHeaderComponent(importButton);
 		}
 
 		// export
 		PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+		if (shouldDisableButton()) {
+			exportPopupButton.setEnabled(false);
+		}
 		addHeaderComponent(exportPopupButton);
 
 		{
@@ -250,19 +256,23 @@ public class EventParticipantsView extends AbstractEventView {
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
+			bulkOperationsDropdown.setEnabled(false);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
 
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-
 			addHeaderComponent(btnEnterBulkEditMode);
 
 			Button btnLeaveBulkEditMode =
 				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 
+			if (shouldDisableButton()) {
+				btnEnterBulkEditMode.setEnabled(false);
+				btnLeaveBulkEditMode.setEnabled(false);
+			}
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
@@ -284,6 +294,11 @@ public class EventParticipantsView extends AbstractEventView {
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
+	}
+
+	private boolean shouldDisableButton() {
+		return FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
+				&& FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
 	}
 
 	private Set<String> getSelectedRows() {

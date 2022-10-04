@@ -31,7 +31,6 @@ import org.mockito.Mockito;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
@@ -47,7 +46,7 @@ public class SormasToSormasExternalMessageFacadeEjbTest extends SormasToSormasTe
 	public void testSendLabMessage() throws SormasToSormasException {
 		Date dateNow = new Date();
 
-		ExternalMessageDto labMessage = creator.createLabMessage((lm) -> setLabMessageFields(lm, dateNow));
+		ExternalMessageDto labMessage = creator.createExternalMessage((lm) -> setLabMessageFields(lm, dateNow));
 
 		Mockito
 			.when(
@@ -74,7 +73,7 @@ public class SormasToSormasExternalMessageFacadeEjbTest extends SormasToSormasTe
 
 		Mockito.verify(MockProducer.getSormasToSormasClient(), Mockito.times(1))
 			.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any());
-		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(ExternalMessageStatus.FORWARDED));
+		assertThat(getExternalMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(ExternalMessageStatus.FORWARDED));
 	}
 
 	@Test
@@ -86,16 +85,13 @@ public class SormasToSormasExternalMessageFacadeEjbTest extends SormasToSormasTe
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(new SormasToSormasExternalMessageDto(labMessage));
 		getSormasToSormasLabMessageFacade().saveExternalMessages(encryptedData);
 
-		ExternalMessageDto savedLabMessage = getLabMessageFacade().getByUuid(labMessage.getUuid());
+		ExternalMessageDto savedLabMessage = getExternalMessageFacade().getByUuid(labMessage.getUuid());
 		assertThat(savedLabMessage, is(notNullValue()));
 		assertLabMessageFields(savedLabMessage, dateNow);
 	}
 
 	private void setLabMessageFields(ExternalMessageDto labMessage, Date dateValue) {
 		labMessage.setMessageDateTime(dateValue);
-		labMessage.setSampleDateTime(dateValue);
-		labMessage.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
-		labMessage.setLabSampleId("Test lab sample ID");
 		labMessage.setPersonFirstName("James");
 		labMessage.setPersonLastName("Smith");
 		labMessage.setPersonPostalCode("test postal code");
@@ -105,9 +101,6 @@ public class SormasToSormasExternalMessageFacadeEjbTest extends SormasToSormasTe
 		long dateTime = dateValue.getTime();
 
 		assertThat(labMessage.getMessageDateTime().getTime(), is(dateTime));
-		assertThat(labMessage.getSampleDateTime().getTime(), is(dateTime));
-		assertThat(labMessage.getSampleMaterial(), is(SampleMaterial.RECTAL_SWAB));
-		assertThat(labMessage.getLabSampleId(), is("Test lab sample ID"));
 		assertThat(labMessage.getPersonFirstName(), is("James"));
 		assertThat(labMessage.getPersonLastName(), is("Smith"));
 		assertThat(labMessage.getPersonPostalCode(), is("test postal code"));

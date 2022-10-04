@@ -112,7 +112,8 @@ public abstract class AbstractRelatedLabMessageHandler {
 						chainHandler));
 
 			for (PathogenTestDto p : relatedEntities.pathogenTests) {
-				Optional<TestReportDto> testReport = labMessage.getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
+				Optional<TestReportDto> testReport =
+					labMessage.getSampleReportsNullSafe().get(0).getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
 				if (testReport.isPresent()) {
 					correctionFlow = correctionFlow.thenCompose(
 						testCorrectionResult -> doPathogenTestCorrection(
@@ -237,10 +238,11 @@ public abstract class AbstractRelatedLabMessageHandler {
 		HandlerResultStatus defaultResult,
 		ChainHandler chainHandler) {
 
+		// TODO Generify this. It may be possible to handle the correction of multiple samples, but this is not yet thought through
 		return handleCorrection(
 			labMessage,
 			sample,
-			mapper::mapToSample,
+			mapper::mapFirstSampleReportToSample,
 			confirmationSupplier,
 			this::handleSampleCorrection,
 			defaultResult,
@@ -334,10 +336,17 @@ public abstract class AbstractRelatedLabMessageHandler {
 
 	// related entities
 	public RelatedEntities getRelatedEntities(ExternalMessageDto labMessage) {
-		String reportId = labMessage.getReportId();
-		String labSampleId = labMessage.getLabSampleId();
+		// TODO It may be possible to use related entities for multiple sample reports, but this is not yet thought through
+		if (labMessage.getSampleReportsNullSafe().size() > 1) {
+			return null;
+		}
 
-		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId)) {
+		String reportId = labMessage.getReportId();
+		String labSampleId = labMessage.getSampleReportsNullSafe().get(0).getLabSampleId();
+
+		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId))
+
+		{
 			return null;
 		}
 
@@ -369,7 +378,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		List<TestReportDto> unmatchedTestReports = new ArrayList<>();
 		boolean pathogenTestMisMatch = false;
 
-		List<TestReportDto> testReports = labMessage.getTestReports();
+		List<TestReportDto> testReports = labMessage.getSampleReportsNullSafe().get(0).getTestReports();
 		List<PathogenTestDto> samplePathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference());
 
 		for (TestReportDto testReport : testReports) {

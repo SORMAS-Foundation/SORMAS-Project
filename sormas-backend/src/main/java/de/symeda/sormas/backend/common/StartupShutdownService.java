@@ -20,7 +20,6 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -631,26 +630,9 @@ public class StartupShutdownService {
 
 		List<User> users = userService.getAllActive();
 		for (User user : users) {
-			syncUser(user);
+			userService.syncUserAsync(user);
 		}
 		logger.info("User synchronization finalized");
-	}
-
-	/**
-	 * Triggers the user sync asynchronously to not block the deployment step
-	 */
-	private void syncUser(User user) {
-		String shortUuid = DataHelper.getShortUuid(user.getUuid());
-		logger.debug("Synchronizing user {}", shortUuid);
-		try {
-
-			UserUpdateEvent event = new UserUpdateEvent(user);
-			event.setExceptionCallback(exceptionMessage -> logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage));
-
-			this.userUpdateEvent.fireAsync(event);
-		} catch (Throwable e) {
-			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", shortUuid), e);
-		}
 	}
 
 	/**

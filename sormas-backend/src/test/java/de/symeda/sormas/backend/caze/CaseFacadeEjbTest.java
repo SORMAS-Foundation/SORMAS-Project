@@ -1411,7 +1411,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		firstCase = getCaseFacade().save(firstCase);
 		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 		assertNull(firstCase.getOutcomeDate());
-		assertEquals(PresentCondition.ALIVE, cazePerson.getPresentCondition());
+		assertEquals(PresentCondition.UNKNOWN, cazePerson.getPresentCondition());
 		assertNull(cazePerson.getDeathDate());
 
 		// additional, newer cases for the the person
