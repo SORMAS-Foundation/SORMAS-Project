@@ -25,6 +25,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
@@ -73,18 +74,21 @@ public class Pseudonymizer extends DtoPseudonymizer {
 		User currentUser,
 		Consumer<UserReferenceDto> setPseudonymizedValue) {
 		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
+		boolean pseudonymizeUser = false;
 
-		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker(isInJurisdiction);
-		boolean isConfiguredToCheck = sensitiveDataFieldAccessChecker != null
-			&& (pseudonymizeMandatoryFields || !getDtoField(dtoClass, dtoFieldName).isAnnotationPresent(NotNull.class));
+		//if the field is annotated with null or required do not pseudonymize the user
+		if (!getDtoField(dtoClass, dtoFieldName).isAnnotationPresent(NotNull.class)
+			&& !getDtoField(dtoClass, dtoFieldName).isAnnotationPresent(Required.class)) {
+			SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker(isInJurisdiction);
+			boolean isConfiguredToCheck = sensitiveDataFieldAccessChecker != null && pseudonymizeMandatoryFields;
 
-		if (isConfiguredToCheck && !sensitiveDataFieldAccessChecker.hasRight()) {
-			setPseudonymizedValue.accept(null);
-
-			return true;
+			if (isConfiguredToCheck && !sensitiveDataFieldAccessChecker.hasRight()) {
+				setPseudonymizedValue.accept(null);
+				pseudonymizeUser = true;
+			}
 		}
 
-		return false;
+		return pseudonymizeUser;
 	}
 
 	private Field getDtoField(Class<?> dtoClass, String dtoFieldName) {
