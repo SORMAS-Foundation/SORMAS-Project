@@ -22,6 +22,7 @@ import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
@@ -40,7 +41,13 @@ public class AuditLoggerInterceptor {
 	@EJB
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 
-	private static final Reflections reflections = new Reflections("de.symeda.sormas.backend", SubTypes);
+	private static final Reflections reflections;
+	static {
+
+		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+		configurationBuilder.forPackages("de.symeda.sormas.backend").addScanners(SubTypes).setParallel(false);
+		reflections = new Reflections(configurationBuilder);
+	}
 
 	private static final Set<Class<?>> adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
 
@@ -142,7 +149,6 @@ public class AuditLoggerInterceptor {
 			// ignore certain classes for audit altogether. Statically populated cache.
 			return context.proceed();
 		}
-
 
 		// with this we ignore EJB calls which definitely originate from within the backend
 		// as they can never be called direct from outside (i.e., remote) of the backend
