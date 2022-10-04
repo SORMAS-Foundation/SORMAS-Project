@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -473,5 +474,9 @@ public enum UserRight {
 
 	public Set<UserRight> getRequiredUserRights() {
 		return userRightDependencies.get(this);
+	}
+
+	public static Set<UserRight> getUserRightsOfGroup(UserRightGroup userRightGroup) {
+		return Arrays.stream(values()).filter(userRight -> userRight.getUserRightGroup() == userRightGroup).collect(Collectors.toSet());
 	}
 }
