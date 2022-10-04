@@ -491,6 +491,12 @@ public class WebDriverHelpers {
     return result;
   }
 
+  public boolean isElementPresent(By elementLocator) {
+    Boolean isPresent = baseSteps.getDriver().findElements(elementLocator).size() > 0;
+    return isPresent;
+  }
+  ;
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info(PID + "Clicking on element: {}", byObject);

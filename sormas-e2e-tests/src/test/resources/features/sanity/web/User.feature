@@ -179,3 +179,59 @@ Feature: Create user
     Then I click on logout button from navbar
     And I login with last edited user
     Then I click on logout button from navbar
+
+  @#7470 @env_main
+  Scenario: Verify user set active set inactive functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create a new disabled National User in the Create New User page
+    When I search for created user in the User Management Page
+    Then I verify that the Active value is Checked in the User Management Page
+    When I select first user from list
+    Then I click on the Active checkbox in the Edit User Page
+    Then I verify that the Active value is Unchecked in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Verify active user filter functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    Then I Verify the number of Active, Inactive and Total users in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Verify User Roles filter functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    Then I Verify The User Role filter in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Verify Region filter functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    Then I Verify Region filter in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Validate that non-admin users can't access users directory
+    Given I log in as a National User
+    Then I Verify Users Navigation link is not present in the navigation bar
+
+  @#7470 @env_main
+  Scenario: Validate create new password functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create 1 new users with National User via UI
+    When I search for created user
+    When I click Create New Password in Edit User page
+    Then I click the Cancel button in the Update Password Modal located in the Edit User Page
+    When I click Create New Password in Edit User page
+    Then I click the Update button in the Update Password Modal located in the Edit User Page
+    Then I Verify the New Password Modal in the Edit User Page
+
+  @#7470 @env_main
+  Scenario: Validate phone number field
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create 1 new users with National User via UI
+    When I search for created user
+    When I fill phone number with a wrong format in the Edit User Page
+    And I click on the Save button in the Edit User Page
+    Then I verify the error message is displayed in the Edit User Page

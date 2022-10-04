@@ -47,6 +47,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -325,6 +326,12 @@ public class SampleFacadeEjb implements SampleFacade {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public List<DiseaseVariant> getAssociatedDiseaseVariants(String sampleUuid) {
+
+		return sampleService.getAssociatedDiseaseVariants(sampleUuid);
 	}
 
 	@Override

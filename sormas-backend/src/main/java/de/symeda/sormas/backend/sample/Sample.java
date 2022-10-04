@@ -59,7 +59,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.externalmessage.ExternalMessage;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -160,7 +160,7 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
-	private List<ExternalMessage> externalMessages = new ArrayList<>(0);
+	private List<SampleReport> sampleReports = new ArrayList<>(0);
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
@@ -608,13 +608,13 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 		this.sormasToSormasShares = sormasToSormasShares;
 	}
 
-	@OneToMany(mappedBy = ExternalMessage.SAMPLE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SampleReport.SAMPLE, fetch = FetchType.LAZY)
 	@AuditedIgnore
-	public List<ExternalMessage> getExternalMessages() {
-		return externalMessages;
+	public List<SampleReport> getSampleReports() {
+		return sampleReports;
 	}
 
-	public void setExternalMessages(List<ExternalMessage> externalMessages) {
-		this.externalMessages = externalMessages;
+	public void setSampleReports(List<SampleReport> externalMessages) {
+		this.sampleReports = externalMessages;
 	}
 }
