@@ -92,5 +92,7 @@ public interface SampleFacade {
 
 	List<SampleDto> getByLabSampleId(String labSampleId);
 
+	Date getEarliestPositiveSampleDate(String contactUuid);
+
 	List<DiseaseVariant> getAssociatedDiseaseVariants(String sampleUuid);
 }
