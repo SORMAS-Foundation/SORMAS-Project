@@ -233,9 +233,11 @@ public class PersonsView extends AbstractView {
 			ViewModelProviders.of(PersonsView.class).remove(PersonCriteria.class);
 			navigateTo(null, true);
 		});
-		if (grid != null) {
-			filterForm.addApplyHandler(e -> ((PersonGrid) grid).reload());
-		}
+		filterForm.addApplyHandler(e -> {
+			if (grid != null) {
+				((PersonGrid) grid).reload();
+			}
+		});
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
