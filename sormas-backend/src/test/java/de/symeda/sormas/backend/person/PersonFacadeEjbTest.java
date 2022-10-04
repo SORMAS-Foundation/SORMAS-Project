@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -714,6 +713,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
 		// 3a. Found by TravelEntry
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getAllAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
