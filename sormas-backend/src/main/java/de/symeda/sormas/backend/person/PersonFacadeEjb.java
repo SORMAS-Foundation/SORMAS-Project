@@ -243,6 +243,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
+	public List<PersonAssociation> getPermittedAssociations() {
+		return service.getPermittedAssociations();
+	}
+
+	@Override
 	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria) {
 
 		return service.getSimilarPersonDtos(criteria, null);

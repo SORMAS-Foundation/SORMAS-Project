@@ -35,6 +35,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, PersonReferenceDto, PersonCriteria> {
 
+	List<PersonAssociation> getPermittedAssociations();
+
 	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease);
 
 	JournalPersonDto getPersonForJournal(String uuid);
