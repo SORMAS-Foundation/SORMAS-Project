@@ -23,9 +23,9 @@ import java.util.List;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.DefaultValuePseudonymizer;
-
-import static java.util.Objects.nonNull;
 
 public class DtoPseudonymizer {
 
@@ -191,12 +191,16 @@ public class DtoPseudonymizer {
 			return false;
 		}
 
-		boolean didPseudonymization = false;
+		boolean didPersonalOrSensitiveDataPseudonymization = false;
 
 		for (Field field : pseudonymizableFields) {
-			if (!getFieldAccessCheckers(inJurisdiction).isAccessible(field, pseudonymizeMandatoryFields)) {
+			FieldAccessCheckers fieldAccessCheckers = getFieldAccessCheckers(inJurisdiction);
+			if (!fieldAccessCheckers.isAccessible(field, pseudonymizeMandatoryFields)) {
 				pseudonymizeField(dto, field, defaultPseudonymizerClass);
-				didPseudonymization = true;
+				// only personal and sensitive data pseudonymization needs special handling on the client side
+				// other not accessible data is hidden on the client side, so just cleanup and don't mark the DTO as pseudonymized
+				didPersonalOrSensitiveDataPseudonymization = !fieldAccessCheckers
+					.isAccessibleBy(field, pseudonymizeMandatoryFields, PersonalDataFieldAccessChecker.class, SensitiveDataFieldAccessChecker.class);
 			}
 		}
 
@@ -216,7 +220,7 @@ public class DtoPseudonymizer {
                             psudonomyzerClass,
                             null,
                             skipEmbeddedFields)) {
-                        didPseudonymization = true;
+						didPersonalOrSensitiveDataPseudonymization = true;
                     }
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(
@@ -229,14 +233,14 @@ public class DtoPseudonymizer {
 		}
 
 		if (Pseudonymizable.class.isAssignableFrom(dto.getClass())) {
-			((Pseudonymizable) dto).setPseudonymized(didPseudonymization);
+			((Pseudonymizable) dto).setPseudonymized(didPersonalOrSensitiveDataPseudonymization);
 		}
 
 		if (customPseudonymization != null) {
 			customPseudonymization.pseudonymize(dto);
 		}
 
-		return didPseudonymization;
+		return didPersonalOrSensitiveDataPseudonymization;
 	}
 
 	private <DTO> void pseudonymizeField(DTO dto, Field field, Class<? extends ValuePseudonymizer> pseudonymizerClass) {
