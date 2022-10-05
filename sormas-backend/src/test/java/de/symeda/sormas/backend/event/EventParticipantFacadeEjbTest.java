@@ -553,36 +553,26 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, eventParticipantIndexDtos.size());
 	}
 	@Test
-	public void testCreationOfEventParticipantWhenArchived()
-	{
+	public void testSaveEventParticipantWithEventArchiving() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = createUser(rdcf);
 		EventDto event = createEvent(user, rdcf);
+		// Validate that for a newly created Event Participant the archived status is kept from the Event
 		getEventFacade().archive(Collections.singletonList(event.getUuid()));
 		PersonDto eventPersonArchived = creator.createPerson("EventArchived", "OrganizerArchived");
 		EventParticipantDto archivedEventParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
 		assertTrue(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
 
+		// Validate that for a newly created Event Participant the active status is kept from the Event
 		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), "reason");
 		PersonDto eventPersonActive = creator.createPerson("EventActive", "OrganizerActive");
 		EventParticipantDto activeEventParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonActive, "event Director", user.toReference());
 		assertFalse(getEventParticipantFacade().isArchived(activeEventParticipantDto.getUuid()));
-	}
 
-	@Test
-	public void testCreationOfExistingEventParticipantRemainsArchived()
-	{
-		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = createUser(rdcf);
-		EventDto event = createEvent(user, rdcf);
-		getEventFacade().archive(Collections.singletonList(event.getUuid()));
-		PersonDto eventPersonArchived = creator.createPerson("EventArchived", "OrganizerArchived");
-		EventParticipantDto archivedEventParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
-		assertTrue(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
-
-		getEventParticipantFacade().dearchive(Collections.singletonList(archivedEventParticipantDto.getUuid()), "reason");
-		EventParticipantDto existingArchivedEventParticipant = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
-		assertTrue(getEventParticipantFacade().isArchived(existingArchivedEventParticipant.getUuid()));
+		//Validate that for an already existing Event Participant the previous status is kept
+		EventParticipantDto alreadyArchivedParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
+		assertFalse(getEventFacade().isArchived(event.getUuid()));
+		assertEquals(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()), getEventParticipantFacade().isArchived(alreadyArchivedParticipantDto.getUuid()));
 	}
 
 	private UserDto createUser(TestDataCreator.RDCF rdcf) {
