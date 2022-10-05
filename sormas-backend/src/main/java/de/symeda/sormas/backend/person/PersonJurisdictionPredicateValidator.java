@@ -86,10 +86,6 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 			}
 		}
 
-		if (associatedJurisdictionValidators.isEmpty()) {
-			throw new IllegalArgumentException("No filter compiled for persons by associations: " + permittedAssociations);
-		}
-
 		return new PersonJurisdictionPredicateValidator(cb, joins, user, associatedJurisdictionValidators);
 	}
 
@@ -100,7 +96,9 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+
+		// Fallback if no associatedJurisdictionValidator was linked: No persons can to be identified by permitted explicit associations
+		return cb.disjunction();
 	}
 
 	@Override
@@ -110,7 +108,7 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 	@Override
 	protected Predicate whenNationalLevel() {
-		return cb.conjunction();
+		return cb.disjunction();
 	}
 
 	@Override

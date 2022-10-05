@@ -303,7 +303,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 		}
 
 		if (userFilter == null) {
-			throw new IllegalArgumentException("No filter compiled for persons by association " + personAssociation.name());
+			logger.debug("No userFilter compiled for persons by association {}, fallback to empty collection", personAssociation.name());
+			return queryContext.getCriteriaBuilder().disjunction();
 		}
 
 		return userFilter;
