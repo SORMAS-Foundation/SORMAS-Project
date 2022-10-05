@@ -534,7 +534,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
-		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 		return resultList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 

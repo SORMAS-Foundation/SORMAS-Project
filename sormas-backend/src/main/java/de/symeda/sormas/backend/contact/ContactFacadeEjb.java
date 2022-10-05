@@ -757,7 +757,7 @@ public class ContactFacadeEjb
 						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
 				exposuresCq.where(exposuresPredicate);
 				exposuresCq.orderBy(cb.asc(exposuresEpiDataJoin.get(EpiData.ID)));
-				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
 			}
 
@@ -775,7 +775,7 @@ public class ContactFacadeEjb
 							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
 							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
 						personIdsExpr.in(exportContacts.stream().map(ContactExportDto::getPersonId).collect(Collectors.toList()))));
-				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
 			}
 

@@ -880,7 +880,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
 			Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
 			symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(CaseExportDto::getSymptomsId).collect(Collectors.toList())));
-			symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 			Map<Long, Symptoms> symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 
 			Map<Long, HealthConditions> healthConditions = null;
@@ -892,7 +892,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					Expression<String> healthConditionsIdsExpr = healthConditionsRoot.get(HealthConditions.ID);
 					healthConditionsCq.where(
 						healthConditionsIdsExpr.in(resultList.stream().map(CaseExportDto::getHealthConditionsId).collect(Collectors.toList())));
-					healthConditionsList = em.createQuery(healthConditionsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+					healthConditionsList = em.createQuery(healthConditionsCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 					healthConditions = healthConditionsList.stream().collect(Collectors.toMap(HealthConditions::getId, Function.identity()));
 				}
 			}
@@ -908,7 +908,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				prevHospsCq
 					.where(hospitalizationIdsExpr.in(resultList.stream().map(CaseExportDto::getHospitalizationId).collect(Collectors.toList())));
 				prevHospsCq.orderBy(cb.asc(prevHospsRoot.get(PreviousHospitalization.ADMISSION_DATE)));
-				prevHospsList = em.createQuery(prevHospsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				prevHospsList = em.createQuery(prevHospsCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				firstPreviousHospitalizations =
 					prevHospsList.stream().collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> id1));
 			}
@@ -937,7 +937,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
 				exposuresCq.where(exposuresPredicate);
 				exposuresCq.orderBy(cb.asc(exposuresEpiDataJoin.get(EpiData.ID)));
-				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
 			}
 
@@ -960,7 +960,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 				Predicate eliminateDeletedSamplesFilter = cb.equal(samplesRoot.get(Sample.DELETED), false);
 				samplesCq.where(caseIdsExpr.in(resultCaseIds), eliminateDeletedSamplesFilter);
-				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getCaseId()));
 			}
 
@@ -1008,7 +1008,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
 						personIdsExpr.in(resultList.stream().map(CaseExportDto::getPersonId).collect(Collectors.toList()))));
 				immunizationsCq.select(immunizationsCqRoot);
-				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
 			}
 
