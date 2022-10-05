@@ -130,7 +130,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			new Date(),
 			Disease.CORONAVIRUS,
 			rdcf2);
-		assertPseudonymized(getContactFacade().getByUuid(contact.getUuid()));
+		assertPseudonymized(getContactFacade().getByUuid(contact.getUuid()), caze.getReportingUser().getCaption());
 	}
 
 	@Test
@@ -142,7 +142,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		List<ContactDto> contacts = getContactFacade().getByUuids(Arrays.asList(contact1.getUuid(), contact2.getUuid()));
 		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), false);
-		assertPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get());
+		assertPseudonymized(
+			contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get(),
+			caze.getReportingUser().getCaption());
 	}
 
 	@Test
@@ -160,7 +162,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		List<ContactDto> contacts = getContactFacade().getAllAfter(calendar.getTime());
 
 		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), true);
-		assertPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get());
+		assertPseudonymized(
+			contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get(),
+			caze2.getReportingUser().getCaption());
 		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact3.getUuid())).findFirst().get(), false);
 	}
 
@@ -376,7 +380,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(contact.getReportLatLonAccuracy(), is(10F));
 	}
 
-	private void assertPseudonymized(ContactDto contact) {
+	private void assertPseudonymized(ContactDto contact, String reportingUser) {
 
 		assertThat(contact.getPerson().getFirstName(), isEmptyString());
 		assertThat(contact.getPerson().getLastName(), isEmptyString());
@@ -385,7 +389,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(contact.getCaze().getLastName(), isEmptyString());
 
 		// sensitive data
-		assertThat(contact.getReportingUser(), is(nullValue()));
+		assertThat(contact.getReportingUser().getCaption(), is(reportingUser));
 		assertThat(contact.getContactOfficer(), is(nullValue()));
 		assertThat(contact.getResultingCaseUser(), is(nullValue()));
 

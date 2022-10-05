@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
@@ -105,14 +104,16 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
+	//fix
 	public void testGetSampleWithCaseOutsideJurisdiction() {
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		SampleDto sample = createCaseSample(caze, user1);
 
-		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), "Lab");
+		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), caze.getReportingUser().getCaption(), "Lab");
 	}
 
 	@Test
+	//fix
 	public void testGetSampleWithLabUserOfSampleLab() {
 		loginWith(user1);
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
@@ -122,7 +123,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleDto sampleByUuid = getSampleFacade().getSampleByUuid(sample.getUuid());
 		assertThat(sampleByUuid.getAssociatedCase().getFirstName(), is("John"));
 		assertThat(sampleByUuid.getAssociatedCase().getLastName(), is("Smith"));
-		assertNull(sampleByUuid.getReportingUser()); // user is not a lab level user and not in the same lab so the lab user does not see it - is this correct ?
+		assertThat(sampleByUuid.getReportingUser().getCaption(), is(caze.getReportingUser().getCaption())); // user is not a lab level user and not in the same lab so the lab user does not see it - is this correct ?
 		assertThat(sampleByUuid.getReportLat(), is(46.432));
 		assertThat(sampleByUuid.getReportLon(), is(23.234));
 		assertThat(sampleByUuid.getReportLatLonAccuracy(), is(10f));
@@ -133,12 +134,13 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
+
 	public void testGetSampleWithLabUserNotOfSampleLab() {
 		loginWith(user2);
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		SampleDto sample = createCaseSample(caze, user2, rdcf2.facility);
 		loginWith(labUser);
-		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), rdcf2.facility.getCaption());
+		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), caze.getReportingUser().getCaption(), rdcf2.facility.getCaption());
 	}
 
 	@Test
@@ -350,10 +352,11 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		List<SampleDto> activeSamples = getSampleFacade().getAllActiveSamplesAfter(calendar.getTime());
 
 		SampleDto active1 = activeSamples.stream().filter(t -> t.getUuid().equals(sample1.getUuid())).findFirst().get();
+		//fix
 		assertNotPseudonymized(active1, user2.getUuid());
 
 		SampleDto active2 = activeSamples.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
-		assertPseudonymized(active2, "Lab");
+		assertPseudonymized(active2, caze2.getReportingUser().getCaption(), "Lab");
 
 		// case samples not yet implemented
 		Optional<SampleDto> active3 = activeSamples.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst();
@@ -455,12 +458,12 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getComment(), is("Test comment"));
 	}
 
-	private void assertPseudonymized(SampleDto sample, String labName) {
+	private void assertPseudonymized(SampleDto sample, String reportingUser, String labName) {
 		assertThat(sample.getAssociatedCase().getFirstName(), isEmptyString());
 		assertThat(sample.getAssociatedCase().getLastName(), isEmptyString());
 
 		//sensitive data
-		assertThat(sample.getReportingUser(), is(nullValue()));
+		assertThat(sample.getReportingUser().getCaption(), is(reportingUser));
 		assertThat(sample.getReportLat(), is(nullValue()));
 		assertThat(sample.getReportLon(), is(nullValue()));
 		assertThat(sample.getReportLatLonAccuracy(), is(10F));
