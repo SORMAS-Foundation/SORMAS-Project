@@ -152,9 +152,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 		return new Person();
 	}
 
-	public List<PersonAssociation> getPermittedAssociations() {
+	public Set<PersonAssociation> getPermittedAssociations() {
 
-		return Arrays.stream(PersonAssociation.values()).filter(e -> isPermittedAssociation(e)).collect(Collectors.toList());
+		return new LinkedHashSet<>(Arrays.stream(PersonAssociation.values()).filter(e -> isPermittedAssociation(e)).collect(Collectors.toList()));
 	}
 
 	public boolean isPermittedAssociation(@NotNull PersonAssociation association) {
@@ -235,7 +235,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 				}
 				break;
 			case ALL:
-				// NOOP: check the explicit associations
+				// NOOP: Persons need to be identified by permitted explicit associations
 				break;
 			default:
 				throw new IllegalArgumentException(personAssociation.toString());
@@ -491,7 +491,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 				}
 				break;
 			case ALL:
-				// NOOP: check the explicit associations
+				// NOOP: Persons need to be identified by permitted explicit associations
 				break;
 			default:
 				throw new IllegalArgumentException(personAssociation.toString());
@@ -635,7 +635,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 		CriteriaQuery<?> personQuery = queryContext.getQuery();
 		PersonJoins joins = queryContext.getJoins();
 
-		List<PersonAssociation> permittedAssociations = getPermittedAssociations();
+		Set<PersonAssociation> permittedAssociations = getPermittedAssociations();
 		List<Predicate> associationPredicates = new ArrayList<>();
 		for (PersonAssociation personAssociation : permittedAssociations) {
 			switch (personAssociation) {
@@ -691,7 +691,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 					.add(and(cb, personTravelEntryJoin.get(TravelEntry.ID).isNotNull(), travelEntryUserFilter, activeTravelEntriesFilter));
 				break;
 			case ALL:
-				// NOOP: check the explicit associations
+				// NOOP: Persons need to be identified by permitted explicit associations
 				break;
 			default:
 				throw new IllegalArgumentException(personAssociation.toString());

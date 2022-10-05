@@ -16,6 +16,7 @@ package de.symeda.sormas.api.person;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -35,7 +36,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, PersonReferenceDto, PersonCriteria> {
 
-	List<PersonAssociation> getPermittedAssociations();
+	Set<PersonAssociation> getPermittedAssociations();
 
 	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease);
 
