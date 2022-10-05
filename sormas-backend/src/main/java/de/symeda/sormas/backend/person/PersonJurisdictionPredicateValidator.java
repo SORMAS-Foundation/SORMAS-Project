@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.person;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -52,7 +53,7 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 		CriteriaBuilder cb,
 		PersonJoins joins,
 		User user,
-		List<PersonAssociation> permittedAssociations) {
+		Set<PersonAssociation> permittedAssociations) {
 
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 		for (PersonAssociation personAssociation : permittedAssociations) {
@@ -78,7 +79,7 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 					.add(TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()), user));
 				break;
 			case ALL:
-				// NOOP: Persons need to be identified by explicit associations
+				// NOOP: Persons need to be identified by permitted explicit associations
 				break;
 			default:
 				throw new IllegalArgumentException(personAssociation.toString());

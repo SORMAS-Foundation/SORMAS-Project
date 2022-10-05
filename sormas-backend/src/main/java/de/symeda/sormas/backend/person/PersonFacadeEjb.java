@@ -243,7 +243,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public List<PersonAssociation> getPermittedAssociations() {
+	public Set<PersonAssociation> getPermittedAssociations() {
 		return service.getPermittedAssociations();
 	}
 
