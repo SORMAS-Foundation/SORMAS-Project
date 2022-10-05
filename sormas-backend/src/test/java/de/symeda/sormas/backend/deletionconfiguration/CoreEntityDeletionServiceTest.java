@@ -39,6 +39,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -191,6 +192,17 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
+		creator.createClinicalVisit(caze, v -> {
+			v.setVisitingPerson("John Smith");
+			v.setVisitRemarks("Test remarks");
+
+			SymptomsDto symptoms = new SymptomsDto();
+			symptoms.setPatientIllLocation("Test ill location");
+			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
+			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic");
+			v.setSymptoms(symptoms);
+		});
+
 		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate());
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
@@ -212,6 +224,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		assertEquals(0, getCaseService().count());
 		assertEquals(0, getVisitService().count());
+		assertEquals(0, getSymptomsService().count());
 	}
 
 	@Test
