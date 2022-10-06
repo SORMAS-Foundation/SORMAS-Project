@@ -199,8 +199,13 @@ public class DtoPseudonymizer {
 				pseudonymizeField(dto, field, defaultPseudonymizerClass);
 				// only personal and sensitive data pseudonymization needs special handling on the client side
 				// other not accessible data is hidden on the client side, so just cleanup and don't mark the DTO as pseudonymized
-				didPersonalOrSensitiveDataPseudonymization = !fieldAccessCheckers
-					.isAccessibleBy(field, pseudonymizeMandatoryFields, PersonalDataFieldAccessChecker.class, SensitiveDataFieldAccessChecker.class);
+				if (!didPersonalOrSensitiveDataPseudonymization) {
+					didPersonalOrSensitiveDataPseudonymization = !fieldAccessCheckers.isAccessibleBy(
+						field,
+						pseudonymizeMandatoryFields,
+						PersonalDataFieldAccessChecker.class,
+						SensitiveDataFieldAccessChecker.class);
+				}
 			}
 		}
 
@@ -214,14 +219,15 @@ public class DtoPseudonymizer {
 					Class<? extends ValuePseudonymizer> psudonomyzerClass =
 						pseudonymizerAnnotation != null ? pseudonymizerAnnotation.value() : defaultPseudonymizerClass;
 
-                    if (pseudonymizeDto((Class<Object>) embeddedField.getType(),
-                            embeddedField.get(dto),
-                            inJurisdiction,
-                            psudonomyzerClass,
-                            null,
-                            skipEmbeddedFields)) {
+					if (pseudonymizeDto(
+						(Class<Object>) embeddedField.getType(),
+						embeddedField.get(dto),
+						inJurisdiction,
+						psudonomyzerClass,
+						null,
+						skipEmbeddedFields)) {
 						didPersonalOrSensitiveDataPseudonymization = true;
-                    }
+					}
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(
 						"Failed to pseudonymize embedded field " + dto.getClass().getName() + "." + embeddedField.getName(),
@@ -250,7 +256,7 @@ public class DtoPseudonymizer {
 
 			ValuePseudonymizer<?> pseudonymizer = getPseudonymizer(field, pseudonymizerClass);
 			Object emptyValue = pseudonymizer.pseudonymize(field.get(dto));
-            field.set(dto, emptyValue);
+			field.set(dto, emptyValue);
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new RuntimeException(e);
 		} finally {
