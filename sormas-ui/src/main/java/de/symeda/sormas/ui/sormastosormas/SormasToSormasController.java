@@ -228,7 +228,6 @@ public class SormasToSormasController {
 						request,
 						Strings.messageSormasToSormasSimilarContactToCaseFound,
 						Captions.actionOkAndGoToContactDirectory,
-						// TODO - filter
 						() -> ControllerProvider.getContactController().navigateToIndex());
 					break;
 				case CONTACT:
