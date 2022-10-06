@@ -24,19 +24,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.symeda.sormas.api.audit.AuditInclude;
-import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasI18nMessageError;
 
-@AuditedClass
 public class ValidationErrorGroup extends SormasToSormasI18nMessageError implements Serializable {
 
 	private static final long serialVersionUID = 2075921523238507571L;
 
 	private String i18nTag;
-	@AuditInclude
-	private String uuid;
+	private String validatedEntityShortUuid;
 
 	private List<ValidationErrorMessage> messages = new ArrayList<>();
 
@@ -48,12 +44,12 @@ public class ValidationErrorGroup extends SormasToSormasI18nMessageError impleme
 
 	public ValidationErrorGroup(String i18nTag) {
 		this.i18nTag = i18nTag;
-		this.uuid = null;
+		this.validatedEntityShortUuid = null;
 	}
 
-	public ValidationErrorGroup(String i18nTag, String uuid) {
+	public ValidationErrorGroup(String i18nTag, String validatedEntityShortUuid) {
 		this.i18nTag = i18nTag;
-		this.uuid = uuid;
+		this.validatedEntityShortUuid = validatedEntityShortUuid;
 	}
 
 	@Override
@@ -65,19 +61,19 @@ public class ValidationErrorGroup extends SormasToSormasI18nMessageError impleme
 		this.i18nTag = i18nTag;
 	}
 
-	public String getUuid() {
-		return uuid;
+	public String getValidatedEntityShortUuid() {
+		return validatedEntityShortUuid;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setValidatedEntityShortUuid(String validatedEntityShortUuid) {
+		this.validatedEntityShortUuid = validatedEntityShortUuid;
 	}
 
 	@JsonIgnore
 	@Override
 	public Object[] getArgs() {
 		return new Object[] {
-			uuid };
+				validatedEntityShortUuid};
 	}
 
 	public List<ValidationErrorMessage> getMessages() {
@@ -91,8 +87,8 @@ public class ValidationErrorGroup extends SormasToSormasI18nMessageError impleme
 	@JsonIgnore
 	@Override
 	protected String getHumanMessageUnsafe() {
-		if (StringUtils.isNotBlank(uuid)) {
-			return String.format("%s %s", I18nProperties.getCaption(i18nTag), uuid);
+		if (StringUtils.isNotBlank(validatedEntityShortUuid)) {
+			return String.format("%s %s", I18nProperties.getCaption(i18nTag), validatedEntityShortUuid);
 		} else {
 			return I18nProperties.getCaption(i18nTag);
 		}
@@ -105,11 +101,11 @@ public class ValidationErrorGroup extends SormasToSormasI18nMessageError impleme
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ValidationErrorGroup that = (ValidationErrorGroup) o;
-		return Objects.equals(i18nTag, that.i18nTag) && Objects.equals(uuid, that.uuid);
+		return Objects.equals(i18nTag, that.i18nTag) && Objects.equals(validatedEntityShortUuid, that.validatedEntityShortUuid);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(i18nTag, uuid);
+		return Objects.hash(i18nTag, validatedEntityShortUuid);
 	}
 }
