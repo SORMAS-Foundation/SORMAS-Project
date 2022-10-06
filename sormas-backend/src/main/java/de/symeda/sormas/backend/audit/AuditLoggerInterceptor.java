@@ -52,15 +52,9 @@ public class AuditLoggerInterceptor {
 	private static final Set<Class<?>> adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
 
 	/**
-	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
+	 * Cache to track all remote beans that must be audited. True indicates audit, false ignore.
 	 */
-	private static final Map<Class<?>, Boolean> shouldIgnoreClassCache;
-	static {
-		Map<Class<?>, Boolean> map = new HashMap<>();
-		// explicitly add all services doing deletion here to bypass the local bean check
-		adoServiceClasses.forEach(clazz -> map.put(clazz, false));
-		shouldIgnoreClassCache = map;
-	}
+	private static final Map<Class<?>, Boolean> mustAuditRemoteBeanCache = new HashMap<>();
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
@@ -150,24 +144,32 @@ public class AuditLoggerInterceptor {
 			return context.proceed();
 		}
 
-		// with this we ignore EJB calls which definitely originate from within the backend
-		// as they can never be called direct from outside (i.e., remote) of the backend
-		// expression yields true if it IS a local bean => should not be audited and ignored
-		Boolean shouldIgnoreAudit = shouldIgnoreClassCache.computeIfAbsent(target, k -> target.getAnnotationsByType(LocalBean.class).length > 0);
-
-		if (Boolean.TRUE.equals(shouldIgnoreAudit)) {
-			// ignore local beans
-			return context.proceed();
-		}
-
 		Method calledMethod = context.getMethod();
 
-		if (ignoreAuditMethods.contains(calledMethod) || !allowedLocalAuditMethods.contains(calledMethod)) {
+		if (ignoreAuditMethods.contains(calledMethod)) {
 			// ignore certain methods for audit altogether. Statically populated cache.
 			return context.proceed();
 		}
 
-		return backendAuditing(context, calledMethod);
+		// with this we ignore EJB calls which definitely originate from within the backend
+		// as they can never be called direct from outside (i.e., remote) of the backend.
+		// The expression yields false if it IS a local bean, which should not be audited and ignored
+		// (exceptions to this rule, e.g., BaseService::deletePermanent, are handled below)
+		Boolean mustAudit = mustAuditRemoteBeanCache.computeIfAbsent(target, k -> target.getAnnotationsByType(LocalBean.class).length <= 0);
+
+		if (Boolean.TRUE.equals(mustAudit)) {
+			// we have a relevant method and a remote bean -> audit remote calls directly
+			return backendAuditing(context, calledMethod);
+		}
+
+		// if we get here, we have a local bean call. We need to check if it is a method which should be audited
+		if (allowedLocalAuditMethods.contains(calledMethod)) {
+			// we have a relevant method and a local bean -> audit local calls directly
+			return backendAuditing(context, calledMethod);
+		} else {
+			// we have a local bean call which should not be audited -> ignore
+			return context.proceed();
+		}
 	}
 
 	private Object backendAuditing(InvocationContext context, Method calledMethod) throws Exception {
