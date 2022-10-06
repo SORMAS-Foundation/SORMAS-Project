@@ -97,6 +97,10 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 public class ArchitectureTest {
 
 	@ArchTest
+	public static final ArchRule testNoDtosInBackend =
+		classes().that().resideInAPackage("de.symeda.sormas.backend.(*)..").should().haveSimpleNameNotEndingWith("Dto");
+
+	@ArchTest
 	public static final ArchRule dontUseFacadeProviderRule =
 		ArchRuleDefinition.theClass(FacadeProvider.class).should().onlyBeAccessed().byClassesThat().belongToAnyOf(FacadeProvider.class);
 
