@@ -986,6 +986,12 @@ public class WebDriverHelpers {
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
   }
 
+  public void refreshCurrentPage() throws InterruptedException {
+    baseSteps.refreshCurrentPage();
+      TimeUnit.SECONDS.sleep(3);
+      waitForPageLoadingSpinnerToDisappear(10);
+  }
+
   public void isElementGreyedOut(By elementLocator) {
     try {
       assertHelpers.assertWithPoll20Second(
