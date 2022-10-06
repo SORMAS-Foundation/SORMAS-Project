@@ -1411,8 +1411,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		firstCase = getCaseFacade().save(firstCase);
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
 		assertNull(firstCase.getOutcomeDate());
-		assertEquals(PresentCondition.UNKNOWN, cazePerson.getPresentCondition());
-		assertNull(cazePerson.getDeathDate());
+		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
 
 		// additional, newer cases for the the person
 		firstCase.setReportDate(DateHelper.subtractDays(today, 17));
@@ -1463,40 +1462,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 		assertEquals(CaseOutcome.NO_OUTCOME, thirdCase.getOutcome());
 		assertNull(thirdCase.getOutcomeDate());
-
-		// move 1st and 3rd case to past, so that they should no longer be affected by anything
-		firstCase.setReportDate(DateHelper.subtractDays(today, 100));
-		firstCase.getSymptoms().setOnsetDate(firstCase.getReportDate());
-		thirdCase.setReportDate(DateHelper.subtractDays(today, 100));
-		thirdCase.getSymptoms().setOnsetDate(thirdCase.getReportDate());
-		getCaseFacade().save(firstCase);
-		getCaseFacade().save(thirdCase);
-
-		// Set 2nd Case to deceased again
-		secondCase.setOutcome(CaseOutcome.DECEASED);
-		secondCase = getCaseFacade().save(secondCase);
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
-
-		// manually set the persons deathdate to 32 days in the past
-		cazePerson.setDeathDate(DateHelper.subtractDays(secondCase.getReportDate(), 32));
-		cazePerson = getPersonFacade().savePerson(cazePerson);
-
-		// Change Case to RECOVERD -> person should not change, because deathdate is over 30 days away from case reportdate
-		secondCase.setOutcome(CaseOutcome.RECOVERED);
-		secondCase = getCaseFacade().save(secondCase);
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
-
-		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
-
-		// update the present condition to dead -> case should still not be affected because of the date threshold
-		cazePerson.setPresentCondition(PresentCondition.DEAD);
-		cazePerson.setDeathDate(today);
-		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
-		cazePerson.setCauseOfDeathDisease(secondCase.getDisease());
-		getPersonFacade().savePerson(cazePerson);
-		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
-
-		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 	}
 
 	@Test
