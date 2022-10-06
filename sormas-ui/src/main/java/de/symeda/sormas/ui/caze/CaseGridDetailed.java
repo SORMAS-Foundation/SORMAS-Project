@@ -19,7 +19,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -61,15 +61,15 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	@Override
 	public Stream<String> getEventColumns() {
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (!UiUtil.permitted(UserRight.EVENT_VIEW)) {
 			return Stream.empty();
 		}
 
 		return Stream.of(
-				CaseIndexDetailedDto.EVENT_COUNT,
-				CaseIndexDetailedDto.LATEST_EVENT_ID,
-				CaseIndexDetailedDto.LATEST_EVENT_STATUS,
-				CaseIndexDetailedDto.LATEST_EVENT_TITLE);
+			CaseIndexDetailedDto.EVENT_COUNT,
+			CaseIndexDetailedDto.LATEST_EVENT_ID,
+			CaseIndexDetailedDto.LATEST_EVENT_STATUS,
+			CaseIndexDetailedDto.LATEST_EVENT_TITLE);
 	}
 
 	@Override
@@ -133,9 +133,9 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 			getColumn(CaseIndexDetailedDto.LATEST_EVENT_TITLE).setWidth(150).setSortable(false);
 			((Column<CaseIndexDetailedDto, String>) getColumn(CaseIndexDetailedDto.LATEST_EVENT_ID)).setRenderer(new UuidRenderer());
 			addItemClickListener(
-					new ShowDetailsListener<>(
-							CaseIndexDetailedDto.LATEST_EVENT_ID,
-							c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
+				new ShowDetailsListener<>(
+					CaseIndexDetailedDto.LATEST_EVENT_ID,
+					c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
 		}
 
 		((Column<CaseIndexDetailedDto, AgeAndBirthDateDto>) getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE)).setRenderer(
