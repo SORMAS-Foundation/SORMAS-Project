@@ -101,7 +101,7 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 			column.setCaption(
 				column.getId().equals(COLUMN_ACTIONS) || column.getId().equals(SHOW_MESSAGE)
 					? ""
-					: I18nProperties.findPrefixCaption(column.getId(), ShareRequestIndexDto.I18N_PREFIX, SormasToSormasShareRequestDto.I18N_PREFIX));
+					: I18nProperties.findPrefixCaption(column.getId(), SormasToSormasShareRequestDto.I18N_PREFIX, ShareRequestIndexDto.I18N_PREFIX));
 		}
 
 		setSortOrder(Collections.singletonList(new GridSortOrder<>(getColumn(ShareRequestIndexDto.CREATION_DATE), SortDirection.DESCENDING)));

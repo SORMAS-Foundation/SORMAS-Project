@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -27,6 +28,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.user.CurrentUserService;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -61,6 +64,9 @@ public class CaseListCriteriaBuilder {
 	private EntityManager em;
 	@EJB
 	private CaseService caseService;
+
+	@Inject
+	private CurrentUserService currentUserService;
 
 	public CriteriaQuery<CaseIndexDto> buildIndexCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
 		return buildIndexCriteria(CaseIndexDto.class, this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false);
@@ -101,17 +107,19 @@ public class CaseListCriteriaBuilder {
 
 		if (detailed) {
 			// Events count subquery
-			Subquery<Long> eventCountSq = cq.subquery(Long.class);
-			Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
-			Join<EventParticipant, Event> event = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
-			Join<EventParticipant, Case> resultingCase = eventCountRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
-			eventCountSq.where(
-				cb.and(
-					cb.equal(resultingCase.get(Case.ID), caze.get(Case.ID)),
-					cb.isFalse(event.get(Event.DELETED)),
-					cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
-			eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
-			selectionList.add(eventCountSq);
+			if (currentUserService.hasUserRight(UserRight.EVENT_VIEW)) {
+				Subquery<Long> eventCountSq = cq.subquery(Long.class);
+				Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
+				Join<EventParticipant, Event> event = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
+				Join<EventParticipant, Case> resultingCase = eventCountRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
+				eventCountSq.where(
+						cb.and(
+								cb.equal(resultingCase.get(Case.ID), caze.get(Case.ID)),
+								cb.isFalse(event.get(Event.DELETED)),
+								cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
+				eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
+				selectionList.add(eventCountSq);
+			}
 
 			// Latest sampleDateTime subquery
 			Subquery<Timestamp> latestSampleDateTimeSq = cq.subquery(Timestamp.class);

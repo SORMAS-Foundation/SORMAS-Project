@@ -34,9 +34,11 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
+import org.testng.Assert;
 
 @Slf4j
 public class NavBarSteps implements En {
@@ -46,7 +48,8 @@ public class NavBarSteps implements En {
   public static String elapsedTime;
 
   @Inject
-  public NavBarSteps(WebDriverHelpers webDriverHelpers) {
+  public NavBarSteps(
+      WebDriverHelpers webDriverHelpers, AssertHelpers assertHelpers, Assert Assert) {
 
     When(
         "^I click on the Cases button from navbar$",
@@ -269,6 +272,17 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.USERS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    Then(
+        "I Verify Users Navigation link is not present in the navigation bar",
+        () -> {
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertFalse(
+                      webDriverHelpers.isElementPresent(NavBarPage.USERS_BUTTON),
+                      "Users Button is displayed for wrong User type"),
+              10);
         });
 
     When(

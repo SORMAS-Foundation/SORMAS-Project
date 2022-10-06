@@ -1120,23 +1120,27 @@ public class CaseController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteWithReasonListener((deleteDetails) -> {
-				long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
-				if (contactCount > 0) {
-					VaadinUiUtil.showThreeOptionsPopup(
-						I18nProperties.getString(Strings.headingDeleteContacts),
-						new Label(I18nProperties.getString(Strings.confirmationDeleteCaseContacts)),
-						I18nProperties.getCaption(Captions.actionYes),
-						I18nProperties.getCaption(Captions.actionNo),
-						I18nProperties.getCaption(Captions.caseCancelDeletion),
-						null,
-						option -> {
-							if (option == VaadinUiUtil.PopupOption.OPTION1) {
-								deleteCase(caze, true, deleteDetails);
-							} else if (option == VaadinUiUtil.PopupOption.OPTION2) {
-								deleteCase(caze, false, deleteDetails);
-							}
-							// Option 3 does not need to be handled because it would just return
-						});
+				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+					long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
+					if (contactCount > 0) {
+						VaadinUiUtil.showThreeOptionsPopup(
+							I18nProperties.getString(Strings.headingDeleteContacts),
+							new Label(I18nProperties.getString(Strings.confirmationDeleteCaseContacts)),
+							I18nProperties.getCaption(Captions.actionYes),
+							I18nProperties.getCaption(Captions.actionNo),
+							I18nProperties.getCaption(Captions.caseCancelDeletion),
+							null,
+							option -> {
+								if (option == VaadinUiUtil.PopupOption.OPTION1) {
+									deleteCase(caze, true, deleteDetails);
+								} else if (option == VaadinUiUtil.PopupOption.OPTION2) {
+									deleteCase(caze, false, deleteDetails);
+								}
+								// Option 3 does not need to be handled because it would just return
+							});
+					} else {
+						deleteCase(caze, false, deleteDetails);
+					}
 				} else {
 					deleteCase(caze, false, deleteDetails);
 				}
