@@ -38,7 +38,7 @@ public class DiseaseConfigurationService extends AdoServiceWithUserFilter<Diseas
 		Subquery sub = cq.subquery(Long.class);
 		Root subRoot = sub.from(DiseaseConfiguration.class);
 
-		sub.select(cb.count(subRoot));
+		sub.select(cb.literal(1));
 
 		sub.where(
 			cb.and(

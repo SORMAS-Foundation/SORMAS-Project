@@ -68,7 +68,7 @@ public class OutbreakService extends AdoServiceWithUserFilter<Outbreak> {
 		}
 
 		Predicate filter = createUserFilter(cb, cq, from);
-		Predicate activeDiseasePredicate = cb.gt(diseaseConfigurationService.existActiveDisease(cq, cb, from, Outbreak.DISEASE), 0);
+		Predicate activeDiseasePredicate = cb.exists(diseaseConfigurationService.existActiveDisease(cq, cb, from, Outbreak.DISEASE));
 		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(criteria, cb, from), activeDiseasePredicate);
 
 		if (filter != null) {
