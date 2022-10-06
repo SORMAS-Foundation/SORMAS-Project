@@ -20,7 +20,7 @@ import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsD
 import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD_DE;
 import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.UNDER_FU_CHART_ON_CONTACTS_DASHBOARD;
-import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_COVID19_COUNTER;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.*;
 
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +94,55 @@ public class ContactsDashboardSteps implements En {
               confirmedContact_EN,
               confirmedContact_DE,
               "Counters for confirmed contacts are not equal!");
+        });
+
+    When(
+        "I click on the Contacts Radio button in Contact Dashboard",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_RADIO_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACTS_RADIO_BUTTON);
+        });
+
+    Then(
+        "^I verify filter component ([^\"]*) in the Contacts Dashboard Page$",
+        (String filterComponent) -> {
+          switch (filterComponent) {
+            case "Region":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  REGION_FILTER_COMBOBOX_CONTACTS_DASHBOARD);
+              break;
+            case "Disease":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DISEASE_FILTER_COMBOBOX_CONTACTS_DASHBOARD);
+              break;
+            case "Reset Filters":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  RESET_FILTERS_BUTTON_CONTACTS_DASHBOARD);
+              break;
+            case "Apply Filters":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  APPLY_FILTERS_BUTTON_CONTACTS_DASHBOARD);
+              break;
+            default:
+              throw new IllegalArgumentException("No valid options were provided");
+          }
+        });
+
+    And(
+        "I click on the Show All Diseases button in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SHOW_ALL_DISEASES_BUTTON_CONTACTS_DASHBOARD);
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_ALL_DISEASES_BUTTON_CONTACTS_DASHBOARD);
+        });
+
+    And(
+        "I click on the Show First Diseases button in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SHOW_FIRST_DISEASES_BUTTON_CONTACTS_DASHBOARD);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SHOW_FIRST_DISEASES_BUTTON_CONTACTS_DASHBOARD);
         });
   }
 }

@@ -264,3 +264,14 @@ Feature: Dashboard counters
     And I click on the Contacts button from navbar
     And I click on first created contact in Contact directory page by UUID
     And I delete the contact
+
+  @env_main @#7443
+  Scenario: Validate Contacts Dashboard layout
+    Given I log in as a National User
+    When I click on the Contacts Radio button in Contact Dashboard
+    Then I verify filter component Region in the Contacts Dashboard Page
+    Then I verify filter component Disease in the Contacts Dashboard Page
+    Then I verify filter component Reset Filters in the Contacts Dashboard Page
+    Then I verify filter component Apply Filters in the Contacts Dashboard Page
+    And I click on the Show All Diseases button in the Contacts Dashboard Page
+    And I click on the Show First Diseases button in the Contacts Dashboard Page
