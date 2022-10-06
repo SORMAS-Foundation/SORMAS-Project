@@ -15,9 +15,20 @@
 
 package de.symeda.sormas.api.utils.pseudonymization;
 
+/**
+ * Interface used to be able to mark objects that has pseudonymized personal and sensitive data
+ */
 public interface Pseudonymizable {
 
+	/**
+	 * @return true if the object has pseudonymized personal and sensitive data
+	 */
 	boolean isPseudonymized();
 
+	/**
+	 * Marks the object that it has pseudonymized personal and sensitive data
+	 * 
+	 * @param pseudonymized
+	 */
 	void setPseudonymized(boolean pseudonymized);
 }
