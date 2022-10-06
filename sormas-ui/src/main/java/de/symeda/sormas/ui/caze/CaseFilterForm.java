@@ -60,6 +60,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -170,7 +171,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		TextField eventSearchField = addField(
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.EVENT_LIKE, I18nProperties.getString(Strings.promptCaseOrContactEventSearchField), 200));
-		eventSearchField.setNullRepresentation("");
+		if (UiUtil.permitted(UserRight.EVENT_VIEW)) {
+			eventSearchField.setNullRepresentation("");
+		} else {
+			eventSearchField.setVisible(false);
+		}
 	}
 
 	@Override
@@ -343,7 +348,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.ONLY_CASES_WITH_EVENTS,
 				I18nProperties.getCaption(Captions.caseFilterRelatedToEvent),
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
-				CssStyles.CHECKBOX_FILTER_INLINE));
+				CssStyles.CHECKBOX_FILTER_INLINE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,
