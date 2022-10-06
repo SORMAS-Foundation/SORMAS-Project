@@ -179,7 +179,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		ExternalSurveillanceServiceGateway.addComponentToLayout(layout.getSidePanelComponent(), editComponent, caze);
+		ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, caze);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SURVEILLANCE_REPORTS)) {
 			SurveillanceReportListComponent surveillanceReportList = new SurveillanceReportListComponent(caze.toReference());
@@ -198,7 +198,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), caze, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
 		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid());
 

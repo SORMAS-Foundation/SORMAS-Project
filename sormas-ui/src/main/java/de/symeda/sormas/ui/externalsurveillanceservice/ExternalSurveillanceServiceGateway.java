@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
@@ -21,6 +20,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
@@ -37,7 +37,7 @@ public class ExternalSurveillanceServiceGateway {
 	}
 
 	public static ExternalSurveillanceShareComponent addComponentToLayout(
-		CustomLayout targetLayout,
+		LayoutWithSidePanel targetLayout,
 		DirtyStateComponent editComponent,
 		CaseDataDto caze) {
 		return addComponentToLayout(
@@ -56,7 +56,7 @@ public class ExternalSurveillanceServiceGateway {
 	}
 
 	public static ExternalSurveillanceShareComponent addComponentToLayout(
-		CustomLayout targetLayout,
+		LayoutWithSidePanel targetLayout,
 		DirtyStateComponent editComponent,
 		EventDto event) {
 		return addComponentToLayout(
@@ -75,7 +75,7 @@ public class ExternalSurveillanceServiceGateway {
 	}
 
 	private static ExternalSurveillanceShareComponent addComponentToLayout(
-		CustomLayout targetLayout,
+		LayoutWithSidePanel targetLayout,
 		DirtyStateComponent editComponent,
 		String entityName,
 		String confirmationText,
@@ -97,7 +97,7 @@ public class ExternalSurveillanceServiceGateway {
 		} : null, () -> {
 			deleteInExternalSurveillanceTool(deletionText, gatewayDeleteCall, SormasUI::refreshView);
 		}, shareInfoCriteria, editComponent);
-		targetLayout.addComponent(shareComponent, EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC);
+		targetLayout.addSidePanelComponent(shareComponent, EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC);
 
 		return shareComponent;
 	}

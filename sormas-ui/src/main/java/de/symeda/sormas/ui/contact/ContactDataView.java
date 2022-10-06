@@ -270,7 +270,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), contactDto, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
 		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
 
