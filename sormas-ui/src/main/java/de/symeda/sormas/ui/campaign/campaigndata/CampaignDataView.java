@@ -105,9 +105,6 @@ public class CampaignDataView extends AbstractCampaignView {
 		grid = new CampaignDataGrid(criteria);
 		grid.setDescriptionGenerator(CampaignFormMetaReferenceDto -> grid.getCaption());
 
-		// grid.setStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
-
-		// grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 		VerticalLayout mainLayout = new VerticalLayout();
 		HorizontalLayout filtersLayout = new HorizontalLayout();
 
