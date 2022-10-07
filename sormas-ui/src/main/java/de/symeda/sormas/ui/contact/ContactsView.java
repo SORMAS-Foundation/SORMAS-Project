@@ -354,7 +354,7 @@ public class ContactsView extends AbstractView {
 	private ContactCriteria getDefaultCriteria() {
 		ContactCriteria criteria = new ContactCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
-		if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
+		if (FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS)) {
 			criteria.setWithOwnership(true);
 		}
 
@@ -448,7 +448,7 @@ public class ContactsView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
+			if (FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS)) {
 				ComboBox ownershipFilter = ComboBoxHelper.createComboBoxV7();
 				ownershipFilter.setId("ownershipStatus");
 				ownershipFilter.setWidth(140, Unit.PIXELS);
@@ -708,8 +708,7 @@ public class ContactsView extends AbstractView {
 				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
 				return;
 			}
-			int newFollowUpRangeInterval =
-				DateHelper.getDaysBetween(UtilDate.from(fromReferenceDateValue), UtilDate.from(toReferenceDateValue));
+			int newFollowUpRangeInterval = DateHelper.getDaysBetween(UtilDate.from(fromReferenceDateValue), UtilDate.from(toReferenceDateValue));
 			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
 				followUpRangeInterval = newFollowUpRangeInterval;
 				buttonPreviousOrNextClick = true;
