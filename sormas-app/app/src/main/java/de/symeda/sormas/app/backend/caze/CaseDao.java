@@ -519,7 +519,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 					}
 
 					User assigneeUser = task.getAssigneeUser();
-					DatabaseHelper.getUserDao().loadUserRoles(assigneeUser);
+					DatabaseHelper.getUserDao().initUserRoles(assigneeUser);
 					if (assigneeUser != null
 						&& CaseJurisdictionBooleanValidator
 							.of(JurisdictionHelper.createCaseJurisdictionDto(changedCase), JurisdictionHelper.createUserJurisdiction(assigneeUser))
