@@ -102,20 +102,27 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			editComponent.setEnabled(false);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
+		UserProvider currentUser = UserProvider.getCurrent();
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.CASE_VIEW)) {
 			layout.addComponent(new SideComponentLayout(new CaseListComponent(getReference())), CASES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.CONTACT_VIEW)) {
 			layout.addComponent(new SideComponentLayout(new ContactListComponent(getReference())), CONTACTS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.EVENT_VIEW)
+			&& currentUser.hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
 			layout.addComponent(new SideComponentLayout(new EventParticipantListComponent(getReference())), EVENT_PARTICIPANTS_LOC);
 		}
 
-		UserProvider currentUser = UserProvider.getCurrent();
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
 			&& currentUser != null
