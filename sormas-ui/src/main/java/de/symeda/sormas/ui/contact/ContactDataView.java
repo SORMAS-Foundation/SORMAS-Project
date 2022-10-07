@@ -249,13 +249,14 @@ public class ContactDataView extends AbstractContactView {
 			}
 		}
 
-		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser();
+		boolean sormasToSormasfeatureEnabled =
+			FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
 		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null || contactDto.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
 
-			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, sormasToSormasfeatureEnabled);
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 

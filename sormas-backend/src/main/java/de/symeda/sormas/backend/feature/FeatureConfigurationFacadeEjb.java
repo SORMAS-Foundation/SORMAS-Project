@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -489,10 +490,13 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
+	public boolean isAnyFeatureEnabled(FeatureType... featureType) {
+		return Stream.of(featureType).anyMatch(this::isFeatureEnabled);
+	}
+
+	@Override
 	public boolean isAnySurveillanceEnabled() {
-		return isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
-			|| isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-			|| isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
+		return isAnyFeatureEnabled(FeatureType.CASE_SURVEILANCE, FeatureType.EVENT_SURVEILLANCE, FeatureType.AGGREGATE_REPORTING);
 	}
 
 	@Override

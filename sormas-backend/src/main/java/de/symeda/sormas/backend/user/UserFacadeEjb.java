@@ -62,7 +62,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskContextIndex;
+import de.symeda.sormas.api.task.TaskContextIndexCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -376,23 +376,23 @@ public class UserFacadeEjb implements UserFacade {
 			.collect(Collectors.toList());
 	}
 
-	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndex taskContextIndex) {
+	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndexCriteria taskContextIndexCriteria) {
 		List<UserReferenceDto> availableUsers = new ArrayList<>();
-		if (taskContextIndex.getUuid() == null) {
-			taskContextIndex = new TaskContextIndex(TaskContext.GENERAL);
+		if (taskContextIndexCriteria.getUuid() == null) {
+			taskContextIndexCriteria = new TaskContextIndexCriteria(TaskContext.GENERAL);
 		}
-		switch (taskContextIndex.getTaskContext()) {
+		switch (taskContextIndexCriteria.getTaskContext()) {
 		case CASE:
-			availableUsers.addAll(getUsersHavingCaseInJurisdiction(new CaseReferenceDto(taskContextIndex.getUuid())));
+			availableUsers.addAll(getUsersHavingCaseInJurisdiction(new CaseReferenceDto(taskContextIndexCriteria.getUuid())));
 			break;
 		case CONTACT:
-			availableUsers.addAll(getUsersHavingContactInJurisdiction(new ContactReferenceDto(taskContextIndex.getUuid())));
+			availableUsers.addAll(getUsersHavingContactInJurisdiction(new ContactReferenceDto(taskContextIndexCriteria.getUuid())));
 			break;
 		case EVENT:
-			availableUsers.addAll(getUsersHavingEventInJurisdiction(new EventReferenceDto(taskContextIndex.getUuid())));
+			availableUsers.addAll(getUsersHavingEventInJurisdiction(new EventReferenceDto(taskContextIndexCriteria.getUuid())));
 			break;
 		case TRAVEL_ENTRY:
-			availableUsers.addAll(getUsersHavingTravelEntryInJurisdiction(new TravelEntryReferenceDto(taskContextIndex.getUuid())));
+			availableUsers.addAll(getUsersHavingTravelEntryInJurisdiction(new TravelEntryReferenceDto(taskContextIndexCriteria.getUuid())));
 			break;
 		default:
 			availableUsers.addAll(getAllUserRefs(false));
@@ -402,9 +402,9 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@PermitAll
-	public List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(TaskContextIndex taskContextIndex) {
+	public List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(TaskContextIndexCriteria taskContextIndexCriteria) {
 
-		List<UserReferenceDto> availableUsers = getAssignableUsersBasedOnContext(taskContextIndex);
+		List<UserReferenceDto> availableUsers = getAssignableUsersBasedOnContext(taskContextIndexCriteria);
 		Map<String, Long> userTaskCounts =
 			taskFacade.getPendingTaskCountPerUser(availableUsers.stream().map(UserReferenceDto::getUuid).collect(Collectors.toList()));
 
