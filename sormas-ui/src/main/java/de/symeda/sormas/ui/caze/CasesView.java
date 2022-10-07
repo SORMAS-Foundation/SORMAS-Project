@@ -229,7 +229,7 @@ public class CasesView extends AbstractView {
 	private CaseCriteria getDefaultCriteria() {
 		CaseCriteria criteria = new CaseCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
-		if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
+		if (FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES)) {
 			criteria.setWithOwnership(true);
 		}
 
@@ -634,7 +634,7 @@ public class CasesView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			if (FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser()) {
+			if (FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES)) {
 				ComboBox ownershipFilter = ComboBoxHelper.createComboBoxV7();
 				ownershipFilter.setId("ownershipStatus");
 				ownershipFilter.setWidth(140, Unit.PIXELS);
@@ -976,8 +976,7 @@ public class CasesView extends AbstractView {
 				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
 				return;
 			}
-			int newFollowUpRangeInterval =
-				DateHelper.getDaysBetween(UtilDate.from(fromReferenceDateValue), UtilDate.from(toReferenceDateValue));
+			int newFollowUpRangeInterval = DateHelper.getDaysBetween(UtilDate.from(fromReferenceDateValue), UtilDate.from(toReferenceDateValue));
 
 			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
 				followUpRangeInterval = newFollowUpRangeInterval;
