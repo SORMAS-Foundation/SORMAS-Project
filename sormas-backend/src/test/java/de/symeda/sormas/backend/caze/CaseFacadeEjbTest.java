@@ -168,6 +168,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -205,6 +206,16 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@After
 	public void teardown() {
 		clearExternalSurvToolUrlForWireMock();
+	}
+
+	@Test(expected = ValidationRuntimeException.class)
+	public void testValidateWithNullReportingUser() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caze = creator
+			.createCase(null, cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseFacadeEjbLocal caseFacadeEjb = getBean(CaseFacadeEjbLocal.class);
+		caseFacadeEjb.validate(caze);
 	}
 
 	@Test
