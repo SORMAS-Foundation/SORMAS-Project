@@ -13,6 +13,7 @@ public interface Strings {
 	String active = "active";
 	String address = "address";
 	String aggregateReportLegend = "aggregateReportLegend";
+	String all = "all";
 	String and = "and";
 	String at = "at";
 	String average = "average";

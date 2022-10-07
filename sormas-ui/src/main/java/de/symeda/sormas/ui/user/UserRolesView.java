@@ -45,6 +45,7 @@ public class UserRolesView extends AbstractUserView {
 
 	public static final String ENABLED_FILTER = I18nProperties.getString(Strings.enabled);
 	public static final String DISABLED_FILTER = I18nProperties.getString(Strings.disabled);
+	public static final String ALL_FILTER = I18nProperties.getString(Strings.all);
 
 	private UserRoleCriteria criteria;
 
@@ -120,7 +121,7 @@ public class UserRolesView extends AbstractUserView {
 		enabledFilter.setId(UserRoleDto.ENABLED);
 		enabledFilter.setWidth(200, Unit.PIXELS);
 		enabledFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, UserRoleDto.ENABLED));
-		enabledFilter.addItems(ENABLED_FILTER, DISABLED_FILTER);
+		enabledFilter.addItems(ALL_FILTER, ENABLED_FILTER, DISABLED_FILTER);
 		enabledFilter.addValueChangeListener(e -> {
 			criteria.enabled(
 				ENABLED_FILTER.equals(e.getProperty().getValue())
@@ -187,7 +188,7 @@ public class UserRolesView extends AbstractUserView {
 		applyingCriteria = true;
 
 		jurisdictionFilter.setValue(criteria.getJurisdictionLevel() == null ? null : criteria.getJurisdictionLevel());
-		enabledFilter.setValue(criteria.getEnabled() == null ? null : criteria.getEnabled() ? ENABLED_FILTER : DISABLED_FILTER);
+		enabledFilter.setValue(criteria.getEnabled() == null ? ALL_FILTER : criteria.getEnabled() ? ENABLED_FILTER : DISABLED_FILTER);
 		userRightsFilter.setValue(criteria.getUserRight() == null ? null : criteria.getUserRight());
 
 		applyingCriteria = false;
