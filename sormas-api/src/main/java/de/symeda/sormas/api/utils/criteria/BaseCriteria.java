@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,12 +32,13 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-@SuppressWarnings("serial")
+@AuditedClass
 public abstract class BaseCriteria implements Serializable {
 
 	public String toUrlParams() {
