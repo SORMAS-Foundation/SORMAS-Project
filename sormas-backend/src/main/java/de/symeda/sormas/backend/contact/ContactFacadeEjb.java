@@ -1245,20 +1245,22 @@ public class ContactFacadeEjb
 		CriteriaQuery<ContactIndexDetailedDto> query = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties);
 		List<ContactIndexDetailedDto> dtos = QueryHelper.getResultList(em, query, first, max);
 
-		// Load event count and latest events info per contact
-		Map<String, List<ContactEventSummaryDetails>> eventSummaries =
-			eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
-				.stream()
-				.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
-		for (ContactIndexDetailedDto contact : dtos) {
+		if (userService.hasRight(UserRight.EVENT_VIEW)) {
+			// Load event count and latest events info per contact
+			Map<String, List<ContactEventSummaryDetails>> eventSummaries =
+				eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
+					.stream()
+					.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
+			for (ContactIndexDetailedDto contact : dtos) {
 
-			List<ContactEventSummaryDetails> contactEvents = eventSummaries.getOrDefault(contact.getUuid(), Collections.emptyList());
-			contact.setEventCount((long) contactEvents.size());
+				List<ContactEventSummaryDetails> contactEvents = eventSummaries.getOrDefault(contact.getUuid(), Collections.emptyList());
+				contact.setEventCount((long) contactEvents.size());
 
-			contactEvents.stream().max(Comparator.comparing(ContactEventSummaryDetails::getEventDate)).ifPresent(eventSummary -> {
-				contact.setLatestEventId(eventSummary.getEventUuid());
-				contact.setLatestEventTitle(eventSummary.getEventTitle());
-			});
+				contactEvents.stream().max(Comparator.comparing(ContactEventSummaryDetails::getEventDate)).ifPresent(eventSummary -> {
+					contact.setLatestEventId(eventSummary.getEventUuid());
+					contact.setLatestEventTitle(eventSummary.getEventTitle());
+				});
+			}
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));

@@ -2426,23 +2426,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					// attention: this may lead to infinite recursion when not properly implemented
 					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 				}
+			} else if (newCase.getOutcome() == CaseOutcome.UNKNOWN || newCase.getOutcome() == CaseOutcome.RECOVERED) {
 
-			} else if ((newCase.getOutcome() == CaseOutcome.NO_OUTCOME || newCase.getOutcome() == CaseOutcome.RECOVERED)
-				&& existingCase.getOutcome() == CaseOutcome.DECEASED) {
-				// Case was put "back alive"
 				PersonDto existingPerson = PersonFacadeEjb.toPersonDto(newCase.getPerson());
-				boolean withinDateThreshold = newCase.getReportDate().before(DateHelper.addDays(existingPerson.getDeathDate(), 30))
-					&& newCase.getReportDate().after(DateHelper.subtractDays(existingPerson.getDeathDate(), 30));
 
 				if (existingPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
-					&& existingPerson.getCauseOfDeathDisease() == newCase.getDisease()
-					&& withinDateThreshold) {
+					&& existingPerson.getCauseOfDeathDisease() == newCase.getDisease()) {
 					// Make sure no other case associated with the person has Outcome=DECEASED
 					CaseCriteria caseCriteria = new CaseCriteria();
 					caseCriteria.setPerson(existingPerson.toReference());
 					caseCriteria.setOutcome(CaseOutcome.DECEASED);
 					if (count(caseCriteria, true) == 0) {
-						newCase.getPerson().setPresentCondition(newCase.getOutcome() == CaseOutcome.NO_OUTCOME ? PresentCondition.UNKNOWN : PresentCondition.ALIVE);
+						newCase.getPerson().setPresentCondition(newCase.getOutcome() == CaseOutcome.UNKNOWN ? PresentCondition.UNKNOWN : PresentCondition.ALIVE);
 						newCase.getPerson().setBurialDate(null);
 						newCase.getPerson().setDeathDate(null);
 						newCase.getPerson().setDeathPlaceDescription(null);
@@ -2479,6 +2474,28 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				newCase.getPerson().setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
 				newCase.getPerson().setCauseOfDeathDisease(newCase.getDisease());
 				personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+			} else if (newCase.getOutcome() == CaseOutcome.UNKNOWN || newCase.getOutcome() == CaseOutcome.RECOVERED) {
+
+				PersonDto existingPerson = PersonFacadeEjb.toPersonDto(newCase.getPerson());
+
+				if (existingPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
+						&& existingPerson.getCauseOfDeathDisease() == newCase.getDisease()) {
+					// Make sure no other case associated with the person has Outcome=DECEASED
+					CaseCriteria caseCriteria = new CaseCriteria();
+					caseCriteria.setPerson(existingPerson.toReference());
+					caseCriteria.setOutcome(CaseOutcome.DECEASED);
+					if (count(caseCriteria, true) == 0) {
+						newCase.getPerson().setPresentCondition(newCase.getOutcome() == CaseOutcome.UNKNOWN ? PresentCondition.UNKNOWN : PresentCondition.ALIVE);
+						newCase.getPerson().setBurialDate(null);
+						newCase.getPerson().setDeathDate(null);
+						newCase.getPerson().setDeathPlaceDescription(null);
+						newCase.getPerson().setDeathPlaceType(null);
+						newCase.getPerson().setCauseOfDeath(null);
+						newCase.getPerson().setCauseOfDeathDetails(null);
+						newCase.getPerson().setCauseOfDeathDisease(null);
+						personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+					}
+				}
 			}
 		}
 	}
