@@ -51,6 +51,7 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
@@ -139,6 +140,8 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
@@ -690,11 +693,11 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasEventFacadeEjbLocal.class);
 	}
 
-	public ExternalMessageFacade getLabMessageFacade() {
+	public ExternalMessageFacade getExternalMessageFacade() {
 		return getBean(ExternalMessageFacadeEjbLocal.class);
 	}
 
-	public ExternalMessageService getLabMessageService() {
+	public ExternalMessageService getExternalMessageService() {
 		return getBean(ExternalMessageService.class);
 	}
 
@@ -959,5 +962,13 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public TaskService getTaskService() {
 		return getBean(TaskService.class);
+	}
+
+	public SampleReportFacade getSampleReportFacade() {
+		return getBean(SampleReportFacadeEjb.SampleReportFacadeEjbLocal.class);
+	}
+
+	public SampleReportService getSampleReportService() {
+		return getBean(SampleReportService.class);
 	}
 }

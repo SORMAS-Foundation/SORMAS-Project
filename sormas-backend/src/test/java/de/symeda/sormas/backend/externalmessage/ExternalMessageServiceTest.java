@@ -14,7 +14,6 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -29,7 +28,7 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 	@Test
 	public void testGetForSample() throws InterruptedException {
 
-		ExternalMessageService sut = getLabMessageService();
+		ExternalMessageService sut = getExternalMessageService();
 
 		// Generally, all objects named ...1. are related to lab messages that shall be returned.
 
@@ -48,25 +47,22 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 		SampleDto sample1 = creator.createSample(caze.toReference(), sampleDate, sampleDate, user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		SampleReferenceDto sampleReference1 = sample1.toReference();
 
-		ExternalMessageDto labMessage1a = creator.createLabMessage(null);
-		labMessage1a.setSample(sampleReference1);
+		ExternalMessageDto labMessage1a = creator.createLabMessageWithTestReport(sampleReference1);
 		labMessage1a.setCreationDate(new Date(4L));
 		labMessage1a.setChangeDate(new Date());
-		getLabMessageFacade().save(labMessage1a);
+		getExternalMessageFacade().save(labMessage1a);
 
-		ExternalMessageDto labMessage1Deleted = creator.createLabMessage(null);
-		labMessage1Deleted.setSample(sampleReference1);
+		ExternalMessageDto labMessage1Deleted = creator.createLabMessageWithTestReport(sampleReference1);
 		labMessage1Deleted.setChangeDate(new Date());
-		getLabMessageFacade().save(labMessage1Deleted);
-		getLabMessageFacade().deleteExternalMessage(labMessage1Deleted.getUuid());
+		getExternalMessageFacade().save(labMessage1Deleted);
+		getExternalMessageFacade().deleteExternalMessage(labMessage1Deleted.getUuid());
 
 		SampleDto sample2 = creator.createSample(caze.toReference(), sampleDate, sampleDate, user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		SampleReferenceDto sampleReference2 = sample2.toReference();
 
-		ExternalMessageDto labMessage2 = creator.createLabMessage(null);
-		labMessage2.setSample(sampleReference2);
+		ExternalMessageDto labMessage2 = creator.createLabMessageWithTestReport(sampleReference2);
 		labMessage2.setChangeDate(new Date());
-		getLabMessageFacade().save(labMessage2);
+		getExternalMessageFacade().save(labMessage2);
 
 		List<ExternalMessage> result = sut.getForSample(sampleReference1);
 		assertThat(result, Matchers.hasSize(1));
@@ -74,18 +70,16 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 
 		// Test with multiple results
 		Thread.sleep(1); // delay to ignore rounding issue with sorting
-		ExternalMessageDto labMessage1b = creator.createLabMessage(null);
-		labMessage1b.setSample(sampleReference1);
+		ExternalMessageDto labMessage1b = creator.createLabMessageWithTestReport(sampleReference1);
 		labMessage1b.setCreationDate(new Date(1L));
 		labMessage1b.setChangeDate(new Date());
-		getLabMessageFacade().save(labMessage1b);
+		getExternalMessageFacade().save(labMessage1b);
 
 		Thread.sleep(1);
-		ExternalMessageDto labMessage1c = creator.createLabMessage(null);
-		labMessage1c.setSample(sampleReference1);
+		ExternalMessageDto labMessage1c = creator.createLabMessageWithTestReport(sampleReference1);
 		labMessage1c.setCreationDate(new Date(2L));
 		labMessage1c.setChangeDate(new Date());
-		getLabMessageFacade().save(labMessage1c);
+		getExternalMessageFacade().save(labMessage1c);
 
 		result = sut.getForSample(sampleReference1);
 		assertThat(result, Matchers.hasSize(3));
@@ -97,7 +91,7 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 	@Test
 	public void testCountForCase() {
 
-		ExternalMessageService sut = getLabMessageService();
+		ExternalMessageService sut = getExternalMessageService();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
@@ -111,22 +105,33 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		assertEquals(0L, sut.countForCase(caze.getUuid()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		assertEquals(1L, sut.countForCase(caze.getUuid()));
 
-		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		// create additional lab message matches
+		creator.createLabMessageWithTestReport(sample.toReference());
 		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
+		creator.createLabMessageWithTestReport(sample2.toReference());
 		assertEquals(3L, sut.countForCase(caze.getUuid()));
 		assertEquals(0L, sut.countForContact(caze.getUuid()));
 		assertEquals(0L, sut.countForEventParticipant(caze.getUuid()));
+
+		// create physician's report match and noise
+		creator.createPhysiciansReportWithCase(caze.toReference());
+		creator.createPhysiciansReportWithCase(noiseCaze.toReference());
+		creator.createPhysiciansReportWithCase(noiseCaze.toReference());
+		assertEquals(4L, sut.countForCase(caze.getUuid()));
+
+		// create yet another physician's report match
+		creator.createPhysiciansReportWithCase(caze.toReference());
+		assertEquals(5L, sut.countForCase(caze.getUuid()));
+
 	}
 
 	@Test
 	public void testCountForContact() {
 
-		ExternalMessageService sut = getLabMessageService();
+		ExternalMessageService sut = getExternalMessageService();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
@@ -140,13 +145,13 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
 		assertEquals(0L, sut.countForContact(contact.getUuid()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		assertEquals(1L, sut.countForContact(contact.getUuid()));
 
 		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		SampleDto sample2 = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
+		creator.createLabMessageWithTestReport(sample2.toReference());
 		assertEquals(3L, sut.countForContact(contact.getUuid()));
 		assertEquals(0L, sut.countForCase(contact.getUuid()));
 		assertEquals(0L, sut.countForEventParticipant(contact.getUuid()));
@@ -155,7 +160,7 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 	@Test
 	public void testCountForEventParticipant() {
 
-		ExternalMessageService sut = getLabMessageService();
+		ExternalMessageService sut = getExternalMessageService();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
@@ -170,13 +175,13 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
 		assertEquals(0L, sut.countForEventParticipant(eventParticipant.getUuid()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		assertEquals(1L, sut.countForEventParticipant(eventParticipant.getUuid()));
 
 		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		SampleDto sample2 = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
+		creator.createLabMessageWithTestReport(sample2.toReference());
 		assertEquals(3L, sut.countForEventParticipant(eventParticipant.getUuid()));
 		assertEquals(0L, sut.countForContact(eventParticipant.getUuid()));
 		assertEquals(0L, sut.countForCase(eventParticipant.getUuid()));
@@ -185,12 +190,12 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 	@Test
 	public void testLabMessagePermanentDeletion() {
 
-		ExternalMessageDto labMessage = creator.createLabMessage(null);
-		TestReportDto testReport = creator.createTestReport(labMessage.toReference());
+		ExternalMessageDto labMessage = creator.createLabMessageWithTestReport(null);
 
-		getLabMessageFacade().deleteExternalMessage(labMessage.getUuid());
+		getExternalMessageFacade().deleteExternalMessage(labMessage.getUuid());
 
-		assertEquals(0, getLabMessageService().count());
+		assertEquals(0, getExternalMessageService().count());
+		assertEquals(0, getSampleReportService().count());
 		assertEquals(0, getTestReportService().count());
 	}
 }

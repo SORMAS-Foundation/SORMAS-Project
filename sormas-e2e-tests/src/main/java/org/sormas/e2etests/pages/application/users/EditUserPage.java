@@ -25,6 +25,7 @@ public class EditUserPage {
   public static final By LAST_NAME_OF_USER_INPUT = By.id("lastName");
   public static final By CREATE_NEW_PASSWORD_BUTTON = By.id("userResetPassword");
   public static final By CONFIRM_NEW_PASSWORD_BUTTON = By.id("actionConfirm");
+  public static final By CANCEL_NEW_PASSWORD_BUTTON = By.id("actionCancel");
   public static final By NEW_GENERATED_PASSWORD_TEXT =
       By.xpath("//div[@class='v-window-wrap']//div[contains(@class,\"h2 v-label-undef-w\")]");
   public static final By CLOSE_PASSWORD_POPUP_BUTTON =
@@ -51,8 +52,12 @@ public class EditUserPage {
   public static final By LONGITUDE_INPUT = By.id("longitude");
   public static final By LAT_LON_ACCURACY_INPUT = By.id("latLonAccuracy");
   public static final By ACTIVE_CHECKBOX = By.cssSelector(".v-window #active input");
+  public static final By ACTIVE_LABEL = By.cssSelector(".v-window #active label");
   public static final By USER_NAME_INPUT = By.id("userName");
   public static final By USER_ROLE_CHECKBOX_TEXT = By.cssSelector("#userRoles [checked] + label");
   public static final By LIMITED_DISEASE_COMBOBOX_INPUT = By.cssSelector("#limitedDisease > input");
   public static final By DISCARD_BUTTON = By.id("discard");
+  public static final By SAVE_BUTTON_EDIT_USER = By.id("commit");
+  public static final By NOTIFICATION_CAPTION_EDIT_USER =
+      By.cssSelector("[class='v-Notification-description']");
 }

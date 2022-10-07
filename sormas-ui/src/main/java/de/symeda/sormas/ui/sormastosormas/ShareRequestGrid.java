@@ -40,9 +40,11 @@ import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -101,7 +103,7 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 			column.setCaption(
 				column.getId().equals(COLUMN_ACTIONS) || column.getId().equals(SHOW_MESSAGE)
 					? ""
-					: I18nProperties.findPrefixCaption(column.getId(), ShareRequestIndexDto.I18N_PREFIX, SormasToSormasShareRequestDto.I18N_PREFIX));
+					: I18nProperties.findPrefixCaption(column.getId(), SormasToSormasShareRequestDto.I18N_PREFIX, ShareRequestIndexDto.I18N_PREFIX));
 		}
 
 		setSortOrder(Collections.singletonList(new GridSortOrder<>(getColumn(ShareRequestIndexDto.CREATION_DATE), SortDirection.DESCENDING)));
@@ -120,7 +122,7 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 				layout.addComponent(ButtonHelper.createButton(Captions.actionReject, (e) -> {
 					ControllerProvider.getSormasToSormasController().rejectShareRequest(indexDto, this::reload);
 				}, ValoTheme.BUTTON_SMALL));
-			} else {
+			} else if (UserProvider.getCurrent().hasUserRight(UserRight.SORMAS_TO_SORMAS_SHARE)) {
 				layout.addComponent(ButtonHelper.createButton(Captions.sormasToSormasRevokeShare, (e) -> {
 					ControllerProvider.getSormasToSormasController().revokeShareRequest(indexDto.getUuid(), this::reload);
 				}, ValoTheme.BUTTON_SMALL));

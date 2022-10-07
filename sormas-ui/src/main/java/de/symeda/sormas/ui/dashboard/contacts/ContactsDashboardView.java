@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -137,11 +136,6 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			networkDiagramRowLayout = createNetworkDiagramRowLayout();
 			rowsLayout.addComponent(networkDiagramRowLayout);
 		}
-	}
-
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		refreshDashboard();
 	}
 
 	private HorizontalLayout createCaseStatisticsLayout() {

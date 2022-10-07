@@ -67,6 +67,7 @@ import de.symeda.sormas.backend.event.EventGroup;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externalmessage.ExternalMessage;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -171,6 +172,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_FORM_DATA, CampaignFormData.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_DIAGRAM_DEFINITIONS, CampaignDiagramDefinition.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EXTERNAL_MESSAGES, ExternalMessage.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SAMPLE_REPORTS, SampleReport.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.TEST_REPORTS, TestReport.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_ORIGIN_INFO, SormasToSormasOriginInfo.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_INFO, SormasToSormasShareInfo.TABLE_NAME);

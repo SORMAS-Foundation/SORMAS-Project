@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.user;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -68,6 +70,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -88,6 +91,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	private FacilityService facilityService;
 	@EJB
 	private PointOfEntryService pointOfEntryService;
+	@Inject
+	private javax.enterprise.event.Event<UserUpdateEvent> userUpdateEvent;
 
 	public UserService() {
 		super(User.class);
@@ -907,5 +912,19 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		cq.where(cb.equal(rolesJoin.get(UserRole.UUID), userRoleRef.getUuid()), cb.equal(roleCount, 1));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	/**
+	 * Triggers the user sync asynchronously to not block the deployment step
+	 */
+	public void syncUserAsync(User user) {
+		try {
+			UserUpdateEvent event = new UserUpdateEvent(user);
+			event.setExceptionCallback(exceptionMessage -> logger.error("Could not synchronize user {} due to {}", user.getUuid(), exceptionMessage));
+
+			this.userUpdateEvent.fireAsync(event);
+		} catch (Throwable e) {
+			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", user.getUuid()), e);
+		}
 	}
 }

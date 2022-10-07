@@ -27,6 +27,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -46,6 +47,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -305,6 +307,34 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._CONTACT_VIEW,
+		UserRight._CASE_VIEW,
+		UserRight._EVENTPARTICIPANT_VIEW })
+	public Date getEarliestPositiveSampleDate(String contactUuid) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+		final Root<Sample> sampleRoot = cq.from(Sample.class);
+
+		cq.where(cb.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE));
+		cq.orderBy(cb.asc(sampleRoot.get(Sample.SAMPLE_DATE_TIME)));
+		cq.select(sampleRoot.get(Sample.SAMPLE_DATE_TIME));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public List<DiseaseVariant> getAssociatedDiseaseVariants(String sampleUuid) {
+
+		return sampleService.getAssociatedDiseaseVariants(sampleUuid);
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -401,22 +431,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		Collection<Sample> entities = sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> associatedObjectFn.apply(s).getUuid(),
-					s -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values();
 
 		return toPseudonymizedDtos(new ArrayList<>(entities));
@@ -825,7 +851,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		Map<Long, SampleJurisdictionFlagsDto> jurisdictionFlags = sampleService.getJurisdictionsFlags(entities);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		List<SampleDto> dtos = entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
+		List<SampleDto> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
 		return dtos;
 	}
 
