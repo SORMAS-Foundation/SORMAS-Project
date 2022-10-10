@@ -175,7 +175,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		VaccinationListCriteria vaccinationCriteria =
 			new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
 		QuarantineOrderDocumentsComponent.addComponentToLayout(
-			layout.getSidePanelComponent(),
+			layout,
 			eventParticipantRef,
 			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
 			sampleCriteria,

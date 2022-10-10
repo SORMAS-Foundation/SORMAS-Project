@@ -107,7 +107,7 @@ public class EventDataView extends AbstractEventView {
 
 		container.addComponent(layout);
 
-		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout.getSidePanelComponent(), editComponent, event);
+		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, event);
 		setExternalSurvToolLayoutVisibility(event.getEventStatus());
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
