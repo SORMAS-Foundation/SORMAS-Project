@@ -294,7 +294,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		ContactDto contact = createRemoteContactDto(rdcf, person);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(person, contact)));
 
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
@@ -329,7 +329,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		SormasToSormasSampleDto sample = createRemoteSampleDtoWithTests(rdcf, null, contact.toReference());
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(person, contact)));
 		shareData.setSamples(Collections.singletonList(sample));
 
@@ -423,7 +423,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		contact.setChangeDate(calendar.getTime());
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true));
 		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(contactPerson, contact)));
 		shareData.setSamples(
 			Arrays.asList(

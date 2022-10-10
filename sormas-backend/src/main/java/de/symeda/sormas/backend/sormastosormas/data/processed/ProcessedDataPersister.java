@@ -19,6 +19,7 @@ import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
@@ -50,6 +51,10 @@ public abstract class ProcessedDataPersister<T extends SormasToSormasShareableDt
 		}
 
 		persistSharedData(processedData, existingEntity);
+	}
+
+	public DuplicateResult checkForSimilarEntities(S processedData) {
+		return DuplicateResult.NONE;
 	}
 
 	protected abstract void persistSharedData(S processedData, E existingEntity) throws SormasToSormasValidationException;

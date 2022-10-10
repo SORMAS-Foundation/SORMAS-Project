@@ -265,6 +265,10 @@ public class PersonController {
 		}
 	}
 
+	public void navigateToPersons() {
+		SormasUI.get().getNavigator().navigateTo(PersonsView.VIEW_NAME);
+	}
+
 	public void navigateToPerson(String uuid) {
 		final String navigationState = PersonDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);

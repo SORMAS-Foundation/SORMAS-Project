@@ -683,6 +683,7 @@ public interface Strings {
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingSormasToSormasCanAcceptContactsWithoutCase = "headingSormasToSormasCanAcceptContactsWithoutCase";
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
+	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
@@ -1184,6 +1185,13 @@ public interface Strings {
 	String messageSamplesDeleted = "messageSamplesDeleted";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
+	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
+	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
+	String messageSormasToSormasSimilarContactFound = "messageSormasToSormasSimilarContactFound";
+	String messageSormasToSormasSimilarContactToCaseFound = "messageSormasToSormasSimilarContactToCaseFound";
+	String messageSormasToSormasSimilarConvertedCaseFound = "messageSormasToSormasSimilarConvertedCaseFound";
+	String messageSormasToSormasSimilarConvertedContactFound = "messageSormasToSormasSimilarConvertedContactFound";
+	String messageSormasToSormasSimilarPersonFound = "messageSormasToSormasSimilarPersonFound";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
 	String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
 	String messageSpecifyRowAttribute = "messageSpecifyRowAttribute";

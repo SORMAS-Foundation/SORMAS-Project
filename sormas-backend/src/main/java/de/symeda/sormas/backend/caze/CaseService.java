@@ -1765,9 +1765,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
-
-		CaseCriteria caseCriteria = criteria.getCaseCriteria();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
@@ -1798,6 +1795,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			root.get(Case.CHANGE_DATE));
 		cq.distinct(true);
 
+		Predicate filter = getSimilarityFilters(criteria, cb, root, queryContext);
+
+		cq.where(filter);
+
+		return em.createQuery(cq)
+			.unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new CaseSelectionDtoResultTransformer())
+			.getResultList();
+	}
+
+	public boolean hasSimilarCases(CaseSimilarityCriteria criteria) {
+		return exists((cb, root, cq) -> getSimilarityFilters(criteria, cb, root, new CaseQueryContext(cb, cq, root)));
+	}
+
+	private Predicate getSimilarityFilters(CaseSimilarityCriteria criteria, CriteriaBuilder cb, Root<Case> root, CaseQueryContext queryContext) {
+		final CaseCriteria caseCriteria = criteria.getCaseCriteria();
+		CaseJoins joins = queryContext.getJoins();
+
 		Predicate userFilter = createUserFilter(queryContext);
 
 		// In case you wonder: At this point in time the **person** duplicate check has already happen.
@@ -1806,6 +1821,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// the same case.
 		Predicate personSimilarityFilter =
 			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
+
+		if (criteria.getPersonUuids() != null) {
+			personSimilarityFilter = joins.getPerson().get(Person.UUID).in(criteria.getPersonUuids());
+		}
 
 		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
 
@@ -1829,12 +1848,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 		filter = CriteriaBuilderHelper.and(cb, filter, reportDateFilter);
 
-		cq.where(filter);
-
-		return em.createQuery(cq)
-			.unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new CaseSelectionDtoResultTransformer())
-			.getResultList();
+		return filter;
 	}
 
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion, double nameSimilarityThreshold) {
