@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.feature;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -63,6 +62,8 @@ public interface FeatureConfigurationFacade {
 	boolean isFeatureDisabled(FeatureType featureType);
 
 	boolean isFeatureEnabled(FeatureType featureType);
+
+	boolean isAnyFeatureEnabled(FeatureType... featureType);
 
 	boolean isFeatureEnabled(FeatureType featureType, CoreEntityType entityType);
 

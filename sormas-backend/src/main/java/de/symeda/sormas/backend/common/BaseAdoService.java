@@ -346,7 +346,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 				cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)),
 				cb.asc(from.get(AbstractDomainObject.UUID)),
 				cb.asc(from.get(AbstractDomainObject.ID)));
-			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 			result.addAll(batchResult);
 		});
 

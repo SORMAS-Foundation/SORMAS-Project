@@ -74,6 +74,7 @@ public class SormasToSormasController {
 	public void shareCaseFromDetailsPage(CaseDataDto caze) {
 		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), null, null);
+
 		shareToSormasFromDetailPage(
 			options -> FacadeProvider.getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options),
 			SormasToSormasOptionsForm.forCase(caze, currentShares));

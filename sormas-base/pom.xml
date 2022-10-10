@@ -639,13 +639,6 @@
 				<artifactId>docx4j-docx-anon</artifactId>
 				<version>${docx4j.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>org.reflections</groupId>
-				<artifactId>reflections</artifactId>
-				<version>0.10.2</version>
-			</dependency>
-
 			<dependency>
 				<groupId>org.docx4j</groupId>
 				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
@@ -728,6 +721,12 @@
 				<groupId>org.keycloak</groupId>
 				<artifactId>keycloak-servlet-filter-adapter</artifactId>
 				<version>${keycloak.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.10.2</version>
 			</dependency>
 
 			<!-- ** Vaadin ** -->

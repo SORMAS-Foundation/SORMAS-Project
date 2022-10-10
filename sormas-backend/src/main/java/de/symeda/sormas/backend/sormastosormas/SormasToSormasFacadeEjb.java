@@ -340,6 +340,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	@PermitAll
+	public boolean isAnyFeatureConfigured(FeatureType... sormasToSormasFeatures) {
+		return configFacadeEjb.isS2SConfigured() && featureConfigurationFacade.isAnyFeatureEnabled(sormasToSormasFeatures);
+	}
+
+	@Override
+	@PermitAll
 	public boolean isSharingCasesEnabledForUser() {
 		return isShareEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES);
 	}
