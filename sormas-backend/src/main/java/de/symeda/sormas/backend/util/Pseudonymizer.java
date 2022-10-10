@@ -18,8 +18,6 @@ package de.symeda.sormas.backend.util;
 import java.lang.reflect.Field;
 import java.util.function.Consumer;
 
-import javax.validation.constraints.NotNull;
-
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -75,8 +73,7 @@ public class Pseudonymizer extends DtoPseudonymizer {
 		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
 
 		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker(isInJurisdiction);
-		boolean isConfiguredToCheck = sensitiveDataFieldAccessChecker != null
-			&& (pseudonymizeMandatoryFields || !getDtoField(dtoClass, dtoFieldName).isAnnotationPresent(NotNull.class));
+		boolean isConfiguredToCheck = sensitiveDataFieldAccessChecker != null && pseudonymizeMandatoryFields;
 
 		if (isConfiguredToCheck && !sensitiveDataFieldAccessChecker.hasRight()) {
 			setPseudonymizedValue.accept(null);

@@ -421,7 +421,7 @@ public class ImmunizationFacadeEjb
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
 		}
 
-		if (immunizationDto.getReportingUser() == null) {
+		if (immunizationDto.getReportingUser() == null && !immunizationDto.isPseudonymized()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
 		}
 	}

@@ -441,7 +441,7 @@ public class EventParticipantFacadeEjb
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
 		}
 
-		if (eventParticipant.getReportingUser() == null) {
+		if (eventParticipant.getReportingUser() == null && !eventParticipant.isPseudonymized()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
 		}
 

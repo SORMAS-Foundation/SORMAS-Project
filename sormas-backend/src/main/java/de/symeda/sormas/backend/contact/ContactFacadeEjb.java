@@ -1883,7 +1883,7 @@ public class ContactFacadeEjb
 	public void validate(@Valid ContactDto contact) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
-		if (contact.getReportingUser() == null) {
+		if (contact.getReportingUser() == null && !contact.isPseudonymized()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
 		}
 

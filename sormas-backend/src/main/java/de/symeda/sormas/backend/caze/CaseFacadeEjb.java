@@ -1762,7 +1762,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty
-		if (caze.getReportingUser() == null) {
+		if (caze.getReportingUser() == null && !caze.isPseudonymized()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
 		}
 
