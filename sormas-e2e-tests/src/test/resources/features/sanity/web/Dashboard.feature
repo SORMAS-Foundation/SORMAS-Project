@@ -274,4 +274,24 @@ Feature: Dashboard counters
     Then I verify filter component Reset Filters in the Contacts Dashboard Page
     Then I verify filter component Apply Filters in the Contacts Dashboard Page
     And I click on the Show All Diseases button in the Contacts Dashboard Page
+    Then I verify the All Contacts Counter is displayed in the Contacts Dashboard Page
+    Then I verify the Under Follow-up Counter is displayed in the Contacts Dashboard Page
+    Then I verify the Stopped Follow-up Counter is displayed in the Contacts Dashboard Page
+    Then I verify the Visits Counter is displayed in the Contacts Dashboard Page
+    Then I verify the All Contacts Metrics are displayed in the Contacts Dashboard Page
+    Then I verify the Under Follow-up Metrics are displayed in the Contacts Dashboard Page
+    Then I verify the Stopped Follow-up Metrics are displayed in the Contacts Dashboard Page
+    Then I verify the Visits Metrics are displayed in the Contacts Dashboard Page
+    Then I verify the Contacts Per Case, min, max and average are displayed in the Contacts Dashboard Page
+    Then I verify that Contacts in Quarantine is displayed in the Contacts Dashboard Page
+    Then I verify that New Cases not Previously Known to Be Contacts is displayed in the Contacts Dashboard Page
+    Then I verify that Contacts placed in Quarantine is displayed in the Contacts Dashboard Page
+    Then I verify that Contacts placed in Quarantine is displayed in the Contacts Dashboard Page
     And I click on the Show First Diseases button in the Contacts Dashboard Page
+    Then I verify Follow-Up Status Chart Elements are displayed in the Contacts Dashboard Page
+    And I click to Expand the Follow up status chart in the Contacts Dashboard Page
+    Then I verify Follow up status Chart Context Menu and its contents in the Contacts Dashboard Page
+    And I click to Collapse the Follow up status chart in the Contacts Dashboard Page
+    And I click to Expand the Contact Map displayed in the Contacts Dashboard Page
+    Then I Verify Contact Map elements are displayed in the Contacts Dashboard Page
+    And I click to Collapse the Contact Map displayed in the Contacts Dashboard Page

@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class ContactsDashboardSteps implements En {
 
@@ -37,7 +38,7 @@ public class ContactsDashboardSteps implements En {
   public static String confirmedContact_DE;
 
   @Inject
-  public ContactsDashboardSteps(WebDriverHelpers webDriverHelpers) {
+  public ContactsDashboardSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -128,12 +129,315 @@ public class ContactsDashboardSteps implements En {
           }
         });
 
+    Then(
+        "^I verify the ([^\"]*) Counter is displayed in the Contacts Dashboard Page$",
+        (String counter) -> {
+          switch (counter) {
+            case "All Contacts":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  ALL_CONTACTS_COUNTER);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(ALL_CONTACTS_COUNTER),
+                  "All Contacts counter is not present in the Dashboard Contacts Page");
+              softly.assertAll();
+              break;
+            case "Under Follow-up":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  UNDER_FOLLOWUP_COUNTER);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(UNDER_FOLLOWUP_COUNTER),
+                  "Under Follow-up counter is not present in the Dashboard Contacts Page");
+              softly.assertAll();
+              break;
+            case "Stopped Follow-up":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  STOPPED_FOLLOWUP_COUNTER);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(STOPPED_FOLLOWUP_COUNTER),
+                  "Stopped Follow-up counter is not present in the Dashboard Contacts Page");
+              softly.assertAll();
+              break;
+            case "Visits":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(VISITS_COUNTER);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(VISITS_COUNTER),
+                  "Visits counter is not present in the Dashboard Contacts Page");
+              softly.assertAll();
+              break;
+            default:
+              throw new IllegalArgumentException("No valid options were provided");
+          }
+        });
+
+    Then(
+        "^I verify the ([^\"]*) Metrics are displayed in the Contacts Dashboard Page$",
+        (String metrics) -> {
+          switch (metrics) {
+            case "All Contacts":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  UNCONFIRMED_CONTACT_COUNTER);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(UNCONFIRMED_CONTACT_COUNTER),
+                  "Unconfirmed contact counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONFIRMED_CONTACT_COUNTER),
+                  "Confirmed contact counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(NOT_A_CONTACT_COUNTER),
+                  "Not a contact counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(NEW_COUNTER),
+                  "New counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(SYMPTOMATIC_COUNTER),
+                  "Symptomatic counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_COVID19_COUNTER),
+                  "Covid 19 counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_CHOLERA_COUNTER),
+                  "Cholera counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_CONGENITAL_RUBELLA_COUNTER),
+                  "Congenital Rubella counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_EBOLA_VIRUS_DISEASE_COUNTER),
+                  "Ebola Virus counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_LASSA_COUNTER),
+                  "Lassa counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_MONKEYPOX_COUNTER),
+                  "Monkey Pox counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_INFLUENZA_NEW_SUBTYPE_COUNTER),
+                  "Influenza New Subtype counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_PLAGUE_COUNTER),
+                  "Plague counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_UNSPECIFIED_WHF_COUNTER),
+                  "Unspecified WHF counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_HUMAN_RABIES_COUNTER),
+                  "Human Rabies counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_OTHER_EPIDEMIC_DISEASE_COUNTER),
+                  "Other epidemic disease counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTACTS_NOT_YET_DEFINED_COUNTER),
+                  "Not yet defined counter is not present in the Dashboard Contacts Page");
+              softly.assertAll();
+              break;
+            case "Under Follow-up":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COOPERATIVE_COUNTER);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(COOPERATIVE_COUNTER),
+                  "Cooperative counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(UNCOOPERATIVE_COUNTER),
+                  "Uncooperative counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(UNAVAILABLE_COUNTER),
+                  "Unavailable counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(NEVER_VISITED_COUNTER),
+                  "Never Visited counter is not present in the Dashboard Contacts Page");
+              softly.assertAll();
+              break;
+            case "Stopped Follow-up":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  COMPLETED_FOLLOW_UP_COUNTER);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(COMPLETED_FOLLOW_UP_COUNTER),
+                  "Completed Follow-up counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CANCELLED_FOLLOW_UP_COUNTER),
+                  "Canceled Follow-up counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(LOST_TO_FOLLOW_UP_COUNTER),
+                  "Lost to Follow-up counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONVERTED_TO_CASE_COUNTER),
+                  "Converted to case counter is not present in the Dashboard Contacts Page");
+              softly.assertAll();
+              break;
+            case "Visits":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  UNAVAILABLE_VISITS_COUNTER);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(UNAVAILABLE_VISITS_COUNTER),
+                  "Unavailable Visits counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(UNCOOPERATIVE_VISITS_COUNTER),
+                  "Uncooperative Visits counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(COOPERATIVE_VISITS_COUNTER),
+                  "Cooperative Visits counter is not present in the Dashboard Contacts Page");
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(MISSED_VISITS_COUNTER),
+                  "Missed Visits counter is not present in the Dashboard Contacts Page");
+              softly.assertAll();
+              break;
+            default:
+              throw new IllegalArgumentException("No valid options were provided");
+          }
+        });
+
+    Then(
+        "I verify the Contacts Per Case, min, max and average are displayed in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CONTACTS_PER_CASE_MIN_COUNTER);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(CONTACTS_PER_CASE_MIN_COUNTER),
+              "Contacts per Case Min counter is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(CONTACTS_PER_CASE_MAX_COUNTER),
+              "Contacts per Case Max counter is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(CONTACTS_PER_CASE_AVERAGE_COUNTER),
+              "Contacts per Case Average counter is not present in the Dashboard Contacts Page");
+          softly.assertAll();
+        });
+
+    Then(
+        "I verify that Contacts in Quarantine is displayed in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CONTACTS_IN_QUARANTINE_COUNTER);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(CONTACTS_IN_QUARANTINE_COUNTER),
+              "Contacts inn Quarantine counter is not present in the Dashboard Contacts Page");
+          softly.assertAll();
+        });
+
+    Then(
+        "I verify that New Cases not Previously Known to Be Contacts is displayed in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CONTACTS_NEW_CASES_NOT_PREVIOUSLY_KNOWN_TO_BE_CONTACTS_COUNTER);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  CONTACTS_NEW_CASES_NOT_PREVIOUSLY_KNOWN_TO_BE_CONTACTS_COUNTER),
+              "New Cases not Previously Known to Be Contacts counter is not present in the Dashboard Contacts Page");
+          softly.assertAll();
+        });
+
+    Then(
+        "I verify that Contacts placed in Quarantine is displayed in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CONTACTS_PLACED_IN_QUARANTINE_COUNTER);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(CONTACTS_PLACED_IN_QUARANTINE_COUNTER),
+              "Contacts placed in Quarantine counter is not present in the Dashboard Contacts Page");
+          softly.assertAll();
+        });
+
+    Then(
+        "I verify Follow-Up Status Chart Elements are displayed in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              FOLLOWUP_STATUS_CHART_UNDER_FU);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(FOLLOWUP_STATUS_CHART_UNDER_FU),
+              "FollowUp Status Chart Under FU is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(FOLLOWUP_STATUS_CHART_LOST_TO_FU),
+              "FollowUp Status Chart Lost to FU is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(FOLLOWUP_STATUS_CHART_COMPLETED_FU),
+              "FollowUp Status Chart Completed FU is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(FOLLOWUP_STATUS_CHART_CANCELED_FU),
+              "FollowUp Status Chart Canceled FU is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DASHBOARD_GROUPING_DROPDOWN),
+              "Grouping Dropdown is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DASHBOARD_DATA_DROPDOWN),
+              "Data Dropdown is not present in the Dashboard Contacts Page");
+          softly.assertAll();
+        });
+
+    And(
+        "I click to Expand the Follow up status chart in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENLARGE_FOLLOWUP_STATUS_CHART_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ENLARGE_FOLLOWUP_STATUS_CHART_BUTTON);
+        });
+
+    And(
+        "I click to Collapse the Follow up status chart in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              COLLAPSE_FOLLOWUP_STATUS_CHART_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(COLLAPSE_FOLLOWUP_STATUS_CHART_BUTTON);
+        });
+
+    And(
+        "I verify Follow up status Chart Context Menu and its contents in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CHART_CONTEXT_MENU);
+          webDriverHelpers.clickOnWebElementBySelector(CHART_CONTEXT_MENU);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(PRINT_CHART_OPTION);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(PRINT_CHART_OPTION),
+              "Print Chart option is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DOWNLOAD_PNG_IMAGE_OPTION),
+              "Download PNG image option is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DOWNLOAD_JPEG_IMAGE_OPTION),
+              "Download JPEG image option is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DOWNLOAD_PDF_DOCUMENT_OPTION),
+              "Download PDF document option is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DOWNLOAD_SVG_VECTOR_IMAGE_OPTION),
+              "Download SVG vector option is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DOWNLOAD_CSV_OPTION),
+              "Download CSV option is not present in the Dashboard Contacts Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DOWNLOAD_XLS_OPTION),
+              "Download XLS option is not present in the Dashboard Contacts Page");
+          softly.assertAll();
+        });
+
+    And(
+        "I click to Expand the Contact Map displayed in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EXPAND_MAP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EXPAND_MAP_BUTTON);
+        });
+
+    And(
+        "I click to Collapse the Contact Map displayed in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COLLAPSE_MAP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(COLLAPSE_MAP_BUTTON);
+        });
+
+    Then(
+        "I Verify Contact Map elements are displayed in the Contacts Dashboard Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(DASHBOARD_MAP_KEYS);
+          webDriverHelpers.clickOnWebElementBySelector(DASHBOARD_MAP_KEYS);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(DASHBOARD_MAP_LAYERS);
+          webDriverHelpers.clickOnWebElementBySelector(DASHBOARD_MAP_LAYERS);
+        });
+
     And(
         "I click on the Show All Diseases button in the Contacts Dashboard Page",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SHOW_ALL_DISEASES_BUTTON_CONTACTS_DASHBOARD);
           webDriverHelpers.clickOnWebElementBySelector(SHOW_ALL_DISEASES_BUTTON_CONTACTS_DASHBOARD);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CONTACTS_INFLUENZA_NEW_SUBTYPE_COUNTER);
         });
 
     And(
