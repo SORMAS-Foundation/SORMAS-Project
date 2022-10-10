@@ -1691,14 +1691,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	public boolean isPersonSimilarToExisting(PersonDto referencePerson) {
 
-		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
-			.lastName(referencePerson.getLastName())
-			.sex(referencePerson.getSex())
-			.birthdateDD(referencePerson.getBirthdateDD())
-			.birthdateMM(referencePerson.getBirthdateMM())
-			.birthdateYYYY(referencePerson.getBirthdateYYYY())
-			.passportNumber(referencePerson.getPassportNumber())
-			.nationalHealthId(referencePerson.getNationalHealthId());
+		PersonSimilarityCriteria criteria = PersonSimilarityCriteria.forPerson(referencePerson);
 
 		return checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
 	}
