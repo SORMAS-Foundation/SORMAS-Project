@@ -1013,7 +1013,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			if (location.getFacilityType() == null && !FacilityDto.NONE_FACILITY_UUID.equals(location.getFacility().getUuid())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
 			}
-			if (location.getFacilityType() != null && !location.getFacilityType().equals(facility.getType())) {
+			if (location.getFacilityType() != null
+				&& !FacilityDto.OTHER_FACILITY_UUID.equals(location.getFacility().getUuid())
+				&& !location.getFacilityType().equals(facility.getType())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
 			}
 			if (location.getCommunity() == null && facility.getDistrict() != null && !facility.getDistrict().equals(location.getDistrict())) {

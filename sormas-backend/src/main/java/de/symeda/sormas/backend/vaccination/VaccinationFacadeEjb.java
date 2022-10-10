@@ -461,7 +461,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	@RightsAllowed(UserRight._CONTACT_EDIT)
+	@RightsAllowed({
+		UserRight._CONTACT_EDIT,
+		UserRight._CONTACT_CREATE })
 	public void updateVaccinationStatuses(Contact contact) {
 		List<Immunization> contactPersonImmunizations =
 			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);

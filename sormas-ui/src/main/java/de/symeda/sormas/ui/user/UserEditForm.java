@@ -131,7 +131,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
         getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
+        userEmailDesc.setWidthFull();
         Label userPhoneDesc = new Label(I18nProperties.getString(Strings.infoUserPhoneNumber));
+        userPhoneDesc.setWidthFull();
         getContent().addComponent(userPhoneDesc, USER_PHONE_DESC_LOC);
 
         ComboBox cbLanguage = addField(UserDto.LANGUAGE, ComboBox.class);

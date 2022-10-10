@@ -1,35 +1,30 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.api.infrastructure.facility;
 
-import java.io.Serializable;
+import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import org.apache.commons.lang3.StringUtils;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class FacilityIndexDto implements Serializable, HasUuid {
+public class FacilityIndexDto extends AbstractUuidDto {
 
 	public static final String I18N_PREFIX = "Facility";
 
-	public static final String UUID = "uuid";
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -40,7 +35,6 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 
-	private String uuid;
 	private String name;
 	private FacilityType type;
 	private RegionReferenceDto region;
@@ -66,7 +60,7 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 		Double longitude,
 		String externalID) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.name = name;
 		this.type = type;
 		if (regionUuid != null) {
@@ -82,15 +76,6 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.externalID = externalID;
-	}
-
-	@Override
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getName() {
@@ -173,7 +158,6 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 	public String toString() {
 		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
-
 
 	public FacilityReferenceDto toReference() {
 		return new FacilityReferenceDto(getUuid(), getCaption(), getExternalID());

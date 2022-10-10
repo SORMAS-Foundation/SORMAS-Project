@@ -32,8 +32,6 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 	public static final String DOSE = "dose";
 	public static final String TREATMENT_ROUTE = "treatmentRoute";
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
-
-	private String uuid;
 	private TreatmentIndexType treatmentIndexType;
 	private Date treatmentDateTime;
 	private String dose;

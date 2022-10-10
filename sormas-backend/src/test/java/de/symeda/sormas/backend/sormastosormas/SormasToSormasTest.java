@@ -33,6 +33,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
@@ -125,7 +127,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		return false;
 	}
 
-	protected SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(String serverId, boolean ownershipHandedOver) {
+	protected SormasToSormasOriginInfoDto createSormasToSormasOriginInfoDto(String serverId, boolean ownershipHandedOver) {
 		SormasToSormasOriginInfoDto source = new SormasToSormasOriginInfoDto();
 		source.setOrganizationId(serverId);
 		source.setSenderName("John doe");
@@ -164,6 +166,16 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		person.getAddress().setCommunity(rdcf.community);
 
 		return person;
+	}
+
+	protected CaseDataDto createCaseDto(TestDataCreator.RDCF remoteRdcf, PersonDto person) {
+		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
+		caze.setResponsibleRegion(remoteRdcf.region);
+		caze.setResponsibleDistrict(remoteRdcf.district);
+		caze.setResponsibleCommunity(remoteRdcf.community);
+		caze.setHealthFacility(remoteRdcf.facility);
+		caze.setFacilityType(FacilityType.HOSPITAL);
+		return caze;
 	}
 
 	protected SormasToSormasSampleDto createRemoteSampleDtoWithTests(

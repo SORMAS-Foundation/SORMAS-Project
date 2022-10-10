@@ -22,6 +22,9 @@ public abstract class PseudonymizableDto extends EntityDto implements Pseudonymi
 
 	public static final String PSEUDONYMIZED = "pseudonymized";
 
+	/**
+	 * Flag that marks the object that is has pseudonymized personal and sensitive data
+	 */
 	private boolean pseudonymized;
 
 	public boolean isPseudonymized() {

@@ -268,6 +268,43 @@ public class CreateNewUserSteps implements En {
           }
         });
 
+    When(
+        "I create a new disabled National User in the Create New User page",
+        () -> {
+          webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+              NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
+          user = userService.buildGeneratedUserWithRole("National User");
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage(user.getLanguage());
+          selectCountry(user.getCountry());
+          selectRegion(user.getRegion());
+          selectDistrict(user.getDistrict());
+          selectCommunity(user.getCommunity());
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          fillUserName(user.getUserName());
+          selectUserRole("National User");
+          selectLimitedDisease(user.getLimitedDisease());
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          closeNewPasswordPopUp();
+        });
+
     And(
         "^I change user data and save the changes$",
         () -> {

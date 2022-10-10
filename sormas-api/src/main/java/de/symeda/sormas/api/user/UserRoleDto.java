@@ -61,9 +61,9 @@ public class UserRoleDto extends EntityDto {
 	private String caption;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
-	private boolean hasOptionalHealthFacility = true;
+	private boolean hasOptionalHealthFacility = false;
 	private boolean hasAssociatedDistrictUser = true;
-	private boolean portHealthUser = true;
+	private boolean portHealthUser = false;
 	private DefaultUserRole linkedDefaultUserRole;
 	private JurisdictionLevel jurisdictionLevel;
 	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();

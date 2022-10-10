@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.dashboard;
 
 import static de.symeda.sormas.ui.UiUtil.permitted;
 
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
@@ -88,6 +89,11 @@ public abstract class AbstractDashboardView extends AbstractView {
 		} else {
 			SormasUI.get().getNavigator().navigateTo(CampaignDashboardView.VIEW_NAME);
 		}
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		refreshDashboard();
 	}
 
 	public abstract void refreshDashboard();

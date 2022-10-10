@@ -15,18 +15,12 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage.processing;
 
-import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.PersonAndPickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
-import de.symeda.sormas.api.sample.SampleCriteria;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -43,15 +37,22 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
-import java.util.stream.Collectors;
+import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.PersonAndPickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 /**
  * Abstract class defining the flow of processing a lab message allowing to choose between multiple options like create or select a
@@ -68,7 +69,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		this.country = country;
 	}
 
-	public CompletionStage<ProcessingResult<SampleAndPathogenTests>> run(
+	public CompletionStage<ProcessingResult<RelatedSamplesReportsAndPathogenTests>> run(
 		ExternalMessageDto externalMessage,
 		AbstractRelatedLabMessageHandler relatedLabMessageHandler) {
 
@@ -89,18 +90,45 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		//@formatter:on
 	}
 
-	private FlowThen<SampleAndPathogenTests> doCreateCaseFlow(FlowThen<PersonAndPickOrCreateEntryResult> flow, ExternalMessageDto labMessage) {
+	private FlowThen<RelatedSamplesReportsAndPathogenTests> doCreateCaseFlow(
+		FlowThen<PersonAndPickOrCreateEntryResult> flow,
+		ExternalMessageDto labMessage) {
 
-		return flow.then(p -> createCase(p.getData().getPerson(), labMessage)).then(c -> createSampleAndPathogenTests(c.getData(), labMessage, true));
+		//@formatter:off
+		return flow.then(p -> createCase(p.getData().getPerson(), labMessage))
+				.then(p -> {
+					IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForCase =
+						sampleReportIndex -> createOneSampleAndPathogenTests(p.getData(), labMessage, sampleReportIndex, true);
+		
+					return doPickOrCreateSamplesFlow(
+						c -> c.sampleCriteria(new SampleCriteria().caze(p.getData().toReference())),
+						createSampleForCase,
+						flow,
+						labMessage).getResult();
+		});
+		//@formatter:on
 	}
 
-	private FlowThen<SampleAndPathogenTests> doCreateContactFlow(FlowThen<PersonAndPickOrCreateEntryResult> flow, ExternalMessageDto labMessage) {
+	private FlowThen<RelatedSamplesReportsAndPathogenTests> doCreateContactFlow(
+		FlowThen<PersonAndPickOrCreateEntryResult> flow,
+		ExternalMessageDto labMessage) {
 
+		//@formatter:off
 		return flow.then(p -> createContact(p.getData().getPerson(), labMessage))
-			.then(c -> createSampleAndPathogenTests(c.getData(), labMessage, true));
+				.then(p -> {
+					IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForContact =
+							sampleReportIndex -> createOneSampleAndPathogenTests(p.getData(), labMessage, sampleReportIndex, true);
+
+					return doPickOrCreateSamplesFlow(
+							c -> c.sampleCriteria(new SampleCriteria().contact(p.getData().toReference())),
+							createSampleForContact,
+							flow,
+							labMessage).getResult();
+		});
+		//@formatter:on
 	}
 
-	private FlowThen<SampleAndPathogenTests> doCreateEventParticipantFlow(
+	private FlowThen<RelatedSamplesReportsAndPathogenTests> doCreateEventParticipantFlow(
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		ExternalMessageDto labMessage) {
 
@@ -109,23 +137,27 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 			.when(
 				PersonAndPickOrCreateEventResult::isNewEvent,
 				(f, p) -> f.then(ignored -> createEvent(labMessage))
-					.then(ef -> doCreateEventParticipantAndSampleFlow(ef.getData(), p.getPerson(), f, labMessage).getResult()))
+					.then(ef -> doCreateEventParticipantAndSamplesFlow(ef.getData(), p.getPerson(), f, labMessage).getResult()))
 			.when(
 				PersonAndPickOrCreateEventResult::isEventSelected,
 				(f, p) -> f.then(e -> validateSelectedEvent(e.getData().getPickOrCreateEventResult().getEvent(), p.getPerson()))
 					.thenSwitch()
 					.when(
 						EventValidationResult::isEventSelected,
-						(vf, v) -> doCreateEventParticipantAndSampleFlow(v.getEvent(), p.getPerson(), vf, labMessage))
-					.when(
-						EventValidationResult::isEventParticipantSelected,
-						(vf, v) -> doPickOrCreateSampleFlow(
-							c -> c.sampleCriteria(new SampleCriteria().eventParticipant(v.getEventParticipant())),
-							() -> {
-							EventDto event = FacadeProvider.getEventFacade().getEventByUuid(p.getEvent().getUuid(), false);
+						(vf, v) -> doCreateEventParticipantAndSamplesFlow(v.getEvent(), p.getPerson(), vf, labMessage))
+					.when(EventValidationResult::isEventParticipantSelected, (vf, v) -> {
+						EventDto event = FacadeProvider.getEventFacade().getEventByUuid(p.getEvent().getUuid(), false);
 
-							return createSampleAndPathogenTests(v.getEventParticipant(), event, labMessage, false);
-						}, vf, labMessage))
+						IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForEventParticipant =
+							sampleReportIndex -> createOneSampleAndPathogenTests(v.eventParticipant, event, labMessage, sampleReportIndex, false);
+
+						return vf.then(
+							ignored -> doPickOrCreateSamplesFlow(
+								c -> c.sampleCriteria(new SampleCriteria().eventParticipant(v.eventParticipant)),
+								createSampleForEventParticipant,
+								flow,
+								labMessage).getResult());
+					})
 					.when(
 						EventValidationResult::isEventSelectionCanceled,
 						(vf, v) -> vf.then(ignored -> doCreateEventParticipantFlow(flow, labMessage).getResult()))
@@ -133,57 +165,99 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 			.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture());
 	}
 
-	private FlowThen<SampleAndPathogenTests> doCreateEventParticipantAndSampleFlow(
+	private FlowThen<RelatedSamplesReportsAndPathogenTests> doCreateEventParticipantAndSamplesFlow(
 		EventDto event,
 		PersonDto person,
 		FlowThen<?> flow,
 		ExternalMessageDto labMessage) {
 
+		//@formatter:off
 		return flow.then(ignored -> createEventParticipant(event, person, labMessage))
-			.then(ep -> createSampleAndPathogenTests(ep.getData().getEventParticipant().toReference(), ep.getData().getEvent(), labMessage, true));
+				.then(p -> {
+					IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForEventParticipant =
+						sampleReportIndex -> createOneSampleAndPathogenTests(
+							p.getData().eventParticipant.toReference(), 
+							p.getData().getEvent(),
+							labMessage,
+							sampleReportIndex,
+							true);
+
+					return doPickOrCreateSamplesFlow(
+						c -> c.sampleCriteria(new SampleCriteria().eventParticipant(p.getData().getEventParticipant().toReference())),
+						createSampleForEventParticipant,
+						flow,
+						labMessage).getResult();
+		});
+		//@formatter:on
 	}
 
-	private FlowThen<SampleAndPathogenTests> doCaseSelectedFlow(
+	private FlowThen<RelatedSamplesReportsAndPathogenTests> doPickOrCreateSamplesFlow(
+		Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
+		IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleAndPathogenTests,
+		FlowThen<?> flow,
+		ExternalMessageDto labMessage) {
+
+		List<SampleReportDto> sampleReports = labMessage.getSampleReportsNullSafe();
+		if (sampleReports.size() > 1) {
+			flow = flow.then(
+				result -> handleMultipleSampleConfirmation().thenCompose(
+					next -> ProcessingResult
+						.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+						.asCompletedFuture()));
+		}
+
+		RelatedSamplesReportsAndPathogenTests allSamplesAndPathogenTests = new RelatedSamplesReportsAndPathogenTests();
+		int i = 0;
+		do {
+			int currentSampleReportIndex = i;
+			flow = doSinglePickOrCreateSampleFlow(addSampleSearchCriteria, createSampleAndPathogenTests, flow, i, labMessage).then(r -> {
+				allSamplesAndPathogenTests.add(sampleReports.get(currentSampleReportIndex), r.getData());
+				return ProcessingResult.continueWith(r.getData()).asCompletedFuture();
+			});
+			i += 1;
+		}
+		while (i < sampleReports.size());
+
+		return flow.then(ignored -> ProcessingResult.continueWith(allSamplesAndPathogenTests).asCompletedFuture());
+	}
+
+	private FlowThen<RelatedSamplesReportsAndPathogenTests> doCaseSelectedFlow(
 		CaseSelectionDto caseSelection,
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		ExternalMessageDto labMessage) {
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseSelection.getUuid());
 
-		return doPickOrCreateSampleFlow(
-			c -> c.sampleCriteria(new SampleCriteria().caze(caze.toReference())),
-			() -> createSampleAndPathogenTests(caze, labMessage, false),
-			flow,
-			labMessage);
+		IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForCase =
+			sampleReportIndex -> createOneSampleAndPathogenTests(caze, labMessage, sampleReportIndex, false);
+
+		return flow.then(
+			ignored -> doPickOrCreateSamplesFlow(
+				c -> c.sampleCriteria(new SampleCriteria().caze(caze.toReference())),
+				createSampleForCase,
+				flow,
+				labMessage).getResult());
 	}
 
-	private FlowThen<SampleAndPathogenTests> doPickOrCreateSampleFlow(
-		Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
-		Supplier<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleAndPathogenTests,
-		FlowThen<?> flow,
-		ExternalMessageDto labMessage) {
-
-		return flow.then(ignored -> pickOrCreateSample(addSampleSearchCriteria, labMessage))
-			.thenSwitch()
-			.when(PickOrCreateSampleResult::isNewSample, (sf, p) -> sf.then(ignored -> createSampleAndPathogenTests.get()))
-			.when(PickOrCreateSampleResult::isSelectedSample, (sf, p) -> sf.then(s -> editSample(s.getData().getSample(), labMessage)))
-			.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture());
-	}
-
-	private FlowThen<SampleAndPathogenTests> doContactSelectedFlow(
+	private FlowThen<RelatedSamplesReportsAndPathogenTests> doContactSelectedFlow(
 		SimilarContactDto contactSelection,
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		ExternalMessageDto labMessage) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactSelection.getUuid());
-		return doPickOrCreateSampleFlow(
-			c -> c.sampleCriteria(new SampleCriteria().contact(contact.toReference())),
-			() -> createSampleAndPathogenTests(contact, labMessage, false),
-			flow,
-			labMessage);
+
+		IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForContact =
+			sampleReportIndex -> createOneSampleAndPathogenTests(contact, labMessage, sampleReportIndex, false);
+
+		return flow.then(
+			ignored -> doPickOrCreateSamplesFlow(
+				c -> c.sampleCriteria(new SampleCriteria().contact(contact.toReference())),
+				createSampleForContact,
+				flow,
+				labMessage).getResult());
 	}
 
-	private FlowThen<SampleAndPathogenTests> doEventParticipantSelectedFlow(
+	private FlowThen<RelatedSamplesReportsAndPathogenTests> doEventParticipantSelectedFlow(
 		SimilarEventParticipantDto eventParticipantSelection,
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		ExternalMessageDto labMessage) {
@@ -191,37 +265,62 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getByUuid(eventParticipantSelection.getUuid());
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
-		return doPickOrCreateSampleFlow(
-			c -> c.sampleCriteria(new SampleCriteria().eventParticipant(eventParticipant.toReference())),
-			() -> createSampleAndPathogenTests(eventParticipant.toReference(), event, labMessage, false),
-			flow,
-			labMessage);
+		IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForEventParticipant =
+			sampleReportIndex -> createOneSampleAndPathogenTests(eventParticipant.toReference(), event, labMessage, sampleReportIndex, false);
+
+		return flow.then(
+			ignored -> doPickOrCreateSamplesFlow(
+				c -> c.sampleCriteria(new SampleCriteria().eventParticipant(eventParticipant.toReference())),
+				createSampleForEventParticipant,
+				flow,
+				labMessage).getResult());
 	}
 
-	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> handleRelatedLabMessages(
+	private FlowThen<SampleAndPathogenTests> doSinglePickOrCreateSampleFlow(
+		Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
+		IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleAndPathogenTests,
+		FlowThen<?> flow,
+		int sampleReportIndex,
+		ExternalMessageDto labMessage) {
+
+		//@formatter:off
+		return flow.then(ignored -> pickOrCreateSample(addSampleSearchCriteria, sampleReportIndex, labMessage))
+			.thenSwitch()
+				.when(PickOrCreateSampleResult::isNewSample, (sf, p) -> sf.then(ignored -> createSampleAndPathogenTests.apply(sampleReportIndex)))
+				.when(PickOrCreateSampleResult::isSelectedSample, (sf, p) -> sf.then(s -> editSample(s.getData().getSample(), sampleReportIndex, labMessage)))
+			.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture());
+		//@formatter:on
+
+	}
+
+	private CompletionStage<ProcessingResult<RelatedSamplesReportsAndPathogenTests>> handleRelatedLabMessages(
 		AbstractRelatedLabMessageHandler relatedLabMessageHandler,
 		ExternalMessageDto labMessage) {
 
+		// TODO currently, related messages handling is just done if one sample report exists. That's why this works.
+		SampleReportDto firstSampleReport = labMessage.getSampleReportsNullSafe().get(0);
 		return relatedLabMessageHandler.handle(labMessage).thenCompose(result -> {
 			AbstractRelatedLabMessageHandler.HandlerResultStatus status = result.getStatus();
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.CANCELED) {
-				return ProcessingResult.<SampleAndPathogenTests> withStatus(ProcessingResultStatus.CANCELED).asCompletedFuture();
+				return ProcessingResult.<RelatedSamplesReportsAndPathogenTests> withStatus(ProcessingResultStatus.CANCELED).asCompletedFuture();
 			}
 
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.CANCELED_WITH_UPDATES) {
-				return ProcessingResult.<SampleAndPathogenTests> withStatus(ProcessingResultStatus.CANCELED_WITH_CORRECTIONS).asCompletedFuture();
+				return ProcessingResult.<RelatedSamplesReportsAndPathogenTests> withStatus(ProcessingResultStatus.CANCELED_WITH_CORRECTIONS)
+					.asCompletedFuture();
 			}
 
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.HANDLED) {
 				SampleDto relatedSample = result.getSample();
-				return ProcessingResult
-					.of(
-						ProcessingResultStatus.DONE,
-						new SampleAndPathogenTests(relatedSample, FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference())))
-					.asCompletedFuture();
+				RelatedSamplesReportsAndPathogenTests handlerResult = new RelatedSamplesReportsAndPathogenTests();
+				handlerResult.add(
+					firstSampleReport,
+					new SampleAndPathogenTests(relatedSample, FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference())));
+
+				return ProcessingResult.of(ProcessingResultStatus.DONE, handlerResult).asCompletedFuture();
 			}
 
-			return ProcessingResult.<SampleAndPathogenTests> continueWith(null).asCompletedFuture();
+			return ProcessingResult.<RelatedSamplesReportsAndPathogenTests> continueWith(null).asCompletedFuture();
 		});
 	}
 
@@ -288,38 +387,60 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		ExternalMessageDto labMessage,
 		HandlerCallback<CaseDataDto> callback);
 
-	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> createSampleAndPathogenTests(
+	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> createOneSampleAndPathogenTests(
 		CaseDataDto caze,
 		ExternalMessageDto labMessage,
+		int sampleReportIndex,
 		boolean entityCreated) {
 
 		SampleDto sample = SampleDto.build(user.toReference(), caze.toReference());
-		return createSampleAndPathogenTests(sample, caze.getDisease(), labMessage, entityCreated);
+		return createOneSampleAndPathogenTests(sample, caze.getDisease(), labMessage, sampleReportIndex, entityCreated);
 	}
 
-	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> createSampleAndPathogenTests(
+	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> createOneSampleAndPathogenTests(
+		ContactDto contact,
+		ExternalMessageDto labMessage,
+		int sampleReportIndex,
+		boolean entityCreated) {
+
+		SampleDto sample = SampleDto.build(user.toReference(), contact.toReference());
+		return createOneSampleAndPathogenTests(sample, contact.getDisease(), labMessage, sampleReportIndex, entityCreated);
+	}
+
+	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> createOneSampleAndPathogenTests(
 		EventParticipantReferenceDto eventParticipant,
 		EventDto event,
 		ExternalMessageDto labMessage,
+		int sampleReportIndex,
 		boolean entityCreated) {
 
 		SampleDto sample = SampleDto.build(user.toReference(), eventParticipant);
-		return createSampleAndPathogenTests(sample, event.getDisease(), labMessage, entityCreated);
+		return createOneSampleAndPathogenTests(sample, event.getDisease(), labMessage, sampleReportIndex, entityCreated);
 	}
 
-	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> createSampleAndPathogenTests(
+	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> createOneSampleAndPathogenTests(
 		SampleDto sample,
 		Disease disease,
 		ExternalMessageDto labMessage,
+		int sampleReportIndex,
 		boolean entityCreated) {
 
-		ExternalMessageMapper.forLabMessage(labMessage).mapToSample(sample);
-		List<PathogenTestDto> pathogenTests = LabMessageProcessingHelper.buildPathogenTests(sample, labMessage, user);
+		ExternalMessageMapper.forLabMessage(labMessage).mapToSample(sample, labMessage.getSampleReportsNullSafe().get(sampleReportIndex));
+		List<PathogenTestDto> pathogenTests = LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, labMessage, user);
 		HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
-		handleCreateSampleAndPathogenTests(sample, pathogenTests, disease, labMessage, entityCreated, callback);
+		handleCreateSampleAndPathogenTests(
+			sample,
+			pathogenTests,
+			disease,
+			labMessage,
+			entityCreated,
+			isLastSample(labMessage, sampleReportIndex),
+			callback);
 
 		return callback.futureResult;
 	}
+
+	public abstract CompletionStage<Boolean> handleMultipleSampleConfirmation();
 
 	protected abstract void handleCreateSampleAndPathogenTests(
 		SampleDto sample,
@@ -327,16 +448,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		Disease disease,
 		ExternalMessageDto labMessage,
 		boolean entityCreated,
+		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback);
-
-	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> createSampleAndPathogenTests(
-		ContactDto contact,
-		ExternalMessageDto labMessage,
-		boolean entityCreated) {
-
-		SampleDto sample = SampleDto.build(user.toReference(), contact.toReference());
-		return createSampleAndPathogenTests(sample, contact.getDisease(), labMessage, entityCreated);
-	}
 
 	private CompletionStage<ProcessingResult<ContactDto>> createContact(PersonDto person, ExternalMessageDto labMessage) {
 
@@ -455,13 +568,14 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 	private CompletionStage<ProcessingResult<PickOrCreateSampleResult>> pickOrCreateSample(
 		Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
+		int sampleReportIndex,
 		ExternalMessageDto labMessage) {
 
-		SampleSimilarityCriteria sampleCriteria = createSampleCriteria(labMessage);
-		addSampleSearchCriteria.accept(sampleCriteria);
+		SampleSimilarityCriteria sampleSimilarityCriteria = createSampleSimilarCriteria(labMessage.getSampleReportsNullSafe().get(sampleReportIndex));
+		addSampleSearchCriteria.accept(sampleSimilarityCriteria);
 
-		List<SampleDto> selectableSamples = FacadeProvider.getSampleFacade().getSamplesByCriteria(sampleCriteria.getSampleCriteria());
-		List<SampleDto> similarSamples = FacadeProvider.getSampleFacade().getSimilarSamples(sampleCriteria);
+		List<SampleDto> selectableSamples = FacadeProvider.getSampleFacade().getSamplesByCriteria(sampleSimilarityCriteria.getSampleCriteria());
+		List<SampleDto> similarSamples = FacadeProvider.getSampleFacade().getSimilarSamples(sampleSimilarityCriteria);
 		List<SampleDto> otherSamples = selectableSamples.stream().filter(s -> !similarSamples.contains(s)).collect(Collectors.toList());
 
 		PickOrCreateSampleResult result = new PickOrCreateSampleResult();
@@ -471,7 +585,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		}
 
 		HandlerCallback<PickOrCreateSampleResult> callback = new HandlerCallback<>();
-		handlePickOrCreateSample(similarSamples, otherSamples, labMessage, callback);
+		handlePickOrCreateSample(similarSamples, otherSamples, labMessage, sampleReportIndex, callback);
 
 		return callback.futureResult;
 	}
@@ -480,31 +594,43 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		List<SampleDto> similarSamples,
 		List<SampleDto> otherSamples,
 		ExternalMessageDto labMessage,
+		int sampleReportIndex,
 		HandlerCallback<PickOrCreateSampleResult> callback);
 
-	private SampleSimilarityCriteria createSampleCriteria(ExternalMessageDto labMessage) {
+	private SampleSimilarityCriteria createSampleSimilarCriteria(SampleReportDto sampleReport) {
 
 		SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
-		sampleCriteria.setLabSampleId(labMessage.getLabSampleId());
-		sampleCriteria.setSampleDateTime(labMessage.getSampleDateTime());
-		sampleCriteria.setSampleMaterial(labMessage.getSampleMaterial());
+		sampleCriteria.setLabSampleId(sampleReport.getLabSampleId());
+		sampleCriteria.setSampleDateTime(sampleReport.getSampleDateTime());
+		sampleCriteria.setSampleMaterial(sampleReport.getSampleMaterial());
 
 		return sampleCriteria;
 	}
 
-	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> editSample(SampleDto sample, ExternalMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> editSample(
+		SampleDto sample,
+		int sampleReportIndex,
+		ExternalMessageDto labMessage) {
 
-		List<PathogenTestDto> newTests = LabMessageProcessingHelper.buildPathogenTests(sample, labMessage, user);
+		List<PathogenTestDto> newTests = LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, labMessage, user);
 		HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
-		handleEditSample(sample, newTests, labMessage, callback);
+		handleEditSample(sample, newTests, labMessage, isLastSample(labMessage, sampleReportIndex), callback);
 
 		return callback.futureResult;
+	}
+
+	private boolean isLastSample(ExternalMessageDto labMessage, int sampleReportIndex) {
+		if (sampleReportIndex >= labMessage.getSampleReportsNullSafe().size()) {
+			throw new IllegalArgumentException("The sample report index is out of bounds.");
+		}
+		return labMessage.getSampleReportsNullSafe().size() == sampleReportIndex + 1;
 	}
 
 	protected abstract void handleEditSample(
 		SampleDto sample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto labMessage,
+		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback);
 
 	private static final class PersonAndPickOrCreateEventResult {

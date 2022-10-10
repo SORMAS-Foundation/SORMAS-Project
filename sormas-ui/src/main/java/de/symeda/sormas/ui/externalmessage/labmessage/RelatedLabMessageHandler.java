@@ -109,10 +109,10 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 
 	@Override
 	protected void handleShortcut(ExternalMessageDto labMessage, SampleDto sample, RelatedLabMessageHandlerChain chain) {
-
+		// Currently, related entities are only looked at when there is just one sample report in the lab message
 		List<PathogenTestDto> newPathogenTests =
-			LabMessageProcessingHelper.buildPathogenTests(sample, labMessage, UserProvider.getCurrent().getUser());
-		showEditSampleWindow(sample, newPathogenTests, labMessage, s -> chain.next(true), chain::cancel);
+			LabMessageProcessingHelper.buildPathogenTests(sample, 0, labMessage, UserProvider.getCurrent().getUser());
+		showEditSampleWindow(sample, true, newPathogenTests, labMessage, s -> chain.next(true), chain::cancel);
 	}
 
 	@Override

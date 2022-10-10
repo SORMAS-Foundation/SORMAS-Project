@@ -39,9 +39,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
-import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.share.incoming.RequestResponseDataDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
@@ -174,8 +175,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	@RightsAllowed({
 		UserRight._SORMAS_TO_SORMAS_PROCESS })
-	public void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException {
-		getEntityInterface(dataType).acceptShareRequest(uuid);
+	public DuplicateResult acceptShareRequest(ShareRequestDataType dataType, String uuid, boolean checkDuplicates)
+		throws SormasToSormasException, SormasToSormasValidationException {
+		return getEntityInterface(dataType).acceptShareRequest(uuid, checkDuplicates);
 	}
 
 	@Override
@@ -334,6 +336,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@PermitAll
 	public boolean isFeatureConfigured() {
 		return configFacadeEjb.isS2SConfigured();
+	}
+
+	@Override
+	@PermitAll
+	public boolean isAnyFeatureConfigured(FeatureType... sormasToSormasFeatures) {
+		return configFacadeEjb.isS2SConfigured() && featureConfigurationFacade.isAnyFeatureEnabled(sormasToSormasFeatures);
 	}
 
 	@Override

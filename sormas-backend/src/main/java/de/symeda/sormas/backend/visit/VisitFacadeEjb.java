@@ -467,7 +467,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
 				Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
 				symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(VisitExportDto::getSymptomsId).collect(Collectors.toList())));
-				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 

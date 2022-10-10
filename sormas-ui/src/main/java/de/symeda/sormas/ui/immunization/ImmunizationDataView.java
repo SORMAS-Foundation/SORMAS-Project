@@ -4,6 +4,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
@@ -48,7 +49,11 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 
 		container.addComponent(layout);
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isShareEnabledForUser();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade()
+			.isAnyFeatureConfigured(
+				FeatureType.SORMAS_TO_SORMAS_SHARE_CASES,
+				FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS,
+				FeatureType.SORMAS_TO_SORMAS_SHARE_EVENTS);
 		if (sormasToSormasEnabled || immunization.getSormasToSormasOriginInfo() != null || immunization.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);

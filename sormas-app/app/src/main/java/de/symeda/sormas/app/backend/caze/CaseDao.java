@@ -519,7 +519,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 					}
 
 					User assigneeUser = task.getAssigneeUser();
-					DatabaseHelper.getUserDao().loadUserRoles(assigneeUser);
+					DatabaseHelper.getUserDao().initUserRoles(assigneeUser);
 					if (assigneeUser != null
 						&& CaseJurisdictionBooleanValidator
 							.of(JurisdictionHelper.createCaseJurisdictionDto(changedCase), JurisdictionHelper.createUserJurisdiction(assigneeUser))
@@ -744,7 +744,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 	public List<Case> queryByCriteria(CaseCriteria criteria, long offset, long limit) {
 		try {
-			return buildQueryBuilder(criteria).orderBy(Case.REPORT_DATE, false).offset(offset).limit(limit).query();
+			return buildQueryBuilder(criteria).orderBy(Case.LOCAL_CHANGE_DATE, false).offset(offset).limit(limit).query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform queryByCriteria on Case");
 			throw new RuntimeException(e);

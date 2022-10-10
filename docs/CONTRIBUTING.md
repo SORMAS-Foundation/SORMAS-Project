@@ -85,6 +85,9 @@ If you're interested in participating in the development of SORMAS, please follo
 If you have problems setting up your development environment or need assistance in choosing the first issue to work on, please get in touch with us by joining our [Gitter channel](https://gitter.im/SORMAS-Project) or contacting us at sormas@helmholtz-hzi.de.
 Additionally, our [Wiki](https://github.com/hzi-braunschweig/SORMAS-Project/wiki) contains some specific development guides that cover common issues like adding new fields to an entity that we suggest to check out before you start implementing something related to those topics.
 
+* [Technical User Guides](https://github.com/hzi-braunschweig/SORMAS-Project/wiki#technical-user-guides)
+* [Development Guides](https://github.com/hzi-braunschweig/SORMAS-Project/wiki#development-guides)
+
 ### Development Contributing Guidelines
 
 In addition to the guidelines covered in the Development Environment Setup Instructions, please ensure to adhere to the following principles and procedures while developing code for SORMAS:

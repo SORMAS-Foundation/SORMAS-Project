@@ -81,10 +81,12 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -412,11 +414,13 @@ public class StatisticsView extends AbstractStatisticsView {
 			CssStyles.style(caseIncidenceNotPossibleLabel, CssStyles.VSPACE_TOP_4);
 		}
 
-		exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
-		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+		if (UserProvider.getCurrent().hasUserRight(UserRight.STATISTICS_EXPORT)) {
+			exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 
-		resultsLayout.addComponent(exportButton);
-		resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+			resultsLayout.addComponent(exportButton);
+			resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+		}
 
 		statisticsCaseGrid = new StatisticsCaseGrid(
 			visualizationComponent.getRowsAttribute(),
@@ -434,12 +438,14 @@ public class StatisticsView extends AbstractStatisticsView {
 			resultsLayout.addComponent(caseIncidenceNotPossibleLabel);
 		}
 
-		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
-			statisticsCaseGrid.getContainerDataSource(),
-			statisticsCaseGrid.getColumns(),
-			ExportEntityName.STATISTICS);
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(exportButton);
+		if (exportButton != null) {
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
+					statisticsCaseGrid.getContainerDataSource(),
+					statisticsCaseGrid.getColumns(),
+					ExportEntityName.STATISTICS);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
 	}
 
 	public void generateChart() {

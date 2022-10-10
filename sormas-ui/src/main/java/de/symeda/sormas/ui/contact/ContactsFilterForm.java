@@ -48,6 +48,7 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -154,7 +155,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		TextField eventSearchField = addField(
 			FieldConfiguration
 				.withCaptionAndPixelSized(ContactCriteria.EVENT_LIKE, I18nProperties.getString(Strings.promptCaseOrContactEventSearchField), 200));
-		eventSearchField.setNullRepresentation("");
+		if (UiUtil.permitted(UserRight.EVENT_VIEW)) {
+			eventSearchField.setNullRepresentation("");
+		} else {
+			eventSearchField.setVisible(false);
+		}
 	}
 
 	@Override
@@ -326,7 +331,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE,
 				I18nProperties.getCaption(Captions.contactOnlyWithSharedEventWithSourceCase),
 				null,
-				CHECKBOX_STYLE));
+				CHECKBOX_STYLE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,
