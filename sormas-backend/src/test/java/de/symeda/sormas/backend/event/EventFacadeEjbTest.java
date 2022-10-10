@@ -424,7 +424,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setReportDateTime(new Date());
 		event.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		event.setEventTitle("Test event");
-		LocationDto eventLocation = new LocationDto();
+		LocationDto eventLocation = LocationDto.build();
 		eventLocation.setRegion(rdcf.region);
 		eventLocation.setDistrict(rdcf.district);
 		event.setEventLocation(eventLocation);

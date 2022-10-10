@@ -403,7 +403,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private PersonDto createPerson() {
 
-		LocationDto address = new LocationDto();
+		LocationDto address = LocationDto.build();
 		address.setRegion(rdcf1.region);
 		address.setDistrict(rdcf1.district);
 		address.setCommunity(rdcf1.community);
@@ -435,7 +435,10 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		person.setLastName("Newlastname");
 		person.setBirthdateDD(23);
 
-		LocationDto newAddress = new LocationDto();
+		LocationDto newAddress = LocationDto.build();
+		newAddress.setUuid(person.getAddress().getUuid());
+		newAddress.setChangeDate(person.getAddress().getChangeDate());
+
 		person.setPseudonymized(pseudonymized);
 		newAddress.setRegion(rdcf1.region);
 		newAddress.setDistrict(rdcf1.district);
@@ -463,7 +466,10 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		person.setLastName("");
 		person.setBirthdateDD(null);
 
-		LocationDto newAddress = new LocationDto();
+		LocationDto newAddress = LocationDto.build();
+		newAddress.setUuid(person.getAddress().getUuid());
+		newAddress.setChangeDate(person.getAddress().getChangeDate());
+
 		newAddress.setPseudonymized(true);
 		newAddress.setRegion(rdcf1.region);
 		newAddress.setDistrict(rdcf1.district);

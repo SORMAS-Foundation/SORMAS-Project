@@ -717,7 +717,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person.setFirstName("Fname");
 		person.setLastName("Lname");
 		person.setSex(Sex.UNKNOWN);
-		person.setAddress(new LocationDto());
+		person.setAddress(LocationDto.build());
 		person.setAddresses(Collections.singletonList(new LocationDto()));
 
 		PersonDto savedPerson = getPersonFacade().save(person);

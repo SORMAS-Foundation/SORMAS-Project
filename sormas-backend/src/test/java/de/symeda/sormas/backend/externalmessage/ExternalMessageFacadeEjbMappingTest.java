@@ -62,7 +62,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assignee.setUuid("12345");
 
 		when(sampleService.getByReferenceDto(sampleRef)).thenReturn(sample);
-		when(testReportFacade.fromDto(eq(testReportDto), any(ExternalMessage.class), eq(false))).thenReturn(testReport);
+		when(testReportFacade.fillOrBuildEntity(eq(testReportDto), any(ExternalMessage.class), eq(false))).thenReturn(testReport);
 		when(userservice.getByReferenceDto(assignee.toReference())).thenReturn(assignee);
 
 		source.addTestReport(testReportDto);
@@ -100,7 +100,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setAssignee(assignee.toReference());
 		source.setType(ExternalMessageType.LAB_MESSAGE);
 
-		ExternalMessage result = sut.fromDto(source, null, true);
+		ExternalMessage result = sut.fillOrBuildEntity(source, null, true);
 
 		assertEquals(source.getTestReports(), result.getTestReports());
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());

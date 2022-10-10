@@ -100,7 +100,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		quarantineOrderFacadeEjb = getQuarantineOrderFacade();
 		reset();
 
-		LocationDto locationDto = new LocationDto();
+		LocationDto locationDto = LocationDto.build();
 		locationDto.setStreet("Nauwieserstraße");
 		locationDto.setHouseNumber("7");
 		locationDto.setCity("Saarbrücken");

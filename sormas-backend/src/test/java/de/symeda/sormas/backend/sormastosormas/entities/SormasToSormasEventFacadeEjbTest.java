@@ -699,7 +699,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		event.setChangeDate(calendar.getTime());
 
-		LocationDto locationDto = new LocationDto();
+		LocationDto locationDto = LocationDto.build();
 		locationDto.setRegion(rdcf.region);
 		locationDto.setDistrict(rdcf.district);
 		event.setEventLocation(locationDto);

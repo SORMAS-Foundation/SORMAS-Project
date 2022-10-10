@@ -27,11 +27,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 @Stateless(name = "HealthConditionsMapper")
 public class HealthConditionsMapper {
 
-	@EJB
-	private HealthConditionsService healthConditionsService;
-
 	public static HealthConditionsDto toDto(HealthConditions source) {
-
 		if (source == null) {
 			return null;
 		}
@@ -68,41 +64,6 @@ public class HealthConditionsMapper {
 	}
 
 	public HealthConditions fillOrBuildEntity(@NotNull HealthConditionsDto source, HealthConditions target, boolean checkChangeDate) {
-
-		target = DtoHelper.fillOrBuildEntity(source, target, HealthConditions::new, checkChangeDate);
-
-		target.setAsplenia(source.getAsplenia());
-		target.setChronicHeartFailure(source.getChronicHeartFailure());
-		target.setChronicKidneyDisease(source.getChronicKidneyDisease());
-		target.setChronicLiverDisease(source.getChronicLiverDisease());
-		target.setChronicNeurologicCondition(source.getChronicNeurologicCondition());
-		target.setChronicPulmonaryDisease(source.getChronicPulmonaryDisease());
-		target.setDiabetes(source.getDiabetes());
-		target.setHepatitis(source.getHepatitis());
-		target.setHiv(source.getHiv());
-		target.setHivArt(source.getHivArt());
-		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
-		target.setTuberculosis(source.getTuberculosis());
-		target.setDownSyndrome(source.getDownSyndrome());
-		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
-		target.setOtherConditions(source.getOtherConditions());
-		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
-		target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
-		target.setObesity(source.getObesity());
-		target.setCurrentSmoker(source.getCurrentSmoker());
-		target.setFormerSmoker(source.getFormerSmoker());
-		target.setAsthma(source.getAsthma());
-		target.setSickleCellDisease(source.getSickleCellDisease());
-		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
-
-		return target;
-	}
-
-	public HealthConditions fromDto(@NotNull HealthConditionsDto source, boolean checkChangeDate) {
-
-		HealthConditions target =
-			DtoHelper.fillOrBuildEntity(source, healthConditionsService.getByUuid(source.getUuid()), HealthConditions::new, checkChangeDate);
-
-		return fillOrBuildEntity(source, target, checkChangeDate);
+		return DtoHelper.fillOrBuildEntity(source, target, HealthConditions::new, checkChangeDate);
 	}
 }

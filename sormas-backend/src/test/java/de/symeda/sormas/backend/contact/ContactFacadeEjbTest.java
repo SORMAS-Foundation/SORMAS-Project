@@ -1668,7 +1668,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testCreateWithoutUuid() {
 		RDCF rdcf = creator.createRDCF();
 
-		ContactDto contact = new ContactDto();
+		ContactDto contact = ContactDto.build();
 		contact.setReportDateTime(new Date());
 		contact.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		contact.setDisease(Disease.CORONAVIRUS);

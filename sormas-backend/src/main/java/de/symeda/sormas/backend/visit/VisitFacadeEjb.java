@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
+import static java.util.Objects.isNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -278,7 +280,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		} else {
 			dto.getSymptoms().setSymptomatic(null);
 		}
-		Visit entity = fromDto(dto, true);
+		Visit entity = fillOrBuildEntity(dto, existingVisit, true);
 
 		visitService.ensurePersisted(entity);
 
@@ -507,14 +509,18 @@ public class VisitFacadeEjb implements VisitFacade {
 		return JurisdictionHelper.booleanSelector(queryContext.getCriteriaBuilder(), visitService.inJurisdictionOrOwned(queryContext));
 	}
 
-	public Visit fromDto(@NotNull VisitDto source, boolean checkChangeDate) {
+	public Visit fillOrBuildEntity(@NotNull VisitDto source, Visit target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
 
-		final String visitUuid = source.getUuid();
-		Visit target = DtoHelper.fillOrBuildEntity(source, visitService.getByUuid(visitUuid), Visit::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Visit::new, checkChangeDate);
+
+		if (targetWasNull) {
+			target.getSymptoms().setUuid(source.getSymptoms().getUuid());
+		}
 
 		target.setDisease(source.getDisease());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
-		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms(), checkChangeDate));
+		target.setSymptoms(symptomsFacade.fillOrBuildEntity(source.getSymptoms(), target.getSymptoms(), checkChangeDate));
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());

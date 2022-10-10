@@ -988,13 +988,9 @@ public class TestDataCreator {
 		return createVisit(disease, person, visitDateTime, visitStatus, visitOrigin, null);
 	}
 
-	public VisitDto createVisit(
-		Disease disease,
-		PersonReferenceDto person,
-		Date visitDateTime,
-		VisitStatus visitStatus,
-		VisitOrigin visitOrigin,
-		Consumer<VisitDto> customConfig) {
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus,
+		VisitOrigin visitOrigin, Consumer<VisitDto> customConfig) {
+
 		VisitDto visit = VisitDto.build(person, disease, visitOrigin);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);

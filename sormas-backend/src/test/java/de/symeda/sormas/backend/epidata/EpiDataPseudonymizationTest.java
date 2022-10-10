@@ -164,7 +164,7 @@ public class EpiDataPseudonymizationTest extends AbstractBeanTest {
 			ExposureDto burial = ExposureDto.build(ExposureType.BURIAL);
 			burial.setDeceasedPersonName("John Smith");
 			burial.setDeceasedPersonRelation("Test burial relation");
-			LocationDto address = new LocationDto();
+			LocationDto address = LocationDto.build();
 			address.setRegion(rdcf.region);
 			address.setDistrict(rdcf.district);
 			address.setCommunity(rdcf.community);
