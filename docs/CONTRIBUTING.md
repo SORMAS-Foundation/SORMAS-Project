@@ -16,6 +16,9 @@ This allows us to consider and process your contribution as quickly and smoothly
   * [Development Contributing Guidelines](#development-contributing-guidelines)
   * [Picking Issues for Development](#picking-issues-for-development)
   * [Submitting Pull Requests](#submitting-pull-requests)
+* [Development Workflow](#development-workflow)
+  * [Versioning](#versioning)
+  * [Branches](#branches)
 
 ## Submitting an Issue
 
@@ -145,3 +148,43 @@ Please adhere to the following principles when submitting pull requests:
 4. Try to not use force-push when updating an existing pull request (e.g. after changes have been requested or because you need to resolve merge conflicts).
 5. Ideally, your pull request should pass the checks done by the automatic CI pipeline before it gets reviewed. If that's not the case, please make sure that your branch is up-to-date with the current development branch. If the checks also fail for the development branch, you're not required to do anything.
 In any other case, please fix the issues (most likely failed unit tests) before requesting another review.
+
+## Development Workflow
+
+For SORMAS we use the **Gitflow** development workflow.
+
+<img alt="General Gitflow Development Workflow" src="images/Gitflow.png"/>
+
+### Versioning
+
+For version numbers we use semantic versioning. Meaning of a given version number `X.Y.Z`:
+
+* X: Major version: Major changes, severe changes in API or technical architecture.
+* Y: Minor version: Usually a new release of a development iteration of a few weeks, containing new features and changes.
+* Z: Micro version: Fixing problems in the last minor version to make it properly or better to use. Usually contains only bugfixes or small changes.
+
+Versions are defined as [Git tags](https://github.com/hzi-braunschweig/SORMAS-Project/tags) with [release notes](https://github.com/hzi-braunschweig/SORMAS-Project/releases) attached to the tag.
+
+An unstable version currently under development is denoted as `X.Y.Z-SNAPSHOT`.
+
+### Branches
+
+#### Permanent branches
+
+* **development**: This is where the changes are commited/merged to by the developers.
+* **master**: In regular intervals, the changes from `development` are merged to master with a identifiable version (tag). On top of this branch there is always the latest released version.
+* **master-<version>**: In case an older version than the head version on `master` needs to be fixed (a new micro release), a dedicated `master-<version>` branch is split from `master` to manage the following micro releases (Example: `master-<version>` = `master-1.75.x`). Changes made on this branch are usually cherry-picked from a newer version (on `master` or `development`).
+* **l10n_development**: Incoming changes on translation files from Crowdin, that are regularly merged into `development`.
+
+#### Supporting branches
+
+* **release-<version>**: To manage changes when merging from `development` to `master`. Once the new version is merged to `master`, the `release-<version>` branch is automatically removed.
+* **hotfix-<version>**: To manage changes that are needed on an already released version (on any `master` branch) that need to be fixed with a new micro release.
+
+Some branches contain the concerned version in its name, examples: `release-1.75.0`, `hotfix-1.75.1`. To manage new versions, tools are used to automatically merge between branches and tag the new version.
+Once the new version is merged to `master`/`master-<version`, the `release-`/`hotfix-` branch are automatically deleted. There is only one `release-` and only `hotfix-` branch allowed at same time (enforced by the used Maven plugin).
+
+#### Implementation branches
+
+These kind of branches are manually created and maintained by developers who work on an issue. Such branches are used to create pull requests on to review the changes before merged into a permanent or supporting branch.
+* **feature-1234_short_description**: Any branch that is supposed to contribute to `development` or a `hotfix` branch.
