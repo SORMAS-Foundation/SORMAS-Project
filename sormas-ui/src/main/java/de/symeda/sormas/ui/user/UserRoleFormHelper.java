@@ -67,7 +67,7 @@ public class UserRoleFormHelper {
 
 	public static void setTemplateRoleItems(ComboBox templateRoleCombo) {
 		List<UserRoleDto> existingUserRoles =
-			FacadeProvider.getUserRoleFacade().getAll().stream().sorted(Comparator.comparing(UserRoleDto::getCaption)).collect(Collectors.toList());
+			FacadeProvider.getUserRoleFacade().getAllActive().stream().sorted(Comparator.comparing(UserRoleDto::getCaption)).collect(Collectors.toList());
 		List<UserRoleDto> defaultUserRoles = FacadeProvider.getUserRoleFacade()
 			.getDefaultUserRolesAsDto()
 			.stream()
