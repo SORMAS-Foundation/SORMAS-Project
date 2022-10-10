@@ -351,6 +351,8 @@ public class EventParticipantFacadeEjb
 		validate(dto);
 
 		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
+		// Create newly event participants with the same archiving status as the Event
+		entity.setArchived(existingParticipant == null ? event.isArchived(): existingParticipant.isArchived());
 		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
