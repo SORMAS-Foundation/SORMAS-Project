@@ -569,10 +569,11 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		EventParticipantDto activeEventParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonActive, "event Director", user.toReference());
 		assertFalse(getEventParticipantFacade().isArchived(activeEventParticipantDto.getUuid()));
 
-		//Validate that for an already existing Event Participant the previous status is kept
+		//Validate that the newly created Event Participant status is in sync with Event and with existing Event Participant
 		EventParticipantDto alreadyArchivedParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
 		assertFalse(getEventFacade().isArchived(event.getUuid()));
-		assertEquals(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()), getEventParticipantFacade().isArchived(alreadyArchivedParticipantDto.getUuid()));
+		assertFalse(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
+		assertFalse(getEventParticipantFacade().isArchived(alreadyArchivedParticipantDto.getUuid()));
 	}
 
 	private UserDto createUser(TestDataCreator.RDCF rdcf) {
