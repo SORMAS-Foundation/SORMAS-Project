@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -117,6 +118,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -411,13 +413,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	@RightsAllowed(UserRight._PERSON_EDIT)
+	@PermitAll
 	public PersonDto save(@Valid @NotNull PersonDto source) throws ValidationRuntimeException {
 		return save(source, true, true, false);
 	}
 
 	@Override
-	@RightsAllowed(UserRight._PERSON_EDIT)
+	@PermitAll
 	public PersonDto save(@Valid @NotNull PersonDto source, boolean skipValidation) throws ValidationRuntimeException {
 		return save(source, true, true, skipValidation);
 	}
@@ -438,9 +440,21 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	 * @throws ValidationRuntimeException
 	 *             if the passed source person to be saved contains invalid data
 	 */
+	@PermitAll
 	public PersonDto save(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares, boolean skipValidation)
 		throws ValidationRuntimeException {
 		Person person = service.getByUuid(source.getUuid());
+
+		FacadeHelper.checkCreateAndEditRights(
+			person,
+			userService,
+			EnumSet.of(
+				UserRight.CASE_CREATE,
+				UserRight.CONTACT_CREATE,
+				UserRight.EVENTPARTICIPANT_CREATE,
+				UserRight.IMMUNIZATION_CREATE,
+				UserRight.TRAVEL_ENTRY_CREATE),
+			UserRight.PERSON_EDIT);
 
 		PersonDto existingPerson = toDto(person);
 
