@@ -91,7 +91,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 		this.actionCallback = actionCallback;
 		eventCriteria.setPerson(contact.getPerson());
 		eventCriteria.setUserFilterIncluded(false);
-		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
+		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToContact));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
 			UserProvider user = UserProvider.getCurrent();
 			if (contact.getPerson() != null && user.hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
