@@ -17,9 +17,11 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.helpers.strings.LanguageDetectorHelper;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -32,15 +34,16 @@ public class AboutDirectorySteps implements En {
   public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
       String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
   public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
+  private static AssertHelpers assertHelpers;
 
   @Inject
-  public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
+  public AboutDirectorySteps(
+      WebDriverHelpers webDriverHelpers, SoftAssert softly, AssertHelpers assertHelpers) {
+    this.assertHelpers = assertHelpers;
 
     When(
         "I check that current Sormas version is shown on About directory page",
-        () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_LINK);
-        });
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_LINK));
 
     When(
         "I select {string} language from Combobox in User settings",
@@ -94,7 +97,12 @@ public class AboutDirectorySteps implements En {
               throw new Exception("No XLSX path provided!");
           }
         });
-
+    When(
+        "^I check if Data Dictionary contains entries name in English$",
+        () -> checkNameOfTheTabsMatchFieldIdEntries(DATA_DICTIONARY_FILE_PATH));
+    When(
+        "^I check if Data Dictionary contains sheets names in ([^\"]*)$",
+        (String language) -> checkNameOfSheetsAreInGerman(DATA_DICTIONARY_FILE_PATH, language));
     Then(
         "^I delete ([^\"]*) downloaded file from About Directory$",
         (String dictionaryName) -> {
@@ -270,6 +278,51 @@ public class AboutDirectorySteps implements En {
             xlsxFileContentList.add(currentCell.getNumericCellValue() + ",");
           }
         }
+      }
+      log.info("All data is read properly from chosen xlsx file");
+    } catch (Exception any) {
+      throw new Exception(String.format("Unable to read Excel File due to: %s", any.getMessage()));
+    }
+  }
+
+  @SneakyThrows
+  private static void checkNameOfTheTabsMatchFieldIdEntries(String fileName) {
+    try {
+      FilesHelper.validateFileIsNotEmpty(fileName);
+      Workbook workbook = FilesHelper.getExcelFile(fileName);
+      for (int i = 0; i < 5; i++) {
+        Sheet datatypeSheet = workbook.getSheetAt(i);
+        Iterator<Row> iterator = datatypeSheet.iterator();
+        Row currentRow = iterator.next();
+        currentRow = iterator.next();
+        Iterator<Cell> cellIterator = currentRow.iterator();
+        Cell currentCell = cellIterator.next();
+        currentCell.getStringCellValue();
+        System.out.println(currentCell.getStringCellValue());
+        assertHelpers.assertWithPoll20Second(
+            () ->
+                Assert.assertEquals(
+                    datatypeSheet.getSheetName().replaceAll("\\s+", "").toUpperCase(),
+                    currentCell
+                        .getStringCellValue()
+                        .substring(0, datatypeSheet.getSheetName().replaceAll("\\s+", "").length())
+                        .toUpperCase(),
+                    "Name of sheet is not visible in cell"));
+      }
+      log.info("All data is read properly from chosen xlsx file");
+    } catch (Exception any) {
+      throw new Exception(String.format("Unable to read Excel File due to: %s", any.getMessage()));
+    }
+  }
+
+  @SneakyThrows
+  private static void checkNameOfSheetsAreInGerman(String fileName, String language) {
+    try {
+      FilesHelper.validateFileIsNotEmpty(fileName);
+      Workbook workbook = FilesHelper.getExcelFile(fileName);
+      for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+        System.out.println(workbook.getSheetName(i));
+        LanguageDetectorHelper.checkLanguage(workbook.getSheetName(i), language);
       }
       log.info("All data is read properly from chosen xlsx file");
     } catch (Exception any) {
