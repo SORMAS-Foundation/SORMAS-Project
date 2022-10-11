@@ -51,7 +51,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		User assignee = new User();
 		assignee.setUuid("12345");
 
-		when(testReportFacade.fillOrBuildEntity(eq(testReportDto), any(ExternalMessage.class), eq(false))).thenReturn(testReport);
+		when(sampleReportFacade.fromDto(eq(sampleReportDto), any(ExternalMessage.class), eq(false))).thenReturn(sampleReport);
 		when(userservice.getByReferenceDto(assignee.toReference())).thenReturn(assignee);
 
 		source.addSampleReport(sampleReportDto);
