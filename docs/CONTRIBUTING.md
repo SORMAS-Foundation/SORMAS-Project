@@ -34,7 +34,7 @@ If you want to report a **security issue**, please follow our guidelines for [*R
 
 ### Bug Report
 
-Bug reports cover everything that leads to the application behaving in an unintended way, including crashes, unexpected error messages, data loss, etc. If something seems to be working correctly but does not necessarily match your expectations of how it should be working, please consider opening a change request instead.
+Bug reports cover everything that leads to the application behaving in an unintended way, including crashes, unexpected error messages, data loss, etc.
 
 * **Bug Description:** A description of what exactly happened, where it happened and under which circumstances. Provide as many details as possible, even if they might seem irrelevant to you.
 * **Steps to Reproduce:** If possible, provide a step-by-step instruction on the order of actions you performed before the bug occurred. This helps us to reproduce it on our system. Generally *optional*, but likely necessary for more complex bugs.
@@ -42,6 +42,12 @@ Bug reports cover everything that leads to the application behaving in an uninte
 * **Screenshots:** If possible, make at least one screenshot of the bug and include it in your bug report (without exposing protected data). You can do this by simply dragging-and-dropping the image file into the template you're filling out. *Optional*, but very helpful for us.
 * **System Details:** Tell us which device you were using, on which SORMAS version the error occurred and, depending on whether you were using the mobile app or the web app, your Android version or web browser.
 * **Additional Information:** If there is anything else you want to add to your request, you can put it here. *Optional*.
+
+Before creating a bug report, please check the following rules:
+
+1. If something seems to be working correctly but does not necessarily match your expectations of how it should be working, please consider opening a change request instead. This applies also for slow performing features.
+2. If you have more than one possible bug - especially when you are tempted to create a list of independent findings in the **Bug Description** - then please document each bug as separate issue.
+3. Bugs are only valid to create if you can point to a released version where the problem is occuring, not on the version currently und development.
 
 ### Change Request
 
