@@ -2554,6 +2554,13 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON_DE);
           TimeUnit.SECONDS.sleep(10);
         });
+
+    And(
+        "^I click on edit task icon of the (\\d+) displayed task on Edit Case page$",
+        (Integer taskNumber) -> {
+          webDriverHelpers.clickOnWebElementBySelector(getEditTaskButtonByNumber(taskNumber - 1));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
   }
 
   private Vaccination collectVaccinationData() {
