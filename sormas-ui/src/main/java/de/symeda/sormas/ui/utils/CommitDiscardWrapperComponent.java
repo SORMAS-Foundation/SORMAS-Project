@@ -560,8 +560,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	private String findHtmlMessageDetails(InvalidValueException exception) {
 		for (InvalidValueException cause : exception.getCauses()) {
-			if (!cause.getMessage().equalsIgnoreCase(exception.getMessage()))
-			{
+			if (!cause.getMessage().equalsIgnoreCase(exception.getMessage())) {
 				String message = findHtmlMessage(cause);
 				if (message != null && !message.equalsIgnoreCase(exception.getMessage()))
 					return message;
