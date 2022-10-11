@@ -454,7 +454,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				UserRight.EVENTPARTICIPANT_CREATE,
 				UserRight.IMMUNIZATION_CREATE,
 				UserRight.TRAVEL_ENTRY_CREATE),
-			UserRight.PERSON_EDIT);
+			EnumSet.of(UserRight.PERSON_EDIT, UserRight.EXTERNAL_VISITS));
 
 		PersonDto existingPerson = toDto(person);
 

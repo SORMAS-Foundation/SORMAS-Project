@@ -25,9 +25,9 @@ public class FacadeHelper {
 		AbstractDomainObject existingEntity,
 		UserService userService,
 		Set<UserRight> createRights,
-		UserRight editRight) {
+		Set<UserRight> editRights) {
 
-		if (existingEntity == null && !userService.hasAnyRight(createRights) || existingEntity != null && !userService.hasRight(editRight)) {
+		if (existingEntity == null && !userService.hasAnyRight(createRights) || existingEntity != null && !userService.hasAnyRight(editRights)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 	}
