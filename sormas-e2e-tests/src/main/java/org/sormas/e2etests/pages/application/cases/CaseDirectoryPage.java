@@ -206,4 +206,6 @@ public class CaseDirectoryPage {
   }
 
   public static By CONFIRM_POPUP = By.cssSelector(".popupContent #actionConfirm");
+  public static By SHARE_OPTION_BULK_ACTION_COMBOBOX =
+      By.xpath("//span[text()=\"\u00DCbergeben\"]");
 }
