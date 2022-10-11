@@ -107,7 +107,9 @@ Additionally, our [Wiki](https://github.com/hzi-braunschweig/SORMAS-Project/wiki
 
 ### Development Contributing Guidelines
 
-In addition to the guidelines covered in the Development Environment Setup Instructions, please ensure to adhere to the following principles and procedures while developing code for SORMAS:
+In addition to the guidelines covered in the Development Environment Setup Instructions, please ensure to adhere to the following principles and procedures while developing code for SORMAS.
+
+#### Rules for source code
 
 1. Remember to always apply code formatting and import reordering for all classes you work on; we recommend to use the Save Actions plugin as described in the setup instructions instead of manually executing these steps.
 2. Some code formatting rules can't be enforced by the code formatter. Please make sure to write your code in accordance to the following rules:
@@ -119,8 +121,22 @@ In addition to the guidelines covered in the Development Environment Setup Instr
 3. You can use `//@formatter:off` and `//@formatter:on` to encapsulate code blocks that you don't want automatic code formatting to be applied to, e.g. because it would mess up readability. Please only use this if really needed and try to use proper indentation nonetheless.
 4. Separate code and comments, i.e. write the comment in a separate line before the statement that you want to explain.
 5. When you create new classes, please add license headers to them according to the [Adding License Headers guide](ADDING_LICENSE.md)
-6. Commit messages have to be related to a specific issue on GitHub and reference its issue number as well as include a short description on what has been done in the commit. We might reject pull requests that violate this principle and ask you to re-submit it with proper commit messages. An acceptable commit message could look like this:
-   > #61 - added model to define classification, apply automatic case classification whenever a field value changes
+
+#### Rules for commits
+
+1. Commit messages of **every commit** have to be related to a specific issue on GitHub and reference its issue number as well as include a short description on what has been done in the commit. We will reject pull requests that violate this principle and ask you to re-submit it with proper commit messages. An acceptable commit message could look like this:
+   > #1234 Added model to define classification
+2. A common practice for Git commits is to keep the first line with 50 characters as meaninful short description, and to deliver additional details following in line 3 onwards. Most git viewers abbreviate the first line after 50 characters.
+   > #1234 Added model to define classification
+   >
+   > - Apply automatic case classification whenever a field value changes
+   > - Show classification in lists
+3. Keep changes in bugfixes clean and compact to be able to easily review them and leave the possibility to cherry-pick the changes to another branch to fix a previous version. Don't clean dirty code along the way if not really needed to fix the problem.
+4. If an issue requires a lot of code changes, consider breaking down these changes in logical steps. They are then easier to review, have more meaningful commit messages and deliver partly the intended value.
+5. Don't mix refactoring with functional changes (new functionality, changes on features, bugfixes) within the same commit, since it makes reviewing the changes much harder. Usually the refactoring of existing code has to happen beforehand in at least one separate commits. This means refactoring (no functional change): Cleaner code, renaming, restructuring.
+6. If it helps, it is okay to have several branches and pull requests for the same ticket (usually one after another, sometimes to work in parallel or to prepare changes in advance).
+7. If you feel an issue consists out of several parts, feel free to document this in the **Implementation Details** as task list and check what you consider as finished. Do not break down an issue into sub-issues, this is to clarified with the development team.
+8. If there is a finding concerning your already closed issue, it will be reopened if that version is not yet released and you or someone else will have to quickly fix the finding before the version is released. If the version was already released, the issue will be kept closed and a new issue has to be documented.
 
 ### Picking Issues for Development
 
@@ -141,7 +157,7 @@ If you have labeled an issue with `approval requested` but don't receive any fee
 Contributing to the SORMAS code requires you to submit pull requests that will be reviewed by one of our core developers. Once a pull request has been submitted to our repository, a developer will either assign themselves as its reviewer or we will get back to you in case we won't be able to review it in time.
 This may e.g. happen if your pull request involves a lot of technical changes that we would like to merge together with other issues of the same nature or that could potentially break a lot of logic. Usually though, the general process looks like this:
 
-1. A developer assigns themselves as the reviewer of your pull request. Please wait until the review is done; if you think that the review is taking too long, feel free to add a comment to the pull request as a reminder to the developer.
+1. A developer assigns themselves as the reviewer of your pull request, core developers assign each other. Please wait until the review is done; if you think that the review is taking too long, feel free to add a comment to the pull request as a reminder to the developer.
 2. The developer might request changes to the code. If that's the case, please implement the requested changes or answer to their change request if you have questions or don't agree with a specific part of the request.
 3. Once you've implemented all requested changes, please request another review by the assigned developer by clicking on the "Re-request review" icon next to their name.
 4. As soon as the developer is happy with the submitted code (which might require multiple iterations of step 2 and 3, especially for larger pull requests), they will merge it into the development branch and close the pull request.
@@ -149,7 +165,7 @@ This may e.g. happen if your pull request involves a lot of technical changes th
 Please adhere to the following principles when submitting pull requests:
 
 1. Only submit pull requests that are directly associated with ideally one specific issue in our GitHub repository. If there is no issue for the development work that you would like to do, create one before you start working on it.
-2. Link your pull request to the issue(s) that they are associated with. This can be done either by using the "Linked issues" section at the right side when viewing a pull request, or by adding the keyword "Closes" or "Fixes" followed by the issue number to the pull request description (e.g. "Closes #61").
+2. Link your pull request to the issue(s) that they are associated with. This can be done either by using the "Linked issues" section at the right side when viewing a pull request, or by adding the keyword "Closes" or "Fixes" followed by the issue number to the pull request description (e.g. "Fixes #1234").
 3. Make sure that your pull request has a meaningful title. By default, GitHub will use your commit message as the title which might not be appropriate. In general, using the same name as the linked issue is a good rule of thumb.
 4. Try to not use force-push when updating an existing pull request (e.g. after changes have been requested or because you need to resolve merge conflicts).
 5. Ideally, your pull request should pass the checks done by the automatic CI pipeline before it gets reviewed. If that's not the case, please make sure that your branch is up-to-date with the current development branch. If the checks also fail for the development branch, you're not required to do anything.
