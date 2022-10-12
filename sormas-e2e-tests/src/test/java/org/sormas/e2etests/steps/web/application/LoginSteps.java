@@ -21,12 +21,7 @@ package org.sormas.e2etests.steps.web.application;
 import static org.sormas.e2etests.pages.application.LoginPage.ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.LoginPage.FAILED_LOGIN_ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.LoginPage.LOGIN_BUTTON;
-import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP;
-import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP_DE;
-import static org.sormas.e2etests.pages.application.NavBarPage.DISCARD_USER_SETTINGS_BUTTON;
-import static org.sormas.e2etests.pages.application.NavBarPage.GDPR_CHECKBOX;
-import static org.sormas.e2etests.pages.application.NavBarPage.LOGOUT_KEYCLOAK_BUTTON;
-import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT;
+import static org.sormas.e2etests.pages.application.NavBarPage.*;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
@@ -39,6 +34,7 @@ import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.strings.LanguageDetectorHelper;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
@@ -216,7 +212,8 @@ public class LoginSteps implements En {
               (webDriverHelpers
                       .getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT)
                       .isEmpty())
-                  ? expectedLanguageText
+                  ? LanguageDetectorHelper.scanLanguage(
+                      webDriverHelpers.getTextFromWebElement(DASHBOARD_BUTTON))
                   : webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
           Assert.assertEquals(
               "Selected language is not correct", expectedLanguageText, selectedLanguageText);
