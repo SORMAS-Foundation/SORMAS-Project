@@ -291,14 +291,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private void updateCaseOnShareAccepted(Case caze, SormasToSormasShareInfo shareInfo, String districtExternalId) {
 		if (caze != null) {
 			updateOriginInfoOnShareAccepted(caze, shareInfo);
-			sormasToSormasEntitiesHelper.updateCaseResponsibleDistrict(caze, districtExternalId);
+			sormasToSormasEntitiesHelper.updateSentCaseResponsibleDistrict(caze, districtExternalId);
 		}
 	}
 
 	private void updateContactOnShareAccepted(Contact contact, SormasToSormasShareInfo shareInfo, String districtExternalId) {
 		if (contact != null) {
 			updateOriginInfoOnShareAccepted(contact, shareInfo);
-			sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(contact, districtExternalId);
+			sormasToSormasEntitiesHelper.updateSentContactResponsibleDistrict(contact, districtExternalId);
 		}
 	}
 
