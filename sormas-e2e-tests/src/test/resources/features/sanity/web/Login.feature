@@ -14,14 +14,14 @@ Feature: Login with different type of users
     Examples:
       | user                      |
       | National User             |
-#      | National Language User    |
-#      | Contact Supervisor        |
-#      | Surveillance Officer      |
-#      | Surveillance Supervisor   |
-#      | Laboratory Officer        |
-#      | Point of Entry Supervisor |
-#      | Admin User                |
-#      | Rest AUTOMATION           |
+      | National Language User    |
+      | Contact Supervisor        |
+      | Surveillance Officer      |
+      | Surveillance Supervisor   |
+      | Laboratory Officer        |
+      | Point of Entry Supervisor |
+      | Admin User                |
+      | Rest AUTOMATION           |
 
   @env_de @LoginDe
   Scenario Outline: Login with <user> user on German Environment
@@ -52,6 +52,7 @@ Feature: Login with different type of users
     Given I navigate to SORMAS login page
     Then I log in as <user> in Keycloak enabled environment
     Then I am logged in
+    And I check that Surveillance Dashboard header is correctly displayed in German language
     And I click on logout button on Keycloak enabled environment
 
     Examples:

@@ -30,7 +30,8 @@ public abstract class LanguageDetectorHelper {
     detector = LanguageDetector.getDefaultLanguageDetector().loadModels();
     return Arrays.stream(Locale.getAvailableLocales())
         .filter(
-            locale -> locale.getLanguage().equalsIgnoreCase(detector.detect(textToScan).getLanguage()))
+            locale ->
+                locale.getLanguage().equalsIgnoreCase(detector.detect(textToScan).getLanguage()))
         .findFirst()
         .get()
         .getDisplayLanguage();
