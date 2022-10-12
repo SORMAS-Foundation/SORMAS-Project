@@ -203,7 +203,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
 
 		User user = ConfigProvider.getUser();
-		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY) || getPrimaryData().getHealthFacility() == null) {
 			// Hospital Informants are not allowed to change place of stay
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
