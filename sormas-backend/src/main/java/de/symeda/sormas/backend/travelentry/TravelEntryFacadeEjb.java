@@ -259,7 +259,9 @@ public class TravelEntryFacadeEjb
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
 		} else {
 			if (travelEntryDto.getPointOfEntry().isOtherPointOfEntry() && StringUtils.isEmpty(travelEntryDto.getPointOfEntryDetails())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(
+						Validations.required,
 						I18nProperties.getPrefixCaption(TravelEntryDto.I18N_PREFIX, TravelEntryDto.POINT_OF_ENTRY_DETAILS)));
 			}
 		}
