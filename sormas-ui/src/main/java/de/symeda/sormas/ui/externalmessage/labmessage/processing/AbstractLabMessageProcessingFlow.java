@@ -357,7 +357,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 		ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
 		contactSimilarityCriteria.setPerson(selectedPerson);
-		contactSimilarityCriteria.setDisease(externalMessage.getTestedDisease());
+		contactSimilarityCriteria.setDisease(externalMessage.getDisease());
 
 		return FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
 	}
@@ -366,7 +366,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.setPerson(selectedPerson);
-		eventParticipantCriteria.setDisease(labMessage.getTestedDisease());
+		eventParticipantCriteria.setDisease(labMessage.getDisease());
 
 		return FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
 	}
@@ -467,7 +467,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 	private ContactDto buildContact(ExternalMessageDto externalMessageDto, PersonDto person) {
 
-		ContactDto contactDto = ContactDto.build(null, externalMessageDto.getTestedDisease(), null, null);
+		ContactDto contactDto = ContactDto.build(null, externalMessageDto.getDisease(), null, null);
 		contactDto.setReportingUser(user.toReference());
 		contactDto.setPerson(person.toReference());
 		return contactDto;
@@ -493,7 +493,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 	private CompletionStage<ProcessingResult<EventDto>> createEvent(ExternalMessageDto labMessage) {
 
-		EventDto event = EventDto.build(country, user, labMessage.getTestedDisease());
+		EventDto event = EventDto.build(country, user, labMessage.getDisease());
 
 		HandlerCallback<EventDto> callback = new HandlerCallback<>();
 		handleCreateEvent(event, callback);

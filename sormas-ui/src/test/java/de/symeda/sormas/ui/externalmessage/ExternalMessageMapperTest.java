@@ -116,7 +116,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 	public void testMigrateDiseaseVariant() throws CustomEnumNotFoundException {
 		CustomizableEnumFacadeEjb customizableEnumFacade = mock(CustomizableEnumFacadeEjb.class);
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
-		labMessage.setTestedDisease(Disease.CORONAVIRUS);
+		labMessage.setDisease(Disease.CORONAVIRUS);
 		TestReportDto testReport = TestReportDto.build();
 
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);

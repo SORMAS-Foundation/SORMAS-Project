@@ -15,11 +15,6 @@
 
 package de.symeda.sormas.ui.externalmessage.processing;
 
-import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -33,6 +28,11 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public abstract class AbstractProcessingFlow {
 
@@ -48,7 +48,7 @@ public abstract class AbstractProcessingFlow {
 
 	private CompletionStage<ProcessingResult<Void>> checkDisease(ExternalMessageDto labMessage) {
 
-		if (labMessage.getTestedDisease() == null) {
+		if (labMessage.getDisease() == null) {
 			return handleMissingDisease().thenCompose(
 				next -> ProcessingResult
 					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
@@ -100,7 +100,7 @@ public abstract class AbstractProcessingFlow {
 
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.person(selectedPerson);
-		caseCriteria.disease(labMessage.getTestedDisease());
+		caseCriteria.disease(labMessage.getDisease());
 		CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
 		caseSimilarityCriteria.caseCriteria(caseCriteria);
 		caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
@@ -110,7 +110,7 @@ public abstract class AbstractProcessingFlow {
 
 	protected CaseDataDto buildCase(PersonDto person, ExternalMessageDto labMessage) {
 
-		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessage.getTestedDisease());
+		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessage.getDisease());
 		caseDto.setReportingUser(user.toReference());
 		return caseDto;
 	}

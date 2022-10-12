@@ -30,7 +30,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 	public static final String TYPE = "type";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
-	public static final String TESTED_DISEASE = "testedDisease";
+	public static final String DISEASE = "disease";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_BIRTH_DATE = "personBirthDate";
@@ -42,7 +42,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 	private Date messageDateTime;
 	private String reporterName;
 	private String reporterPostalCode;
-	private Disease testedDisease;
+	private Disease disease;
 	private String personFirstName;
 	private String personLastName;
 	private Date personBirthDate;
@@ -56,7 +56,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 		Date messageDateTime,
 		String reporterName,
 		String reporterPostalCode,
-		Disease testedDisease,
+		Disease disease,
 		String personFirstName,
 		String personLastName,
 		Integer personBirthDateYYYY,
@@ -73,7 +73,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 		this.messageDateTime = messageDateTime;
 		this.reporterName = reporterName;
 		this.reporterPostalCode = reporterPostalCode;
-		this.testedDisease = testedDisease;
+		this.disease = disease;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
@@ -126,12 +126,12 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 		this.reporterPostalCode = testLabPostalCode;
 	}
 
-	public Disease getTestedDisease() {
-		return testedDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setTestedDisease(Disease testedDisease) {
-		this.testedDisease = testedDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	public String getPersonFirstName() {

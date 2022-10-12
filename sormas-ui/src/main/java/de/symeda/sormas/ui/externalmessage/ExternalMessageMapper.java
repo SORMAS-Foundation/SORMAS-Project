@@ -242,7 +242,7 @@ public class ExternalMessageMapper {
 					Mapping.of(
 						pathogenTest::setTestedDisease,
 						pathogenTest.getTestedDisease(),
-						externalMessage.getTestedDisease(),
+						externalMessage.getDisease(),
 						PathogenTestDto.TESTED_DISEASE),
 					Mapping.of(
 						pathogenTest::setReportDate,
@@ -330,7 +330,7 @@ public class ExternalMessageMapper {
 
 		try {
 			testedDiseaseVariant = FacadeProvider.getCustomizableEnumFacade()
-				.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, sourceTestReport.getTestedDiseaseVariant(), externalMessage.getTestedDisease());
+				.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, sourceTestReport.getTestedDiseaseVariant(), externalMessage.getDisease());
 			testedDiseaseVariantDetails = sourceTestReport.getTestedDiseaseVariantDetails();
 		} catch (CustomEnumNotFoundException e) {
 			String diseaseVariantString = sourceTestReport.getTestedDiseaseVariant();

@@ -12143,4 +12143,10 @@ ALTER TABLE testreport_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (493, 'Introduce sample reports #9109');
 
+-- 2022-10-10 [DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733
+
+ALTER TABLE externalmessage RENAME COLUMN testeddisease to disease;
+ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (494, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

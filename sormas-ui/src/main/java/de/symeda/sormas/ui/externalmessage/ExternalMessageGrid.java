@@ -107,7 +107,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			ExternalMessageIndexDto.MESSAGE_DATE_TIME,
 			ExternalMessageIndexDto.REPORTER_NAME,
 			ExternalMessageIndexDto.REPORTER_POSTAL_CODE,
-			ExternalMessageIndexDto.TESTED_DISEASE,
+			ExternalMessageIndexDto.DISEASE,
 			ExternalMessageIndexDto.PERSON_FIRST_NAME,
 			ExternalMessageIndexDto.PERSON_LAST_NAME,
 			ExternalMessageIndexDto.PERSON_BIRTH_DATE,
