@@ -988,8 +988,8 @@ public class WebDriverHelpers {
 
   public void refreshCurrentPage() throws InterruptedException {
     baseSteps.refreshCurrentPage();
-      TimeUnit.SECONDS.sleep(3);
-      waitForPageLoadingSpinnerToDisappear(10);
+    TimeUnit.SECONDS.sleep(3);
+    waitForPageLoadingSpinnerToDisappear(10);
   }
 
   public void isElementGreyedOut(By elementLocator) {

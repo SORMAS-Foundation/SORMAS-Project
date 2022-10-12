@@ -54,8 +54,8 @@ public class LoginSteps implements En {
       AssertHelpers assertHelpers) {
 
     Given(
-        "^I am logged in with name ([^\"]*)$",
-        (String name) -> {
+        "^I am logged in$",
+        () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LOGOUT_BUTTON, 60);
         });
@@ -213,7 +213,11 @@ public class LoginSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
           String selectedLanguageText =
-              webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
+              (webDriverHelpers
+                      .getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT)
+                      .isEmpty())
+                  ? expectedLanguageText
+                  : webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
           Assert.assertEquals(
               "Selected language is not correct", expectedLanguageText, selectedLanguageText);
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_USER_SETTINGS_BUTTON);
