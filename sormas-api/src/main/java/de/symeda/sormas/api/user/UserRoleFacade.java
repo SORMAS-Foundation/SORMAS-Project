@@ -37,6 +37,8 @@ public interface UserRoleFacade {
 
 	List<UserRoleDto> getAll();
 
+	List<UserRoleDto> getAllActive();
+
 	List<String> getAllUuids();
 
 	List<String> getDeletedUuids(Date date);

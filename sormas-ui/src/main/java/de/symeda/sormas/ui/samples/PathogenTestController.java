@@ -181,7 +181,7 @@ public class PathogenTestController {
 				if (callback != null) {
 					callback.accept(yes);
 				}
-			});
+			}).bringToFront();
 	}
 
 	public PathogenTestDto savePathogenTest(

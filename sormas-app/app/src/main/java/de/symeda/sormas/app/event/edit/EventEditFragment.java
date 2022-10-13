@@ -19,9 +19,9 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-import java.util.List;
-
 import android.view.View;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -191,7 +191,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		}
 		List<DiseaseVariant> diseaseVariants =
 			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
-		diseaseVariantList = DataUtils.toItems(diseaseVariants);
+		diseaseVariantList = DataUtils.toItems(diseaseVariants, false);
 		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
 		}

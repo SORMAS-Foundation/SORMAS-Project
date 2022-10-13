@@ -31,6 +31,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FACI
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHARE_OPTION_BULK_ACTION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
@@ -341,7 +342,15 @@ public class ContactDirectorySteps implements En {
               getMergeDuplicatesButtonById(leadingContactUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
-
+    When(
+        "I check that Share option is not visible in Bulk Actions dropdown in Contact Directory for DE specific",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(SHARE_OPTION_BULK_ACTION_COMBOBOX, 3),
+              "Share is visible!");
+          softly.assertAll();
+        });
     And(
         "I click on Merge button of first leading Contact in Merge Duplicate Contact page",
         () -> {
