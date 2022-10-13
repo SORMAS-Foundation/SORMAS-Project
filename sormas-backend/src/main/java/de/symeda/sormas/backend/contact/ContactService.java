@@ -1506,8 +1506,15 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
 		Root<Visit> visitRoot = cd.from(Visit.class);
-		Subquery<Long> visitContactSubquery = getVisitsContactSubqueryForDelete(cb, cd, visitRoot);
-		cd.where(cb.and(cb.isNull(visitRoot.get(Visit.CAZE).get(Case.ID)), cb.lessThanOrEqualTo(visitContactSubquery, 1L)));
+		Subquery<Long> visitContactSubquery = countVisitsContactSubqueryForDelete(cb, cd, visitRoot, contact);
+
+		Subquery<Visit> getVisitContactSubquery = getVisitsContactSubqueryForDelete(cb, cd, contact);
+
+		cd.where(
+			cb.and(
+//				cb.isNull(visitRoot.get(Visit.CAZE).get(Case.ID)),
+//				cb.lessThanOrEqualTo(visitContactSubquery, 1L),
+				visitRoot.in(getVisitContactSubquery)));
 		em.createQuery(cd).executeUpdate();
 
 		// Remove the contact that will be deleted from contact_visits
@@ -1533,13 +1540,24 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		super.deletePermanent(contact);
 	}
 
-	private Subquery<Long> getVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot) {
+	private Subquery<Long> countVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot, Contact contact) {
 		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
 		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
 		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
-		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
+		contactVisitsSubquery.where(
+			cb.and(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)), cb.equal(visitContactJoin.get(Contact.ID), contact.getId())));
 
 		contactVisitsSubquery.select(cb.count(visitContactJoin.get(Contact.ID)));
+
+		return contactVisitsSubquery;
+	}
+
+	private Subquery<Visit> getVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Contact contact) {
+		Subquery<Visit> contactVisitsSubquery = cd.subquery(Visit.class);
+		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
+		contactVisitsSubquery.where(cb.equal(subqueryRoot.join(Visit.CONTACTS).get(Contact.ID), contact.getId()));
+
+		contactVisitsSubquery.select(subqueryRoot);
 
 		return contactVisitsSubquery;
 	}
