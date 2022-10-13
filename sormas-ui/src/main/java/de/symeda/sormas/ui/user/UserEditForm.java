@@ -217,7 +217,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 				for (CommunityReferenceDto item : items) {
 					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 				}
-				Collections.sort(items);
+				//Collections.sort(items);
+				
              FieldHelper
                     .updateItems(community, districtDto != null ? items : null);    
 			}  

@@ -181,7 +181,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			for (CommunityReferenceDto item : items) {
 				item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 			}
-			Collections.sort(items);
+			
 			cbCommunity.addItems(items);
 		}
 	}
@@ -234,7 +234,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 				for (CommunityReferenceDto item : items) {
 					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 				}
-				Collections.sort(items);
+			
 				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
 
 			}
