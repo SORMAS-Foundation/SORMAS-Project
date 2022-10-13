@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -75,6 +76,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -965,6 +967,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertThat(result[1], equalTo(0));
 		assertThat(result[2], equalTo(0));
 
+		//test with a huge list of contact ids
+		ids = Stream.iterate(1L, n -> n + 1).limit(123000).collect(Collectors.toList());
+
+		result = getContactFacade().getContactCountsByCasesForDashboard(ids);
+		assertThat(result[0], equalTo(0));
+		assertThat(result[1], equalTo(0));
+		assertThat(result[2], equalTo(0));
+
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
 		UserDto user = useNationalAdminLogin();
@@ -979,17 +989,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertThat(result[0], equalTo(1));
 		assertThat(result[1], equalTo(1));
 		assertThat(result[2], equalTo(1));
-	}
-
-	@Test
-	public void testGetContactCountsByCasesForDashboardWithHugeList() {
-
-		List<Long> ids = Stream.iterate(1L, n -> n + 1).limit(123000).collect(Collectors.toList());
-
-		int[] result = getContactFacade().getContactCountsByCasesForDashboard(ids);
-		assertThat(result[0], equalTo(0));
-		assertThat(result[1], equalTo(0));
-		assertThat(result[2], equalTo(0));
 	}
 
 	@Test
@@ -2106,6 +2105,34 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactCriteria.setPersonLike("detail2");
 		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
 		assertEquals(0, contactIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void testContactsForDashboard() {
+
+		Calendar fromDate = Calendar.getInstance();
+		fromDate.add(Calendar.YEAR, -1);
+
+		//search when there is no data in DB
+		List<DashboardContactDto> dashboardContactDtos = getContactFacade().getContactsForDashboard(null, null, null, fromDate.getTime(), new Date());
+		assertEquals(0, dashboardContactDtos.size());
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+
+		creator.createContact(rdcf, user.toReference(), person.toReference());
+
+		//search when we have a contact and no visit in DB
+		dashboardContactDtos = getContactFacade().getContactsForDashboard(null, null, null, fromDate.getTime(), new Date());
+		assertEquals(1, dashboardContactDtos.size());
+		assertEquals(null, dashboardContactDtos.get(0).getLastVisitStatus());
+
+		creator.createVisit(Disease.EVD, person.toReference());
+		//search when we have a contact and a visit in DB
+		dashboardContactDtos = getContactFacade().getContactsForDashboard(null, null, null, fromDate.getTime(), new Date());
+		assertEquals(1, dashboardContactDtos.size());
+		assertEquals(VisitStatus.COOPERATIVE, dashboardContactDtos.get(0).getLastVisitStatus());
 	}
 
 	private CaseDataDto createCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcf) {

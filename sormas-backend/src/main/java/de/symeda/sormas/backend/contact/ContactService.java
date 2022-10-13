@@ -672,6 +672,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	}
 
 	private List<DashboardVisit> getContactDashboardVisits(List<Long> dashboardContactIds, Root<Contact> contact) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
 		Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
@@ -680,9 +681,9 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 
 		visitsCq.where(
 			CriteriaBuilderHelper
-				.and(cb, contact.get(AbstractDomainObject.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+				.and(cb, contact.get(Contact.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
 		visitsCq.multiselect(
-			visitsCqRoot.get(AbstractDomainObject.ID),
+			visitsCqRoot.get(Visit.ID),
 			visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
 			visitsJoin.get(Visit.VISIT_STATUS),
 			visitsJoin.get(Visit.VISIT_DATE_TIME));
