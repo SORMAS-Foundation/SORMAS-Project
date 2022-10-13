@@ -102,6 +102,7 @@ public class ContactsDashboardSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_RADIO_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACTS_RADIO_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
         });
 
     Then(
@@ -447,6 +448,129 @@ public class ContactsDashboardSteps implements En {
               SHOW_FIRST_DISEASES_BUTTON_CONTACTS_DASHBOARD);
           webDriverHelpers.clickOnWebElementBySelector(
               SHOW_FIRST_DISEASES_BUTTON_CONTACTS_DASHBOARD);
+        });
+
+    And(
+        "^I Select the ([^\"]*) option from the Current period filter in Contact Dashboard$",
+        (String option) -> {
+          switch (option) {
+            case "Custom":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_DASHBOARD_CUSTOM_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CURRENT_PERIOD_DASHBOARD_CUSTOM_CONTACTS_DASHBOARD);
+              break;
+            case "Today":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_DASHBOARD_TODAY_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CURRENT_PERIOD_DASHBOARD_TODAY_CONTACTS_DASHBOARD);
+              break;
+            case "Yesterday":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_DASHBOARD_YESTERDAY_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CURRENT_PERIOD_DASHBOARD_YESTERDAY_CONTACTS_DASHBOARD);
+              break;
+            case "This week":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_DASHBOARD_THIS_WEEK_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CURRENT_PERIOD_DASHBOARD_THIS_WEEK_CONTACTS_DASHBOARD);
+              break;
+            case "Last week":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_DASHBOARD_LAST_WEEK_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CURRENT_PERIOD_DASHBOARD_LAST_WEEK_CONTACTS_DASHBOARD);
+              break;
+            case "This year":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(CURRENT_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CURRENT_PERIOD_DASHBOARD_THIS_YEAR_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CURRENT_PERIOD_DASHBOARD_THIS_YEAR_CONTACTS_DASHBOARD);
+              break;
+            default:
+              throw new IllegalArgumentException("No valid options were provided");
+          }
+        });
+
+    And(
+        "^I Select the ([^\"]*) option from the Comparison period filter in Contact Dashboard$",
+        (String option) -> {
+          switch (option) {
+            case "Day before":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  COMPARISON_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(COMPARISON_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  COMPARISON_PERIOD_DASHBOARD_DAY_BEFORE_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  COMPARISON_PERIOD_DASHBOARD_DAY_BEFORE_CONTACTS_DASHBOARD);
+              break;
+            case "Same day last year":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  COMPARISON_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(COMPARISON_PERIOD_CONTACTS_DASHBOARD);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  COMPARISON_PERIOD_DASHBOARD_SAME_DAY_LAST_YEAR_CONTACTS_DASHBOARD);
+              webDriverHelpers.clickOnWebElementBySelector(
+                  COMPARISON_PERIOD_DASHBOARD_SAME_DAY_LAST_YEAR_CONTACTS_DASHBOARD);
+              break;
+            default:
+              throw new IllegalArgumentException("No valid options were provided");
+          }
+        });
+
+    And(
+        "I select a region for the filter located in Contact Dashboard",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              REGION_FILTER_COMBOBOX_CONTACTS_DASHBOARD);
+          webDriverHelpers.selectFromCombobox(REGION_FILTER_COMBOBOX_CONTACTS_DASHBOARD, "Berlin");
+        });
+
+    And(
+        "I select a disease for the filter located in Contact Dashboard",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              DISEASE_FILTER_COMBOBOX_CONTACTS_DASHBOARD);
+          webDriverHelpers.selectFromCombobox(
+              DISEASE_FILTER_COMBOBOX_CONTACTS_DASHBOARD, "COVID-19");
+        });
+
+    Then(
+        "I click the Apply filter button in Contact Dashboard",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON_CONTACTS_DASHBOARD);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON_CONTACTS_DASHBOARD);
+        });
+
+    Then(
+        "I click the Reset filter button in Contact Dashboard",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              RESET_FILTERS_BUTTON_CONTACTS_DASHBOARD);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON_CONTACTS_DASHBOARD);
         });
   }
 }

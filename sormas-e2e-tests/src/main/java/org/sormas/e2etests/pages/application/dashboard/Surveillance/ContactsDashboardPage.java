@@ -23,8 +23,26 @@ import org.openqa.selenium.By;
 public class ContactsDashboardPage {
 
   public static final By CONTACTS_RADIO_BUTTON = By.xpath("//label[contains(text(),'Contacts')]");
+  public static final By CURRENT_PERIOD_CONTACTS_DASHBOARD = By.id("currentPeriod");
+  public static final By CURRENT_PERIOD_DASHBOARD_CUSTOM_CONTACTS_DASHBOARD =
+      By.id("dashboardCustom");
+  public static final By CURRENT_PERIOD_DASHBOARD_TODAY_CONTACTS_DASHBOARD =
+      By.id("dashboardToday");
+  public static final By CURRENT_PERIOD_DASHBOARD_YESTERDAY_CONTACTS_DASHBOARD =
+      By.id("dashboardYesterday");
+  public static final By CURRENT_PERIOD_DASHBOARD_THIS_WEEK_CONTACTS_DASHBOARD =
+      By.id("dashboardThisWeek");
+  public static final By CURRENT_PERIOD_DASHBOARD_LAST_WEEK_CONTACTS_DASHBOARD =
+      By.id("dashboardLastWeek");
+  public static final By CURRENT_PERIOD_DASHBOARD_THIS_YEAR_CONTACTS_DASHBOARD =
+      By.id("dashboardThisYear");
+  public static final By COMPARISON_PERIOD_CONTACTS_DASHBOARD = By.id("comparisonPeriod");
+  public static final By COMPARISON_PERIOD_DASHBOARD_DAY_BEFORE_CONTACTS_DASHBOARD =
+      By.id("dashboardDayBefore");
+  public static final By COMPARISON_PERIOD_DASHBOARD_SAME_DAY_LAST_YEAR_CONTACTS_DASHBOARD =
+      By.id("dashboardSameDayLastYear");
   public static final By REGION_FILTER_COMBOBOX_CONTACTS_DASHBOARD =
-      By.cssSelector("[location='diseaseFilter']>div>div");
+      By.cssSelector("[location='regionFilter']>div>div");
   public static final By DISEASE_FILTER_COMBOBOX_CONTACTS_DASHBOARD =
       By.cssSelector("[location='diseaseFilter']>div>div");
   public static final By RESET_FILTERS_BUTTON_CONTACTS_DASHBOARD = By.id("actionResetFilters");

@@ -295,3 +295,14 @@ Feature: Dashboard counters
     And I click to Expand the Contact Map displayed in the Contacts Dashboard Page
     Then I Verify Contact Map elements are displayed in the Contacts Dashboard Page
     And I click to Collapse the Contact Map displayed in the Contacts Dashboard Page
+
+  @env_main @#7443
+  Scenario: Verify filters in the Contact Dashboard
+    Given I log in as a National User
+    When I click on the Contacts Radio button in Contact Dashboard
+    And I Select the Today option from the Current period filter in Contact Dashboard
+    And I Select the Day before option from the Comparison period filter in Contact Dashboard
+    And I select a region for the filter located in Contact Dashboard
+    And I select a disease for the filter located in Contact Dashboard
+    Then I click the Apply filter button in Contact Dashboard
+    Then I click the Reset filter button in Contact Dashboard
