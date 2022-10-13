@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,8 +66,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.api.client.util.Lists;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -1286,7 +1284,7 @@ public class ContactFacadeEjb
 	@Override
 	public int[] getContactCountsByCasesForDashboard(List<Long> contactIds) {
 
-		Set<Long> caseIds = new HashSet<>();
+		Set<Long> caseIds = new LinkedHashSet<>();
 		IterableHelper.executeBatched(
 			contactIds,
 			ModelConstants.PARAMETER_LIMIT,
@@ -1297,9 +1295,9 @@ public class ContactFacadeEjb
 		} else {
 			int[] counts = new int[3];
 
-			Set<Long> caseContactCounts = new HashSet<>();
+			List<Long> caseContactCounts = new ArrayList<>();
 			IterableHelper.executeBatched(
-				Lists.newArrayList(caseIds),
+				new ArrayList<>(caseIds),
 				ModelConstants.PARAMETER_LIMIT,
 				batchedCaseIds -> caseContactCounts.addAll(countContactsAssignToCases(batchedCaseIds)));
 
