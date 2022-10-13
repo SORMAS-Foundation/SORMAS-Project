@@ -133,7 +133,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.WEEKLY_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
             addDiseaseField(UserDto.LIMITED_DISEASE, false);
         }
-
+        
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
         getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
         Label userPhoneDesc = new Label(I18nProperties.getString(Strings.infoUserPhoneNumber));
@@ -217,14 +217,14 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 				for (CommunityReferenceDto item : items) {
 					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 				}
+				Collections.sort(items);
              FieldHelper
                     .updateItems(community, districtDto != null ? items : null);    
 			}  
         });
         
        community.addValueChangeListener(e -> {
-    	  // System.out.println("dddddddddddddddddddddddddddd communityDto CHANGES!!ssssssssssefasdfa:"+ e.getProperty().getValue());
-    	  // CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+    	  
      });
         		
         
@@ -232,30 +232,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
         ComboBox healthFacility = addInfrastructureField(UserDto.HEALTH_FACILITY);
         ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY); //white-space: nowrap;
-//        
-//        district.addValueChangeListener(e -> {
-//            FieldHelper.removeItems(healthFacility);
-//            FieldHelper.removeItems(associatedOfficer);
-//            FieldHelper.removeItems(cbPointOfEntry);
-//            DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-//            //FieldHelper.updateItems(
-//              //      community,
-//                //    districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-//            FieldHelper.updateItems(
-//                    healthFacility,
-//                    districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
-//            FieldHelper.updateItems(
-//                    associatedOfficer,
-//                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
-//            FieldHelper.updateItems(
-//                    cbPointOfEntry,
-//                    districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
-//        });
+
 
         ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        //region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry()); 
         System.out.println("ddddddddddddddddddddddddddddddddssssssssssssssssssssefasdfas "+FacadeProvider.getAreaFacade().getAllActiveAsReference());
         area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 

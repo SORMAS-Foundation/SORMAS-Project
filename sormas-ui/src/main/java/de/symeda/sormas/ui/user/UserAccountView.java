@@ -7,10 +7,12 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
@@ -73,12 +75,8 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 	private static final String HTML_LAYOUT = loc(PERSON_DATA_HEADING_LOC)
 			+ fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) + fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE)
 			+ fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC)
-			+ fluidRowLocs(UserDto.USER_POSITION, UserDto.USER_ORGANISATION)
-
-			+ loc(ADDRESS_HEADING_LOC) + fluidRowLocs(UserDto.ADDRESS)
-
-			+ fluidRowLocsCss(VSPACE_TOP_3, UserDto.LANGUAGE, "") // + loc(USER_DATA_HEADING_LOC)
-			// + fluidRowLocs(UserDto.USER_NAME)
+			+ fluidRowLocs(UserDto.USER_POSITION, UserDto.USER_ORGANISATION) + loc(ADDRESS_HEADING_LOC)
+			+ fluidRowLocs(UserDto.ADDRESS) + fluidRowLocsCss(VSPACE_TOP_3, UserDto.LANGUAGE, "")
 			+ fluidRowLocs(PASSWORD_BUTTON);
 
 	public UserAccountView() {
@@ -91,7 +89,7 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 		return HTML_LAYOUT;
 	}
 
-	class UserNameValidator implements Validator { 
+	class UserNameValidator implements Validator {
 
 		private static final long serialVersionUID = 1L;
 
@@ -150,10 +148,6 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 		ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
 		laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-		// addValidators(UserDto.USER_NAME, new UserNameValidator());
-		// addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
-		// addFieldListeners(UserDto.LAST_NAME, e -> suggestUserName());
-
 		// add button for password reset
 		Button changePasswordButton = new Button();
 		changePasswordButton.setIcon(VaadinIcons.UNLOCK);
@@ -162,7 +156,8 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 				this.getField(UserDto.USER_NAME).getValue().toString());
 
 		changePasswordButton.addClickListener(e -> {
-			Window popupWindow = VaadinUiUtil.showPopupWindow(PasswordChangeConfirmationComponent);
+			Window popupWindow = VaadinUiUtil.showPopupWindow(PasswordChangeConfirmationComponent); // Password Changed
+																									// Successfully
 			PasswordChangeConfirmationComponent.addDoneListener(() -> popupWindow.close());
 			PasswordChangeConfirmationComponent.getCancelButton().addClickListener(new ClickListener() {
 
@@ -176,7 +171,6 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 			popupWindow.setCaption(I18nProperties.getString(Strings.headingUpdatePassword));
 		});
 		changePasswordButton.addStyleName(ValoTheme.BUTTON_LINK);
-
 		getContent().addComponent(changePasswordButton, PASSWORD_BUTTON);
 
 	}
@@ -217,6 +211,7 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 
 	private void showPasswordChangeInternalSuccessPopup(String userName) { // REST_USER
 		VerticalLayout layout = new VerticalLayout();
+
 		
 		UserDto userxs = UserProvider.getCurrent().getUser();
 		Label c2Label = new Label("Editing: " + userxs.getUserName());
@@ -224,6 +219,7 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 		
 		layout.addComponent(c2Label);
 		layout.addComponent(new Label(""));
+
 		layout.addComponent(new Label(I18nProperties.getString(Strings.messageChangePassword)));
 		
 		layout.addComponent(new Label("*Must be at least 8 characters"));
@@ -236,57 +232,54 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 		passField1.addValidator(new RegexpValidator("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
 				"Password does not meet requirement"));
 		layout.addComponent(passField1);
-		
+
 		PasswordField passField2 = new PasswordField("Confirm New Password");
 		passField2.setSizeFull();
 		layout.addComponent(passField2);
-		
-		
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
-		Button changePassword = new Button("Save"); // VALO
+		Button changePassword = new Button("Save"); 
 		changePassword.setStyleName(CssStyles.VAADIN_BUTTON);
 		changePassword.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		changePassword.setStyleName(CssStyles.FLOAT_RIGHT);
-		
-		buttonLayout.addComponent(changePassword);// cbCommunity
 
-		
+		buttonLayout.addComponent(changePassword);
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		Button cancel = new Button("Cancel");
 		cancel.setStyleName(CssStyles.VAADIN_BUTTON);
 		cancel.setStyleName(CssStyles.FLOAT_RIGHT);
 		buttonLayout.addComponent(cancel);
-		
+
 		changePassword.addClickListener(e -> {
 			String newpass1 = passField1.getValue();
 			String newpass2 = passField2.getValue();
-			
+
 			try {
 				passField1.validate();
 			} catch (Validator.InvalidValueException ex) {
 				passField1.setValidationVisible(true);
-			    Notification.show("Invalid value!");
+				Notification.show("Invalid value!");
 			}
-			if (newpass1.equals(newpass2) && passField1.isValid()) { 
-				
-				 FacadeProvider.getUserFacade()
-						.changePassword(this.getField(UserDto.USER_NAME).getValue().toString(), newpass1);
-				 popupWindow.close();
-				 Notification.show("Password changed Successfully", Notification.Type.TRAY_NOTIFICATION);
+			if (newpass1.equals(newpass2) && passField1.isValid()) {
 
-			}
-			else {
+				FacadeProvider.getUserFacade().changePassword(this.getField(UserDto.USER_NAME).getValue().toString(),
+						newpass1);
+				popupWindow.close();
+				Notification.show("Password changed Successfully", Notification.Type.TRAY_NOTIFICATION);
+				UI.getCurrent().getPage().reload();
+
+			} else {
 				Notification.show("Password does not match", Notification.Type.HUMANIZED_MESSAGE);
 			}
 		});
 		cancel.addClickListener(e -> {
 			popupWindow.close();
 		});
-		
+
 		buttonLayout.setSpacing(true);
 		layout.addComponent(buttonLayout);
-		
+
 		layout.setMargin(true);
 		layout.setSpacing(false);
 	}

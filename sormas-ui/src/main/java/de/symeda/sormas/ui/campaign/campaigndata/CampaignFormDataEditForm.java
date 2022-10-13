@@ -20,6 +20,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -180,6 +181,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			for (CommunityReferenceDto item : items) {
 				item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 			}
+			Collections.sort(items);
 			cbCommunity.addItems(items);
 		}
 	}
@@ -232,16 +234,17 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 				for (CommunityReferenceDto item : items) {
 					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 				}
+				Collections.sort(items);
 				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
 
 			}
 			
 			final UserDto currentUserx = UserProvider.getCurrent().getUser();
 			if(currentUserx.getCommunity().size() > 0) {
+				List<CommunityReferenceDto> items = currentUserx.getCommunity().stream().collect(Collectors.toList());
+				Collections.sort(items);
 				cbCommunity.clear();
-				FieldHelper.updateItems(cbCommunity,
-						  currentUserx.getCommunity().stream().collect(Collectors.toList())
-							);
+				FieldHelper.updateItems(cbCommunity, items);
 			}
 
 		});
