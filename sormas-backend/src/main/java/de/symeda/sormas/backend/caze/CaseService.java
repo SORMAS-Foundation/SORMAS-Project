@@ -1618,8 +1618,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {
 
 		List<Case> cases = new ArrayList<>();
-		IterableHelper
-			.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
+		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> cases.addAll(getCasesByPersonUuids(batchedUuids)));
 		return cases;
 	}
 
