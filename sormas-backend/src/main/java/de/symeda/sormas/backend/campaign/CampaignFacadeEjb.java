@@ -386,7 +386,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		CampaignDto target = new CampaignDto();
 		DtoHelper.fillDto(target, source);
-
+		System.out.println("++++++++++++++++ "+UserFacadeEjb.toReferenceDto(source.getCreatingUser()));
 		target.setCreatingUser(UserFacadeEjb.toReferenceDto(source.getCreatingUser()));
 		target.setDescription(source.getDescription());
 		target.setEndDate(source.getEndDate());
@@ -523,6 +523,15 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
 	}
+	
+	@Override
+	public boolean isClosedd(String uuid) {
+		String cdvv = "select openandclose from campaigns where uuid = '"+uuid+"' and openandclose = false";
+	
+		List count = em.createNativeQuery(cdvv).getResultList();  
+		System.out.println(cdvv +"  ++++++++++++++++   "+count.size());
+		return count.size() > 0;
+	}
 
 	@Override
 	public void deleteCampaign(String campaignUuid) {
@@ -540,7 +549,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	
 	
 	@Override
-	public void cloneCampaign(String campaignUuid, String userCreating) {
+	public String cloneCampaign(String campaignUuid, String userCreating) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -549,9 +558,17 @@ public class CampaignFacadeEjb implements CampaignFacade {
 				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to duplicate "
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
-		
-		campaignService.cloneForm(campaignService.getByUuid(campaignUuid), userCreating);
+		String newUuid = campaignService.cloneForm(campaignService.getByUuid(campaignUuid), user.getId());
+		return newUuid;
 	}
+	
+	
+	@Override
+	public void closeandOpenCampaign(String campaignUuid, boolean openandclosebutton) {
+		campaignService.closeAndOpenForm(campaignUuid, openandclosebutton);  
+		
+	}
+	
 
 	@Override
 	public void archiveOrDearchiveCampaign(String campaignUuid, boolean archive) {
@@ -615,6 +632,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@Stateless
 	public static class CampaignFacadeEjbLocal extends CampaignFacadeEjb {
 	}
+
+
 
 	
 

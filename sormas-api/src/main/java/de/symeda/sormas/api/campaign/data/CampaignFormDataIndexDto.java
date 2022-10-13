@@ -33,6 +33,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public static final String DISTRICT = "district";
 	public static final String DCODE = "dcode";
 	public static final String COMMUNITY = "community";
+	public static final String COMMUNITYNUMBER = "clusternumber";
 	public static final String CCODE = "ccode";
 	public static final String FORM_DATE = "formDate";
 	public static final String FORM_TYPE = "formType";
@@ -50,6 +51,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private String district;
 	private Long dcode;
 	private String community;
+	private Integer clusternumber;
 	private Long ccode;
 	private Date formDate;
 	private String formType;
@@ -66,6 +68,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		String district,
 		Long dcode,
 		String community,
+		Integer clusternumber,
 		Long ccode,
 		Date formDate,
 		String formType) {
@@ -80,6 +83,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.district = district;
 		this.dcode = dcode;
 		this.community = community;
+		this.clusternumber = clusternumber;
 		this.ccode = ccode;
 		this.formDate = formDate;
 		this.formType = formType;
@@ -169,6 +173,16 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public void setCommunity(String community) {
 		this.community = community;
+	}
+	
+	
+
+	public Integer getClusternumber() {
+		return clusternumber;
+	}
+
+	public void setClusternumber(Integer clusternumber) {
+		this.clusternumber = clusternumber;
 	}
 
 	public Date getFormDate() {

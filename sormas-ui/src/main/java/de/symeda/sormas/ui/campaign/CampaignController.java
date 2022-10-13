@@ -18,6 +18,8 @@ package de.symeda.sormas.ui.campaign;
 import static com.vaadin.v7.data.Validator.InvalidValueException;
 import static de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria.CAMPAIGN;
 
+import java.time.ZonedDateTime;
+
 import com.vaadin.server.ConnectorResource;
 import com.vaadin.shared.ApplicationConstants;
 import com.vaadin.shared.ui.BrowserWindowOpenerState;
@@ -75,14 +77,58 @@ public class CampaignController {
 					SormasUI.refreshView();
 				}, I18nProperties.getString(Strings.entityCampaign));
 			}
-			
+
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 				campaignComponent.addCloneListener(() -> {
-					FacadeProvider.getCampaignFacade().cloneCampaign(campaign.getUuid(), UserProvider.getCurrent().getUuid());
+					String newUUId = FacadeProvider.getCampaignFacade().cloneCampaign(campaign.getUuid(), UserProvider.getCurrent().getUuid());
+					campaignComponent.discard();
+				//	UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + newUUId);
+
+					//SormasUI.refreshView();
+				}, I18nProperties.getString(Strings.entityCampaign));
+			}
+//			
+			
+//			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+//				campaignComponent.addCloseOpenListener(() -> {
+//					
+//					FacadeProvider.getCampaignFacade().closeandOpenCampaign(campaign.getUuid(), false);
+//					campaignComponent.discard();
+//					SormasUI.refreshView();
+//				
+//				}, I18nProperties.getString(Strings.entityCampaign));
+//			}
+//			
+//			
+//			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+//				campaignComponent.addOpenCloseListener(() -> {
+//					FacadeProvider.getCampaignFacade().closeandOpenCampaign(campaign.getUuid(), true);
+//					campaignComponent.discard();
+//					SormasUI.refreshView();
+//				}, I18nProperties.getString(Strings.entityCampaign));
+//			}
+//			
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+				final String campaignUuid = campaign.getUuid();
+				boolean closex = FacadeProvider.getCampaignFacade().isClosedd(campaignUuid);
+				if(closex) {
+				campaignComponent.addCloseOpenListener(() -> {
+					FacadeProvider.getCampaignFacade().closeandOpenCampaign(campaignUuid, true);
 					campaignComponent.discard();
 					SormasUI.refreshView();
 				}, I18nProperties.getString(Strings.entityCampaign));
+				
+				}else {
+					campaignComponent.addOpenCloseListener(() -> {
+						FacadeProvider.getCampaignFacade().closeandOpenCampaign(campaignUuid, false);
+						campaignComponent.discard();
+						SormasUI.refreshView();
+					}, I18nProperties.getString(Strings.entityCampaign));
+					
+				}
 			}
+			
+			
 
 			// Initialize 'Archive' button
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE)) {
@@ -207,10 +253,41 @@ public class CampaignController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
 			campaignComponent.addCloneListener(() -> {
-				FacadeProvider.getCampaignFacade().cloneCampaign(finalCampaignDto.getUuid(), UserProvider.getCurrent().getUuid());
-				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
+			
+				String newUuid = FacadeProvider.getCampaignFacade().cloneCampaign(finalCampaignDto.getUuid(), UserProvider.getCurrent().getUuid());
+				UI.getCurrent().getNavigator().navigateTo(CampaignView.VIEW_NAME + "/" + newUuid);
+				Notification.show("Success", "Campaign has been duplicated succesfully.", Notification.TYPE_TRAY_NOTIFICATION);
+
+				//UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+			final String campaignUuid = campaignDto.getUuid();
+			CampaignDto finalCampaignDto = campaignDto;
+			
+			boolean closex = FacadeProvider.getCampaignFacade().isClosedd(campaignUuid);
+			if(closex) {
+			campaignComponent.addCloseOpenListener(() -> {
+				
+				FacadeProvider.getCampaignFacade().closeandOpenCampaign(finalCampaignDto.getUuid(), false);
+				campaignComponent.discard();
+				SormasUI.refreshView();
+			}, I18nProperties.getString(Strings.entityCampaign));
+			
+			
+			}else {
+				campaignComponent.addOpenCloseListener(() -> {
+					FacadeProvider.getCampaignFacade().closeandOpenCampaign(finalCampaignDto.getUuid(), true);
+					campaignComponent.discard();
+					SormasUI.refreshView();
+				}, I18nProperties.getString(Strings.entityCampaign));
+				
+			}
+		}
+		
+		
+		
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE) && !isCreate) {
@@ -384,8 +461,6 @@ public class CampaignController {
 					ControllerProvider.getCampaignController().navigateToFormDataView(campaign.getUuid(), campaignForm.getUuid());
 					//ControllerProvider.getCampaignController().createCampaignDataForm(campaign, campaignForm);
 					
-					
-					
 					//UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
 				}
 			}
@@ -438,7 +513,7 @@ public class CampaignController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 	
-	public void navigateToFormDataView(String camPuuid, String formUUID) {
+	public void navigateToFormDataViewDRAFT(String camPuuid, String formUUID) {
 		String navigationState = CampaignFormDataView.VIEW_NAME + "/"+camPuuid+","+formUUID;
 		//SormasUI.get().getNavigator().navigateTo(navigationState);
 		
@@ -446,12 +521,24 @@ public class CampaignController {
                 UI.getCurrent().getUIId()+"/"+
                 BrowserWindowOpenerState.locationResource+"/"+navigationState;
 		
-		System.out.println("____________________________________________________________________"+generatedURL);
 		
 //Page.getCurrent().open(generatedURL, "_blank");
 
 	//	SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
+	
+	public void navigateToFormDataView(String camPuuid, String formUUID) {
+		boolean closex = FacadeProvider.getCampaignFacade().isClosedd(camPuuid);
+		if(!closex) {
+			String navigationState = CampaignFormDataView.VIEW_NAME + "/"+camPuuid+","+formUUID;
+			SormasUI.get().getNavigator().navigateTo(navigationState);
+		
+		}else {
+			Notification.show("Closed Campaign", "We are no longer accepting data for this campaign at this time. Please contact your supervisor for further information and support. Thank you.", Notification.TYPE_WARNING_MESSAGE);
+			
+		}
+		
+		}
 
 	public void navigateToCampaignData(String campaignUuid) {
 		String navigationState = CampaignDataView.VIEW_NAME + "/?" + CampaignFormDataDto.CAMPAIGN + "=" + campaignUuid;

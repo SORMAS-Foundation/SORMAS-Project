@@ -27,10 +27,14 @@ public interface CampaignFacade { //CampaignFacadeEjb
 	List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid, String formType);
 
 	boolean isArchived(String uuid);
+	
+	boolean isClosedd(String uuid);
 
 	void deleteCampaign(String uuid);
 	
-	void cloneCampaign(String uuid, String userCreatingx);
+	String cloneCampaign(String uuid, String userCreatingx);
+	
+	void closeandOpenCampaign(String uuid, boolean openandclosebutton);
 
 	void archiveOrDearchiveCampaign(String campaignUuid, boolean archive);
 

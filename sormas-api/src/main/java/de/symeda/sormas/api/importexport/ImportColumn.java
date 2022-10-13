@@ -130,7 +130,7 @@ public class ImportColumn {
 		} else if (EventReferenceDto.class.isAssignableFrom(fieldType)) {
 			return String.format(I18nProperties.getString(Strings.uuidOf), DataHelper.getHumanClassCaption(fieldType));
 		} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
-			return String.format(I18nProperties.getString(Strings.nameOf), DataHelper.getHumanClassCaption(fieldType));
+			return String.format(I18nProperties.getString(Strings.nameOf), DataHelper.getHumanClassCaption(fieldType));//.equalsIgnoreCase("Region") ? "Province" : DataHelper.getHumanClassCaption(fieldType));
 		} else if (Disease.class.isAssignableFrom(fieldType)) {
 			return ImportFacade.ACTIVE_DISEASES_PLACEHOLDER;
 		} else if (fieldType.isEnum()) {

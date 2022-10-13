@@ -229,6 +229,10 @@ public class Menu extends CssLayout {
 		createViewButton(name, caption, icon);
 	}
 	
+	public void addViewx(Class<? extends View> viewClass, final String name) {
+
+		navigator.addView(name, viewClass);
+	}
 	
 
 	private void createViewButton(final String name, String caption, Resource icon) {

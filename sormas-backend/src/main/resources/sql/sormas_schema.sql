@@ -8440,7 +8440,27 @@ ALTER TABLE community ADD CONSTRAINT community_unique_extgernal_id UNIQUE (exter
 ALTER TABLE campaigns ADD COLUMN campaignyear character varying;
 ALTER TABLE campaigns_history ADD COLUMN campaignyear character varying;
 
+CREATE TABLE IF NOT EXISTS public.user_account
+(
+    id bigint NOT NULL,
+    email character varying(255) COLLATE pg_catalog."default",
+    first_name character varying(255) COLLATE pg_catalog."default",
+    last_name character varying(255) COLLATE pg_catalog."default",
+    password character varying(255) COLLATE pg_catalog."default",
+    seed character varying(255) COLLATE pg_catalog."default",
+    username character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT user_account_pkey PRIMARY KEY (id),
+    CONSTRAINT ukhl02wv5hym99ys465woijmfib UNIQUE (email)
+)
+WITH (
+    OIDS = FALSE //novatec
+)
+TABLESPACE pg_default;
 
+ALTER TABLE IF EXISTS public.user_account
+    OWNER to sormas_user;
+    
+    
 
 CREATE OR REPLACE FUNCTION function_copy() RETURNS TRIGGER AS
 $BODY$
@@ -8607,6 +8627,11 @@ INSERT INTO schema_version (version_number, comment) VALUES (428, 'add form acce
 ALTER TABLE campaignformmeta add column formCategory varchar(50);
 
 INSERT INTO schema_version (version_number, comment) VALUES (429, 'add form category to campaignformmeta');
+
+--add openandClose campaign function
+ALTER TABLE campaigns add column openandclose boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (430, 'add openandClose campaign function');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

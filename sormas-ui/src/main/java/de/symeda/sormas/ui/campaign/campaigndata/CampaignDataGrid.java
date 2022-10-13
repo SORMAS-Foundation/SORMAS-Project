@@ -85,6 +85,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 			CampaignFormDataIndexDto.DISTRICT,
 			CampaignFormDataIndexDto.DCODE,
 			CampaignFormDataIndexDto.COMMUNITY,
+			CampaignFormDataIndexDto.COMMUNITYNUMBER,
 			CampaignFormDataIndexDto.CCODE,
 			CampaignFormDataIndexDto.FORM_DATE,
 			CampaignFormDataIndexDto.FORM_TYPE

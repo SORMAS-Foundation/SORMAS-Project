@@ -51,6 +51,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	private final HorizontalLayout viewHeader;
 	private final VerticalLayout viewTitleLayout;
 	private final Label viewTitleLabel;
+	private  String closedTitleLabel = "";
 	private final Label viewSubTitleLabel;
 
 	protected boolean applyingCriteria;
@@ -65,6 +66,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		viewHeader = new HorizontalLayout();
 		//viewHeader.setWidth(100, Unit.PERCENTAGE);
 		viewHeader.addStyleName("view-headerxxx");
+		System.out.println("rrrrrrrrrrrrrrrrrrrrrrrrrrrrr" + getClosedTitleLabel());
 		viewHeader.addStyleName("view-headerxxxx");
 		viewHeader.setHeightUndefined();
 		viewHeader.setMargin(new MarginInfo(false, true));
@@ -83,6 +85,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".sub", "");
 			viewTitleLabel = new Label(viewTitle);
 			viewTitleLabel.setSizeUndefined();
+			viewTitleLabel.addStyleName(getClosedTitleLabel());
 			CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
 			viewTitleLayout.addComponent(viewTitleLabel);
 			viewSubTitleLabel = new Label(viewSubTitle);
@@ -126,7 +129,18 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	public Label getViewTitleLabel() {
 		return viewTitleLabel;
 	}
+	
+	
 
+	public String getClosedTitleLabel() {
+		return closedTitleLabel;
+	}
+
+	public void setClosedTitleLabel(String closedTitleLabel) {
+		
+	this.closedTitleLabel = closedTitleLabel;
+	}
+	
 	public Label getViewSubTitleLabel() {
 		return viewSubTitleLabel;
 	}

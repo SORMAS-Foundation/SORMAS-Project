@@ -148,7 +148,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			return;
 		}
 		
-		System.out.print("isCreateForm=true");
 
 		Label campaignBasicHeadingLabel = new Label(I18nProperties.getString(Strings.headingCampaignBasics));
 		campaignBasicHeadingLabel.addStyleName(H3);
@@ -206,7 +205,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		getContent().addComponent(spacerx, SPACE_LOCX);
 
 		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER);
-		setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
+		//setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
 
 		setRequired(true, CampaignDto.UUID, CampaignDto.NAME, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.ROUND, CampaignDto.CAMPAIGN_YEAR);
 
