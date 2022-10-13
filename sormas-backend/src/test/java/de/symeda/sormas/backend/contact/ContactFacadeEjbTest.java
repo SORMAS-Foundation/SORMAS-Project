@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -978,6 +979,17 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertThat(result[0], equalTo(1));
 		assertThat(result[1], equalTo(1));
 		assertThat(result[2], equalTo(1));
+	}
+
+	@Test
+	public void testGetContactCountsByCasesForDashboardWithHugeList() {
+
+		List<Long> ids = Stream.iterate(1L, n -> n + 1).limit(123000).collect(Collectors.toList());
+
+		int[] result = getContactFacade().getContactCountsByCasesForDashboard(ids);
+		assertThat(result[0], equalTo(0));
+		assertThat(result[1], equalTo(0));
+		assertThat(result[2], equalTo(0));
 	}
 
 	@Test
