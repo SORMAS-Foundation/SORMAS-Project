@@ -280,7 +280,7 @@ public abstract class DataImporter {
 				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0); 
 				logger.debug("runImport - line {}", lineCounter);
 				if (importedLineCallback != null) {
-					importedLineCallback.accept(lineResult);
+					importedLineCallback.accept(lineResult); //dddddddddd
 				}
 				if (cancelAfterCurrent) {
 					break;

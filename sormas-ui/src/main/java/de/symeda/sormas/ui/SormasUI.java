@@ -69,7 +69,7 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 				( int ) TimeUnit.MINUTES.toSeconds( 30 ) 
 				);
 
-		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
+		getPage().setTitle("APMIS Server");//FacadeProvider.getConfigFacade().getSormasInstanceName());
 
 		initMainScreen();
 	}
@@ -108,6 +108,7 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 	public static void refreshCampaignView() {
 		get().getNavigator().navigateTo(get().getNavigator().getState());
 		Page.getCurrent().getJavaScript().execute("$(document).ready(function() {"
+				
 				// + "alert();"
 				// + "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").show();"
 				// +

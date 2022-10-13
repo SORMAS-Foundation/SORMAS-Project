@@ -280,20 +280,16 @@ public class CampaignDataView extends AbstractCampaignView {
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
 
-		if (phase != null && campaignReferenceDto != null) {
-			
+		if (campaignReferenceDto != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences;
 			if (UserProvider.getCurrent().getUser().getUsertype().equals(UserType.WHO_USER)) {
 				campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
-						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(campaignReferenceDto.getUuid());
-						
+						.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
 			} else {
-				String phases = "pre-campaign";
 				campagaignFormReferences =  FacadeProvider.getCampaignFormMetaFacade()
-						.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phases,
-								campaignReferenceDto.getUuid(), userFormAccess);
-						
+						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(campaignReferenceDto.getUuid());;
 			}
+
 
 			Collections.sort(campagaignFormReferences);
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
@@ -369,6 +365,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public CampaignFormDataFilterForm createFilterBar() {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		criteria.setArea(user.getArea());
@@ -390,32 +387,23 @@ public class CampaignDataView extends AbstractCampaignView {
 		filterForm.addApplyHandler(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
-			System.out.println(campaignFormPhaseSelector.getValue().toString()
-					+ "    sssssssssssssssyyyyyyyyyy!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!sssssssssssssssssssss"
-					+ campaignSelector.getValue());
 			grid.reload();
 		});
 		campaignSelector.addValueChangeListener(e -> {
-			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
-			System.out.println("!!!!!-------------------!!!!!");
 			criteria.setFormType(e.getValue().toString());
 			grid.reload();
 		});
 
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
-
 		return filterForm;
 	}
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallback() {
-
-		System.out.println(
-				"sswwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwsssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssssssssssssss");
 		return formMetaReference -> {
 			grid.removeAllColumns();
 			grid.addDefaultColumns();
@@ -455,8 +443,6 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallbackPhase() {
 
-		System.out.println(
-				"ss@wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwsssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssssssssssssss");
 		return formMetaReference -> {
 			grid.removeAllColumns();
 			grid.addDefaultColumns();

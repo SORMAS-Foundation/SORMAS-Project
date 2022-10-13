@@ -111,8 +111,9 @@ public class PopulationDataImporter extends DataImporter {
 			}*/
 			
 			//patch to use cluster No for data import
+			
 			if (PopulationDataDto.COMMUNITY_EXTID.equalsIgnoreCase(entityProperties[i])) { 
-				
+				System.out.println("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt "+entityProperties[i]);
 				
 				if (DataHelper.isNullOrEmpty(values[i])) {
 					community = null;
@@ -121,11 +122,13 @@ public class PopulationDataImporter extends DataImporter {
 					List<CommunityReferenceDto> communities = FacadeProvider.getCommunityFacade().getByExternalId(Long.parseLong(values[i]), false);
 					if (communities.size() != 1) {
 						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
+						System.out.println(new ImportErrorException(values[i], entityProperties[i]).getMessage());
 						return ImportLineResult.ERROR;
 					}
 					community = communities.get(0);
 				} else {
 					writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
+					System.out.println(new ImportErrorException(values[i], entityProperties[i]).getMessage() +" ttttttttttttttttt 1111"+values[i]);
 					return ImportLineResult.ERROR;
 				}
 					}

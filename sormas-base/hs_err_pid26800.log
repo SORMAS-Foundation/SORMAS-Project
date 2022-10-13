@@ -1,0 +1,195 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 266338304 bytes for Failed to commit area from 0x0000000703600000 to 0x0000000713400000 of length 266338304.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (./open/src/hotspot/os/windows/os_windows.cpp:3276), pid=26800, tid=10692
+#
+# JRE version:  (11.0.13+10) (build )
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (11.0.13+10-LTS-370, mixed mode, sharing, tiered, compressed oops, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Dant.home=C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452 -Dant.library.dir=C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib -Djava.library.path=C:\Users\darkn\eclipse\jee-2021-12\eclipse;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Java\jdk-11.0.13\bin;E:\MirabiliaProject\apache-maven-3.8.4\bin;C:\Program Files\PostgreSQL\10\bin;C:\Program Files\PuTTY\;C:\Windows;C:\Program Files\nodejs\;C:\Users\darkn\AppData\Local\Microsoft\WindowsApps;C:\Users\darkn\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\darkn\AppData\Roaming\npm;C:\Users\darkn\Downloads\pms\tomcat-8.5.34\lib\sigar;C:\Users\darkn\Downloads\pms_new\tomcat-8.5.34\lib\sigar;C:\Tesseract-OCR;C:\Program Files\dotnet\;C:\Users\darkn\AppData\Local\Android\Sdk\platform-tools;C:\Users\darkn\AppData\Local\Microsoft\WindowsApps;C:\Users\darkn\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\darkn\AppData\Roaming\npm;C:\Users\darkn\AppData\Local\GitHubDesktop\bin;.;C:\Users\darkn\eclipse\jee-2021-12\eclipse\configuration\org.eclipse.osgi\749\0\.cp -Dfile.encoding=Cp1252 org.eclipse.ant.internal.launching.remote.InternalAntRunner -Dorg.eclipse.ant.core.ANT_PROCESS_ID=1664804010214 -Declipse.connect.port=58125 -Declipse.pdebuild.home=C:\Users\darkn\eclipse\jee-2021-12\eclipse\..\..\..\.p2\pool\plugins\org.eclipse.pde.build_3.11.100.v20210916-0743\. -Declipse.pdebuild.scripts=C:\Users\darkn\eclipse\jee-2021-12\eclipse\..\..\..\.p2\pool\plugins\org.eclipse.pde.build_3.11.100.v20210916-0743\scripts -Declipse.pdebuild.templates=C:\Users\darkn\eclipse\jee-2021-12\eclipse\..\..\..\.p2\pool\plugins\org.eclipse.pde.build_3.11.100.v20210916-0743\templates -Dant.home=C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452 -logger org.eclipse.ant.internal.launching.remote.logger.RemoteAntBuildLogger -inputhandler org.eclipse.ant.internal.ui.antsupport.inputhandler.ProxyInputHandler -buildfile E:\MirabiliaProject\APMIS\SORMAS-Project\APMIS-Project\sormas-base\build.xml
+
+Host: Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz, 8 cores, 15G,  Windows 10 , 64 bit Build 22000 (10.0.22000.708)
+Time: Mon Oct  3 14:39:06 2022 W. Central Africa Standard Time elapsed time: 0.837401 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000018f84097800):  JavaThread "Unknown thread" [_thread_in_vm, id=10692, stack(0x0000008675900000,0x0000008675a00000)]
+
+Stack: [0x0000008675900000,0x0000008675a00000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x62870a]
+V  [jvm.dll+0x761f2f]
+V  [jvm.dll+0x7635d9]
+V  [jvm.dll+0x763c63]
+V  [jvm.dll+0x23d728]
+V  [jvm.dll+0x625aba]
+V  [jvm.dll+0x61a855]
+V  [jvm.dll+0x2f242c]
+V  [jvm.dll+0x2f22b2]
+V  [jvm.dll+0x2f6fd6]
+V  [jvm.dll+0x3395ff]
+V  [jvm.dll+0x339030]
+V  [jvm.dll+0x2cfa38]
+V  [jvm.dll+0x2d0ba6]
+V  [jvm.dll+0x73c547]
+V  [jvm.dll+0x73dddf]
+V  [jvm.dll+0x346369]
+V  [jvm.dll+0x721e60]
+V  [jvm.dll+0x3b500f]
+V  [jvm.dll+0x3b7121]
+C  [jli.dll+0x5207]
+C  [ucrtbase.dll+0x26c0c]
+C  [KERNEL32.DLL+0x154e0]
+C  [ntdll.dll+0x485b]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x0000018f83f59140, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x0000018f840ac800 GCTaskThread "GC Thread#0" [stack: 0x0000008675a00000,0x0000008675b00000] [id=27852]
+  0x0000018f84107800 ConcurrentGCThread "G1 Main Marker" [stack: 0x0000008675b00000,0x0000008675c00000] [id=3068]
+  0x0000018f8410a000 ConcurrentGCThread "G1 Conc#0" [stack: 0x0000008675c00000,0x0000008675d00000] [id=30856]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffdf021ecc7]
+
+VM state:not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x0000018f84093ce0] Heap_lock - owner thread: 0x0000018f84097800
+
+Heap address: 0x0000000703600000, size: 4042 MB, Compressed Oops mode: Non-zero based: 0x0000000703600000
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff7807a0000 - 0x00007ff7807af000 	C:\Program Files\Java\jdk-11.0.13\bin\javaw.exe
+0x00007ffeb33c0000 - 0x00007ffeb35c9000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00007ffe6faf0000 - 0x00007ffe6fb07000 	C:\Program Files\AVG\Antivirus\aswhook.dll
+0x00007ffeb28f0000 - 0x00007ffeb29ad000 	C:\Windows\System32\KERNEL32.DLL
+0x00007ffeb0de0000 - 0x00007ffeb115c000 	C:\Windows\System32\KERNELBASE.dll
+0x00007ffeb0b30000 - 0x00007ffeb0c41000 	C:\Windows\System32\ucrtbase.dll
+0x00007ffeaf5b0000 - 0x00007ffeaf5c8000 	C:\Program Files\Java\jdk-11.0.13\bin\jli.dll
+0x00007ffeb30e0000 - 0x00007ffeb318e000 	C:\Windows\System32\ADVAPI32.dll
+0x00007ffeb3280000 - 0x00007ffeb3323000 	C:\Windows\System32\msvcrt.dll
+0x00007ffeb18a0000 - 0x00007ffeb193e000 	C:\Windows\System32\sechost.dll
+0x00007ffeb29b0000 - 0x00007ffeb2ad0000 	C:\Windows\System32\RPCRT4.dll
+0x00007ffeb2110000 - 0x00007ffeb22bd000 	C:\Windows\System32\USER32.dll
+0x00007ffeb1160000 - 0x00007ffeb1186000 	C:\Windows\System32\win32u.dll
+0x00007ffeb2730000 - 0x00007ffeb2759000 	C:\Windows\System32\GDI32.dll
+0x00007ffeb08a0000 - 0x00007ffeb09b9000 	C:\Windows\System32\gdi32full.dll
+0x00007ffeb0cd0000 - 0x00007ffeb0d6d000 	C:\Windows\System32\msvcp_win.dll
+0x00007ffe487e0000 - 0x00007ffe487f5000 	C:\Program Files\Java\jdk-11.0.13\bin\VCRUNTIME140.dll
+0x00007ffeafb30000 - 0x00007ffeafdd5000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22000.120_none_9d947278b86cc467\COMCTL32.dll
+0x00007ffeaeed0000 - 0x00007ffeaeeda000 	C:\Windows\SYSTEM32\VERSION.dll
+0x00007ffeb3330000 - 0x00007ffeb3361000 	C:\Windows\System32\IMM32.DLL
+0x00007ffe38f80000 - 0x00007ffe3901b000 	C:\Program Files\Java\jdk-11.0.13\bin\msvcp140.dll
+0x00007ffdeff40000 - 0x00007ffdf0a53000 	C:\Program Files\Java\jdk-11.0.13\bin\server\jvm.dll
+0x00007ffeb3370000 - 0x00007ffeb3378000 	C:\Windows\System32\PSAPI.DLL
+0x00007ffe8b500000 - 0x00007ffe8b509000 	C:\Windows\SYSTEM32\WSOCK32.dll
+0x00007ffeb1780000 - 0x00007ffeb17ef000 	C:\Windows\System32\WS2_32.dll
+0x00007ffea49a0000 - 0x00007ffea49d3000 	C:\Windows\SYSTEM32\WINMM.dll
+0x00007ffeaead0000 - 0x00007ffeaeae8000 	C:\Windows\SYSTEM32\kernel.appcore.dll
+0x00007ffea8f10000 - 0x00007ffea8f20000 	C:\Program Files\Java\jdk-11.0.13\bin\verify.dll
+0x00007ffeb01f0000 - 0x00007ffeb0411000 	C:\Windows\SYSTEM32\DBGHELP.DLL
+0x00007ffeb00c0000 - 0x00007ffeb00f1000 	C:\Windows\SYSTEM32\dbgcore.DLL
+0x00007ffeb0c50000 - 0x00007ffeb0ccf000 	C:\Windows\System32\bcryptPrimitives.dll
+0x00007ffe92950000 - 0x00007ffe92978000 	C:\Program Files\Java\jdk-11.0.13\bin\java.dll
+0x00007ffe987f0000 - 0x00007ffe987fa000 	C:\Program Files\Java\jdk-11.0.13\bin\jimage.dll
+0x00007ffe89130000 - 0x00007ffe89146000 	C:\Program Files\Java\jdk-11.0.13\bin\zip.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Java\jdk-11.0.13\bin;C:\Windows\SYSTEM32;C:\Program Files\AVG\Antivirus;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22000.120_none_9d947278b86cc467;C:\Program Files\Java\jdk-11.0.13\bin\server
+
+VM Arguments:
+jvm_args: -Dant.home=C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452 -Dant.library.dir=C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib -Djava.library.path=C:\Users\darkn\eclipse\jee-2021-12\eclipse;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Java\jdk-11.0.13\bin;E:\MirabiliaProject\apache-maven-3.8.4\bin;C:\Program Files\PostgreSQL\10\bin;C:\Program Files\PuTTY\;C:\Windows;C:\Program Files\nodejs\;C:\Users\darkn\AppData\Local\Microsoft\WindowsApps;C:\Users\darkn\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\darkn\AppData\Roaming\npm;C:\Users\darkn\Downloads\pms\tomcat-8.5.34\lib\sigar;C:\Users\darkn\Downloads\pms_new\tomcat-8.5.34\lib\sigar;C:\Tesseract-OCR;C:\Program Files\dotnet\;C:\Users\darkn\AppData\Local\Android\Sdk\platform-tools;C:\Users\darkn\AppData\Local\Microsoft\WindowsApps;C:\Users\darkn\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\darkn\AppData\Roaming\npm;C:\Users\darkn\AppData\Local\GitHubDesktop\bin;.;C:\Users\darkn\eclipse\jee-2021-12\eclipse\configuration\org.eclipse.osgi\749\0\.cp -Dfile.encoding=Cp1252 
+java_command: org.eclipse.ant.internal.launching.remote.InternalAntRunner -Dorg.eclipse.ant.core.ANT_PROCESS_ID=1664804010214 -Declipse.connect.port=58125 -Declipse.pdebuild.home=C:\Users\darkn\eclipse\jee-2021-12\eclipse\..\..\..\.p2\pool\plugins\org.eclipse.pde.build_3.11.100.v20210916-0743\. -Declipse.pdebuild.scripts=C:\Users\darkn\eclipse\jee-2021-12\eclipse\..\..\..\.p2\pool\plugins\org.eclipse.pde.build_3.11.100.v20210916-0743\scripts -Declipse.pdebuild.templates=C:\Users\darkn\eclipse\jee-2021-12\eclipse\..\..\..\.p2\pool\plugins\org.eclipse.pde.build_3.11.100.v20210916-0743\templates -Dant.home=C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452 -logger org.eclipse.ant.internal.launching.remote.logger.RemoteAntBuildLogger -inputhandler org.eclipse.ant.internal.ui.antsupport.inputhandler.ProxyInputHandler -buildfile E:\MirabiliaProject\APMIS\SORMAS-Project\APMIS-Project\sormas-base\build.xml
+java_class_path (initial): C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-antlr.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-apache-bcel.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-apache-bsf.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-apache-log4j.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-apache-oro.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-apache-regexp.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-apache-resolver.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-apache-xalan2.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-commons-logging.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-commons-net.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-imageio.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-jai.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-javamail.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-jdepend.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-jmf.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-jsch.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-junit.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-junit4.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-junitlauncher.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-launcher.jar;C:\Users\darkn\.p2\pool\plugins\org.apache.ant_1.10.12.v20211102-1452\lib\ant-netrexx.jar;C:\Users\darkn\.p2\pool\plugins\org.apache
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 4                                         {product} {ergonomic}
+     uint ConcGCThreads                            = 2                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 8                                         {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 1048576                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 266338304                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 4238344192                                {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 1048576                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 5836300                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122910970                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122910970                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+     bool UseCompressedClassPointers               = true                                 {lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                                 {lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Java\jdk1.8.0_202
+PATH=C:/Program Files/Java/jdk-11.0.13/bin/server;C:/Program Files/Java/jdk-11.0.13/bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Java\jdk-11.0.13\bin;E:\MirabiliaProject\apache-maven-3.8.4\bin;C:\Program Files\PostgreSQL\10\bin;C:\Program Files\PuTTY\;C:\Windows;C:\Program Files\nodejs\;C:\Users\darkn\AppData\Local\Microsoft\WindowsApps;C:\Users\darkn\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\darkn\AppData\Roaming\npm;C:\Users\darkn\Downloads\pms\tomcat-8.5.34\lib\sigar;C:\Users\darkn\Downloads\pms_new\tomcat-8.5.34\lib\sigar;C:\Tesseract-OCR;C:\Program Files\dotnet\;C:\Users\darkn\AppData\Local\Android\Sdk\platform-tools;C:\Users\darkn\AppData\Local\Microsoft\WindowsApps;C:\Users\darkn\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\darkn\AppData\Roaming\npm;C:\Users\darkn\AppData\Local\GitHubDesktop\bin;C:\Windows\system32;
+USERNAME=darkn
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 126 Stepping 5, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 10 , 64 bit Build 22000 (10.0.22000.708)
+Hyper-V role detected
+
+CPU:total 8 (initial active 8) (4 cores per cpu, 2 threads per core) family 6 model 126 stepping 5 microcode 0xa0, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, avx2, aes, clmul, erms, 3dnowpref, lzcnt, ht, tsc, tscinvbit, bmi1, bmi2, adx, evex, sha, fma
+
+Memory: 4k page, system-wide physical 16165M (828M free)
+TotalPageFile size 46599M (AvailPageFile size 1547M)
+current process WorkingSet (physical memory assigned to process): 10M, peak: 10M
+current process commit charge ("private bytes"): 60M, peak: 314M
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (11.0.13+10-LTS-370) for windows-amd64 JRE (11.0.13+10-LTS-370), built on Sep 15 2021 22:10:36 by "mach5one" with MS VC++ 15.9 (VS2017)
+
+END.

@@ -235,7 +235,7 @@ public class MainScreen extends HorizontalLayout {
 					I18nProperties.getCaption(Captions.mainMenuStatistics), VaadinIcons.BAR_CHART);
 		}
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
-			if (permitted(UserType.WHO_USER) ||  permitted(UserType.EOC_USER) && permitted(UserRole.ADMIN)) {
+			if ((permitted(UserType.WHO_USER) ||  permitted(UserType.EOC_USER)) && permitted(UserRole.ADMIN)) {
 				AbstractConfigurationView.registerViews(navigator);
 				menu.addView(
 						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
@@ -270,6 +270,10 @@ public class MainScreen extends HorizontalLayout {
 		menu.addView(LogoutView.class, LogoutView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.actionLogout) + " | " + UserProvider.getCurrent().getUserName(),
 				VaadinIcons.POWER_OFF);
+		
+		menu.addViewx(LogoutTimeoutView.class, LogoutTimeoutView.VIEW_NAME);
+		
+		
 		/*
 		 * //trying to include a javascript from this method MainScreenAbstract dd = new
 		 * MainScreenAbstract(); menu.addComponent(dd);
@@ -350,6 +354,42 @@ public class MainScreen extends HorizontalLayout {
 		setSpacing(false);
 		setMargin(false);
 		setSizeFull();
+		
+		Page.getCurrent().getJavaScript().execute("\n"
+				+ "var timeleft = 1800;\n"
+				+ "\n"
+				+ "        function resetTimer() {\n"
+				+ "            return timeleft = (1800 - timeleft) + timeleft; //reset back to 35 seconds \n"
+				+ "        }\n"
+				+ "\n"
+				+ "        function setupReset() {\n"
+				+ "            document.addEventListener(\"mousedown\", resetTimer);\n"
+				+ "            document.addEventListener(\"keypress\", resetTimer);\n"
+				+ "            document.addEventListener(\"touchmove\", resetTimer);\n"
+				+ "            document.addEventListener(\"onscroll\", resetTimer);\n"
+				+ "            \n"
+				+ "        }\n"
+				+ "\n"
+								+ "        var pageTimer = setInterval(function () {\n"
+				+ "            timeleft --;\n"
+				+ "            setupReset();\n"
+
+				+ "            if (timeleft > 600) {\n"
+				+ "                \n"
+				+ "            } else if (timeleft == 600) {\n"
+				
+				+ "               if (confirm(\"You've been idle for 20 minutes. Are you still working on the system? You will be logged out in 10 minutes after getting this message. Click OK to Logout now!\"))\n"
+				+ "              { window.location.href = window.location.origin + \"sormas-ui/#!logouttimer\"}\n"
+				+ "              else{window.location.reload();};\n"
+				+ "            } else if (timeleft ==5) {\n"
+				+ "                alert(\"Logging you out.\");\n"
+				               
+				+ "            } else if (timeleft == 0) {\n"
+			
+				+ "                window.location.href = window.location.origin+\"/sormas-ui/#!logouttimer\";\n"
+				+ "            }\n"
+				+ "\n"
+				+ "        }, 1000);");
 	}
 
 	private void showSettingsPopup() {

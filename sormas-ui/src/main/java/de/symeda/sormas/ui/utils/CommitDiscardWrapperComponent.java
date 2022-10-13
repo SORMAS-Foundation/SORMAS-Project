@@ -96,10 +96,22 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		void onClone();
 	}
 	
+	public static interface CloseOpenCampaignListener {
+
+		void onCloseOpenCampaignListener();
+	}
+	
+	public static interface OpenCloseCampaignListener {
+
+		void onOpenCloseCampaignListener();
+	}
+	
 	public static interface SaveAndContinueListener {
 
 		void onSaveAndContinue();
 	}
+	
+	
 
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
 	private transient List<CommitandContListener> commitandContListeners = new ArrayList<>();
@@ -107,6 +119,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
 	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
 	private transient List<CloneListener> cloneListeners = new ArrayList<>();
+	private transient List<OpenCloseCampaignListener> openCloseCampaignListeners = new ArrayList<>();
+	private transient List<CloseOpenCampaignListener> closeOpenCampaignListeners = new ArrayList<>();
 	private transient List<SaveAndContinueListener> saveAndContinueListeners = new ArrayList<>();
 	// only to check if it's set
 	private transient CommitListener primaryCommitListener;
@@ -126,6 +140,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Button deleteButton;
 	
 	private Button cloneButton;
+	
+	private Button closeOpenCampaignButton;
+	
+	private Button openCloseCampaignButton;
 	
 	private Button saveAndContinueButton;
 
@@ -443,7 +461,44 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return cloneButton;
 	}
 	
-	
+	//I18nProperties.getCaption(Captions.actionDelete)
+			public Button getCloseOpenCampaignButton(String entityName) {
+				if (closeOpenCampaignButton == null) {
+					closeOpenCampaignButton = ButtonHelper.createButton("open", "Open Campaign", new ClickListener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void buttonClick(ClickEvent event) {
+							onCloseOpenCampaignListener();
+						}
+					}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+					closeOpenCampaignButton.setTabIndex(-1);
+				}
+
+				return closeOpenCampaignButton;
+			}
+		
+			
+			public Button getOpenCloseCampaignButton(String entityName) {
+				if (openCloseCampaignButton == null) {
+					openCloseCampaignButton= ButtonHelper.createButton("close", "Close Campaign", new ClickListener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void buttonClick(ClickEvent event) {
+							onOpenCloseCampaignListener();
+						}
+					}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+					openCloseCampaignButton.setTabIndex(-1);
+				}
+
+				return openCloseCampaignButton;
+			}
+		
+		
+			
 	public Button getCommitandContButton(String entityName) {
 		if (commitandContButton == null) {
 			commitandContButton = ButtonHelper.createButton("commitandCont", "Save and Add New", new ClickListener() {
@@ -867,6 +922,21 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			cloneListeners.add(listener);
 	}
 	
+	public void addCloseOpenListener(CloseOpenCampaignListener listener, String entityName) {
+		if (closeOpenCampaignListeners.isEmpty())
+			buttonsPanel.addComponent(getCloseOpenCampaignButton(entityName), 0);
+		if (!closeOpenCampaignListeners.contains(listener))
+			closeOpenCampaignListeners.add(listener);
+	}
+	
+	public void addOpenCloseListener(OpenCloseCampaignListener listener, String entityName) {
+		if (openCloseCampaignListeners.isEmpty())
+			buttonsPanel.addComponent(getOpenCloseCampaignButton(entityName), 0);
+		if (!openCloseCampaignListeners.contains(listener))
+			openCloseCampaignListeners.add(listener);
+	}
+	
+	
 	public void addCommitandContListener(CommitandContListener listener, String entityName) {
 		if (commitandContListeners.isEmpty())
 			buttonsPanel.addComponent(getCommitandContButton(entityName), 0);
@@ -885,7 +955,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 	
 	
-	//imp save and continue clone
+	//imp save and continue
 	public boolean hasSaveAndContinueListener() {
 		return !saveAndContinueListeners.isEmpty();
 	}
@@ -907,6 +977,29 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		for (CloneListener listener : cloneListeners)
 			listener.onClone();
 	}
+	
+	//impl close and open
+	public boolean hasCloseOpenCampaignListener() {
+		return !closeOpenCampaignListeners.isEmpty();
+	}
+	
+	private void onCloseOpenCampaignListener() {
+		for (CloseOpenCampaignListener listener : closeOpenCampaignListeners)
+			listener.onCloseOpenCampaignListener();
+	}
+	
+	//impl open then close
+		public boolean hasOpenCloseCampaignListener() {
+			return !openCloseCampaignListeners.isEmpty();
+		}
+		
+		private void onOpenCloseCampaignListener() {
+			for (OpenCloseCampaignListener listener : openCloseCampaignListeners)
+				listener.onOpenCloseCampaignListener();
+		}
+		
+	
+	
 	@Override
 	public void setReadOnly(boolean readOnly) {
 		try {

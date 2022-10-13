@@ -443,6 +443,10 @@ public final class RetroProvider {
 			// Check if the versions match
 			String serverApiVersion = versionResponse.body();
 			String appApiVersion = InfoProvider.get().getVersion();
+			HoldVersions versionStorage = new HoldVersions(serverApiVersion, appApiVersion);
+
+
+
 			if (!serverApiVersion.equals(appApiVersion)) {
 				// Retrieve the app URL
 				Response<String> appUrlResponse;

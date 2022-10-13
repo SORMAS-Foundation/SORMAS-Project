@@ -46,6 +46,7 @@ import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.user.UserEditForm.UserNameValidator;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -214,13 +215,23 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 		return PasswordChangeConfirmationComponent;
 	}
 
-	private void showPasswordChangeInternalSuccessPopup(String userName) { // close
+	private void showPasswordChangeInternalSuccessPopup(String userName) { // REST_USER
 		VerticalLayout layout = new VerticalLayout();
 		
+		UserDto userxs = UserProvider.getCurrent().getUser();
+		Label c2Label = new Label("Editing: " + userxs.getUserName());
+		c2Label.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		
+		layout.addComponent(c2Label);
+		layout.addComponent(new Label(""));
 		layout.addComponent(new Label(I18nProperties.getString(Strings.messageChangePassword)));
-		PasswordField passField1 = new PasswordField(I18nProperties.getString(Strings.headingNewPassword));
+		
 		layout.addComponent(new Label("*Must be at least 8 characters"));
 		layout.addComponent(new Label("*Must contain 1 Uppercase and 1 special character "));
+		layout.addComponent(new Label(""));
+		
+		
+		PasswordField passField1 = new PasswordField(I18nProperties.getString(Strings.headingNewPassword));
 		passField1.setSizeFull();
 		passField1.addValidator(new RegexpValidator("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
 				"Password does not meet requirement"));

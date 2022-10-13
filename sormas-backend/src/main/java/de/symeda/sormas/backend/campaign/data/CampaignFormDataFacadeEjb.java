@@ -317,7 +317,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						areaJoin.get(Area.NAME), areaJoin.get(Area.EXTERNAL_ID),
 						regionJoin.get(Region.NAME), regionJoin.get(Region.EXTERNAL_ID),
 						districtJoin.get(District.NAME), districtJoin.get(District.EXTERNAL_ID),
-						communityJoin.get(Community.NAME), communityJoin.get(Community.EXTERNAL_ID),
+						communityJoin.get(Community.NAME), communityJoin.get(Community.CLUSTER_NUMBER), communityJoin.get(Community.EXTERNAL_ID),
 						root.get(CampaignFormData.FORM_DATE),
 				campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE));
 
@@ -370,6 +370,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					break;
 				case CampaignFormDataIndexDto.COMMUNITY:
 					expression = communityJoin.get(Community.NAME);
+					break;
+				case CampaignFormDataIndexDto.COMMUNITYNUMBER:
+					expression = communityJoin.get(Community.CLUSTER_NUMBER);
 					break;
 				case CampaignFormDataIndexDto.CCODE:
 					expression = communityJoin.get(Community.EXTERNAL_ID);

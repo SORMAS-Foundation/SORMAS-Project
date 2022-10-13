@@ -103,7 +103,9 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 	//	if (!includeArchived) {
 	//		filter = cb.and(filter, createBasicFilter(cb, from));
 	//	}
-		cq.where(cb.equal(from.get("externalID"), externalId));
+		
+		//this was changed from externalID
+		cq.where(cb.equal(from.get("externalId"), externalId));
 
 		return em.createQuery(cq).getResultList();
 
