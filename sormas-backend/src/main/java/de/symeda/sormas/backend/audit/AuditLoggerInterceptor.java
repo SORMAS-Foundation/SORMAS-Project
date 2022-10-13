@@ -52,9 +52,9 @@ public class AuditLoggerInterceptor {
 	private static final Set<Class<?>> adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
 
 	/**
-	 * Cache to track all remote beans that must be audited. True indicates audit, false ignore.
+	 * Cache to track all remote beans that should not be audited. True indicates ignore, false audit.
 	 */
-	private static final Map<Class<?>, Boolean> mustAuditRemoteBeanCache = new HashMap<>();
+	private static final Map<Class<?>, Boolean> shouldIgnoreBeanCache = new HashMap<>();
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
@@ -153,23 +153,17 @@ public class AuditLoggerInterceptor {
 
 		// with this we ignore EJB calls which definitely originate from within the backend
 		// as they can never be called direct from outside (i.e., remote) of the backend.
-		// The expression yields false if it IS a local bean, which should not be audited and ignored
+		// The expression yields true if it IS a local bean and should be ignored
 		// (exceptions to this rule, e.g., BaseService::deletePermanent, are handled below)
-		Boolean mustAudit = mustAuditRemoteBeanCache.computeIfAbsent(target, k -> target.getAnnotationsByType(LocalBean.class).length <= 0);
+		Boolean ignoreBeanAudit = shouldIgnoreBeanCache.computeIfAbsent(target, k -> target.getAnnotationsByType(LocalBean.class).length > 0);
 
-		if (Boolean.TRUE.equals(mustAudit)) {
-			// we have a relevant method and a remote bean -> audit remote calls directly
-			return backendAuditing(context, calledMethod);
-		}
-
-		// if we get here, we have a local bean call. We need to check if it is a method which should be audited
-		if (allowedLocalAuditMethods.contains(calledMethod)) {
-			// we have a relevant method and a local bean -> audit local calls directly
-			return backendAuditing(context, calledMethod);
-		} else {
+		if (Boolean.TRUE.equals(ignoreBeanAudit) && !allowedLocalAuditMethods.contains(calledMethod)) {
 			// we have a local bean call which should not be audited -> ignore
 			return context.proceed();
 		}
+
+		// we have a relevant method and a local bean -> audit local calls directly
+		return backendAuditing(context, calledMethod);
 	}
 
 	private Object backendAuditing(InvocationContext context, Method calledMethod) throws Exception {
