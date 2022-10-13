@@ -18,12 +18,12 @@ package de.symeda.sormas.app.pathogentest.edit;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -102,7 +102,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		List<DiseaseVariant> diseaseVariants = record.getTestedDisease() != null
 			? DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getTestedDisease())
 			: new ArrayList<>();
-		diseaseVariantList = DataUtils.toItems(diseaseVariants);
+		diseaseVariantList = DataUtils.toItems(diseaseVariants, false);
 		if (record.getTestedDiseaseVariant() != null && !diseaseVariants.contains(record.getTestedDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
 		}

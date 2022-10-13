@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -39,6 +40,7 @@ import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -47,6 +49,9 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless
 @LocalBean
 public class OutbreakService extends AdoServiceWithUserFilter<Outbreak> {
+
+	@EJB
+	private DiseaseConfigurationService diseaseConfigurationService;
 
 	public OutbreakService() {
 		super(Outbreak.class);
@@ -63,7 +68,9 @@ public class OutbreakService extends AdoServiceWithUserFilter<Outbreak> {
 		}
 
 		Predicate filter = createUserFilter(cb, cq, from);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(criteria, cb, from));
+		Predicate activeDiseasePredicate = cb.exists(diseaseConfigurationService.existActiveDisease(cq, cb, from, Outbreak.DISEASE));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(criteria, cb, from), activeDiseasePredicate);
+
 		if (filter != null) {
 			cq.where(filter);
 		}

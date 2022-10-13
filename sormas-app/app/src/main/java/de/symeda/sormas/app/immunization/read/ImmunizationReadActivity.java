@@ -24,12 +24,14 @@ import android.view.MenuItem;
 import java.util.List;
 
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -116,7 +118,8 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
         final MenuItem editMenu = getEditMenu();
 
         if (editMenu != null) {
-            if (ImmunizationEditAuthorization.isImmunizationEditAllowed(selectedImmunization)) {
+            if (ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_EDIT) &&
+                    ImmunizationEditAuthorization.isImmunizationEditAllowed(selectedImmunization)) {
                 editMenu.setVisible(true);
             } else {
                 editMenu.setVisible(false);

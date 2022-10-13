@@ -729,6 +729,15 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
     When(
+        "I check that Share option is not visible in Bulk Actions dropdown in Case Directory for DE specific",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(SHARE_OPTION_BULK_ACTION_COMBOBOX, 3),
+              "Share is visible!");
+          softly.assertAll();
+        });
+    When(
         "I collect the leading case UUID displayed on Case Directory Page",
         () -> leadingCaseUUID = getCaseIDByIndex(1));
     And(

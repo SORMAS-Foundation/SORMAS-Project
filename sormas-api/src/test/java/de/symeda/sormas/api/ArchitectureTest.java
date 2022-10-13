@@ -2,6 +2,7 @@ package de.symeda.sormas.api;
 
 import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.name;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static de.symeda.sormas.api.audit.Constants.createPrefix;
 import static de.symeda.sormas.api.audit.Constants.deletePrefix;
 import static de.symeda.sormas.api.audit.Constants.executePrefix;
@@ -19,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.ArchUnitRunner;
@@ -28,6 +30,8 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 @RunWith(ArchUnitRunner.class)
@@ -90,4 +94,22 @@ public class ArchitectureTest {
 		.should()
 		.implement(HasUuid.class);
 
+	@ArchTest
+	public static final ArchRule testDtoClassesWithUuidFieldMustBeAnnotatedWithAuditedClass = classes().that()
+		.resideInAPackage("de.symeda.sormas.api.(*)..")
+		.and()
+		.containAnyFieldsThat(name("uuid"))
+		.should()
+		.beAnnotatedWith(AuditedClass.class)
+		.orShould()
+		.beAssignableTo(CanBeAnnotated.Predicates.annotatedWith(AuditedClass.class)); // covers inheritance
+
+	@ArchTest
+	public static final ArchRule testUuidDtoFieldMustBeAnnotatedWithAuditInclude = fields().that()
+		.areDeclaredInClassesThat()
+		.resideInAPackage("de.symeda.sormas.api.(*)..")
+		.and()
+		.haveName("uuid")
+		.should()
+		.beAnnotatedWith(AuditInclude.class);
 }

@@ -203,11 +203,13 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
 
 		User user = ConfigProvider.getUser();
-		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY) || getPrimaryData().getHealthFacility() == null) {
 			// Hospital Informants are not allowed to change place of stay
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
+
+		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariantList.isEmpty() ? GONE : VISIBLE);
 	}
 
 	private void updateCaseConfirmationBasis(FragmentCaseEditLayoutBinding contentBinding) {
@@ -339,7 +341,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 		List<DiseaseVariant> diseaseVariants =
 			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
-		diseaseVariantList = DataUtils.toItems(diseaseVariants);
+		diseaseVariantList = DataUtils.toItems(diseaseVariants, false);
 		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
 		}

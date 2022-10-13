@@ -94,9 +94,7 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 		return toDto(shareInfo);
 	}
 
-	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE,
-		UserRight._SORMAS_TO_SORMAS_PROCESS })
+	@PermitAll
 	public SormasToSormasShareInfoDto toDto(SormasToSormasShareInfo source) {
 		if (source == null) {
 			return null;

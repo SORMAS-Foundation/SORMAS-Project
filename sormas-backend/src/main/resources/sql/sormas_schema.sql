@@ -12143,4 +12143,11 @@ ALTER TABLE testreport_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (493, 'Introduce sample reports #9109');
 
+-- 2022-10-12 [S2S] Add a duplicate detection warning when sharing a case with another instance #9527
+
+ALTER TABLE sormastosormasorigininfo ADD COLUMN pseudonymizeddata BOOLEAN DEFAULT false;
+ALTER TABLE sormastosormasorigininfo_history ADD COLUMN pseudonymizeddata BOOLEAN DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (494, '[S2S] Add a duplicate detection warning when sharing a case with another instance #9527');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

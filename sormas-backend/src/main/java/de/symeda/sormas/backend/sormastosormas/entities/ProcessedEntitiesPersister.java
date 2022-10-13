@@ -26,6 +26,7 @@ import org.apache.commons.collections.CollectionUtils;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
@@ -114,6 +115,28 @@ public class ProcessedEntitiesPersister {
 		}
 	}
 
+	public DuplicateResult checkForSimilarEntities(SormasToSormasDto processedData, ShareDataExistingEntities existingEntities) {
+		List<SormasToSormasCaseDto> cases = processedData.getCases();
+		if (CollectionUtils.isNotEmpty(cases)) {
+			for (SormasToSormasCaseDto c : cases) {
+				if (!existingEntities.getCases().containsKey(c.getEntity().getUuid())) {
+					return caseDataPersister.checkForSimilarEntities(c);
+				}
+			}
+		}
+
+		List<SormasToSormasContactDto> contacts = processedData.getContacts();
+		if (CollectionUtils.isNotEmpty(contacts)) {
+			for (SormasToSormasContactDto c : contacts) {
+				if (!existingEntities.getContacts().containsKey(c.getEntity().getUuid())) {
+					return contactDataPersister.checkForSimilarEntities(c);
+				}
+			}
+		}
+
+		return DuplicateResult.NONE;
+	}
+
 	public void persistSyncData(
 		SormasToSormasDto processedData,
 		SormasToSormasOriginInfoDto originInfoDto,
@@ -173,4 +196,5 @@ public class ProcessedEntitiesPersister {
 			eventFacade.syncSharesAsync(shareTreeCriteria);
 		}
 	}
+
 }

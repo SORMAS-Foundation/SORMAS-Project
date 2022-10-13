@@ -98,6 +98,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		xAxisInfo = axisInfo.entrySet()
 			.stream()
+			.filter(es -> es.getKey() != null && es.getValue() != null)
 			.sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getValue(), o2.getValue()))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 

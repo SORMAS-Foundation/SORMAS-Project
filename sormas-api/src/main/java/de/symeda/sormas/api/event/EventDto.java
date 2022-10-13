@@ -148,7 +148,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	private Date endDate;
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDateTime;
-	@NotNull(message = Validations.validReportingUser)
+
 	private UserReferenceDto reportingUser;
 	private Date evolutionDate;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
