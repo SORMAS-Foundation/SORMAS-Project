@@ -3971,7 +3971,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		IterableHelper.executeBatched(
 			caseUuids,
 			ModelConstants.PARAMETER_LIMIT,
-			e -> totalCount.addAndGet(countCasesWithMissingContactInfo(caseUuids, messageType)));
+			batchedUuids -> totalCount.addAndGet(countCasesWithMissingContactInfo(batchedUuids, messageType)));
 
 		return totalCount.get();
 	}
