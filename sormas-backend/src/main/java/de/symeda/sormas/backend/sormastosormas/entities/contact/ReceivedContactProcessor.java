@@ -76,7 +76,7 @@ public class ReceivedContactProcessor
 		updateReportingUser(contact, existingData);
 
 		if (originInfo.isOwnershipHandedOver()) {
-			sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(contact, configFacade.getS2SConfig().getDistrictExternalId());
+			sormasToSormasEntitiesHelper.updateReceivedContactResponsibleDistrict(contact);
 		}
 	}
 
