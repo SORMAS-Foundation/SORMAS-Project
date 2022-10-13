@@ -874,7 +874,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, jurisdictionFlags.getInJurisdiction(), s -> {
 				pseudonymizer
-					.pseudonymizeUser(SampleDto.class, SampleDto.REPORTING_USER, source.getReportingUser(), currentUser, s::setReportingUser);
+					.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					s.getAssociatedCase(),
 					s.getAssociatedContact(),

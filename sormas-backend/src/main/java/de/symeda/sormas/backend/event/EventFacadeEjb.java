@@ -1147,8 +1147,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, e -> {
 				pseudonymizer.pseudonymizeUser(
-					EventDto.class,
-					EventDto.REPORTING_USER,
 					event.getReportingUser(),
 					userService.getCurrentUser(),
 					dto::setReportingUser);

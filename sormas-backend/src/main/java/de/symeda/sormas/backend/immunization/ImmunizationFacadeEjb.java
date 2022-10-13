@@ -379,8 +379,6 @@ public class ImmunizationFacadeEjb
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(
-					ImmunizationDto.class,
-					ImmunizationDto.REPORTING_USER,
 					source.getReportingUser(),
 					currentUser,
 					dto::setReportingUser);

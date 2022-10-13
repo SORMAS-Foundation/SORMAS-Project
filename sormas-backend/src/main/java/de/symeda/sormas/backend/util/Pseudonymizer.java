@@ -65,8 +65,6 @@ public class Pseudonymizer extends DtoPseudonymizer {
 	}
 
 	public boolean pseudonymizeUser(
-		Class<?> dtoClass,
-		String dtoFieldName,
 		User dtoUser,
 		User currentUser,
 		Consumer<UserReferenceDto> setPseudonymizedValue) {

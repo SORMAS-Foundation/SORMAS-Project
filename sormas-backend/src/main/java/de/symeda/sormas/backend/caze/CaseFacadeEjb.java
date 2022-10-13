@@ -658,8 +658,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			pseudonymizer.pseudonymizeDto(CaseIndexDetailedDto.class, caze, isInJurisdiction, c -> {
 				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
 				pseudonymizer.pseudonymizeUser(
-					CaseDataDto.class,
-					CaseDataDto.REPORTING_USER,
 					userService.getByUuid(caze.getReportingUser().getUuid()),
 					userService.getCurrentUser(),
 					caze::setReportingUser);
@@ -2676,10 +2674,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			pseudonymizer.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer
-					.pseudonymizeUser(CaseDataDto.class, CaseDataDto.REPORTING_USER, source.getReportingUser(), currentUser, dto::setReportingUser);
+					.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 				pseudonymizer.pseudonymizeUser(
-					CaseDataDto.class,
-					CaseDataDto.CLASSIFICATION_USER,
 					source.getClassificationUser(),
 					currentUser,
 					dto::setClassificationUser);

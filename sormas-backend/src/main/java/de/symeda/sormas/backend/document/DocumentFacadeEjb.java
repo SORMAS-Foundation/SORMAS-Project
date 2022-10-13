@@ -189,8 +189,6 @@ public class DocumentFacadeEjb implements DocumentFacade {
 				dto,
 				inJurisdiction,
 				(e) -> pseudonymizer.pseudonymizeUser(
-					DocumentDto.class,
-					DocumentDto.UPLOADING_USER,
 					document.getUploadingUser(),
 					userService.getCurrentUser(),
 					dto::setUploadingUser));
