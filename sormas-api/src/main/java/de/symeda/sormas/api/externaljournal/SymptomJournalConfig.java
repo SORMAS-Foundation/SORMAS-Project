@@ -3,6 +3,10 @@ package de.symeda.sormas.api.externaljournal;
 import java.io.Serializable;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
+// todo discuss
 public class SymptomJournalConfig implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -642391732124051183L;

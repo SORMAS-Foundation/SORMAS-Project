@@ -2,10 +2,12 @@ package de.symeda.sormas.api.sormastosormas;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@AuditedClass(includeAllFields = true)
 public class SormasServerDescriptor implements Serializable {
 
 	private static final long serialVersionUID = 42341345234L;

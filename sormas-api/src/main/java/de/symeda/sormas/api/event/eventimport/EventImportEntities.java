@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,20 +21,26 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
+@AuditedClass
 public class EventImportEntities implements Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
 	@Valid
+	@AuditInclude
 	private final EventDto event;
 	@Valid
+	@AuditInclude
 	private final List<EventParticipantDto> eventParticipants;
 	@Valid
+	@AuditInclude
 	private final List<EventGroupReferenceDto> eventGroupReferences;
 
 	public EventImportEntities(UserReferenceDto reportingUser) {

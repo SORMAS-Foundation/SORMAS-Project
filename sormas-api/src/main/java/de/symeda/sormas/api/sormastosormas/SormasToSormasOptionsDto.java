@@ -22,8 +22,10 @@ import java.io.Serializable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
+@AuditedClass(includeAllFields = true)
 public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "SormasToSormasOptions";

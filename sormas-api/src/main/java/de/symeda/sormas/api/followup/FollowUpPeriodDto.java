@@ -15,9 +15,12 @@
 
 package de.symeda.sormas.api.followup;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.util.Date;
 
+@AuditedClass
 public class FollowUpPeriodDto implements Serializable {
 
 	private final Date followUpStartDate;

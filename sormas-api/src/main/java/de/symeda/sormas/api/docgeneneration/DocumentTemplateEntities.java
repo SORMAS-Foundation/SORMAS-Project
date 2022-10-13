@@ -15,10 +15,13 @@
 
 package de.symeda.sormas.api.docgeneneration;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@AuditedClass
 public class DocumentTemplateEntities implements Serializable {
 
 	private static final long serialVersionUID = 4264467192868446193L;

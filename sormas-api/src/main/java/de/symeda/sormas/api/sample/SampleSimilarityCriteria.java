@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.util.Date;
 
+// todo BaseCriteria
+@AuditedClass(includeAllFields = true)
 public class SampleSimilarityCriteria implements Serializable {
 
 	private static final long serialVersionUID = -2051359287159310211L;

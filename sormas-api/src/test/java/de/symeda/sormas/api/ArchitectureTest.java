@@ -3,6 +3,7 @@ package de.symeda.sormas.api;
 import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.name;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static de.symeda.sormas.api.audit.Constants.createPrefix;
 import static de.symeda.sormas.api.audit.Constants.deletePrefix;
 import static de.symeda.sormas.api.audit.Constants.executePrefix;
@@ -112,4 +113,90 @@ public class ArchitectureTest {
 		.haveName("uuid")
 		.should()
 		.beAnnotatedWith(AuditInclude.class);
+
+	@ArchTest
+	public static final ArchRule testTypesInFacadeAreAuditable = methods().that()
+		.areDeclaredInClassesThat()
+		.haveSimpleNameEndingWith("Facade")
+		.should(new ArchCondition<JavaMethod>("have parameters which classes be annotated with @AuditedClass") {
+
+// todo return type
+			@Override
+			public void check(JavaMethod javaMethod, ConditionEvents conditionEvents) {
+				javaMethod.getParameters().forEach(parameter -> {
+					JavaClass rawType = parameter.getRawType();
+					if (!mustAudit(rawType)) {
+						return;
+					}
+					conditionEvents.add(
+						SimpleConditionEvent.violated(
+							javaMethod,
+							"Parameter " + parameter + " of type " + rawType.getName() + " is not annotated with @AuditedClass"));
+
+				});
+
+				final JavaClass rawReturnType = javaMethod.getRawReturnType();
+				if (!mustAudit(rawReturnType)) {
+					return;
+				}
+				conditionEvents.add(
+					SimpleConditionEvent.violated(
+						javaMethod,
+						String.format("Return type %s of method %s is not annotated with @AuditedClass", rawReturnType, javaMethod)));
+
+			}
+
+			private boolean mustAudit(JavaClass rawType) {
+				String rawTypeName = rawType.getName();
+				// [L shows up in case of varargs
+				if (rawTypeName.startsWith("[L")) {
+					String componentTypeName = rawTypeName.substring(2, rawTypeName.length() - 1);
+					try {
+						Class<?> clazz = getClass().getClassLoader().loadClass(componentTypeName);
+						if (clazz.isEnum()) {
+							return false;
+						}
+					} catch (ClassNotFoundException e) {
+						throw new RuntimeException(e);
+					}
+				}
+
+				// ignore enums as they can just be audited with toString()
+				if (rawType.isEnum()) {
+					return false;
+				}
+
+				// violated rule if parameter is a list and the list type is not annotated with @AuditedClass
+				final Class<?> reflect = rawType.reflect();
+				// todo collections etc are ignored with this, but I was not able to get access the concrete generic
+				//  type to check it further.
+				if (rawTypeName.startsWith("java.") || reflect.isPrimitive() || rawTypeName.startsWith("com.fasterxml.jackson.databind.JsonNode")) {
+					return false;
+				}
+
+				// ignore primitive arrays
+				if (rawType.isArray() && rawType.getComponentType().isPrimitive()) {
+					return false;
+				}
+
+				// ignore string arrays as they just can be audited with
+				if (rawType.isArray() && rawType.getComponentType().isEquivalentTo(String.class)) {
+					return false;
+				}
+
+				// ignore two-dimensional string arrays as they just can be audited with toString()
+				if (rawType.isArray()
+					&& rawType.getComponentType().isArray()
+					&& rawType.getComponentType().getComponentType().isEquivalentTo(String.class)) {
+					return false;
+				}
+
+				// ignore byte arrays
+				if (rawType.isArray() && rawType.getComponentType().isEquivalentTo(byte.class)) {
+					return false;
+				}
+				return !rawType.isAnnotatedWith(AuditedClass.class)
+					&& !rawType.isAssignableTo(CanBeAnnotated.Predicates.annotatedWith(AuditedClass.class));
+			}
+		});
 }

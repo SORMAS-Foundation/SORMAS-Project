@@ -8,9 +8,10 @@ import java.lang.annotation.Target;
 /**
  * This annotation is used to mark DTO as auditable. This annotation being present causes the log line to contain at
  * least the class name. If more information is required, the fields to be included in the log line can be marked with
- * {@link AuditInclude}.
+ * {@link AuditInclude}. If `includeAllFields` is set to true, all fields will be included in the log line.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface AuditedClass {
+    public boolean includeAllFields() default false;
 }

@@ -3,12 +3,17 @@ package de.symeda.sormas.api.externalmessage;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public class ExternalMessageResult<T> implements Serializable {
 
 	private static final long serialVersionUID = 6134397796300281952L;
 
 	private T value;
 	private Date synchronizationDate;
+	@AuditInclude
 	private boolean success = true;
 	private String error = "";
 

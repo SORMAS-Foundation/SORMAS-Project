@@ -42,6 +42,7 @@ import com.google.common.base.CharMatcher;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
@@ -187,6 +188,7 @@ public final class DataHelper {
 		return uuid.substring(0, 6).toUpperCase();
 	}
 
+	@AuditedClass(includeAllFields = true)
 	public static class Pair<K, V> implements Serializable {
 
 		private static final long serialVersionUID = 7135988167451005820L;

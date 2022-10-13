@@ -22,6 +22,7 @@ import static de.symeda.sormas.api.audit.Constants.readPrefix;
 import static de.symeda.sormas.api.audit.Constants.updatePrefix;
 import static org.reflections.ReflectionUtils.Fields;
 import static org.reflections.ReflectionUtils.Methods;
+import static org.reflections.ReflectionUtils.SuperTypes;
 import static org.reflections.scanners.Scanners.FieldsAnnotated;
 import static org.reflections.scanners.Scanners.MethodsAnnotated;
 import static org.reflections.scanners.Scanners.SubTypes;
@@ -68,6 +69,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import de.symeda.sormas.api.audit.AuditExclude;
 import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
@@ -591,7 +593,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		String fieldValue = null;
 
-		List<Field> fields = getFieldsAnnotatedWithAuditInclude(object.getClass());
+		List<Field> fields = getFieldsAnnotatedWithAuditIncludeOrIncludeAll(object.getClass());
 		if (!fields.isEmpty()) {
 			fieldValue = printFromFieldAnnotations(object, fields);
 		}
@@ -680,9 +682,22 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		});
 	}
 
-	private List<Field> getFieldsAnnotatedWithAuditInclude(Class<?> type) {
+	private List<Field> getFieldsAnnotatedWithAuditIncludeOrIncludeAll(Class<?> type) {
 		return cachedAnnotatedFields.computeIfAbsent(type, k -> {
-			Set<Field> fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditInclude.class)));
+			// we already now that this type is annotated with @AuditedClass, so we
+			boolean includeAllFields = !reflections.get(
+				SuperTypes.of(type).filter(t -> t.isAnnotationPresent(AuditedClass.class) && t.getAnnotation(AuditedClass.class).includeAllFields()))
+				.isEmpty();
+
+			Set<Field> fieldsFound;
+
+			if (includeAllFields) {
+				fieldsFound = reflections
+					.get(Fields.of(type).filter(f -> !f.toString().contains("static final") && !f.isAnnotationPresent(AuditExclude.class)));
+			} else {
+				fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditInclude.class)));
+			}
+
 			final ArrayList<Field> fields = new ArrayList<>(fieldsFound);
 			return fields.stream().sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
 		});

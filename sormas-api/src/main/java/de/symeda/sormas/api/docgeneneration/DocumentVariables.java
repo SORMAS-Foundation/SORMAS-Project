@@ -1,11 +1,14 @@
 package de.symeda.sormas.api.docgeneneration;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@AuditedClass
 public class DocumentVariables implements Serializable {
 
 	private final Set<String> variables;

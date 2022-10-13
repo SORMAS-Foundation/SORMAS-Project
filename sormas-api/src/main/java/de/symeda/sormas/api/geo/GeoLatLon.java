@@ -17,8 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.geo;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 
+@AuditedClass
 public class GeoLatLon implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 6016397482506424761L;

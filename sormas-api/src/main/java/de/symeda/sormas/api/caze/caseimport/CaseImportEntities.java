@@ -15,32 +15,39 @@
 
 package de.symeda.sormas.api.caze.caseimport;
 
-import de.symeda.sormas.api.vaccination.VaccinationDto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-
+import de.symeda.sormas.api.vaccination.VaccinationDto;
+@AuditedClass
 public class CaseImportEntities implements Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
 	@Valid
+	@AuditInclude
 	private final PersonDto person;
 	@Valid
+	@AuditInclude
 	private final CaseDataDto caze;
 	@Valid
+	@AuditInclude
 	private final List<SampleDto> samples;
 	@Valid
+	@AuditInclude
 	private final List<PathogenTestDto> pathogenTests;
 	@Valid
+	@AuditInclude
 	private final List<VaccinationDto> vaccinations;
 
 	public CaseImportEntities(UserReferenceDto reportingUser) {
