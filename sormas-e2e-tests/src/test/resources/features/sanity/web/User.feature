@@ -235,3 +235,11 @@ Feature: Create user
     When I fill phone number with a wrong format in the Edit User Page
     And I click on the Save button in the Edit User Page
     Then I verify the error message is displayed in the Edit User Page
+
+  @tmsLink=SORDEV-12303 @env_main
+  Scenario: Edit and create user roles
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on User roles tab from User Management Page
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template

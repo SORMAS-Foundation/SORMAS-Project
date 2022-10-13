@@ -41,4 +41,5 @@ public class UserManagementPage {
   public static final By USERS_COUNTER_USER_MANAGEMENT =
       By.cssSelector("[class*='v-label-align-right v-label-undef-w']");
   public static final By LOADING_INDICATOR = By.cssSelector("[class='v-loading-indicator first']");
+  public static final By USER_ROLES_TAB = By.cssSelector("div#tab-user-userroles");
 }

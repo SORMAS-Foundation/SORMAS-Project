@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.users;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.*;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
 
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
@@ -190,6 +191,14 @@ public class UserManagementSteps implements En {
                       numberOfTotalUsers == numberOfSpecificUsers,
                       "User Roles Filer ComboBox failed in User Management Page"),
               10);
+        });
+
+    And(
+        "^I click on User roles tab from User Management Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(USER_ROLES_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(USER_ROLES_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_RIGHTS_INPUT);
         });
   }
 
