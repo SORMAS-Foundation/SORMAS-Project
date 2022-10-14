@@ -162,7 +162,7 @@ public class AuditLoggerInterceptor {
 			return context.proceed();
 		}
 
-		// we have a relevant method and a local bean -> audit local calls directly
+		// we have a relevant method of a remote bean or a local bean that is allowed
 		return backendAuditing(context, calledMethod);
 	}
 
