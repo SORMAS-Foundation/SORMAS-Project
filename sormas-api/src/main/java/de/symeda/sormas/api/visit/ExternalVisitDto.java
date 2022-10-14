@@ -27,8 +27,8 @@ import de.symeda.sormas.api.utils.SensitiveData;
 /**
  * The class ExternalVisitDto.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @AuditedClass
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExternalVisitDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7909093498222091926L;

@@ -14,7 +14,7 @@ public class SormasToSormasConfig implements Serializable {
 	private static final long serialVersionUID = -7981351672462016280L;
 
 	// We normally just send encrypted data DTOs between instances which already carry the org id of the sender, however,
-	// this does not work for GET request. Therefore we include a query parameter in this case. This variable cannot
+	// this does not work for GET request. Therefore, we include a query parameter in this case. This variable cannot
 	// resort in the REST client, as it needs to be shared between REST client and sormas-rest.
 	public static final String SENDER_SERVER_ID = "senderServerId";
 
@@ -44,10 +44,8 @@ public class SormasToSormasConfig implements Serializable {
 	private String oidcRealm;
 	private String oidcClientId;
 	private String oidcClientSecret;
-
 	private String keyPrefix;
 	@AuditInclude
-
 	private String districtExternalId;
 
 	public String getId() {

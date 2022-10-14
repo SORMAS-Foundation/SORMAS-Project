@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @AuditedClass
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExternalJournalSyncResponseDto implements Serializable {
 
 	@AuditInclude

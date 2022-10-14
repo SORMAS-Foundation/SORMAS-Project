@@ -118,12 +118,12 @@ public class ArchitectureTest {
 	public static final ArchRule testTypesInFacadeAreAuditable = methods().that()
 		.areDeclaredInClassesThat()
 		.haveSimpleNameEndingWith("Facade")
-		.should(new ArchCondition<JavaMethod>("have parameters which classes be annotated with @AuditedClass") {
+		.should(new ArchCondition<JavaMethod>("have parameters and return type which is annotated with @AuditedClass") {
 
-// todo return type
 			@Override
 			public void check(JavaMethod javaMethod, ConditionEvents conditionEvents) {
 				javaMethod.getParameters().forEach(parameter -> {
+					// audit parameters
 					JavaClass rawType = parameter.getRawType();
 					if (!mustAudit(rawType)) {
 						return;
@@ -135,6 +135,7 @@ public class ArchitectureTest {
 
 				});
 
+				// audit return type
 				final JavaClass rawReturnType = javaMethod.getRawReturnType();
 				if (!mustAudit(rawReturnType)) {
 					return;
@@ -153,6 +154,7 @@ public class ArchitectureTest {
 					String componentTypeName = rawTypeName.substring(2, rawTypeName.length() - 1);
 					try {
 						Class<?> clazz = getClass().getClassLoader().loadClass(componentTypeName);
+						// only case right now for varargs is enums so this is fine for now...
 						if (clazz.isEnum()) {
 							return false;
 						}
@@ -169,7 +171,8 @@ public class ArchitectureTest {
 				// violated rule if parameter is a list and the list type is not annotated with @AuditedClass
 				final Class<?> reflect = rawType.reflect();
 				// todo collections etc are ignored with this, but I was not able to get access the concrete generic
-				//  type to check it further.
+				//  type to check it further. This means we need to resort to warnings printed about @AuditedClass
+				//  being missing in the concrete type.
 				if (rawTypeName.startsWith("java.") || reflect.isPrimitive() || rawTypeName.startsWith("com.fasterxml.jackson.databind.JsonNode")) {
 					return false;
 				}
@@ -179,12 +182,12 @@ public class ArchitectureTest {
 					return false;
 				}
 
-				// ignore string arrays as they just can be audited with
+				// ignore string arrays as they just can be audited with toString() if need be
 				if (rawType.isArray() && rawType.getComponentType().isEquivalentTo(String.class)) {
 					return false;
 				}
 
-				// ignore two-dimensional string arrays as they just can be audited with toString()
+				// ignore two-dimensional string arrays as they just can be audited with toString() if need be
 				if (rawType.isArray()
 					&& rawType.getComponentType().isArray()
 					&& rawType.getComponentType().getComponentType().isEquivalentTo(String.class)) {

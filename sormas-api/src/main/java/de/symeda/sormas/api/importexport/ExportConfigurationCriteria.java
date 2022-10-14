@@ -15,13 +15,15 @@
 
 package de.symeda.sormas.api.importexport;
 
+import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
-// todo criteria?
-@AuditedClass(includeAllFields = true)
+
+@AuditedClass
 public class ExportConfigurationCriteria implements Serializable {
 
+	@AuditInclude
 	private ExportType exportType;
 
 	public ExportConfigurationCriteria() {

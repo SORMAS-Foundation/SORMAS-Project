@@ -14,8 +14,8 @@ import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @AuditedClass
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CampaignDiagramSeries implements Serializable {
 
 	private static final long serialVersionUID = 1420672609912364060L;

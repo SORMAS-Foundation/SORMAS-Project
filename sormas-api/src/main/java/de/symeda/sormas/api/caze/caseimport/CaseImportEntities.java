@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +21,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -29,25 +28,20 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
-@AuditedClass
+@AuditedClass(includeAllFields = true)
 public class CaseImportEntities implements Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
 	@Valid
-	@AuditInclude
 	private final PersonDto person;
 	@Valid
-	@AuditInclude
 	private final CaseDataDto caze;
 	@Valid
-	@AuditInclude
 	private final List<SampleDto> samples;
 	@Valid
-	@AuditInclude
 	private final List<PathogenTestDto> pathogenTests;
 	@Valid
-	@AuditInclude
 	private final List<VaccinationDto> vaccinations;
 
 	public CaseImportEntities(UserReferenceDto reportingUser) {

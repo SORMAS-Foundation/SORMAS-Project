@@ -21,26 +21,22 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-@AuditedClass
+@AuditedClass(includeAllFields = true)
 public class EventImportEntities implements Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
 	@Valid
-	@AuditInclude
 	private final EventDto event;
 	@Valid
-	@AuditInclude
 	private final List<EventParticipantDto> eventParticipants;
 	@Valid
-	@AuditInclude
 	private final List<EventGroupReferenceDto> eventGroupReferences;
 
 	public EventImportEntities(UserReferenceDto reportingUser) {

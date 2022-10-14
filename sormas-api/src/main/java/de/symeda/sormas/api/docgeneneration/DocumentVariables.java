@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.docgeneneration;
 
+import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
@@ -39,6 +40,7 @@ public class DocumentVariables implements Serializable {
 		return entityName != null && usedEntities.contains(entityName.toLowerCase());
 	}
 
+	@AuditInclude
 	public Set<String> getUsedEntities() {
 		return usedEntities;
 	}

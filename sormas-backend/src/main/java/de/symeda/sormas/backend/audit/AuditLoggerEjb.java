@@ -684,7 +684,6 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 	private List<Field> getFieldsAnnotatedWithAuditIncludeOrIncludeAll(Class<?> type) {
 		return cachedAnnotatedFields.computeIfAbsent(type, k -> {
-			// we already now that this type is annotated with @AuditedClass, so we
 			boolean includeAllFields = !reflections.get(
 				SuperTypes.of(type).filter(t -> t.isAnnotationPresent(AuditedClass.class) && t.getAnnotation(AuditedClass.class).includeAllFields()))
 				.isEmpty();

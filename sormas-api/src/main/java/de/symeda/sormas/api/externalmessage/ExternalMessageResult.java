@@ -10,8 +10,9 @@ import de.symeda.sormas.api.audit.AuditedClass;
 public class ExternalMessageResult<T> implements Serializable {
 
 	private static final long serialVersionUID = 6134397796300281952L;
-
+	@AuditInclude
 	private T value;
+	@AuditInclude
 	private Date synchronizationDate;
 	@AuditInclude
 	private boolean success = true;
