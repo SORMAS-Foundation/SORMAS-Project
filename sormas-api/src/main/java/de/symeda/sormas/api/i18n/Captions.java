@@ -92,6 +92,10 @@ public interface Captions {
 	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
 	String actionNoAll = "actionNoAll";
+	String actionOkAndGoToContactDetails = "actionOkAndGoToContactDetails";
+	String actionOkAndGoToContactDirectory = "actionOkAndGoToContactDirectory";
+	String actionOkAndGoToMerge = "actionOkAndGoToMerge";
+	String actionOkAndGoToPersonDirectory = "actionOkAndGoToPersonDirectory";
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";

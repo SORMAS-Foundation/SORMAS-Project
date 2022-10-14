@@ -10,7 +10,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
@@ -49,9 +51,12 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 	}
 
 	private void addEditButton(ImmunizationListEntry listEntry) {
-		listEntry.addEditButton(
-			"edit-immunization-" + listEntry.getImmunizationEntry().getUuid(),
-			(Button.ClickListener) event -> ControllerProvider.getImmunizationController()
-				.navigateToImmunization(listEntry.getImmunizationEntry().getUuid()));
+		UserProvider currentUser = UserProvider.getCurrent();
+		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_EDIT)) {
+			listEntry.addEditButton(
+					"edit-immunization-" + listEntry.getImmunizationEntry().getUuid(),
+					(Button.ClickListener) event -> ControllerProvider.getImmunizationController()
+							.navigateToImmunization(listEntry.getImmunizationEntry().getUuid()));
+		}
 	}
 }

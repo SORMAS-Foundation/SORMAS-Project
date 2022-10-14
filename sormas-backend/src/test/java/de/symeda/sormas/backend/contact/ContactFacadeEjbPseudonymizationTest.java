@@ -100,7 +100,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			JurisdictionLevel.NATION,
 			UserRight.CONTACT_VIEW,
 			UserRight.CONTACT_EDIT,
-			UserRight.CASE_VIEW);
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}

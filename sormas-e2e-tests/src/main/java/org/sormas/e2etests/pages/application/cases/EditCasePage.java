@@ -163,6 +163,7 @@ public class EditCasePage {
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EXTRA_COMMENT_INPUT =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By EXTRA_COMMENT_INPUT_SHARE_POPUP = By.cssSelector(".popupContent #comment");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
   public static final By CREATE_DOCUMENT_BUTTON_DE = By.cssSelector("[id='Erstellen']");
 
@@ -379,5 +380,9 @@ public class EditCasePage {
         String.format(
             "//div[@id='%s']//input[@value='on' and @checked]/following-sibling::label[contains(text(),'%s')]",
             id, value));
+  }
+
+  public static By getEditTaskButtonByNumber(Integer number) {
+    return By.cssSelector(String.format("#edit-task-%x", number));
   }
 }

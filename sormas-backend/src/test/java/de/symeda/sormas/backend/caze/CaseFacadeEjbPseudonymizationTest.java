@@ -82,8 +82,12 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		super.init();
 
-		UserRoleReferenceDto newUserRole =
-			creator.createUserRole("NoEventNoCaseView", JurisdictionLevel.DISTRICT, UserRight.CASE_CLINICIAN_VIEW, UserRight.CASE_VIEW);
+		UserRoleReferenceDto newUserRole = creator.createUserRole(
+			"NoEventNoCaseView",
+			JurisdictionLevel.DISTRICT,
+			UserRight.CASE_CLINICIAN_VIEW,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW);
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		user1 = creator.createUser(

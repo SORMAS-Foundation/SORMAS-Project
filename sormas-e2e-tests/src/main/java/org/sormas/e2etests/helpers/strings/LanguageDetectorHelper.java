@@ -15,12 +15,10 @@ public abstract class LanguageDetectorHelper {
 
   @SneakyThrows
   public static void checkLanguage(String textToScan, String expectedLanguage) {
-    String langCode = getLanguageCode(expectedLanguage);
-    detector = LanguageDetector.getDefaultLanguageDetector().loadModels();
     if (isConfidenceStrong(textToScan)) {
       log.info("Check if text {} language is {}", textToScan, expectedLanguage);
       Assert.assertEquals(
-          detector.detect(textToScan).getLanguage(), langCode, "Language is not as expected");
+          scanLanguage(textToScan), expectedLanguage, "Language is not as expected");
     } else {
       throw new LanguageDetectorException(
           "LanguageDetectorHelper confidence is not at least MEDIUM");
@@ -30,21 +28,19 @@ public abstract class LanguageDetectorHelper {
   @SneakyThrows
   public static String scanLanguage(String textToScan) {
     detector = LanguageDetector.getDefaultLanguageDetector().loadModels();
-    return detector.detect(textToScan).getLanguage();
+    return Arrays.stream(Locale.getAvailableLocales())
+        .filter(
+            locale ->
+                locale.getLanguage().equalsIgnoreCase(detector.detect(textToScan).getLanguage()))
+        .findFirst()
+        .get()
+        .getDisplayLanguage();
   }
 
-  private static String getLanguageCode(String expectedLanguage) {
-    String lang =
-        Arrays.stream(Locale.getAvailableLocales())
-            .filter(locale -> locale.getDisplayLanguage().equalsIgnoreCase(expectedLanguage))
-            .findFirst()
-            .get()
-            .toString();
-    return lang.substring(0, lang.indexOf("_"));
-  }
-
+  @SneakyThrows
   private static boolean isConfidenceStrong(String textToScan) {
     scanTextForNumbers(textToScan);
+    detector = LanguageDetector.getDefaultLanguageDetector().loadModels();
     String confidence = detector.detect(sanitizeCharacters(textToScan)).getConfidence().toString();
     return confidence.equalsIgnoreCase("MEDIUM") || confidence.equalsIgnoreCase("HIGH");
   }

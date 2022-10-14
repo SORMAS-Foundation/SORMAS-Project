@@ -105,6 +105,7 @@ public class ShareDataBuilderHelper {
 		sormasToSormasOriginInfo.setWithEventParticipants(options.isWithEventParticipants());
 		sormasToSormasOriginInfo.setWithImmunizations(options.isWithImmunizations());
 		sormasToSormasOriginInfo.setComment(options.getComment());
+		sormasToSormasOriginInfo.setPseudonymizedData(options.isPseudonymizeData());
 
 		return sormasToSormasOriginInfo;
 	}

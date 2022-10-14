@@ -567,6 +567,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				epidemiologicalConfirmationCombo.setVisible(false);
 				laboratoryConfirmationCombo.setVisible(false);
 			}
+
+			setReadOnly(
+				!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY),
+				CaseDataDto.CLINICAL_CONFIRMATION,
+				CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION,
+				CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
 		}
 
 		quarantineOrderedVerbally = addField(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
@@ -1076,9 +1082,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setReadOnly(
 			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY),
 			CaseDataDto.CASE_CLASSIFICATION,
-			CaseDataDto.CLINICAL_CONFIRMATION,
-			CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION,
-			CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION,
 			CaseDataDto.OUTCOME,
 			CaseDataDto.OUTCOME_DATE);
 		setReadOnly(

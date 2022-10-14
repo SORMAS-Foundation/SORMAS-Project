@@ -46,6 +46,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -99,6 +100,24 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
 		getUserFacade().saveUser(covidLimitedDistrictUser, false);
+	}
+
+	@Test(expected = ValidationRuntimeException.class)
+	public void testValidateWithNullReportingUser() {
+		loginWith(districtUser1);
+
+		PersonDto person = creator.createPerson("John", "Doe");
+		ImmunizationDto immunizationDto = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			null,
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+
+		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb = getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
+		immunizationFacadeEjb.validate(immunizationDto);
 	}
 
 	@Test

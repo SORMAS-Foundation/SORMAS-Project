@@ -110,6 +110,11 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
+	public List<UserRoleDto> getAllActive() {
+		return userRoleService.getAllActive().stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<String> getAllUuids() {
 
 		if (userService.getCurrentUser() == null) {

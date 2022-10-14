@@ -73,7 +73,7 @@ public class EventListComponent extends VerticalLayout {
 
 		this.actionCallback = actionCallback;
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
-		EventList eventList = new EventList(contact.getPerson(), actionCallback);
+		EventList eventList = new EventList(contact, actionCallback);
 
 		createEventListComponent(eventList, I18nProperties.getString(Strings.entityEvents), false, () -> {
 			EventCriteria eventCriteria = new EventCriteria();
