@@ -444,13 +444,15 @@ public abstract class DataImporter {
 		}
 
 		if (propertyType.isAssignableFrom(Date.class)) {
-			String dateFormat = I18nProperties.getUserLanguage().getDateFormat();
 			try {
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, dateFormat));
+				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage()));
 				return true;
 			} catch (ParseException e) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, pd.getName(), DateHelper.getAllowedDateFormats(dateFormat)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						pd.getName(),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			}
 		}
 		if (propertyType.isAssignableFrom(Integer.class)) {

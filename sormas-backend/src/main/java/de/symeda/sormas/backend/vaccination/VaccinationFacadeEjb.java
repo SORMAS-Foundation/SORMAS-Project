@@ -279,8 +279,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	private VaccinationListEntryDto toVaccinationListEntryDto(Vaccination vaccination, boolean relevant, String message) {
-		VaccinationListEntryDto dto = new VaccinationListEntryDto();
-		dto.setUuid(vaccination.getUuid());
+		VaccinationListEntryDto dto = new VaccinationListEntryDto(vaccination.getUuid());
 		dto.setDisease(vaccination.getImmunization().getDisease());
 		dto.setVaccinationDate(vaccination.getVaccinationDate());
 		dto.setVaccineName(vaccination.getVaccineName());
@@ -300,15 +299,19 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@Override
 	public List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto) {
+
 		Case caze = caseService.getByUuid(cazeDto.getUuid());
 		List<Vaccination> vaccinations = vaccinationService.getRelevantVaccinationsForCase(caze);
-		return convertToDtoList(vaccinations);
+		return toPseudonymizedDtos(vaccinations);
 	}
 
-	public List<VaccinationDto> convertToDtoList(List<Vaccination> vaccinations) {
-		Pseudonymizer defaultPseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+	private List<VaccinationDto> toPseudonymizedDtos(List<Vaccination> entities) {
 
-		return vaccinations.stream().map(v -> convertToDto(v, defaultPseudonymizer)).collect(Collectors.toList());
+		List<Long> inJurisdictionIds = vaccinationService.getInJurisdictionIds(entities);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		List<VaccinationDto> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
+		return dtos;
 	}
 
 	@Override
@@ -374,23 +377,33 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.collect(Collectors.toList());
 	}
 
-	public VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {
+	private VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		boolean inJurisdiction = vaccinationService.inJurisdictionOrOwned(source);
+		return convertToDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	private VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		VaccinationDto dto = toDto(source);
-
-		pseudonymizeDto(source, dto, pseudonymizer);
-
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
 		return dto;
 	}
 
-	private void pseudonymizeDto(Vaccination source, VaccinationDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonymizeDto(Vaccination source, VaccinationDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		if (dto != null) {
-			boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(source.getImmunization());
 			pseudonymizer.pseudonymizeDto(VaccinationDto.class, dto, inJurisdiction, c -> {
 
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					source.getReportingUser(),
+					currentUser,
+					dto::setReportingUser);
 			});
 		}
 	}
@@ -398,7 +411,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	private void restorePseudonymizedDto(VaccinationDto dto, VaccinationDto existingDto, Vaccination vaccination, Pseudonymizer pseudonymizer) {
 
 		if (existingDto != null) {
-			final boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(vaccination.getImmunization());
+			final boolean inJurisdiction = vaccinationService.inJurisdictionOrOwned(vaccination);
 			final User currentUser = userService.getCurrentUser();
 			pseudonymizer.restoreUser(vaccination.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(VaccinationDto.class, dto, existingDto, inJurisdiction);
@@ -446,7 +459,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	@RightsAllowed(UserRight._CONTACT_EDIT)
+	@RightsAllowed({
+		UserRight._CONTACT_EDIT,
+		UserRight._CONTACT_CREATE })
 	public void updateVaccinationStatuses(Contact contact) {
 		List<Immunization> contactPersonImmunizations =
 			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);

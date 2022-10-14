@@ -91,4 +91,18 @@ public class TaskService {
         .assignedTo("Nat USER")
         .build();
   }
+
+  public Task buildGeneratedTaskWithSpecificUserAssigned(String user) {
+    return Task.builder()
+        .taskContext("CASE")
+        .taskType("case isolation")
+        .suggestedStartDate(LocalDate.now())
+        .suggestedStartTime(LocalTime.of(11, 30))
+        .dueDateDate(LocalDate.now().plusDays(1))
+        .dueDateTime(LocalTime.of(11, 30))
+        .assignedTo(user)
+        .priority("Normal")
+        .taskStatus(StatusValues.PENDING.getValue())
+        .build();
+  }
 }

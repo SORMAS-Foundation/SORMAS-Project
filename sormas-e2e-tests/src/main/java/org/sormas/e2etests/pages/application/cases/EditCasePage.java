@@ -163,9 +163,14 @@ public class EditCasePage {
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EXTRA_COMMENT_INPUT =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By EXTRA_COMMENT_INPUT_SHARE_POPUP = By.cssSelector(".popupContent #comment");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
+  public static final By CREATE_DOCUMENT_BUTTON_DE = By.cssSelector("[id='Erstellen']");
+
   public static final By CREATE_QUARANTINE_ORDER_BUTTON =
       By.cssSelector(".popupContent [id='Create']");
+  public static final By CREATE_QUARANTINE_ORDER_BUTTON_DE =
+      By.cssSelector(".popupContent [id='Erstellen']");
   public static final By EXTRA_COMMENT_TEXTAREA =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =
@@ -347,8 +352,37 @@ public class EditCasePage {
   public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");
   public static final By ADD_A_PARTICIPANT_HEADER_DE =
       By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
-  public static final By CHANGE_DISEASE_POPUP_TITLE =
-      By.xpath("//div[text()='Change case disease']");
+  public static final By CHANGE_DISEASE_CONFIRMATION_POPUP =
+      By.xpath("//div[@class='v-window-outerheader']");
   public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
   public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
+
+  public static final By SHARE_SORMAS_2_SORMAS_BUTTON = By.cssSelector("#sormasToSormasShare");
+  public static final By SHARE_ORGANIZATION_POPUP_COMBOBOX =
+      By.cssSelector(".popupContent #organization div");
+  public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
+      By.cssSelector(".popupContent #commit");
+  public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
+      By.xpath(
+          "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
+  public static final By CLINICAL_ASSESSMENTS_LABEL_DE =
+      By.xpath("//div[contains(text(), 'Klinische Bewertungen')]");
+
+  public static By getPreExistingConditionCombobox_DE(String id) {
+    return By.xpath(
+        String.format(
+            "//div[@id='%s']//input[@value='on']/following-sibling::label[contains(text(),'Ja') or contains(text(),'Nein') or contains(text(),'Unbekannt')]",
+            id));
+  }
+
+  public static By getPreExistingConditionComboboxWithValue_DE(String id, String value) {
+    return By.xpath(
+        String.format(
+            "//div[@id='%s']//input[@value='on' and @checked]/following-sibling::label[contains(text(),'%s')]",
+            id, value));
+  }
+
+  public static By getEditTaskButtonByNumber(Integer number) {
+    return By.cssSelector(String.format("#edit-task-%x", number));
+  }
 }

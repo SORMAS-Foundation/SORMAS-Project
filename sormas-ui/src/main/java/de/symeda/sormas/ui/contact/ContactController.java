@@ -153,7 +153,7 @@ public class ContactController {
 					if (selectedPerson != null) {
 						newContact.setPerson(selectedPerson);
 
-						selectOrCreateContact(newContact, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+						selectOrCreateContact(newContact, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 							if (uuid == null) {
 								FacadeProvider.getContactFacade().save(newContact);
 								Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
@@ -170,27 +170,32 @@ public class ContactController {
 	}
 
 	public void openLineListingWindow(EventDto eventDto, Set<EventParticipantIndexDto> eventParticipantIndexDtos) {
-		if (eventParticipantIndexDtos == null || eventParticipantIndexDtos.isEmpty()) {
-			return;
+		if (eventParticipantIndexDtos.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+				I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+
+			Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
+
+			List<String> uuids = eventParticipantIndexDtos.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList());
+			List<EventParticipantDto> eventParticipantDtos = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
+
+			LineListingLayout lineListingForm = new LineListingLayout(window, eventDto, eventParticipantDtos);
+			lineListingForm.setSaveCallback(contacts -> saveContactsFromEventParticipantsLineListing(lineListingForm, contacts));
+
+			lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+
+			window.setContent(lineListingForm);
+			window.setModal(true);
+			window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
+			window.setPositionY(70);
+			window.setResizable(false);
+
+			UI.getCurrent().addWindow(window);
 		}
-
-		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
-
-		List<String> uuids = eventParticipantIndexDtos.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList());
-		List<EventParticipantDto> eventParticipantDtos = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
-
-		LineListingLayout lineListingForm = new LineListingLayout(window, eventDto, eventParticipantDtos);
-		lineListingForm.setSaveCallback(contacts -> saveContactsFromEventParticipantsLineListing(lineListingForm, contacts));
-
-		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
-
-		window.setContent(lineListingForm);
-		window.setModal(true);
-		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
-		window.setPositionY(70);
-		window.setResizable(false);
-
-		UI.getCurrent().addWindow(window);
 	}
 
 	private void saveContactsFromEventParticipantsLineListing(LineListingLayout lineListingForm, LinkedList<LineDto<ContactDto>> contacts) {
@@ -380,7 +385,7 @@ public class ContactController {
 		Runnable alternativeCallback,
 		boolean createdFromLabMesssage) {
 
-		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()) : null;
+		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid()) : null;
 		ContactCreateForm createForm = new ContactCreateForm(
 			caze != null ? caze.getDisease() : null,
 			caze != null && !asSourceContact,
@@ -420,17 +425,17 @@ public class ContactController {
 						}
 					});
 				} else if (createdFromLabMesssage) {
-					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+					PersonDto dbPerson = FacadeProvider.getPersonFacade().getByUuid(dto.getPerson().getUuid());
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
 						transferDataToPerson(createForm, personDto);
-						FacadeProvider.getPersonFacade().savePerson(personDto);
+						FacadeProvider.getPersonFacade().save(personDto);
 						dto.setPerson(personDto.toReference());
 						createNewContact(dto, e -> {
 						});
 					} else {
 						transferDataToPerson(createForm, dbPerson);
-						FacadeProvider.getPersonFacade().savePerson(dbPerson);
+						FacadeProvider.getPersonFacade().save(dbPerson);
 						createNewContact(dto, e -> {
 						});
 					}
@@ -454,7 +459,7 @@ public class ContactController {
 								if (selectedPerson != null) {
 									dto.setPerson(selectedPerson);
 
-									fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
+									fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()));
 
 									selectOrCreateContact(dto, person, selectedContactUuid -> {
 										if (selectedContactUuid != null) {
@@ -500,9 +505,9 @@ public class ContactController {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
 				PersonFacade personFacade = FacadeProvider.getPersonFacade();
-				PersonDto personDto = personFacade.getPersonByUuid(dto.getPerson().getUuid());
+				PersonDto personDto = personFacade.getByUuid(dto.getPerson().getUuid());
 				transferDataToPerson(createForm, personDto);
-				personFacade.savePerson(personDto);
+				personFacade.save(personDto);
 
 				fillPersonAddressIfEmpty(dto, () -> personDto);
 
@@ -585,7 +590,7 @@ public class ContactController {
 			if (!editForm.getFieldGroup().isModified()) {
 				ContactDto dto = editForm.getValue();
 
-				fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid()));
+				fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getByUuid(dto.getPerson().getUuid()));
 
 				FacadeProvider.getContactFacade().save(dto);
 
@@ -857,7 +862,7 @@ public class ContactController {
 		if (StringUtils.isNotBlank(contactPersonFullName)) {
 			mainRowText.append(contactPersonFullName);
 
-			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
 			String dateOfBirth =
 				DateFormatHelper.formatDate(contactPerson.getBirthdateDD(), contactPerson.getBirthdateMM(), contactPerson.getBirthdateYYYY());
 			if (StringUtils.isNotBlank(dateOfBirth)) {
@@ -888,7 +893,7 @@ public class ContactController {
 				person.getAddress().setDistrict(CaseLogic.getDistrictWithFallback(caze));
 				person.getAddress().setCommunity(CaseLogic.getCommunityWithFallback(caze));
 			}
-			FacadeProvider.getPersonFacade().savePerson(person);
+			FacadeProvider.getPersonFacade().save(person);
 		}
 	}
 }

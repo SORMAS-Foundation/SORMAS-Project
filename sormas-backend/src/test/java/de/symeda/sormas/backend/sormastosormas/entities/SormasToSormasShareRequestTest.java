@@ -19,6 +19,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,25 +38,34 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasShareRequestTest extends SormasToSormasTest {
@@ -323,5 +334,371 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		assertThat(shareInfoList.get(0).isOwnershipHandedOver(), is(true));
 		assertThat(shareInfoList.get(0).getComment(), is("New comment"));
 		assertThat(shareInfoList.get(0).getRequestStatus(), is(ShareRequestStatus.PENDING));
+	}
+
+	@Test
+	public void testAcceptShareRequest() throws SormasToSormasException, SormasToSormasValidationException {
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		CaseDataDto caze = createCaseDto(rdcf, person);
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasCaseFacade().acceptShareRequest(shareRequest.getUuid(), true);
+
+		assertThat(duplicateResult, is(DuplicateResult.NONE));
+		assertThat(getCaseFacade().getByUuid(caze.getUuid()), is(notNullValue()));
+		assertThat(getSormasToSormasShareRequestFacade().getShareRequestByUuid(shareRequest.getUuid()).getStatus(), is(ShareRequestStatus.ACCEPTED));
+	}
+
+	@Test
+	public void testAcceptWithCaseDuplicate() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		getPersonFacade().save(person);
+		CaseDataDto caze = createCaseDto(rdcf, person);
+		caze.setReportingUser(officer);
+		getCaseFacade().save(caze);
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		// create similar person and case
+		PersonDto sharedPerson = createPersonDto(rdcf);
+		CaseDataDto sharedCaze = createCaseDto(rdcf, person);
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(sharedPerson, sharedCaze)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasCaseFacade().acceptShareRequest(shareRequest.getUuid(), true);
+		assertThat(duplicateResult, is(DuplicateResult.CASE));
+		assertThat(getCaseFacade().getByUuid(sharedCaze.getUuid()), is(nullValue()));
+		assertThat(getSormasToSormasShareRequestFacade().getShareRequestByUuid(shareRequest.getUuid()).getStatus(), is(ShareRequestStatus.PENDING));
+
+		duplicateResult = getSormasToSormasCaseFacade().acceptShareRequest(shareRequest.getUuid(), false);
+
+		assertThat(duplicateResult, is(DuplicateResult.NONE));
+		assertThat(getCaseFacade().getByUuid(sharedCaze.getUuid()), is(notNullValue()));
+		assertThat(getSormasToSormasShareRequestFacade().getShareRequestByUuid(shareRequest.getUuid()).getStatus(), is(ShareRequestStatus.ACCEPTED));
+	}
+
+	@Test
+	public void testAcceptWithConvertedCaseDuplicate() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		getPersonFacade().save(person);
+		CaseDataDto caze = createCaseDto(rdcf, person);
+		caze.setReportingUser(officer);
+		getCaseFacade().save(caze);
+
+		creator.createContact(officer, person.toReference(), caze.getDisease(), c -> {
+			c.setResultingCase(caze.toReference());
+		});
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		// create similar person and case
+		PersonDto sharedPerson = createPersonDto(rdcf);
+		CaseDataDto sharedCaze = createCaseDto(rdcf, person);
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(sharedPerson, sharedCaze)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasCaseFacade().acceptShareRequest(shareRequest.getUuid(), true);
+		assertThat(duplicateResult, is(DuplicateResult.CASE_CONVERTED));
+	}
+
+	@Test
+	public void testAcceptCaseHavingSimilarContact() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		getPersonFacade().save(person);
+		ContactDto contact = createContactDto(rdcf, person);
+		contact.setReportingUser(officer);
+		getContactFacade().save(contact);
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		// create similar person and case
+		PersonDto sharedPerson = createPersonDto(rdcf);
+		CaseDataDto sharedCaze = createCaseDto(rdcf, person);
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(sharedPerson, sharedCaze)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasCaseFacade().acceptShareRequest(shareRequest.getUuid(), true);
+		assertThat(duplicateResult, is(DuplicateResult.CONTACT_TO_CASE));
+	}
+
+	@Test
+	public void testAcceptWithContactDuplicate() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		getPersonFacade().save(person);
+		ContactDto contact = createContactDto(rdcf, person);
+		contact.setReportingUser(officer);
+		getContactFacade().save(contact);
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		// create similar person and contact
+		PersonDto sharedPerson = createPersonDto(rdcf);
+		ContactDto sharedContact = createContactDto(rdcf, person);
+		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(sharedPerson, sharedContact)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasContactFacade().acceptShareRequest(shareRequest.getUuid(), true);
+		assertThat(duplicateResult, is(DuplicateResult.CONTACT));
+		assertThat(getContactFacade().getByUuid(sharedContact.getUuid()), is(nullValue()));
+		assertThat(getSormasToSormasShareRequestFacade().getShareRequestByUuid(shareRequest.getUuid()).getStatus(), is(ShareRequestStatus.PENDING));
+
+		duplicateResult = getSormasToSormasCaseFacade().acceptShareRequest(shareRequest.getUuid(), false);
+
+		assertThat(duplicateResult, is(DuplicateResult.NONE));
+		assertThat(getContactFacade().getByUuid(sharedContact.getUuid()), is(notNullValue()));
+		assertThat(getSormasToSormasShareRequestFacade().getShareRequestByUuid(shareRequest.getUuid()).getStatus(), is(ShareRequestStatus.ACCEPTED));
+	}
+
+	@Test
+	public void testAcceptWithConvertedContactDuplicate() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		getPersonFacade().save(person);
+
+		CaseDataDto convertedCaze = creator.createCase(officer, person.toReference(), rdcf);
+
+		ContactDto contact = createContactDto(rdcf, person);
+		contact.setReportingUser(officer);
+		contact.setResultingCase(convertedCaze.toReference());
+		getContactFacade().save(contact);
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		// create similar person and contact
+		PersonDto sharedPerson = createPersonDto(rdcf);
+		ContactDto sharedContact = createContactDto(rdcf, person);
+		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(sharedPerson, sharedContact)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasContactFacade().acceptShareRequest(shareRequest.getUuid(), true);
+		assertThat(duplicateResult, is(DuplicateResult.CONTACT_CONVERTED));
+	}
+
+	@Test
+	public void testAcceptWithContactHavingSimilarCase() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		getPersonFacade().save(person);
+
+		creator.createCase(officer, person.toReference(), rdcf, c -> {
+			c.setDisease(Disease.CORONAVIRUS);
+		});
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		// create similar person and contact
+		PersonDto sharedPerson = createPersonDto(rdcf);
+		ContactDto sharedContact = createContactDto(rdcf, person);
+		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(sharedPerson, sharedContact)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasContactFacade().acceptShareRequest(shareRequest.getUuid(), true);
+		assertThat(duplicateResult, is(DuplicateResult.CASE_TO_CONTACT));
+	}
+
+	@Test
+	public void testAcceptCaseWithDuplicatePerson() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		getPersonFacade().save(person);
+
+		creator.createCase(officer, person.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+		});
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		// create similar person and contact
+		PersonDto sharedPerson = createPersonDto(rdcf);
+		CaseDataDto sharedCase = createCaseDto(rdcf, person);
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(sharedPerson, sharedCase)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasContactFacade().acceptShareRequest(shareRequest.getUuid(), true);
+		assertThat(duplicateResult, is(DuplicateResult.PERSON_ONLY));
+	}
+
+	@Test
+	public void testAcceptContactWithDuplicatePerson() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = createPersonDto(rdcf);
+		getPersonFacade().save(person);
+
+		creator.createCase(officer, person.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+		});
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(originInfo);
+		shareRequest.setStatus(ShareRequestStatus.PENDING);
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(originInfo);
+		// create similar person and contact
+		PersonDto sharedPerson = createPersonDto(rdcf);
+		ContactDto sharedContact = createContactDto(rdcf, person);
+		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(sharedPerson, sharedContact)));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(shareData));
+
+		DuplicateResult duplicateResult = getSormasToSormasContactFacade().acceptShareRequest(shareRequest.getUuid(), true);
+		assertThat(duplicateResult, is(DuplicateResult.PERSON_ONLY));
+	}
+
+	private ContactDto createContactDto(TestDataCreator.RDCF rdcf, PersonDto person) {
+		ContactDto contactDto = ContactDto.build();
+
+		contactDto.setDisease(Disease.CORONAVIRUS);
+		contactDto.setRegion(rdcf.region);
+		contactDto.setDistrict(rdcf.district);
+
+		contactDto.setPerson(person.toReference());
+
+		return contactDto;
 	}
 }

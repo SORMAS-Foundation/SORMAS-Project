@@ -225,7 +225,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
-			&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+			&& FacadeProvider.getSormasToSormasFacade().isProcessingShareEnabledForUser()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
 			menu.addView(
 				ShareRequestsView.class,
@@ -263,7 +263,8 @@ public class MainScreen extends HorizontalLayout {
 		if (UserProvider.getCurrent().hasConfigurationAccess()) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : RegionsView.class,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
+					&& UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_VIEW) ? OutbreaksView.class : RegionsView.class,
 				AbstractConfigurationView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuConfiguration),
 				VaadinIcons.COGS);

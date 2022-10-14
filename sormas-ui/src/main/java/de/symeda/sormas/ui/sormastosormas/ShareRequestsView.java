@@ -15,17 +15,18 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
-import java.util.Arrays;
-
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.OptionGroup;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ShareRequestsView extends AbstractView {
 
@@ -38,9 +39,27 @@ public class ShareRequestsView extends AbstractView {
 	public ShareRequestsView() {
 		super(VIEW_NAME);
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		ShareRequestsViewConfiguration viewConfiguration = ViewModelProviders.of(getClass()).get(ShareRequestsViewConfiguration.class);
 
 		ShareRequestCriteria criteria = getCriteria();
+
+		OptionGroup viewSwitcher = new OptionGroup();
+		viewSwitcher.setId("viewSwitcher");
+		CssStyles.style(viewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		viewSwitcher.addItem(ShareRequestViewType.INCOMING);
+		viewSwitcher.setItemCaption(ShareRequestViewType.INCOMING, I18nProperties.getEnumCaption(ShareRequestViewType.INCOMING));
+
+		viewSwitcher.addItem(ShareRequestViewType.OUTGOING);
+		viewSwitcher.setItemCaption(ShareRequestViewType.OUTGOING, I18nProperties.getEnumCaption(ShareRequestViewType.OUTGOING));
+
+		viewSwitcher.setValue(viewConfiguration.getViewType());
+		viewSwitcher.addValueChangeListener(e -> {
+			ShareRequestViewType viewType = (ShareRequestViewType) e.getProperty().getValue();
+
+			viewConfiguration.setViewType(viewType);
+			SormasUI.get().getNavigator().navigateTo(VIEW_NAME);
+		});
+		addHeaderComponent(viewSwitcher);
 
 		gridComponent = new ShareRequestGridComponent(viewConfiguration, criteria, () -> {
 			navigateTo(criteria, true);
@@ -63,7 +82,6 @@ public class ShareRequestsView extends AbstractView {
 		if (!ViewModelProviders.of(TasksView.class).has(TaskCriteria.class)) {
 			// init default filter
 			criteria = new ShareRequestCriteria();
-			criteria.setStatusesExcepted(Arrays.asList(ShareRequestStatus.REJECTED, ShareRequestStatus.REVOKED));
 			ViewModelProviders.of(ShareRequestsView.class).get(ShareRequestCriteria.class, criteria);
 		}
 		return criteria;

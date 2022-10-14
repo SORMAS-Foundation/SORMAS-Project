@@ -184,6 +184,20 @@ public class CreateNewTaskSteps implements En {
                 }
               });
         });
+    And(
+        "I check that Pending button exist on task edit page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PENDING_TASK_STATUS_OPTION);
+          Assert.assertTrue(webDriverHelpers.isElementEnabled(PENDING_TASK_STATUS_OPTION));
+        });
+    And(
+        "I create a new task with {string} as a assigned user",
+        (String user) -> {
+          task = taskService.buildGeneratedTaskWithSpecificUserAssigned(user);
+          fillAllFieldsWithoutComments(task);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
   }
 
   private void fillAllFields(Task task) {
@@ -196,6 +210,16 @@ public class CreateNewTaskSteps implements En {
     selectPriority(task.getPriority());
     fillCommentsOnTask(task.getCommentsOnTask());
     fillCommentsOnExecution(task.getCommentsOnExecution());
+  }
+
+  private void fillAllFieldsWithoutComments(Task task) {
+    selectTaskType(task.getTaskType());
+    fillSuggestedStartDate(task.getSuggestedStartDate());
+    fillSuggestedStartTime(task.getSuggestedStartTime());
+    fillDueDateDate(task.getDueDateDate());
+    fillDueDateTime(task.getDueDateTime());
+    selectAssignedTo(task.getAssignedTo());
+    selectPriority(task.getPriority());
   }
 
   private void fillAllFieldsDE(Task task) {

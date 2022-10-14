@@ -43,17 +43,20 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -71,6 +74,7 @@ public class SormasToSormasController {
 	public void shareCaseFromDetailsPage(CaseDataDto caze) {
 		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), null, null);
+
 		shareToSormasFromDetailPage(
 			options -> FacadeProvider.getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options),
 			SormasToSormasOptionsForm.forCase(caze, currentShares));
@@ -127,7 +131,7 @@ public class SormasToSormasController {
 			new SormasToSormasOptionsDto());
 	}
 
-	public void rejectShareRequest(SormasToSormasShareRequestIndexDto request, Runnable callback) {
+	public void rejectShareRequest(ShareRequestIndexDto request, Runnable callback) {
 
 		TextArea commentField = new TextArea(I18nProperties.getCaption(Captions.SormasToSormasOptions_comment));
 		commentField.setWidthFull();
@@ -150,13 +154,12 @@ public class SormasToSormasController {
 			});
 	}
 
-	public void acceptShareRequest(SormasToSormasShareRequestIndexDto request, Runnable callback) {
+	public void acceptShareRequest(ShareRequestIndexDto request, Runnable callback) {
 		boolean hasErrors = false;
 
-		if (request.getDataType() == ShareRequestDataType.CONTACT) {
-			SormasToSormasShareRequestDto shareRequest =
-				FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestByUuid(request.getUuid());
+		SormasToSormasShareRequestDto shareRequest = FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestByUuid(request.getUuid());
 
+		if (request.getDataType() == ShareRequestDataType.CONTACT) {
 			List<SormasToSormasContactPreview> contacts = shareRequest.getContacts();
 			for (int i = 0, contactsSize = contacts.size(); i < contactsSize && !hasErrors; i++) {
 				SormasToSormasContactPreview c = contacts.get(i);
@@ -202,10 +205,96 @@ public class SormasToSormasController {
 		}
 
 		if (!hasErrors) {
-			handleSormasToSormasRequest(
-				() -> FacadeProvider.getSormasToSormasFacade().acceptShareRequest(request.getDataType(), request.getUuid()),
-				callback);
+			handleSormasToSormasRequest(() -> {
+				DuplicateResult duplicateResult =
+					FacadeProvider.getSormasToSormasFacade().acceptShareRequest(request.getDataType(), request.getUuid(), true);
+
+				switch (duplicateResult) {
+				case CASE:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarCaseFound,
+						Captions.actionOkAndGoToMerge,
+						() -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+					break;
+				case CASE_CONVERTED:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarConvertedCaseFound,
+						Captions.actionOkAndGoToMerge,
+						() -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+					break;
+				case CONTACT_TO_CASE:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarContactToCaseFound,
+						Captions.actionOkAndGoToContactDirectory,
+						() -> ControllerProvider.getContactController().navigateToIndex());
+					break;
+				case CONTACT:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarContactFound,
+						Captions.actionOkAndGoToMerge,
+						() -> ControllerProvider.getContactController().navigateToMergeContactsView());
+					break;
+				case CONTACT_CONVERTED:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarConvertedContactFound,
+						Captions.actionOkAndGoToMerge,
+						() -> ControllerProvider.getContactController().navigateToMergeContactsView());
+					break;
+				case CASE_TO_CONTACT:
+					boolean isMultipleContacts = shareRequest.getContacts().size() > 1;
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarCaseToContactFound,
+						isMultipleContacts ? Captions.actionOkAndGoToContactDirectory : Captions.actionOkAndGoToContactDetails,
+						() -> {
+							if (isMultipleContacts) {
+								ControllerProvider.getContactController().navigateToIndex();
+							} else {
+								ControllerProvider.getContactController().navigateToData(shareRequest.getContacts().get(0).getUuid());
+							}
+						});
+					break;
+				case PERSON_ONLY:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarPersonFound,
+						Captions.actionOkAndGoToPersonDirectory,
+						() -> ControllerProvider.getPersonController().navigateToPersons());
+					break;
+				}
+			}, callback);
 		}
+	}
+
+	private void confirmDuplicateFound(
+		ShareRequestIndexDto request,
+		String messageI18nProperty,
+		String thirdActionI18nProperty,
+		Runnable navigateToMergeView) {
+		VaadinUiUtil.showThreeOptionsPopup(
+			I18nProperties.getString(Strings.headingSormasToSormasDuplicateDetection),
+			new Label(I18nProperties.getString(messageI18nProperty), ContentMode.HTML),
+			I18nProperties.getCaption(Captions.actionOkay),
+			I18nProperties.getCaption(Captions.actionCancel),
+			I18nProperties.getCaption(thirdActionI18nProperty),
+			600,
+			(response) -> {
+				if (response != VaadinUiUtil.PopupOption.OPTION2) {
+					handleSormasToSormasRequest(() -> {
+						FacadeProvider.getSormasToSormasFacade().acceptShareRequest(request.getDataType(), request.getUuid(), false);
+
+						if (response == VaadinUiUtil.PopupOption.OPTION3) {
+							navigateToMergeView.run();
+						}
+					}, () -> {
+					});
+				}
+			});
 	}
 
 	public void revokeShare(String shareInfoUuid, Runnable callback) {
@@ -218,6 +307,20 @@ public class SormasToSormasController {
 			confirmed -> {
 				if (confirmed) {
 					handleSormasToSormasRequest(() -> FacadeProvider.getSormasToSormasFacade().revokeShare(shareInfoUuid), callback);
+				}
+			});
+	}
+
+	public void revokeShareRequest(String requestUuid, Runnable callback) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingRevokeSormasToSormasShareRequest),
+			new Label(I18nProperties.getString(Strings.confirmationRevokeSormasToSormasShareRequest)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					handleSormasToSormasRequest(() -> FacadeProvider.getSormasToSormasFacade().revokeShareRequest(requestUuid), callback);
 				}
 			});
 	}
@@ -329,13 +432,17 @@ public class SormasToSormasController {
 		}).toArray(Component[]::new);
 	}
 
-	public void showRequestDetails(SormasToSormasShareRequestIndexDto request) {
-		SormasToSormasShareRequestDto shareRequest = FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestByUuid(request.getUuid());
+	public void showRequestDetails(ShareRequestIndexDto request, ShareRequestViewType viewType) {
+		String requestUuid = request.getUuid();
+		ShareRequestDetailsDto shareRequest = viewType == ShareRequestViewType.INCOMING
+			? FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestDetails(requestUuid)
+			: FacadeProvider.getShareRequestInfoFacade().getShareRequestDetails(requestUuid);
 		ShareRequestLayout shareRequestLayout = new ShareRequestLayout(shareRequest);
 		shareRequestLayout.setWidth(900, Sizeable.Unit.PIXELS);
 		shareRequestLayout.setMargin(true);
 
-		VaadinUiUtil.showPopupWindow(shareRequestLayout, I18nProperties.getString(Strings.headingShareRequestDetails));
+		Window window = VaadinUiUtil.showPopupWindow(shareRequestLayout, I18nProperties.getString(Strings.headingShareRequestDetails));
+		shareRequestLayout.setNavigateCallback(window::close);
 	}
 
 	private interface HandleShareWithOptions {

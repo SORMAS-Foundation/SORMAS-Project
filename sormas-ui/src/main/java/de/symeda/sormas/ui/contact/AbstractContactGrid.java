@@ -151,8 +151,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
-		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
-		if (tasksFeatureEnabled) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			Column<IndexDto, String> pendingTasksColumn = addColumn(
 				entry -> String.format(
 					I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
@@ -194,8 +194,6 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 	protected Stream<String> getColumnList() {
 
-		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
-
 		return Stream
 			.of(
 				Stream.of(
@@ -216,7 +214,10 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
 					ContactIndexDto.VACCINATION_STATUS,
 					NUMBER_OF_VISITS),
-				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled),
+				Stream.of(NUMBER_OF_PENDING_TASKS)
+					.filter(
+						column -> FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+							&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)),
 				Stream.of(COLUMN_COMPLETENESS))
 			.flatMap(s -> s);
 	}

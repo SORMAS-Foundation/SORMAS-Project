@@ -26,6 +26,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 
 public final class TimeAgo {
@@ -56,7 +57,7 @@ public final class TimeAgo {
 	 * @see TimeAgoMessages
 	 */
 	public String with(final long time) {
-		return with(time, new TimeAgoMessages.Builder(context).build());
+		return with(time, false, new TimeAgoMessages.Builder(context).build());
 	}
 
 	/**
@@ -66,24 +67,46 @@ public final class TimeAgo {
 	 *
 	 * @param time
 	 *            the date time for parsing
+	 * @param detailLevelDays
+	 *            restrict to day levels only
+	 * @return the 'time ago' formatted text using date time
+	 * @see TimeAgoMessages
+	 */
+	public String with(final long time, final boolean detailLevelDays) {
+		return with(time, detailLevelDays, new TimeAgoMessages.Builder(context).build());
+	}
+
+	/**
+	 * <p>
+	 * Returns the 'time ago' formatted text using date time.
+	 * </p>
+	 *
+	 * @param time
+	 *            the date time for parsing
+	 * @param detailLevelDays
+	 *            restrict to day levels only
 	 * @param resources
 	 *            the resources for localizing messages
 	 * @return the 'time ago' formatted text using date time
 	 * @see TimeAgoMessages
 	 */
-	public String with(final long time, final TimeAgoMessages resources) {
-		final long dim = getTimeDistanceInMinutes(time);
-		final StringBuilder timeAgo = buildTimeagoText(resources, dim);
+	public String with(final long time, final boolean detailLevelDays, final TimeAgoMessages resources) {
+		final long dim = getTimeDistanceInMinutes(time, detailLevelDays);
+		final StringBuilder timeAgo = buildTimeagoText(resources, dim, detailLevelDays);
 		return timeAgo.toString();
 	}
 
 	public String with(Date date) {
-		return with(date, new TimeAgoMessages.Builder(context).build());
+		return with(date, false, new TimeAgoMessages.Builder(context).build());
 	}
 
-	public String with(Date date, TimeAgoMessages resources) {
-		final long dim = getTimeDistanceInMinutes(date.getTime());
-		final StringBuilder timeAgo = buildTimeagoText(resources, dim);
+	public String with(Date date, boolean detailLevelDays) {
+		return with(date, detailLevelDays, new TimeAgoMessages.Builder(context).build());
+	}
+
+	public String with(Date date, boolean detailLevelDays, TimeAgoMessages resources) {
+		final long dim = getTimeDistanceInMinutes(date.getTime(), detailLevelDays);
+		final StringBuilder timeAgo = buildTimeagoText(resources, dim, detailLevelDays);
 		return timeAgo.toString();
 	}
 
@@ -94,12 +117,14 @@ public final class TimeAgo {
 	 *            the resources
 	 * @param dim
 	 *            the distance in minutes from now
+	 * @param detailLevelDays
+	 *            restrict to day levels only
 	 * @return the string builder
 	 */
-	private static StringBuilder buildTimeagoText(TimeAgoMessages resources, long dim) {
+	private static StringBuilder buildTimeagoText(TimeAgoMessages resources, long dim, boolean detailLevelDays) {
 		final StringBuilder timeAgo = new StringBuilder();
 
-		final Periods foundTimePeriod = Periods.findByDistanceMinutes(dim);
+		final Periods foundTimePeriod = Periods.findByDistanceMinutes(dim, detailLevelDays);
 		if (foundTimePeriod != null) {
 			final int periodKey = foundTimePeriod.getPropertyKey();
 			switch (foundTimePeriod) {
@@ -107,57 +132,57 @@ public final class TimeAgo {
 				timeAgo.append(resources.getPropertyValue(periodKey, dim));
 				break;
 			case XHOURS_PAST:
-				int hours = Math.round(dim / 60);
+				int hours = Math.round(dim / (float) TimeMinutes.ONE_HOUR.getValue());
 				final String xHoursText = handlePeriodKeyAsPlural(resources, R.string.time_past_one_hour, periodKey, hours);
 				timeAgo.append(xHoursText);
 				break;
 			case XDAYS_PAST:
-				int days = Math.round(dim / 1440);
+				int days = Math.round(dim / (float) TimeMinutes.ONE_DAY.getValue());
 				final String xDaysText = handlePeriodKeyAsPlural(resources, R.string.time_past_one_day, periodKey, days);
 				timeAgo.append(xDaysText);
 				break;
 			case XWEEKS_PAST:
-				int weeks = Math.round(dim / 7560);
+				int weeks = Math.round(dim / (float) TimeMinutes.time(5, 6));
 				final String xWeeksText = handlePeriodKeyAsPlural(resources, R.string.time_past_one_week, periodKey, weeks);
 				timeAgo.append(xWeeksText);
 				break;
 			case XMONTHS_PAST:
-				int months = Math.round(dim / 43200);
+				int months = Math.round(dim / (float) TimeMinutes.ONE_MONTH.getValue());
 				final String xMonthsText = handlePeriodKeyAsPlural(resources, R.string.time_past_one_month, periodKey, months);
 				timeAgo.append(xMonthsText);
 				break;
 			case XYEARS_PAST:
-				int years = Math.round(dim / 525600);
+				int years = Math.round(dim / (float) TimeMinutes.ONE_YEAR.getValue());
 				timeAgo.append(resources.getPropertyValue(periodKey, years));
 				break;
 			case XMINUTES_FUTURE:
 				timeAgo.append(resources.getPropertyValue(periodKey, Math.abs((float) dim)));
 				break;
 			case XHOURS_FUTURE:
-				int hours1 = Math.abs(Math.round(dim / 60f));
+				int hours1 = Math.abs(Math.round(dim / (float) TimeMinutes.ONE_HOUR.getValue()));
 				final String yHoursText = hours1 == 24
 					? resources.getPropertyValue(R.string.time_future_one_day)
 					: handlePeriodKeyAsPlural(resources, R.string.time_future_one_hour, periodKey, hours1);
 				timeAgo.append(yHoursText);
 				break;
 			case XDAYS_FUTURE:
-				int days1 = Math.abs(Math.round(dim / 1440f));
+				int days1 = Math.abs(Math.round(dim / (float) TimeMinutes.ONE_DAY.getValue()));
 				final String yDaysText = handlePeriodKeyAsPlural(resources, R.string.time_future_one_day, periodKey, days1);
 				timeAgo.append(yDaysText);
 				break;
 			case XWEEKS_FUTURE:
-				int weeks1 = Math.abs(Math.round(dim / 7560f));
+				int weeks1 = Math.abs(Math.round(dim / (float) TimeMinutes.time(5, 6)));
 				final String yWeeksText = handlePeriodKeyAsPlural(resources, R.string.time_future_one_week, periodKey, weeks1);
 				timeAgo.append(yWeeksText);
 			case XMONTHS_FUTURE:
-				int months1 = Math.abs(Math.round(dim / 43200f));
+				int months1 = Math.abs(Math.round(dim / (float) TimeMinutes.ONE_MONTH.getValue()));
 				final String yMonthsText = months1 == 12
 					? resources.getPropertyValue(R.string.time_future_one_year)
 					: handlePeriodKeyAsPlural(resources, R.string.time_future_one_month, periodKey, months1);
 				timeAgo.append(yMonthsText);
 				break;
 			case XYEARS_FUTURE:
-				int years1 = Math.abs(Math.round(dim / 525600f));
+				int years1 = Math.abs(Math.round(dim / (float) TimeMinutes.ONE_YEAR.getValue()));
 				timeAgo.append(resources.getPropertyValue(periodKey, years1));
 				break;
 			default:
@@ -188,10 +213,17 @@ public final class TimeAgo {
 	 *
 	 * @param time
 	 *            the date time
+	 * @param detailLevelDays
+	 *            restriction if the current hour should be taken in considerations
 	 * @return the time distance in minutes
 	 */
-	private static long getTimeDistanceInMinutes(long time) {
-		long timeDistance = System.currentTimeMillis() - time;
+	private static long getTimeDistanceInMinutes(long time, boolean detailLevelDays) {
+		long nowInMilliseconds = System.currentTimeMillis();
+		if (detailLevelDays) {
+			Date nowDate = DataHelper.removeTime(new Date());
+			nowInMilliseconds = nowDate.getTime();
+		}
+		long timeDistance = nowInMilliseconds - time;
 		return Math.round((timeDistance / 1000) / 60);
 	}
 
@@ -204,116 +236,125 @@ public final class TimeAgo {
 	 */
 	private enum Periods {
 
-		NOW(R.string.time_now, new DistancePredicate() {
+		NOW(R.string.time_now, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance == 0;
+				return distance == TimeMinutes.NO_MINUTES.getValue();
 			}
 		}),
-		ONEMINUTE_PAST(R.string.time_past_one_minute, new DistancePredicate() {
+		ONEMINUTE_PAST(R.string.time_past_one_minute, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance == 1;
+				return distance == TimeMinutes.ONE_MINUTE.getValue();
 			}
 		}),
-		XMINUTES_PAST(R.string.time_past_x_minutes, new DistancePredicate() {
+		XMINUTES_PAST(R.string.time_past_x_minutes, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 2 && distance <= 44;
+				return distance >= TimeMinutes.TWO_MINUTES.getValue() && distance < TimeMinutes.FORTY_FIVE_MINUTES.getValue();
 			}
 		}),
-		ABOUTANHOUR_PAST(R.string.time_past_one_hour, new DistancePredicate() {
+		ABOUTANHOUR_PAST(R.string.time_past_one_hour, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 45 && distance <= 89;
+				return distance >= TimeMinutes.FORTY_FIVE_MINUTES.getValue() && distance < TimeMinutes.ONE_HOUR_AND_A_HALF.getValue();
 			}
 		}),
-		XHOURS_PAST(R.string.time_past_x_hours, new DistancePredicate() {
+		XHOURS_PAST(R.string.time_past_x_hours, false, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 90 && distance <= 1439;
+				return distance >= TimeMinutes.ONE_HOUR_AND_A_HALF.getValue() && distance < TimeMinutes.ONE_DAY.getValue();
 			}
 		}),
+
+		TODAY(R.string.time_past_today, true, new DistancePredicate() {
+
+			@Override
+			public boolean validateDistanceMinutes(final long distance) {
+				return distance >= TimeMinutes.NO_MINUTES.getValue() && distance < TimeMinutes.ONE_DAY.getValue();
+			}
+		}),
+
 		ONEDAY_PAST(R.string.time_past_one_day, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 1440 && distance <= 2519;
+				return distance >= TimeMinutes.ONE_DAY.getValue() && distance < TimeMinutes.time(1, 18);
 			}
 		}),
 		XDAYS_PAST(R.string.time_past_x_days, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 2520 && distance <= 7559;
+				return distance >= TimeMinutes.time(1, 18) && distance < TimeMinutes.time(5, 6);
 			}
 		}),
 		ONEWEEK_PAST(R.string.time_past_one_week, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 7560 && distance <= 14918;
+				return distance >= TimeMinutes.time(5, 6) && distance < TimeMinutes.time(10, 8, 39);
 			}
 		}),
 		XWEEKS_PAST(R.string.time_past_x_weeks, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 14919 && distance <= 43199;
+				return distance >= TimeMinutes.time(10, 8, 39) && distance < TimeMinutes.ONE_MONTH.getValue();
 			}
 		}),
 		ABOUTAMONTH_PAST(R.string.time_past_one_month, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 43200 && distance <= 86399;
+				return distance >= TimeMinutes.ONE_MONTH.getValue() && distance < TimeMinutes.TWO_MONTHS.getValue();
 			}
 		}),
 		XMONTHS_PAST(R.string.time_past_x_months, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 86400 && distance <= 525599;
+				return distance >= TimeMinutes.TWO_MONTHS.getValue() && distance < TimeMinutes.ONE_YEAR.getValue();
 			}
 		}),
 		ABOUTAYEAR_PAST(R.string.time_past_one_year, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 525600 && distance <= 655199;
+				return distance >= TimeMinutes.ONE_YEAR.getValue() && distance < TimeMinutes.time(455, 0);
 			}
 		}),
 		OVERAYEAR_PAST(R.string.time_past_over_one_year, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 655200 && distance <= 914399;
+				return distance >= TimeMinutes.time(455, 0) && distance < TimeMinutes.time(635, 0);
 			}
 		}),
 		ALMOSTTWOYEARS_PAST(R.string.time_past_almost_two_years, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance >= 914400 && distance <= 1051199;
+				return distance >= TimeMinutes.time(635, 0) && distance < TimeMinutes.TWO_YEARS.getValue();
 			}
 		}),
 		XYEARS_PAST(R.string.time_past_x_years, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return Math.round(distance / 525600) > 1;
+				return Math.round(distance / TimeMinutes.ONE_YEAR.getValue()) > TimeMinutes.ONE_MINUTE.getNegativeValue();
 			}
 		}),
 		ONEMINUTE_FUTURE(R.string.time_future_one_minute, new DistancePredicate() {
 
 			@Override
 			public boolean validateDistanceMinutes(final long distance) {
-				return distance == -1;
+				return distance == TimeMinutes.ONE_MINUTE.getNegativeValue();
 			}
 		}),
 		XMINUTES_FUTURE(R.string.time_future_x_minutes, new DistancePredicate() {
@@ -417,9 +458,16 @@ public final class TimeAgo {
 		 */
 		private DistancePredicate mPredicate;
 
+		private boolean detailLevelDays;
+
 		Periods(int propertyKey, DistancePredicate predicate) {
+			this(propertyKey, true, predicate);
+		}
+
+		Periods(int propertyKey, boolean detailLevelDays, DistancePredicate predicate) {
 			this.mPropertyKey = propertyKey;
 			this.mPredicate = predicate;
+			this.detailLevelDays = detailLevelDays;
 		}
 
 		/**
@@ -427,13 +475,16 @@ public final class TimeAgo {
 		 *
 		 * @param distanceMinutes
 		 *            the distance minutes
+		 * @param detailLevelDays
+		 *            show time in days or above
 		 * @return the periods
 		 */
-		public static Periods findByDistanceMinutes(final long distanceMinutes) {
+		public static Periods findByDistanceMinutes(final long distanceMinutes, final boolean detailLevelDays) {
 			final Periods[] values = Periods.values();
 			for (final Periods item : values) {
 				final boolean successful = item.getPredicate().validateDistanceMinutes(distanceMinutes);
-				if (successful) {
+				final boolean passDetailLevelDaysRestriction = detailLevelDays ? item.isDetailLevelDays() : true;
+				if (successful && passDetailLevelDaysRestriction) {
 					return item;
 				}
 			}
@@ -456,6 +507,10 @@ public final class TimeAgo {
 		 */
 		public int getPropertyKey() {
 			return mPropertyKey;
+		}
+
+		private boolean isDetailLevelDays() {
+			return detailLevelDays;
 		}
 	}
 

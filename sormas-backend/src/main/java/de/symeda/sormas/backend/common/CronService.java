@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -12,6 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package de.symeda.sormas.backend.common;
 
 import java.io.File;
@@ -126,8 +127,15 @@ public class CronService {
 
 		Date now = new Date();
 		File exportFolder = new File(configFacade.getTempFilesPath());
+
 		int numberOfDeletedFiles = 0;
-		for (final File fileEntry : exportFolder.listFiles()) {
+		final File[] files = exportFolder.listFiles();
+		if (files == null) {
+			logger.warn("No files found in export folder {}", exportFolder.getAbsolutePath());
+			return;
+		}
+
+		for (final File fileEntry : files) {
 			// Skip the file if it's a directory or not a temporary sormas file
 			if (!fileEntry.isFile() || (!fileEntry.getName().startsWith(ImportExportUtils.TEMP_FILE_PREFIX))) {
 				continue;
@@ -136,7 +144,7 @@ public class CronService {
 			try {
 				BasicFileAttributes fileAttributes = Files.readAttributes(fileEntry.toPath(), BasicFileAttributes.class);
 				if (now.getTime() - fileAttributes.creationTime().toMillis() >= 1000 * 60 * 120) {
-					fileEntry.delete();
+					Files.delete(fileEntry.toPath());
 					numberOfDeletedFiles++;
 				}
 			} catch (IOException e) {
@@ -144,7 +152,7 @@ public class CronService {
 			}
 		}
 
-		logger.info("Deleted " + numberOfDeletedFiles + " export files");
+		logger.info("Deleted {} export files", numberOfDeletedFiles);
 	}
 
 	@Schedule(hour = "1", minute = "15", second = "0", persistent = false)
@@ -156,8 +164,10 @@ public class CronService {
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		if (daysAfterCaseGetsArchived < daysAfterContactsGetsArchived) {
 			logger.warn(
-				FeatureTypeProperty.THRESHOLD_IN_DAYS + " for " + CoreEntityType.CONTACT + " [{}] should be <= the one for " + CoreEntityType.CASE
-					+ " [{}]",
+				"{} for {} [{}] should be <= the one for {} [{}]",
+				FeatureTypeProperty.THRESHOLD_IN_DAYS,
+				CoreEntityType.CONTACT,
+				CoreEntityType.CASE,
 				daysAfterContactsGetsArchived,
 				daysAfterCaseGetsArchived);
 		}
@@ -175,8 +185,10 @@ public class CronService {
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		if (daysAfterEventsGetsArchived < daysAfterEventParticipantsGetsArchived) {
 			logger.warn(
-				FeatureTypeProperty.THRESHOLD_IN_DAYS + " for " + CoreEntityType.EVENT_PARTICIPANT + " [{}] should be <= the one for "
-					+ CoreEntityType.EVENT + " [{}]",
+				"{} for {} [{}] should be <= the one for {} [{}]",
+				FeatureTypeProperty.THRESHOLD_IN_DAYS,
+				CoreEntityType.EVENT_PARTICIPANT,
+				CoreEntityType.EVENT,
 				daysAfterEventParticipantsGetsArchived,
 				daysAfterEventsGetsArchived);
 		}

@@ -40,6 +40,7 @@ public interface Captions {
 	String Action_title = "Action.title";
 	String actionAccept = "actionAccept";
 	String actionAdjustChanges = "actionAdjustChanges";
+	String actionApply = "actionApply";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchiveCoreEntity = "actionArchiveCoreEntity";
@@ -91,6 +92,10 @@ public interface Captions {
 	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
 	String actionNoAll = "actionNoAll";
+	String actionOkAndGoToContactDetails = "actionOkAndGoToContactDetails";
+	String actionOkAndGoToContactDirectory = "actionOkAndGoToContactDirectory";
+	String actionOkAndGoToMerge = "actionOkAndGoToMerge";
+	String actionOkAndGoToPersonDirectory = "actionOkAndGoToPersonDirectory";
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
@@ -177,10 +182,12 @@ public interface Captions {
 	String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
 	String aggregateReportEditReport = "aggregateReportEditReport";
+	String aggregateReportExpiredAgeGroups = "aggregateReportExpiredAgeGroups";
 	String aggregateReportLabConfirmationsShort = "aggregateReportLabConfirmationsShort";
 	String aggregateReportLastWeek = "aggregateReportLastWeek";
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
 	String aggregateReportNewCasesShort = "aggregateReportNewCasesShort";
+	String aggregateReportNoAgeGroup = "aggregateReportNoAgeGroup";
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportShowOnlyDuplicateReports = "aggregateReportShowOnlyDuplicateReports";
 	String aggregateReportShowZeroRows = "aggregateReportShowZeroRows";
@@ -1822,6 +1829,7 @@ public interface Captions {
 	String registerInPatientDiaryButton = "registerInPatientDiaryButton";
 	String remove = "remove";
 	String reportingUser = "reportingUser";
+	String requiredUserRights = "requiredUserRights";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_additionalTestingStatus = "Sample.additionalTestingStatus";
@@ -2018,6 +2026,9 @@ public interface Captions {
 	String SormasToSormasShareRequest_senderName = "SormasToSormasShareRequest.senderName";
 	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
 	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";
+	String SormasToSormasShareRequestIndex_direction = "SormasToSormasShareRequestIndex.direction";
+	String SormasToSormasShareRequestIndex_organizationName = "SormasToSormasShareRequestIndex.organizationName";
+	String SormasToSormasShareRequestIndex_uuid = "SormasToSormasShareRequestIndex.uuid";
 	String sormasToSormasSync = "sormasToSormasSync";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
@@ -2417,10 +2428,11 @@ public interface Captions {
 	String userRight = "userRight";
 	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";
-	String UserRight_jurisdiction = "UserRight.jurisdiction";
-	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
+	String UserRight_requiredUserRights = "UserRight.requiredUserRights";
+	String UserRight_userRightGroup = "UserRight.userRightGroup";
 	String userRights = "userRights";
 	String UserRole = "UserRole";
+	String userrole_applyUserRoleTemplate = "userrole.applyUserRoleTemplate";
 	String UserRole_caption = "UserRole.caption";
 	String UserRole_description = "UserRole.description";
 	String UserRole_emailNotificationTypes = "UserRole.emailNotificationTypes";
@@ -2428,6 +2440,7 @@ public interface Captions {
 	String UserRole_hasAssociatedDistrictUser = "UserRole.hasAssociatedDistrictUser";
 	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
 	String UserRole_jurisdictionLevel = "UserRole.jurisdictionLevel";
+	String UserRole_linkedDefaultUserRole = "UserRole.linkedDefaultUserRole";
 	String userrole_main = "userrole.main";
 	String userrole_notifications = "userrole.notifications";
 	String UserRole_portHealthUser = "UserRole.portHealthUser";

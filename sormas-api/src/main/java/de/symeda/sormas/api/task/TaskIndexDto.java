@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,13 +41,12 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class TaskIndexDto extends PseudonymizableIndexDto implements Serializable {
+public class TaskIndexDto extends PseudonymizableIndexDto {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 
 	public static final String I18N_PREFIX = "Task";
 
-	public static final String UUID = "uuid";
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
 	public static final String CAZE = "caze";
@@ -121,7 +119,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventInJurisdiction, boolean isTravelEntryInJurisdiction) {
 	//@formatter:on
 
-		this.setUuid(uuid);
+		super(uuid);
 		this.taskContext = taskContext;
 
 		if (caseUuid != null) {

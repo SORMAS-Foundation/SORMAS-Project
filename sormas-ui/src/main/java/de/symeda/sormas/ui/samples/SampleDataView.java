@@ -167,10 +167,11 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser()
-			|| FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser()
-			|| FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
-		if (sormasToSormasEnabled || sampleDto.getSormasToSormasOriginInfo() != null) {
+		if (FacadeProvider.getSormasToSormasFacade()
+			.isAnyFeatureConfigured(
+				FeatureType.SORMAS_TO_SORMAS_SHARE_CASES,
+				FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS,
+				FeatureType.SORMAS_TO_SORMAS_SHARE_EVENTS)) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);

@@ -82,8 +82,12 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		super.init();
 
-		UserRoleReferenceDto newUserRole =
-			creator.createUserRole("NoEventNoCaseView", JurisdictionLevel.DISTRICT, UserRight.CASE_CLINICIAN_VIEW, UserRight.CASE_VIEW);
+		UserRoleReferenceDto newUserRole = creator.createUserRole(
+			"NoEventNoCaseView",
+			JurisdictionLevel.DISTRICT,
+			UserRight.CASE_CLINICIAN_VIEW,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW);
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		user1 = creator.createUser(
@@ -150,7 +154,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
-		List<CaseDataDto> cases = getCaseFacade().getAllActiveCasesAfter(calendar.getTime());
+		List<CaseDataDto> cases = getCaseFacade().getAllAfter(calendar.getTime());
 
 		assertPseudonymized(cases.stream().filter(c -> c.getUuid().equals(caze1.getUuid())).findFirst().get());
 		assertNotPseudonymized(cases.stream().filter(c -> c.getUuid().equals(caze2.getUuid())).findFirst().get());

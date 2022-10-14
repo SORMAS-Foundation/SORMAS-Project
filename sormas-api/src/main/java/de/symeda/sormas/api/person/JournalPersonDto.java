@@ -1,18 +1,32 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.person;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class JournalPersonDto implements Serializable {
+public class JournalPersonDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 3561284010406711305L;
 
-	private String uuid;
 	private boolean pseudonymized;
 	@PersonalData
 	private String firstName;
@@ -33,12 +47,8 @@ public class JournalPersonDto implements Serializable {
 	private Date latestFollowUpEndDate;
 	private FollowUpStatus followUpStatus;
 
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public JournalPersonDto(String uuid) {
+		super(uuid);
 	}
 
 	public boolean isPseudonymized() {
@@ -131,7 +141,7 @@ public class JournalPersonDto implements Serializable {
 
 	@Override
 	public String toString() {
-		return uuid + ' ' + firstName + ' ' + lastName;
+		return getUuid() + ' ' + firstName + ' ' + lastName;
 	}
 
 	@Override
@@ -142,7 +152,7 @@ public class JournalPersonDto implements Serializable {
 			return false;
 		JournalPersonDto that = (JournalPersonDto) o;
 		return pseudonymized == that.pseudonymized
-			&& Objects.equals(uuid, that.uuid)
+			&& Objects.equals(getUuid(), that.getUuid())
 			&& Objects.equals(firstName, that.firstName)
 			&& Objects.equals(lastName, that.lastName)
 			&& Objects.equals(emailAddress, that.emailAddress)
@@ -158,7 +168,7 @@ public class JournalPersonDto implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(
-			uuid,
+			getUuid(),
 			pseudonymized,
 			firstName,
 			lastName,

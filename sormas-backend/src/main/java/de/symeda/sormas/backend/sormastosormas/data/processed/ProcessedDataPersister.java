@@ -19,14 +19,19 @@ import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 
-public abstract class ProcessedDataPersister<T extends SormasToSormasShareableDto, S extends de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto<T>, E extends SormasToSormasShareable> {
+public abstract class ProcessedDataPersister<T extends SormasToSormasShareableDto, S extends SormasToSormasEntityDto<T>, E extends SormasToSormasShareable> {
 
 	protected abstract SormasToSormasShareInfoService getShareInfoService();
+
+	protected abstract SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade();
 
 	@Transactional(rollbackOn = {
 		Exception.class })
@@ -48,16 +53,27 @@ public abstract class ProcessedDataPersister<T extends SormasToSormasShareableDt
 		persistSharedData(processedData, existingEntity);
 	}
 
+	public DuplicateResult checkForSimilarEntities(S processedData) {
+		return DuplicateResult.NONE;
+	}
+
 	protected abstract void persistSharedData(S processedData, E existingEntity) throws SormasToSormasValidationException;
 
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistSyncData(S processedData, SormasToSormasOriginInfoDto originInfo, E existingEntity) throws SormasToSormasValidationException {
 		T entity = processedData.getEntity();
-		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity, originInfo.getOrganizationId());
 
-		if (shareInfo == null) {
-			entity.setSormasToSormasOriginInfo(originInfo);
+		if (entity.getSormasToSormasOriginInfo() == null) {
+			SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity, originInfo.getOrganizationId());
+
+			if (shareInfo == null) {
+				if (!getOriginInfoFacade().exists(originInfo.getUuid())) {
+					getOriginInfoFacade().saveOriginInfo(originInfo);
+				}
+
+				entity.setSormasToSormasOriginInfo(originInfo);
+			}
 		}
 
 		persistSharedData(processedData, existingEntity);

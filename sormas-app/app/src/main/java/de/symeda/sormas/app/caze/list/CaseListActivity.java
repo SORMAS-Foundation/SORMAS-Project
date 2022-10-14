@@ -139,13 +139,6 @@ public class CaseListActivity extends PagedBaseListActivity {
 	}
 
 	@Override
-	public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
-		//TODO: Call database and retrieve notification count
-		return new Random().nextInt(100);
-		//return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
-	}
-
-	@Override
 	protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
 		if (menuItem != null) {
 			InvestigationStatus listFilter = statusFilters[menuItem.getPosition()];

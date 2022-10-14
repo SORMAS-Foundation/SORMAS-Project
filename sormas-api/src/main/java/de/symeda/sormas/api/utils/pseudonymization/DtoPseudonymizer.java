@@ -34,7 +34,7 @@ public class DtoPseudonymizer {
 
 	private final String stringValuePlaceholder;
 
-	private final boolean pseudonymizeMandatoryFields;
+	protected final boolean pseudonymizeMandatoryFields;
 
 	protected DtoPseudonymizer(
 		FieldAccessCheckers inJurisdictionCheckers,

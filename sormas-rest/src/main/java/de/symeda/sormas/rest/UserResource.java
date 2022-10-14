@@ -32,7 +32,7 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.task.TaskContextIndex;
+import de.symeda.sormas.api.task.TaskContextIndexCriteria;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
@@ -84,7 +84,7 @@ public class UserResource {
 
 	@POST
 	@Path("/userReferenceWithNoOfTask")
-	public List<UserReferenceWithTaskNumbersDto> getUsersWithTaskNumbers(@RequestBody TaskContextIndex taskContextIndex) {
-		return FacadeProvider.getUserFacade().getAssignableUsersWithTaskNumbers(taskContextIndex);
+	public List<UserReferenceWithTaskNumbersDto> getUsersWithTaskNumbers(@RequestBody TaskContextIndexCriteria taskContextIndexCriteria) {
+		return FacadeProvider.getUserFacade().getAssignableUsersWithTaskNumbers(taskContextIndexCriteria);
 	}
 }

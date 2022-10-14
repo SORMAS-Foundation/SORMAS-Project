@@ -102,8 +102,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
-		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
-		if (tasksFeatureEnabled) {
+		boolean showPendingTasks = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW);
+		if (showPendingTasks) {
 			Column<EventIndexDto, String> pendingTasksColumn = addColumn(
 				entry -> String.format(
 					I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
@@ -127,16 +128,16 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			columnIds.add(EventIndexDto.SPECIFIC_RISK);
 		}
 
-		columnIds.addAll(Arrays.asList(
-			EventIndexDto.EVENT_INVESTIGATION_STATUS,
-			EventIndexDto.EVENT_MANAGEMENT_STATUS,
-			EventIndexDto.EVENT_IDENTIFICATION_SOURCE,
-			createEventDateColumn(this),
-			createEventEvolutionDateColumn(this),
-			DISEASE_SHORT,
-			EventIndexDto.DISEASE_VARIANT,
-			EventIndexDto.EVENT_TITLE));
-
+		columnIds.addAll(
+			Arrays.asList(
+				EventIndexDto.EVENT_INVESTIGATION_STATUS,
+				EventIndexDto.EVENT_MANAGEMENT_STATUS,
+				EventIndexDto.EVENT_IDENTIFICATION_SOURCE,
+				createEventDateColumn(this),
+				createEventEvolutionDateColumn(this),
+				DISEASE_SHORT,
+				EventIndexDto.DISEASE_VARIANT,
+				EventIndexDto.EVENT_TITLE));
 
 		if (eventGroupsFeatureEnabled) {
 			columnIds.add(EventIndexDto.EVENT_GROUPS);
@@ -162,7 +163,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 					EventIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT));
 		}
 
-		if (tasksFeatureEnabled) {
+		if (showPendingTasks) {
 			columnIds.add(NUMBER_OF_PENDING_TASKS);
 		}
 

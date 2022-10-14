@@ -60,7 +60,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -114,9 +113,9 @@ import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -142,7 +141,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
@@ -267,7 +266,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		FacadeHelper.checkCreateAndEditRights(existingEvent, userService, UserRight.EVENT_CREATE, UserRight.EVENT_EDIT);
 
-		if (internal && existingEvent != null && !service.isEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingEvent != null && !service.isEditAllowed(existingEvent)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -276,10 +275,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingEvent, pseudonymizer);
 
-		if (dto.getReportDateTime() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
-		}
-
+		validate(dto);
 		Event event = fillOrBuildEntity(dto, existingEvent, checkChangeDate);
 		service.ensurePersisted(event);
 
@@ -993,28 +989,19 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public void validate(@Valid EventDto event) throws ValidationRuntimeException {
 
-		// Check whether any required field that does not have a not null constraint in
-		// the database is empty
-		if (event.getEventStatus() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventStatus));
-		}
-		if (event.getEventInvestigationStatus() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventInvestigationStatus));
-		}
-		if (StringUtils.isEmpty(event.getEventTitle())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventTitle));
-		}
-
 		LocationDto location = event.getEventLocation();
-		if (location == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validLocation));
-		}
+
 		if (location.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
 		if (location.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
+
+		if (event.getReportingUser() == null && !event.isPseudonymized()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
+		}
+
 		// Check whether there are any infrastructure errors
 		if (!districtFacade.getByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
@@ -1029,7 +1016,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			if (location.getFacilityType() == null && !FacilityDto.NONE_FACILITY_UUID.equals(location.getFacility().getUuid())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
 			}
-			if (location.getFacilityType() != null && !location.getFacilityType().equals(facility.getType())) {
+			if (location.getFacilityType() != null
+				&& !FacilityDto.OTHER_FACILITY_UUID.equals(location.getFacility().getUuid())
+				&& !location.getFacilityType().equals(facility.getType())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
 			}
 			if (location.getCommunity() == null && facility.getDistrict() != null && !facility.getDistrict().equals(location.getDistrict())) {
@@ -1139,24 +1128,28 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public EventReferenceDto toRefDto(Event event) {
+	protected EventReferenceDto toRefDto(Event event) {
 		return toReferenceDto(event);
 	}
 
 	public EventDto convertToDetailedReferenceDto(Event source, Pseudonymizer pseudonymizer) {
+
 		EventDto eventDto = toDto(source);
 		eventDto.setSuperordinateEvent(EventFacadeEjb.toDetailedReferenceDto(source.getSuperordinateEvent()));
-		pseudonymizeDto(source, eventDto, pseudonymizer);
+		pseudonymizeDto(source, eventDto, pseudonymizer, service.inJurisdictionOrOwned(source));
 
 		return eventDto;
 	}
 
-	protected void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(event);
+	@Override
+	protected void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
-			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
-				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+		if (dto != null) {
+			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, e -> {
+				pseudonymizer.pseudonymizeUser(
+					event.getReportingUser(),
+					userService.getCurrentUser(),
+					dto::setReportingUser);
 			});
 		}
 	}
@@ -1236,7 +1229,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
 		}
 
 		target.setDeleted(source.isDeleted());
@@ -1369,7 +1362,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		for (String evetUuid : eventUuidList) {
 			Event event = service.getByUuid(evetUuid);
 
-			if (service.isEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(event)) {
 				EventDto eventDto = toDto(event);
 				if (eventStatusChange) {
 					eventDto.setEventStatus(updatedTempEvent.getEventStatus());
@@ -1408,5 +1401,4 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			super(service, userService);
 		}
 	}
-
 }

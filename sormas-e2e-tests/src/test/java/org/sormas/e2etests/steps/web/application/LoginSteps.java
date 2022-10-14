@@ -18,14 +18,10 @@
 
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.LoginPage.ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.LoginPage.FAILED_LOGIN_ERROR_MESSAGE;
 import static org.sormas.e2etests.pages.application.LoginPage.LOGIN_BUTTON;
-import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP;
-import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP_DE;
-import static org.sormas.e2etests.pages.application.NavBarPage.DISCARD_USER_SETTINGS_BUTTON;
-import static org.sormas.e2etests.pages.application.NavBarPage.GDPR_CHECKBOX;
-import static org.sormas.e2etests.pages.application.NavBarPage.LOGOUT_KEYCLOAK_BUTTON;
-import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT;
+import static org.sormas.e2etests.pages.application.NavBarPage.*;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
@@ -38,6 +34,7 @@ import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.strings.LanguageDetectorHelper;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
@@ -53,12 +50,21 @@ public class LoginSteps implements En {
       AssertHelpers assertHelpers) {
 
     Given(
-        "^I am logged in with name ([^\"]*)$",
-        (String name) -> {
+        "^I am logged in$",
+        () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LOGOUT_BUTTON, 60);
         });
 
+    When(
+        "I check error message for disabled user is present",
+        () ->
+            assertHelpers.assertWithPoll20Second(
+                () -> {
+                  org.testng.Assert.assertTrue(
+                      webDriverHelpers.isElementVisibleWithTimeout(ERROR_MESSAGE, 5),
+                      "Error message is not visible");
+                }));
     Given(
         "^I navigate to SORMAS login page$",
         () -> {
@@ -117,6 +123,13 @@ public class LoginSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
         });
 
+    When(
+        "I navigate to {string} environment",
+        (String env) -> {
+          locale = env;
+          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
+          TimeUnit.SECONDS.sleep(5);
+        });
     Then(
         "I login with last edited user",
         () -> {
@@ -130,6 +143,21 @@ public class LoginSteps implements En {
               LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
           log.info("Click on Login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    Then(
+        "I login with last edited user on Keycloak Enabled Environment",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LoginPage.USER_NAME_INPUT, 100);
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_NAME_INPUT, EditUserSteps.collectedUser.getUserName());
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
+          log.info("Click on Login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
           webDriverHelpers.waitForPageLoaded();
         });
 
@@ -181,7 +209,12 @@ public class LoginSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
           String selectedLanguageText =
-              webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
+              (webDriverHelpers
+                      .getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT)
+                      .isEmpty())
+                  ? LanguageDetectorHelper.scanLanguage(
+                      webDriverHelpers.getTextFromWebElement(DASHBOARD_BUTTON))
+                  : webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
           Assert.assertEquals(
               "Selected language is not correct", expectedLanguageText, selectedLanguageText);
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_USER_SETTINGS_BUTTON);

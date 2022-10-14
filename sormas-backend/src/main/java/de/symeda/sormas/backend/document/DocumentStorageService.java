@@ -93,6 +93,12 @@ public class DocumentStorageService {
 	}
 
 	private void setAttribute(Path path, String attributeKey, String attributeValue) throws IOException {
-		Files.setAttribute(path, "user:" + attributeKey, Charset.defaultCharset().encode(attributeValue));
+		try {
+			Files.setAttribute(path, "user:" + attributeKey, Charset.defaultCharset().encode(attributeValue));
+		} catch (UnsupportedOperationException uoe) {
+			// Java 11 does not support user defined file attributes on OS X. https://bugs.openjdk.org/browse/JDK-8030048
+			// TODO remove try/catch after upgrade to Java 17
+			logger.warn("Could not set document attribute [{}]: {}", attributeKey, uoe.getMessage());
+		}
 	}
 }

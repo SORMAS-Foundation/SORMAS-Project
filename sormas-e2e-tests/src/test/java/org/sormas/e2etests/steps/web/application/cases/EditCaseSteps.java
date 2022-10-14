@@ -255,6 +255,7 @@ import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
 import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
 import org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
@@ -274,6 +275,7 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
+  public static String caseUuid;
 
   @SneakyThrows
   @Inject
@@ -1255,6 +1257,10 @@ public class EditCaseSteps implements En {
         () -> aCase = collectCasePersonUuid());
 
     When(
+        "I get the case person UUID displayed on Edit case page",
+        () -> caseUuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT));
+
+    When(
         "I check case created from created contact is correctly displayed on Edit Case page",
         () -> {
           aCase = collectCasePersonData();
@@ -1341,6 +1347,10 @@ public class EditCaseSteps implements En {
     When(
         "I click on the Create button from Case Document Templates",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
+
+    When(
+        "I click on the Create button from Case Document Templates in DE",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON_DE));
 
     When(
         "I change the Case Classification field for {string} value",
@@ -2001,6 +2011,12 @@ public class EditCaseSteps implements En {
         });
 
     And(
+        "I fill comment in share popup with {string}",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, comment);
+        });
+
+    And(
         "I fill in the Internal Token field in Edit Case page with ([^\"]*)",
         (String token) -> {
           webDriverHelpers.scrollToElementUntilIsVisible(INTERNAL_TOKEN_INPUT);
@@ -2170,7 +2186,7 @@ public class EditCaseSteps implements En {
         "I change disease to {string} in the case tab",
         (String disease) -> {
           webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_POPUP_TITLE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_CONFIRMATION_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
 
@@ -2296,6 +2312,7 @@ public class EditCaseSteps implements En {
     And(
         "^I check that the vaccination card displays \"([^\"]*)\" in place of the vaccination date$",
         (String vaccinationDateDescription) -> {
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REPORT_DATE_INPUT);
           softly.assertEquals(
@@ -2440,6 +2457,109 @@ public class EditCaseSteps implements En {
         (String vaccinationStatus) -> {
           webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I click on share case button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
+
+    When(
+        "I select organization to share with {string}",
+        (String organization) -> {
+          String survnetOrganization = runningConfiguration.getSurvnetResponsible(organization);
+          webDriverHelpers.selectFromCombobox(
+              SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
+        });
+
+    When(
+        "I click on share button in s2s share popup and wait for share to finish",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          // Workaround before SORQA-565 will be fixed
+          webDriverHelpers.refreshCurrentPage();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
+        });
+
+    And(
+        "^I check that displayed vaccination name is equal to \"([^\"]*)\" on Edit case page$",
+        (String expectedName) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(VACCINATION_CARD_VACCINATION_NAME);
+          String name = webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_NAME);
+          softly.assertEquals(
+              name,
+              "Impfstoffname: " + expectedName,
+              "Vaccination name is different than expected!");
+          softly.assertAll();
+        });
+
+    And(
+        "I check that displayed vaccination name is {string} on Edit case page",
+        (String activationState) -> {
+          switch (activationState) {
+            case "enabled":
+              Assert.assertTrue(
+                  webDriverHelpers.isElementEnabled(VACCINATION_CARD_VACCINATION_NAME),
+                  "Vaccination name is not enabled!");
+              break;
+            case "greyed out":
+              webDriverHelpers.isElementGreyedOut(VACCINATION_CARD_VACCINATION_NAME);
+              break;
+          }
+        });
+
+    And(
+        "^I check that follow-up status comment is correctly displayed on Edit case page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FOLLOW_UP_COMMENT_FIELD);
+          String actualFollowUpStatusComment =
+              webDriverHelpers.getValueFromWebElement(FOLLOW_UP_COMMENT_FIELD);
+          String expectedFollowUpStatusComment =
+              EditContactSteps.editedContact.getFollowUpStatusComment();
+          softly.assertEquals(
+              actualFollowUpStatusComment,
+              expectedFollowUpStatusComment,
+              "Follow-up status comment is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "I check that {string} Pre-existing condition is visible on page",
+        (String preExistingCondition) ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementEnabled(
+                    getPreExistingConditionCombobox_DE(preExistingCondition))));
+    And(
+        "I check that {string} Pre-existing condition have {string} selected",
+        (String preExistingCondition, String value) ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementEnabled(
+                    getPreExistingConditionComboboxWithValue_DE(preExistingCondition, value))));
+
+    Then(
+        "I check that Clinical Assessments heading is visible in DE",
+        () ->
+            Assert.assertTrue(
+                webDriverHelpers.isElementVisibleWithTimeout(CLINICAL_ASSESSMENTS_LABEL_DE, 15)));
+
+    And(
+        "I select {string} from documents templates list",
+        (String templateName) -> {
+          selectQuarantineOrderTemplate(templateName);
+        });
+    Then(
+        "I click download in case document create page in DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(10);
+        });
+
+    And(
+        "^I click on edit task icon of the (\\d+) displayed task on Edit Case page$",
+        (Integer taskNumber) -> {
+          webDriverHelpers.clickOnWebElementBySelector(getEditTaskButtonByNumber(taskNumber - 1));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }
 

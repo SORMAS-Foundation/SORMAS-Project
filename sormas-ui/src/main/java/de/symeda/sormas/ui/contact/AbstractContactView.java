@@ -23,7 +23,7 @@ import java.util.List;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 
-import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -41,17 +41,21 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
 
-@SuppressWarnings("serial")
-public abstract class AbstractContactView extends AbstractDetailView<ContactReferenceDto> {
+public abstract class AbstractContactView extends AbstractEditAllowedDetailView<ContactReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = ContactsView.VIEW_NAME;
 
 	protected AbstractContactView(String viewName) {
 		super(viewName);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getContactFacade();
 	}
 
 	@Override
@@ -94,7 +98,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
 			ExternalJournalUtil.getExternalJournalUiButton(contactPerson, contact).ifPresent(getButtonsLayout()::addComponent);
 		}
 	}
@@ -139,13 +143,9 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		return getReference();
 	}
 
-	public void setContactEditPermission(Component component) {
-		if (!isContactEditAllowed()) {
+	public void setEditPermission(Component component) {
+		if (!isEditAllowed()) {
 			getComponent(getComponentIndex(component)).setEnabled(false);
 		}
-	}
-
-	protected boolean isContactEditAllowed() {
-		return FacadeProvider.getContactFacade().isEditAllowed(getContactRef().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

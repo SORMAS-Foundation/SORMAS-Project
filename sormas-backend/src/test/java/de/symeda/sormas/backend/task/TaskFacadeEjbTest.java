@@ -195,7 +195,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		creator.createTask(
 			TaskContext.GENERAL,
@@ -288,7 +288,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		creator.createTask(
 			TaskContext.GENERAL,
@@ -614,7 +614,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 				JurisdictionLevel.NATION,
 				UserRight.CASE_VIEW,
 				UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
-				UserRight.TRAVEL_ENTRY_VIEW));
+				UserRight.TRAVEL_ENTRY_VIEW,
+				UserRight.PERSON_VIEW));
 		loginWith(noEventNoCaseViewUser);
 		assertFalse(getUserService().hasRight(UserRight.EVENT_VIEW));
 		assertFalse(getUserService().hasRight(UserRight.CONTACT_VIEW));
@@ -641,7 +642,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 				JurisdictionLevel.NATION,
 				UserRight.CASE_VIEW,
 				UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
-				UserRight.TRAVEL_ENTRY_VIEW));
+				UserRight.TRAVEL_ENTRY_VIEW,
+				UserRight.PERSON_VIEW));
 
 		EventDto eventDto = creator.createEvent(user.toReference());
 		TaskDto taskEvent1 = creator.createTask(
@@ -696,7 +698,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 				JurisdictionLevel.NATION,
 				UserRight.CASE_VIEW,
 				UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
-				UserRight.TRAVEL_ENTRY_VIEW));
+				UserRight.TRAVEL_ENTRY_VIEW,
+				UserRight.PERSON_VIEW));
 
 		EventDto eventDto = creator.createEvent(user.toReference());
 

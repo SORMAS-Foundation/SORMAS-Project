@@ -18,21 +18,39 @@ package de.symeda.sormas.backend.sormastosormas.entities.caze;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
+import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntitiesHelper;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -43,11 +61,24 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
+	private CaseService caseService;
+	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
+	@EJB
+	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
 
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
 		return shareInfoService;
+	}
+
+	@Override
+	protected SormasToSormasOriginInfoFacadeEjb getOriginInfoFacade() {
+		return originInfoFacade;
 	}
 
 	@Override
@@ -60,17 +91,46 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 		return shareInfoService.getByCaseAndOrganization(entity.getUuid(), organizationId);
 	}
 
+	@Override
+	public DuplicateResult checkForSimilarEntities(SormasToSormasCaseDto processedData) {
+		List<SimilarPersonDto> similarPersons = personFacade.getSimilarPersonDtos(PersonSimilarityCriteria.forPerson(processedData.getPerson()));
+		if (similarPersons.isEmpty()) {
+			return DuplicateResult.NONE;
+		}
+
+		List<CaseSelectionDto> similarCases = caseService.getSimilarCases(
+			CaseSimilarityCriteria
+				.forCase(processedData.getEntity(), similarPersons.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList())));
+
+		if (!similarCases.isEmpty()) {
+			boolean foundCasesConverted = caseService.exists(
+				((cb, root, cq) -> cb.and(
+					root.get(Case.UUID).in(similarCases.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList())),
+					cb.isNotNull(root.join(Case.CONVERTED_FROM_CONTACT, JoinType.LEFT)))));
+
+			return foundCasesConverted ? DuplicateResult.CASE_CONVERTED : DuplicateResult.CASE;
+		}
+
+		DistrictReferenceDto district = sormasToSormasEntitiesHelper.getS2SDistrictReference()
+			.map(DistrictDto::toReference)
+			.orElse(processedData.getEntity().getResponsibleDistrict());
+
+		boolean foundSimilarContacts = contactFacade.hasSimilarContacts(
+			new ContactSimilarityCriteria().withPersons(similarPersons.stream().map(SimilarPersonDto::toReference).collect(Collectors.toList()))
+				.withNoResultingCase(true)
+				.withDistrict(district)
+				.withDisease(processedData.getEntity().getDisease()));
+
+		return foundSimilarContacts ? DuplicateResult.CONTACT_TO_CASE : DuplicateResult.PERSON_ONLY;
+	}
+
 	private void persistProcessedData(SormasToSormasCaseDto caseData, boolean isCreate) throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getEntity();
 
 		final PersonDto person = caseData.getPerson();
 		if (isCreate) {
 			// save person first during creation
-			handleValidationError(
-				() -> personFacade.savePerson(person, false, false, false),
-				Captions.Person,
-				buildCaseValidationGroupName(caze),
-				person);
+			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, buildCaseValidationGroupName(caze), person);
 
 			handleValidationError(
 				() -> caseFacade.save(caze, true, false, false, false),
@@ -85,11 +145,7 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 				Captions.CaseData,
 				buildCaseValidationGroupName(caze),
 				caze);
-			handleValidationError(
-				() -> personFacade.savePerson(person, false, false, false),
-				Captions.Person,
-				buildCaseValidationGroupName(caze),
-				person);
+			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, buildCaseValidationGroupName(caze), person);
 		}
 	}
 }

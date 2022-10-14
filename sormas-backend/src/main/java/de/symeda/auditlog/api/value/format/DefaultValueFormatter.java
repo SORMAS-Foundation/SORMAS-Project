@@ -23,7 +23,7 @@ import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.auditlog.api.value.DefaultValueContainer;
 import de.symeda.auditlog.api.value.SimpleValueContainer;
 import de.symeda.auditlog.api.value.ValueContainer;
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 /**
  * Default formatter for {@link AuditedAttribute} that supports the following types:

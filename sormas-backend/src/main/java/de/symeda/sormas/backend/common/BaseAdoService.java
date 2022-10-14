@@ -22,10 +22,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.TransactionAttribute;
@@ -44,9 +47,11 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.slf4j.Logger;
@@ -59,6 +64,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -86,6 +92,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	public boolean hasRight(UserRight right) {
 		return currentUserService.hasUserRight(right);
+	}
+
+	public boolean hasAnyRight(Set<UserRight> userRights) {
+		return currentUserService.hasAnyUserRight(userRights);
 	}
 
 	protected Class<ADO> getElementClass() {
@@ -143,20 +153,40 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
-		return getAll(filterBuilder, null);
-	}
+	public List<ADO> getList(FilterProvider<ADO> filterProvider, Integer batchSize) {
 
-	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder, Integer batchSize) {
+		long startTime = DateHelper.startTime();
+		logger.trace("getList started...");
 
+		// 1. Fetch ids, avoid duplicates with DISTINCT. Only fetch some attributes to avoid costly DISTINCT
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		CriteriaQuery<AdoAttributes> cq = cb.createQuery(AdoAttributes.class);
 		Root<ADO> from = cq.from(getElementClass());
-		Predicate filter = filterBuilder.apply(cb, from);
+
+		// SELECT
+		cq.multiselect(from.get(ADO.ID), from.get(ADO.UUID), from.get(ADO.CHANGE_DATE));
+
+		// FILTER
+		Predicate filter = filterProvider.provide(cb, cq, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+
+		cq.distinct(true);
+
+		List<AdoAttributes> attributes = getBatchedAttributesQueryResults(cb, cq, from, batchSize);
+		List<Long> ids = attributes.stream().map(e -> e.getId()).limit(batchSize == null ? Long.MAX_VALUE : batchSize).collect(Collectors.toList());
+		logger.trace(
+			"getList: Unique ids identified. batchSize:{}, attributes:{}, ids:{}, {} ms",
+			batchSize,
+			attributes.size(),
+			ids.size(),
+			DateHelper.durationMillies(startTime));
+
+		// 2. Fetch JPA entities by ids
+		List<ADO> adoResult = getByIds(ids);
+		logger.trace("getList finished. Fetched entities:{}, {} ms", adoResult.size(), DateHelper.durationMillies(startTime));
+		return adoResult;
 	}
 
 	public List<ADO> getAll(String orderProperty, boolean asc) {
@@ -167,6 +197,91 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	/**
+	 * @return {@code true} if {@code entity} fulfills the provided condition, else {@code false}.
+	 */
+	protected boolean fulfillsCondition(ADO entity, FilterProvider<ADO> conditionProvider) {
+
+		if (entity == null) {
+			return false;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<ADO> root = cq.from(getElementClass());
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, conditionProvider.provide(cb, cq, root)));
+		cq.where(cb.equal(root.get(ADO.ID), entity.getId()));
+
+		return em.createQuery(cq).getResultList().stream().anyMatch(bool -> bool);
+	}
+
+	/**
+	 * @return Ids of given {@code selectedEntities} that match the filter given by the {@code filterProvider}.
+	 */
+	protected List<Long> getIdList(List<ADO> selectedEntities, FilterProvider<ADO> filterProvider) {
+
+		List<Long> result = new ArrayList<>(selectedEntities.size());
+		IterableHelper.executeBatched(selectedEntities, ModelConstants.PARAMETER_LIMIT, batchEntities -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+			Root<ADO> root = cq.from(getElementClass());
+			cq.select(root.get(ADO.ID));
+
+			List<Long> ids = batchEntities.stream().map(ADO::getId).collect(Collectors.toList());
+			cq.where(cb.and(cb.in(root.get(ADO.ID)).value(ids), filterProvider.provide(cb, cq, root)));
+			result.addAll(em.createQuery(cq).getResultList());
+		});
+
+		return result;
+	}
+
+	/**
+	 * @param <S>
+	 *            An object with the selected attributes (projection with id as first parameter in constructor).
+	 * @param selectedEntities
+	 *            From these entities attributes will be fetched.
+	 * @param selectionProvider
+	 *            To fetch or calculate the desired attributes.
+	 * @param attributesConverter
+	 *            Converts the query result to an S object.
+	 *            The first entry of Object array (Object[0]) contains the entity id that is provided as map key in the method result.
+	 * @return Objects with several selected or calculated attributes, with entity id as key.
+	 */
+	protected <S> Map<Long, S> getSelectionAttributes(
+		List<ADO> selectedEntities,
+		SelectionProvider<ADO> selectionProvider,
+		Function<Object[], S> attributesConverter) {
+
+		Map<Long, S> result = new LinkedHashMap<>(selectedEntities.size());
+		IterableHelper.executeBatched(selectedEntities, ModelConstants.PARAMETER_LIMIT, batchEntities -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			Root<ADO> root = cq.from(getElementClass());
+
+			List<Selection<?>> selectionList = new ArrayList<>();
+			selectionList.add(root.get(ADO.ID));
+			selectionList.addAll(selectionProvider.provide(cb, cq, root));
+			cq.multiselect(selectionList);
+
+			List<Long> ids = batchEntities.stream().map(ADO::getId).collect(Collectors.toList());
+			cq.where(cb.and(cb.in(root.get(ADO.ID)).value(ids)));
+			List<Object[]> resultList = em.createQuery(cq).getResultList();
+			Map<Long, S> batchResult = resultList.stream().collect(Collectors.toMap(e -> (Long) e[0], e -> attributesConverter.apply(e)));
+
+			// Check that a result for every queried id was provided
+			if (CollectionUtils.containsAll(batchResult.keySet(), ids)) {
+				result.putAll(batchResult);
+			} else {
+				throw new IllegalArgumentException(
+					String.format("No result found some of the queried ids: %s", CollectionUtils.subtract(ids, batchResult.keySet())));
+			}
+		});
+
+		return result;
 	}
 
 	public List<String> getAllUuids(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
@@ -181,15 +296,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.select(from.get(ADO.UUID));
 
 		return em.createQuery(cq).getResultList();
-	}
-
-	public List<ADO> getBatchedQueryResults(CriteriaBuilder cb, CriteriaQuery<ADO> cq, From<?, ADO> from, Integer batchSize) {
-
-		// Ordering by UUID is relevant if a batch includes some, but not all objects with the same timestamp.
-		// the next batch can then resume with the same timestamp and the next UUID in lexicographical order.y
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)), cb.asc(from.get(AbstractDomainObject.UUID)));
-
-		return createQuery(cq, 0, batchSize).getResultList();
 	}
 
 	public List<AdoAttributes> getBatchedAttributesQueryResults(
@@ -224,7 +330,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	 * @return List of <strong>read-only</strong> entities. Sorts also by {@value AbstractDomainObject#CHANGE_DATE},
 	 *         {@value AbstractDomainObject#UUID}, {@value AbstractDomainObject#ID} ASC
 	 *         to match sorting for {@code getAllAfter} pattern (to be in sync with
-	 *         {@link #getBatchedQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)} and
 	 *         {@link #getBatchedAttributesQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)}).
 	 */
 	public List<ADO> getByIds(List<Long> ids) {
@@ -239,16 +344,24 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 			Root<ADO> from = cq.from(getElementClass());
+			fetchReferences(from);
 			cq.where(from.get(AbstractDomainObject.ID).in(batchedIds));
 			cq.orderBy(
 				cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)),
 				cb.asc(from.get(AbstractDomainObject.UUID)),
 				cb.asc(from.get(AbstractDomainObject.ID)));
-			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 			result.addAll(batchResult);
 		});
 
 		return new ArrayList<>(result);
+	}
+
+	/**
+	 * Override this method to eagerly fetch entity references in {@link #getByIds(List)}.
+	 */
+	protected void fetchReferences(From<?, ADO> from) {
+		// NOOP by default
 	}
 
 	public List<ADO> getByUuids(List<String> uuids) {

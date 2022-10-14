@@ -138,7 +138,7 @@ Feature: Dashboard counters
     Then I click on reset filters on Surveillance Dashboard Page
     Then I verify that filters were reset on Surveillance Dashboard Page
 
-    @tmsLink=SORDEV-6604 @env_main
+    @tmsLink=SORDEV-6604 @env_main @LanguageRisk
     Scenario: Differentiate strings for confirmed cases and confirmed contacts on dashboard
       Given I log in as a Admin User
       And I click on the Users from navbar
@@ -156,7 +156,7 @@ Feature: Dashboard counters
       And I select "Deutsch" language from Combobox in User settings
       When I click on the Dashboard button from navbar and access Surveillance Dashboard
       Then I get Confirmed labels and value from Surveillance Dashboard with Deutsch language
-      When I click on the Dashboard button from navbar and access Contacts Dashboard with Deutsch language
+      When I click on the Dashboard button from navbar and access Contacts Dashboard
       Then I get Confirmed Contact labels and value from Contact Dashboard with Deutsch language
       And I compare English and German confirmed counter
       And I compare English and German confirmed contacts counter

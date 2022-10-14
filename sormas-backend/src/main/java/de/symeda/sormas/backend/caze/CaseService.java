@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
@@ -86,6 +88,7 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -133,14 +136,17 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -166,7 +172,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 @LocalBean
 public class CaseService extends AbstractCoreAdoService<Case> {
 
-	private static final long SECONDS_30_DAYS = 30L * 24L * 60L * 60L;
+	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 
 	@EJB
 	private CaseListCriteriaBuilder listQueryBuilder;
@@ -246,11 +252,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Case> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
-		Root<Case> from = cq.from(getElementClass());
+		Predicate filter = createActiveCasesFilter(cb, from);
+
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
+		}
+
+		return filter;
+	}
+
+	@Override
+	protected void fetchReferences(From<?, Case> from) {
+
 		from.fetch(Case.SYMPTOMS);
 		from.fetch(Case.THERAPY);
 		from.fetch(Case.HEALTH_CONDITIONS);
@@ -258,28 +275,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		from.fetch(Case.EPI_DATA);
 		from.fetch(Case.PORT_HEALTH_INFO);
 		from.fetch(Case.MATERNAL_HISTORY);
-
-		Predicate filter = createActiveCasesFilter(cb, from);
-
-		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
-		}
-
-		if (date != null) {
-			Predicate dateFilter =
-				createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeExtendedChangeDateFilters, lastSynchronizedUuid);
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -638,6 +633,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, Facility> facility = joins.getFacility();
 		Join<Person, Location> location = joins.getPersonAddress();
 
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
+
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
@@ -811,7 +808,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
@@ -893,6 +894,53 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyShowCasesWithFulfilledReferenceDefinition())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_DEFINITION), CaseReferenceDefinition.FULFILLED));
 		}
+		if (caseCriteria.getWithOwnership() != null) {
+			Subquery<Boolean> sharesQuery = cq.subquery(Boolean.class);
+			Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
+			sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
+
+			Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
+			Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+			latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+			latestRequestDateQuery.where(
+				cb.equal(
+					shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+					shareInfoFrom.get(SormasToSormasShareInfo.ID)));
+
+			Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
+			sharesQuery.where(
+				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.CAZE), from.get(Case.ID)),
+				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
+				cb.equal(
+					requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
+						.get(ShareRequestInfo.REQUEST_STATUS),
+					ShareRequestStatus.ACCEPTED));
+
+			if (Boolean.TRUE.equals(caseCriteria.getWithOwnership())) {
+				filter =
+					CriteriaBuilderHelper
+						.and(
+							cb,
+							filter,
+							cb.and(
+								cb.or(
+									cb.isNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+									cb.equal(
+										from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
+											.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+										true)),
+								cb.not(cb.exists(sharesQuery))));
+			} else {
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.or(
+						cb.equal(
+							from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+							false),
+						cb.exists(sharesQuery)));
+			}
+		}
 
 		filter = CriteriaBuilderHelper.and(
 			cb,
@@ -915,10 +963,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return cb.and(cb.isFalse(root.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
 	}
 
-	public Predicate createActiveCasesFilter(CriteriaBuilder cb, Join<?, Case> join) {
-		return cb.and(cb.isFalse(join.get(Case.ARCHIVED)), cb.isFalse(join.get(Case.DELETED)));
-	}
-
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link CaseCriteria}.
 	 * This essentially removes {@link DeletableAdo#isDeleted()} cases from the queries.
@@ -939,14 +983,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		caze.getVisits().stream().forEach(visit -> {
-			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {
-				visitService.deletePermanent(visit);
-			} else {
-				visit.setCaze(null);
-				visitService.ensurePersisted(visit);
-			}
-		});
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
+		Root<Visit> visitRoot = cd.from(Visit.class);
+		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
+		initVisitSubqueryForDeletion(cb, visitRoot, contactVisitsSubquery);
+		cd.where(cb.and(cb.equal(visitRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.not(cb.exists(contactVisitsSubquery))));
+		em.createQuery(cd).executeUpdate();
+
+		CriteriaUpdate<Visit> cu = cb.createCriteriaUpdate(Visit.class);
+		Root<Visit> updateRoot = cu.from(Visit.class);
+		cu.set(Visit.CAZE, null);
+		Subquery<Long> updateVisitsSubquery = cu.subquery(Long.class);
+		initVisitSubqueryForDeletion(cb, visitRoot, updateVisitsSubquery);
+		cu.where(cb.and(cb.equal(updateRoot.get(Visit.CAZE).get(Case.ID), caze.getId()), cb.exists(updateVisitsSubquery)));
+		em.createQuery(cu).executeUpdate();
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
@@ -994,6 +1045,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+	}
+
+	private void initVisitSubqueryForDeletion(CriteriaBuilder cb, Root<Visit> visitRoot, Subquery<Long> contactVisitsSubquery) {
+		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
+		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
+		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
+		contactVisitsSubquery.select(visitContactJoin.get(Visit.ID));
 	}
 
 	@Override
@@ -1520,18 +1578,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(caze) || sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+		if (!inJurisdictionOrOwned(caze)) {
 			return EditPermissionType.REFUSED;
+		}
+
+		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+			return EditPermissionType.DOCUMENTS_ONLY;
 		}
 
 		return super.getEditPermissionType(caze);
 
-	}
-
-	@Override
-	public EditPermissionType isEditAllowed(Case entity) {
-		// todo compared to ContactService this seems strange.
-		return getEditPermissionType(entity);
 	}
 
 	public boolean inJurisdiction(Case caze, User user) {
@@ -1546,18 +1602,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
-	public boolean inJurisdictionOrOwned(Case caze, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Case> root = cq.from(Case.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
-		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
-	}
-
-	public boolean inJurisdictionOrOwned(Case caze) {
-		return inJurisdictionOrOwned(caze, userService.getCurrentUser());
+	@Override
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
+		return inJurisdictionOrOwned(new CaseQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(CaseQueryContext qc) {
@@ -1571,8 +1618,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {
 
 		List<Case> cases = new ArrayList<>();
-		IterableHelper
-			.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
+		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> cases.addAll(getCasesByPersonUuids(batchedUuids)));
 		return cases;
 	}
 
@@ -1718,9 +1764,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
-
-		CaseCriteria caseCriteria = criteria.getCaseCriteria();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
@@ -1751,6 +1794,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			root.get(Case.CHANGE_DATE));
 		cq.distinct(true);
 
+		Predicate filter = getSimilarityFilters(criteria, cb, root, queryContext);
+
+		cq.where(filter);
+
+		return em.createQuery(cq)
+			.unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new CaseSelectionDtoResultTransformer())
+			.getResultList();
+	}
+
+	public boolean hasSimilarCases(CaseSimilarityCriteria criteria) {
+		return exists((cb, root, cq) -> getSimilarityFilters(criteria, cb, root, new CaseQueryContext(cb, cq, root)));
+	}
+
+	private Predicate getSimilarityFilters(CaseSimilarityCriteria criteria, CriteriaBuilder cb, Root<Case> root, CaseQueryContext queryContext) {
+		final CaseCriteria caseCriteria = criteria.getCaseCriteria();
+		CaseJoins joins = queryContext.getJoins();
+
 		Predicate userFilter = createUserFilter(queryContext);
 
 		// In case you wonder: At this point in time the **person** duplicate check has already happen.
@@ -1759,6 +1820,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// the same case.
 		Predicate personSimilarityFilter =
 			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
+
+		if (criteria.getPersonUuids() != null) {
+			personSimilarityFilter = joins.getPerson().get(Person.UUID).in(criteria.getPersonUuids());
+		}
 
 		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
 
@@ -1782,12 +1847,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 		filter = CriteriaBuilderHelper.and(cb, filter, reportDateFilter);
 
-		cq.where(filter);
-
-		return em.createQuery(cq)
-			.unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new CaseSelectionDtoResultTransformer())
-			.getResultList();
+		return filter;
 	}
 
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion, double nameSimilarityThreshold) {
@@ -1838,8 +1898,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
-					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
 			SECONDS_30_DAYS);
 
 		// // todo this should use PersonService.buildSimilarityCriteriaFilter
@@ -1867,8 +1927,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			cb.lessThanOrEqualTo(
 				cb.abs(
 					cb.diff(
-						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
-						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
+						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
+						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
 				SECONDS_30_DAYS));
 
 		Predicate creationDateFilter = cb.or(
@@ -2027,7 +2087,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
 		Root<Case> root = cq.from(Case.class);
 
-		cq.where(cb.equal(root.get(Case.DUPLICATE_OF), caseId));
+		cq.where(cb.equal(root.get(Case.DUPLICATE_OF).get(Case.ID), caseId));
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -2053,7 +2113,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate datePredicate = vaccinationService.getRelevantVaccinationPredicate(root, cu, cb, vaccination);
 
-		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
+		cu.where(
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(root.get(Case.PERSON).get(Person.ID), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}

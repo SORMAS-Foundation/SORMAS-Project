@@ -30,10 +30,11 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.web.Person;
-import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -44,7 +45,11 @@ public class PersonImportExportSteps implements En {
 
   @Inject
   public PersonImportExportSteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, SoftAssert softly) {
+      WebDriverHelpers webDriverHelpers,
+      ApiState apiState,
+      SoftAssert softly,
+      RestAssuredClient restAssuredClient) {
+    EnvironmentManager manager = new EnvironmentManager(restAssuredClient);
     When(
         "I click on the Export person button",
         () -> {
@@ -131,8 +136,8 @@ public class PersonImportExportSteps implements En {
               "Sexes are not equal");
           softly.assertEquals(
               reader.getDistrict().toLowerCase(),
-              DistrictsValues.getNameValueForUuid(
-                      apiState.getLastCreatedPerson().getAddress().getDistrict())
+              manager
+                  .getDistrictName(apiState.getLastCreatedPerson().getAddress().getDistrict())
                   .toLowerCase(),
               "Districts are not equal");
           softly.assertEquals(
@@ -186,8 +191,8 @@ public class PersonImportExportSteps implements En {
               "Sexes are not equal");
           softly.assertEquals(
               reader.getDistrict().toLowerCase(),
-              DistrictsValues.getNameValueForUuid(
-                      apiState.getLastCreatedPerson().getAddress().getDistrict())
+              manager
+                  .getDistrictName(apiState.getLastCreatedPerson().getAddress().getDistrict())
                   .toLowerCase(),
               "Districts are not equal");
           softly.assertEquals(
@@ -219,14 +224,14 @@ public class PersonImportExportSteps implements En {
               "Present conditions are not equal");
           softly.assertEquals(
               reader.getRegion().toLowerCase(),
-              RegionsValues.getNameValueForUuid(
-                      apiState.getLastCreatedPerson().getAddress().getRegion())
+              manager
+                  .getRegionName(apiState.getLastCreatedPerson().getAddress().getRegion())
                   .toLowerCase(),
               "Regions are not equal");
           softly.assertEquals(
               reader.getCommunity().toLowerCase(),
-              CommunityValues.getNameValueForUuid(
-                      apiState.getLastCreatedPerson().getAddress().getCommunity())
+              manager
+                  .getCommunityName(apiState.getLastCreatedPerson().getAddress().getCommunity())
                   .toLowerCase(),
               "Communities are not equal");
           softly.assertEquals(
