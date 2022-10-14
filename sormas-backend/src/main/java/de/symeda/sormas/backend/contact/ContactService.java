@@ -1502,23 +1502,12 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		// Delete all visits that are only associated with this contact
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
-		Root<Visit> visitRoot = cd.from(Visit.class);
-		Subquery<Long> visitContactSubquery = countVisitsContactSubqueryForDelete(cb, cd, visitRoot, contact);
-
-		Subquery<Visit> getVisitContactSubquery = getVisitsContactSubqueryForDelete(cb, cd, contact);
-
-		cd.where(
-			cb.and(
-//				cb.isNull(visitRoot.get(Visit.CAZE).get(Case.ID)),
-//				cb.lessThanOrEqualTo(visitContactSubquery, 1L),
-				visitRoot.in(getVisitContactSubquery)));
-		em.createQuery(cd).executeUpdate();
-
 		// Remove the contact that will be deleted from contact_visits
 		em.createNativeQuery("delete from contacts_visits cv where cv.contact_id = ?1").setParameter(1, contact.getId()).executeUpdate();
+
+		// Delete all visits that are not associated with any contact or case
+		em.createNativeQuery("delete from visit v where v.caze_id is null and not exists(select from contacts_visits cv where cv.visit_id = v.id)")
+			.executeUpdate();
 
 		// Delete documents related to this contact
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
