@@ -208,6 +208,22 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
+		CaseDataDto caze2 = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		creator.createClinicalVisit(caze2, v -> {
+			v.setVisitingPerson("John Wayne");
+			v.setVisitRemarks("Visit remarks");
+
+			SymptomsDto symptoms = new SymptomsDto();
+			symptoms.setPatientIllLocation("Test sick location");
+			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
+			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic for case 2");
+			v.setSymptoms(symptoms);
+		});
+
+		VisitDto visit2 = creator.createVisit(caze2.getDisease(), caze2.getPerson(), caze2.getReportDate());
+		visit2.getSymptoms().setCough(SymptomState.YES);
+		getVisitFacade().saveVisit(visit2);
+
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		SessionImpl em = (SessionImpl) getEntityManager();
 		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
@@ -217,15 +233,15 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
 		em.save(singleResult);
 
-		assertEquals(1, getCaseService().count());
+		assertEquals(2, getCaseService().count());
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
-		assertEquals(0, getCaseService().count());
-		assertEquals(0, getVisitService().count());
-		assertEquals(0, getSymptomsService().count());
+		assertEquals(1, getCaseService().count());
+		assertEquals(1, getVisitService().count());
+		assertEquals(3, getSymptomsService().count());
 	}
 
 	@Test
@@ -505,7 +521,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	}
 
 	@Test
-	public void testContactPermanentDeletion()  {
+	public void testContactPermanentDeletion() {
 
 		// the Visit will be added only to contacts that have REPORT_DATE_TIME, LAST_CONTACT_DATE or FOLLOW_UP_UNTIL within less than ALLOWED_DATE_OFFSET days from Visit report date
 		// the test is checking the permanent deletion for contacts which are more than ALLOWED_DATE_OFFSET days apart from each other so there will be no shared Visit between them
