@@ -71,7 +71,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	public AreaReferenceDto getArea() {
 		return area;
 	}
-
+ 
 	public void setArea(AreaReferenceDto area) {
 		this.area = area;
 	}

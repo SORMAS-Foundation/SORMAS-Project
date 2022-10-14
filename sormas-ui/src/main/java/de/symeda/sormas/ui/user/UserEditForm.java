@@ -206,7 +206,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             
             UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
           //  FacadeProvider.getUserFacade().getByUuid(userUuid);
-            Set<CommunityReferenceDto> data = Collections.<CommunityReferenceDto>emptySet();
+            Set<CommunityReferenceDto> data = Collections.<CommunityReferenceDto>emptySet(); 
             currentUser.setCommunity(data);
             FacadeProvider.getUserFacade().saveUser(currentUser);
         	  System.out.println(districtDto+" ddddddddddddddddddddddddddddDISTRICT CHANGES!!ssssssssssefasdfa:"+ e.getProperty().getValue());

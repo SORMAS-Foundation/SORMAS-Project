@@ -65,7 +65,7 @@ public class CommunityReferenceDto extends InfrastructureDataReferenceDto implem
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey compareFruit) {
 		
-		int compareQuantity = ((CommunityReferenceDto) compareFruit).getNumber(); 
+		int compareQuantity = ((CommunityReferenceDto) compareFruit).getNumber();  
 		
 		//ascending order
 		return this.numberx - compareQuantity;
