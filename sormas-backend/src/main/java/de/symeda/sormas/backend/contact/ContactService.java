@@ -1529,28 +1529,6 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		super.deletePermanent(contact);
 	}
 
-	private Subquery<Long> countVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot, Contact contact) {
-		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
-		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
-		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
-		contactVisitsSubquery.where(
-			cb.and(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)), cb.equal(visitContactJoin.get(Contact.ID), contact.getId())));
-
-		contactVisitsSubquery.select(cb.count(visitContactJoin.get(Contact.ID)));
-
-		return contactVisitsSubquery;
-	}
-
-	private Subquery<Visit> getVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Contact contact) {
-		Subquery<Visit> contactVisitsSubquery = cd.subquery(Visit.class);
-		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
-		contactVisitsSubquery.where(cb.equal(subqueryRoot.join(Visit.CONTACTS).get(Contact.ID), contact.getId()));
-
-		contactVisitsSubquery.select(subqueryRoot);
-
-		return contactVisitsSubquery;
-	}
-
 	private void deleteContactLinks(Contact contact) {
 		// Remove the contact from any sample that is also connected to other entities
 		contact.getSamples().stream().filter(s -> s.getAssociatedCase() != null || s.getAssociatedEventParticipant() != null).forEach(s -> {
