@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1281,6 +1282,33 @@ public class ContactFacadeEjb
 	@Override
 	public int[] getContactCountsByCasesForDashboard(List<Long> contactIds) {
 
+		Set<Long> caseIds = new LinkedHashSet<>();
+		IterableHelper.executeBatched(
+			contactIds,
+			ModelConstants.PARAMETER_LIMIT,
+			batchedContactIds -> caseIds.addAll(getCaseIdsFromContacts(batchedContactIds)));
+
+		if (caseIds.isEmpty()) {
+			return new int[3];
+		} else {
+			int[] counts = new int[3];
+
+			List<Long> caseContactCounts = new ArrayList<>();
+			IterableHelper.executeBatched(
+				new ArrayList<>(caseIds),
+				ModelConstants.PARAMETER_LIMIT,
+				batchedCaseIds -> caseContactCounts.addAll(countContactsAssignToCases(batchedCaseIds)));
+
+			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[2] = caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
+
+			return counts;
+		}
+	}
+
+	private List<Long> getCaseIdsFromContacts(List<Long> contactIds) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -1290,27 +1318,20 @@ public class ContactFacadeEjb
 		cq.select(caseJoin.get(Case.ID));
 		cq.distinct(true);
 
-		List<Long> caseIds = em.createQuery(cq).getResultList();
+		return em.createQuery(cq).getResultList();
+	}
 
-		if (caseIds.isEmpty()) {
-			return new int[3];
-		} else {
-			int[] counts = new int[3];
-			CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
-			Root<Contact> contact2 = cq2.from(Contact.class);
-			cq2.groupBy(contact2.get(Contact.CAZE));
+	private List<Long> countContactsAssignToCases(List<Long> caseIds) {
 
-			cq2.where(contact2.get(Contact.CAZE).get(Case.ID).in(caseIds));
-			cq2.select(cb.count(contact2.get(Contact.ID)));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> contact = cq.from(Contact.class);
+		cq.groupBy(contact.get(Contact.CAZE));
 
-			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
+		cq.where(contact.get(Contact.CAZE).get(Case.ID).in(caseIds));
+		cq.select(cb.count(contact.get(Contact.ID)));
 
-			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[2] = caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
-
-			return counts;
-		}
+		return em.createQuery(cq).getResultList();
 	}
 
 	@SuppressWarnings("JpaQueryApiInspection")
