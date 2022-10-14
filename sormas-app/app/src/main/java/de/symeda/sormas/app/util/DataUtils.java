@@ -76,7 +76,7 @@ public class DataUtils {
 	}
 
 	public static boolean emptyOrWithOneNullItem(List<Item> listIn) {
-		return listIn.isEmpty() || (listIn.size() == 1 && listIn.get(0).getValue() == null);
+		return listIn.isEmpty() || (listIn.size() == 1 && (listIn.get(0) == null || listIn.get(0).getValue() == null));
 	}
 
 
