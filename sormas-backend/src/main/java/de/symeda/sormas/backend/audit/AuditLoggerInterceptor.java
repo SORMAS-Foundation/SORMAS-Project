@@ -49,7 +49,11 @@ public class AuditLoggerInterceptor {
 		reflections = new Reflections(configurationBuilder);
 	}
 
-	private static final Set<Class<?>> adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
+	private static final Set<Class<?>> adoServiceClasses;
+
+	static {
+		adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
+	}
 
 	/**
 	 * Cache to track all remote beans that should not be audited. True indicates ignore, false audit.
