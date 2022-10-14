@@ -17,6 +17,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
@@ -56,7 +58,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
-import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "TravelEntryFacade")
 @RightsAllowed(UserRight._TRAVEL_ENTRY_VIEW)
@@ -153,8 +154,6 @@ public class TravelEntryFacadeEjb
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(
-					TravelEntryDto.class,
-					TravelEntryDto.REPORTING_USER,
 					source.getReportingUser(),
 					currentUser,
 					dto::setReportingUser);

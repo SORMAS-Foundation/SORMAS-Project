@@ -115,14 +115,14 @@ public class CoreEntityDeletionService {
 		IterableHelper.executeBatched(
 			nonReferencedS2SShareRequestsUuids,
 			DELETE_BATCH_SIZE,
-			batchedUuids -> sormasToSormasShareRequestService.deletePermanentByUuids(nonReferencedS2SShareRequestsUuids));
+			batchedUuids -> sormasToSormasShareRequestService.deletePermanentByUuids(batchedUuids));
 
 		List<String> nonReferencedShareRequestInfoUuids = shareRequestInfoService.getAllNonReferencedShareRequestInfo();
 		logger.debug("executeAutomaticDeletion(): Detected non referenced ShareRequestInfo: n={}", nonReferencedShareRequestInfoUuids.size());
 		IterableHelper.executeBatched(
 			nonReferencedShareRequestInfoUuids,
 			DELETE_BATCH_SIZE,
-			batchedUuids -> shareRequestInfoService.deletePermanentByUuids(nonReferencedShareRequestInfoUuids));
+			batchedUuids -> shareRequestInfoService.deletePermanentByUuids(batchedUuids));
 	}
 
 	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {

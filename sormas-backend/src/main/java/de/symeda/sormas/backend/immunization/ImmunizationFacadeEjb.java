@@ -379,8 +379,6 @@ public class ImmunizationFacadeEjb
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(
-					ImmunizationDto.class,
-					ImmunizationDto.REPORTING_USER,
 					source.getReportingUser(),
 					currentUser,
 					dto::setReportingUser);
@@ -419,6 +417,10 @@ public class ImmunizationFacadeEjb
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (immunizationDto.getPerson() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
+		}
+
+		if (immunizationDto.getReportingUser() == null && !immunizationDto.isPseudonymized()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
 		}
 	}
 

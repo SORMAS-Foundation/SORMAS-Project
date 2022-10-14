@@ -1267,8 +1267,6 @@ public class ContactFacadeEjb
 		User currentUser = userService.getCurrentUser();
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
 			pseudonymizer.pseudonymizeUser(
-				ContactIndexDetailedDto.class,
-				ContactIndexDetailedDto.REPORTING_USER,
 				userService.getByUuid(c.getReportingUser().getUuid()),
 				currentUser,
 				c::setReportingUser);
@@ -1598,7 +1596,7 @@ public class ContactFacadeEjb
 
 			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, inJurisdiction, (c) -> {
 				pseudonymizer
-					.pseudonymizeUser(ContactDto.class, ContactDto.REPORTING_USER, source.getReportingUser(), currentUser, dto::setReportingUser);
+					.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 
 				if (c.getCaze() != null) {
 					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), jurisdictionFlags.getCaseInJurisdiction(), null);
@@ -1885,6 +1883,10 @@ public class ContactFacadeEjb
 	public void validate(@Valid ContactDto contact) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
+		if (contact.getReportingUser() == null && !contact.isPseudonymized()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
+		}
+
 		if (contact.getReportDateTime() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
 		}

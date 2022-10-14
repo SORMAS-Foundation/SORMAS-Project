@@ -209,7 +209,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
 
-		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariantList.isEmpty() ? GONE : VISIBLE);
+		contentBinding.caseDataDiseaseVariant.setVisibility(DataUtils.emptyOrWithOneNullItem(diseaseVariantList) ? GONE : VISIBLE);
 	}
 
 	private void updateCaseConfirmationBasis(FragmentCaseEditLayoutBinding contentBinding) {
@@ -341,7 +341,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 		List<DiseaseVariant> diseaseVariants =
 			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
-		diseaseVariantList = DataUtils.toItems(diseaseVariants, false);
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
 		}

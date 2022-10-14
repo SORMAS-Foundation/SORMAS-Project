@@ -74,6 +74,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -81,6 +82,20 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
+
+	@Test(expected = ValidationRuntimeException.class)
+	public void testValidateWithNullReportingUser() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = createUser(rdcf);
+		EventDto event = createEvent(user, rdcf);
+
+		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "event Director", null);
+
+		EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacadeEjb =
+			getBean(EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal.class);
+		eventParticipantFacadeEjb.validate(eventParticipant);
+	}
 
 	@Test
 	public void testGetExportListWithRelevantVaccinations() {

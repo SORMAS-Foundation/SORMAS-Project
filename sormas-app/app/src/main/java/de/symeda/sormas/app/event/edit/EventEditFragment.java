@@ -191,7 +191,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		}
 		List<DiseaseVariant> diseaseVariants =
 			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
-		diseaseVariantList = DataUtils.toItems(diseaseVariants, false);
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
 		}
@@ -313,7 +313,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		} else {
 			contentBinding.eventDiseaseVariant.setValue(null);
 		}
-		contentBinding.eventDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+		contentBinding.eventDiseaseVariant.setVisibility(DataUtils.emptyOrWithOneNullItem(diseaseVariantList) ? GONE : VISIBLE);
 
 		// Specific risk
 		SpecificRisk selectedRisk = (SpecificRisk) contentBinding.eventSpecificRisk.getValue();

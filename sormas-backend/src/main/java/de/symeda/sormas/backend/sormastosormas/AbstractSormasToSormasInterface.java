@@ -293,7 +293,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		DuplicateResult duplicateCheckResult = decryptAndPersist(encryptedData, (data, existingData) -> {
 			DuplicateResult duplicateResult = DuplicateResult.NONE;
 
-			if (checkDuplicates) {
+			if (checkDuplicates && !data.getOriginInfo().isPseudonymizedData()) {
 				duplicateResult = processedEntitiesPersister.checkForSimilarEntities(data, existingData);
 			}
 
@@ -361,10 +361,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 
 		requestInfo.getShares().forEach(s -> {
 			if (s.getCaze() != null) {
-				sormasToSormasEntitiesHelper.updateCaseResponsibleDistrict(s.getCaze(), responseData.getDistrictExternalId());
+				sormasToSormasEntitiesHelper.updateSentCaseResponsibleDistrict(s.getCaze(), responseData.getDistrictExternalId());
 			}
 			if (s.getContact() != null) {
-				sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(s.getContact(), responseData.getDistrictExternalId());
+				sormasToSormasEntitiesHelper.updateSentContactResponsibleDistrict(s.getContact(), responseData.getDistrictExternalId());
 			}
 
 			if (s.getSample() != null) {

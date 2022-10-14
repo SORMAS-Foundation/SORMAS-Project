@@ -149,6 +149,69 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 	}
 
 	@Test
+	public void testShareContactWithPseudonymizeData() throws SormasToSormasException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, creator.createPerson().toReference(), rdcf);
+
+		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			getUserService().getByUuid(officer.getUuid()),
+			SECOND_SERVER_ID,
+			false,
+			ShareRequestStatus.PENDING,
+			i -> i.setCaze(getCaseService().getByUuid(caze.getUuid())));
+		shareRequestInfo.getShares().add(createShareInfo(SECOND_SERVER_ID, false, i -> i.setCaze(getCaseService().getByUuid(caze.getUuid()))));
+		getShareRequestInfoService().persist(shareRequestInfo);
+
+		ContactDto contact = creator
+			.createContact(officer, officer, person.toReference(), caze, new Date(), null, null, rdcf, dto -> dto.setResultingCaseUser(officer));
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setPseudonymizeData(true);
+		options.setComment("Test comment");
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> {
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
+				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/contacts"));
+
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+				assertThat(postBody.getContacts().size(), is(1));
+				SormasToSormasContactDto sharedContact = postBody.getContacts().get(0);
+
+				assertThat(sharedContact.getPerson().getFirstName(), is("Confidential"));
+				assertThat(sharedContact.getPerson().getLastName(), is("Confidential"));
+				assertThat(sharedContact.getEntity().getUuid(), is(contact.getUuid()));
+				assertThat(sharedContact.getEntity().getReportingUser(), is(officer));
+				assertThat(sharedContact.getEntity().getContactOfficer(), is(nullValue()));
+				assertThat(sharedContact.getEntity().getResultingCaseUser(), is(nullValue()));
+
+				// share information
+				assertThat(postBody.getOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
+				assertThat(postBody.getOriginInfo().getSenderName(), is("Surv Off"));
+				assertThat(postBody.getOriginInfo().getComment(), is("Test comment"));
+
+				return encryptShareData(new ShareRequestAcceptData(null, null));
+			});
+
+		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
+
+		List<SormasToSormasShareInfoDto> shareInfoList =
+			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), 0, 100);
+		assertThat(shareInfoList.size(), is(1));
+		assertThat(shareInfoList.get(0).getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
+		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF"));
+		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
+	}
+
+	@Test
 	public void testShareContactWithSamples() throws SormasToSormasException {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 

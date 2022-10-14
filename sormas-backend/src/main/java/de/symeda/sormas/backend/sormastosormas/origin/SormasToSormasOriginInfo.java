@@ -84,6 +84,8 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private List<Sample> samples;
 
+	private boolean pseudonymizedData;
+
 	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
 	public String getOrganizationId() {
 		return organizationId;
@@ -231,5 +233,14 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setSamples(List<Sample> samples) {
 		this.samples = samples;
+	}
+
+	@Column
+	public boolean isPseudonymizedData() {
+		return pseudonymizedData;
+	}
+
+	public void setPseudonymizedData(boolean pseudonymizedData) {
+		this.pseudonymizedData = pseudonymizedData;
 	}
 }
