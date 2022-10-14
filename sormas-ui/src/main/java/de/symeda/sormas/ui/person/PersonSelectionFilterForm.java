@@ -40,20 +40,15 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 	@Override
 	protected String[] getMainFilterLocators() {
 		return new String[] {
-			PersonSimilarityCriteria.FIRST_NAME,
-			PersonSimilarityCriteria.LAST_NAME,
-			PersonSimilarityCriteria.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE };
+			PersonSimilarityCriteria.NAME_UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE };
 	}
 
 	@Override
 	protected void addFields() {
-		addField(
-			FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.FIRST_NAME, I18nProperties.getCaption(Captions.firstName), 100));
-		addField(FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.LAST_NAME, I18nProperties.getCaption(Captions.lastName), 100));
 
 		addField(
 			FieldConfiguration.withCaptionAndPixelSized(
-				PersonSimilarityCriteria.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE,
+				PersonSimilarityCriteria.NAME_UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE,
 				I18nProperties.getString(Strings.promptPersonDuplicateSearchIdExternalId),
 				150)).addStyleName(CssStyles.HSPACE_RIGHT_3);
 	}
