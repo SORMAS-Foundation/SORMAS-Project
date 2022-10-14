@@ -42,44 +42,52 @@ public class AuditLoggerInterceptor {
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 
 	private static final Reflections reflections;
-	static {
 
-		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-		configurationBuilder.forPackages("de.symeda.sormas.backend").addScanners(SubTypes).setParallel(false);
-		reflections = new Reflections(configurationBuilder);
-	}
+	private static final String DELETE_PERMANENT = "deletePermanent";
+
+	private static final String DELETE_PERMANENT_BY_UUIDS = "deletePermanentByUuids";
 
 	private static final Set<Class<?>> adoServiceClasses;
-
-	static {
-		adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
-	}
 
 	/**
 	 * Cache to track all remote beans that should not be audited. True indicates ignore, false audit.
 	 */
-	private static final Map<Class<?>, Boolean> shouldIgnoreBeanCache = new HashMap<>();
+	private static final Map<Class<?>, Boolean> shouldIgnoreBeanCache;
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
 	 */
-	private static final Set<Class<?>> ignoreAuditClasses = Collections.unmodifiableSet(
-		new HashSet<>(
-			Arrays.asList(
-				FeatureConfigurationFacadeEjb.class,
-				ConfigFacadeEjb.class,
-				CurrentUserService.class,
-				AuditContextProducer.class,
-				AuditLogServiceBean.class,
-				AuditLoggerEjb.class,
-				I18nFacadeEjb.class)));
+	private static final Set<Class<?>> ignoreAuditClasses;
 
 	/**
 	 * Cache to track all methods which should be completely ignored.
 	 */
 	private static final Set<Method> ignoreAuditMethods;
 
+	/**
+	 * Cache to track all local methods which should be audited.
+	 */
+	private static final Set<Method> allowedLocalAuditMethods;
+
 	static {
+
+		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+		configurationBuilder.forPackages("de.symeda.sormas.backend").addScanners(SubTypes).setParallel(false);
+		reflections = new Reflections(configurationBuilder);
+
+		adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
+
+		ignoreAuditClasses = Collections.unmodifiableSet(
+			new HashSet<>(
+				Arrays.asList(
+					FeatureConfigurationFacadeEjb.class,
+					ConfigFacadeEjb.class,
+					CurrentUserService.class,
+					AuditContextProducer.class,
+					AuditLogServiceBean.class,
+					AuditLoggerEjb.class,
+					I18nFacadeEjb.class)));
+
 		try {
 			ignoreAuditMethods = Collections.unmodifiableSet(
 				new HashSet<>(
@@ -91,18 +99,7 @@ public class AuditLoggerInterceptor {
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
-	}
 
-	/**
-	 * Cache to track all local methods which should be audited.
-	 */
-	private static final Set<Method> allowedLocalAuditMethods;
-
-	private static final String DELETE_PERMANENT = "deletePermanent";
-
-	private static final String DELETE_PERMANENT_BY_UUIDS = "deletePermanentByUuids";
-
-	static {
 		// explicitly add all local methods which should be explicitly audited. Please note that this is a set of
 		// methods, therefore, its cardinality may be smaller than the size of the deletableAdoServiceClasses list as 
 		// some service classes just use the super class implementation of the deletePermanent method.
@@ -124,6 +121,8 @@ public class AuditLoggerInterceptor {
 
 		deletePermanentMethods.addAll(deletePermanentByUuids);
 		allowedLocalAuditMethods = Collections.unmodifiableSet(deletePermanentMethods);
+
+		shouldIgnoreBeanCache = new HashMap<>();
 	}
 
 	@AroundTimeout
