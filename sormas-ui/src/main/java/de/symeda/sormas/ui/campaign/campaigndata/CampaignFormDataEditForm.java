@@ -71,7 +71,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	public AreaReferenceDto getArea() {
 		return area;
 	}
- 
+
 	public void setArea(AreaReferenceDto area) {
 		this.area = area;
 	}
@@ -181,7 +181,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			for (CommunityReferenceDto item : items) {
 				item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 			}
-			
+			Collections.sort(items, 
+					CommunityReferenceDto.clusternumber); 
 			cbCommunity.addItems(items);
 		}
 	}
@@ -234,15 +235,17 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 				for (CommunityReferenceDto item : items) {
 					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 				}
-			
+				Collections.sort(items, 
+						CommunityReferenceDto.clusternumber); 
 				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
 
 			}
-			
+
 			final UserDto currentUserx = UserProvider.getCurrent().getUser();
-			if(currentUserx.getCommunity().size() > 0) {
+			if (currentUserx.getCommunity().size() > 0) {
 				List<CommunityReferenceDto> items = currentUserx.getCommunity().stream().collect(Collectors.toList());
-				//Collections.sort(items);
+				Collections.sort(items, 
+						CommunityReferenceDto.clusternumber); 
 				cbCommunity.clear();
 				FieldHelper.updateItems(cbCommunity, items);
 			}
@@ -259,9 +262,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 				if (cbCommunity.getValue() != null && cbDistrict.getValue() != null) {
 
-					System.out.println(dates.getValue() + "||||||||||||||||||||||||||||"
-							+ super.getValue().getCampaignFormMeta().getUuid() + "||||||||||||"
-							+ super.getValue().getCampaign().getUuid());
+//					System.out.println(dates.getValue() + "||||||||||||||||||||||||||||"
+//							+ super.getValue().getCampaignFormMeta().getUuid() + "||||||||||||"
+//							+ super.getValue().getCampaign().getUuid());
 					CampaignFormMetaDto campaignForm = FacadeProvider.getCampaignFormMetaFacade()
 							.getCampaignFormMetaByUuid(super.getValue().getCampaignFormMeta().getUuid());
 
@@ -270,8 +273,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 					CommunityReferenceDto community = (CommunityReferenceDto) cbCommunity.getValue();
 
-					System.out.println(community.getCaption() + "??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "
-							+ campaignForm.getFormName() + campaign.getName());
+//					System.out.println(community.getCaption() + "??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "
+//							+ campaignForm.getFormName() + campaign.getName());
 					String formuuid = FacadeProvider.getCampaignFormDataFacade().getByClusterDropDown(community,
 							campaignForm, campaign);
 
@@ -279,8 +282,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 						// Page.getCurrent().get
 						ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
 					} else {
-						System.out.println(
-								">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//						System.out.println(
+//								">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 						Page.getCurrent().getJavaScript().execute("$(document).ready(function() {"
 								// + "alert();"
 								// + "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").show();"
