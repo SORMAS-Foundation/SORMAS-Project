@@ -73,6 +73,7 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 	private static final String PASSWORD_BUTTON = "changePassword";
 
 	private static final String HTML_LAYOUT = loc(PERSON_DATA_HEADING_LOC)
+			+ fluidRowLocs(UserDto.USER_NAME)
 			+ fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) + fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE)
 			+ fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC)
 			+ fluidRowLocs(UserDto.USER_POSITION, UserDto.USER_ORGANISATION) + loc(ADDRESS_HEADING_LOC)
@@ -116,6 +117,7 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 		userDataHeadingLabel.addStyleName(H3);
 		getContent().addComponent(userDataHeadingLabel, USER_DATA_HEADING_LOC);
 
+		addField(UserDto.USER_NAME, TextField.class).setEnabled(false);;
 		addField(UserDto.FIRST_NAME, TextField.class);
 		addField(UserDto.LAST_NAME, TextField.class);
 		addField(UserDto.USER_EMAIL, TextField.class);
@@ -143,7 +145,7 @@ public class UserAccountView extends AbstractEditForm<UserDto> {
 
 		addField(UserDto.ADDRESS, LocationEditForm.class).setCaption(null);
 
-		addField(UserDto.USER_NAME, TextField.class);
+		
 
 		ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
 		laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));

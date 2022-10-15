@@ -242,7 +242,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			final UserDto currentUserx = UserProvider.getCurrent().getUser();
 			if(currentUserx.getCommunity().size() > 0) {
 				List<CommunityReferenceDto> items = currentUserx.getCommunity().stream().collect(Collectors.toList());
-				Collections.sort(items);
+				//Collections.sort(items);
 				cbCommunity.clear();
 				FieldHelper.updateItems(cbCommunity, items);
 			}
