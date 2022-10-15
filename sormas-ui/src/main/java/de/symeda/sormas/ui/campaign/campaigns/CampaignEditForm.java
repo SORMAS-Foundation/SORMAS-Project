@@ -154,7 +154,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		getContent().addComponent(campaignBasicHeadingLabel, CAMPAIGN_BASIC_HEADING_LOC);
 
 		addField(CampaignDto.UUID);
-		addField(CampaignDto.CREATING_USER);
+		addField(CampaignDto.CREATING_USER_NAME);
 
 		DateField startDate = addField(CampaignDto.START_DATE, DateField.class);
 		startDate.removeAllValidators();
@@ -190,6 +190,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		addField(CampaignDto.NAME);
 		
 		ComboBox clusterfield = addField(CampaignDto.ROUND, ComboBox.class);
+		//This can be optimised by putting into an enum class and adding here
 		clusterfield.addItem("NID");
 		clusterfield.addItem("SNID");
 		clusterfield.addItem("Case Respond");
@@ -204,10 +205,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		spacerx.setHeight("10%");
 		getContent().addComponent(spacerx, SPACE_LOCX);
 
-		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER);
+		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER_NAME);
 		//setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
 
-		setRequired(true, CampaignDto.UUID, CampaignDto.NAME, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.ROUND, CampaignDto.CAMPAIGN_YEAR);
+		setRequired(true, CampaignDto.UUID, CampaignDto.NAME, CampaignDto.CREATING_USER_NAME, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.ROUND, CampaignDto.CAMPAIGN_YEAR);
 
 		FieldHelper.addSoftRequiredStyle(description);
 		final HorizontalLayout usageLayout = new HorizontalLayout();

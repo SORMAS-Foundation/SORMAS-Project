@@ -29,6 +29,7 @@ public class CampaignDto extends EntityDto {
 	public static final String END_DATE = "endDate";
 	public static final String CAMPAIGN_YEAR = "campaignYear";
 	public static final String CREATING_USER = "creatingUser";
+	public static final String CREATING_USER_NAME = "creatingusername";
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 	public static final String CAMPAIGN_TYPES = "campaignTypes";
 
@@ -44,6 +45,8 @@ public class CampaignDto extends EntityDto {
 	private String campaignYear;
 	private UserReferenceDto creatingUser;
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
+	
+	public String creatingusername;
 	
 	@Valid
 	private List<CampaignDashboardElement> campaignDashboardElements;
@@ -122,6 +125,10 @@ public class CampaignDto extends EntityDto {
 
 	public void setCreatingUser(UserReferenceDto creatingUser) {
 		this.creatingUser = creatingUser;
+	}
+
+	public String getCreatingusername() {
+		return this.getCreatingUser().getFirstName() + " " +this.getCreatingUser().getLastName();
 	}
 
 	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas() {
