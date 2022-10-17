@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -210,8 +211,8 @@ public class CampaignDataView extends AbstractCampaignView {
 						Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignFormDataImportLayout(campaignForm, campaignReferenceDto));
 						popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
 						popupWindow.addCloseListener(c -> grid.reload());
-					} catch (IOException ioException) {
-						ioException.printStackTrace();
+					} catch (IOException ex) {
+						throw new UncheckedIOException(ex);
 					}
 				});
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);

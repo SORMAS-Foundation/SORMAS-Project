@@ -59,6 +59,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setWithEventParticipants(source.isWithEventParticipants());
 		target.setWithImmunizations(source.isWithImmunizations());
 		target.setComment(source.getComment());
+		target.setPseudonymizedData(source.isPseudonymizedData());
 
 		return target;
 	}
@@ -93,6 +94,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setWithEventParticipants(source.isWithEventParticipants());
 		target.setWithImmunizations(source.isWithImmunizations());
 		target.setComment(source.getComment());
+		target.setPseudonymizedData(source.isPseudonymizedData());
 
 		return target;
 	}

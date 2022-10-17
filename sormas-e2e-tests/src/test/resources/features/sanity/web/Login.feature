@@ -5,7 +5,7 @@ Feature: Login with different type of users
   Scenario Outline: Login with <user> user on Main Environment
     Given I navigate to SORMAS login page
     Then I log in as a <user>
-    Then I am logged in with name <user>
+    Then I am logged in
     And I check that English word for User Settings is present in the left main menu
     Then I click on the User Settings button from navbar
     Then I check that English language is selected in User Settings
@@ -23,11 +23,11 @@ Feature: Login with different type of users
       | Admin User                |
       | Rest AUTOMATION           |
 
-  @env_de @LoginDe @precon
+  @env_de @LoginDe
   Scenario Outline: Login with <user> user on German Environment
     Given I navigate to SORMAS login page
     Then I log in as a <user>
-    Then I am logged in with name <user>
+    Then I am logged in
     Then I click on the User Settings button from navbar
     And I select "Deutsch" language from Combobox in User settings
     And I check that German word for User Settings is present in the left main menu
@@ -51,10 +51,8 @@ Feature: Login with different type of users
   Scenario Outline: Login with <user> user on Keycloak Environment
     Given I navigate to SORMAS login page
     Then I log in as <user> in Keycloak enabled environment
-    Then I am logged in with name <user>
-    And I check that German word for User Settings is present in the left main menu
-    Then I click on the User Settings button from navbar
-    And I check that Deutsch language is selected in User Settings
+    Then I am logged in
+    And I check that Surveillance Dashboard header is correctly displayed in German language
     And I click on logout button on Keycloak enabled environment
 
     Examples:
@@ -66,5 +64,5 @@ Feature: Login with different type of users
   Scenario: Login on Keycloak Administrator Console
     Given I navigate to Keycloak Administrator Console Login page
     Then I log in as Keycloak Admin to Keycloak Administrator Console
-    Then I am logged in with Admin Keycloak in Keycloak Administrator Page
+    Then I am logged in
     And I click on logout button on Keycloak Administrator Console Page

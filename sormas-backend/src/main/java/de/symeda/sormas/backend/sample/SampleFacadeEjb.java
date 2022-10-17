@@ -479,6 +479,13 @@ public class SampleFacadeEjb implements SampleFacade {
 				I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
 
+		if (sample.getSampleMaterial() == SampleMaterial.OTHER && StringUtils.isEmpty(sample.getSampleMaterialText())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL_TEXT)));
+		}
+
 		if (checkAssociatedEntities) {
 			validateSampleAssociatedEntities(sample);
 		}
@@ -866,7 +873,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, jurisdictionFlags.getInJurisdiction(), s -> {
 				pseudonymizer
-					.pseudonymizeUser(SampleDto.class, SampleDto.REPORTING_USER, source.getReportingUser(), currentUser, s::setReportingUser);
+					.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					s.getAssociatedCase(),
 					s.getAssociatedContact(),

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -206,6 +207,22 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
+		CaseDataDto caze2 = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		creator.createClinicalVisit(caze2, v -> {
+			v.setVisitingPerson("John Wayne");
+			v.setVisitRemarks("Visit remarks");
+
+			SymptomsDto symptoms = new SymptomsDto();
+			symptoms.setPatientIllLocation("Test sick location");
+			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
+			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic for case 2");
+			v.setSymptoms(symptoms);
+		});
+
+		VisitDto visit2 = creator.createVisit(caze2.getDisease(), caze2.getPerson(), caze2.getReportDate());
+		visit2.getSymptoms().setCough(SymptomState.YES);
+		getVisitFacade().saveVisit(visit2);
+
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		SessionImpl em = (SessionImpl) getEntityManager();
 		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
@@ -215,15 +232,15 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
 		em.save(singleResult);
 
-		assertEquals(1, getCaseService().count());
+		assertEquals(2, getCaseService().count());
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
-		assertEquals(0, getCaseService().count());
-		assertEquals(0, getVisitService().count());
-		assertEquals(0, getSymptomsService().count());
+		assertEquals(1, getCaseService().count());
+		assertEquals(1, getVisitService().count());
+		assertEquals(3, getSymptomsService().count());
 	}
 
 	@Test
@@ -503,7 +520,11 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	}
 
 	@Test
-	public void testContactPermanentDeletion() throws IOException {
+	public void testContactPermanentDeletion() {
+
+		// the Visit will be added only to contacts that have REPORT_DATE_TIME, LAST_CONTACT_DATE or FOLLOW_UP_UNTIL within less than ALLOWED_DATE_OFFSET days from Visit report date
+		// the test is checking the permanent deletion for contacts which are more than ALLOWED_DATE_OFFSET days apart from each other so there will be no shared Visit between them
+		// the second part tests the permanent deletion of contacts with the same person which are less than ALLOWED_DATE_OFFSET days apart
 		createDeletionConfigurations();
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
 
@@ -513,6 +534,10 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		PersonDto person = creator.createPerson();
 
 		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		final Date beyondRelevanceDate = DateUtils.addDays(new Date(), (-1) * (FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
+		contactDto.setReportDateTime(beyondRelevanceDate);
+		getContactFacade().save(contactDto);
 
 		TaskDto taskDto = creator
 			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto.toReference(), null, new Date(), null);
@@ -525,13 +550,27 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		VisitDto visitDto = creator.createVisit(contactDto.getDisease(), contactDto.getPerson(), contactDto.getReportDateTime());
 
-		assertEquals(1, getContactService().count());
-		assertEquals(1, getTaskFacade().getAllByContact(contactDto.toReference()).size());
-		assertEquals(1, getSampleService().count());
-		assertEquals(1, getVisitService().count());
+		ContactDto contactDto2 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
-		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		TaskDto taskDto2 = creator
+			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto2.toReference(), null, new Date(), null);
+
+		SampleDto sample2 = creator.createSample(
+			contactDto2.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(contactDto2.toReference()));
+
+		VisitDto visitDto2 = creator.createVisit(contactDto2.getDisease(), contactDto2.getPerson(), contactDto2.getReportDateTime());
+
+		assertEquals(2, getContactService().count());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto.toReference()).size());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto2.toReference()).size());
+		assertEquals(2, getSampleService().count());
+		assertEquals(2, getVisitService().count());
+
 		SessionImpl em = (SessionImpl) getEntityManager();
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		QueryImplementor query = em.createQuery("select i from contact i where i.uuid=:uuid");
 		query.setParameter("uuid", contactDto.getUuid());
 		Contact singleResult = (Contact) query.getSingleResult();
@@ -543,8 +582,58 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
+		assertEquals(1, getContactService().count());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto2.toReference()).size());
+		assertEquals(1, getSampleService().count());
+		assertEquals(1, getVisitService().count());
+
+		ContactDto contactDto3 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		TaskDto taskDto3 = creator
+			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto3.toReference(), null, new Date(), null);
+
+		SampleDto sample3 = creator.createSample(
+			contactDto3.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(contactDto3.toReference()));
+
+		VisitDto visitDto3 = creator.createVisit(contactDto3.getDisease(), contactDto3.getPerson(), contactDto3.getReportDateTime());
+
+		final Date tenYearsPlusAgoSecondContact = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl emSecondContact = (SessionImpl) getEntityManager();
+		QueryImplementor query2 = emSecondContact.createQuery("select i from contact i where i.uuid=:uuid");
+		query2.setParameter("uuid", contactDto2.getUuid());
+		Contact singleResult2 = (Contact) query2.getSingleResult();
+		singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgoSecondContact.getTime()));
+		singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgoSecondContact.getTime()));
+		emSecondContact.save(singleResult2);
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(1, getContactService().count());
+		assertEquals(0, getTaskFacade().getAllByContact(contactDto2.toReference()).size());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto3.toReference()).size());
+		assertEquals(1, getSampleService().count());
+		assertEquals(2, getVisitService().count());
+
+		final Date tenYearsPlusAgoThirdContact = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl emThirdContact = (SessionImpl) getEntityManager();
+		QueryImplementor query3 = emThirdContact.createQuery("select i from contact i where i.uuid=:uuid");
+		query3.setParameter("uuid", contactDto3.getUuid());
+		Contact singleResult3 = (Contact) query3.getSingleResult();
+		singleResult3.setCreationDate(new Timestamp(tenYearsPlusAgoThirdContact.getTime()));
+		singleResult3.setChangeDate(new Timestamp(tenYearsPlusAgoThirdContact.getTime()));
+		emThirdContact.save(singleResult3);
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
 		assertEquals(0, getContactService().count());
-		assertEquals(0, getTaskFacade().getAllByContact(contactDto.toReference()).size());
+		assertEquals(0, getTaskFacade().getAllByContact(contactDto3.toReference()).size());
 		assertEquals(0, getSampleService().count());
 		assertEquals(0, getVisitService().count());
 	}

@@ -94,6 +94,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return currentUserService.hasUserRight(right);
 	}
 
+	public boolean hasAnyRight(Set<UserRight> userRights) {
+		return currentUserService.hasAnyUserRight(userRights);
+	}
+
 	protected Class<ADO> getElementClass() {
 		return elementClass;
 	}

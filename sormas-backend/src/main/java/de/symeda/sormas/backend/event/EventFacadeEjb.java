@@ -999,6 +999,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		if (location.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
+
+		if (event.getReportingUser() == null && !event.isPseudonymized()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
+		}
+
 		// Check whether there are any infrastructure errors
 		if (!districtFacade.getByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
@@ -1144,8 +1149,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, e -> {
 				pseudonymizer.pseudonymizeUser(
-					EventDto.class,
-					EventDto.REPORTING_USER,
 					event.getReportingUser(),
 					userService.getCurrentUser(),
 					dto::setReportingUser);

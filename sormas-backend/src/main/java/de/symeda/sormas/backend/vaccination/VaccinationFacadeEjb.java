@@ -401,8 +401,6 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(
-					VaccinationDto.class,
-					VaccinationDto.REPORTING_USER,
 					source.getReportingUser(),
 					currentUser,
 					dto::setReportingUser);

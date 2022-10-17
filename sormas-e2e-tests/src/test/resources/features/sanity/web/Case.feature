@@ -1857,4 +1857,13 @@ Feature: Case end to end tests
     Then I click download in case document create page in DE
     When I check if downloaded docx file is correct
 
+  @tmsLink=SORDEV-12446 @env_s2s_1
+  Scenario: Hide share action in bulk mode for cases
+    Given I log in as Admin User in Keycloak enabled environment
+    Then I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click on Bulk Actions combobox on Case Directory Page
+    Then I check that Share option is not visible in Bulk Actions dropdown in Case Directory for DE specific
+
 

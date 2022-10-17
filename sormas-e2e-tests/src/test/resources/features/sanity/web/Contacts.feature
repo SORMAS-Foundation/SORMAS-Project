@@ -1195,3 +1195,12 @@ Feature: Contacts end to end tests
     Then I open Contact Person tab
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
+
+  @tmsLink=SORDEV-12446 @env_s2s_1
+  Scenario: Hide share action in bulk mode for contacts
+    Given I log in as Admin User in Keycloak enabled environment
+    Then I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I click on Bulk Actions combobox on Contact Directory Page
+    Then I check that Share option is not visible in Bulk Actions dropdown in Contact Directory for DE specific

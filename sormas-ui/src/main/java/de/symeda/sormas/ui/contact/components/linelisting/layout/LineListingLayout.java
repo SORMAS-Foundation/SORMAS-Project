@@ -45,7 +45,7 @@ public class LineListingLayout extends VerticalLayout {
 
 	private static final long serialVersionUID = 5372515237174090496L;
 
-	public static final float DEFAULT_WIDTH = 1696;
+	public static final float DEFAULT_WIDTH = 1860;
 
 	private final SharedInfoField sharedInfoField;
 	private final List<ContactLineLayout> lines;

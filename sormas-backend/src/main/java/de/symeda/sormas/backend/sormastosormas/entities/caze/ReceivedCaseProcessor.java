@@ -76,7 +76,7 @@ public class ReceivedCaseProcessor
 		updateReportingUser(caze, existingCase);
 
 		if(originInfo.isOwnershipHandedOver()) {
-			sormasToSormasEntitiesHelper.updateCaseResponsibleDistrict(caze, configFacade.getS2SConfig().getDistrictExternalId());
+			sormasToSormasEntitiesHelper.updateReceivedCaseResponsibleDistrict(caze);
 		}
 	}
 

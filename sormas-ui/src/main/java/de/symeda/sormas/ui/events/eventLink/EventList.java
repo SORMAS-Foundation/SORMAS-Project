@@ -30,6 +30,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -37,7 +38,6 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -85,20 +85,20 @@ public class EventList extends PaginationList<EventIndexDto> {
 		};
 	}
 
-	public EventList(PersonReferenceDto personRef, Consumer<Runnable> actionCallback) {
+	public EventList(ContactDto contact, Consumer<Runnable> actionCallback) {
 
 		super(5);
 		this.actionCallback = actionCallback;
-		eventCriteria.setPerson(personRef);
+		eventCriteria.setPerson(contact.getPerson());
 		eventCriteria.setUserFilterIncluded(false);
-		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
+		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToContact));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
 			UserProvider user = UserProvider.getCurrent();
-			if (personRef != null && user.hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			if (contact.getPerson() != null && user.hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 				listEntry.addUnlinkEventListener(
 					i,
 					(ClickListener) clickEvent -> ControllerProvider.getEventParticipantController()
-						.deleteEventParticipant(listEntry.getEvent().getUuid(), personRef.getUuid(), this::reload));
+						.deleteEventParticipant(listEntry.getEvent().getUuid(), contact.getPerson().getUuid(), this::reload));
 			}
 		};
 	}
