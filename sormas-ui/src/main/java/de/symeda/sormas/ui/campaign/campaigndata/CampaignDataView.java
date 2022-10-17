@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -25,18 +26,26 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.router.Location;
+import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -53,6 +62,11 @@ import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -77,7 +91,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @CssImport("w3c.css")
 public class CampaignDataView extends AbstractCampaignView {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata"; /// dataform
 
 	private final CampaignSelector campaignSelector;
 	private final CampaignFormDataCriteria criteria;
@@ -91,6 +105,24 @@ public class CampaignDataView extends AbstractCampaignView {
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
 		super(VIEW_NAME);
+
+		/*
+		 * Wanted to implement this to make sure when the Campaigns menu icon is
+		 * clicked, the criteria remains. But, this won't work because the lastcriteria
+		 * session attribute used to manipulate the url is saved in the session as a
+		 * String and cannot be parsed to the Criteria class to be used on page initial
+		 * constructor. A more elegant approach to making the criteria stick should be
+		 * looked into.
+		 * 
+		 * An approach can be to manipulate the lastcriteria string to retrieve the
+		 * values of each filter element and then set/parse into criteria field. This
+		 * might be a crude approach but should work
+		 * 
+		 * if(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") !=
+		 * null){ criteria = (CampaignFormDataCriteria)
+		 * UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"); }else
+		 * {
+		 */
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
@@ -128,6 +160,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
@@ -206,8 +239,6 @@ public class CampaignDataView extends AbstractCampaignView {
 						: campaignSelector.getValue().toString();
 				StreamResource streamResourcex = GridExportStreamResource.createStreamResource(
 						camNamee + "_" + formNamee, "APMIS", grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
-				// streamResource = GridExportStreamResource.createStreamResource("", "", grid,
-				// ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
 				addExportButton(streamResourcex, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export,
 						Strings.infoBasicExport);
 			});
@@ -222,12 +253,20 @@ public class CampaignDataView extends AbstractCampaignView {
 				fillNewFormDropdown(newFormPanel);
 				importCampaignButton.setEnabled(true);
 				newFormButton.setEnabled(true);
+				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
+						criteria.toUrlParams().toString());
+				System.out.println("333333333333333333333 " + criteria.toUrlParams().toString());
 			} else {
 				importCampaignButton.setEnabled(false);
 				newFormButton.setEnabled(false);
+				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
+						criteria.toUrlParams().toString());
+				System.out.println("44444444444444444 " + criteria.toUrlParams().toString());
 			}
 			criteria.setCampaignFormMeta(null);
 			filterForm.setValue(criteria);
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+			System.out.println("5555555555555555 " + criteria.toUrlParams().toString());
 		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
@@ -242,9 +281,9 @@ public class CampaignDataView extends AbstractCampaignView {
 			criteria.setFormType(e.getValue().toString());
 			filterForm.setPhaseFilterContent(e.getValue().toString());
 			filterForm.setValue(criteria);
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+			System.out.println("777777777777777777777 " + criteria.toUrlParams().toString());
 			grid.reload();
-			// System.out.println(filterForm.getPhaseFilterContent() +" =
-			// 2222222222222222222222222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		});
 
 		if (campaignSelector.getValue() == null) {
@@ -269,10 +308,9 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	private void fillImportDropdown(Panel containerPanel) {
-		
-		
+
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
-		
+
 		String phase = campaignFormPhaseSelector.getValue();
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
@@ -283,10 +321,10 @@ public class CampaignDataView extends AbstractCampaignView {
 				campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
 						.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
 			} else {
-				campagaignFormReferences =  FacadeProvider.getCampaignFormMetaFacade()
-						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(campaignReferenceDto.getUuid());;
+				campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
+						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(campaignReferenceDto.getUuid());
+				;
 			}
-
 
 			Collections.sort(campagaignFormReferences);
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
@@ -323,15 +361,14 @@ public class CampaignDataView extends AbstractCampaignView {
 		CampaignReferenceDto campaignReferenceDtx = campaignSelector.getValue();
 		String phase = campaignFormPhaseSelector.getValue();
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
-		
+
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
 
 		if (phase != null && campaignReferenceDtx != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
 					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
 							campaignReferenceDtx.getUuid(), userFormAccess);
-		
-			
+
 			Collections.sort(campagaignFormReferences);
 
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
@@ -339,7 +376,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 					ControllerProvider.getCampaignController().navigateToFormDataView(criteria.getCampaign().getUuid(),
 							campaignForm.getUuid());
-					
+
 					System.out.println("####################################################################");
 					newFormButton.setPopupVisible(false);
 				});
@@ -368,8 +405,16 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria.setArea(user.getArea());
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
-		criteria.setCommunity(null); //set to null for the initial filter bar
+		criteria.setCommunity(null); // set to null for the initial filter bar
 		filterForm = new CampaignFormDataFilterForm();
+
+		if (filterForm.hasFilter()) {
+			criteria.setArea(criteria.getArea());
+			criteria.setRegion(criteria.getRegion());
+			criteria.setDistrict(criteria.getDistrict());
+			criteria.setCommunity(criteria.getCommunity());
+		}
+
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter() && campaignSelector == null) {
 				navigateTo(null);
@@ -377,6 +422,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", "");
 			navigateTo(null, true);
 		});
 
@@ -385,18 +431,24 @@ public class CampaignDataView extends AbstractCampaignView {
 			criteria.setCampaign(campaignSelector.getValue());
 			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
 			grid.reload();
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
 		});
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
 			criteria.setFormType(e.getValue().toString());
 			grid.reload();
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
+					Page.getCurrent().getLocation().toString());
 		});
 
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
+
 		return filterForm;
 	}
 
@@ -484,6 +536,78 @@ public class CampaignDataView extends AbstractCampaignView {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 			campaignSelector.setValue(criteria.getCampaign());
+
+			String district = "";
+			String campaignFormMeta = "";
+			String community ="";
+			String string = params;
+			String[] parts = string.split("=");
+			int ll = parts.length;
+			String formType = ll > 1 ? parts[1] : ""; // 004
+			String area = ll > 2 ? parts[2] : ""; // 004
+			String region = ll > 3 ? parts[3] : ""; // 004
+			String campaign = ll > 4 ? parts[4] : ""; // 004
+			if (string.contains("campaignFormMeta")) {
+				 community = ll > 5 ? parts[5] : ""; // 004
+			}else {
+				community = ll > 5 ? parts[5] : ""; 
+			}
+			if (string.contains("campaignFormMeta")) {
+				campaignFormMeta = ll > 6 ? parts[6] : "";
+				district = ll > 7 ? parts[7] : ""; // 004
+			} else if (!string.contains("community")) {
+				district = ll > 5 ? parts[5] : "";
+			} else {
+				district = ll > 6 ? parts[6] : "";
+			}
+
+			System.out.println(ll + "------------------------------------" + params);
+//			System.out.println(parts[6]);
+//			System.out.println(campaignFormMeta);
+			
+//			System.out.println("------------------------------------" + formType.replace("&area", "")
+//					+ "------------------------------------" + area.replace("&region", "")
+//					+ "------------------------------------" + region.replace("&campaign", "")
+//					+ "------------------------------------" + campaign.replace("&community", "")
+//					+ "------------------------------------" + community.replace("&campaignFormMeta", "")
+//					+ "------------------------------------" + campaignFormMeta.replace("&district", "")
+//					+ "------------------------------------" + district);
+
+//			if (!area.isEmpty() && params.contains("&area")) {
+//				AreaDto uu = FacadeProvider.getAreaFacade().getByUuid(area.replace("&region", ""));
+//				// uu.setUuid(area.replace("&region", ""));
+//				AreaReferenceDto areas = uu.toReference();
+//				criteria.setArea(areas);
+//			}
+			if (!region.isEmpty() && params.contains("&region")) {
+				RegionReferenceDto regions = FacadeProvider.getRegionFacade()
+						.getRegionReferenceByUuid(region.replace("&campaign", ""));
+				criteria.setRegion(regions);
+			}
+			if (!district.isEmpty() && params.contains("&district")) {
+				DistrictReferenceDto districts = FacadeProvider.getDistrictFacade()
+						.getDistrictReferenceByUuid(district);
+				criteria.setDistrict(districts);
+			}
+			if (!community.isEmpty() && params.contains("&community") && params.contains("&campaignFormMeta")) {
+				CommunityReferenceDto communitys = FacadeProvider.getCommunityFacade()
+						.getCommunityReferenceByUuid(community.replace("&campaignFormMeta", ""));
+				criteria.setCommunity(communitys);
+			}else{
+				CommunityReferenceDto communitys = FacadeProvider.getCommunityFacade()
+						.getCommunityReferenceByUuid(community.replace("&district", ""));
+				criteria.setCommunity(communitys);
+			}
+			if (!formType.isEmpty() && params.contains("&formType")) {
+				criteria.setFormType(formType.replace("&area", ""));
+				
+			}
+			if (!campaignFormMeta.isEmpty() && params.contains("&campaignFormMeta")) {
+				CampaignFormMetaReferenceDto campaignsmeta = FacadeProvider.getCampaignFormMetaFacade()
+						.getCampaignFormMetaReferenceByUuid(campaignFormMeta.replaceAll("&district", ""));
+				criteria.setCampaignFormMeta(campaignsmeta);
+				System.out.println(campaignFormMeta.replaceAll("&district", ""));
+			}
 		}
 
 		applyingCriteria = true;

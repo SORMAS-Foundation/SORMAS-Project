@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,15 +60,18 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.configuration.infrastructure.RegionsGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -135,9 +140,10 @@ public class UsersView extends AbstractView {
 
 			addHeaderComponent(createButton);
 
+			
 			Button exportUserRightsButton =
 				ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
-
+			
 			new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
 				try {
 					String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument(true);
@@ -152,8 +158,18 @@ public class UsersView extends AbstractView {
 				}
 			}, (e) -> {
 			}), createFileNameWithCurrentDate(ExportEntityName.USER_ROLES, ".xlsx"))).extend(exportUserRightsButton);
-
 			addHeaderComponent(exportUserRightsButton);
+
+			
+			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null,
+					ValoTheme.BUTTON_PRIMARY);
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			addHeaderComponent(exportButton);
+
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", grid,
+					ExportEntityName.USERS, UserGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
 		}
 
 		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()) {

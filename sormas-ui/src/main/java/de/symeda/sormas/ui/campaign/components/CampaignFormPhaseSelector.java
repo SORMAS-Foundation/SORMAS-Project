@@ -39,39 +39,31 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 
 		phaseComboBox = new ComboBox<>(" ");
 
-		// phaseComboBox.setItems(CampaignPhase.values());
-
 		List<String> phases = new ArrayList();
-		// phases.add("ALL PHASES");
+
+		// Set drop-down options based on User Type
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
 		}
-		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER) || UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)
+				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
-		// if (UserProvider.getCurrent().hasUserRight(UserRight.POST_CAMPAIGN_VIEW)) {
-		// phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
-		// }
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
 		}
 
+		// Populate the drop-down
 		phaseComboBox.setItems(phases);
-		if(UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
-			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
-		}else {
+
+		// Set default value of drop-down based on the user type
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
+		} else {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
+		//Drop-down styling
 		phaseComboBox.setEmptySelectionAllowed(false);
-		// phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
-		// final CampaignReferenceDto lastStartedCampaign =
-		// FacadeProvider.getCampaignFacade().getLastStartedCampaign();
-		// phaseComboBox.setItems(CampaignPhase.values());
-		// phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllForms));
-
-		// System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		// ");
-
 		CssStyles.style(phaseComboBox, CssStyles.SOFT_REQUIRED);
 		addComponent(phaseComboBox);
 	}
@@ -88,38 +80,27 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 
 		phaseComboBox = new ComboBox<>(I18nProperties.getCaption(Captions.Campaign_phase));
 
-		// phaseComboBox.setItems(CampaignPhase.values());
-
 		List<String> phases = new ArrayList();
-		// phases.add("ALL PHASES");
+
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
 		}
-		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER) || UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)
+				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
 		}
 		phaseComboBox.setItems(phases);
-		//set phase value based on the type of user
-		if(UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		// set phase value based on the type of user
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
-		}else {
+		} else {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
-		
-		
+
 		phaseComboBox.setEmptySelectionAllowed(false);
-		// phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
-		// final CampaignReferenceDto lastStartedCampaign =
-		// FacadeProvider.getCampaignFacade().getLastStartedCampaign();
-		// phaseComboBox.setItems(CampaignPhase.values());
-		// phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllForms));
-
-		// System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		// ");
-
 		CssStyles.style(phaseComboBox, CssStyles.SOFT_REQUIRED);
 		addComponent(phaseComboBox);
 	}
@@ -133,9 +114,9 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 	}
 
 	public void clear() {
-		if(UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
-		}else {
+		} else {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
 	}

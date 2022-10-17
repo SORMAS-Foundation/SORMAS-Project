@@ -36,7 +36,7 @@ import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 @com.vaadin.annotations.JavaScript("jquerymini.js")
 public class CampaignFormDataView extends AbstractCampaignDataView {
 
-	private static final long serialVersionUID = -1890947102041773346L;
+	private static final long serialVersionUID = -1890947102041773346L; 
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/dataform";
 
@@ -96,7 +96,6 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 			
 
 		} else {
-
 			CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade()
 					.getCampaignFormDataByUuid(getReference().getUuid());
 			editComponent = ControllerProvider.getCampaignController().getCampaignFormDataComponent(campaignFormData,

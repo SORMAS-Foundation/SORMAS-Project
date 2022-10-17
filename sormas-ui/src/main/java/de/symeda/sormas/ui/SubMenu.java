@@ -20,16 +20,26 @@ package de.symeda.sormas.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.application.Application;
+import javax.servlet.ServletContext;
+
+import org.hibernate.internal.build.AllowSysOut;
+
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.UI;
 
 /**
- * A sub navigation menu presenting a list of available views to the user.
- * It emulates the HTML components of a tabsheet to use it's styling.
+ * A sub navigation menu presenting a list of available views to the user. It
+ * emulates the HTML components of a tabsheet to use it's styling.
  */
 @SuppressWarnings("serial")
 public class SubMenu extends CssLayout {
@@ -62,7 +72,6 @@ public class SubMenu extends CssLayout {
 	public void addView(final String name, String caption, String params, boolean isBackNavigation) {
 
 		String target = "#!" + name + (params != null ? "/" + params : "");
-
 		CssLayout tabItemCell = new CssLayout();
 		tabItemCell.setSizeUndefined();
 		tabItemCell.setPrimaryStyleName("v-tabsheet-tabitemcell");
@@ -70,18 +79,57 @@ public class SubMenu extends CssLayout {
 		CssLayout tabItem = new CssLayout();
 		tabItem.setId("tab-" + name.replaceAll("/", "-"));
 		tabItem.setSizeUndefined();
-	tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
+		tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
 		if (isBackNavigation) {
 			tabItem.addStyleName("back");
 		}
 		tabItemCell.addComponent(tabItem);
+		// insert if statements to take care of null here
+		if (UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null) {
+			String iii = (UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null
+					? UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria").toString()
+					: target); // this
+			// gives me
+			// the url
+			// parameters
+			// I
+			// need....
+			// just
+			// need to
+			// append
+			// the
+			// context
+			// to it
 
-		Link link = new Link(caption, new ExternalResource(target));
-		link.addStyleName("v-caption");
-		if (isBackNavigation)
-			link.setIcon(VaadinIcons.ARROW_CIRCLE_LEFT);
-		tabItem.addComponent(link);
+			System.out.println("========================= " + iii);
+			String targetttt = "#!" + name + (iii != null ? "/"
+					+ "formType=Intra-campaign&area=UC5BUE-L2P2UF-P2B7XZ-HEOO2EHM&campaign=VPRWOX-M7VHMR-2AALCV-3BSK2PDI"
+					: "");
+			System.out.println("tttaaarrrrggggeeetttttt " + target);
 
+			Link link = new Link();
+			if (isBackNavigation) { // need to check if the view is campaign or campaign data
+				if (Page.getCurrent().getLocation().toString().contains("campaigndata")) {
+					link = new Link(caption, new ExternalResource("#!campaign/campaigndata/?" + iii));
+				}
+				if (Page.getCurrent().getLocation().toString().contains("/data/")) {
+					link = new Link(caption, new ExternalResource("#!campaign/campaigns/?" + iii));
+				}
+
+				link.addStyleName("v-caption");
+			} else {
+				link = new Link(caption, new ExternalResource(target));
+				link.addStyleName("v-caption");
+			}
+
+			if (isBackNavigation) {
+				link.setIcon(VaadinIcons.ARROW_CIRCLE_LEFT);
+
+			}
+			tabItem.addComponent(link);
+		} else {
+
+		}
 		menuItemsLayout.addComponent(tabItemCell);
 		viewMenuItemMap.put(name, tabItem);
 	}
@@ -117,11 +165,10 @@ public class SubMenu extends CssLayout {
 	}
 
 	/**
-	 * Highlights a view navigation button as the currently active view in the
-	 * menu. This method does not perform the actual navigation.
+	 * Highlights a view navigation button as the currently active view in the menu.
+	 * This method does not perform the actual navigation.
 	 *
-	 * @param viewName
-	 *            the name of the view to show as active
+	 * @param viewName the name of the view to show as active
 	 */
 	public void setActiveView(String viewName) {
 
