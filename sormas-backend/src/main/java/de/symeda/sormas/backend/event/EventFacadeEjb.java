@@ -302,6 +302,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@RightsAllowed(UserRight._EVENT_DELETE)
 	public void delete(String eventUuid, DeletionDetails deletionDetails) {
 		Event event = service.getByUuid(eventUuid);
+
+		sormasToSormasFacade.revokePendingShareRequests(event.getSormasToSormasShares());
+
 		try {
 			deleteEvent(event, deletionDetails);
 		} catch (ExternalSurveillanceToolException e) {
@@ -1146,10 +1149,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, e -> {
-				pseudonymizer.pseudonymizeUser(
-					event.getReportingUser(),
-					userService.getCurrentUser(),
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
 			});
 		}
 	}
