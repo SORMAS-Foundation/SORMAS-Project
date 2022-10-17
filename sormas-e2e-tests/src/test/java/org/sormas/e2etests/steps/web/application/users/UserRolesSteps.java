@@ -18,7 +18,13 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.ARCHIVE_CASES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.ARCHIVE_CONTACTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER_ROLE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_LIST;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TEMPLATE_COMBOBOX;
 
 import cucumber.api.java8.En;
@@ -45,6 +51,46 @@ public class UserRolesSteps implements En {
         "^I choose \"([^\"]*)\" as the user role template$",
         (String userTemplate) -> {
           webDriverHelpers.selectFromCombobox(USER_ROLE_TEMPLATE_COMBOBOX, userTemplate);
+        });
+
+    And(
+        "^I click SAVE button on Create New User Role form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE_BUTTON);
+        });
+
+    And(
+        "^I fill caption input as \"([^\"]*)\" on Create New User Role form$",
+        (String caption) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CAPTION_INPUT);
+          webDriverHelpers.fillInWebElement(CAPTION_INPUT, caption);
+        });
+
+    And(
+        "^I click checkbox to choose \"([^\"]*)\"$",
+        (String checkboxLabel) -> {
+          switch (checkboxLabel) {
+            case "Archive cases":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(ARCHIVE_CASES_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CASES_CHECKBOX);
+            case "Archive contacts":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(ARCHIVE_CONTACTS_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CONTACTS_CHECKBOX);
+          }
+        });
+
+    And(
+        "^I click SAVE button on User Role Page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "^I back to the User role list$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(USER_ROLE_LIST);
+          webDriverHelpers.clickOnWebElementBySelector(USER_ROLE_LIST);
         });
   }
 }

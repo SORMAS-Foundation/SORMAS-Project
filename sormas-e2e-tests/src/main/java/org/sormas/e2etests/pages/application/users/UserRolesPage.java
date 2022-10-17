@@ -26,7 +26,10 @@ public class UserRolesPage {
   public static By USER_ROLE_TEMPLATE_COMBOBOX =
       By.cssSelector(".popupContent #templateUserRole div");
   public static By CAPTION_INPUT = By.cssSelector(".popupContent #caption");
-  public static By JURISDICTION_LEVEL_COMBOBOX = By.cssSelector(".popupContent #jurisdictionLevel");
   public static By POPUP_SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static By POPUP_DISCARD_BUTTON = By.cssSelector(".popupContent #discard");
+  public static By ARCHIVE_CASES_CHECKBOX = By.xpath("//label[text()='Archive cases']");
+  public static By ARCHIVE_CONTACTS_CHECKBOX = By.xpath("//label[text()='Archive contacts']");
+  public static By SAVE_BUTTON = By.cssSelector("#commit");
+  public static By USER_ROLE_LIST = By.cssSelector("#tab-user-userroles");
 }

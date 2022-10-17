@@ -243,3 +243,11 @@ Feature: Create user
     And I click on User roles tab from User Management Page
     And I click on New user role button on User Roles Page
     And I choose "National User" as the user role template
+    And I click SAVE button on Create New User Role form
+    And I close input data error popup
+    And I fill caption input as "TestNatUser" on Create New User Role form
+    And I click SAVE button on Create New User Role form
+    And I click checkbox to choose "Archive cases"
+    And I click checkbox to choose "Archive contacts"
+    And I click SAVE button on User Role Page
+    And I back to the User role list
