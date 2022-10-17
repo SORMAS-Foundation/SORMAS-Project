@@ -29,8 +29,6 @@ import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -55,7 +53,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	@EJB
 	private PreviousHospitalizationService previousHospitalizationService;
 
-	public Hospitalization fillOrBuildEntity(HospitalizationDto source, Hospitalization target ,boolean checkChangeDate) {
+	public Hospitalization fillOrBuildEntity(HospitalizationDto source, Hospitalization target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
@@ -80,7 +78,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 			prevHosp.setHospitalization(target);
 			previousHospitalizations.add(prevHosp);
 		}
-		if (!DataHelper.equal(target.getPreviousHospitalizations(), previousHospitalizations)) {
+		if (!DataHelper.equalContains(target.getPreviousHospitalizations(), previousHospitalizations)) {
+			// note: DataHelper.equal does not work here, because target.getAddresses may be a PersistentBag when using lazy loading
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.getPreviousHospitalizations().clear();
@@ -100,7 +99,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, PreviousHospitalization::new, checkChangeDate);
 
-		if(!DataHelper.isSame(target.getRegion(), source.getRegion())) {
+		if (!DataHelper.isSame(target.getRegion(), source.getRegion())) {
 			target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		}
 

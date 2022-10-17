@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -105,6 +106,19 @@ public final class DataHelper {
 		}
 
 		return equal;
+	}
+
+	/**
+	 * Compare content of collections, ignoring the order
+	 */
+	public static boolean equalContains(Collection a, Collection b) {
+		if (equal(a, b)) {
+			return true;
+		}
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.size() == b.size() && a.containsAll(b);
 	}
 
 	/**

@@ -1630,7 +1630,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			Location location = locationFacade.fillOrBuildEntity(locationDto, existingLocation, checkChangeDate);
 			locations.add(location);
 		}
-		if (!DataHelper.equal(target.getAddresses(), locations)) {
+		if (!DataHelper.equalContains(target.getAddresses(), locations)) {
+			// note: DataHelper.equal does not work here, because target.getAddresses may be a PersistentBag when using lazy loading
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.getAddresses().clear();
