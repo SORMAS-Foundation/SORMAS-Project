@@ -82,7 +82,7 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 		ExternalShareInfoDto dto = toDto(source);
 
 		boolean pseudonymized = pseudonymizer
-			.pseudonymizeUser(ExternalShareInfo.class, ExternalShareInfo.SENDER, source.getSender(), userService.getCurrentUser(), dto::setSender);
+			.pseudonymizeUser(source.getSender(), userService.getCurrentUser(), dto::setSender);
 		if (pseudonymized) {
 			dto.setPseudonymized(true);
 		}

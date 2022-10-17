@@ -37,22 +37,20 @@ public class SormasToSormasEntitiesHelper {
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
-	public void updateCaseResponsibleDistrict(CaseDataDto caze, String districtExternalId) {
-		if (StringUtils.isNoneBlank(districtExternalId)) {
-			Optional<DistrictDto> districts = getS2SDistrictReference();
-			if (districts.isPresent()) {
-				DistrictDto district = districts.get();
+	public void updateReceivedCaseResponsibleDistrict(CaseDataDto caze) {
+		Optional<DistrictDto> districts = getS2SDistrictReference();
+		if (districts.isPresent()) {
+			DistrictDto district = districts.get();
 
-				if (caze.getRegion() == null) {
-					caze.setRegion(caze.getResponsibleRegion());
-					caze.setDistrict(caze.getResponsibleDistrict());
-					caze.setCommunity(caze.getResponsibleCommunity());
-				}
-
-				caze.setResponsibleRegion(district.getRegion());
-				caze.setResponsibleDistrict(district.toReference());
-				caze.setResponsibleCommunity(null);
+			if (caze.getRegion() == null) {
+				caze.setRegion(caze.getResponsibleRegion());
+				caze.setDistrict(caze.getResponsibleDistrict());
+				caze.setCommunity(caze.getResponsibleCommunity());
 			}
+
+			caze.setResponsibleRegion(district.getRegion());
+			caze.setResponsibleDistrict(district.toReference());
+			caze.setResponsibleCommunity(null);
 		}
 	}
 
@@ -67,9 +65,9 @@ public class SormasToSormasEntitiesHelper {
 		return Optional.ofNullable(districts.isEmpty() ? null : districts.get(0));
 	}
 
-	public void updateCaseResponsibleDistrict(Case caze, String districtExternalId) {
+	public void updateSentCaseResponsibleDistrict(Case caze, String districtExternalId) {
 		if (StringUtils.isNoneBlank(districtExternalId)) {
-			Optional<District> districts = getS2SDistrict();
+			Optional<District> districts = getS2SDistrict(districtExternalId);
 			if (districts.isPresent()) {
 				District district = districts.get();
 
@@ -86,28 +84,26 @@ public class SormasToSormasEntitiesHelper {
 		}
 	}
 
-	private Optional<District> getS2SDistrict() {
-		List<District> districts = districtService.getByExternalId(configFacade.getS2SConfig().getDistrictExternalId(), false);
+	private Optional<District> getS2SDistrict(String externalId) {
+		List<District> districts = districtService.getByExternalId(externalId, false);
 
 		return Optional.ofNullable(districts.isEmpty() ? null : districts.get(0));
 	}
 
-	public void updateContactResponsibleDistrict(ContactDto contact, String districtExternalId) {
-		if (StringUtils.isNoneBlank(districtExternalId)) {
-			Optional<DistrictDto> districts = getS2SDistrictReference();
-			if (districts.isPresent()) {
-				DistrictDto district = districts.get();
+	public void updateReceivedContactResponsibleDistrict(ContactDto contact) {
+		Optional<DistrictDto> districts = getS2SDistrictReference();
+		if (districts.isPresent()) {
+			DistrictDto district = districts.get();
 
-				contact.setRegion(district.getRegion());
-				contact.setDistrict(district.toReference());
-				contact.setCommunity(null);
-			}
+			contact.setRegion(district.getRegion());
+			contact.setDistrict(district.toReference());
+			contact.setCommunity(null);
 		}
 	}
 
-	public void updateContactResponsibleDistrict(Contact contact, String districtExternalId) {
+	public void updateSentContactResponsibleDistrict(Contact contact, String districtExternalId) {
 		if (StringUtils.isNoneBlank(districtExternalId)) {
-			Optional<District> districts = getS2SDistrict();
+			Optional<District> districts = getS2SDistrict(districtExternalId);
 			if (districts.isPresent()) {
 				District district = districts.get();
 

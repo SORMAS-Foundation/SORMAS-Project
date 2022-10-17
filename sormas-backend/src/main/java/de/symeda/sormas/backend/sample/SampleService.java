@@ -1003,10 +1003,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		long startTime;
 		if (pathogenTestUUIDsList.size() > 0) {
 			startTime = DateHelper.startTime();
-			IterableHelper.executeBatched(
-				pathogenTestUUIDsList,
-				pathogenTestUUIDsList.size(),
-				batchedSampleUuids -> pathogenTestService.delete(pathogenTestUUIDsList));
+			IterableHelper
+				.executeBatched(pathogenTestUUIDsList, pathogenTestUUIDsList.size(), batchedUuids -> pathogenTestService.delete(batchedUuids));
 			logger.debug(
 				"pathogenTestService.delete(pathogenTestUUIDsList) = {}, {}ms",
 				pathogenTestUUIDsList.size(),
@@ -1015,10 +1013,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		if (additionalTestUUIDsList.size() > 0) {
 			startTime = DateHelper.startTime();
-			IterableHelper.executeBatched(
-				additionalTestUUIDsList,
-				additionalTestUUIDsList.size(),
-				batchedSampleUuids -> additionalTestService.delete(additionalTestUUIDsList));
+			IterableHelper
+				.executeBatched(additionalTestUUIDsList, additionalTestUUIDsList.size(), batchedUuids -> additionalTestService.delete(batchedUuids));
 			logger.debug(
 				"additionalTestService.delete(additionalTestUUIDsList) = {}, {}ms",
 				additionalTestUUIDsList.size(),

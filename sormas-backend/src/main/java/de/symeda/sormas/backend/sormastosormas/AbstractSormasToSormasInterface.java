@@ -37,6 +37,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -293,7 +294,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		DuplicateResult duplicateCheckResult = decryptAndPersist(encryptedData, (data, existingData) -> {
 			DuplicateResult duplicateResult = DuplicateResult.NONE;
 
-			if (checkDuplicates) {
+			if (checkDuplicates && !data.getOriginInfo().isPseudonymizedData()) {
 				duplicateResult = processedEntitiesPersister.checkForSimilarEntities(data, existingData);
 			}
 
@@ -309,7 +310,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			sormasToSormasRestClient.post(
 				organizationId,
 				REQUEST_ACCEPTED_ENDPOINT,
-				new ShareRequestAcceptData(requestUuid, configFacadeEjb.getS2SConfig().getDistrictExternalId()),
+				new ShareRequestAcceptData(
+					requestUuid,
+					shareRequest.getOriginInfo().isOwnershipHandedOver() ? configFacadeEjb.getS2SConfig().getDistrictExternalId() : null),
 				null);
 
 			shareRequest.setChangeDate(new Date());
@@ -361,10 +364,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 
 		requestInfo.getShares().forEach(s -> {
 			if (s.getCaze() != null) {
-				sormasToSormasEntitiesHelper.updateCaseResponsibleDistrict(s.getCaze(), responseData.getDistrictExternalId());
+				sormasToSormasEntitiesHelper.updateSentCaseResponsibleDistrict(s.getCaze(), responseData.getDistrictExternalId());
 			}
 			if (s.getContact() != null) {
-				sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(s.getContact(), responseData.getDistrictExternalId());
+				sormasToSormasEntitiesHelper.updateSentContactResponsibleDistrict(s.getContact(), responseData.getDistrictExternalId());
 			}
 
 			if (s.getSample() != null) {
@@ -392,15 +395,18 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_CLIENT)
 	public SormasToSormasEncryptedDataDto saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData)
 		throws SormasToSormasException, SormasToSormasValidationException {
+		MutableBoolean withOwnership = new MutableBoolean(false);
 		decryptAndPersist(encryptedData, (data, existingData) -> {
 			originInfoFacade.saveOriginInfo(data.getOriginInfo());
 			processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData);
+			withOwnership.setValue(data.getOriginInfo().isOwnershipHandedOver());
 
 			return null;
 		});
 
-		return sormasToSormasEncryptionEjb
-			.signAndEncrypt(new ShareRequestAcceptData(null, configFacadeEjb.getS2SConfig().getDistrictExternalId()), encryptedData.getSenderId());
+		return sormasToSormasEncryptionEjb.signAndEncrypt(
+			new ShareRequestAcceptData(null, withOwnership.isTrue() ? configFacadeEjb.getS2SConfig().getDistrictExternalId() : null),
+			encryptedData.getSenderId());
 	}
 
 	@Override
@@ -892,6 +898,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		requestInfo.setUuid(requestUuid);
 		requestInfo.setDataType(shareRequestDataType);
 		requestInfo.setRequestStatus(requestStatus);
+		requestInfo.setOwnershipHandedOver(options.isHandOverOwnership());
 
 		addOptionsToShareRequestInfo(requestInfo, options, currentUser);
 		shares.forEach(s -> s.setOwnershipHandedOver(options.isHandOverOwnership()));

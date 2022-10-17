@@ -105,6 +105,7 @@ public class ShareDataBuilderHelper {
 		sormasToSormasOriginInfo.setWithEventParticipants(options.isWithEventParticipants());
 		sormasToSormasOriginInfo.setWithImmunizations(options.isWithImmunizations());
 		sormasToSormasOriginInfo.setComment(options.getComment());
+		sormasToSormasOriginInfo.setPseudonymizedData(options.isPseudonymizeData());
 
 		return sormasToSormasOriginInfo;
 	}
@@ -127,7 +128,7 @@ public class ShareDataBuilderHelper {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
 		options.setOrganization(new SormasServerDescriptor(requestInfo.getShares().get(0).getOrganizationId()));
-		options.setHandOverOwnership(requestInfo.getShares().get(0).isOwnershipHandedOver());
+		options.setHandOverOwnership(requestInfo.isOwnershipHandedOver());
 		options.setWithAssociatedContacts(requestInfo.isWithAssociatedContacts());
 		options.setWithSamples(requestInfo.isWithSamples());
 		options.setWithEventParticipants(requestInfo.isWithEventParticipants());

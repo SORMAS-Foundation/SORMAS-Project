@@ -168,6 +168,84 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	}
 
 	@Test
+	public void testShareEventWithPseudonymizeData() throws SormasToSormasException {
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		Date dateNow = new Date();
+
+		EventDto event = creator.createEvent(
+			EventStatus.SCREENING,
+			EventInvestigationStatus.ONGOING,
+			"Test event title",
+			"Test description",
+			user.toReference(),
+			null,
+			(e) -> {
+				e.setRiskLevel(RiskLevel.MODERATE);
+				e.setMultiDayEvent(true);
+				e.setStartDate(dateNow);
+				e.setEndDate(dateNow);
+				e.setSrcType(EventSourceType.MEDIA_NEWS);
+				e.setSrcMediaWebsite("Test media name");
+				e.setSrcMediaName("Test media website");
+				e.setSrcMediaDetails("Test media details");
+
+				e.getEventLocation().setRegion(rdcf.region);
+				e.getEventLocation().setDistrict(rdcf.district);
+			});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setPseudonymizeData(true);
+		options.setComment("Test comment");
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> {
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
+				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/events"));
+
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+				assertThat(postBody.getEvents().size(), is(1));
+				SormasToSormasEventDto sharedEventData = postBody.getEvents().get(0);
+				EventDto sharedEvent = sharedEventData.getEntity();
+
+				assertThat(sharedEvent.getEventTitle(), is("Test event title"));
+				assertThat(sharedEvent.getEventDesc(), is("Test description"));
+				assertThat(sharedEvent.getEventStatus(), is(EventStatus.SCREENING));
+				assertThat(sharedEvent.getEventInvestigationStatus(), is(EventInvestigationStatus.ONGOING));
+				assertThat(sharedEvent.getRiskLevel(), is(RiskLevel.MODERATE));
+				assertThat(sharedEvent.isMultiDayEvent(), is(true));
+				assertThat(sharedEvent.getStartDate().getTime(), is(dateNow.getTime()));
+				assertThat(sharedEvent.getEndDate().getTime(), is(dateNow.getTime()));
+				assertThat(sharedEvent.getSrcType(), is(EventSourceType.MEDIA_NEWS));
+				assertThat(sharedEvent.getSrcMediaWebsite(), is("Test media name"));
+				assertThat(sharedEvent.getSrcMediaName(), is("Test media website"));
+				assertThat(sharedEvent.getSrcMediaDetails(), is("Test media details"));
+
+				// share information
+				assertThat(postBody.getOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
+				assertThat(postBody.getOriginInfo().getSenderName(), is("Surv Off"));
+				assertThat(postBody.getOriginInfo().getComment(), is("Test comment"));
+
+				return encryptShareData(new ShareRequestAcceptData(null, null));
+			});
+
+		getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
+
+		List<SormasToSormasShareInfoDto> shareInfoList =
+			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);
+		assertThat(shareInfoList.size(), is(1));
+		assertThat(shareInfoList.get(0).getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
+		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF"));
+		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
+	}
+
+	@Test
 	public void testShareEventWithSamples() throws SormasToSormasException {
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
