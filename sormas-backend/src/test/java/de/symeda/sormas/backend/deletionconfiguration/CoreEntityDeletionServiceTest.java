@@ -212,11 +212,10 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 			v.setVisitingPerson("John Wayne");
 			v.setVisitRemarks("Visit remarks");
 
-			SymptomsDto symptoms = new SymptomsDto();
+			SymptomsDto symptoms = v.getSymptoms();
 			symptoms.setPatientIllLocation("Test sick location");
 			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
 			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic for case 2");
-			v.setSymptoms(symptoms);
 		});
 
 		VisitDto visit2 = creator.createVisit(caze2.getDisease(), caze2.getPerson(), caze2.getReportDate());
