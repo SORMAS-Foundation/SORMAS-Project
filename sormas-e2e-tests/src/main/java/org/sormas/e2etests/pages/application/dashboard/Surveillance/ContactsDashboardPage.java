@@ -22,7 +22,7 @@ import org.openqa.selenium.By;
 
 public class ContactsDashboardPage {
 
-  public static final By CONTACTS_RADIO_BUTTON = By.xpath("//label[contains(text(),'Contacts')]");
+  public static final By CONTACTS_RADIO_BUTTON = By.cssSelector("[role='radiogroup']>:nth-child(2)");
   public static final By CURRENT_PERIOD_CONTACTS_DASHBOARD = By.id("currentPeriod");
   public static final By CURRENT_PERIOD_DASHBOARD_CUSTOM_CONTACTS_DASHBOARD =
       By.id("dashboardCustom");
@@ -52,111 +52,140 @@ public class ContactsDashboardPage {
   public static final By SHOW_FIRST_DISEASES_BUTTON_CONTACTS_DASHBOARD =
       By.id("dashboardShowFirstDiseases");
   public static final By CONTACTS_DASHBOARD_NAME =
-      By.xpath("//div[contains(text(),'Contacts Dashboard')]");
+      By.cssSelector("[class*=\"h1 v-label-h1\"]");
   public static final By ALL_CONTACTS_COUNTER =
-      By.xpath("//div[text()='All Contacts']/parent::div/following-sibling::div//child::div");
+      By.cssSelector("[location='firstLoc']>div>div>:nth-child(1)>div>div>div>div>:nth-child(2)>div");
   public static final By UNDER_FOLLOWUP_COUNTER =
-      By.xpath("//div[text()='Under Follow-up']/parent::div/following-sibling::div//child::div");
+      By.cssSelector("[location='secondLoc']>div>div>:nth-child(1)>div>div>div>div>:nth-child(2)>div");
   public static final By STOPPED_FOLLOWUP_COUNTER =
-      By.xpath("//div[text()='Stopped Follow-up']/parent::div/following-sibling::div//child::div");
+      By.cssSelector("[location='thirdLoc']>div>:nth-child(1)>:nth-child(1)>div>div>div>:nth-child(2)>div");
   public static final By VISITS_COUNTER =
-      By.xpath("//div[text()='Visits']/parent::div/following-sibling::div//child::div");
+      By.cssSelector("[location='fourthLoc']>div>:nth-child(1)>:nth-child(1)>div>div>div>:nth-child(2)>div");
   public static final By UNCONFIRMED_CONTACT_COUNTER =
-      By.xpath("//div[text()='Unconfirmed contact']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(1)");
   public static final By CONFIRMED_CONTACT_COUNTER =
-      By.xpath("//div[text()='Confirmed contact']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(2)");
   public static final By NOT_A_CONTACT_COUNTER =
-      By.xpath("//div[text()='Not a contact']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(3)");
   public static final By NEW_COUNTER =
-      By.xpath("//div[text()='New']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(4)");
   public static final By SYMPTOMATIC_COUNTER =
-      By.xpath("//div[text()='Symptomatic']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(5)");
   public static final By COOPERATIVE_COUNTER =
-      By.xpath("//div[text()='Cooperative']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='secondLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(1)>:nth-child(1)");
   public static final By UNCOOPERATIVE_COUNTER =
-      By.xpath("//div[text()='Uncooperative']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='secondLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(2)>:nth-child(1)");
   public static final By UNAVAILABLE_COUNTER =
-      By.xpath("//div[text()='Unavailable']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='secondLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(3)>:nth-child(1)");
   public static final By NEVER_VISITED_COUNTER =
-      By.xpath("//div[text()='Never visited']/parent::div/preceding-sibling::div");
+      By.cssSelector("[location='secondLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(4)>:nth-child(1)");
   public static final By COMPLETED_FOLLOW_UP_COUNTER =
-      By.xpath("//div[text()='Completed follow-up']/parent::div/following-sibling::div[2]");
+      By.cssSelector("[location='thirdLoc']>div>:nth-child(2)>div>:nth-child(1)>:nth-child(1)>:nth-child(1)>div>div>:nth-child(3)>div");
   public static final By CANCELLED_FOLLOW_UP_COUNTER =
-      By.xpath("//div[text()='Canceled follow-up']/parent::div/following-sibling::div[2]");
+      By.cssSelector("[location='thirdLoc']>div>:nth-child(2)>div>:nth-child(2)>:nth-child(1)>:nth-child(1)>div>div>:nth-child(3)>div");
   public static final By LOST_TO_FOLLOW_UP_COUNTER =
-      By.xpath("//div[text()='Lost to follow-up']/parent::div/following-sibling::div[2]");
+      By.cssSelector("[location='thirdLoc']>div>:nth-child(2)>div>:nth-child(3)>:nth-child(1)>:nth-child(1)>div>div>:nth-child(3)>div");
   public static final By CONVERTED_TO_CASE_COUNTER =
-      By.xpath("//div[text()='Converted to case']/parent::div/following-sibling::div[2]");
+      By.cssSelector("[location='thirdLoc']>div>:nth-child(2)>div>:nth-child(4)>:nth-child(1)>:nth-child(1)>div>div>:nth-child(3)>div");
   public static final By UNAVAILABLE_VISITS_COUNTER =
-      By.xpath("//div[text()='Unavailable']/parent::div/following-sibling::div[1]");
+      By.cssSelector("[location='fourthLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(1)>div>div>:nth-child(2)");
   public static final By UNCOOPERATIVE_VISITS_COUNTER =
-      By.xpath("//div[text()='Uncooperative']/parent::div/following-sibling::div[1]");
+      By.cssSelector("[location='fourthLoc']>div>:nth-child(2)>div>:nth-child(2)>div>:nth-child(1)>div>div>:nth-child(2)");
   public static final By COOPERATIVE_VISITS_COUNTER =
-      By.xpath("//div[text()='Cooperative']/parent::div/following-sibling::div[1]");
+      By.cssSelector("[location='fourthLoc']>div>:nth-child(2)>div>:nth-child(3)>div>:nth-child(1)>div>div>:nth-child(2)");
   public static final By MISSED_VISITS_COUNTER =
-      By.xpath("//div[text()='Missed']/parent::div/following-sibling::div[1]");
+      By.cssSelector("[location='fourthLoc']>div>:nth-child(2)>div>:nth-child(5)>div>:nth-child(1)>div>div>:nth-child(2)");
   public static final By CONTACTS_COVID19_COUNTER =
-      By.xpath("//div[contains(text(),'COVID-19')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(2)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_CHOLERA_COUNTER =
-      By.xpath("//div[contains(text(),'Cholera')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(3)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_CONGENITAL_RUBELLA_COUNTER =
-      By.xpath(
-          "//div[contains(text(),'Congenital Rubella')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector(
+          "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(4)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_EBOLA_VIRUS_DISEASE_COUNTER =
-      By.xpath(
-          "//div[contains(text(),'Ebola Virus Disease')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector(
+          "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(5)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_LASSA_COUNTER =
-      By.xpath("//div[contains(text(),'Lassa')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(6)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_MONKEYPOX_COUNTER =
-      By.xpath("//div[contains(text(),'Monkeypox')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(7)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_INFLUENZA_NEW_SUBTYPE_COUNTER =
-      By.xpath(
-          "//div[contains(text(),'Influenza (New subtype)')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector(
+          "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(8)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_PLAGUE_COUNTER =
-      By.xpath("//div[contains(text(),'Plague')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(9)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_UNSPECIFIED_WHF_COUNTER =
-      By.xpath(
-          "//div[contains(text(),'Unspecified VHF')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector(
+          "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(10)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_HUMAN_RABIES_COUNTER =
-      By.xpath("//div[contains(text(),'Human Rabies')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(11)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_OTHER_EPIDEMIC_DISEASE_COUNTER =
-      By.xpath(
-          "//div[contains(text(),'Other Epidemic Disease')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector(
+          "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(12)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_NOT_YET_DEFINED_COUNTER =
-      By.xpath(
-          "//div[contains(text(),'Not Yet Defined')]/parent::div/following-sibling::div[4]/div");
+      By.cssSelector(
+          "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(13)>div>:nth-child(1)>:nth-child(5)");
   public static final By CONTACTS_PER_CASE_MIN_COUNTER =
-      By.xpath("//div[contains(text(),'Contacts per Case')]/parent::div/following-sibling::div[1]");
+      By.xpath("(//div[@class='v-label v-widget primary v-label-primary large-alt v-label-large-alt bold " +
+              "v-label-bold vspace-5 v-label-vspace-5 hspace-right-3 v-label-hspace-right-3 v-label-undef-w'])[1]");
   public static final By CONTACTS_PER_CASE_MAX_COUNTER =
-      By.xpath("//div[contains(text(),'Contacts per Case')]/parent::div/following-sibling::div[2]");
+      By.xpath("(//div[@class='v-label v-widget primary v-label-primary large-alt v-label-large-alt bold" +
+              " v-label-bold vspace-5 v-label-vspace-5 hspace-right-3 v-label-hspace-right-3 v-label-undef-w'])[2]");
   public static final By CONTACTS_PER_CASE_AVERAGE_COUNTER =
-      By.xpath("//div[contains(text(),'Contacts per Case')]/parent::div/following-sibling::div[3]");
+      By.xpath("//div[@class='v-horizontallayout v-layout v-horizontal v-widget" +
+              " highlighted-statistics-component v-horizontallayout-highlighted-statistics-component v-has-width']" +
+              "//div[@class='v-slot']//div[@class='v-label v-widget primary v-label-primary large-alt v-label-large-alt" +
+              " bold v-label-bold vspace-5 v-label-vspace-5 v-label-undef-w']");
   public static final By CONTACTS_IN_QUARANTINE_COUNTER =
       By.xpath(
-          "//div[contains(text(),'Contacts in Quarantine')]/parent::div/following-sibling::div");
+          "(//div[@class='v-label v-widget primary v-label-primary large-alt v-label-large-alt bold" +
+                  " v-label-bold vspace-5 v-label-vspace-5 hspace-right-3 v-label-hspace-right-3 v-label-undef-w'])[3]");
   public static final By CONTACTS_PLACED_IN_QUARANTINE_COUNTER =
       By.xpath(
-          "//div[contains(text(),'Contacts placed in Quarantine')]/parent::div/following-sibling::div");
+          "(//div[@class='v-label v-widget primary v-label-primary large-alt v-label-large-alt" +
+                  " bold v-label-bold vspace-5 v-label-vspace-5 hspace-right-3 v-label-hspace-right-3" +
+                  " v-label-undef-w'])[4]");
   public static final By CONTACTS_NEW_CASES_NOT_PREVIOUSLY_KNOWN_TO_BE_CONTACTS_COUNTER =
       By.xpath(
-          "//div[contains(text(),'New Cases not Previously Known to Be Contacts')]/parent::div/following-sibling::div");
-  public static final By FOLLOWUP_STATUS_CHART_UNDER_FU = By.xpath("//*[text()='Under F/U']");
-  public static final By FOLLOWUP_STATUS_CHART_LOST_TO_FU = By.xpath("//*[text()='Lost To F/U']");
+          "(//div[@class='v-label v-widget primary v-label-primary large-alt" +
+                  " v-label-large-alt bold v-label-bold vspace-5 v-label-vspace-5 v-label-undef-w'])[2]");
+  public static final By FOLLOWUP_STATUS_CHART_UNDER_FU = By.xpath("//body[1]/div[1]/div[1]/div[2]/div[1]" +
+          "/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[4]/div[1]/div[1]/div[1]/div[1]/div[1]" +
+          "/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/*[name()='svg']/*[name()='g']/*[name()='g']/*[name()='g']" +
+          "/*[name()='g']/*[name()='text']/*[name()='tspan']");
+  public static final By FOLLOWUP_STATUS_CHART_LOST_TO_FU = By.cssSelector("body>div:nth-child(1)>div:nth-child(1)" +
+          ">div:nth-child(2)>div:nth-child(1)>div:nth-child(2)>div:nth-child(1)>div:nth-child(1)>div:nth-child(1)" +
+          ">div:nth-child(2)>div:nth-child(1)>div:nth-child(1)>div:nth-child(2)>div:nth-child(1)>div:nth-child(4)" +
+          ">div:nth-child(1)>div:nth-child(1)>div:nth-child(1)>div:nth-child(1)>div:nth-child(1)>div:nth-child(1)" +
+          ">div:nth-child(1)>div:nth-child(1)>div:nth-child(2)>div:nth-child(1)>div:nth-child(1)>svg:nth-child(1)" +
+          ">g:nth-child(21)>g:nth-child(2)>g:nth-child(1)>g:nth-child(2)>text:nth-child(1)>tspan:nth-child(1)");
   public static final By FOLLOWUP_STATUS_CHART_COMPLETED_FU =
-      By.xpath("//*[text()='Completed F/U']");
-  public static final By FOLLOWUP_STATUS_CHART_CANCELED_FU = By.xpath("//*[text()='Canceled F/U']");
+      By.cssSelector("body > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)" +
+              " > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) >" +
+              " div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(4) >" +
+              " div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) >" +
+              " div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) >" +
+              " div:nth-child(1) > svg:nth-child(1) > g:nth-child(21) > g:nth-child(2) > g:nth-child(1) >" +
+              " g:nth-child(3) > text:nth-child(1) > tspan:nth-child(1)");
+  public static final By FOLLOWUP_STATUS_CHART_CANCELED_FU = By.cssSelector("body > div:nth-child(1) >" +
+          " div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) >" +
+          " div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) >" +
+          " div:nth-child(2) > div:nth-child(1) > div:nth-child(4) > div:nth-child(1) > div:nth-child(1) >" +
+          " div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) >" +
+          " div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > svg:nth-child(1) >" +
+          " g:nth-child(21) > g:nth-child(2) > g:nth-child(1) > g:nth-child(4) > text:nth-child(1) > tspan:nth-child(1)");
 
   public static final By CHART_CONTEXT_MENU = By.cssSelector("[class='highcharts-button-symbol']");
-  public static final By PRINT_CHART_OPTION = By.xpath("//li[text()='Print chart']");
-  public static final By DOWNLOAD_PNG_IMAGE_OPTION = By.xpath("//li[text()='Download PNG image']");
+  public static final By PRINT_CHART_OPTION = By.xpath("(//li[@class='highcharts-menu-item'])[1]");
+  public static final By DOWNLOAD_PNG_IMAGE_OPTION = By.xpath("(//li[@class='highcharts-menu-item'])[2]");
   public static final By DOWNLOAD_JPEG_IMAGE_OPTION =
-      By.xpath("//li[text()='Download JPEG image']");
+      By.xpath("(//li[@class='highcharts-menu-item'])[3]");
   public static final By DOWNLOAD_PDF_DOCUMENT_OPTION =
-      By.xpath("//li[text()='Download PDF document']");
+      By.xpath("(//li[@class='highcharts-menu-item'])[4]");
   public static final By DOWNLOAD_SVG_VECTOR_IMAGE_OPTION =
-      By.xpath("//li[text()='Download SVG vector image']");
-  public static final By DOWNLOAD_CSV_OPTION = By.xpath("//li[text()='Download CSV']");
-  public static final By DOWNLOAD_XLS_OPTION = By.xpath("//li[text()='Download XLS']");
+      By.xpath("(//li[@class='highcharts-menu-item'])[5]");
+  public static final By DOWNLOAD_CSV_OPTION = By.xpath("(//li[@class='highcharts-menu-item'])[6]");
+  public static final By DOWNLOAD_XLS_OPTION = By.xpath("(//li[@class='highcharts-menu-item'])[7]");
   public static final By ENLARGE_FOLLOWUP_STATUS_CHART_BUTTON = By.id("expandEpiCurve");
   public static final By COLLAPSE_FOLLOWUP_STATUS_CHART_BUTTON = By.id("collapseEpiCurve");
   public static final By EXPAND_MAP_BUTTON = By.id("expandMap");
