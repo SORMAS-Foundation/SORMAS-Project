@@ -28,6 +28,8 @@ import org.junit.runner.RunWith;
 @CourgetteOptions(
     runLevel = CourgetteRunLevel.SCENARIO,
     showTestOutput = true,
+    rerunFailedScenarios = true,
+    rerunAttempts = 1,
     cucumberOptions =
         @CucumberOptions(
             features = "src/test/resources/features",
