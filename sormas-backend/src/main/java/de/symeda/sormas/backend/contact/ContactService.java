@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -634,22 +635,11 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 
 			if (!dashboardContacts.isEmpty()) {
 				List<Long> dashboardContactIds = dashboardContacts.stream().map(DashboardContactDto::getId).collect(Collectors.toList());
-
-				CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
-				Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
-				Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
-				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
-
-				visitsCq.where(
-					CriteriaBuilderHelper
-						.and(cb, contact.get(AbstractDomainObject.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
-				visitsCq.multiselect(
-					visitsCqRoot.get(AbstractDomainObject.ID),
-					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
-					visitsJoin.get(Visit.VISIT_STATUS),
-					visitsJoin.get(Visit.VISIT_DATE_TIME));
-
-				List<DashboardVisit> contactVisits = em.createQuery(visitsCq).getResultList();
+				List<DashboardVisit> contactVisits = new ArrayList<>();
+				IterableHelper.executeBatched(
+					dashboardContactIds,
+					ModelConstants.PARAMETER_LIMIT,
+					batchedVisitIds -> contactVisits.addAll(getContactDashboardVisits(batchedVisitIds, contact)));
 
 				// Add visit information to the DashboardContactDtos
 				for (DashboardContactDto dashboardContact : dashboardContacts) {
@@ -679,6 +669,26 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		}
 
 		return Collections.emptyList();
+	}
+
+	private List<DashboardVisit> getContactDashboardVisits(List<Long> dashboardContactIds, Root<Contact> contact) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
+		Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
+		Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
+		Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+		visitsCq.where(
+			CriteriaBuilderHelper
+				.and(cb, contact.get(Contact.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+		visitsCq.multiselect(
+			visitsCqRoot.get(Visit.ID),
+			visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
+			visitsJoin.get(Visit.VISIT_STATUS),
+			visitsJoin.get(Visit.VISIT_DATE_TIME));
+
+		return em.createQuery(visitsCq).getResultList();
 	}
 
 	public Predicate getRegionDistrictDiseasePredicate(
