@@ -21,6 +21,7 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @LocalBean
@@ -64,6 +65,36 @@ public class HealthConditionsMapper {
 	}
 
 	public HealthConditions fillOrBuildEntity(@NotNull HealthConditionsDto source, HealthConditions target, boolean checkChangeDate) {
-		return DtoHelper.fillOrBuildEntity(source, target, HealthConditions::new, checkChangeDate);
+		if (source == null) {
+			return null;
+		}
+
+		target = DtoHelper.fillOrBuildEntity(source, target, HealthConditions::new, checkChangeDate);
+
+		target.setAsplenia(source.getAsplenia());
+		target.setChronicHeartFailure(source.getChronicHeartFailure());
+		target.setChronicKidneyDisease(source.getChronicKidneyDisease());
+		target.setChronicLiverDisease(source.getChronicLiverDisease());
+		target.setChronicNeurologicCondition(source.getChronicNeurologicCondition());
+		target.setChronicPulmonaryDisease(source.getChronicPulmonaryDisease());
+		target.setDiabetes(source.getDiabetes());
+		target.setHepatitis(source.getHepatitis());
+		target.setHiv(source.getHiv());
+		target.setHivArt(source.getHivArt());
+		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
+		target.setTuberculosis(source.getTuberculosis());
+		target.setDownSyndrome(source.getDownSyndrome());
+		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
+		target.setOtherConditions(source.getOtherConditions());
+		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
+		target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
+		target.setObesity(source.getObesity());
+		target.setCurrentSmoker(source.getCurrentSmoker());
+		target.setFormerSmoker(source.getFormerSmoker());
+		target.setAsthma(source.getAsthma());
+		target.setSickleCellDisease(source.getSickleCellDisease());
+		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
+
+		return target;
 	}
 }

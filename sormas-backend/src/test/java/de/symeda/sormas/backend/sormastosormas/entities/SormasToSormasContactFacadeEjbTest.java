@@ -494,48 +494,52 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 			.when(
 				MockProducer.getSormasToSormasClient()
 					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-			.thenAnswer(
-				invocation -> {
-					// share the case first
-					if (switching.get()) {
+			.thenAnswer(invocation -> {
+				// share the case first
+				if (switching.get()) {
 
-						SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+					SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
 
-						// make sure that no entities are found
-						final CaseDataDto entity = postBody.getCases().get(0).getEntity();
+					// make sure that no entities are found
+					final CaseDataDto entity = postBody.getCases().get(0).getEntity();
 
-						entity.setUuid(uuidCase);
-						entity.getTherapy().setUuid(DataHelper.createUuid());
-						entity.getHealthConditions().setUuid(DataHelper.createUuid());
-						entity.getPortHealthInfo().setUuid(DataHelper.createUuid());
-						entity.getClinicalCourse().setUuid(DataHelper.createUuid());
-						entity.getMaternalHistory().setUuid(DataHelper.createUuid());
+					entity.setUuid(uuidCase);
+					entity.getHospitalization().setUuid(DataHelper.createUuid());
+					entity.getSymptoms().setUuid(DataHelper.createUuid());
+					entity.getEpiData().setUuid(DataHelper.createUuid());
+					entity.getTherapy().setUuid(DataHelper.createUuid());
+					entity.getHealthConditions().setUuid(DataHelper.createUuid());
+					entity.getPortHealthInfo().setUuid(DataHelper.createUuid());
+					entity.getClinicalCourse().setUuid(DataHelper.createUuid());
+					entity.getMaternalHistory().setUuid(DataHelper.createUuid());
 
-						SormasToSormasEncryptedDataDto encryptedData = encryptShareData(new ShareRequestAcceptData(null, null));
-						when(MockProducer.getPrincipal().getName()).thenReturn(s2sClientUser.getUserName());
-						getSormasToSormasCaseFacade().saveSharedEntities(encryptShareData(postBody));
-						when(MockProducer.getPrincipal().getName()).thenReturn(officer.getUserName());
+					SormasToSormasEncryptedDataDto encryptedData = encryptShareData(new ShareRequestAcceptData(null, null));
+					when(MockProducer.getPrincipal().getName()).thenReturn(s2sClientUser.getUserName());
+					getSormasToSormasCaseFacade().saveSharedEntities(encryptShareData(postBody));
+					when(MockProducer.getPrincipal().getName()).thenReturn(officer.getUserName());
 
-						switching.set(false);
+					switching.set(false);
 
-						return encryptedData;
-					} else {
-						// share the contact second
-						SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+					return encryptedData;
+				} else {
+					// share the contact second
+					SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
 
-						// make sure that no entities are found
-						final ContactDto entity = postBody.getContacts().get(0).getEntity();
+					// make sure that no entities are found
+					final ContactDto entity = postBody.getContacts().get(0).getEntity();
 
-						entity.setUuid(uuidContact);
+					entity.setUuid(uuidContact);
+					entity.getEpiData().setUuid(DataHelper.createUuid());
+					entity.getHealthConditions().setUuid(DataHelper.createUuid());
 
-						SormasToSormasEncryptedDataDto encryptedData = encryptShareData(new ShareRequestAcceptData(null, null));
-						when(MockProducer.getPrincipal().getName()).thenReturn(s2sClientUser.getUserName());
-						getSormasToSormasCaseFacade().saveSharedEntities(encryptShareData(postBody));
-						when(MockProducer.getPrincipal().getName()).thenReturn(officer.getUserName());
-						return encryptedData;
-					}
+					SormasToSormasEncryptedDataDto encryptedData = encryptShareData(new ShareRequestAcceptData(null, null));
+					when(MockProducer.getPrincipal().getName()).thenReturn(s2sClientUser.getUserName());
+					getSormasToSormasCaseFacade().saveSharedEntities(encryptShareData(postBody));
+					when(MockProducer.getPrincipal().getName()).thenReturn(officer.getUserName());
+					return encryptedData;
+				}
 
-				});
+			});
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);

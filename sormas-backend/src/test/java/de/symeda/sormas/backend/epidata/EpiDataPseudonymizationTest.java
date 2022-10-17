@@ -177,7 +177,12 @@ public class EpiDataPseudonymizationTest extends AbstractBeanTest {
 			epiData.getExposures().add(travel);
 
 			ExposureDto gathering = ExposureDto.build(ExposureType.GATHERING);
-			gathering.setLocation(address);
+			LocationDto address2 = LocationDto.build();
+			address2.setRegion(rdcf.region);
+			address2.setDistrict(rdcf.district);
+			address2.setCommunity(rdcf.community);
+			address2.setCity("Test City");
+			gathering.setLocation(address2);
 			gathering.setDescription("Test gathering description");
 			epiData.getExposures().add(gathering);
 		});

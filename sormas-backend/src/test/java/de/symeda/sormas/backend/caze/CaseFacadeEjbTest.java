@@ -2037,8 +2037,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		aCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
 		final ArrayList<ActivityAsCaseDto> otherActivitiesAsCase = new ArrayList<>();
-		ActivityAsCaseDto activityAsCaseDto = new ActivityAsCaseDto();
-		activityAsCaseDto.setActivityAsCaseType(ActivityAsCaseType.GATHERING);
+		ActivityAsCaseDto activityAsCaseDto = ActivityAsCaseDto.build(ActivityAsCaseType.GATHERING);
 		otherActivitiesAsCase.add(activityAsCaseDto);
 		aCase.getEpiData().setActivitiesAsCase(otherActivitiesAsCase);
 
