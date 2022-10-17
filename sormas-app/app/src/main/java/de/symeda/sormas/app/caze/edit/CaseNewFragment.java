@@ -113,7 +113,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		}
 		List<DiseaseVariant> diseaseVariants =
 			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
-		diseaseVariantList = DataUtils.toItems(diseaseVariants, false);
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
 		dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
 		rabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
@@ -380,7 +380,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);
 		contentBinding.caseDataDiseaseVariant.setValue(null);
-		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+		contentBinding.caseDataDiseaseVariant.setVisibility(DataUtils.emptyOrWithOneNullItem(diseaseVariantList) ? GONE : VISIBLE);
 	}
 
 	private void updatePresentConditionField(FragmentCaseNewLayoutBinding contentBinding) {

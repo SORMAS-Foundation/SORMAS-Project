@@ -465,6 +465,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 				if (!visibleAndRequired) {
 					facilityDetails.clear();
+				} else {
+					String facilityDetailsValue = getValue() != null ? getValue().getFacilityDetails() : null;
+					facilityDetails.setValue(facilityDetailsValue);
 				}
 			} else {
 				facilityDetails.setVisible(false);

@@ -102,7 +102,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		List<DiseaseVariant> diseaseVariants = record.getTestedDisease() != null
 			? DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getTestedDisease())
 			: new ArrayList<>();
-		diseaseVariantList = DataUtils.toItems(diseaseVariants, false);
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getTestedDiseaseVariant() != null && !diseaseVariants.contains(record.getTestedDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
 		}
@@ -220,7 +220,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.pathogenTestTestedDiseaseVariant.setSpinnerData(diseaseVariantList);
 		contentBinding.pathogenTestTestedDiseaseVariant.setValue(null);
-		contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+		contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(DataUtils.emptyOrWithOneNullItem(diseaseVariantList) ? GONE : VISIBLE);
 	}
 
 	@Override

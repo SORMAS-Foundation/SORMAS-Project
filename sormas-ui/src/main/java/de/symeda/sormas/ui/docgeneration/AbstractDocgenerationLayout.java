@@ -21,6 +21,7 @@ import java.util.Properties;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -122,8 +123,8 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 					}
 					performTemplateUpdates();
 					setStreamResource(templateFile, fileNameFunction.apply(templateFile));
-				} catch (Exception ex) {
-					ex.printStackTrace();
+				} catch (IOException | DocumentTemplateException ex) {
+					LoggerFactory.getLogger(getClass()).error("Error while reading document variables.", e);
 					new Notification(I18nProperties.getString(Strings.errorOccurred), ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)
 						.show(Page.getCurrent());
 				}
