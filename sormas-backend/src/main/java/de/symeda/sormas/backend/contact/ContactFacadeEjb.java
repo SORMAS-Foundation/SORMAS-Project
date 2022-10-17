@@ -120,6 +120,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -550,7 +552,12 @@ public class ContactFacadeEjb
 
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
-		sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares());
+		try {
+			sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares());
+		} catch (SormasToSormasException e) {
+			throw new SormasToSormasRuntimeException(e);
+		}
+
 		service.delete(contact, deletionDetails);
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());

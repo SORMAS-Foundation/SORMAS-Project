@@ -42,7 +42,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.share.incoming.RequestResponseDataDto;
@@ -373,22 +372,17 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@RightsAllowed({
 		UserRight._CASE_DELETE,
 		UserRight._CONTACT_DELETE,
-		UserRight._EVENT_DELETE })
-	public void revokePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares) throws SormasToSormasRuntimeException {
+		UserRight._EVENT_DELETE,
+		UserRight._SYSTEM })
+	public void revokePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares) throws SormasToSormasException {
 		List<ShareRequestInfo> pendingRequests = sormasToSormasShares.stream()
 			.map(SormasToSormasShareInfo::getRequests)
 			.flatMap(Collection::stream)
 			.filter(r -> r.getRequestStatus() == ShareRequestStatus.PENDING)
 			.collect(Collectors.toList());
 
-		try {
-			for (ShareRequestInfo r : pendingRequests) {
-
-				revokeShareRequest(r.getUuid());
-				shareRequestInfoService.deletePermanent(r);
-			}
-		} catch (SormasToSormasException e) {
-			throw new SormasToSormasRuntimeException(e);
+		for (ShareRequestInfo r : pendingRequests) {
+			revokeShareRequest(r.getUuid());
 		}
 	}
 
