@@ -1768,7 +1768,7 @@ Feature: Case end to end tests
      Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
      Then API: I check that POST call body is "OK"
      And API: I check that POST call status code is 200
-     Given I log in as Admin User in Keycloak enabled environment
+     Given I log in as a Admin User
      Then I navigate to the last created case via the url
      And I collect uuid of the case
      Then I click on share case button
@@ -1776,7 +1776,7 @@ Feature: Case end to end tests
      And I fill comment in share popup with "shared with automated test"
      Then I click on share button in s2s share popup and wait for share to finish
      Then I navigate to "s2s_2" environment
-     Given I log in as Admin User in Keycloak enabled environment
+     Given I log in as a Admin User
      And I click on the Shares button from navbar
      Then I click on the The Eye Icon located in the Shares Page
      And I check if received case id is equal with sent
@@ -1859,7 +1859,7 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-12446 @env_s2s_1
   Scenario: Hide share action in bulk mode for cases
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I click on the Cases button from navbar
     And I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page

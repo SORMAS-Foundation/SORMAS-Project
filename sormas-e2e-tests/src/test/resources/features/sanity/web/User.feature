@@ -136,14 +136,14 @@ Feature: Create user
 
   @tmsLink=SORQA-457 @env_keycloak
   Scenario: Create a new SORMAS user, check login and disable
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Users from navbar
     Then I click on the NEW USER button
     Then I create new Test user for test on DE specific
     And I click on logout button from navbar
     And I login first time as a new created user from keycloak instance
     And I click on logout button from navbar
-    Then I log in as Admin User in Keycloak enabled environment
+    Then I log in as a Admin User
     And I click on the Users from navbar
     And I filter last created user
     And I open first user from the list
@@ -161,7 +161,7 @@ Feature: Create user
 
   @tmsLink=SORQA-460 @env_keycloak
   Scenario: Change password of SORMAS user (by admin)
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Users from navbar
     Then I search user "PasswordUser"
     And I select first user from list
