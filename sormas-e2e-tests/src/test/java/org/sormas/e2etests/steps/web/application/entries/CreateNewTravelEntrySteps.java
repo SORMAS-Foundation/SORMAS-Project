@@ -705,7 +705,7 @@ public class CreateNewTravelEntrySteps implements En {
           webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
               By.xpath("//div[text()='" + travelEntry.getPointOfEntryDetails() + "']"));
           webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
-              By.xpath("//div[contains(text(), 'Automated test dummy description')]"));
+              By.xpath("//div[contains(text(),'Automated test dummy description')]"));
         });
 
     When(
