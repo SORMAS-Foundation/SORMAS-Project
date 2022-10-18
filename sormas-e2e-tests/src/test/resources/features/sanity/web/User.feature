@@ -261,6 +261,8 @@ Feature: Create user
     And I create new TestNatUser for test
     And I filter last created user
     And I open first user from the list
+    And I click DISCARD button on Create New User Role form
+#    And I check that number of users displayed in User Directory is 1
     Then I click on logout button from navbar
     And As a new created user I log in
     And I click on the Cases button from navbar
@@ -284,10 +286,52 @@ Feature: Create user
     And I click on the Users from navbar
     And I click on User roles tab from User Management Page
     And I double click on "TestNatUser" from user role list
-    And I click on the user role Disable button
+    And I click on the user role "Disable" button
     And I click SAVE button on User Role Page
     And I back to the User role list
     And I search for "disabled" user role
     And I check that "TestNatUser" is displayed in the User role column
     And I click on User roles tab from User Management Page
     And I click on New user role button on User Roles Page
+    And I check that "TestNatUser" is not available in the user role template dropdown menu
+    #Step13
+    And I click DISCARD button on Create New User Role form
+    And I click on User Management tab from User Roles Page
+    And I check that "TestNatUser" is not available in the user role filter
+    #Step14
+    And I click on the NEW USER button
+    And I check that "TestNatUser" user role checkbox is not available in Create New User form
+    And I click DISCARD button on Create New User Role form
+    #STep15
+    And I click on logout button from navbar
+    And As a new created user I log in
+    And I click on the Cases button from navbar
+    And I click on the first Case ID from Case Directory
+    And I check that the Archive case button is not available
+    And I click on logout button from navbar
+    #Step16
+    And I log in as a Admin user
+    And I click on the Users from navbar
+    And I click on User roles tab from User Management Page
+    And I search for "disabled" user role
+    And I double click on "TestNatUser" from user role list
+    And I click on delete user role button
+    And I confirm user role deletion
+    And I check if Cannot delete user role popup message is displayed
+    And I confirm Cannot delete user role popup message
+    #Additional steps
+    And I click on the user role "Enable" button
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    And I click on User Management tab from User Roles Page
+    And I filter users by "TestNatUser" user role
+    And I double click on "TestNatUser" from user role list
+    #Changing user role for created user
+    And I click checkbox to choose "TestNatUser" as a user role in Edit user form
+    And I click checkbox to choose "National User" as a user role in Edit user form
+    And I click on the Save button in the Edit User Page
+    And I click on User roles tab from User Management Page
+    And I double click on "TestNatUser" from user role list
+    And I click on delete user role button
+    And I confirm user role deletion
+    And I click on User Management tab from User Roles Page

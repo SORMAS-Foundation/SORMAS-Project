@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.dashboard.Surveillance.Surve
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.FIRST_EDIT_BUTTON_FROM_LIST;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.NEW_USER_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserManagementPage.getUserRoleLabelByCaption;
 
 import cucumber.api.java8.En;
 import java.util.*;
@@ -552,6 +553,16 @@ public class CreateNewUserSteps implements En {
               webDriverHelpers.getTextFromWebElement(TABLE_USER_NAME),
               uname,
               "Users name are not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that \"([^\"]*)\" user role checkbox is not available in Create New User form$",
+        (String userRole) -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getUserRoleLabelByCaption("TestNatUser"), 3),
+              userRole + " user role is available!");
           softly.assertAll();
         });
   }

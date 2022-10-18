@@ -2566,10 +2566,10 @@ public class EditCaseSteps implements En {
         "^I check that the Archive case button is not available$",
         () -> {
           softly.assertFalse(
-            webDriverHelpers.isElementVisibleWithTimeout(ARCHIVE_CASE_BUTTON, 2),
-                  "Archive case button is visible!");
+              webDriverHelpers.isElementVisibleWithTimeout(ARCHIVE_CASE_BUTTON, 2),
+              "Archive case button is visible!");
           softly.assertAll();
-      });
+        });
   }
 
   private Vaccination collectVaccinationData() {

@@ -37,6 +37,14 @@ public class UserRolesPage {
     return By.xpath(String.format("//td[contains(text(), '%s')]", caption));
   }
 
-  public static final By USER_MANAGEMENT_TAB = By.cssSelector("div#tab-user-users");
+  public static By USER_MANAGEMENT_TAB = By.cssSelector("div#tab-user-users");
   public static By USER_ROLE_DISABLE_BUTTON = By.cssSelector("#actionDisable");
+  public static By USER_ROLE_ENABLE_BUTTON = By.cssSelector("#actionEnable");
+  public static By ENABLED_DISABLED_SEARCH_INPUT = By.cssSelector("#enabled input");
+  public static By ENABLED_DISABLED_SEARCH_COMBOBOX = By.cssSelector("#enabled div");
+  public static By DELETE_USER_ROLE_BUTTON = By.cssSelector("#delete");
+  public static By DELETE_CONFIRMATION_BUTTON = By.cssSelector(".popupContent #actionConfirm");
+  public static By CANNOT_DELETE_USER_ROLE_POPUP =
+      By.xpath("//div[contains(text(), 'Cannot delete user role')]");
+  public static By CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON = By.cssSelector("#actionOkay");
 }

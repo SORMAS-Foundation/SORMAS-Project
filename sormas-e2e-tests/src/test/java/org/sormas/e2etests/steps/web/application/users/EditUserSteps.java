@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.USER_ROLE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.EditUserPage.*;
 
 import cucumber.api.java8.En;
@@ -123,6 +124,10 @@ public class EditUserSteps implements En {
           webDriverHelpers.scrollToElementUntilIsVisible(SAVE_BUTTON_EDIT_USER);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EDIT_USER);
         });
+
+    And(
+        "^I click checkbox to choose \"([^\"]*)\" as a user role in Edit user form$",
+        (String role) -> selectUserRole(role));
   }
 
   private User collectEditUserData() {
@@ -189,5 +194,10 @@ public class EditUserSteps implements En {
         .limitedDisease(webDriverHelpers.getValueFromWebElement(LIMITED_DISEASE_COMBOBOX_INPUT))
         .userRole(webDriverHelpers.getTextFromWebElement(USER_ROLE_CHECKBOX_TEXT))
         .build();
+  }
+
+  private void selectUserRole(String role) {
+    webDriverHelpers.scrollToElement(USER_ROLE_CHECKBOX);
+    webDriverHelpers.clickWebElementByText(USER_ROLE_CHECKBOX, role);
   }
 }

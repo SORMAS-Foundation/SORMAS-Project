@@ -21,13 +21,19 @@ package org.sormas.e2etests.steps.web.application.users;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.SEARCH_USER_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ARCHIVE_CASES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ARCHIVE_CONTACTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.CANNOT_DELETE_USER_ROLE_POPUP;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_INPUT;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_USER_ROLE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_DISABLED_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER_ROLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_MANAGEMENT_TAB;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_DISABLE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_ENABLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_LIST;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TEMPLATE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.getUserRoleCaptionByText;
@@ -35,12 +41,13 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.getUserR
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
 public class UserRolesSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
 
   @Inject
-  public UserRolesSteps(final WebDriverHelpers webDriverHelpers) {
+  public UserRolesSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -121,13 +128,69 @@ public class UserRolesSteps implements En {
 
     And(
         "^I double click on \"([^\"]*)\" from user role list$",
-        (String arg0) -> {
-          webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText("TestNatUser"));
+        (String userRole) -> {
+          webDriverHelpers.scrollToElement(getUserRoleCaptionByText(userRole));
+          webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText(userRole));
         });
 
     And(
-        "^I click on the user role Disable button$", () -> {
-          webDriverHelpers.clickOnWebElementBySelector(USER_ROLE_DISABLE_BUTTON);
+        "I click on the user role {string} button",
+        (String disableEnable) -> {
+          switch (disableEnable) {
+            case "Disable":
+              webDriverHelpers.scrollToElement(USER_ROLE_DISABLE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(USER_ROLE_DISABLE_BUTTON);
+              break;
+            case "Enable":
+              webDriverHelpers.scrollToElement(USER_ROLE_ENABLE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(USER_ROLE_ENABLE_BUTTON);
+              break;
+          }
+        });
+
+    And(
+        "^I check that \"([^\"]*)\" is not available in the user role template dropdown menu$",
+        (String userRole) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  USER_ROLE_TEMPLATE_COMBOBOX, userRole),
+              "Provided user role is available in the user role template dropdown menu!");
+          softly.assertAll();
+        });
+
+    And(
+        "I search for {string} user role",
+        (String disableEnableSearch) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ENABLED_DISABLED_SEARCH_INPUT);
+          webDriverHelpers.fillInWebElement(ENABLED_DISABLED_SEARCH_INPUT, disableEnableSearch);
+        });
+
+    And(
+        "^I click on delete user role button$",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_USER_ROLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_USER_ROLE_BUTTON);
+        });
+
+    And(
+        "^I confirm user role deletion$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_CONFIRMATION_BUTTON);
+        });
+
+    And(
+        "^I check if Cannot delete user role popup message is displayed$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CANNOT_DELETE_USER_ROLE_POPUP);
+        });
+
+    And(
+        "^I confirm Cannot delete user role popup message$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON);
         });
   }
 }
