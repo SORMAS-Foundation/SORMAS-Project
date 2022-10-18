@@ -31,7 +31,7 @@ public class MSersDirectoryPage {
   public static By getEditButtonByIndex(int idx) {
     return By.xpath(
         String.format(
-            "(//tr[contains(@class,'v-grid-row-has-data')]//span[@class=\"v-button-wrap\"])[%x]",
+            "(//tr[contains(@class,'v-grid-row-has-data')]//td[1]//span[@class=\"v-button-wrap\"])[%x]",
             idx));
   }
 
