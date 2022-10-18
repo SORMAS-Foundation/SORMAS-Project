@@ -250,7 +250,7 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		boolean sormasToSormasfeatureEnabled =
-			FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
+			FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
 		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null || contactDto.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
@@ -271,7 +271,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), contactDto, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
 		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
 

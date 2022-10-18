@@ -115,4 +115,15 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	public void setUuidExternalIdExternalTokenLike(String uuidExternalIdExternalTokenLike) {
 		this.uuidExternalIdExternalTokenLike = uuidExternalIdExternalTokenLike;
 	}
+
+	public static PersonSimilarityCriteria forPerson(PersonDto person) {
+		return new PersonSimilarityCriteria().firstName(person.getFirstName())
+			.lastName(person.getLastName())
+			.sex(person.getSex())
+			.birthdateDD(person.getBirthdateDD())
+			.birthdateMM(person.getBirthdateMM())
+			.birthdateYYYY(person.getBirthdateYYYY())
+			.passportNumber(person.getPassportNumber())
+			.nationalHealthId(person.getNationalHealthId());
+	}
 }

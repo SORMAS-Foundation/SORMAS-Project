@@ -158,23 +158,6 @@ Feature: Create events
     And I click on edit task icon of the first created task
     And I check the created task is correctly displayed on Edit task page
 
-  @#5840 @env_main
-  Scenario: Add a New Groups Event from event and verify the fields
-    Given API: I create a new event
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a National User
-    When I am accessing the event tab using the created event via api
-    And I click on link event group
-    And I create a new event group
-    When I am accessing the event tab using the created event via api
-    Then I am checking event group name and id is correctly displayed
-    Then I click on the Events button from navbar
-    And I click on GROUPS Radiobutton on Event Directory Page
-    Then I search last created groups Event by "GROUP_ID" option filter in Event Group Directory
-    And I apply on the APPLY FILTERS button from Event
-    And I open the first event group from events list group
-
   @tmsLink=SORDEV-5496 @env_main
   Scenario: Generate and download Event document
     Given I log in as a National User

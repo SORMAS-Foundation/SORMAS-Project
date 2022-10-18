@@ -187,7 +187,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 					currentUI.setPollInterval(-1);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
 				logger.error(e.getMessage(), e);
 
 				currentUI.setPollInterval(-1);

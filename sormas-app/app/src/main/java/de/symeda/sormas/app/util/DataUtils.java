@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.app.util;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -74,6 +74,11 @@ public class DataUtils {
 		list.add(new Item<>(DatabaseHelper.getString(R.string.no), Boolean.FALSE));
 		return list;
 	}
+
+	public static boolean emptyOrWithOneNullItem(List<Item> listIn) {
+		return listIn.isEmpty() || (listIn.size() == 1 && (listIn.get(0) == null || listIn.get(0).getValue() == null));
+	}
+
 
 	public static <E> List<Item> toItems(List<E> listIn) {
 		return toItems(listIn, true);

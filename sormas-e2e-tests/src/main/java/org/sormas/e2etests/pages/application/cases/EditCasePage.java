@@ -381,4 +381,8 @@ public class EditCasePage {
             "//div[@id='%s']//input[@value='on' and @checked]/following-sibling::label[contains(text(),'%s')]",
             id, value));
   }
+
+  public static By getEditTaskButtonByNumber(Integer number) {
+    return By.cssSelector(String.format("#edit-task-%x", number));
+  }
 }
