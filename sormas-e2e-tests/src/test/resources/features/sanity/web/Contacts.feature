@@ -1198,7 +1198,7 @@ Feature: Contacts end to end tests
 
   @tmsLink=SORDEV-12446 @env_s2s_1
   Scenario: Hide share action in bulk mode for contacts
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I click on the Contacts button from navbar
     And I click on the More button on Contact directory page
     And I click Enter Bulk Edit Mode on Contact directory page
