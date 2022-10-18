@@ -200,6 +200,12 @@ public class UserManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(USER_ROLES_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_RIGHTS_INPUT);
         });
+
+    And("I search for {string} user role",
+        (String disableEnableSearch) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ENABLED_DISABLED_SEARCH_INPUT);
+          webDriverHelpers.fillInWebElement(ENABLED_DISABLED_SEARCH_INPUT, disableEnableSearch);
+        });
   }
 
   private void searchForUser(String userName) {

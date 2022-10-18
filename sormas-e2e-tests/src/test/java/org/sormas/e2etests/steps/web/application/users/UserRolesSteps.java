@@ -18,14 +18,19 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.users.UserManagementPage.SEARCH_USER_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ARCHIVE_CASES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ARCHIVE_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER_ROLE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_MANAGEMENT_TAB;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_DISABLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_LIST;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TEMPLATE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.getUserRoleCaptionByText;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
@@ -91,6 +96,38 @@ public class UserRolesSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(USER_ROLE_LIST);
           webDriverHelpers.clickOnWebElementBySelector(USER_ROLE_LIST);
+        });
+
+    And(
+        "^I check that \"([^\"]*)\" is displayed in the User role column$",
+        (String userRoleCaption) -> {
+          webDriverHelpers.isElementVisibleWithTimeout(
+              getUserRoleCaptionByText(userRoleCaption), 5);
+        });
+
+    And(
+        "^I click DISCARD button on Create New User Role form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_BUTTON);
+        });
+
+    And(
+        "^I click on User Management tab from User Roles Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(USER_MANAGEMENT_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(USER_MANAGEMENT_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SEARCH_USER_INPUT);
+        });
+
+    And(
+        "^I double click on \"([^\"]*)\" from user role list$",
+        (String arg0) -> {
+          webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText("TestNatUser"));
+        });
+
+    And(
+        "^I click on the user role Disable button$", () -> {
+          webDriverHelpers.clickOnWebElementBySelector(USER_ROLE_DISABLE_BUTTON);
         });
   }
 }

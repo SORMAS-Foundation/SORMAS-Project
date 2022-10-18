@@ -251,3 +251,43 @@ Feature: Create user
     And I click checkbox to choose "Archive contacts"
     And I click SAVE button on User Role Page
     And I back to the User role list
+    And I check that "TestNatUser" is displayed in the User role column
+    And I click on New user role button on User Roles Page
+    And I choose "TestNatUser" as the user role template
+    And I click DISCARD button on Create New User Role form
+    And I click on User Management tab from User Roles Page
+    And I set user role to "TestNatUser"
+    And I click on the NEW USER button
+    And I create new TestNatUser for test
+    And I filter last created user
+    And I open first user from the list
+    Then I click on logout button from navbar
+    And As a new created user I log in
+    And I click on the Cases button from navbar
+    And I click on the first Case ID from Case Directory
+    And I click on the Archive case button
+    And I click on discard button in de-archive case popup
+    And I click on logout button from navbar
+    And I log in as a Admin user
+    And I click on the Users from navbar
+    And I click on User roles tab from User Management Page
+    And I double click on "TestNatUser" from user role list
+    And I click checkbox to choose "Archive cases"
+    And I click SAVE button on User Role Page
+    And I click on logout button from navbar
+    And As a new created user I log in
+    And I click on the Cases button from navbar
+    And I click on the first Case ID from Case Directory
+    And I check that the Archive case button is not available
+    And I click on logout button from navbar
+    And I log in as a Admin user
+    And I click on the Users from navbar
+    And I click on User roles tab from User Management Page
+    And I double click on "TestNatUser" from user role list
+    And I click on the user role Disable button
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    And I search for "disabled" user role
+    And I check that "TestNatUser" is displayed in the User role column
+    And I click on User roles tab from User Management Page
+    And I click on New user role button on User Roles Page

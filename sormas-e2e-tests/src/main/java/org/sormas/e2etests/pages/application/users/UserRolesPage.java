@@ -32,4 +32,11 @@ public class UserRolesPage {
   public static By ARCHIVE_CONTACTS_CHECKBOX = By.xpath("//label[text()='Archive contacts']");
   public static By SAVE_BUTTON = By.cssSelector("#commit");
   public static By USER_ROLE_LIST = By.cssSelector("#tab-user-userroles");
+
+  public static By getUserRoleCaptionByText(String caption) {
+    return By.xpath(String.format("//td[contains(text(), '%s')]", caption));
+  }
+
+  public static final By USER_MANAGEMENT_TAB = By.cssSelector("div#tab-user-users");
+  public static By USER_ROLE_DISABLE_BUTTON = By.cssSelector("#actionDisable");
 }
