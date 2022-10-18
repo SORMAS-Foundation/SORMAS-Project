@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextArea;
@@ -21,15 +22,19 @@ import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.DateHelper;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
@@ -338,6 +343,22 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		getContent().addComponent(field, propertyId);
 		addFutureDateValidator(field, allowedDaysInFuture);
 		return field;
+	}
+
+	public void addBirthDateFields(String yearPropertyId, String monthPropertyId, String dayPropertyId) {
+		final ComboBox birthDateYYYY = addField(getContent(), yearPropertyId, ComboBox.class);
+		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
+		birthDateYYYY.setWidth(140, Sizeable.Unit.PIXELS);
+		birthDateYYYY.addItems(DateHelper.getYearsToNow());
+		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
+		final ComboBox birthDateMM = addField(getContent(), monthPropertyId, ComboBox.class);
+		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
+		birthDateMM.setWidth(140, Sizeable.Unit.PIXELS);
+		birthDateMM.addItems(DateHelper.getMonthsInYear());
+		DateHelper.getMonthsInYear().forEach(month -> birthDateMM.setItemCaption(month, Month.values()[month - 1].toString()));
+		final ComboBox birthDateDD = addField(getContent(), dayPropertyId, ComboBox.class);
+		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
+		birthDateDD.setWidth(140, Sizeable.Unit.PIXELS);
 	}
 
 	@SuppressWarnings("rawtypes")

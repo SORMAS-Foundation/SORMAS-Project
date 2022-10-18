@@ -7,6 +7,9 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable {
 
 	public static final String NAME_UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE = "nameUuidExternalIdExternalTokenLike";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_DD = "birthdateDD";
 
 	private Sex sex;
 	private Integer birthdateYYYY;
@@ -86,6 +89,18 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 
 	public void setName(PersonDto person) {
 		this.nameUuidExternalIdExternalTokenLike = person.getFirstName() + " " + person.getLastName();
+	}
+
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
+	}
+
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
 	}
 
 	public static PersonSimilarityCriteria forPerson(PersonDto person) {
