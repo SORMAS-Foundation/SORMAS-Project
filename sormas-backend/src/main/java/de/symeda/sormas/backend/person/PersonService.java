@@ -918,12 +918,12 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 	public List<Person> getByExternalIds(List<String> externalIds) {
 
 		List<Person> persons = new LinkedList<>();
-		IterableHelper.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+		IterableHelper.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedExternalIds -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
 			Root<Person> from = cq.from(getElementClass());
 
-			cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+			cq.where(from.get(Person.EXTERNAL_ID).in(batchedExternalIds));
 
 			persons.addAll(em.createQuery(cq).getResultList());
 		});

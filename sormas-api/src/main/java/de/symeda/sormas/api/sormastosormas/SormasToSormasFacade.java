@@ -19,6 +19,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
@@ -35,7 +37,8 @@ public interface SormasToSormasFacade {
 
 	void requestRejected(SormasToSormasEncryptedDataDto encryptedRejectData) throws SormasToSormasException;
 
-	void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException;
+	DuplicateResult acceptShareRequest(ShareRequestDataType dataType, String uuid, boolean checkDuplicates)
+		throws SormasToSormasException, SormasToSormasValidationException;
 
 	void revokeShare(String shareInfoUuid) throws SormasToSormasException;
 
@@ -49,6 +52,8 @@ public interface SormasToSormasFacade {
 
 	boolean isProcessingShareEnabledForUser();
 	boolean isFeatureConfigured();
+
+	boolean isAnyFeatureConfigured(FeatureType... sormasToSormasFeatures);
 
 	boolean isSharingCasesEnabledForUser();
 

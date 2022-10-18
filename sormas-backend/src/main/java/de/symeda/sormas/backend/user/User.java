@@ -365,6 +365,10 @@ public class User extends AbstractDomainObject {
 		return this.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight));
 	}
 
+	public boolean hasAnyUserRight(Set<UserRight> userRights) {
+		return this.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().stream().anyMatch(userRights::contains));
+	}
+
 	public static String buildCaptionForNotification(User user) {
 		if (user == null) {
 			return "-";

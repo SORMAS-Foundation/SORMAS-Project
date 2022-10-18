@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -74,6 +75,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -99,6 +101,7 @@ import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -114,6 +117,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -134,6 +138,20 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest {
+
+	@Test(expected = ValidationRuntimeException.class)
+	public void testValidateWithNullReportingUser() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caze = creator
+			.createCase(null, cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(null, null, contactPerson.toReference(), caze, new Date(), new Date(), null);
+
+		ContactFacadeEjb.ContactFacadeEjbLocal contactFacadeEjb = getBean(ContactFacadeEjb.ContactFacadeEjbLocal.class);
+		contactFacadeEjb.validate(contact);
+	}
 
 	@Test
 	public void testGetMatchingContacts() {
@@ -957,7 +975,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		List<Long> ids;
 
-		// 0. test with some random id: returns 0,0,0
+		// 0a. test with some random id: returns 0,0,0
 		ids = Arrays.asList(5555L);
 		int[] result = getContactFacade().getContactCountsByCasesForDashboard(ids);
 		assertThat(result[0], equalTo(0));
@@ -968,13 +986,27 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = new RDCF(rdcfEntities);
 		UserDto user = useNationalAdminLogin();
 
+		// 0b. Test with a huge list of contact ids
+		List<Long> manyIds = Stream.iterate(1000L, n -> n + 1).limit(123000L).collect(Collectors.toList());
+		result = getContactFacade().getContactCountsByCasesForDashboard(manyIds);
+		assertThat(result[0], equalTo(0));
+		assertThat(result[1], equalTo(0));
+		assertThat(result[2], equalTo(0));
+
 		// 1. Test with one contact
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
 		ContactDto contact = createContact(user, caze, rdcf);
 		ids = Arrays.asList(getContactService().getByUuid(contact.getUuid()).getId());
 		result = getContactFacade().getContactCountsByCasesForDashboard(ids);
+		assertThat(result[0], equalTo(1));
+		assertThat(result[1], equalTo(1));
+		assertThat(result[2], equalTo(1));
 
+		// 1b. Test with a huge list of contact ids
+		ids = new ArrayList<>(ids);
+		ids.addAll(manyIds);
+		result = getContactFacade().getContactCountsByCasesForDashboard(ids);
 		assertThat(result[0], equalTo(1));
 		assertThat(result[1], equalTo(1));
 		assertThat(result[2], equalTo(1));
@@ -2094,6 +2126,34 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactCriteria.setPersonLike("detail2");
 		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
 		assertEquals(0, contactIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void testContactsForDashboard() {
+
+		Date fromDate = UtilDate.from(LocalDate.now().minusYears(1));
+		Date toDate = UtilDate.now();
+
+		//search when there is no data in DB
+		List<DashboardContactDto> dashboardContactDtos = getContactFacade().getContactsForDashboard(null, null, null, fromDate, toDate);
+		assertEquals(0, dashboardContactDtos.size());
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+
+		creator.createContact(rdcf, user.toReference(), person.toReference());
+
+		//search when we have a contact and no visit in DB
+		dashboardContactDtos = getContactFacade().getContactsForDashboard(null, null, null, fromDate, toDate);
+		assertEquals(1, dashboardContactDtos.size());
+		assertEquals(null, dashboardContactDtos.get(0).getLastVisitStatus());
+
+		creator.createVisit(Disease.EVD, person.toReference());
+		//search when we have a contact and a visit in DB
+		dashboardContactDtos = getContactFacade().getContactsForDashboard(null, null, null, fromDate, toDate);
+		assertEquals(1, dashboardContactDtos.size());
+		assertEquals(VisitStatus.COOPERATIVE, dashboardContactDtos.get(0).getLastVisitStatus());
 	}
 
 	private CaseDataDto createCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcf) {

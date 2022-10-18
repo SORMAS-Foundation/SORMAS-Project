@@ -19,6 +19,7 @@ import static android.view.View.GONE;
 
 import android.view.View;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -126,6 +127,8 @@ public class TaskExecutionFragment extends BaseEditFragment<FragmentTaskExecutio
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
+
+		contentBinding.setDone.setEnabled(!(record.getCaze() != null && record.getCaze().getCaseClassification() == CaseClassification.NOT_CLASSIFIED));
 	}
 
 	@Override

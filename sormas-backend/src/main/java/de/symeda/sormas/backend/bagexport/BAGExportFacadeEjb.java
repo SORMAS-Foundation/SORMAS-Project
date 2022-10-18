@@ -168,7 +168,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			Path<Object> caseIdExpr = samplesRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(Case.ID);
 			samplesCq.where(caseIdExpr.in(caseIds)).orderBy(cb.asc(samplesRoot.get(Sample.REPORT_DATE_TIME)));
 
-			List<Sample> samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			List<Sample> samplesList = em.createQuery(samplesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 			samples.putAll(samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId())));
 		}
 
@@ -317,7 +317,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			Path<Object> contactIdExpr = samplesRoot.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT).get(Contact.ID);
 			samplesCq.where(contactIdExpr.in(contactIds)).orderBy(cb.asc(samplesRoot.get(Sample.REPORT_DATE_TIME)));
 
-			List<Sample> samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			List<Sample> samplesList = em.createQuery(samplesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 			samples.putAll(samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedContact().getId())));
 		}
 

@@ -19,9 +19,9 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-import java.util.List;
-
 import android.view.View;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -313,7 +313,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		} else {
 			contentBinding.eventDiseaseVariant.setValue(null);
 		}
-		contentBinding.eventDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+		contentBinding.eventDiseaseVariant.setVisibility(DataUtils.emptyOrWithOneNullItem(diseaseVariantList) ? GONE : VISIBLE);
 
 		// Specific risk
 		SpecificRisk selectedRisk = (SpecificRisk) contentBinding.eventSpecificRisk.getValue();
