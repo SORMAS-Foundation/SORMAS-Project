@@ -1207,7 +1207,7 @@ Feature: Contacts end to end tests
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1215,7 +1215,7 @@ Feature: Contacts end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
@@ -1256,7 +1256,7 @@ Feature: Contacts end to end tests
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1264,7 +1264,7 @@ Feature: Contacts end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
@@ -1302,7 +1302,7 @@ Feature: Contacts end to end tests
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1310,7 +1310,7 @@ Feature: Contacts end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
@@ -1348,7 +1348,7 @@ Feature: Contacts end to end tests
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1356,7 +1356,7 @@ Feature: Contacts end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
@@ -1395,7 +1395,7 @@ Feature: Contacts end to end tests
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1403,7 +1403,7 @@ Feature: Contacts end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
