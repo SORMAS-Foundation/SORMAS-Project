@@ -1874,7 +1874,7 @@ Feature: Case end to end tests
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1883,7 +1883,7 @@ Feature: Case end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
@@ -1916,7 +1916,7 @@ Feature: Case end to end tests
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1925,7 +1925,7 @@ Feature: Case end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     And I click on the Cases button from navbar
@@ -1949,7 +1949,7 @@ Feature: Case end to end tests
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1957,7 +1957,7 @@ Feature: Case end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    And I log in as Admin User in Keycloak enabled environment
+    And I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
@@ -1981,7 +1981,7 @@ Feature: Case end to end tests
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1989,7 +1989,7 @@ Feature: Case end to end tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     And I click on the Cases button from navbar
@@ -2016,7 +2016,7 @@ Feature: Case end to end tests
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -2027,6 +2027,6 @@ Feature: Case end to end tests
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     Then I navigate to "s2s_2" environment
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
