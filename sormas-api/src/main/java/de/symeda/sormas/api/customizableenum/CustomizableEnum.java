@@ -15,12 +15,11 @@
 
 package de.symeda.sormas.api.customizableenum;
 
-import de.symeda.sormas.api.audit.AuditInclude;
-import de.symeda.sormas.api.audit.AuditedClass;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
+
+import de.symeda.sormas.api.audit.AuditedClass;
 
 /**
  * Base class for customizable enums. Supposed to be extended for every enum that is made customizable to ensure type safety.
@@ -33,7 +32,6 @@ public abstract class CustomizableEnum implements Serializable {
 	/**
 	 * The enum value, identical {@link CustomizableEnumValueDto#getValue()}.
 	 */
-	@AuditInclude
 	private String value;
 	/**
 	 * The enum caption, internationalized according to the user language if that language is present in

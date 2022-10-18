@@ -20,7 +20,7 @@ import de.symeda.sormas.api.audit.AuditedClass;
 import java.io.Serializable;
 import java.util.Date;
 
-@AuditedClass(includeAllFields = true)
+@AuditedClass
 public class InfrastructureChangeDatesDto implements Serializable {
 
 	private static final long serialVersionUID = 6269655187128160377L;

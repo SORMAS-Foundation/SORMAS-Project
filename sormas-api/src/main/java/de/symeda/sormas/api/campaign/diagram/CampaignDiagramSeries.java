@@ -10,7 +10,6 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import de.symeda.sormas.api.AgeGroup;
-import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
@@ -21,17 +20,13 @@ public class CampaignDiagramSeries implements Serializable {
 	private static final long serialVersionUID = 1420672609912364060L;
 
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@AuditInclude
 	private String fieldId;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@AuditInclude
 	private String formId;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@AuditInclude
 	private String referenceValue;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String stack;
-	@AuditInclude
 	private AgeGroup populationGroup;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;

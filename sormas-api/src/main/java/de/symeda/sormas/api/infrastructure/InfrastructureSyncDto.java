@@ -19,7 +19,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRoleDto;
 
-@AuditedClass(includeAllFields = true)
+@AuditedClass
 public class InfrastructureSyncDto implements Serializable {
 
 	private static final long serialVersionUID = -3874808120492307171L;
