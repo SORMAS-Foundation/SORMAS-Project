@@ -1810,7 +1810,7 @@ Feature: Case end to end tests
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
-    And I check if Follow up until date is 14 days days after last created API case report date
+    And I check if Follow up until date is 14 days after last created API case report date
     When I click on New Sample in German
     Then I create a new Sample with positive test result for DE version
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
