@@ -18,6 +18,7 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	private String passportNumber;
 	private String nationalHealthId;
 	private String nameUuidExternalIdExternalTokenLike;
+	private Boolean matchMissingInfo = Boolean.FALSE;
 
 	@IgnoreForUrl
 	public Sex getSex() {
@@ -89,6 +90,14 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 
 	public void setName(PersonDto person) {
 		this.nameUuidExternalIdExternalTokenLike = person.getFirstName() + " " + person.getLastName();
+	}
+
+	public Boolean getMatchMissingInfo() {
+		return matchMissingInfo;
+	}
+
+	public void setMatchMissingInfo(Boolean matchMissingInfo) {
+		this.matchMissingInfo = matchMissingInfo;
 	}
 
 	public void setBirthdateYYYY(Integer birthdateYYYY) {
