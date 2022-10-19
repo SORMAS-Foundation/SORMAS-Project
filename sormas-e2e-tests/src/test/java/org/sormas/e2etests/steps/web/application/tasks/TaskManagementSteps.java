@@ -111,6 +111,20 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
               lastTaskEditButton, TASK_STATUS_OPTIONS, 6);
         });
+    When(
+        "^I filter out last created task from Tasks Directory$",
+        () -> {
+          By lastTaskEditButton =
+              By.xpath(
+                  String.format(
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnExecution()));
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ASSIGNED_USER_FILTER_INPUT);
+          String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
+          webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+        });
 
     When(
         "^I search last created task by Case UUID and open it$",

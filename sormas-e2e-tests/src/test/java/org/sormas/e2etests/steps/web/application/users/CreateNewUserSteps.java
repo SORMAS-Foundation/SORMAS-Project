@@ -410,7 +410,7 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
           webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           userPass = userPass + "3!";
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(LoginPage.PASSWORD_NEW_INPUT, userPass);
@@ -428,7 +428,7 @@ public class CreateNewUserSteps implements En {
               LoginPage.USER_NAME_INPUT, EditUserSteps.collectedUser.getUserName());
           webDriverHelpers.fillInWebElement(
               LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           String newPassword = EditUserSteps.collectedUser.getPassword() + "3!";
           EditUserSteps.collectedUser =
               EditUserSteps.collectedUser.toBuilder().password(newPassword).build();
@@ -448,7 +448,7 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
           webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
         });
 
     And(

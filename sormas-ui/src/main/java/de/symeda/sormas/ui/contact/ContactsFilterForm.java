@@ -17,7 +17,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -249,18 +248,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO),
 				140));
 		quarantineTo.removeAllValidators();
-		ComboBox birthDateYYYY = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_YYYY, ComboBox.class);
-		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
-		birthDateYYYY.setWidth(140, Unit.PIXELS);
-		birthDateYYYY.addItems(DateHelper.getYearsToNow());
-		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
-		ComboBox birthDateMM = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_MM, ComboBox.class);
-		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
-		birthDateMM.setWidth(140, Unit.PIXELS);
-		birthDateMM.addItems(DateHelper.getMonthsInYear());
-		ComboBox birthDateDD = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_DD, ComboBox.class);
-		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
-		birthDateDD.setWidth(140, Unit.PIXELS);
+
+		addBirthDateFields(ContactCriteria.BIRTHDATE_YYYY, ContactCriteria.BIRTHDATE_MM, ContactCriteria.BIRTHDATE_DD);
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(

@@ -6,47 +6,19 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 @SuppressWarnings("serial")
 public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable {
 
-	public static final String FIRST_NAME = "firstName";
-	public static final String LAST_NAME = "lastName";
-	public static final String UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE = "uuidExternalIdExternalTokenLike";
+	public static final String NAME_UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE = "nameUuidExternalIdExternalTokenLike";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_DD = "birthdateDD";
 
-	private String firstName;
-	private String lastName;
 	private Sex sex;
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
 	private String passportNumber;
 	private String nationalHealthId;
-	private String uuidExternalIdExternalTokenLike;
-
-	@IgnoreForUrl
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public PersonSimilarityCriteria firstName(String firstName) {
-		this.firstName = firstName;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public PersonSimilarityCriteria lastName(String lastName) {
-		this.lastName = lastName;
-		return this;
-	}
+	private String nameUuidExternalIdExternalTokenLike;
+	private Boolean matchMissingInfo = Boolean.FALSE;
 
 	@IgnoreForUrl
 	public Sex getSex() {
@@ -108,22 +80,47 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 		return this;
 	}
 
-	public String getUuidExternalIdExternalTokenLike() {
-		return uuidExternalIdExternalTokenLike;
+	public String getNameUuidExternalIdExternalTokenLike() {
+		return nameUuidExternalIdExternalTokenLike;
 	}
 
-	public void setUuidExternalIdExternalTokenLike(String uuidExternalIdExternalTokenLike) {
-		this.uuidExternalIdExternalTokenLike = uuidExternalIdExternalTokenLike;
+	public void setNameUuidExternalIdExternalTokenLike(String nameUuidExternalIdExternalTokenLike) {
+		this.nameUuidExternalIdExternalTokenLike = nameUuidExternalIdExternalTokenLike;
+	}
+
+	public void setName(PersonDto person) {
+		this.nameUuidExternalIdExternalTokenLike = person.getFirstName() + " " + person.getLastName();
+	}
+
+	public Boolean getMatchMissingInfo() {
+		return matchMissingInfo;
+	}
+
+	public void setMatchMissingInfo(Boolean matchMissingInfo) {
+		this.matchMissingInfo = matchMissingInfo;
+	}
+
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
+	}
+
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
 	}
 
 	public static PersonSimilarityCriteria forPerson(PersonDto person) {
-		return new PersonSimilarityCriteria().firstName(person.getFirstName())
-			.lastName(person.getLastName())
-			.sex(person.getSex())
-			.birthdateDD(person.getBirthdateDD())
-			.birthdateMM(person.getBirthdateMM())
-			.birthdateYYYY(person.getBirthdateYYYY())
-			.passportNumber(person.getPassportNumber())
-			.nationalHealthId(person.getNationalHealthId());
+		PersonSimilarityCriteria personSimilarityCriteria = new PersonSimilarityCriteria()
+				.sex(person.getSex())
+				.birthdateDD(person.getBirthdateDD())
+				.birthdateMM(person.getBirthdateMM())
+				.birthdateYYYY(person.getBirthdateYYYY())
+				.passportNumber(person.getPassportNumber())
+				.nationalHealthId(person.getNationalHealthId());
+		personSimilarityCriteria.setNameUuidExternalIdExternalTokenLike(person.getFirstName() + " " + person.getLastName());
+		return personSimilarityCriteria;
 	}
 }
