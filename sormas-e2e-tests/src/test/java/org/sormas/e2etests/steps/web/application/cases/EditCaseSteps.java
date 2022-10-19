@@ -2562,6 +2562,15 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(getEditTaskButtonByNumber(taskNumber - 1));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
+
+    And(
+        "^I check that the Archive case button is not available$",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ARCHIVE_CASE_BUTTON, 2),
+              "Archive case button is visible!");
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {
