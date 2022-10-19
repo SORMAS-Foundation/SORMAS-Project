@@ -262,7 +262,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setDataType(source.getDataType());
 		target.setStatus(source.getStatus());
 
-		//TODO: originInfo should be reference type
+		// #10679: originInfo should be reference type
 		target.setOriginInfo(originInfoFacade.fillOrBuildEntity(source.getOriginInfo(), sormasToSormasOriginInfoService.getByUuid(source.getOriginInfo().getUuid()), checkChangeDate));
 		target.setCasesList(source.getCases());
 		target.setContactsList(source.getContacts());
