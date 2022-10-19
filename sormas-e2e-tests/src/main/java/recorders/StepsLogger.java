@@ -59,25 +59,25 @@ public class StepsLogger implements StepLifecycleListener {
       takeScreenshot();
     }
     if (isScreenshotEnabled && driver != null) {
-      if (!stepResult.getStatus().value().contains("pass")) {
-        attachConsoleLog();
-      }
+//      if (!stepResult.getStatus().value().contains("pass")) {
+//        attachConsoleLog();
+//      }
     }
     isScreenshotEnabled = true;
     log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, stepResult.getName());
   }
 
-  @SneakyThrows
-  @Attachment(value = "Browser console log", type = "text/json")
-  private void attachConsoleLog() {
-    try {
-      Allure.getLifecycle()
-          .addAttachment(
-              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
-    } catch (Exception any) {
-      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
-    }
-  }
+//  @SneakyThrows
+//  @Attachment(value = "Browser console log", type = "text/json")
+//  private void attachConsoleLog() {
+//    try {
+//      Allure.getLifecycle()
+//          .addAttachment(
+//              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
+//    } catch (Exception any) {
+//      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
+//    }
+//  }
 
   @Attachment(value = "After step screenshot", type = "image/png")
   public void takeScreenshot() {
