@@ -45,7 +45,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.asserts.SoftAssert;
 
 public class UserRolesSteps implements En {
-  private final WebDriverHelpers webDriverHelpers;
+  protected WebDriverHelpers webDriverHelpers;
 
   @Inject
   public UserRolesSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
