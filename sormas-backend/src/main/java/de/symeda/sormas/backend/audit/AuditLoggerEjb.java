@@ -73,6 +73,7 @@ import de.symeda.sormas.api.audit.AuditExclude;
 import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
@@ -586,27 +587,30 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	private String tryPrintFromAnnotation(Object object) {
 		StringBuilder finalValue = new StringBuilder();
 
-		String auditedClassName = getClassNameAnnotatedWithAuditedClass(object.getClass());
+		final Class<?> clazz = object.getClass();
+		String auditedClassName = getClassNameAnnotatedWithAuditedClass(clazz);
 		if (auditedClassName != null) {
 			finalValue.append(auditedClassName);
 		}
 
 		String fieldValue = null;
 
-		List<Field> fields = getFieldsAnnotatedWithAuditIncludeOrIncludeAll(object.getClass());
+		List<Field> fields = getFieldsAnnotatedWithAuditIncludeOrIncludeAll(clazz);
 		if (!fields.isEmpty()) {
 			fieldValue = printFromFieldAnnotations(object, fields);
 		}
 
 		String methodValue = null;
 
-		List<Method> methods = getMethodsAnnotatedWithAuditInclude(object.getClass());
+		List<Method> methods = getMethodsAnnotatedWithAuditInclude(clazz);
 		if (!methods.isEmpty()) {
 			methodValue = printFromMethodAnnotations(object, methods);
 		}
 
 		if (finalValue.length() == 0) {
-			logger.debug("Audit logging for object of type {} is not implemented. Please file an issue.", object.getClass());
+			if (!DataHelper.isValueType(clazz)){
+				logger.debug("Audit logging for object of type {} is not implemented. Please file an issue.", clazz);
+			}
 			return object.toString();
 		}
 
