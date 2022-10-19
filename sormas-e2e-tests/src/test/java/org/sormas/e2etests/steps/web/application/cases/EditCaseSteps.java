@@ -1936,9 +1936,10 @@ public class EditCaseSteps implements En {
               "Anderer Einreiseort",
               "Point of entry is not correct");
 
-          softly.assertEquals(
-              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
-              "Automated test dummy description",
+          softly.assertTrue(
+              webDriverHelpers
+                  .getValueFromWebElement(POINT_OF_ENTRY_DETAILS)
+                  .contains("Automated test dummy description"),
               "Point of entry details are not correct");
 
           softly.assertAll();
