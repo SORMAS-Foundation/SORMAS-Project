@@ -1415,11 +1415,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), createPseudonymizer());
+		return convertToDto(service.getByUuid(uuid, true), createPseudonymizer());
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return toDto(service.getByUuid(uuid, true));
 	}
 
 	@Override
@@ -1590,7 +1590,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, boolean systemSave)
 		throws ValidationRuntimeException {
 
-		Case existingCase = service.getByUuid(dto.getUuid());
+		Case existingCase = service.getByUuid(dto.getUuid(), true);
 		FacadeHelper.checkCreateAndEditRights(existingCase, userService, UserRight.CASE_CREATE, UserRight.CASE_EDIT);
 
 		if (!systemSave && internal && existingCase != null && !service.isEditAllowed(existingCase)) {

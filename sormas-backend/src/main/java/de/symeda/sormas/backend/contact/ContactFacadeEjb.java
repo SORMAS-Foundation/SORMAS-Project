@@ -359,7 +359,7 @@ public class ContactFacadeEjb
 		UserRight._CONTACT_CREATE,
 		UserRight._CONTACT_EDIT })
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
-		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid(), true) : null;
 		FacadeHelper.checkCreateAndEditRights(existingContact, userService, UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT);
 
 		if (internal && existingContact != null && !service.isEditAllowed(existingContact)) {
