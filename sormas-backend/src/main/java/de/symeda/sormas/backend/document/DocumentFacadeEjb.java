@@ -14,7 +14,10 @@
  */
 package de.symeda.sormas.backend.document;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +30,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 
+import org.apache.tika.detect.DefaultDetector;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+
 import de.symeda.sormas.api.document.DocumentCriteria;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
@@ -35,6 +43,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -80,6 +89,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	private ContactService contactService;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -99,6 +110,21 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		}
 
 		Document document = fromDto(dto, true);
+
+
+
+		InputStream stream = new ByteArrayInputStream(content);
+		Detector detector = new DefaultDetector();
+		Metadata metadata = new Metadata();
+
+		MediaType mediaType = detector.detect(stream, metadata);
+
+		String[] allowedFileExtensions = configFacade.getAllowedFileExtensions();
+		boolean contains = Arrays.asList(allowedFileExtensions).contains(mediaType.getType());
+
+
+
+
 
 		String storageReference = documentStorageService.save(document, content);
 		try {
@@ -230,5 +256,10 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@LocalBean
 	@Stateless
 	public static class DocumentFacadeEjbLocal extends DocumentFacadeEjb {
+	}
+
+	@LocalBean
+	@Stateless
+	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
 	}
 }
