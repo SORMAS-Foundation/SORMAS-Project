@@ -13,6 +13,8 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria> {
 
+	boolean exists(String uuid);
+
 	DTO save(@Valid @NotNull DTO dto);
 
 	long count(CRITERIA criteria);
@@ -28,6 +30,8 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 	List<INDEX_DTO> getIndexList(CRITERIA criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<DTO> getAllAfter(Date date);
+
+	List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	List<String> getObsoleteUuidsSince(Date since);
 

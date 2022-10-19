@@ -43,8 +43,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 
-	List<PersonDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
 	 * This only includes persons that are associated with an active case, contact or event participant.
@@ -66,8 +64,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	List<PersonExportDto> getExportList(PersonCriteria criteria, int first, int max);
 
 	Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
-
-	boolean exists(String uuid);
 
 	boolean doesExternalTokenExist(String externalToken, String personUuid);
 

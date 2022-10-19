@@ -495,16 +495,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseDataDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
-	}
-
-	@Override
 	protected Pseudonymizer createPseudonymizer() {
 		return getPseudonymizerForDtoWithClinician("");
 	}
@@ -1415,7 +1405,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), createPseudonymizer());
+		return toPseudonymizedDto(service.getByUuid(uuid), createPseudonymizer());
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
@@ -1608,7 +1598,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Case caze = service.getByUuid(dto.getUuid());
 		caze.setFollowUpComment(dto.getFollowUpComment());
 		service.ensurePersisted(caze);
-		return convertToDto(caze, pseudonymizer);
+		return toPseudonymizedDto(caze, pseudonymizer);
 	}
 
 	private CaseDataDto caseSave(
@@ -1639,7 +1629,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		doSave(caze, handleChanges, existingCaseDto, syncShares);
 
-		return convertToDto(caze, pseudonymizer);
+		return toPseudonymizedDto(caze, pseudonymizer);
 	}
 
 	@RightsAllowed(UserRight._CASE_EDIT)
@@ -2439,7 +2429,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					caseCriteria.setPerson(existingPerson.toReference());
 					caseCriteria.setOutcome(CaseOutcome.DECEASED);
 					if (count(caseCriteria, true) == 0) {
-						newCase.getPerson().setPresentCondition(newCase.getOutcome() == CaseOutcome.UNKNOWN ? PresentCondition.UNKNOWN : PresentCondition.ALIVE);
+						newCase.getPerson()
+							.setPresentCondition(newCase.getOutcome() == CaseOutcome.UNKNOWN ? PresentCondition.UNKNOWN : PresentCondition.ALIVE);
 						newCase.getPerson().setBurialDate(null);
 						newCase.getPerson().setDeathDate(null);
 						newCase.getPerson().setDeathPlaceDescription(null);
@@ -2481,13 +2472,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				PersonDto existingPerson = PersonFacadeEjb.toPersonDto(newCase.getPerson());
 
 				if (existingPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
-						&& existingPerson.getCauseOfDeathDisease() == newCase.getDisease()) {
+					&& existingPerson.getCauseOfDeathDisease() == newCase.getDisease()) {
 					// Make sure no other case associated with the person has Outcome=DECEASED
 					CaseCriteria caseCriteria = new CaseCriteria();
 					caseCriteria.setPerson(existingPerson.toReference());
 					caseCriteria.setOutcome(CaseOutcome.DECEASED);
 					if (count(caseCriteria, true) == 0) {
-						newCase.getPerson().setPresentCondition(newCase.getOutcome() == CaseOutcome.UNKNOWN ? PresentCondition.UNKNOWN : PresentCondition.ALIVE);
+						newCase.getPerson()
+							.setPresentCondition(newCase.getOutcome() == CaseOutcome.UNKNOWN ? PresentCondition.UNKNOWN : PresentCondition.ALIVE);
 						newCase.getPerson().setBurialDate(null);
 						newCase.getPerson().setDeathDate(null);
 						newCase.getPerson().setDeathPlaceDescription(null);
@@ -4172,7 +4164,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	public List<CaseDataDto> getByExternalId(String externalId) {
 
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return service.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return service.getByExternalId(externalId).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,6 +18,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilter<ADO>, CRITERIA extends BaseCriteria>
 	implements BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
@@ -42,8 +42,14 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	}
 
 	@Override
+	public boolean exists(String uuid) {
+		return service.exists(uuid);
+	}
+
+	@Override
 	public DTO getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		final Pseudonymizer pseudonymizer = createPseudonymizer();
+		return Optional.of(uuid).map(u -> service.getByUuid(u)).map(p -> toPseudonymizedDto(p, pseudonymizer)).orElse(null);
 	}
 
 	@Override
@@ -53,11 +59,12 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public List<DTO> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getByUuids(uuids));
 	}
 
 	@Override
 	public List<String> getAllUuids() {
+
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
@@ -74,7 +81,53 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return service.getObsoleteUuidsSince(since);
 	}
 
+	@Override
+	public List<DTO> getAllAfter(Date date) {
+		return getAllAfter(date, null, null);
+	}
+
+	@Override
+	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		List<ADO> entities = service.getAllAfter(date, batchSize, lastSynchronizedUuid);
+		return toPseudonymizedDtos(entities);
+	}
+
+	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
+		if (source == null) {
+			return null;
+		}
+
+		DTO dto = toDto(source);
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
+		return dto;
+	}
+
+	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		boolean inJurisdiction = isAdoInJurisdiction(source);
+		return toPseudonymizedDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity) {
+		restorePseudonymizedDto(dto, existingDto, entity, createPseudonymizer());
+	}
+
+	protected Pseudonymizer createPseudonymizer() {
+		return Pseudonymizer.getDefault(userService::hasRight);
+	}
+
 	// todo find a better name, it is not clear what it does
+
 	protected abstract void selectDtoFields(CriteriaQuery<DTO> cq, Root<ADO> root);
 
 	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);
@@ -82,4 +135,13 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	public abstract DTO toDto(ADO ado);
 
 	protected abstract REF_DTO toRefDto(ADO ado);
+
+	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction);
+
+	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
+
+	protected abstract boolean isAdoInJurisdiction(ADO ado);
+
+	protected abstract List<DTO> toPseudonymizedDtos(List<ADO> entities);
+
 }

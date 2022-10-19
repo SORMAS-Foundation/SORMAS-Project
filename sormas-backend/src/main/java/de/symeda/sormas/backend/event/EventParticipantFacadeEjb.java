@@ -214,7 +214,7 @@ public class EventParticipantFacadeEjb
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllByEventAfter(date, event).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return service.getAllByEventAfter(date, event).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -226,17 +226,6 @@ public class EventParticipantFacadeEjb
 		}
 
 		return service.getAllActiveUuids(user);
-	}
-
-	@Override
-	public List<EventParticipantDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -297,7 +286,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return toPseudonymizedDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -351,7 +340,7 @@ public class EventParticipantFacadeEjb
 
 		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
 		// Create newly event participants with the same archiving status as the Event
-		entity.setArchived(existingParticipant == null ? event.isArchived(): existingParticipant.isArchived());
+		entity.setArchived(existingParticipant == null ? event.isArchived() : existingParticipant.isArchived());
 		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
@@ -362,7 +351,7 @@ public class EventParticipantFacadeEjb
 
 		onEventParticipantChanged(eventFacade.toDto(entity.getEvent()), existingDto, entity, internal);
 
-		return convertToDto(entity, pseudonymizer);
+		return toPseudonymizedDto(entity, pseudonymizer);
 	}
 
 	@PermitAll
@@ -739,8 +728,7 @@ public class EventParticipantFacadeEjb
 				personAddressesCq.where(
 					personAddressesIdsExpr
 						.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getPersonAddressId).collect(Collectors.toList())));
-				List<Location> personAddressesList =
-					em.createQuery(personAddressesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
+				List<Location> personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
 			}
 
@@ -924,12 +912,6 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
-		EventParticipant eventParticipant = service.getByUuid(uuid);
-		return new EventParticipantReferenceDto(eventParticipant.getUuid());
-	}
-
-	@Override
 	public EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid) {
 		return Optional.ofNullable(service.getByEventAndPerson(eventUuid, personUuid))
 			.map(eventParticipant -> new EventParticipantReferenceDto(eventParticipant.getUuid()))
@@ -944,7 +926,7 @@ public class EventParticipantFacadeEjb
 		}
 
 		return service.getFirst(criteria)
-			.map(e -> convertToDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
+			.map(e -> toPseudonymizedDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
 			.orElse(null);
 	}
 
@@ -1052,7 +1034,7 @@ public class EventParticipantFacadeEjb
 	@Override
 	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return service.getByEventUuids(eventUuids).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override

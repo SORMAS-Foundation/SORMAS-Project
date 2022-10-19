@@ -27,7 +27,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -371,11 +370,6 @@ public class CampaignFacadeEjb
 	@Override
 	protected void selectDtoFields(CriteriaQuery<CampaignDto> cq, Root<Campaign> root) {
 
-	}
-
-	@Override
-	public List<CampaignDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override

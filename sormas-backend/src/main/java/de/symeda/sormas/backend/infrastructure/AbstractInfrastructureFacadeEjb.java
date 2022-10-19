@@ -4,12 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -29,6 +26,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 public abstract class AbstractInfrastructureFacadeEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
@@ -52,42 +50,6 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
 		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
-	}
-
-	@Override
-	@PermitAll
-	public List<String> getAllUuids() {
-		return super.getAllUuids();
-	}
-
-	@Override
-	@PermitAll
-	public List<DTO> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	@PermitAll
-	public List<String> getObsoleteUuidsSince(Date since) {
-		return super.getObsoleteUuidsSince(since);
-	}
-
-	@Override
-	@PermitAll
-	public DTO getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
-	@PermitAll
-	public REF_DTO getReferenceByUuid(String uuid) {
-		return Optional.ofNullable(uuid).map(u -> service.getByUuid(u)).map(this::toRefDto).orElse(null);
-	}
-
-	@Override
-	@PermitAll
-	public List<DTO> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -242,6 +204,28 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	@RightsAllowed({
 		UserRight._INFRASTRUCTURE_VIEW })
 	public void validate(@Valid DTO dto) throws ValidationRuntimeException {
-		// todo we do not run any generic validation logic for infra yet
+		// we do not run any generic validation logic for infra yet
+	}
+
+	@Override
+	protected void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+		// we do not pseudonymize infra data
+	}
+
+	@Override
+	protected List<DTO> toPseudonymizedDtos(List<ADO> entities) {
+		// we do not pseudonymize infra data
+		return entities.stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer) {
+		// we do not pseudonymize infra data
+	}
+
+	@Override
+	protected boolean isAdoInJurisdiction(ADO ado) {
+		// we do not pseudonymize infra data
+		return false;
 	}
 }
