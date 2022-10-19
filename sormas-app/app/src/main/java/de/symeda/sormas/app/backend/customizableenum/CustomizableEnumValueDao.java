@@ -15,17 +15,17 @@
 
 package de.symeda.sormas.app.backend.customizableenum;
 
+import com.j256.ormlite.dao.Dao;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -96,7 +96,8 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 
 	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
-		if (customizableEnumsByType.isEmpty()) {
+
+		if (customizableEnumsByType.isEmpty() || (long) customizableEnumsByType.values().stream().mapToInt(i -> i.size()).sum() != countOf()) {
 			loadData();
 		}
 

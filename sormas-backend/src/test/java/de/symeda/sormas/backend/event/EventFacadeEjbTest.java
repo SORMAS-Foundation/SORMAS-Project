@@ -74,6 +74,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -99,6 +100,29 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@After
 	public void teardown() {
 		clearExternalSurvToolUrlForWireMock();
+	}
+
+	@Test(expected = ValidationRuntimeException.class)
+	public void testValidateWithNullReportingUser() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			null,
+			null,
+			Disease.EVD,
+			rdcf);
+
+		EventFacadeEjb.EventFacadeEjbLocal eventFacadeEjb = getBean(EventFacadeEjb.EventFacadeEjbLocal.class);
+		eventFacadeEjb.validate(event);
 	}
 
 	@Test

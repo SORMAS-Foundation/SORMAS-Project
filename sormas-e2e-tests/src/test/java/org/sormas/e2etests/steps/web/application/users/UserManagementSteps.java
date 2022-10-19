@@ -62,6 +62,12 @@ public class UserManagementSteps implements En {
         });
 
     When(
+        "I search for created user in the User Management Page",
+        () -> {
+          searchForUser(CreateNewUserSteps.user.getUserName());
+        });
+
+    When(
         "^I search for recently edited user$",
         () -> {
           searchForUser(CreateNewUserSteps.editUser.getUserName());
@@ -94,6 +100,97 @@ public class UserManagementSteps implements En {
                         webDriverHelpers.isElementVisibleWithTimeout(SYNC_SUCCESS_DE, 5),
                         "Sync of users failed"),
                 10));
+
+    When(
+        "^I verify that the Active value is ([^\"]*) in the User Management Page",
+        (String option) -> {
+          switch (option) {
+            case "Checked":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  ACTIVE_CHECKBOX_USER_MANAGEMENT);
+              break;
+            case "Unchecked":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  INACTIVE_CHECKBOX_USER_MANAGEMENT);
+              break;
+            default:
+              throw new IllegalArgumentException("No valid Switch options were provided");
+          }
+        });
+
+    Then(
+        "I Verify the number of Active, Inactive and Total users in the User Management Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              USERS_COUNTER_USER_MANAGEMENT);
+          Integer numberOfTotalUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Active");
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          Integer numberOfActiveUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Inactive");
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          Integer numberOfInactiveUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      numberOfTotalUsers == numberOfActiveUsers + numberOfInactiveUsers,
+                      "Sync of users failed in User Management Page"),
+              10);
+        });
+
+    Then(
+        "I Verify The User Role filter in the User Management Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              USERS_COUNTER_USER_MANAGEMENT);
+          Integer numberOfTotalUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, "National User");
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          Integer numberOfSpecificUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, "");
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertFalse(
+                      numberOfTotalUsers == numberOfSpecificUsers,
+                      "User Roles Filer ComboBox failed in User Management Page"),
+              10);
+        });
+
+    Then(
+        "I Verify Region filter in the User Management Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              USERS_COUNTER_USER_MANAGEMENT);
+          Integer numberOfTotalUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_USER_MANAGEMENT, "Bayern");
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          Integer numberOfSpecificUsers =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+          webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_USER_MANAGEMENT, "");
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertFalse(
+                      numberOfTotalUsers == numberOfSpecificUsers,
+                      "User Roles Filer ComboBox failed in User Management Page"),
+              10);
+        });
   }
 
   private void searchForUser(String userName) {

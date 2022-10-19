@@ -16,7 +16,9 @@
 package de.symeda.sormas.ui.person;
 
 import com.vaadin.server.UserError;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -25,9 +27,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilarityCriteria> {
 
@@ -40,22 +44,22 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 	@Override
 	protected String[] getMainFilterLocators() {
 		return new String[] {
-			PersonSimilarityCriteria.FIRST_NAME,
-			PersonSimilarityCriteria.LAST_NAME,
-			PersonSimilarityCriteria.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE };
+			PersonSimilarityCriteria.NAME_UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE,
+			PersonSimilarityCriteria.BIRTHDATE_YYYY,
+			PersonSimilarityCriteria.BIRTHDATE_MM,
+			PersonSimilarityCriteria.BIRTHDATE_DD };
 	}
 
 	@Override
 	protected void addFields() {
-		addField(
-			FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.FIRST_NAME, I18nProperties.getCaption(Captions.firstName), 100));
-		addField(FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.LAST_NAME, I18nProperties.getCaption(Captions.lastName), 100));
 
 		addField(
 			FieldConfiguration.withCaptionAndPixelSized(
-				PersonSimilarityCriteria.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE,
+				PersonSimilarityCriteria.NAME_UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE,
 				I18nProperties.getString(Strings.promptPersonDuplicateSearchIdExternalId),
 				150)).addStyleName(CssStyles.HSPACE_RIGHT_3);
+
+		addBirthDateFields(PersonSimilarityCriteria.BIRTHDATE_YYYY, PersonSimilarityCriteria.BIRTHDATE_MM, PersonSimilarityCriteria.BIRTHDATE_DD);
 	}
 
 	public boolean validateFields() {
@@ -83,4 +87,25 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 			}
 		});
 	}
+
+	@Override
+	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
+		super.applyDependenciesOnFieldChange(propertyId, event);
+
+		switch (propertyId) {
+		case PersonSimilarityCriteria.BIRTHDATE_MM: {
+			Integer birthMM = (Integer) event.getProperty().getValue();
+
+			ComboBox birthDayDD = getField(PersonSimilarityCriteria.BIRTHDATE_DD);
+			birthDayDD.setEnabled(birthMM != null);
+			FieldHelper.updateItems(
+				birthDayDD,
+				DateHelper.getDaysInMonth(
+					(Integer) getField(PersonSimilarityCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(PersonSimilarityCriteria.BIRTHDATE_YYYY).getValue()));
+			break;
+		}
+		}
+	}
+
 }

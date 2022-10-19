@@ -117,7 +117,7 @@ public class PersonApiService {
         .phone(faker.phoneNumber().phoneNumber())
         .address(address)
         .personContactDetails(Collections.singletonList(personContactDetails))
-        .presentCondition(PresentCondition.getRandomPresentCondition().toUpperCase())
+        .presentCondition(PresentCondition.ALIVE.getCondition().toUpperCase())
         .build();
   }
 
@@ -179,7 +179,7 @@ public class PersonApiService {
         .phone(faker.phoneNumber().phoneNumber())
         .address(address)
         .personContactDetails(Collections.singletonList(personContactDetails))
-        .presentCondition(PresentCondition.getRandomPresentCondition().toUpperCase())
+        .presentCondition(PresentCondition.ALIVE.getCondition().toUpperCase())
         .build();
   }
 }

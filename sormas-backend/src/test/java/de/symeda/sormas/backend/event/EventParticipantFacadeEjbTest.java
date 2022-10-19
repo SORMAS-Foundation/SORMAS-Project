@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -73,6 +74,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -80,6 +82,20 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
+
+	@Test(expected = ValidationRuntimeException.class)
+	public void testValidateWithNullReportingUser() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = createUser(rdcf);
+		EventDto event = createEvent(user, rdcf);
+
+		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "event Director", null);
+
+		EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacadeEjb =
+			getBean(EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal.class);
+		eventParticipantFacadeEjb.validate(eventParticipant);
+	}
 
 	@Test
 	public void testGetExportListWithRelevantVaccinations() {
@@ -333,7 +349,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		getEventParticipantFacade().delete(eventParticipant.toReference().getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
-		Assert.assertFalse(exist);
+		assertFalse(exist);
 	}
 
 	@Test
@@ -550,6 +566,29 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		eventParticipantCriteria.setFreeText("detail2");
 		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
 		assertEquals(0, eventParticipantIndexDtos.size());
+	}
+	@Test
+	public void testSaveEventParticipantWithEventArchiving() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = createUser(rdcf);
+		EventDto event = createEvent(user, rdcf);
+		// Validate that for a newly created Event Participant the archived status is kept from the Event
+		getEventFacade().archive(Collections.singletonList(event.getUuid()));
+		PersonDto eventPersonArchived = creator.createPerson("EventArchived", "OrganizerArchived");
+		EventParticipantDto archivedEventParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
+		assertTrue(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
+
+		// Validate that for a newly created Event Participant the active status is kept from the Event
+		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), "reason");
+		PersonDto eventPersonActive = creator.createPerson("EventActive", "OrganizerActive");
+		EventParticipantDto activeEventParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonActive, "event Director", user.toReference());
+		assertFalse(getEventParticipantFacade().isArchived(activeEventParticipantDto.getUuid()));
+
+		//Validate that the newly created Event Participant status is in sync with Event and with existing Event Participant
+		EventParticipantDto alreadyArchivedParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
+		assertFalse(getEventFacade().isArchived(event.getUuid()));
+		assertFalse(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
+		assertFalse(getEventParticipantFacade().isArchived(alreadyArchivedParticipantDto.getUuid()));
 	}
 
 	private UserDto createUser(TestDataCreator.RDCF rdcf) {

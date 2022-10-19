@@ -14,8 +14,8 @@
  */
 package de.symeda.sormas.backend.contact;
 
-import de.symeda.sormas.backend.person.PersonQueryContext;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -111,6 +111,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -167,6 +168,14 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 
 	public ContactService() {
 		super(Contact.class);
+	}
+
+
+	@Override
+	protected void fetchReferences(From<?, Contact> from) {
+
+		from.fetch(Contact.HEALTH_CONDITIONS);
+		from.fetch(Contact.EPI_DATA);
 	}
 
 	public List<Contact> findBy(ContactCriteria contactCriteria, User user) {
@@ -226,16 +235,18 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Contact> contactFrom, boolean includeExtendedChangeDateFilters) {
 		Join<Object, HealthConditions> healthCondition = contactFrom.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
 		Join<Object, EpiData> epiData = contactFrom.join(Contact.EPI_DATA, JoinType.LEFT);
-		Join<Contact, Sample> contactSampleJoin = contactFrom.join(Contact.SAMPLES, JoinType.LEFT);
-		Join<Contact, Visit> contactVisitJoin = contactFrom.join(Contact.VISITS, JoinType.LEFT);
 
 		builder = super.addChangeDates(builder, contactFrom, includeExtendedChangeDateFilters).add(healthCondition)
 			.add(contactFrom, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES)
-			.add(contactSampleJoin)
-			.add(contactVisitJoin);
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES);
 
 		builder = epiDataService.addChangeDates(builder, epiData);
+
+		if (includeExtendedChangeDateFilters) {
+			Join<Contact, Sample> contactSampleJoin = contactFrom.join(Contact.SAMPLES, JoinType.LEFT);
+			Join<Contact, Visit> contactVisitJoin = contactFrom.join(Contact.VISITS, JoinType.LEFT);
+			builder.add(contactSampleJoin).add(contactSampleJoin, Sample.PATHOGENTESTS).add(contactVisitJoin);
+		}
 
 		return builder;
 	}
@@ -632,22 +643,11 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 
 			if (!dashboardContacts.isEmpty()) {
 				List<Long> dashboardContactIds = dashboardContacts.stream().map(DashboardContactDto::getId).collect(Collectors.toList());
-
-				CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
-				Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
-				Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
-				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
-
-				visitsCq.where(
-					CriteriaBuilderHelper
-						.and(cb, contact.get(AbstractDomainObject.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
-				visitsCq.multiselect(
-					visitsCqRoot.get(AbstractDomainObject.ID),
-					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
-					visitsJoin.get(Visit.VISIT_STATUS),
-					visitsJoin.get(Visit.VISIT_DATE_TIME));
-
-				List<DashboardVisit> contactVisits = em.createQuery(visitsCq).getResultList();
+				List<DashboardVisit> contactVisits = new ArrayList<>();
+				IterableHelper.executeBatched(
+					dashboardContactIds,
+					ModelConstants.PARAMETER_LIMIT,
+					batchedVisitIds -> contactVisits.addAll(getContactDashboardVisits(batchedVisitIds, contact)));
 
 				// Add visit information to the DashboardContactDtos
 				for (DashboardContactDto dashboardContact : dashboardContacts) {
@@ -677,6 +677,26 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		}
 
 		return Collections.emptyList();
+	}
+
+	private List<DashboardVisit> getContactDashboardVisits(List<Long> dashboardContactIds, Root<Contact> contact) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
+		Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
+		Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
+		Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+		visitsCq.where(
+			CriteriaBuilderHelper
+				.and(cb, contact.get(Contact.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+		visitsCq.multiselect(
+			visitsCqRoot.get(Visit.ID),
+			visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
+			visitsJoin.get(Visit.VISIT_STATUS),
+			visitsJoin.get(Visit.VISIT_DATE_TIME));
+
+		return em.createQuery(visitsCq).getResultList();
 	}
 
 	public Predicate getRegionDistrictDiseasePredicate(
@@ -1284,7 +1304,8 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					CriteriaBuilderHelper
+						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
 					CriteriaBuilderHelper
 						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
@@ -1499,21 +1520,12 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		// Delete all visits that are only associated with this contact
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
-		Root<Visit> visitRoot = cd.from(Visit.class);
-		Subquery<Long> visitContactSubquery = getVisitsContactSubqueryForDelete(cb, cd, visitRoot);
-		cd.where(
-			cb.and(
-				cb.isNull(visitRoot.get(Visit.CAZE).get(Case.ID)),
-				cb.lessThanOrEqualTo(visitContactSubquery, 1L)));
-		em.createQuery(cd).executeUpdate();
-
 		// Remove the contact that will be deleted from contact_visits
-		em.createNativeQuery("delete from contacts_visits cv where cv.contact_id = ?1")
-		.setParameter(1,contact.getId())
-		.executeUpdate();
+		em.createNativeQuery("delete from contacts_visits cv where cv.contact_id = ?1").setParameter(1, contact.getId()).executeUpdate();
+
+		// Delete all visits that are not associated with any contact or case
+		em.createNativeQuery("delete from visit v where v.caze_id is null and not exists(select from contacts_visits cv where cv.visit_id = v.id)")
+			.executeUpdate();
 
 		// Delete documents related to this contact
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
@@ -1533,17 +1545,6 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		deleteContactLinks(contact);
 
 		super.deletePermanent(contact);
-	}
-
-	private Subquery<Long> getVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot) {
-		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
-		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
-		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
-		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
-
-		contactVisitsSubquery.select(cb.count(visitContactJoin.get(Contact.ID)));
-
-		return contactVisitsSubquery;
 	}
 
 	private void deleteContactLinks(Contact contact) {

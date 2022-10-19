@@ -60,7 +60,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 	public static void registerViews(Navigator navigator) {
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_VIEW)) {
 			navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
 		}
 

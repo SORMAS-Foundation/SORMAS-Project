@@ -34,7 +34,7 @@ public interface SormasToSormasEntityInterface {
 
 	void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
-	void acceptShareRequest(String uuid) throws SormasToSormasException, SormasToSormasValidationException;
+	DuplicateResult acceptShareRequest(String uuid, boolean checkDuplicates) throws SormasToSormasException, SormasToSormasValidationException;
 
 	SormasToSormasEncryptedDataDto getDataForShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 

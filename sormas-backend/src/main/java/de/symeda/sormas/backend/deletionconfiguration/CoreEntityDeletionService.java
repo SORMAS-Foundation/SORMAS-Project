@@ -23,6 +23,7 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.util.IterableHelper;
 
@@ -46,6 +47,8 @@ public class CoreEntityDeletionService {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ShareRequestInfoService shareRequestInfoService;
+	@EJB
+	private SymptomsService symptomsService;
 
 	public CoreEntityDeletionService() {
 	}
@@ -88,6 +91,17 @@ public class CoreEntityDeletionService {
 			});
 		});
 
+		deleteOrphanEntities();
+
+		logger.debug("executeAutomaticDeletion() finished. {}s", DateHelper.durationSeconds(startTime));
+	}
+
+	private void deleteOrphanEntities() {
+
+		List<String> nonReferencedSymptoms = symptomsService.getOrphanSymptoms();
+		logger.debug("executeAutomaticDeletion(): Detected non referenced symptoms: n={}", nonReferencedSymptoms.size());
+		IterableHelper.executeBatched(nonReferencedSymptoms, DELETE_BATCH_SIZE, batchedUuids -> symptomsService.deletePermanentByUuids(batchedUuids));
+
 		// Delete non referenced Persons
 		List<String> nonReferencedPersonUuids = personService.getAllNonReferencedPersonUuids();
 		logger.debug("executeAutomaticDeletion(): Detected non referenced persons: n={}", nonReferencedPersonUuids.size());
@@ -101,16 +115,14 @@ public class CoreEntityDeletionService {
 		IterableHelper.executeBatched(
 			nonReferencedS2SShareRequestsUuids,
 			DELETE_BATCH_SIZE,
-			batchedUuids -> sormasToSormasShareRequestService.deletePermanentByUuids(nonReferencedS2SShareRequestsUuids));
+			batchedUuids -> sormasToSormasShareRequestService.deletePermanentByUuids(batchedUuids));
 
 		List<String> nonReferencedShareRequestInfoUuids = shareRequestInfoService.getAllNonReferencedShareRequestInfo();
 		logger.debug("executeAutomaticDeletion(): Detected non referenced ShareRequestInfo: n={}", nonReferencedShareRequestInfoUuids.size());
 		IterableHelper.executeBatched(
 			nonReferencedShareRequestInfoUuids,
 			DELETE_BATCH_SIZE,
-			batchedUuids -> shareRequestInfoService.deletePermanentByUuids(nonReferencedShareRequestInfoUuids));
-
-		logger.debug("executeAutomaticDeletion() finished. {}s", DateHelper.durationSeconds(startTime));
+			batchedUuids -> shareRequestInfoService.deletePermanentByUuids(batchedUuids));
 	}
 
 	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {

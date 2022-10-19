@@ -147,8 +147,6 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 			Optional<SurveillanceReport> report = resultList.stream().filter(r -> r.getUuid().equals(r.getUuid())).findFirst();
 			report.ifPresent(
 				surveillanceReport -> pseudonymizer.pseudonymizeUser(
-					SurveillanceReportDto.class,
-					SurveillanceReportDto.CREATING_USER,
 					surveillanceReport.getCreatingUser(),
 					currentUser,
 					reportDto::setCreatingUser));

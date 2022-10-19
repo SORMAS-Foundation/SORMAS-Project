@@ -325,6 +325,28 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetSimilarPersonDtos() {
+		loginWith(nationalUser);
+		PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
+		PersonDto person2 = creator.createPerson("James", "Smith", Sex.MALE, 1979, 5, 12);
+		PersonDto person3 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 5);
+
+		creator.createCase(nationalUser.toReference(), person1.toReference(), rdcf);
+		creator.createCase(nationalUser.toReference(), person2.toReference(), rdcf);
+		creator.createCase(nationalUser.toReference(), person3.toReference(), rdcf);
+
+		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria();
+		criteria.setNameUuidExternalIdExternalTokenLike("Jame");
+		criteria.setBirthdateYYYY(1980);
+		criteria.setBirthdateMM(1);
+		criteria.setBirthdateDD(1);
+		List<String> relevantNameUuids =
+				getPersonFacade().getSimilarPersonDtos(criteria).stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
+		Assert.assertEquals(1, relevantNameUuids.size());
+		Assert.assertEquals(person1.getUuid(), relevantNameUuids.get(0));
+	}
+
+	@Test
 	public void testGetMatchingNameDtos() {
 		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 

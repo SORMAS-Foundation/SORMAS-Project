@@ -168,6 +168,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -205,6 +206,16 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@After
 	public void teardown() {
 		clearExternalSurvToolUrlForWireMock();
+	}
+
+	@Test(expected = ValidationRuntimeException.class)
+	public void testValidateWithNullReportingUser() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caze = creator
+			.createCase(null, cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseFacadeEjbLocal caseFacadeEjb = getBean(CaseFacadeEjbLocal.class);
+		caseFacadeEjb.validate(caze);
 	}
 
 	@Test
@@ -1411,8 +1422,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		firstCase = getCaseFacade().save(firstCase);
 		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
 		assertNull(firstCase.getOutcomeDate());
-		assertEquals(PresentCondition.ALIVE, cazePerson.getPresentCondition());
-		assertNull(cazePerson.getDeathDate());
+		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
 
 		// additional, newer cases for the the person
 		firstCase.setReportDate(DateHelper.subtractDays(today, 17));
@@ -1463,40 +1473,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 		assertEquals(CaseOutcome.NO_OUTCOME, thirdCase.getOutcome());
 		assertNull(thirdCase.getOutcomeDate());
-
-		// move 1st and 3rd case to past, so that they should no longer be affected by anything
-		firstCase.setReportDate(DateHelper.subtractDays(today, 100));
-		firstCase.getSymptoms().setOnsetDate(firstCase.getReportDate());
-		thirdCase.setReportDate(DateHelper.subtractDays(today, 100));
-		thirdCase.getSymptoms().setOnsetDate(thirdCase.getReportDate());
-		getCaseFacade().save(firstCase);
-		getCaseFacade().save(thirdCase);
-
-		// Set 2nd Case to deceased again
-		secondCase.setOutcome(CaseOutcome.DECEASED);
-		secondCase = getCaseFacade().save(secondCase);
-		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
-
-		// manually set the persons deathdate to 32 days in the past
-		cazePerson.setDeathDate(DateHelper.subtractDays(secondCase.getReportDate(), 32));
-		cazePerson = getPersonFacade().save(cazePerson);
-
-		// Change Case to RECOVERD -> person should not change, because deathdate is over 30 days away from case reportdate
-		secondCase.setOutcome(CaseOutcome.RECOVERED);
-		secondCase = getCaseFacade().save(secondCase);
-		cazePerson = getPersonFacade().getByUuid(cazePerson.getUuid());
-
-		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
-
-		// update the present condition to dead -> case should still not be affected because of the date threshold
-		cazePerson.setPresentCondition(PresentCondition.DEAD);
-		cazePerson.setDeathDate(today);
-		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
-		cazePerson.setCauseOfDeathDisease(secondCase.getDisease());
-		getPersonFacade().save(cazePerson);
-		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
-
-		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 	}
 
 	@Test

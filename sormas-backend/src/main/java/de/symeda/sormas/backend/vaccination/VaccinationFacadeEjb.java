@@ -401,8 +401,6 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(
-					VaccinationDto.class,
-					VaccinationDto.REPORTING_USER,
 					source.getReportingUser(),
 					currentUser,
 					dto::setReportingUser);
@@ -461,7 +459,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	@RightsAllowed(UserRight._CONTACT_EDIT)
+	@RightsAllowed({
+		UserRight._CONTACT_EDIT,
+		UserRight._CONTACT_CREATE })
 	public void updateVaccinationStatuses(Contact contact) {
 		List<Immunization> contactPersonImmunizations =
 			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);

@@ -94,6 +94,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return currentUserService.hasUserRight(right);
 	}
 
+	public boolean hasAnyRight(Set<UserRight> userRights) {
+		return currentUserService.hasAnyUserRight(userRights);
+	}
+
 	protected Class<ADO> getElementClass() {
 		return elementClass;
 	}
@@ -346,7 +350,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 				cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)),
 				cb.asc(from.get(AbstractDomainObject.UUID)),
 				cb.asc(from.get(AbstractDomainObject.ID)));
-			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 			result.addAll(batchResult);
 		});
 
@@ -431,6 +435,11 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	@Override
 	public ADO getByUuid(String uuid) {
 
+		return getByUuid(uuid, false);
+	}
+
+	public ADO getByUuid(String uuid, boolean fetchReferences) {
+
 		if (uuid == null) {
 			return null;
 		}
@@ -439,6 +448,9 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
+		if (fetchReferences) {
+			fetchReferences(from);
+		}
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
 
 		TypedQuery<ADO> q = em.createQuery(cq).setParameter(uuidParam, uuid);

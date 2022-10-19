@@ -60,13 +60,14 @@ public class UserRoleFormHelper {
 			portHealthUserCb.setValue(e.getProperty().getValue() == JurisdictionLevel.POINT_OF_ENTRY);
 
 			CheckBox optionalHealthFacilityCb = (CheckBox) fieldGroup.getField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY);
-			optionalHealthFacilityCb.setValue(e.getProperty().getValue() != JurisdictionLevel.HEALTH_FACILITY);
+			//initial default false should be set for any jurisdiction level
+			optionalHealthFacilityCb.setValue(false);
 		});
 	}
 
 	public static void setTemplateRoleItems(ComboBox templateRoleCombo) {
 		List<UserRoleDto> existingUserRoles =
-			FacadeProvider.getUserRoleFacade().getAll().stream().sorted(Comparator.comparing(UserRoleDto::getCaption)).collect(Collectors.toList());
+			FacadeProvider.getUserRoleFacade().getAllActive().stream().sorted(Comparator.comparing(UserRoleDto::getCaption)).collect(Collectors.toList());
 		List<UserRoleDto> defaultUserRoles = FacadeProvider.getUserRoleFacade()
 			.getDefaultUserRolesAsDto()
 			.stream()

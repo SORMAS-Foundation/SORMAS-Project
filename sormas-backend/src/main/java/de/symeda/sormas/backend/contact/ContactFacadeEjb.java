@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -358,7 +359,7 @@ public class ContactFacadeEjb
 		UserRight._CONTACT_CREATE,
 		UserRight._CONTACT_EDIT })
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
-		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid(), true) : null;
 		FacadeHelper.checkCreateAndEditRights(existingContact, userService, UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT);
 
 		if (internal && existingContact != null && !service.isEditAllowed(existingContact)) {
@@ -757,7 +758,7 @@ public class ContactFacadeEjb
 						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
 				exposuresCq.where(exposuresPredicate);
 				exposuresCq.orderBy(cb.asc(exposuresEpiDataJoin.get(EpiData.ID)));
-				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
 			}
 
@@ -775,7 +776,7 @@ public class ContactFacadeEjb
 							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
 							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
 						personIdsExpr.in(exportContacts.stream().map(ContactExportDto::getPersonId).collect(Collectors.toList()))));
-				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
 			}
 
@@ -1245,28 +1246,28 @@ public class ContactFacadeEjb
 		CriteriaQuery<ContactIndexDetailedDto> query = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties);
 		List<ContactIndexDetailedDto> dtos = QueryHelper.getResultList(em, query, first, max);
 
-		// Load event count and latest events info per contact
-		Map<String, List<ContactEventSummaryDetails>> eventSummaries =
-			eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
-				.stream()
-				.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
-		for (ContactIndexDetailedDto contact : dtos) {
+		if (userService.hasRight(UserRight.EVENT_VIEW)) {
+			// Load event count and latest events info per contact
+			Map<String, List<ContactEventSummaryDetails>> eventSummaries =
+				eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
+					.stream()
+					.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
+			for (ContactIndexDetailedDto contact : dtos) {
 
-			List<ContactEventSummaryDetails> contactEvents = eventSummaries.getOrDefault(contact.getUuid(), Collections.emptyList());
-			contact.setEventCount((long) contactEvents.size());
+				List<ContactEventSummaryDetails> contactEvents = eventSummaries.getOrDefault(contact.getUuid(), Collections.emptyList());
+				contact.setEventCount((long) contactEvents.size());
 
-			contactEvents.stream().max(Comparator.comparing(ContactEventSummaryDetails::getEventDate)).ifPresent(eventSummary -> {
-				contact.setLatestEventId(eventSummary.getEventUuid());
-				contact.setLatestEventTitle(eventSummary.getEventTitle());
-			});
+				contactEvents.stream().max(Comparator.comparing(ContactEventSummaryDetails::getEventDate)).ifPresent(eventSummary -> {
+					contact.setLatestEventId(eventSummary.getEventUuid());
+					contact.setLatestEventTitle(eventSummary.getEventTitle());
+				});
+			}
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		User currentUser = userService.getCurrentUser();
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
 			pseudonymizer.pseudonymizeUser(
-				ContactIndexDetailedDto.class,
-				ContactIndexDetailedDto.REPORTING_USER,
 				userService.getByUuid(c.getReportingUser().getUuid()),
 				currentUser,
 				c::setReportingUser);
@@ -1281,6 +1282,33 @@ public class ContactFacadeEjb
 	@Override
 	public int[] getContactCountsByCasesForDashboard(List<Long> contactIds) {
 
+		Set<Long> caseIds = new LinkedHashSet<>();
+		IterableHelper.executeBatched(
+			contactIds,
+			ModelConstants.PARAMETER_LIMIT,
+			batchedContactIds -> caseIds.addAll(getCaseIdsFromContacts(batchedContactIds)));
+
+		if (caseIds.isEmpty()) {
+			return new int[3];
+		} else {
+			int[] counts = new int[3];
+
+			List<Long> caseContactCounts = new ArrayList<>();
+			IterableHelper.executeBatched(
+				new ArrayList<>(caseIds),
+				ModelConstants.PARAMETER_LIMIT,
+				batchedCaseIds -> caseContactCounts.addAll(countContactsAssignToCases(batchedCaseIds)));
+
+			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[2] = caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
+
+			return counts;
+		}
+	}
+
+	private List<Long> getCaseIdsFromContacts(List<Long> contactIds) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -1290,27 +1318,20 @@ public class ContactFacadeEjb
 		cq.select(caseJoin.get(Case.ID));
 		cq.distinct(true);
 
-		List<Long> caseIds = em.createQuery(cq).getResultList();
+		return em.createQuery(cq).getResultList();
+	}
 
-		if (caseIds.isEmpty()) {
-			return new int[3];
-		} else {
-			int[] counts = new int[3];
-			CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
-			Root<Contact> contact2 = cq2.from(Contact.class);
-			cq2.groupBy(contact2.get(Contact.CAZE));
+	private List<Long> countContactsAssignToCases(List<Long> caseIds) {
 
-			cq2.where(contact2.get(Contact.CAZE).get(Case.ID).in(caseIds));
-			cq2.select(cb.count(contact2.get(Contact.ID)));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> contact = cq.from(Contact.class);
+		cq.groupBy(contact.get(Contact.CAZE));
 
-			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
+		cq.where(contact.get(Contact.CAZE).get(Case.ID).in(caseIds));
+		cq.select(cb.count(contact.get(Contact.ID)));
 
-			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[2] = caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
-
-			return counts;
-		}
+		return em.createQuery(cq).getResultList();
 	}
 
 	@SuppressWarnings("JpaQueryApiInspection")
@@ -1596,7 +1617,7 @@ public class ContactFacadeEjb
 
 			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, inJurisdiction, (c) -> {
 				pseudonymizer
-					.pseudonymizeUser(ContactDto.class, ContactDto.REPORTING_USER, source.getReportingUser(), currentUser, dto::setReportingUser);
+					.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 
 				if (c.getCaze() != null) {
 					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), jurisdictionFlags.getCaseInJurisdiction(), null);
@@ -1883,6 +1904,10 @@ public class ContactFacadeEjb
 	public void validate(@Valid ContactDto contact) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
+		if (contact.getReportingUser() == null && !contact.isPseudonymized()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
+		}
+
 		if (contact.getReportDateTime() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
 		}
@@ -1929,17 +1954,57 @@ public class ContactFacadeEjb
 		selections.addAll(service.getJurisdictionSelections(contactQueryContext));
 		cq.multiselect(selections);
 
+		cq.where(getSimilarityFilters(criteria, cb, contactRoot, contactQueryContext));
+
+		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
+			CaseReferenceDto contactCase = c.getCaze();
+			if (contactCase != null) {
+				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, contactCase, c.getCaseInJurisdiction(), null);
+			}
+		});
+
+		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
+			contacts = contacts.stream().filter(c -> !c.isPseudonymized()).collect(Collectors.toList());
+		}
+
+		return contacts;
+	}
+
+	public boolean hasSimilarContacts(ContactSimilarityCriteria criteria) {
+		return service.exists((cb, root, cq) -> getSimilarityFilters(criteria, cb, root, new ContactQueryContext(cb, cq, root)));
+	}
+
+	private Predicate getSimilarityFilters(
+		ContactSimilarityCriteria criteria,
+		CriteriaBuilder cb,
+		Root<Contact> contactRoot,
+		ContactQueryContext contactQueryContext) {
+		ContactJoins joins = contactQueryContext.getJoins();
+
 		final Predicate defaultFilter = service.createDefaultFilter(cb, contactRoot);
 		final Predicate userFilter = service.createUserFilter(contactQueryContext);
 
 		final PersonReferenceDto person = criteria.getPerson();
-		final Predicate samePersonFilter = person != null ? cb.equal(joins.getPerson().get(Person.UUID), person.getUuid()) : null;
+		Predicate samePersonFilter = person != null ? cb.equal(joins.getPerson().get(Person.UUID), person.getUuid()) : null;
+		if (criteria.getPersons() != null) {
+			samePersonFilter =
+				joins.getPerson().get(Person.UUID).in(criteria.getPersons().stream().map(PersonReferenceDto::getUuid).collect(Collectors.toList()));
+		}
 
 		final Disease disease = criteria.getDisease();
 		final Predicate diseaseFilter = disease != null ? cb.equal(contactRoot.get(Contact.DISEASE), disease) : null;
 
 		final CaseReferenceDto caze = criteria.getCaze();
-		final Predicate cazeFilter = caze != null ? cb.equal(joins.getCaze().get(Case.UUID), caze.getUuid()) : null;
+		Predicate cazeFilter = caze != null ? cb.equal(joins.getCaze().get(Case.UUID), caze.getUuid()) : null;
+
+		if (criteria.getResultingCases() != null) {
+			cazeFilter = joins.getResultingCase()
+				.get(Case.UUID)
+				.in(criteria.getResultingCases().stream().map(CaseReferenceDto::getUuid).collect(Collectors.toList()));
+		}
 
 		final ContactClassification contactClassification = criteria.getContactClassification();
 		final Predicate contactClassificationFilter =
@@ -1961,34 +2026,17 @@ public class ContactFacadeEjb
 			service.recentDateFilter(cb, relevantDate, contactRoot.get(Contact.REPORT_DATE_TIME), 30),
 			service.recentDateFilter(cb, relevantDate, contactRoot.get(Contact.LAST_CONTACT_DATE), 30));
 
-		cq.where(
-			CriteriaBuilderHelper.and(
-				cb,
-				defaultFilter,
-				userFilter,
-				samePersonFilter,
-				diseaseFilter,
-				cazeFilter,
-				contactClassificationFilter,
-				noResulingCaseFilter,
-				recentContactsFilter,
-				relevantDateFilter));
-
-		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
-			CaseReferenceDto contactCase = c.getCaze();
-			if (contactCase != null) {
-				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, contactCase, c.getCaseInJurisdiction(), null);
-			}
-		});
-
-		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
-			contacts = contacts.stream().filter(c -> !c.isPseudonymized()).collect(Collectors.toList());
-		}
-
-		return contacts;
+		return CriteriaBuilderHelper.and(
+			cb,
+			defaultFilter,
+			userFilter,
+			samePersonFilter,
+			diseaseFilter,
+			cazeFilter,
+			contactClassificationFilter,
+			noResulingCaseFilter,
+			recentContactsFilter,
+			relevantDateFilter);
 	}
 
 	@Override

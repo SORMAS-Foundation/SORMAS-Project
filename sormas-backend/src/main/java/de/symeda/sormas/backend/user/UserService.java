@@ -327,7 +327,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 
-		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		return em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 	}
 
 	public List<UserReference> getUserRefsByInfrastructure(
@@ -409,7 +409,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 
-		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		return em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 	}
 
 	private Predicate createUserRefsByInfrastructurePredicate(
@@ -513,7 +513,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 
-		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		return em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 	}
 
 	public List<UserReference> getUserReferencesByIds(Collection<Long> userIds) {
@@ -523,7 +523,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 		cq.where(root.get(UserReference.ID).in(userIds));
 
-		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		return em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 	}
 
 	public User getRandomDistrictUser(District district, UserRight... userRights) {
