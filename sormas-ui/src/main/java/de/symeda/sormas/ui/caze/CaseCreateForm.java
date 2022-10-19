@@ -332,10 +332,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			updateFacility();
 		});
 		facilityOrHome.addValueChangeListener(e -> {
-
+			FacilityReferenceDto healthFacility = UserProvider.getCurrent().getUser().getHealthFacility();
 			boolean hasOptionalHealthFacility = UserProvider.getCurrent().hasOptionalHealthFacility();
-			if (hasOptionalHealthFacility) {
-				String facilityId = UserProvider.getCurrent().getUser().getHealthFacility().getUuid();
+			if (hasOptionalHealthFacility && healthFacility != null) {
+				String facilityId = healthFacility.getUuid();
 				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityId);
 				FacilityType facilityUserType = facilityDto.getType();
 				FacilityTypeGroup facilityUserTypeGroup = facilityDto.getType().getFacilityTypeGroup();
