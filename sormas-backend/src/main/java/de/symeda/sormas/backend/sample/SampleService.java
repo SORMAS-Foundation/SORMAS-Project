@@ -821,10 +821,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.or(cb.equal(joins.getCaze().get(Case.ARCHIVED), false), cb.isNull(joins.getCaze().get(Case.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(cb, filter, predicateAssignedToActiveEntity(cb, joins));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, predicateAllAssignedEntitiesAreArchived(cb, joins));
 			}
 		}
 		if (criteria.getDeleted() != null) {
@@ -900,6 +899,44 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 
 		return filter;
+	}
+
+	private boolean sampleAssignToActiveEntity(String sampleUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Sample> from = cq.from(getElementClass());
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, from);
+		SampleJoins joins = sampleQueryContext.getJoins();
+
+		cq.select(cb.literal(true));
+
+		Predicate predicate =
+			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), cb.isFalse(from.get(Sample.DELETED)), predicateAssignedToActiveEntity(cb, joins));
+
+		cq.where(predicate);
+
+		Boolean exist = QueryHelper.getSingleResult(em, cq);
+
+		return Boolean.TRUE.equals(exist);
+	}
+
+	private Predicate predicateAssignedToActiveEntity(CriteriaBuilder cb, SampleJoins joins) {
+
+		return cb.or(
+			cb.isFalse(joins.getCaze().get(Case.ARCHIVED)),
+			cb.isFalse(joins.getContact().get(Contact.ARCHIVED)),
+			cb.isFalse(joins.getEventParticipant().get(EventParticipant.ARCHIVED)));
+	}
+
+	private Predicate predicateAllAssignedEntitiesAreArchived(CriteriaBuilder cb, SampleJoins joins) {
+
+		return cb.and(
+			cb.or(cb.isTrue(joins.getCaze().get(Case.ARCHIVED)), cb.isNull(joins.getCaze().get(Case.ARCHIVED))),
+			cb.or(cb.isTrue(joins.getContact().get(Contact.ARCHIVED)), cb.isNull(joins.getContact().get(Contact.ARCHIVED))),
+			cb.or(
+				cb.isTrue(joins.getEventParticipant().get(EventParticipant.ARCHIVED)),
+				cb.isNull(joins.getEventParticipant().get(EventParticipant.ARCHIVED))));
 	}
 
 	@Override
@@ -1096,6 +1133,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 	public boolean isEditAllowed(Sample sample) {
 		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
+		}
+
+		if(!sampleAssignToActiveEntity(sample.getUuid())){
 			return false;
 		}
 

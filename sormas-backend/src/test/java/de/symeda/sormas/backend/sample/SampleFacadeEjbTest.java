@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -42,16 +43,23 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -80,6 +88,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class SampleFacadeEjbTest extends AbstractBeanTest {
@@ -830,6 +839,223 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		} catch (ValidationRuntimeException e) {
 			assertEquals(I18nProperties.getValidationError(Validations.noReportingUserWithUuid), e.getMessage());
 		}
+	}
+
+	@Test
+	public void testSamplesForActiveAndArchiveCases() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+		CaseDataDto cazeActive = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		CaseDataDto cazeArchive = creator.createCase(user.toReference(), person.toReference(), rdcf);
+
+		SampleDto sampleActive = creator.createSample(cazeActive.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sampleArchive = creator.createSample(cazeArchive.toReference(), user.toReference(), rdcf.facility);
+
+		getCaseFacade().archive(cazeArchive.getUuid(), null);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria = caseCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		List<CaseIndexDto> caseIndexDtos = getCaseFacade().getIndexList(caseCriteria, null, null, null);
+		assertEquals(1, caseIndexDtos.size());
+		assertEquals(cazeArchive.getUuid(), caseIndexDtos.get(0).getUuid());
+
+		SampleCriteria sampleCriteria = new SampleCriteria();
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(2, sampleIndexDtos.size());
+
+		sampleCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(1, sampleIndexDtos.size());
+		assertEquals(sampleActive.getUuid(), sampleIndexDtos.get(0).getUuid());
+
+		sampleCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(1, sampleIndexDtos.size());
+		assertEquals(sampleArchive.getUuid(), sampleIndexDtos.get(0).getUuid());
+	}
+
+	@Test
+	public void testSamplesForActiveAndArchiveContacts() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+
+		ContactDto contactActive = creator.createContact(user.toReference(), person.toReference());
+		ContactDto contactArchive = creator.createContact(user.toReference(), person.toReference());
+
+		SampleDto sampleActive = creator.createSample(contactActive.toReference(), user.toReference(), rdcf.facility, null);
+		SampleDto sampleArchive = creator.createSample(contactArchive.toReference(), user.toReference(), rdcf.facility, null);
+
+		getContactFacade().archive(contactArchive.getUuid(), null);
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria = contactCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		List<ContactIndexDto> contactIndexDtos = getContactFacade().getIndexList(contactCriteria, null, null, null);
+		assertEquals(1, contactIndexDtos.size());
+		assertEquals(contactArchive.getUuid(), contactIndexDtos.get(0).getUuid());
+
+		SampleCriteria sampleCriteria = new SampleCriteria();
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(2, sampleIndexDtos.size());
+
+		sampleCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(1, sampleIndexDtos.size());
+		assertEquals(sampleActive.getUuid(), sampleIndexDtos.get(0).getUuid());
+
+		sampleCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(1, sampleIndexDtos.size());
+		assertEquals(sampleArchive.getUuid(), sampleIndexDtos.get(0).getUuid());
+	}
+
+	@Test
+	public void testSamplesForActiveAndArchiveEventParticipant() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDtoActive = creator.createEventParticipant(eventDto.toReference(), person, user.toReference());
+		EventParticipantDto eventParticipantDtoArchive = creator.createEventParticipant(eventDto.toReference(), person, user.toReference());
+
+		SampleDto sampleActive = creator.createSample(eventParticipantDtoActive.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sampleArchive = creator.createSample(eventParticipantDtoArchive.toReference(), user.toReference(), rdcf.facility);
+
+		getEventParticipantFacade().archive(eventParticipantDtoArchive.getUuid(), null);
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(eventDto.toReference());
+		eventParticipantCriteria = eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		List<EventParticipantIndexDto> eventParticipantIndexDtos =
+			getEventParticipantFacade().getIndexList(eventParticipantCriteria, null, null, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipantDtoArchive.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		SampleCriteria sampleCriteria = new SampleCriteria();
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(2, sampleIndexDtos.size());
+
+		sampleCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(1, sampleIndexDtos.size());
+		assertEquals(sampleActive.getUuid(), sampleIndexDtos.get(0).getUuid());
+
+		sampleCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(1, sampleIndexDtos.size());
+		assertEquals(sampleArchive.getUuid(), sampleIndexDtos.get(0).getUuid());
+	}
+
+	@Test
+	public void testSampleForActiveCaseAndArchiveContact() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+
+		CaseDataDto cazeActive = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		ContactDto contactArchive = creator.createContact(user.toReference(), person.toReference());
+
+		SampleDto sampleCaseActive = creator.createSample(cazeActive.toReference(), user.toReference(), rdcf.facility);
+
+		SampleDto sampleContactArchive = creator.createSample(contactArchive.toReference(), user.toReference(), rdcf.facility, null);
+
+		SampleDto sampleCaseAndContact = creator.createSample(contactArchive.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setAssociatedCase(cazeActive.toReference());
+		});
+
+		getContactFacade().archive(contactArchive.getUuid(), null);
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria = contactCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		List<ContactIndexDto> contactIndexDtos = getContactFacade().getIndexList(contactCriteria, null, null, null);
+		assertEquals(1, contactIndexDtos.size());
+		assertEquals(contactArchive.getUuid(), contactIndexDtos.get(0).getUuid());
+
+		SampleCriteria sampleCriteria = new SampleCriteria();
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(3, sampleIndexDtos.size());
+
+		sampleCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(2, sampleIndexDtos.size());
+		List<String> uuids = sampleIndexDtos.stream().map(s -> s.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(sampleCaseActive.getUuid()));
+		assertTrue(uuids.contains(sampleCaseAndContact.getUuid()));
+
+		sampleCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		sampleIndexDtos = getSampleFacade().getIndexList(sampleCriteria, null, null, null);
+		assertEquals(1, sampleIndexDtos.size());
+		assertEquals(sampleContactArchive.getUuid(), sampleIndexDtos.get(0).getUuid());
+	}
+
+	@Test
+	public void testIsEditAllowedSampleWithActiveEntity() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), person, user.toReference());
+
+		SampleDto sampleCase = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sampleContact = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
+		SampleDto sampleEventParticipant = creator.createSample(eventParticipantDto.toReference(), user.toReference(), rdcf.facility);
+
+		Boolean editable = getSampleFacade().isEditAllowed(sampleCase.getUuid());
+		assertTrue(editable);
+		editable = getSampleFacade().isEditAllowed(sampleContact.getUuid());
+		assertTrue(editable);
+		editable = getSampleFacade().isEditAllowed(sampleEventParticipant.getUuid());
+		assertTrue(editable);
+	}
+
+	@Test
+	public void testIsEditAllowedSampleWithInactiveEntity() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), person, user.toReference());
+
+		SampleDto sampleCase = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sampleContact = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
+		SampleDto sampleEventParticipant = creator.createSample(eventParticipantDto.toReference(), user.toReference(), rdcf.facility);
+
+		getCaseFacade().archive(caze.getUuid(), null);
+		getContactFacade().archive(contact.getUuid(), null);
+		getEventParticipantFacade().archive(eventParticipantDto.getUuid(), null);
+
+		Boolean editable = getSampleFacade().isEditAllowed(sampleCase.getUuid());
+		assertFalse(editable);
+		editable = getSampleFacade().isEditAllowed(sampleContact.getUuid());
+		assertFalse(editable);
+		editable = getSampleFacade().isEditAllowed(sampleEventParticipant.getUuid());
+		assertFalse(editable);
+	}
+
+	@Test
+	public void testIsEditAllowedSampleWithActiveAndInactiveEntity() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+
+		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setAssociatedCase(caze.toReference());
+		});
+
+		getContactFacade().archive(contact.getUuid(), null);
+
+		Boolean editable = getSampleFacade().isEditAllowed(sample.getUuid());
+		assertTrue(editable);
 	}
 
 }
