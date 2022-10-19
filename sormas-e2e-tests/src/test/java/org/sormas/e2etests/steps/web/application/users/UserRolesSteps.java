@@ -26,12 +26,13 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.CANNOT_D
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_USER_ROLE_BUTTON;
-import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_DISABLED_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_DISABLED_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER_ROLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_MANAGEMENT_TAB;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_DISABLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_ENABLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_LIST;
@@ -85,9 +86,13 @@ public class UserRolesSteps implements En {
             case "Archive cases":
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(ARCHIVE_CASES_CHECKBOX);
               webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CASES_CHECKBOX);
+              webDriverHelpers.scrollToElement(ARCHIVE_CASES_CHECKBOX);
+              break;
             case "Archive contacts":
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(ARCHIVE_CONTACTS_CHECKBOX);
               webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CONTACTS_CHECKBOX);
+              webDriverHelpers.scrollToElement(ARCHIVE_CONTACTS_CHECKBOX);
+              break;
           }
         });
 
@@ -159,10 +164,11 @@ public class UserRolesSteps implements En {
         });
 
     And(
-        "I search for {string} user role",
+        "I filter user roles by {string}",
         (String disableEnableSearch) -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ENABLED_DISABLED_SEARCH_INPUT);
-          webDriverHelpers.fillInWebElement(ENABLED_DISABLED_SEARCH_INPUT, disableEnableSearch);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ENABLED_DISABLED_SEARCH_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(
+              ENABLED_DISABLED_SEARCH_COMBOBOX, disableEnableSearch);
         });
 
     And(
@@ -191,6 +197,13 @@ public class UserRolesSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(
               CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON);
+        });
+
+    And(
+        "^I filter user roles by \"([^\"]*)\" user rights$",
+        (String userRight) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_RIGHTS_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(USER_RIGHTS_COMBOBOX, userRight);
         });
   }
 }

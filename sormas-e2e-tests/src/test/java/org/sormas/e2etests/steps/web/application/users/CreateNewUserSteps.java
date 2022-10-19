@@ -565,6 +565,25 @@ public class CreateNewUserSteps implements En {
               userRole + " user role is available!");
           softly.assertAll();
         });
+
+    And(
+        "^I create new \"([^\"]*)\" with english language for test$",
+        (String role) -> {
+          user = userService.buildGeneratedUserWithRole(role);
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+          selectUserRole(role);
+          userName = user.getUserName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          userPass = webDriverHelpers.getTextFromWebElement(PASSWORD_FIELD);
+          closeNewPasswordPopUp();
+        });
   }
 
   private void fillFirstName(String firstName) {

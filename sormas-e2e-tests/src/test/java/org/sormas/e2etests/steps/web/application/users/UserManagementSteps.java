@@ -217,15 +217,6 @@ public class UserManagementSteps implements En {
         (String userRole) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_ROLES_COMBOBOX);
           webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, userRole);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
-        });
-
-    And(
-        "^I check that number of users displayed in User Directory is (\\d+)$",
-        (String expectedNumber) -> {
-          softly.assertEquals(numberOfUsers, expectedNumber, "Number of users is not equal");
-          softly.assertAll();
         });
   }
 

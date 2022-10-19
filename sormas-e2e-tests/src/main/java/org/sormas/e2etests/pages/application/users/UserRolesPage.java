@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class UserRolesPage {
   public static By USER_RIGHTS_INPUT = By.cssSelector("#userRights input");
+  public static By USER_RIGHTS_COMBOBOX = By.cssSelector("#userRights div");
   public static By NEW_USER_ROLE_BUTTON = By.cssSelector("div #userRoleNewUserRole");
   public static By USER_ROLE_TEMPLATE_COMBOBOX =
       By.cssSelector(".popupContent #templateUserRole div");
@@ -40,7 +41,6 @@ public class UserRolesPage {
   public static By USER_MANAGEMENT_TAB = By.cssSelector("div#tab-user-users");
   public static By USER_ROLE_DISABLE_BUTTON = By.cssSelector("#actionDisable");
   public static By USER_ROLE_ENABLE_BUTTON = By.cssSelector("#actionEnable");
-  public static By ENABLED_DISABLED_SEARCH_INPUT = By.cssSelector("#enabled input");
   public static By ENABLED_DISABLED_SEARCH_COMBOBOX = By.cssSelector("#enabled div");
   public static By DELETE_USER_ROLE_BUTTON = By.cssSelector("#delete");
   public static By DELETE_CONFIRMATION_BUTTON = By.cssSelector(".popupContent #actionConfirm");
