@@ -1938,7 +1938,8 @@ public class EditCaseSteps implements En {
 
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
-              "Automated test dummy description",
+              "Automated test dummy description "
+                  + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-M-dd")),
               "Point of entry details are not correct");
 
           softly.assertAll();
