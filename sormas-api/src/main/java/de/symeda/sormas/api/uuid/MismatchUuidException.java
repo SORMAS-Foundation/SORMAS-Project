@@ -23,10 +23,10 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 public class MismatchUuidException extends ValidationRuntimeException {
 	public MismatchUuidException(String entityUuid, Class entityClass, String dtoUuid) {
 		super(
-				String.format(
-						"%s dto UUID (%s) does not match entity UUID (%s)",
-						entityClass.getSimpleName(),
-						dtoUuid,
-						entityUuid));
+			String.format(
+				"%s dto UUID (%s) does not match entity UUID (%s)",
+				entityClass.getSimpleName(),
+				dtoUuid,
+				entityUuid));
 	}
 }
