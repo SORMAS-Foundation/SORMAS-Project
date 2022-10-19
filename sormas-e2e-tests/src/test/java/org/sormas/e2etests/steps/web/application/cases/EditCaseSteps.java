@@ -1956,7 +1956,7 @@ public class EditCaseSteps implements En {
         "I check if editable fields are read only for an archived case",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          TimeUnit.SECONDS.sleep(15);
+          TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(BACK_TO_CASES_LIST_BUTTON);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(INVESTIGATION_STATUS_OPTIONS),
@@ -2471,12 +2471,15 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(
               SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
         });
+    When(
+        "I click to hand over the ownership of the case in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
 
     When(
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          // Workaround before SORQA-565 will be fixed
+          // TODO Workaround before SORQA-565 will be fixed
           webDriverHelpers.refreshCurrentPage();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
