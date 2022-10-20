@@ -72,7 +72,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@Override
 	public DTO getByUuid(String uuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(service.getByUuid(uuid), pseudonymizer);
+		return convertToDto(service.getByUuid(uuid, true), pseudonymizer);
 	}
 
 	@Override

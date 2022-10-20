@@ -98,6 +98,38 @@ public class ContactApiService {
         .build();
   }
 
+  public Contact buildGeneratedContactWithParamRegionAndDistrictLinkedToPreviousCreatedCase(
+      Person person, Case caze, String region, String district) {
+    environmentManager = new EnvironmentManager(restAssuredClient);
+    return Contact.builder()
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .uuid(UUID.randomUUID().toString())
+        .reportDateTime(new Date())
+        .reportingUser(
+            ReportingUser.builder()
+                .uuid(
+                    runningConfiguration
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
+                .build())
+        .district(District.builder().uuid(environmentManager.getDistrictUUID(district)).build())
+        .region(Region.builder().uuid(environmentManager.getRegionUUID(region)).build())
+        .relationToCase("")
+        .contactClassification("UNCONFIRMED")
+        .followUpStatus("FOLLOW_UP")
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
+        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
+        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+        .relationToCase("SAME_HOUSEHOLD")
+        .caze(Case.builder().uuid(caze.getUuid()).build())
+        .build();
+  }
+
   public Contact buildGeneratedContactWithLinkedCase(Person person, Case caze) {
     environmentManager = new EnvironmentManager(restAssuredClient);
     return Contact.builder()

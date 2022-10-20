@@ -1196,9 +1196,234 @@ Feature: Contacts end to end tests
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
 
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a contact in source system with handing ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created contact via the url
+    Then I click on share contact button
+    And I click to hand over the ownership of the contact in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    Then I accept first contact in Shares Page
+    And I click to accept potential duplicate in Shares Page
+    Then I navigate to "s2s_1" environment
+    And I click on the Contacts button from navbar
+    Then I apply Id of last api created Contact on Contact Directory Page
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I click on the APPLY FILTERS button
+    Then I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I click checkbox to choose all Contact results on Contact Directory Page
+    And I click on Bulk Actions combobox on Contact Directory Page
+    Then I click on Delete button from Bulk Actions Combobox in Contact Directory
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_2" environment
+    And I click on the Contacts button from navbar
+    And I search after last created contact via API by UUID and open
+
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a contact in target system with handing ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created contact via the url
+    Then I click on share contact button
+    And I click to hand over the ownership of the contact in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    Then I accept first contact in Shares Page
+    And I click to accept potential duplicate in Shares Page
+    And I click on the Contacts button from navbar
+    And I search after last created contact via API by UUID and open
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_1" environment
+    And I click on the Contacts button from navbar
+    Then I apply Id of last api created Contact on Contact Directory Page
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I click on the APPLY FILTERS button
+    And I open the first contact from contacts list
+    And I check if editable fields are read only for shared contact
+
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a contact in source system without handing ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created contact via the url
+    Then I click on share contact button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    Then I accept first contact in Shares Page
+    And I click to accept potential duplicate in Shares Page
+    And I navigate to "s2s_1" environment
+    And I click on the Contacts button from navbar
+    And I search after last created contact via API by UUID and open
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_2" environment
+    And I click on the Contacts button from navbar
+    Then I apply Id of last api created Contact on Contact Directory Page
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I click on the APPLY FILTERS button
+    And I open the first contact from contacts list
+    And I check if editable fields are read only for shared contact
+
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a contact in target system without handing ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created contact via the url
+    Then I click on share contact button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    Then I accept first contact in Shares Page
+    And I click to accept potential duplicate in Shares Page
+    And I click on the Contacts button from navbar
+    Then I apply Id of last api created Contact on Contact Directory Page
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I click on the APPLY FILTERS button
+    Then I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I click checkbox to choose all Contact results on Contact Directory Page
+    And I click on Bulk Actions combobox on Contact Directory Page
+    Then I click on Delete button from Bulk Actions Combobox in Contact Directory
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_1" environment
+    And I click on the Contacts button from navbar
+    And I search after last created contact via API by UUID and open
+
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a contact in source system with handing ownership before acceptance
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created contact via the url
+    Then I click on share contact button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the contact in Share popup
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    Then I accept first contact in Shares Page
+    And I click to accept potential duplicate in Shares Page
+
   @tmsLink=SORDEV-12446 @env_s2s_1
   Scenario: Hide share action in bulk mode for contacts
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I click on the Contacts button from navbar
     And I click on the More button on Contact directory page
     And I click Enter Bulk Edit Mode on Contact directory page

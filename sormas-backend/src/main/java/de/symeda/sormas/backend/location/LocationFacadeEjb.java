@@ -43,8 +43,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class LocationFacadeEjb implements LocationFacade {
 
 	@EJB
-	private LocationService locationService;
-	@EJB
 	private ContinentService continentService;
 	@EJB
 	private SubcontinentService subcontinentService;
@@ -59,13 +57,12 @@ public class LocationFacadeEjb implements LocationFacade {
 	@EJB
 	private FacilityService facilityService;
 
-	public Location fromDto(LocationDto source, boolean checkChangeDate) {
-
+	public Location fillOrBuildEntity(LocationDto source, Location target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		Location target = DtoHelper.fillOrBuildEntity(source, locationService.getByUuid(source.getUuid()), Location::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Location::new, checkChangeDate);
 
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());

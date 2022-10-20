@@ -170,6 +170,14 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		super(Contact.class);
 	}
 
+
+	@Override
+	protected void fetchReferences(From<?, Contact> from) {
+
+		from.fetch(Contact.HEALTH_CONDITIONS);
+		from.fetch(Contact.EPI_DATA);
+	}
+
 	public List<Contact> findBy(ContactCriteria contactCriteria, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

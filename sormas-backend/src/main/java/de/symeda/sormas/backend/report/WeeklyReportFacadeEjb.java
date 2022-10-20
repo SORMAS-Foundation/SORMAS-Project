@@ -137,7 +137,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return null;
 		}
 
-		WeeklyReport report = fromDto(dto, true);
+		WeeklyReport existingWeeklyReport = weeklyReportService.getByUuid(dto.getUuid());
+		WeeklyReport report = fillOrBuildEntity(dto, existingWeeklyReport, true);
 		weeklyReportService.ensurePersisted(report);
 		return toDto(report);
 	}
@@ -261,10 +262,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		return toDto(weeklyReportService.getByEpiWeekAndUser(epiWeek, user));
 	}
 
-	public WeeklyReport fromDto(@NotNull WeeklyReportDto source, boolean checkChangeDate) {
-
-		WeeklyReport target =
-			DtoHelper.fillOrBuildEntity(source, weeklyReportService.getByUuid(source.getUuid()), WeeklyReport::new, checkChangeDate);
+	public WeeklyReport fillOrBuildEntity(@NotNull WeeklyReportDto source, WeeklyReport target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, WeeklyReport::new, checkChangeDate);
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());

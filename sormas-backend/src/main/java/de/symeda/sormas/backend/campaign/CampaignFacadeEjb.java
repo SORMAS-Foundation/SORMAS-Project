@@ -170,7 +170,8 @@ public class CampaignFacadeEjb
 	@RightsAllowed(UserRight._CAMPAIGN_EDIT)
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
-		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
+		Campaign existingCampaign = service.getByUuid(dto.getUuid());
+		Campaign campaign = fillOrBuildEntity(dto, existingCampaign, true);
 		if (!service.isEditAllowed(campaign)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}

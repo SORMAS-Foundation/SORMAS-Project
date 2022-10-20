@@ -113,6 +113,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 
 import com.github.javafaker.Faker;
@@ -1103,10 +1104,6 @@ public class CreateNewCaseSteps implements En {
           fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
           fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
           fillPlaceDescription(caze.getPlaceDescription());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
     When(
@@ -1316,6 +1313,9 @@ public class CreateNewCaseSteps implements En {
               "UUIDs are not equal");
           softly.assertAll();
         });
+    When(
+        "I accept first case in Shares Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {

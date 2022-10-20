@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -42,6 +43,7 @@ import com.google.common.base.CharMatcher;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
@@ -105,6 +107,19 @@ public final class DataHelper {
 		}
 
 		return equal;
+	}
+
+	/**
+	 * Compare content of collections, ignoring the order
+	 */
+	public static boolean equalContains(Collection a, Collection b) {
+		if (equal(a, b)) {
+			return true;
+		}
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.size() == b.size() && a.containsAll(b);
 	}
 
 	/**
@@ -187,6 +202,7 @@ public final class DataHelper {
 		return uuid.substring(0, 6).toUpperCase();
 	}
 
+	@AuditedClass(includeAllFields = true)
 	public static class Pair<K, V> implements Serializable {
 
 		private static final long serialVersionUID = 7135988167451005820L;

@@ -142,10 +142,10 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public UserRoleDto saveUserRole(@Valid UserRoleDto dto) {
-
 		validate(dto);
 
-		UserRole entity = fromDto(dto, true);
+		UserRole existingUserRole = userRoleService.getByUuid(dto.getUuid());
+		UserRole entity = fillOrBuildEntity(dto, existingUserRole, true);
 
 		userRoleService.ensurePersisted(entity);
 
@@ -223,13 +223,12 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		return false;
 	}
 
-	public UserRole fromDto(UserRoleDto source, boolean checkChangeDate) {
-
+	public UserRole fillOrBuildEntity(UserRoleDto source, UserRole target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		UserRole target = DtoHelper.fillOrBuildEntity(source, userRoleService.getByUuid(source.getUuid()), UserRole::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, UserRole::new, checkChangeDate);
 
 		Set<UserRight> userRights = Optional.of(target).map(UserRole::getUserRights).orElseGet(HashSet::new);
 		target.setUserRights(userRights);

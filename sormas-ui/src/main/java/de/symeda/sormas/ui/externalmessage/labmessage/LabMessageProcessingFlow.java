@@ -189,7 +189,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	@Override
 	protected void handlePickOrCreateEvent(ExternalMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback) {
 		EventSelectionField eventSelect =
-			new EventSelectionField(labMessage.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
+			new EventSelectionField(labMessage.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		Window window = VaadinUiUtil.createPopupWindow();

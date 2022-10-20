@@ -759,24 +759,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 
 		Predicate filter = null;
 
-		if (!StringUtils.isBlank(criteria.getFirstName()) && !StringUtils.isBlank(criteria.getLastName())) {
-			Expression<String> nameExpr = cb.concat(personFrom.get(Person.FIRST_NAME), " ");
-			nameExpr = cb.concat(nameExpr, personFrom.get(Person.LAST_NAME));
-
-			String name = criteria.getFirstName() + " " + criteria.getLastName();
-
-			filter = and(cb, filter, cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, nameExpr, cb.literal(name))));
-		} else if (!StringUtils.isBlank(criteria.getFirstName())) {
-			filter = and(
-				cb,
-				filter,
-				cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.FIRST_NAME), cb.literal(criteria.getFirstName()))));
-		} else if (!StringUtils.isBlank(criteria.getLastName())) {
-			filter = and(
-				cb,
-				filter,
-				cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.LAST_NAME), cb.literal(criteria.getLastName()))));
-		}
+		Boolean matchMissingInfo = criteria.getMatchMissingInfo();
 
 		if (criteria.getSex() != null) {
 			Expression<Sex> sexExpr = cb.literal(criteria.getSex());
@@ -790,47 +773,47 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 		}
 
 		if (criteria.getBirthdateYYYY() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.or(
-					cb.isNull(personFrom.get(Person.BIRTHDATE_YYYY)),
-					cb.equal(personFrom.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY())));
+			final Predicate yearEquals = cb.equal(personFrom.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY());
+			filter = and(cb, filter, matchMissingInfo ? yearEquals : cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_YYYY)), yearEquals));
 		}
 		if (criteria.getBirthdateMM() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_MM)), cb.equal(personFrom.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM())));
+			final Predicate monthEquals = cb.equal(personFrom.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM());
+			filter = and(cb, filter, matchMissingInfo ? monthEquals : cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_MM)), monthEquals));
 		}
 		if (criteria.getBirthdateDD() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
+			final Predicate dayEquals = cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD());
+			filter = and(cb, filter, matchMissingInfo ? dayEquals : cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), dayEquals));
 		}
 		if (!StringUtils.isBlank(criteria.getNationalHealthId())) {
-			filter = and(
-				cb,
-				filter,
-				cb.or(
-					cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)),
-					cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId())));
+			final Predicate nationalEqual = cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId());
+			filter = and(cb, filter, matchMissingInfo ? nationalEqual : cb.or(cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)), nationalEqual));
 		}
 		if (!StringUtils.isBlank(criteria.getPassportNumber())) {
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));
 		}
 
-		String uuidExternalIdExternalTokenLike = criteria.getUuidExternalIdExternalTokenLike();
+		String uuidExternalIdExternalTokenLike = criteria.getNameUuidExternalIdExternalTokenLike();
 		if (!StringUtils.isBlank(uuidExternalIdExternalTokenLike)) {
-			Predicate uuidExternalIdExternalTokenFilter = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
-				cb,
-				uuidExternalIdExternalTokenLike,
-				(searchTerm) -> cb.or(
-					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), searchTerm),
-					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), searchTerm),
-					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), searchTerm)));
-			filter = CriteriaBuilderHelper.or(cb, filter, uuidExternalIdExternalTokenFilter);
+
+			String[] textFilters = uuidExternalIdExternalTokenLike.split("\\s+");
+
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
+				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.LAST_NAME), textFilter),
+					cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.FIRST_NAME), cb.literal(textFilter))),
+					cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.LAST_NAME), cb.literal(textFilter))),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.INTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), textFilter));
+
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			}
 		}
 
 		return filter;

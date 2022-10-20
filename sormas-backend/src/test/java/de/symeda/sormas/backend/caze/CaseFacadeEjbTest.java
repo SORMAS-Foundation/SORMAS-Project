@@ -1723,8 +1723,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		otherCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
 		final ArrayList<ActivityAsCaseDto> otherActivitiesAsCase = new ArrayList<>();
-		ActivityAsCaseDto activityAsCaseDto = new ActivityAsCaseDto();
-		activityAsCaseDto.setActivityAsCaseType(ActivityAsCaseType.GATHERING);
+		ActivityAsCaseDto activityAsCaseDto = ActivityAsCaseDto.build(ActivityAsCaseType.GATHERING);
 		otherActivitiesAsCase.add(activityAsCaseDto);
 		otherCase.getEpiData().setActivitiesAsCase(otherActivitiesAsCase);
 
@@ -2049,8 +2048,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		aCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
 		final ArrayList<ActivityAsCaseDto> otherActivitiesAsCase = new ArrayList<>();
-		ActivityAsCaseDto activityAsCaseDto = new ActivityAsCaseDto();
-		activityAsCaseDto.setActivityAsCaseType(ActivityAsCaseType.GATHERING);
+		ActivityAsCaseDto activityAsCaseDto = ActivityAsCaseDto.build(ActivityAsCaseType.GATHERING);
 		otherActivitiesAsCase.add(activityAsCaseDto);
 		aCase.getEpiData().setActivitiesAsCase(otherActivitiesAsCase);
 
@@ -2480,27 +2478,20 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCreateCaseWithoutUuid() {
 		RDCF rdcf = creator.createRDCF();
-		CaseDataDto caze = new CaseDataDto();
+		PersonReferenceDto person = creator.createPerson().toReference();
+		CaseDataDto caze = CaseDataDto.build(person, Disease.CORONAVIRUS);
 
 		caze.setReportDate(new Date());
 		caze.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		caze.setCaseClassification(CaseClassification.PROBABLE);
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
-		caze.setDisease(Disease.CORONAVIRUS);
-		caze.setPerson(creator.createPerson().toReference());
 		caze.setResponsibleRegion(rdcf.region);
 		caze.setResponsibleDistrict(rdcf.district);
 		caze.setFacilityType(FacilityType.HOSPITAL);
 		caze.setHealthFacility(rdcf.facility);
 
-		caze.setTherapy(new TherapyDto());
-		caze.setSymptoms(new SymptomsDto());
-		caze.setHealthConditions(new HealthConditionsDto());
-		EpiDataDto epiData = new EpiDataDto();
-		ExposureDto exposure = new ExposureDto();
-		exposure.setExposureType(ExposureType.WORK);
-		epiData.setExposures(Collections.singletonList(exposure));
-		caze.setEpiData(epiData);
+		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
+		caze.getEpiData().setExposures(Collections.singletonList(exposure));
 
 		CaseDataDto savedCaze = getCaseFacade().save(caze);
 
@@ -2560,10 +2551,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze1.setFacilityType(facilityType);
 		caze1.setHealthFacility(rdcf.facility);
 		caze1.setTherapy(new TherapyDto());
-		caze1.setSymptoms(new SymptomsDto());
-		EpiDataDto epiData = new EpiDataDto();
-		ExposureDto exposure = new ExposureDto();
-		exposure.setExposureType(ExposureType.WORK);
+		caze1.setSymptoms(SymptomsDto.build());
+		EpiDataDto epiData = EpiDataDto.build();
+		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
 		epiData.setExposures(Collections.singletonList(exposure));
 		caze1.setEpiData(epiData);
 

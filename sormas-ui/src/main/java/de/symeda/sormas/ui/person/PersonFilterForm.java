@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.person;
 
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
@@ -43,18 +42,8 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 
 	@Override
 	protected void addFields() {
-		final ComboBox birthDateYYYY = addField(getContent(), PersonCriteria.BIRTHDATE_YYYY, ComboBox.class);
-		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
-		birthDateYYYY.setWidth(140, Unit.PIXELS);
-		birthDateYYYY.addItems(DateHelper.getYearsToNow());
-		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
-		final ComboBox birthDateMM = addField(getContent(), PersonCriteria.BIRTHDATE_MM, ComboBox.class);
-		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
-		birthDateMM.setWidth(140, Unit.PIXELS);
-		birthDateMM.addItems(DateHelper.getMonthsInYear());
-		final ComboBox birthDateDD = addField(getContent(), PersonCriteria.BIRTHDATE_DD, ComboBox.class);
-		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
-		birthDateDD.setWidth(140, Unit.PIXELS);
+
+		addBirthDateFields(PersonCriteria.BIRTHDATE_YYYY, PersonCriteria.BIRTHDATE_MM, PersonCriteria.BIRTHDATE_DD);
 
 		final TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(

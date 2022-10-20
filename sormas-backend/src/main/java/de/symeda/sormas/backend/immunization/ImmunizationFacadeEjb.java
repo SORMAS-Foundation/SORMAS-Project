@@ -477,11 +477,8 @@ public class ImmunizationFacadeEjb
 		return fillOrBuildEntity(source, target, checkChangeDate, true);
 	}
 
-	protected Immunization fillOrBuildEntity(
-		@NotNull ImmunizationDto source,
-		Immunization target,
-		boolean checkChangeDate,
-		boolean includeVaccinations) {
+	protected Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target,
+		boolean checkChangeDate, boolean includeVaccinations) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
@@ -519,7 +516,8 @@ public class ImmunizationFacadeEjb
 		if (includeVaccinations) {
 			List<Vaccination> vaccinationEntities = new ArrayList<>();
 			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-				Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
+				Vaccination existingVaccination = vaccinationService.getByUuid(source.getUuid());
+				Vaccination vaccination = vaccinationFacade.fillOrBuildEntity(vaccinationDto, existingVaccination, checkChangeDate);
 				vaccination.setImmunization(target);
 				vaccinationEntities.add(vaccination);
 			}
@@ -697,18 +695,15 @@ public class ImmunizationFacadeEjb
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._PERSON_EDIT })
 	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson, List<VaccinationDto> leadPersonVaccinations) {
+		Immunization immunization = fillOrBuildEntity(immunizationDto, null, false, false);
+		immunization.setUuid(DataHelper.createUuid());
 
-		Immunization newImmunization = new Immunization();
-		newImmunization.setUuid(DataHelper.createUuid());
+		immunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
+		service.persist(immunization);
 
-		newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, false);
+		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, immunization, leadPersonVaccinations);
 
-		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
-		service.persist(newImmunization);
-
-		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinations);
-
-		service.ensurePersisted(newImmunization);
+		service.ensurePersisted(immunization);
 	}
 
 	@Override

@@ -435,6 +435,11 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	@Override
 	public ADO getByUuid(String uuid) {
 
+		return getByUuid(uuid, false);
+	}
+
+	public ADO getByUuid(String uuid, boolean fetchReferences) {
+
 		if (uuid == null) {
 			return null;
 		}
@@ -443,6 +448,9 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
+		if (fetchReferences) {
+			fetchReferences(from);
+		}
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
 
 		TypedQuery<ADO> q = em.createQuery(cq).setParameter(uuidParam, uuid);

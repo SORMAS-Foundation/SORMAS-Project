@@ -202,7 +202,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 			v.setVisitingPerson("John Smith");
 			v.setVisitRemarks("Test remarks");
 
-			SymptomsDto symptoms = new SymptomsDto();
+			SymptomsDto symptoms = SymptomsDto.build();
 			symptoms.setPatientIllLocation("Test ill location");
 			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
 			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic");

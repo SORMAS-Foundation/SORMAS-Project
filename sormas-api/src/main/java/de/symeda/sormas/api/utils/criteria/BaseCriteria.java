@@ -38,7 +38,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-@AuditedClass
+@AuditedClass(includeAllFields = true)
 public abstract class BaseCriteria implements Serializable {
 
 	public String toUrlParams() {

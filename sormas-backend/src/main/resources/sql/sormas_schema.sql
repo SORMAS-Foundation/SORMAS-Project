@@ -12176,4 +12176,10 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (495, 'S2S_case editable on two systems, behavior of jurisdiction level wrong if share is without ownership #10553');
 
+-- 2022-10-10 [DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733
+
+ALTER TABLE externalmessage RENAME COLUMN testeddisease to disease;
+ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (496, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.person;
 
 import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
@@ -164,6 +165,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.user.User;
@@ -211,6 +213,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private LocationService locationService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -1598,8 +1602,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
 
 		target = DtoHelper.fillOrBuildEntity(source, target, service::createPerson, checkChangeDate);
+
+		if (targetWasNull) {
+			target.getAddress().setUuid(source.getAddress().getUuid());
+		}
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
@@ -1628,13 +1637,15 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 
-		target.setAddress(locationFacade.fromDto(source.getAddress(), checkChangeDate));
+		target.setAddress(locationFacade.fillOrBuildEntity(source.getAddress(), target.getAddress(), checkChangeDate));
 		List<Location> locations = new ArrayList<>();
 		for (LocationDto locationDto : source.getAddresses()) {
-			Location location = locationFacade.fromDto(locationDto, checkChangeDate);
+			Location existingLocation = locationService.getByUuid(source.getUuid());
+			Location location = locationFacade.fillOrBuildEntity(locationDto, existingLocation, checkChangeDate);
 			locations.add(location);
 		}
-		if (!DataHelper.equal(target.getAddresses(), locations)) {
+		if (!DataHelper.equalContains(target.getAddresses(), locations)) {
+			// note: DataHelper.equal does not work here, because target.getAddresses may be a PersistentBag when using lazy loading
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.getAddresses().clear();

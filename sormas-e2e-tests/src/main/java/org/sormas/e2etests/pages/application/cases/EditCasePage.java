@@ -360,6 +360,8 @@ public class EditCasePage {
   public static final By SHARE_SORMAS_2_SORMAS_BUTTON = By.cssSelector("#sormasToSormasShare");
   public static final By SHARE_ORGANIZATION_POPUP_COMBOBOX =
       By.cssSelector(".popupContent #organization div");
+  public static final By HAND_THE_OWNERSHIP_CHECKBOX =
+      By.cssSelector(".popupContent #handOverOwnership label");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
       By.cssSelector(".popupContent #commit");
   public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
@@ -385,4 +387,11 @@ public class EditCasePage {
   public static By getEditTaskButtonByNumber(Integer number) {
     return By.cssSelector(String.format("#edit-task-%x", number));
   }
+  public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");
+  public static final By REASON_FOR_DELETION_DETAILS_TEXTAREA =
+      By.cssSelector(".popupContent textarea");
+  public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
+      By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
 }

@@ -22,6 +22,8 @@ import java.util.List;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -34,6 +36,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@AuditedClass
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
 public class ExternalMessageDto extends SormasToSormasShareableDto {
 
@@ -63,9 +66,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String REPORT_ID = "reportId";
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
-
+	@AuditInclude
 	private ExternalMessageType type;
-	private Disease testedDisease;
+	private Disease disease;
+	@AuditInclude
 	private Date messageDateTime;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -98,15 +102,16 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personEmail;
-
+	@AuditInclude
 	private List<SampleReportDto> sampleReports;
+	@AuditInclude
 	private CaseReferenceDto caze;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
-
+	@AuditInclude
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 
 	private UserReferenceDto assignee;
@@ -123,12 +128,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.type = type;
 	}
 
-	public Disease getTestedDisease() {
-		return testedDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setTestedDisease(Disease testedDisease) {
-		this.testedDisease = testedDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	public Date getMessageDateTime() {

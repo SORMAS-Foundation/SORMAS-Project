@@ -2442,7 +2442,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		Consumer<ExternalMessageDto> customConfig) {
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
-		labMessage.setTestedDisease(disease);
+		labMessage.setDisease(disease);
 		labMessage.setReportId(reportId);
 		labMessage.setStatus(status);
 

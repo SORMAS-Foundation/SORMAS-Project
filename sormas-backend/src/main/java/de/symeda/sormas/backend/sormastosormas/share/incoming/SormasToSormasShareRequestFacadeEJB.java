@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -70,12 +71,16 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	@EJB
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
+	@EJB
+	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
+
 	@Override
 	@RightsAllowed({
 		UserRight._SORMAS_TO_SORMAS_PROCESS,
 		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto) {
-		SormasToSormasShareRequest request = fromDto(dto, true);
+		SormasToSormasShareRequest existingSormasToSormasShareRequest = shareRequestService.getByUuid(dto.getUuid());
+		SormasToSormasShareRequest request = fillOrBuildEntity(dto, existingSormasToSormasShareRequest, true);
 
 		shareRequestService.ensurePersisted(request);
 
@@ -251,14 +256,14 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return toDetailsDto(request);
 	}
 
-	private SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
-
-		SormasToSormasShareRequest target =
-			DtoHelper.fillOrBuildEntity(source, shareRequestService.getByUuid(source.getUuid()), SormasToSormasShareRequest::new, checkChangeDate);
+	private SormasToSormasShareRequest fillOrBuildEntity(@NotNull SormasToSormasShareRequestDto source, SormasToSormasShareRequest target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, SormasToSormasShareRequest::new, checkChangeDate);
 
 		target.setDataType(source.getDataType());
 		target.setStatus(source.getStatus());
-		target.setOriginInfo(originInfoFacade.fromDto(source.getOriginInfo(), checkChangeDate));
+
+		// #10679: originInfo should be reference type
+		target.setOriginInfo(originInfoFacade.fillOrBuildEntity(source.getOriginInfo(), sormasToSormasOriginInfoService.getByUuid(source.getOriginInfo().getUuid()), checkChangeDate));
 		target.setCasesList(source.getCases());
 		target.setContactsList(source.getContacts());
 		target.setEventsList(source.getEvents());
