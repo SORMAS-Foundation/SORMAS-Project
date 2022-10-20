@@ -111,20 +111,26 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 		Document document = fromDto(dto, true);
 
-
+		String[] allowedFileExtensions = configFacade.getAllowedFileExtensions();
 
 		InputStream stream = new ByteArrayInputStream(content);
 		Detector detector = new DefaultDetector();
 		Metadata metadata = new Metadata();
-
 		MediaType mediaType = detector.detect(stream, metadata);
 
-		String[] allowedFileExtensions = configFacade.getAllowedFileExtensions();
-		boolean contains = Arrays.asList(allowedFileExtensions).contains(mediaType.getType());
+		boolean fileTypeAllowed = Arrays.asList(allowedFileExtensions).contains(mediaType.getSubtype());
+        if (!fileTypeAllowed) {
+			DocumentDto documentDto = new DocumentDto();
+			documentDto.setFileTypeNotAllowed(true);
+			return documentDto;
+        }
 
-
-
-
+		boolean contentAndExtensionMatch = dto.getMimeType().equals(mediaType.getBaseType().toString());
+		if (!contentAndExtensionMatch) {
+			DocumentDto documentDto = new DocumentDto();
+			documentDto.setFileContentAndExtensionsDoNotMatch(true);
+			return documentDto;
+        }
 
 		String storageReference = documentStorageService.save(document, content);
 		try {
@@ -256,10 +262,5 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@LocalBean
 	@Stateless
 	public static class DocumentFacadeEjbLocal extends DocumentFacadeEjb {
-	}
-
-	@LocalBean
-	@Stateless
-	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
 	}
 }

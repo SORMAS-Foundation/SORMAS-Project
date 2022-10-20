@@ -67,7 +67,11 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 							if (ok) {
 								FacadeProvider.getDocumentFacade().deleteDocument(existing);
 								try {
-									saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+									DocumentDto documentDto = saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+									boolean fileTypeOK = checkFileType(documentDto);
+									if (filesLeftInQueue == 0 && fileTypeOK) {
+										Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
+									}
 								} catch (Exception e) {
 									new Notification(
 										I18nProperties.getString(Strings.headingImportError),
@@ -75,9 +79,6 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 										Notification.Type.ERROR_MESSAGE,
 										false).show(Page.getCurrent());
 									throw new RuntimeException(e);
-								}
-								if (filesLeftInQueue == 0) {
-									Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
 								}
 							}
 							if (filesLeftInQueue == 0) {
@@ -96,7 +97,12 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 						ok -> {
 							if (ok) {
 								try {
-									saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+									DocumentDto documentDto = saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+									boolean fileTypeOK = checkFileType(documentDto);
+									if (filesLeftInQueue == 0 && fileTypeOK) {
+										Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
+
+									}
 								} catch (Exception e) {
 									new Notification(
 										I18nProperties.getString(Strings.headingImportError),
@@ -104,9 +110,6 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 										Notification.Type.ERROR_MESSAGE,
 										false).show(Page.getCurrent());
 									throw new RuntimeException(e);
-								}
-								if (filesLeftInQueue == 0) {
-									Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
 								}
 							}
 							if (filesLeftInQueue == 0) {
@@ -117,9 +120,9 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 						});
 				}
 			} else {
-				saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
-
-				if (filesLeftInQueue == 0) {
+				DocumentDto documentDto = saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+				boolean fileTypeOK = checkFileType(documentDto);
+				if (filesLeftInQueue == 0 && fileTypeOK) {
 					Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
 					if (callback != null) {
 						callback.run();
@@ -136,7 +139,26 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		}
 	}
 
-	private void saveDocument(
+	private static boolean checkFileType(DocumentDto documentDto) {
+		if(documentDto.getFileTypeNotAllowed()) {
+			new Notification(
+					I18nProperties.getString(Strings.headingImportError),
+					I18nProperties.getString(Strings.messageImportFileTypeNotAllowed),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			return false;
+		} else if(documentDto.getFileContentAndExtensionsDoNotMatch()){
+			new Notification(
+					I18nProperties.getString(Strings.headingImportError),
+					I18nProperties.getString(Strings.messageImportExtensionDoesNotMatchContent),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			return false;
+		}
+		return true;
+	}
+
+	private DocumentDto saveDocument(
 		String fileName,
 		String mimeType,
 		Long length,
@@ -147,7 +169,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
 		if (isFileSizeLimitExceeded(length, fileSizeLimitMb)) {
 			Notification.show(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
-			return;
+			return new DocumentDto();
 		}
 		DocumentDto document = DocumentDto.build();
 		document.setUploadingUser(Objects.requireNonNull(UserProvider.getCurrent()).getUserReference());
@@ -157,7 +179,6 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		document.setRelatedEntityType(relatedEntityType);
 		document.setRelatedEntityUuid(relatedEntityUuid);
 
-		FacadeProvider.getDocumentFacade().saveDocument(document, bytes);
+		return FacadeProvider.getDocumentFacade().saveDocument(document, bytes);
 	}
-
 }
