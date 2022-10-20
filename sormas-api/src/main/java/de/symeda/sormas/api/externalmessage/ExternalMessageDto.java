@@ -65,7 +65,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String ASSIGNEE = "assignee";
 
 	private ExternalMessageType type;
-	private Disease testedDisease;
+	private Disease disease;
 	private Date messageDateTime;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -123,12 +123,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.type = type;
 	}
 
-	public Disease getTestedDisease() {
-		return testedDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setTestedDisease(Disease testedDisease) {
-		this.testedDisease = testedDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	public Date getMessageDateTime() {

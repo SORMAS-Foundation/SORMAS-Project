@@ -53,6 +53,7 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -380,6 +381,9 @@ public class CaseDirectorySteps implements En {
         "I click first result in grid on Link to Event form",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID));
 
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Case Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_DELETE_BUTTON));
     When(
         "I filter by CaseID on Case directory page",
         () -> {
@@ -971,8 +975,16 @@ public class CaseDirectorySteps implements En {
         });
     And(
         "I apply {string} to combobox on Case Directory Page",
-        (String caseParameter) ->
-            webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter));
+        (String caseParameter) -> {
+          webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
+          TimeUnit.SECONDS.sleep(2);
+        });
+    And(
+        "I apply {string} to ownership combobox on Case Directory Page",
+        (String caseParameter) -> {
+          webDriverHelpers.selectFromCombobox(CASE_OWNERSHIP_FILTER_COMBOBOX, caseParameter);
+          TimeUnit.SECONDS.sleep(2);
+        });
 
     And(
         "I apply Month filter different than Person has on Case directory page",
