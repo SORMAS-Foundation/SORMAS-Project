@@ -394,9 +394,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		if (sampleTestsNeedPull) {
 			pathogenTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (additionalTestsNeedPull) {
-			additionalTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (DtoUserRightsHelper.isViewAllowed(AdditionalTestDto.class)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (additionalTestsNeedPull) {
+				additionalTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
 		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		if (contactsNeedPull) {

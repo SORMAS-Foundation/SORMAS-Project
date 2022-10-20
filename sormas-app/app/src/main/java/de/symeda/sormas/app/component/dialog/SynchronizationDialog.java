@@ -414,7 +414,9 @@ public class SynchronizationDialog extends AbstractDialog {
 		addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
 		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
 		addEntityIfViewAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
-		addEntityIfViewAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
+			addEntityIfViewAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
+		}
 		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
 		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities);
 		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
