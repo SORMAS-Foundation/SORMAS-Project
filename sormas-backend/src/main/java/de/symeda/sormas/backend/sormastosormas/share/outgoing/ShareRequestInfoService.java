@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -33,6 +34,7 @@ import javax.persistence.criteria.Root;
 import org.springframework.util.CollectionUtils;
 
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
@@ -72,9 +74,16 @@ public class ShareRequestInfoService extends AdoServiceWithUserFilter<ShareReque
 		Join<ShareRequestInfo, SormasToSormasShareInfo> shareRequestJoin = from.join(ShareRequestInfo.SHARES, JoinType.LEFT);
 		cq.select(from.get(ShareRequestInfo.UUID));
 		cq.groupBy(from.get(ShareRequestInfo.ID));
-		cq.having(cb.equal(cb.count(shareRequestJoin), 0));
 
-		return em.createQuery(cq).getResultList();
+		Predicate revokedStatus = cb.equal(from.get(ShareRequestInfo.REQUEST_STATUS), ShareRequestStatus.REVOKED);
+		List<String> revokedRequests = em.createQuery(cq.where(revokedStatus)).getResultList();
+		List<String> requestsWithoutJoins = em.createQuery(cq.having(cb.equal(cb.count(shareRequestJoin), 0))).getResultList();
+
+		List<String> allNonReferencedShareRequestInfo = new ArrayList<>();
+		allNonReferencedShareRequestInfo.addAll(revokedRequests);
+		allNonReferencedShareRequestInfo.addAll(requestsWithoutJoins);
+
+		return allNonReferencedShareRequestInfo;
 	}
 
 	public void executePermanentDeletion() {
