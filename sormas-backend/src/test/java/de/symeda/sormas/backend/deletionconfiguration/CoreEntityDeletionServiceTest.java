@@ -866,6 +866,9 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 
+		assertEquals(0, getCaseService().count());
+		assertEquals(0, getShareRequestInfoService().count());
+		assertEquals(0, getSormasToSormasShareInfoService().count());
 		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
@@ -895,6 +898,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		loginWith(user);
 
 		assertEquals(0, getCaseService().count());
+		assertEquals(0, getSormasToSormasShareRequestService().count());
 		assertEquals(0, getShareRequestInfoService().count());
 		assertEquals(0, getSormasToSormasShareInfoService().count());
 	}
