@@ -90,7 +90,7 @@ public class SampleReportFacadeEjb implements SampleReportFacade {
 		if (source.getTestReports() != null) {
 			List<TestReport> testReports = new ArrayList<>();
 			for (TestReportDto t : source.getTestReports()) {
-				TestReport testReport = testReportFacade.fromDto(t, target, false);
+				TestReport testReport = testReportFacade.fromDto(t, false);
 				testReports.add(testReport);
 			}
 			target.setTestReports(testReports);

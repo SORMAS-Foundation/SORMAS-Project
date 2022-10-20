@@ -81,7 +81,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setAssignee(assignee.toReference());
 		source.setType(ExternalMessageType.LAB_MESSAGE);
 
-		ExternalMessage result = sut.fromDto(source, null, true);
+		ExternalMessage result = sut.fillOrBuildEntity(source, null, true);
 
 		assertEquals(source.getSampleReports(), result.getSampleReports());
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());

@@ -115,11 +115,11 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testSave() {
-
 		ExternalMessageDto externalMessageDto = new ExternalMessageDto();
 		String testUuid = "Test UUID";
 		externalMessageDto.setUuid(testUuid);
 		ExternalMessage externalMessage = new ExternalMessage();
+		externalMessage.setUuid(testUuid);
 
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);
 		sut.save(externalMessageDto);
@@ -129,7 +129,6 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testGetByUuid() {
-
 		String testUuid = "test UUID";
 		ExternalMessage externalMessage = new ExternalMessage();
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.symptoms;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
@@ -28,17 +27,12 @@ import de.symeda.sormas.backend.util.DtoHelper;
 @Stateless(name = "SymptomsFacade")
 public class SymptomsFacadeEjb implements SymptomsFacade {
 
-	@EJB
-	private SymptomsService service;
-
-	public Symptoms fromDto(SymptomsDto source, boolean checkChangeDate) {
-
+	public Symptoms fillOrBuildEntity(SymptomsDto source, Symptoms target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		String uuid = source.getUuid();
-		Symptoms target = DtoHelper.fillOrBuildEntity(source, uuid != null ? service.getByUuid(uuid) : null, Symptoms::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Symptoms::new, checkChangeDate);
 
 		target.setAbdominalPain(source.getAbdominalPain());
 		target.setAlteredConsciousness(source.getAlteredConsciousness());

@@ -37,6 +37,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.JsonDataEntry;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
+import de.symeda.sormas.api.uuid.MismatchUuidException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public final class DtoHelper {
@@ -177,6 +178,7 @@ public final class DtoHelper {
 	}
 
 	// todo this really should return void. Taking a target/receiver argument and then return it anyways does not make sense
+	// NOT REALLY, TARGET CAN BE NULL -> WE WONT HAVE ACCESS TO IT IN THE METHOD AFTER CALLING fillOrBuildEntity
 	// FIXME(#6880)
 	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
 		if (target == null) {
@@ -188,6 +190,8 @@ public final class DtoHelper {
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
+		} else if(!target.getUuid().equals(source.getUuid())) {
+			throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
 		}
 
 		DtoHelper.validateDto(source, target, checkChangeDate);

@@ -41,11 +41,10 @@ public class SymptomsServiceTest extends AbstractBeanTest {
 			v.setVisitingPerson("John Smith");
 			v.setVisitRemarks("Test remarks");
 
-			SymptomsDto symptoms = new SymptomsDto();
+			SymptomsDto symptoms = v.getSymptoms();
 			symptoms.setPatientIllLocation("Test ill location");
 			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
 			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic");
-			v.setSymptoms(symptoms);
 		});
 
 		VisitDto visit1 = creator.createVisit(caze1.getDisease(), caze1.getPerson(), caze1.getReportDate());
@@ -59,11 +58,10 @@ public class SymptomsServiceTest extends AbstractBeanTest {
 			v.setVisitingPerson("Thomas");
 			v.setVisitRemarks("Test remarks");
 
-			SymptomsDto symptoms = new SymptomsDto();
+			SymptomsDto symptoms = v.getSymptoms();
 			symptoms.setPatientIllLocation("Test ill location");
 			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
 			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic");
-			v.setSymptoms(symptoms);
 		});
 
 		VisitDto visit2 = creator.createVisit(caze2.getDisease(), caze2.getPerson(), caze2.getReportDate());

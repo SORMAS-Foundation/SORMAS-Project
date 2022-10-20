@@ -71,7 +71,7 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getAllSystemEvents(), hasSize(2));
 
 		systemEventFacadeEjb.deleteAllDeletableSystemEvents(inBetween);
-		assertEquals(systemEventFacadeEjb.fromDto(systemEvent2, null, true), getAllSystemEvents().get(0));
+		assertEquals(systemEventFacadeEjb.fillOrBuildEntity(systemEvent2, null, true), getAllSystemEvents().get(0));
 
 		getSystemEventFacade().deleteAllDeletableSystemEvents(-1);
 		assertTrue(getAllSystemEvents().isEmpty());

@@ -235,7 +235,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		restorePseudonymizedDto(dto, existingSampleTest, existingSampleTestDto);
 
-		PathogenTest pathogenTest = fromDto(dto, checkChangeDate);
+		PathogenTest pathogenTest = fillOrBuildEntity(dto, existingSampleTest, checkChangeDate);
 		pathogenTestService.ensurePersisted(pathogenTest);
 
 		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
@@ -433,9 +433,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 	}
 
-	public PathogenTest fromDto(@NotNull PathogenTestDto source, boolean checkChangeDate) {
-		PathogenTest target =
-			DtoHelper.fillOrBuildEntity(source, pathogenTestService.getByUuid(source.getUuid()), PathogenTest::new, checkChangeDate);
+	public PathogenTest fillOrBuildEntity(@NotNull PathogenTestDto source, PathogenTest target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, PathogenTest::new, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());

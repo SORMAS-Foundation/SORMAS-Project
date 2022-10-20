@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static java.util.Objects.isNull;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,8 +48,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class EpiDataFacadeEjb implements EpiDataFacade {
 
 	@EJB
-	private EpiDataService service;
-	@EJB
 	private ExposureService exposureService;
 	@EJB
 	private ActivityAsCaseService activityAsCaseService;
@@ -58,13 +58,12 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	@EJB
 	private UserService userService;
 
-	public EpiData fromDto(EpiDataDto source, boolean checkChangeDate) {
-
+	public EpiData fillOrBuildEntity(EpiDataDto source, EpiData target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		EpiData target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), EpiData::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, EpiData::new, checkChangeDate);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
 		target.setActivityAsCaseDetailsKnown(source.getActivityAsCaseDetailsKnown());
@@ -75,11 +74,13 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 
 		List<Exposure> exposures = new ArrayList<>();
 		for (ExposureDto exposureDto : source.getExposures()) {
-			Exposure exposure = fromExposureDto(exposureDto, checkChangeDate);
+			Exposure exposure = exposureService.getByUuid(exposureDto.getUuid());
+			exposure = fillOrBuildExposureEntity(exposureDto, exposure, checkChangeDate);
 			exposure.setEpiData(target);
 			exposures.add(exposure);
 		}
-		if (!DataHelper.equal(target.getExposures(), exposures)) {
+		if (!DataHelper.equalContains(target.getExposures(), exposures)) {
+			// note: DataHelper.equal does not work here, because target.getAddresses may be a PersistentBag when using lazy loading
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.getExposures().clear();
@@ -87,11 +88,13 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 
 		List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
 		for (ActivityAsCaseDto activityAsCaseDto : source.getActivitiesAsCase()) {
-			ActivityAsCase activityAsCase = fromActivityAsCaseDto(activityAsCaseDto, checkChangeDate);
+			ActivityAsCase activityAsCase = activityAsCaseService.getByUuid(activityAsCaseDto.getUuid());
+			activityAsCase = fillOrBuildActivityAsCaseEntity(activityAsCaseDto, activityAsCase, checkChangeDate);
 			activityAsCase.setEpiData(target);
 			activitiesAsCase.add(activityAsCase);
 		}
-		if (!DataHelper.equal(target.getActivitiesAsCase(), activitiesAsCase)) {
+		if (!DataHelper.equalContains(target.getActivitiesAsCase(), activitiesAsCase)) {
+			// note: DataHelper.equal does not work here, because target.getAddresses may be a PersistentBag when using lazy loading
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.getActivitiesAsCase().clear();
@@ -100,13 +103,17 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		return target;
 	}
 
-	public Exposure fromExposureDto(ExposureDto source, boolean checkChangeDate) {
-
+	public Exposure fillOrBuildExposureEntity(ExposureDto source, Exposure target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
 		if (source == null) {
 			return null;
 		}
 
-		Exposure target = DtoHelper.fillOrBuildEntity(source, exposureService.getByUuid(source.getUuid()), Exposure::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Exposure::new, checkChangeDate);
+
+		if (targetWasNull) {
+			target.getLocation().setUuid(source.getLocation().getUuid());
+		}
 
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
@@ -132,7 +139,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHandlingAnimals(source.getHandlingAnimals());
 		target.setHandlingSamples(source.getHandlingSamples());
 		target.setIndoors(source.getIndoors());
-		target.setLocation(locationFacade.fromDto(source.getLocation(), checkChangeDate));
+		target.setLocation(locationFacade.fillOrBuildEntity(source.getLocation(), target.getLocation(), checkChangeDate));
 		target.setLongFaceToFaceContact(source.getLongFaceToFaceContact());
 		target.setOtherProtectiveMeasures(source.getOtherProtectiveMeasures());
 		target.setProtectiveMeasuresDetails(source.getProtectiveMeasuresDetails());
@@ -165,14 +172,17 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		return target;
 	}
 
-	public ActivityAsCase fromActivityAsCaseDto(ActivityAsCaseDto source, boolean checkChangeDate) {
-
+	public ActivityAsCase fillOrBuildActivityAsCaseEntity(ActivityAsCaseDto source, ActivityAsCase target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
 		if (source == null) {
 			return null;
 		}
 
-		ActivityAsCase target =
-			DtoHelper.fillOrBuildEntity(source, activityAsCaseService.getByUuid(source.getUuid()), ActivityAsCase::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, ActivityAsCase::new, checkChangeDate);
+
+		if (targetWasNull) {
+			target.getLocation().setUuid(source.getLocation().getUuid());
+		}
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setStartDate(source.getStartDate());
@@ -180,7 +190,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setDescription(source.getDescription());
 		target.setActivityAsCaseType(source.getActivityAsCaseType());
 		target.setActivityAsCaseTypeDetails(source.getActivityAsCaseTypeDetails());
-		target.setLocation(locationFacade.fromDto(source.getLocation(), checkChangeDate));
+		target.setLocation(locationFacade.fillOrBuildEntity(source.getLocation(), target.getLocation(), checkChangeDate));
 		target.setRole(source.getRole());
 
 		target.setTypeOfPlace(source.getTypeOfPlace());

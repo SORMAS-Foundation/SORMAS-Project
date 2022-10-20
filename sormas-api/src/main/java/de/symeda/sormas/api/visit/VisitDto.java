@@ -92,7 +92,7 @@ public class VisitDto extends PseudonymizableDto {
 		visit.setPerson(contactPerson);
 		visit.setDisease(disease);
 
-		SymptomsDto symptoms = new SymptomsDto();
+		SymptomsDto symptoms = SymptomsDto.build();
 		visit.setSymptoms(symptoms);
 
 		visit.setVisitDateTime(new Date());

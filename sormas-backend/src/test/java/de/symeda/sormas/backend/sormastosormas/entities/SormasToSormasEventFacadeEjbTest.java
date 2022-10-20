@@ -777,10 +777,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		event.setChangeDate(calendar.getTime());
 
-		LocationDto locationDto = new LocationDto();
+		LocationDto locationDto = event.getEventLocation();
 		locationDto.setRegion(rdcf.region);
 		locationDto.setDistrict(rdcf.district);
-		event.setEventLocation(locationDto);
 
 		getEventFacade().validate(event);
 
@@ -885,7 +884,10 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
 
 				// make sure that no entities are found
-				postBody.getEvents().get(0).getEntity().setUuid(uuid);
+				EventDto entity = postBody.getEvents().get(0).getEntity();
+				entity.setUuid(uuid);
+				entity.getEventLocation().setUuid(DataHelper.createUuid());
+
 				postBody.getEventParticipants().get(0).getEntity().setUuid(uuid);
 				postBody.getSamples().get(0).getEntity().setUuid(uuid);
 
