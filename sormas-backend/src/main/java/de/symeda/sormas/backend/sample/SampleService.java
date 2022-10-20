@@ -821,9 +821,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicateAssignedToActiveEntity(cb, joins));
+				filter = CriteriaBuilderHelper.and(cb, filter, assignedToActiveEntity(cb, joins));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicateAllAssignedEntitiesAreArchived(cb, joins));
+				filter = CriteriaBuilderHelper.and(cb, filter, allAssignedEntitiesAreArchived(cb, joins));
 			}
 		}
 		if (criteria.getDeleted() != null) {
@@ -901,7 +901,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return filter;
 	}
 
-	private boolean sampleAssignToActiveEntity(String sampleUuid) {
+	private boolean sampleAssignedToActiveEntity(String sampleUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
@@ -912,7 +912,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.select(cb.literal(true));
 
 		Predicate predicate =
-			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), cb.isFalse(from.get(Sample.DELETED)), predicateAssignedToActiveEntity(cb, joins));
+			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), cb.isFalse(from.get(Sample.DELETED)), assignedToActiveEntity(cb, joins));
 
 		cq.where(predicate);
 
@@ -921,7 +921,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return Boolean.TRUE.equals(exist);
 	}
 
-	private Predicate predicateAssignedToActiveEntity(CriteriaBuilder cb, SampleJoins joins) {
+	private Predicate assignedToActiveEntity(CriteriaBuilder cb, SampleJoins joins) {
 
 		return cb.or(
 			cb.isFalse(joins.getCaze().get(Case.ARCHIVED)),
@@ -929,7 +929,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			cb.isFalse(joins.getEventParticipant().get(EventParticipant.ARCHIVED)));
 	}
 
-	private Predicate predicateAllAssignedEntitiesAreArchived(CriteriaBuilder cb, SampleJoins joins) {
+	private Predicate allAssignedEntitiesAreArchived(CriteriaBuilder cb, SampleJoins joins) {
 
 		return cb.and(
 			cb.or(cb.isTrue(joins.getCaze().get(Case.ARCHIVED)), cb.isNull(joins.getCaze().get(Case.ARCHIVED))),
@@ -1136,7 +1136,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			return false;
 		}
 
-		if(!sampleAssignToActiveEntity(sample.getUuid())){
+		if(!sampleAssignedToActiveEntity(sample.getUuid())){
 			return false;
 		}
 
