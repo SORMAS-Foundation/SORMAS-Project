@@ -1,16 +1,20 @@
 package de.symeda.sormas.api.sormastosormas;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@AuditedClass
 public class SormasToSormasConfig implements Serializable {
 
 	private static final long serialVersionUID = -7981351672462016280L;
 
 	// We normally just send encrypted data DTOs between instances which already carry the org id of the sender, however,
-	// this does not work for GET request. Therefore we include a query parameter in this case. This variable cannot
+	// this does not work for GET request. Therefore, we include a query parameter in this case. This variable cannot
 	// resort in the REST client, as it needs to be shared between REST client and sormas-rest.
 	public static final String SENDER_SERVER_ID = "senderServerId";
 
@@ -18,11 +22,12 @@ public class SormasToSormasConfig implements Serializable {
 	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_ID = "sormas2sormas.ignoreProperty.externalId";
 	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN = "sormas2sormas.ignoreProperty.externalToken";
 	public static final String SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN = "sormas2sormas.ignoreProperty.internalToken";
-
+	@AuditInclude
 	private String id;
 	private String path;
 	private String keystoreName;
 	private String keystorePass;
+	@AuditInclude
 	private String rootCaAlias;
 	private String truststoreName;
 	private String truststorePass;
@@ -33,14 +38,14 @@ public class SormasToSormasConfig implements Serializable {
 		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, true);
 		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, true);
 	}
-
+	@AuditInclude
 	private String oidcServer;
+	@AuditInclude
 	private String oidcRealm;
 	private String oidcClientId;
 	private String oidcClientSecret;
-
 	private String keyPrefix;
-
+	@AuditInclude
 	private String districtExternalId;
 
 	public String getId() {
