@@ -1136,7 +1136,13 @@ public class CaseController {
 				} else {
 					deleteCase(caze, false, deleteDetails);
 				}
-			}, I18nProperties.getString(Strings.entityCase));
+			}, (deleteDetails) -> {
+				FacadeProvider.getContactFacade().undelete(caze.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
+			},
+				I18nProperties.getString(Strings.entityCase),
+				caze.getUuid(),
+				FacadeProvider.getCaseFacade());
 		}
 
 		// Initialize 'Archive' button

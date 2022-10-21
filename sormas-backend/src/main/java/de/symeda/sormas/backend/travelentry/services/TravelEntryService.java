@@ -30,7 +30,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -209,17 +208,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 			.forEach(document -> documentService.markAsDeleted(document));
 
 		super.deletePermanent(travelEntry);
-	}
-
-	public boolean isDeleted(String uuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<TravelEntry> from = cq.from(TravelEntry.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
 	}
 
 	public TravelEntry getLastTravelEntry() {

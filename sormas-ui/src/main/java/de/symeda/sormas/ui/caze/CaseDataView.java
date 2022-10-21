@@ -200,14 +200,17 @@ public class CaseDataView extends AbstractCaseView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
-		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid());
+		final EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid());
+		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(caze.getUuid());
 
 		if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID, deleted ? CommitDiscardWrapperComponent.DELETE_UNDELETE : "");
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		} else if (caseEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
-			layout.disable(true);
+			layout.disable(true, deleted ? CommitDiscardWrapperComponent.DELETE_UNDELETE : "");
+		} else if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		}
 	}
 }

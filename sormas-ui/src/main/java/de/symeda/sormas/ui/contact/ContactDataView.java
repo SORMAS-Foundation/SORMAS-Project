@@ -273,24 +273,16 @@ public class ContactDataView extends AbstractContactView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
-		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
+		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
 
-		boolean deleted = FacadeProvider.getContactFacade().isDeleted(contactDto.getUuid());
+		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(contactDto.getUuid());
 
 		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			if (deleted) {
-				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID, CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			} else {
-				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID, deleted ? CommitDiscardWrapperComponent.DELETE_UNDELETE : "");
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
-			if (deleted) {
-				layout.disable(true, CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			} else {
-				layout.disable(true);
-			}
+			layout.disable(true, deleted ? CommitDiscardWrapperComponent.DELETE_UNDELETE : "");
 		} else if (deleted) {
 			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		}

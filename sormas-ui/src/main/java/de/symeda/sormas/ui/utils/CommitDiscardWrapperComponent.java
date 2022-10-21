@@ -777,6 +777,26 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteWithDetailsListeners.add(listener);
 		}
 	}
+	
+	public void addDeleteWithReasonListener(
+		DeleteWithDetailsListener deleteListener,
+		DeleteWithDetailsListener undeleteListener,
+		String entityName,
+		String entityUuid,
+		CoreFacade coreFacade) {
+
+		final boolean deleted = coreFacade.isDeleted(entityUuid);
+
+		if (deleteWithDetailsListeners.isEmpty()) {
+			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, deleted), 0);
+		}
+
+		if (!deleted) {
+			deleteWithDetailsListeners.add(deleteListener);
+		} else {
+			deleteWithDetailsListeners.add(undeleteListener);
+		}
+	}
 
 	public void addDeleteWithReasonOrUndeleteListener(String viewName, String entityName, String entityUuid, CoreFacade coreFacade) {
 

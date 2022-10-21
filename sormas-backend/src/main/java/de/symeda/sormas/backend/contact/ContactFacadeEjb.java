@@ -1476,19 +1476,6 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public boolean isDeleted(String contactUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Contact> from = cq.from(Contact.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(Contact.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), contactUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
