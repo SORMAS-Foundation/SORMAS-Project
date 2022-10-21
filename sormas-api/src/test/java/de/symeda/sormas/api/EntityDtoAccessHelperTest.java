@@ -68,9 +68,8 @@ public class EntityDtoAccessHelperTest {
 		personDto.setBirthdateYYYY(1973);
 		personDto.setPhone("+49 681 1234");
 
-		LocationDto address = new LocationDto();
+		LocationDto address = personDto.getAddress();
 		address.setStreet("Elm Street");
-		personDto.setAddress(address);
 
 		referenceDtoResolver = new IReferenceDtoResolver() {
 
