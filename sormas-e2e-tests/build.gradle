@@ -137,7 +137,7 @@ task createAllureReport(type: Exec) {
 	workingDir "."
 	def isWindows = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")
 	if (isWindows) {
-		commandLine "cmd", "/c", "allure", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
+		commandLine "cmd", "/c", "allure.bat", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
 	} else {
 		commandLine "allure", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
 	}
