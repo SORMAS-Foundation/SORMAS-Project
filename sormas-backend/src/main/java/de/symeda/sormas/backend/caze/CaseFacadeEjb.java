@@ -3535,19 +3535,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public boolean isDeleted(String caseUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Case> from = cq.from(Case.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(Case.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), caseUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	@Override
 	@RightsAllowed(UserRight._CASE_MERGE)
 	public void mergeCase(String leadUuid, String otherUuid) {
 

@@ -1108,6 +1108,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		super.delete(caze, deletionDetails);
 	}
 
+	@Override
+	public void undelete(Case caze) {
+		// un-delete all samples that are only associated with this case
+		caze.getSamples()
+				.stream()
+				.forEach(sample -> sampleService.undelete(sample));
+		super.undelete(caze);
+	}
+
 	private void deleteCaseInExternalSurveillanceTool(Case caze) {
 		try {
 			caseFacade.deleteCaseInExternalSurveillanceTool(caze);

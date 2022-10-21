@@ -133,10 +133,6 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 	@Override
 	protected void setSubComponent(DirtyStateComponent newComponent) {
 		super.setSubComponent(newComponent);
-
-		if (FacadeProvider.getContactFacade().isDeleted(getReference().getUuid())) {
-			newComponent.setEnabled(false);
-		}
 	}
 
 	public ContactReferenceDto getContactRef() {

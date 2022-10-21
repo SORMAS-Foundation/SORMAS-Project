@@ -120,6 +120,7 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
+	String actionUnDelete = "actionUnDelete";
 	String actionYes = "actionYes";
 	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";

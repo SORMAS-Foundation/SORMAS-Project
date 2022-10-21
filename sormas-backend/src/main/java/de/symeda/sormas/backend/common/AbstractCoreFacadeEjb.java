@@ -140,8 +140,18 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		service.delete(ado, deletionDetails);
 	}
 
+	@DenyAll
+	public void undelete(String uuid) {
+		ADO ado = service.getByUuid(uuid);
+		service.undelete(ado);
+	}
+
 	public boolean isArchived(String uuid) {
 		return service.isArchived(uuid);
+	}
+
+	public boolean isDeleted(String uuid) {
+		return service.isDeleted(uuid);
 	}
 
 	public DTO convertToDto(ADO source, Pseudonymizer pseudonymizer) {

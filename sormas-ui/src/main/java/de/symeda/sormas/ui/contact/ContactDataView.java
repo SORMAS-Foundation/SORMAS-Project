@@ -275,12 +275,24 @@ public class ContactDataView extends AbstractContactView {
 
 		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
 
+		boolean deleted = FacadeProvider.getContactFacade().isDeleted(contactDto.getUuid());
+
 		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			if (deleted) {
+				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			} else {
+				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			}
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
-			layout.disable(true);
+			if (deleted) {
+				layout.disable(true, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			} else {
+				layout.disable(true);
+			}
+		} else if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		}
 	}
 

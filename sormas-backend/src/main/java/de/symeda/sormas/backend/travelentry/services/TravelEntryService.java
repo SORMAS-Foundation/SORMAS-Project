@@ -7,7 +7,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -212,12 +211,12 @@ public class TravelEntryService extends BaseTravelEntryService {
 		super.deletePermanent(travelEntry);
 	}
 
-	public boolean isDeleted(String travelEntryUuid) {
+	public boolean isDeleted(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<TravelEntry> from = cq.from(TravelEntry.class);
 
-		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
+		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
 		cq.select(cb.count(from));
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
