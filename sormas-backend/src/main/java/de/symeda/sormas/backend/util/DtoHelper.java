@@ -195,7 +195,7 @@ public final class DtoHelper {
 				String uuid = source.getUuid() != null ? source.getUuid() : DataHelper.createUuid();
 				target.setUuid(uuid);
 			} else if (DataHelper.isNullOrEmpty(source.getUuid())) {
-				// do nothing -> gracefully handle missing uuids of children
+				// target has a uuid. do nothing -> gracefully handle missing uuids of children
 			} else if (!target.getUuid().equals(source.getUuid())) {
 				throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
 			}
