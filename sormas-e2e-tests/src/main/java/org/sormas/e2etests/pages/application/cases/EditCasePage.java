@@ -163,9 +163,14 @@ public class EditCasePage {
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EXTRA_COMMENT_INPUT =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By EXTRA_COMMENT_INPUT_SHARE_POPUP = By.cssSelector(".popupContent #comment");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
+  public static final By CREATE_DOCUMENT_BUTTON_DE = By.cssSelector("[id='Erstellen']");
+
   public static final By CREATE_QUARANTINE_ORDER_BUTTON =
       By.cssSelector(".popupContent [id='Create']");
+  public static final By CREATE_QUARANTINE_ORDER_BUTTON_DE =
+      By.cssSelector(".popupContent [id='Erstellen']");
   public static final By EXTRA_COMMENT_TEXTAREA =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =
@@ -355,9 +360,38 @@ public class EditCasePage {
   public static final By SHARE_SORMAS_2_SORMAS_BUTTON = By.cssSelector("#sormasToSormasShare");
   public static final By SHARE_ORGANIZATION_POPUP_COMBOBOX =
       By.cssSelector(".popupContent #organization div");
+  public static final By HAND_THE_OWNERSHIP_CHECKBOX =
+      By.cssSelector(".popupContent #handOverOwnership label");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
       By.cssSelector(".popupContent #commit");
   public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
       By.xpath(
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
+  public static final By CLINICAL_ASSESSMENTS_LABEL_DE =
+      By.xpath("//div[contains(text(), 'Klinische Bewertungen')]");
+
+  public static By getPreExistingConditionCombobox_DE(String id) {
+    return By.xpath(
+        String.format(
+            "//div[@id='%s']//input[@value='on']/following-sibling::label[contains(text(),'Ja') or contains(text(),'Nein') or contains(text(),'Unbekannt')]",
+            id));
+  }
+
+  public static By getPreExistingConditionComboboxWithValue_DE(String id, String value) {
+    return By.xpath(
+        String.format(
+            "//div[@id='%s']//input[@value='on' and @checked]/following-sibling::label[contains(text(),'%s')]",
+            id, value));
+  }
+
+  public static By getEditTaskButtonByNumber(Integer number) {
+    return By.cssSelector(String.format("#edit-task-%x", number));
+  }
+  public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");
+  public static final By REASON_FOR_DELETION_DETAILS_TEXTAREA =
+      By.cssSelector(".popupContent textarea");
+  public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
+      By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
 }

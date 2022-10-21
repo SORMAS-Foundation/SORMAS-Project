@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.component.dialog;
 
+import static android.view.View.GONE;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
@@ -38,8 +40,6 @@ import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 
-import static android.view.View.GONE;
-
 /**
  * This should probably inherit from DialogFragment
  */
@@ -62,25 +62,28 @@ public abstract class AbstractDialog implements NotificationContext {
 
 	// Button callbacks
 	private boolean suppressNextDismiss;
-    private Callback positiveCallback;
-    private Callback negativeCallback;
-    private Callback deleteCallback;
+	private Callback positiveCallback;
+	private Callback negativeCallback;
+	private Callback deleteCallback;
 
 	// Constructor
 
 	public AbstractDialog(
-			final FragmentActivity activity,
-			int rootLayoutId,
-			int contentLayoutResourceId,
-			int buttonPanelLayoutResourceId,
-			int headingResourceId,
-			int subHeadingResourceId,
-			boolean closeOnPositiveButtonClick) {
-		this(activity, rootLayoutId, contentLayoutResourceId,
-				buttonPanelLayoutResourceId,
-				headingResourceId >= 0 ? activity.getResources().getString(headingResourceId) : null,
-				subHeadingResourceId >= 0 ? activity.getResources().getString(subHeadingResourceId) : null,
-				closeOnPositiveButtonClick);
+		final FragmentActivity activity,
+		int rootLayoutId,
+		int contentLayoutResourceId,
+		int buttonPanelLayoutResourceId,
+		int headingResourceId,
+		int subHeadingResourceId,
+		boolean closeOnPositiveButtonClick) {
+		this(
+			activity,
+			rootLayoutId,
+			contentLayoutResourceId,
+			buttonPanelLayoutResourceId,
+			headingResourceId >= 0 ? activity.getResources().getString(headingResourceId) : null,
+			subHeadingResourceId >= 0 ? activity.getResources().getString(subHeadingResourceId) : null,
+			closeOnPositiveButtonClick);
 	}
 
 	public AbstractDialog(
@@ -122,7 +125,9 @@ public abstract class AbstractDialog implements NotificationContext {
 		final FragmentActivity activity,
 		int rootLayoutId,
 		int contentLayoutResourceId,
-		int buttonPanelLayoutResourceId, String headingResourceId, String subHeadingResourceId) {
+		int buttonPanelLayoutResourceId,
+		String headingResourceId,
+		String subHeadingResourceId) {
 		this(activity, rootLayoutId, contentLayoutResourceId, buttonPanelLayoutResourceId, headingResourceId, subHeadingResourceId, true);
 	}
 
@@ -183,7 +188,7 @@ public abstract class AbstractDialog implements NotificationContext {
 		return binding;
 	}
 
-	public void show() {
+	public void create() {
 		this.rootBinding = bindRootLayout(activity);
 		setNotificationContextForPropertyFields((ViewGroup) rootBinding.getRoot());
 		initializeContentView(rootBinding, buttonPanelBinding);
@@ -222,7 +227,15 @@ public abstract class AbstractDialog implements NotificationContext {
 		}
 
 		suppressNextDismiss = false;
-		dialog = builder.show();
+		dialog = builder.create();
+	}
+
+	public void show() {
+		if (dialog == null) {
+			create();
+		}
+
+		dialog.show();
 	}
 
 	public void suppressNextDismiss() {

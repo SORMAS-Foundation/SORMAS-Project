@@ -100,7 +100,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			JurisdictionLevel.NATION,
 			UserRight.CONTACT_VIEW,
 			UserRight.CONTACT_EDIT,
-			UserRight.CASE_VIEW);
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -341,8 +343,6 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		contact.setReportingUser(null);
 		contact.setContactOfficer(null);
 		contact.setResultingCaseUser(null);
-		contact.setReportLat(null);
-		contact.setReportLon(null);
 		contact.setReportLatLonAccuracy(20F);
 
 		getContactFacade().save(contact);
@@ -422,7 +422,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private PersonDto createPerson() {
 
-		LocationDto address = new LocationDto();
+		LocationDto address = LocationDto.build();
 		address.setRegion(rdcf1.region);
 		address.setDistrict(rdcf1.district);
 		address.setCommunity(rdcf1.community);

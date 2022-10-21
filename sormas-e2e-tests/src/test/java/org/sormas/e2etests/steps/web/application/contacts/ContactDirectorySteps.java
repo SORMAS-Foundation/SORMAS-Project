@@ -31,6 +31,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FACI
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHARE_OPTION_BULK_ACTION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
@@ -89,6 +90,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_ACTIONS_CONTACT_VALUES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_DELETE_BUTTON_CONTACT_PAGE;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX;
@@ -341,7 +343,15 @@ public class ContactDirectorySteps implements En {
               getMergeDuplicatesButtonById(leadingContactUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
-
+    When(
+        "I check that Share option is not visible in Bulk Actions dropdown in Contact Directory for DE specific",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(SHARE_OPTION_BULK_ACTION_COMBOBOX, 3),
+              "Share is visible!");
+          softly.assertAll();
+        });
     And(
         "I click on Merge button of first leading Contact in Merge Duplicate Contact page",
         () -> {
@@ -1028,6 +1038,9 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickWebElementByText(
               RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS, option);
         });
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Contact Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_DELETE_BUTTON_CONTACT_PAGE));
 
     When(
         "I am checking if options in checkbox for Contact are displayed correctly",

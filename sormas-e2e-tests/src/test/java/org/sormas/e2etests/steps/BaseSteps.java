@@ -167,4 +167,8 @@ public class BaseSteps implements StepLifecycleListener {
             pngValue,
             screenShot);
   }
+
+  public void refreshCurrentPage() {
+    driver.navigate().refresh();
+  }
 }

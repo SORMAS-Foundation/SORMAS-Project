@@ -19,7 +19,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -60,6 +59,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -170,7 +170,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		TextField eventSearchField = addField(
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.EVENT_LIKE, I18nProperties.getString(Strings.promptCaseOrContactEventSearchField), 200));
-		eventSearchField.setNullRepresentation("");
+		if (UiUtil.permitted(UserRight.EVENT_VIEW)) {
+			eventSearchField.setNullRepresentation("");
+		} else {
+			eventSearchField.setVisible(false);
+		}
 	}
 
 	@Override
@@ -256,18 +260,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		Field<?> quarantineTo = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
 		quarantineTo.removeAllValidators();
-		ComboBox birthDateYYYY = addField(moreFiltersContainer, CaseCriteria.BIRTHDATE_YYYY, ComboBox.class);
-		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
-		birthDateYYYY.setWidth(140, Unit.PIXELS);
-		birthDateYYYY.addItems(DateHelper.getYearsToNow());
-		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
-		ComboBox birthDateMM = addField(moreFiltersContainer, CaseCriteria.BIRTHDATE_MM, ComboBox.class);
-		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
-		birthDateMM.setWidth(140, Unit.PIXELS);
-		birthDateMM.addItems(DateHelper.getMonthsInYear());
-		ComboBox birthDateDD = addField(moreFiltersContainer, CaseCriteria.BIRTHDATE_DD, ComboBox.class);
-		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
-		birthDateDD.setWidth(140, Unit.PIXELS);
+
+		addBirthDateFields(CaseCriteria.BIRTHDATE_YYYY, CaseCriteria.BIRTHDATE_MM, CaseCriteria.BIRTHDATE_DD);
+
 		addField(
 			moreFiltersContainer,
 			CheckBox.class,
@@ -343,7 +338,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.ONLY_CASES_WITH_EVENTS,
 				I18nProperties.getCaption(Captions.caseFilterRelatedToEvent),
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
-				CssStyles.CHECKBOX_FILTER_INLINE));
+				CssStyles.CHECKBOX_FILTER_INLINE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,
@@ -621,8 +616,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 				FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
 				List<PresentCondition> validValues = Arrays.stream(PresentCondition.values())
-						.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
-						.collect(Collectors.toList());
+					.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+					.collect(Collectors.toList());
 				PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
 				if (currentValue != null && !validValues.contains(currentValue)) {
 					validValues.add(currentValue);
@@ -735,7 +730,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			clearAndDisableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
 		}
 
-		getField(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY).setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+			getField(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY).setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);
+		}
 
 		// Date/Epi week filter
 		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);

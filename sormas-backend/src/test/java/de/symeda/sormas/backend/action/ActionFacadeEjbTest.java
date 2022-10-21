@@ -72,7 +72,7 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.CORONAVIRUS,
-			rdcf.district);
+			rdcf);
 
 		String uuid1 = "ABCDE-FGHIJ-KLMNO-PQRST";
 		String uuid2 = "BCDEF-GHIJK-LMNOP-QRSTU";

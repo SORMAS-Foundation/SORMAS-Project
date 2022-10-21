@@ -472,6 +472,31 @@ public class WebDriverHelpers {
     return true;
   }
 
+  public boolean isElementChecked(By elementLocator) {
+    scrollToElement(elementLocator);
+    boolean isChecked = elementContainsAttribute(elementLocator, "checked");
+    if (isChecked) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean elementContainsAttribute(By elementLocator, String attribute) {
+    scrollToElement(elementLocator);
+    boolean result = false;
+    String value = baseSteps.getDriver().findElement(elementLocator).getAttribute(attribute);
+    if (value != null) {
+      result = true;
+    }
+    return result;
+  }
+
+  public boolean isElementPresent(By elementLocator) {
+    Boolean isPresent = baseSteps.getDriver().findElements(elementLocator).size() > 0;
+    return isPresent;
+  }
+  ;
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info(PID + "Clicking on element: {}", byObject);
@@ -959,6 +984,12 @@ public class WebDriverHelpers {
             Assert.assertTrue(
                 getAttributeFromWebElement(rowLocator, "class").contains("row-selected"),
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
+  }
+
+  public void refreshCurrentPage() throws InterruptedException {
+    baseSteps.refreshCurrentPage();
+    TimeUnit.SECONDS.sleep(3);
+    waitForPageLoadingSpinnerToDisappear(10);
   }
 
   public void isElementGreyedOut(By elementLocator) {

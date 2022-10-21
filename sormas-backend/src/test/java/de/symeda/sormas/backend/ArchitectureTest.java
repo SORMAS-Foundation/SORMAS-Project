@@ -7,6 +7,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -40,6 +41,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
+import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
@@ -93,6 +95,10 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 	"de.symeda.sormas.api",
 	"de.symeda.sormas.backend" })
 public class ArchitectureTest {
+
+	@ArchTest
+	public static final ArchRule testNoDtosInBackend =
+		classes().that().resideInAPackage("de.symeda.sormas.backend.(*)..").should().haveSimpleNameNotEndingWith("Dto");
 
 	@ArchTest
 	public static final ArchRule dontUseFacadeProviderRule =
@@ -267,7 +273,12 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(
 			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-			Arrays.asList("fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "deleteExternalMessage", "deleteExternalMessages"),
+			Arrays.asList(
+				"getExternalMessagesAdapterVersion",
+				"fetchAndSaveExternalMessages",
+				"bulkAssignExternalMessages",
+				"deleteExternalMessage",
+				"deleteExternalMessages"),
 			classes);
 	}
 
@@ -421,6 +432,11 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(DocumentTemplateFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
 	}
 
+	@ArchTest
+	public void testAbstractBaseEjbNoAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(AbstractBaseEjb.class, AuthMode.NONE, classes);
+	}
+
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
 		assertFacadeEjbAnnotated(facadeEjbClass, AuthMode.CLASS_AND_METHODS, Collections.emptyList(), classes);
 	}
@@ -430,26 +446,35 @@ public class ArchitectureTest {
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, AuthMode authMode, @NotNull List<String> exceptedMethods, JavaClasses classes) {
-		if (authMode != AuthMode.METHODS_ONLY) {
+		if (authMode == AuthMode.METHODS_ONLY || authMode == AuthMode.NONE) {
+			ArchRuleDefinition.theClass(facadeEjbClass).should().notBeAnnotatedWith(RightsAllowed.class).check(classes);
+		} else {
 			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RightsAllowed.class).check(classes);
 		}
 
 		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic().and().areNotStatic();
 		String exceptedMethodsMatcher = "^(" + String.join("|", exceptedMethods) + ")$";
 
-		if (authMode == AuthMode.CLASS_ONLY) {
-			methods.and().haveNameNotMatching(exceptedMethodsMatcher).should().notBeAnnotatedWith(RightsAllowed.class).check(classes);
-			methods.and().haveNameMatching(exceptedMethodsMatcher).should().beAnnotatedWith(RightsAllowed.class).check(classes);
+		Function<GivenMethodsConjunction, MethodsShouldConjunction> annotatedRule = (m) -> m.should()
+			.beAnnotatedWith(RightsAllowed.class)
+			.orShould()
+			.beAnnotatedWith(PermitAll.class)
+			.orShould()
+			.beAnnotatedWith(DenyAll.class);
+
+		Function<GivenMethodsConjunction, MethodsShouldConjunction> notAnnotatedRule = (m) -> m.should()
+			.notBeAnnotatedWith(RightsAllowed.class)
+			.andShould()
+			.notBeAnnotatedWith(PermitAll.class)
+			.andShould()
+			.notBeAnnotatedWith(DenyAll.class);
+
+		if (authMode == AuthMode.CLASS_ONLY || authMode == AuthMode.NONE) {
+			notAnnotatedRule.apply(methods.and().haveNameNotMatching(exceptedMethodsMatcher)).check(classes);
+			annotatedRule.apply(methods.and().haveNameMatching(exceptedMethodsMatcher)).check(classes);
 		} else {
 			// TODO - add exceptedMethods handling when needed
-
-			MethodsShouldConjunction methodChecks = methods.should()
-				.beAnnotatedWith(RightsAllowed.class)
-				.orShould()
-				.beAnnotatedWith(PermitAll.class)
-				.orShould()
-				.beAnnotatedWith(DenyAll.class);
-
+			MethodsShouldConjunction methodChecks = annotatedRule.apply(methods);
 			if (authMode == AuthMode.CLASS_AND_METHODS) {
 				methodChecks = methodChecks.orShould()
 					.haveNameMatching(
@@ -463,6 +488,7 @@ public class ArchitectureTest {
 	private enum AuthMode {
 		CLASS_AND_METHODS,
 		CLASS_ONLY,
-		METHODS_ONLY
+		METHODS_ONLY,
+		NONE,
 	}
 }

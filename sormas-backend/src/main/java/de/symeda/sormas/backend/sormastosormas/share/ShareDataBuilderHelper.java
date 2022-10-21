@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,6 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPr
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
@@ -93,7 +93,7 @@ public class ShareDataBuilderHelper {
 		return createSormasToSormasOriginInfo(user, createOptionsFormShareRequestInfo(requestInfo));
 	}
 
-	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasOptionsDto options) {
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, @Valid SormasToSormasOptionsDto options) {
 		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
 		sormasToSormasOriginInfo.setOrganizationId(configFacadeEjb.getS2SConfig().getId());
 		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", user.getFirstName(), user.getLastName()));
@@ -105,6 +105,7 @@ public class ShareDataBuilderHelper {
 		sormasToSormasOriginInfo.setWithEventParticipants(options.isWithEventParticipants());
 		sormasToSormasOriginInfo.setWithImmunizations(options.isWithImmunizations());
 		sormasToSormasOriginInfo.setComment(options.getComment());
+		sormasToSormasOriginInfo.setPseudonymizedData(options.isPseudonymizeData());
 
 		return sormasToSormasOriginInfo;
 	}
@@ -127,7 +128,7 @@ public class ShareDataBuilderHelper {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
 		options.setOrganization(new SormasServerDescriptor(requestInfo.getShares().get(0).getOrganizationId()));
-		options.setHandOverOwnership(requestInfo.getShares().get(0).isOwnershipHandedOver());
+		options.setHandOverOwnership(requestInfo.isOwnershipHandedOver());
 		options.setWithAssociatedContacts(requestInfo.isWithAssociatedContacts());
 		options.setWithSamples(requestInfo.isWithSamples());
 		options.setWithEventParticipants(requestInfo.isWithEventParticipants());

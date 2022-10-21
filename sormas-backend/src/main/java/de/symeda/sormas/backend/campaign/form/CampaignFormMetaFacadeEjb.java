@@ -50,8 +50,12 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	@EJB
 	private UserService userService;
 
-	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source, boolean checkChangeDate) {
-		CampaignFormMeta target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CampaignFormMeta::new, checkChangeDate);
+	public CampaignFormMeta fillOrBuildEntity(@NotNull CampaignFormMetaDto source, CampaignFormMeta target, boolean checkChangeDate) {
+		if(source == null) {
+			return null;
+		}
+
+		target = DtoHelper.fillOrBuildEntity(source, source.getUuid() != null ? target : null, CampaignFormMeta::new, checkChangeDate);
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());
@@ -83,7 +87,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	public CampaignFormMetaDto saveCampaignFormMeta(@Valid CampaignFormMetaDto campaignFormMetaDto) throws ValidationRuntimeException {
 		validateAndClean(campaignFormMetaDto);
 
-		CampaignFormMeta campaignFormMeta = fromDto(campaignFormMetaDto, true);
+		CampaignFormMeta existingCampaignFormMeta = service.getByUuid(campaignFormMetaDto.getUuid());
+		CampaignFormMeta campaignFormMeta = fillOrBuildEntity(campaignFormMetaDto, existingCampaignFormMeta, true);
 		service.ensurePersisted(campaignFormMeta);
 		return toDto(campaignFormMeta);
 	}
@@ -121,7 +126,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 	@Override
 	public List<CampaignFormMetaDto> getAllAfter(Date date) {
-		final List<CampaignFormMeta> allAfter = service.getAllAfter(date, userService.getCurrentUser());
+		final List<CampaignFormMeta> allAfter = service.getAllAfter(date);
 		return allAfter.stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
 	}
 

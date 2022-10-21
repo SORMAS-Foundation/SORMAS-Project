@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.user;
 
+import java.util.Set;
+
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
@@ -70,11 +72,22 @@ public class CurrentUserService {
 		// this only works for user rights that are used in RolesAllowed or DeclareRoles annotations.
 		// return context.isCallerInRole(userRight.name());
 		// We don't want to have to do this for all the user rights, so we check against the user rights of the current user instead
-		if(getCurrentUser() == null || getCurrentUser().getUserRoles() == null) {
+		if (getCurrentUser() == null || getCurrentUser().getUserRoles() == null) {
 			return false;
 		}
 
-		return getCurrentUser().getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight)); // TODO cache?
+		return getCurrentUser().hasUserRight(userRight); // todo cache this?
+	}
+
+	public boolean hasAnyUserRight(Set<UserRight> userRights) {
+		// this only works for user rights that are used in RolesAllowed or DeclareRoles annotations.
+		// return context.isCallerInRole(userRight.name());
+		// We don't want to have to do this for all the user rights, so we check against the user rights of the current user instead
+		if (getCurrentUser() == null || getCurrentUser().getUserRoles() == null) {
+			return false;
+		}
+
+		return getCurrentUser().hasAnyUserRight(userRights);
 	}
 
 	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion

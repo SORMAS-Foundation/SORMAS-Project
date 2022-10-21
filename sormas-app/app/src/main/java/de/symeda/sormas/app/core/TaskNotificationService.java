@@ -18,8 +18,6 @@ package de.symeda.sormas.app.core;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
-
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -37,6 +35,7 @@ import androidx.core.app.NotificationCompat;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -104,7 +103,7 @@ public class TaskNotificationService extends Service {
 
 			Date notificationRangeStart = ConfigProvider.getLastNotificationDate();
 			if (notificationRangeStart == null) {
-				notificationRangeStart = new DateTime().minusDays(1).toDate();
+				notificationRangeStart = UtilDate.yesterday();
 			}
 			Date notificationRangeEnd = new Date();
 

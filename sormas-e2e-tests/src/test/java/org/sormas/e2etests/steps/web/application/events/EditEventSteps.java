@@ -75,6 +75,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_H
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_INVESTIGATION_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANT_HEADER;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANT_STATUS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
@@ -91,6 +92,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.IMPRESS
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LABORATORY_DIAGNOSTIC_EVIDENCE_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LINK_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.MAP_CONTAINER;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DATA_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_GROUP_BUTTON;
@@ -193,17 +195,26 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELET
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
 import cucumber.api.java8.En;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -234,6 +245,7 @@ import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinatio
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -1011,6 +1023,12 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON);
+        });
+    When(
+        "I navigate to EVENT DATA from edit event page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NAVIGATE_TO_EVENT_DATA_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NAVIGATE_TO_EVENT_DATA_BUTTON);
         });
     When(
         "I check that number of added Vaccinations is {int} on Edit Event Participant Page",
@@ -1852,6 +1870,64 @@ public class EditEventSteps implements En {
         () ->
             webDriverHelpers.clickOnWebElementBySelector(
                 CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON));
+    When(
+        "I check if citizenship and country of birth is not present in Detailed Event Participant export file",
+        () -> {
+          String fileName = "sormas_ereignisteilnehmer_" + LocalDate.now() + "_.csv";
+          FilesHelper.waitForFileToDownload(fileName, 20);
+          String[] headers =
+              parseDetailedEventParticipantExportHeaders(userDirPath + "/downloads/" + fileName);
+          FilesHelper.deleteFile(fileName);
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("citizenship"::equals),
+              "Citizenship is present in file");
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("countryOfBirth"::equals),
+              "Country of birth is present in file");
+          softly.assertAll();
+        });
+
+    And(
+        "I check event participant filter dropdown on event participant page when event is active",
+        () -> {
+          Assert.assertEquals(
+              webDriverHelpers.getValueFromCombobox(EVENT_PARTICIPANT_STATUS),
+              "Active event participants",
+              "Default option is not 'All event participants'");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "All event participants"),
+              "There is no 'All event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Active event participants"),
+              "There is no 'Active event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Archived event participants"),
+              "There is no 'Archived event participants' option in drop list.");
+        });
+
+    And(
+        "I check event participant filter dropdown on event participant page when event is archived",
+        () -> {
+          Assert.assertEquals(
+              webDriverHelpers.getValueFromCombobox(EVENT_PARTICIPANT_STATUS),
+              "All event participants",
+              "Default option is not 'All event participants'");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "All event participants"),
+              "There is no 'All event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Active event participants"),
+              "There is no 'Active event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Archived event participants"),
+              "There is no 'Archived event participants' option in drop list.");
+        });
   }
 
   private String collectEventParticipantUuid() {
@@ -2015,5 +2091,25 @@ public class EditEventSteps implements En {
 
   private void selectEventHandoutTemplate(String templateName) {
     webDriverHelpers.selectFromCombobox(EVENT_HANDOUT_COMBOBOX, templateName);
+  }
+
+  public String[] parseDetailedEventParticipantExportHeaders(String fileName) {
+    List<String[]> r = null;
+    String[] values = new String[] {};
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
+    try (CSVReader reader =
+        new CSVReaderBuilder(new FileReader(fileName)).withCSVParser(csvParser).build()) {
+      r = reader.readAll();
+    } catch (IOException e) {
+      log.error("IOException parseDetailedContactExportHeaders: {}", e.getCause());
+    } catch (CsvException e) {
+      log.error("CsvException parseDetailedContactExportHeaders: {}", e.getCause());
+    }
+    try {
+      values = r.get(1);
+    } catch (NullPointerException e) {
+      log.error("Null pointer exception parseDetailedContactExportHeaders: {}", e.getCause());
+    }
+    return values;
   }
 }

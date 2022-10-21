@@ -26,6 +26,8 @@ import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
@@ -99,10 +101,12 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 		pathogenTestSelector = new ComboBox<>(I18nProperties.getCaption(Captions.PathogenTest));
 		pathogenTestSelector.setWidth(100F, Unit.PERCENTAGE);
+		pathogenTestSelector.setItemCaptionGenerator(e -> e.buildCaption());
 		pathogenTestSelector.setEnabled(false);
 
 		sampleSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Sample));
 		sampleSelector.setWidth(100F, Unit.PERCENTAGE);
+		sampleSelector.setItemCaptionGenerator(e -> e.getCaption());
 		sampleSelector.setItems(samples);
 		sampleSelector.setEnabled(!samples.isEmpty());
 		sampleSelector.addValueChangeListener(e -> {
@@ -132,6 +136,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 		vaccinationSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Vaccination));
 		vaccinationSelector.setWidth(100F, Unit.PERCENTAGE);
+		vaccinationSelector.setItemCaptionGenerator(e -> e.getCaption());
 		vaccinationSelector.setItems(vaccinations);
 		vaccinationSelector.setEnabled(!vaccinations.isEmpty());
 
@@ -189,8 +194,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 				}
 
 				return stream;
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (DocumentTemplateException e) {
+				LoggerFactory.getLogger(getClass()).error("Error while reading document variables.", e);
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
 					.show(Page.getCurrent());
 				return null;

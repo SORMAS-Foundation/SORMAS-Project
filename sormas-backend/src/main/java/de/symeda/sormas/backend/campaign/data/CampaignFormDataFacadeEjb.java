@@ -132,9 +132,12 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	@EJB
 	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacadeEjb;
 
-	public CampaignFormData fromDto(@NotNull CampaignFormDataDto source, boolean checkChangeDate) {
-		CampaignFormData target =
-			DtoHelper.fillOrBuildEntity(source, campaignFormDataService.getByUuid(source.getUuid()), CampaignFormData::new, checkChangeDate);
+	public CampaignFormData fillOrBuildEntity(@NotNull CampaignFormDataDto source, CampaignFormData target, boolean checkChangeDate) {
+		if (source == null) {
+			return null;
+		}
+
+		target = DtoHelper.fillOrBuildEntity(source, target, CampaignFormData::new, checkChangeDate);
 
 		target.setFormValues(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));
@@ -170,8 +173,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public CampaignFormDataDto saveCampaignFormData(@Valid CampaignFormDataDto campaignFormDataDto) throws ValidationRuntimeException {
-
-		final CampaignFormData campaignFormData = fromDto(campaignFormDataDto, true);
+		CampaignFormData existingCampaignFormData = campaignFormDataService.getByUuid(campaignFormDataDto.getUuid());
+		final CampaignFormData campaignFormData = fillOrBuildEntity(campaignFormDataDto, existingCampaignFormData, true);
 		final List<CampaignFormDataEntry> entries = campaignFormData.getFormValues();
 		final ArrayList<CampaignFormDataEntry> removableEntries = new ArrayList<>(entries);
 		removableEntries.removeIf(entry -> entry.getValue() == null);
@@ -343,7 +346,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-		return campaignFormDataService.getAllActiveAfter(date).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		return campaignFormDataService.getAllAfter(date).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
 	}
 
 	public List<CampaignDiagramDataDto> getDiagramDataByAgeGroup(

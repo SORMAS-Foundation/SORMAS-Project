@@ -72,6 +72,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
@@ -321,6 +322,28 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().delete(contact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+	}
+
+	@Test
+	public void testGetSimilarPersonDtos() {
+		loginWith(nationalUser);
+		PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
+		PersonDto person2 = creator.createPerson("James", "Smith", Sex.MALE, 1979, 5, 12);
+		PersonDto person3 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 5);
+
+		creator.createCase(nationalUser.toReference(), person1.toReference(), rdcf);
+		creator.createCase(nationalUser.toReference(), person2.toReference(), rdcf);
+		creator.createCase(nationalUser.toReference(), person3.toReference(), rdcf);
+
+		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria();
+		criteria.setNameUuidExternalIdExternalTokenLike("Jame");
+		criteria.setBirthdateYYYY(1980);
+		criteria.setBirthdateMM(1);
+		criteria.setBirthdateDD(1);
+		List<String> relevantNameUuids =
+				getPersonFacade().getSimilarPersonDtos(criteria).stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
+		Assert.assertEquals(1, relevantNameUuids.size());
+		Assert.assertEquals(person1.getUuid(), relevantNameUuids.get(0));
 	}
 
 	@Test
@@ -716,7 +739,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person.setFirstName("Fname");
 		person.setLastName("Lname");
 		person.setSex(Sex.UNKNOWN);
-		person.setAddress(new LocationDto());
+		person.setAddress(LocationDto.build());
 		person.setAddresses(Collections.singletonList(new LocationDto()));
 
 		PersonDto savedPerson = getPersonFacade().save(person);
@@ -1138,5 +1161,113 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getImmunizationFacade().delete(immunizationDto.getUuid(), new DeletionDetails());
 		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
 		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void searchPersonsByPersonPhone() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
+		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
+
+		creator.createCase(user.toReference(), personWithPhone.toReference(), rdcf);
+		creator.createCase(user.toReference(), personWithoutPhone.toReference(), rdcf);
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+
+		personWithPhone.getPersonContactDetails().add(primaryPhone);
+		personWithPhone.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithPhone);
+
+		PersonCriteria personCriteria = new PersonCriteria();
+		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(2, personIndexDtos.size());
+		List<String> uuids = personIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(personWithPhone.getUuid()));
+		assertTrue(uuids.contains(personWithoutPhone.getUuid()));
+
+		personCriteria.setNameAddressPhoneEmailLike("111222333");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(1, personIndexDtos.size());
+		assertEquals(personWithPhone.getUuid(), personIndexDtos.get(0).getUuid());
+
+		personCriteria.setNameAddressPhoneEmailLike("444555666");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(0, personIndexDtos.size());
+	}
+
+	@Test
+	public void searchPersonsByPersonEmail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
+		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
+
+		creator.createCase(user.toReference(), personWithEmail.toReference(), rdcf);
+		creator.createCase(user.toReference(), personWithoutEmail.toReference(), rdcf);
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+
+		personWithEmail.getPersonContactDetails().add(primaryPhone);
+		personWithEmail.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithEmail);
+
+		PersonCriteria personCriteria = new PersonCriteria();
+		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(2, personIndexDtos.size());
+		List<String> uuids = personIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(personWithEmail.getUuid()));
+		assertTrue(uuids.contains(personWithoutEmail.getUuid()));
+
+		personCriteria.setNameAddressPhoneEmailLike("test1@email.com");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(1, personIndexDtos.size());
+		assertEquals(personWithEmail.getUuid(), personIndexDtos.get(0).getUuid());
+
+		personCriteria.setNameAddressPhoneEmailLike("test2@email.com");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(0, personIndexDtos.size());
+	}
+
+	@Test
+	public void searchPersonsByPersonOtherDetail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
+		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
+
+		creator.createCase(user.toReference(), personWithOtherDetail.toReference(), rdcf);
+		creator.createCase(user.toReference(), personWithoutOtherDetail.toReference(), rdcf);
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+
+		personWithOtherDetail.getPersonContactDetails().add(primaryPhone);
+		personWithOtherDetail.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithOtherDetail);
+
+		PersonCriteria personCriteria = new PersonCriteria();
+		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(2, personIndexDtos.size());
+		List<String> uuids = personIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(personWithOtherDetail.getUuid()));
+		assertTrue(uuids.contains(personWithoutOtherDetail.getUuid()));
+
+		personCriteria.setNameAddressPhoneEmailLike("detail1");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(1, personIndexDtos.size());
+		assertEquals(personWithOtherDetail.getUuid(), personIndexDtos.get(0).getUuid());
+
+		personCriteria.setNameAddressPhoneEmailLike("detail2");
+		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
+		assertEquals(0, personIndexDtos.size());
 	}
 }

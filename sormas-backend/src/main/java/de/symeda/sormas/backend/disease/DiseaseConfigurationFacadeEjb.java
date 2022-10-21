@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -52,6 +53,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
 
 	@Override
+	@PermitAll
 	public List<DiseaseConfigurationDto> getAllAfter(Date date) {
 		return service.getAllAfter(date).stream().map(d -> toDto(d)).collect(Collectors.toList());
 	}
@@ -213,7 +215,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public void saveDiseaseConfiguration(DiseaseConfigurationDto configuration) {
-		service.ensurePersisted(fromDto(configuration, true));
+		DiseaseConfiguration existingDiseaseConfiguration = service.getByUuid(configuration.getUuid());
+		service.ensurePersisted(fillOrBuildEntity(configuration, existingDiseaseConfiguration, true));
 	}
 
 	@Override
@@ -239,10 +242,12 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return getAgeGroups(disease) != null ? getAgeGroups(disease).get(0) : null;
 	}
 
-	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {
+	public DiseaseConfiguration fillOrBuildEntity(@NotNull DiseaseConfigurationDto source, DiseaseConfiguration target, boolean checkChangeDate) {
+		if (source == null) {
+			return null;
+		}
 
-		DiseaseConfiguration target =
-			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), DiseaseConfiguration::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, DiseaseConfiguration::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setActive(source.getActive());

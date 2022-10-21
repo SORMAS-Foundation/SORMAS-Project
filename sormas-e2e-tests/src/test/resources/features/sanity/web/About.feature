@@ -29,7 +29,7 @@ Feature: About Directory end to end tests
     Then I click on Case Classification Rules hyperlink and download HTML file in About directory
     Then I delete Case Classification Html downloaded file from About Directory
 
-  @env_main @#9768
+  @env_main @#9768 @ignore #Data Protection Dictionary is no longer present for international env
   Scenario: Check Data Protection Dictionary existence and download
     Given  I log in as a Admin User
     And I click on the About button from navbar
@@ -54,3 +54,23 @@ Feature: About Directory end to end tests
     Then I check if Data Dictionary in "Person.burialPlaceDescription" record has no "COVID-19" as a disease
     Then I check if Data Dictionary in "Person.burialConductor" record has no "COVID-19" as a disease
     And I delete Data Dictionary downloaded file from About Directory
+
+  @env_main @tmsLink=SORDEV-10238
+    Scenario: Check if sheets names are contained in entries in Excel file
+    Given  I log in as a National User
+    And I click on the About button from navbar
+    And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    And I check if Data Dictionary contains entries name in English
+    And I delete Data Dictionary downloaded file from About Directory
+
+  @env_main @tmsLink=SORDEV-10238 @LanguageRisk @ignore
+  Scenario: Check if data dictionary is in German when service language is set to German
+    Given  I log in as a National Language User
+    And I click on the About button from navbar
+    Then I click on the User Settings button from navbar
+    And I select "Deutsch" language from Combobox in User settings
+    And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    And I check if Data Dictionary contains sheets names in German
+    And I delete Data Dictionary downloaded file from About Directory
+    Then I click on the User Settings button from navbar
+    And I select "English" language from Combobox in User settings

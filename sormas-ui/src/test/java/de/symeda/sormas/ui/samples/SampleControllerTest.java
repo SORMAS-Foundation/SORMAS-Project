@@ -53,7 +53,7 @@ public class SampleControllerTest extends AbstractBeanTest {
 		assertThat(sut.getDiseaseOf(sample), equalTo(Disease.CORONAVIRUS));
 
 		// event participant
-		EventDto event = creator.createEvent(user.toReference(), Disease.CHOLERA);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CHOLERA, rdcf);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 		sample = creator.createSample(
 			eventParticipant.toReference(),

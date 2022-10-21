@@ -20,12 +20,12 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 
 public class SormasToSormasDto implements Serializable {
 

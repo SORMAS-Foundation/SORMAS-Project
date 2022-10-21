@@ -17,16 +17,14 @@ package de.symeda.sormas.api.utils;
 
 import static java.util.stream.Collectors.joining;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -44,8 +42,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.base.CharMatcher;
 
 import de.symeda.sormas.api.AgeGroup;
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
@@ -54,6 +52,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public final class DataHelper {
 
@@ -108,6 +107,19 @@ public final class DataHelper {
 		}
 
 		return equal;
+	}
+
+	/**
+	 * Compare content of collections, ignoring the order
+	 */
+	public static boolean equalContains(Collection a, Collection b) {
+		if (equal(a, b)) {
+			return true;
+		}
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.size() == b.size() && a.containsAll(b);
 	}
 
 	/**
@@ -190,6 +202,7 @@ public final class DataHelper {
 		return uuid.substring(0, 6).toUpperCase();
 	}
 
+	@AuditedClass(includeAllFields = true)
 	public static class Pair<K, V> implements Serializable {
 
 		private static final long serialVersionUID = 7135988167451005820L;
@@ -451,5 +464,23 @@ public final class DataHelper {
 		} else {
 			return "";
 		}
+	}
+
+	/**
+	 * This method will remove the time from a date and set it to midnight. For example date 22.09.2022 15:32:54.123 will become
+	 * 22.09.2022 0:00:0 .
+	 */
+	public static Date removeTime(Date date) {
+		Date shortDate = date;
+		if (date != null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
+			shortDate = calendar.getTime();
+		}
+		return shortDate;
 	}
 }

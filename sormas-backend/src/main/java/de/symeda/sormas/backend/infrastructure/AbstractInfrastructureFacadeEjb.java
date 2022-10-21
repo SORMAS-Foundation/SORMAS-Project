@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -48,6 +52,42 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
 		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
+	}
+
+	@Override
+	@PermitAll
+	public List<String> getAllUuids() {
+		return super.getAllUuids();
+	}
+
+	@Override
+	@PermitAll
+	public List<DTO> getAllAfter(Date date) {
+		return service.getAllAfter(date).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	@PermitAll
+	public List<String> getObsoleteUuidsSince(Date since) {
+		return super.getObsoleteUuidsSince(since);
+	}
+
+	@Override
+	@PermitAll
+	public DTO getByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
+	}
+
+	@Override
+	@PermitAll
+	public REF_DTO getReferenceByUuid(String uuid) {
+		return Optional.ofNullable(uuid).map(u -> service.getByUuid(u)).map(this::toRefDto).orElse(null);
+	}
+
+	@Override
+	@PermitAll
+	public List<DTO> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

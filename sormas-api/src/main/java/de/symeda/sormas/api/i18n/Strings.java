@@ -13,6 +13,7 @@ public interface Strings {
 	String active = "active";
 	String address = "address";
 	String aggregateReportLegend = "aggregateReportLegend";
+	String all = "all";
 	String and = "and";
 	String at = "at";
 	String average = "average";
@@ -208,6 +209,8 @@ public interface Strings {
 	String entityCampaign = "entityCampaign";
 	String entityCampaignData = "entityCampaignData";
 	String entityCampaignDataForm = "entityCampaignDataForm";
+	String entityCampaignFormData = "entityCampaignFormData";
+	String entityCampaignFormMeta = "entityCampaignFormMeta";
 	String entityCampaigns = "entityCampaigns";
 	String entityCase = "entityCase";
 	String entityCaseManagement = "entityCaseManagement";
@@ -220,9 +223,13 @@ public interface Strings {
 	String entityContactFollowUps = "entityContactFollowUps";
 	String entityContacts = "entityContacts";
 	String entityContactVisits = "entityContactVisits";
+	String entityContinents = "entityContinents";
 	String entityCountries = "entityCountries";
+	String entityCustomizableEnumValues = "entityCustomizableEnumValues";
 	String entityDataDictionary = "entityDataDictionary";
 	String entityDataProtectionDictionary = "entityDataProtectionDictionary";
+	String entityDiseaseClassifications = "entityDiseaseClassifications";
+	String entityDiseaseConfigurations = "entityDiseaseConfigurations";
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
@@ -235,9 +242,11 @@ public interface Strings {
 	String entityEvents = "entityEvents";
 	String entityExposure = "entityExposure";
 	String entityFacilities = "entityFacilities";
+	String entityFeatureConfigurations = "entityFeatureConfigurations";
 	String entityGathering = "entityGathering";
 	String entityImmunization = "entityImmunization";
 	String entityImmunizations = "entityImmunizations";
+	String entityOutbreaks = "entityOutbreaks";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPersonContactDetail = "entityPersonContactDetail";
 	String entityPersons = "entityPersons";
@@ -250,6 +259,7 @@ public interface Strings {
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
 	String entityStatistics = "entityStatistics";
+	String entitySubcontinents = "entitySubcontinents";
 	String entityTask = "entityTask";
 	String entityTasks = "entityTasks";
 	String entityTravelEntries = "entityTravelEntries";
@@ -258,7 +268,10 @@ public interface Strings {
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
 	String entityUserRoles = "entityUserRoles";
+	String entityUsers = "entityUsers";
 	String entityVaccinations = "entityVaccinations";
+	String entityVisits = "entityVisits";
+	String entityWeeklyReports = "entityWeeklyReports";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
@@ -334,6 +347,7 @@ public interface Strings {
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String errorWritingTemplate = "errorWritingTemplate";
+	String externalMessageMultipleSampleReports = "externalMessageMultipleSampleReports";
 	String ExternalSurveillanceToolGateway_confirmDeleteCase = "ExternalSurveillanceToolGateway.confirmDeleteCase";
 	String ExternalSurveillanceToolGateway_confirmDeleteEvent = "ExternalSurveillanceToolGateway.confirmDeleteEvent";
 	String ExternalSurveillanceToolGateway_confirmSendCase = "ExternalSurveillanceToolGateway.confirmSendCase";
@@ -670,6 +684,7 @@ public interface Strings {
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingSormasToSormasCanAcceptContactsWithoutCase = "headingSormasToSormasCanAcceptContactsWithoutCase";
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
+	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
@@ -813,6 +828,7 @@ public interface Strings {
 	String infoMergingMergeDescription = "infoMergingMergeDescription";
 	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoMoreDetailsAboutHospitalization = "infoMoreDetailsAboutHospitalization";
+	String infoNoAccessToPersonEntities = "infoNoAccessToPersonEntities";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
@@ -1108,6 +1124,7 @@ public interface Strings {
 	String messageMissingCases = "messageMissingCases";
 	String messageMissingDateFilter = "messageMissingDateFilter";
 	String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
+	String messageMultipleSampleReports = "messageMultipleSampleReports";
 	String messageNoCaseFound = "messageNoCaseFound";
 	String messageNoCaseFoundToLinkImmunization = "messageNoCaseFoundToLinkImmunization";
 	String messageNoCasesSelected = "messageNoCasesSelected";
@@ -1169,6 +1186,13 @@ public interface Strings {
 	String messageSamplesDeleted = "messageSamplesDeleted";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
+	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
+	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
+	String messageSormasToSormasSimilarContactFound = "messageSormasToSormasSimilarContactFound";
+	String messageSormasToSormasSimilarContactToCaseFound = "messageSormasToSormasSimilarContactToCaseFound";
+	String messageSormasToSormasSimilarConvertedCaseFound = "messageSormasToSormasSimilarConvertedCaseFound";
+	String messageSormasToSormasSimilarConvertedContactFound = "messageSormasToSormasSimilarConvertedContactFound";
+	String messageSormasToSormasSimilarPersonFound = "messageSormasToSormasSimilarPersonFound";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
 	String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
 	String messageSpecifyRowAttribute = "messageSpecifyRowAttribute";

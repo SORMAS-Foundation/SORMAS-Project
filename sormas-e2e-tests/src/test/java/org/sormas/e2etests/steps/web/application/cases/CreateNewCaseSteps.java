@@ -108,10 +108,12 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 
 import com.github.javafaker.Faker;
@@ -711,6 +713,7 @@ public class CreateNewCaseSteps implements En {
               PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
           webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
         });
 
@@ -746,7 +749,9 @@ public class CreateNewCaseSteps implements En {
     When(
         "^I pick a new case in pick or create a case popup$",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
@@ -852,7 +857,7 @@ public class CreateNewCaseSteps implements En {
             }
           }
           if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 1)) {
-            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
             TimeUnit.SECONDS.sleep(1);
           }
@@ -959,7 +964,7 @@ public class CreateNewCaseSteps implements En {
     When(
         "I check if ([^\"]*) file is downloaded correctly",
         (String fileType) -> {
-          String file = "./downloads/testCase_" + fileType + "." + fileType;
+          String file = "testCase_" + fileType + "." + fileType;
           FilesHelper.waitForFileToDownload(file, 40);
           FilesHelper.deleteFile(file);
         });
@@ -1099,10 +1104,6 @@ public class CreateNewCaseSteps implements En {
           fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
           fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
           fillPlaceDescription(caze.getPlaceDescription());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
     When(
@@ -1112,6 +1113,17 @@ public class CreateNewCaseSteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
+        "^I fill only mandatory fields for a new case form$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
         });
 
     And(
@@ -1133,6 +1145,11 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
         });
 
@@ -1296,6 +1313,9 @@ public class CreateNewCaseSteps implements En {
               "UUIDs are not equal");
           softly.assertAll();
         });
+    When(
+        "I accept first case in Shares Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {

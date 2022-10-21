@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.USER_ROLE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.EditUserPage.*;
 
 import cucumber.api.java8.En;
@@ -63,6 +64,70 @@ public class EditUserSteps implements En {
                   .build();
           webDriverHelpers.clickOnWebElementBySelector(CLOSE_PASSWORD_POPUP_BUTTON);
         });
+
+    When(
+        "I click Create New Password in Edit User page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CREATE_NEW_PASSWORD_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PASSWORD_BUTTON);
+        });
+
+    Then(
+        "^I click the ([^\"]*) button in the Update Password Modal located in the Edit User Page$",
+        (String action) -> {
+          switch (action) {
+            case "Cancel":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CANCEL_NEW_PASSWORD_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(CANCEL_NEW_PASSWORD_BUTTON);
+              break;
+            case "Update":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CONFIRM_NEW_PASSWORD_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NEW_PASSWORD_BUTTON);
+              break;
+          }
+        });
+
+    When(
+        "I fill phone number with a wrong format in the Edit User Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PHONE_INPUT);
+          webDriverHelpers.fillInWebElement(PHONE_INPUT, "random404");
+        });
+
+    Then(
+        "I Verify the New Password Modal in the Edit User Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NEW_GENERATED_PASSWORD_TEXT);
+        });
+
+    Then(
+        "I verify the error message is displayed in the Edit User Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NOTIFICATION_CAPTION_EDIT_USER);
+        });
+
+    Then(
+        "I click on the Active checkbox in the Edit User Page",
+        () -> {
+          webDriverHelpers.scrollToElementUntilIsVisible(ACTIVE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EDIT_USER);
+        });
+
+    Then(
+        "I click on the Save button in the Edit User Page",
+        () -> {
+          webDriverHelpers.scrollToElementUntilIsVisible(SAVE_BUTTON_EDIT_USER);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EDIT_USER);
+        });
+
+    And(
+        "^I click checkbox to choose \"([^\"]*)\" as a user role in Edit user form$",
+        (String role) -> selectUserRole(role));
   }
 
   private User collectEditUserData() {
@@ -129,5 +194,10 @@ public class EditUserSteps implements En {
         .limitedDisease(webDriverHelpers.getValueFromWebElement(LIMITED_DISEASE_COMBOBOX_INPUT))
         .userRole(webDriverHelpers.getTextFromWebElement(USER_ROLE_CHECKBOX_TEXT))
         .build();
+  }
+
+  private void selectUserRole(String role) {
+    webDriverHelpers.scrollToElement(USER_ROLE_CHECKBOX);
+    webDriverHelpers.clickWebElementByText(USER_ROLE_CHECKBOX, role);
   }
 }

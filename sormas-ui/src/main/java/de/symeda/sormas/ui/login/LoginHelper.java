@@ -63,14 +63,6 @@ public final class LoginHelper {
 			authentication);
 
 		if (status == AuthenticationStatus.SUCCESS) {
-			if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRight.SORMAS_UI.name())) {
-				try {
-					VaadinServletService.getCurrentServletRequest().logout();
-				} catch (ServletException e) {
-					// just do not crash
-				}
-				return false;
-			}
 			Language userLanguage = FacadeProvider.getUserFacade().getByUserName(username).getLanguage();
 			I18nProperties.setUserLanguage(userLanguage);
 			FacadeProvider.getI18nFacade().setUserLanguage(userLanguage);
@@ -78,6 +70,18 @@ public final class LoginHelper {
 		}
 
 		return false;
+	}
+
+	public static boolean hasApplicationRight() {
+		if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRight.SORMAS_UI.name())) {
+			try {
+				VaadinServletService.getCurrentServletRequest().logout();
+			} catch (ServletException e) {
+				// just do not crash
+			}
+			return false;
+		}
+		return true;
 	}
 
 	/**

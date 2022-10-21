@@ -91,6 +91,7 @@ public class PersonSelectionGrid extends CustomizableGrid {
 	 *            The person criteria.
 	 */
 	public void loadData(PersonSimilarityCriteria criteria) {
+		criteria.setMatchMissingInfo(true);
 		List<SimilarPersonDto> similarPersons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(criteria);
 
 		getContainer().removeAllItems();

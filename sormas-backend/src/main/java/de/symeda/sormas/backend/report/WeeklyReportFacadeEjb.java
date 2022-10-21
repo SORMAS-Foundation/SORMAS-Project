@@ -56,6 +56,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -71,7 +72,6 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -137,7 +137,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return null;
 		}
 
-		WeeklyReport report = fromDto(dto, true);
+		WeeklyReport existingWeeklyReport = weeklyReportService.getByUuid(dto.getUuid());
+		WeeklyReport report = fillOrBuildEntity(dto, existingWeeklyReport, true);
 		weeklyReportService.ensurePersisted(report);
 		return toDto(report);
 	}
@@ -261,10 +262,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		return toDto(weeklyReportService.getByEpiWeekAndUser(epiWeek, user));
 	}
 
-	public WeeklyReport fromDto(@NotNull WeeklyReportDto source, boolean checkChangeDate) {
-
-		WeeklyReport target =
-			DtoHelper.fillOrBuildEntity(source, weeklyReportService.getByUuid(source.getUuid()), WeeklyReport::new, checkChangeDate);
+	public WeeklyReport fillOrBuildEntity(@NotNull WeeklyReportDto source, WeeklyReport target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, WeeklyReport::new, checkChangeDate);
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
@@ -395,8 +394,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 				Task task = taskService.buildTask(null);
 				task.setTaskContext(TaskContext.GENERAL);
 				task.setTaskType(TaskType.WEEKLY_REPORT_GENERATION);
-				task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
-				task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+				task.setSuggestedStart(UtilDate.from(fromDateTime));
+				task.setDueDate(UtilDate.from(toDateTime.minusMinutes(1)));
 				task.setAssigneeUser(user);
 				taskService.ensurePersisted(task);
 			}

@@ -107,6 +107,8 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='newCaseDateType'] [class='v-filterselect-button']");
   public static final By CASE_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By CASE_OWNERSHIP_FILTER_COMBOBOX =
+      By.cssSelector("[id='ownershipStatus'] [class='v-filterselect-button']");
   public static final By BULK_ACTIONS = By.id("bulkActions-2");
   public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
   public static final By BULK_ACTIONS_ARCHIVE = By.id("bulkActions-5");
@@ -206,4 +208,6 @@ public class CaseDirectoryPage {
   }
 
   public static By CONFIRM_POPUP = By.cssSelector(".popupContent #actionConfirm");
+  public static By SHARE_OPTION_BULK_ACTION_COMBOBOX =
+      By.xpath("//span[text()=\"\u00DCbergeben\"]");
 }

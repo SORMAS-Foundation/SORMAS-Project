@@ -29,7 +29,6 @@ import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -44,12 +43,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class HospitalizationFacadeEjb implements HospitalizationFacade {
 
 	@EJB
-	private HospitalizationService service;
-	@EJB
-	private PreviousHospitalizationService prevHospService;
-	@EJB
-	private CaseService caseService;
-	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
@@ -57,14 +50,15 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private PreviousHospitalizationService previousHospitalizationService;
 
-	public Hospitalization fromDto(HospitalizationDto source, boolean checkChangeDate) {
-
+	public Hospitalization fillOrBuildEntity(HospitalizationDto source, Hospitalization target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		Hospitalization target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), Hospitalization::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Hospitalization::new, checkChangeDate);
 
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
@@ -78,11 +72,14 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 
 		List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalizationDto prevDto : source.getPreviousHospitalizations()) {
-			PreviousHospitalization prevHosp = fromDto(prevDto, checkChangeDate);
+			//prevHospitalization will be present in 1st level cache based on #10214
+			PreviousHospitalization existingPreviousHospitalization = previousHospitalizationService.getByUuid(source.getUuid());
+			PreviousHospitalization prevHosp = fillOrBuildEntity(prevDto, existingPreviousHospitalization, checkChangeDate);
 			prevHosp.setHospitalization(target);
 			previousHospitalizations.add(prevHosp);
 		}
-		if (!DataHelper.equal(target.getPreviousHospitalizations(), previousHospitalizations)) {
+		if (!DataHelper.equalContains(target.getPreviousHospitalizations(), previousHospitalizations)) {
+			// note: DataHelper.equal does not work here, because target.getAddresses may be a PersistentBag when using lazy loading
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.getPreviousHospitalizations().clear();
@@ -95,19 +92,23 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		return target;
 	}
 
-	public PreviousHospitalization fromDto(PreviousHospitalizationDto source, boolean checkChangeDate) {
-
+	public PreviousHospitalization fillOrBuildEntity(PreviousHospitalizationDto source, PreviousHospitalization target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		PreviousHospitalization target =
-			DtoHelper.fillOrBuildEntity(source, prevHospService.getByUuid(source.getUuid()), PreviousHospitalization::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, PreviousHospitalization::new, checkChangeDate);
+
+		if (!DataHelper.isSame(target.getRegion(), source.getRegion())) {
+			target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		}
 
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
+
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));

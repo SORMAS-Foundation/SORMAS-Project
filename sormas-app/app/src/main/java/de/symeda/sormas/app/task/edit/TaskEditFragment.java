@@ -17,14 +17,11 @@ package de.symeda.sormas.app.task.edit;
 
 import static android.view.View.GONE;
 
-import java.util.List;
-
 import android.view.View;
 
-import org.joda.time.DateTimeComparator;
+import java.util.List;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
@@ -133,6 +130,8 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 		// Initialize ControlDateFields and ControlDateTimeFields
 		contentBinding.taskSuggestedStart.initializeDateTimeField(getFragmentManager());
 		contentBinding.taskDueDate.initializeDateTimeField(getFragmentManager());
+
+		contentBinding.setDone.setEnabled(!(record.getCaze() != null && record.getCaze().getCaseClassification() == CaseClassification.NOT_CLASSIFIED));
 
 		//creatorComment should be required when task type is OTHER
 		contentBinding.taskTaskType.addValueChangedListener(new ValueChangeListener() {

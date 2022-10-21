@@ -23,6 +23,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public static final String TABLE_NAME = "diseaseconfiguration";
 
 	public static final String DISEASE = "disease";
+	public static final String PRIMARY_DISEASE = "primaryDisease";
+	public static final String CASE_SURVEILLANCE_ENABLED = "caseSurveillanceEnabled";
 
 	private Disease disease;
 	private Boolean active;

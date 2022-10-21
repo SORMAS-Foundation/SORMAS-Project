@@ -166,20 +166,20 @@ public class CaseDataView extends AbstractCaseView {
 			}
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES);
 		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null || caze.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
 
-			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(caze, sormasToSormasEnabled);
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(caze);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
 			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		ExternalSurveillanceServiceGateway.addComponentToLayout(layout.getSidePanelComponent(), editComponent, caze);
+		ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, caze);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SURVEILLANCE_REPORTS)) {
 			SurveillanceReportListComponent surveillanceReportList = new SurveillanceReportListComponent(caze.toReference());
@@ -198,9 +198,9 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), caze, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
-		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().isEditAllowed(caze.getUuid());
+		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid());
 
 		if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

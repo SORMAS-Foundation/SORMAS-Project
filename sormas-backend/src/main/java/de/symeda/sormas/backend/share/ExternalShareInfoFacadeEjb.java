@@ -34,6 +34,7 @@ import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -80,7 +81,8 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 	private ExternalShareInfoDto convertToDto(ExternalShareInfo source, Pseudonymizer pseudonymizer) {
 		ExternalShareInfoDto dto = toDto(source);
 
-		boolean pseudonymized = pseudonymizer.pseudonymizeUser(source.getSender(), userService.getCurrentUser(), dto::setSender);
+		boolean pseudonymized = pseudonymizer
+			.pseudonymizeUser(source.getSender(), userService.getCurrentUser(), dto::setSender);
 		if (pseudonymized) {
 			dto.setPseudonymized(true);
 		}
@@ -93,7 +95,7 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 
 		DtoHelper.fillDto(target, source);
 
-		target.setSender(source.getSender().toReference());
+		target.setSender(UserFacadeEjb.toReferenceDto(source.getSender()));
 		target.setStatus(source.getStatus());
 
 		return target;

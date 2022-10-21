@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.person;
 
 import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -117,6 +119,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -162,6 +165,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.user.User;
@@ -209,6 +213,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private LocationService locationService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -343,8 +349,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	public JournalPersonDto getPersonForJournal(PersonDto detailedPerson) {
 		//only specific attributes of the person shall be returned:
 		if (detailedPerson != null) {
-			JournalPersonDto exportPerson = new JournalPersonDto();
-			exportPerson.setUuid(detailedPerson.getUuid());
+			JournalPersonDto exportPerson = new JournalPersonDto(detailedPerson.getUuid());
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -412,13 +417,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	@RightsAllowed(UserRight._PERSON_EDIT)
+	@PermitAll
 	public PersonDto save(@Valid @NotNull PersonDto source) throws ValidationRuntimeException {
 		return save(source, true, true, false);
 	}
 
 	@Override
-	@RightsAllowed(UserRight._PERSON_EDIT)
+	@PermitAll
 	public PersonDto save(@Valid @NotNull PersonDto source, boolean skipValidation) throws ValidationRuntimeException {
 		return save(source, true, true, skipValidation);
 	}
@@ -439,9 +444,21 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	 * @throws ValidationRuntimeException
 	 *             if the passed source person to be saved contains invalid data
 	 */
+	@PermitAll
 	public PersonDto save(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares, boolean skipValidation)
 		throws ValidationRuntimeException {
 		Person person = service.getByUuid(source.getUuid());
+
+		FacadeHelper.checkCreateAndEditRights(
+			person,
+			userService,
+			EnumSet.of(
+				UserRight.CASE_CREATE,
+				UserRight.CONTACT_CREATE,
+				UserRight.EVENTPARTICIPANT_CREATE,
+				UserRight.IMMUNIZATION_CREATE,
+				UserRight.TRAVEL_ENTRY_CREATE),
+			EnumSet.of(UserRight.PERSON_EDIT, UserRight.EXTERNAL_VISITS));
 
 		PersonDto existingPerson = toDto(person);
 
@@ -1525,7 +1542,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		final List<Long> inJurisdictionIDs = service.getInJurisdictionIDs(persons);
+		final List<Long> inJurisdictionIDs = service.getInJurisdictionIds(persons);
 
 		return persons.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
 	}
@@ -1585,8 +1602,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
 
 		target = DtoHelper.fillOrBuildEntity(source, target, service::createPerson, checkChangeDate);
+
+		if (targetWasNull) {
+			target.getAddress().setUuid(source.getAddress().getUuid());
+		}
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
@@ -1615,13 +1637,15 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 
-		target.setAddress(locationFacade.fromDto(source.getAddress(), checkChangeDate));
+		target.setAddress(locationFacade.fillOrBuildEntity(source.getAddress(), target.getAddress(), checkChangeDate));
 		List<Location> locations = new ArrayList<>();
 		for (LocationDto locationDto : source.getAddresses()) {
-			Location location = locationFacade.fromDto(locationDto, checkChangeDate);
+			Location existingLocation = locationService.getByUuid(source.getUuid());
+			Location location = locationFacade.fillOrBuildEntity(locationDto, existingLocation, checkChangeDate);
 			locations.add(location);
 		}
-		if (!DataHelper.equal(target.getAddresses(), locations)) {
+		if (!DataHelper.equalContains(target.getAddresses(), locations)) {
+			// note: DataHelper.equal does not work here, because target.getAddresses may be a PersistentBag when using lazy loading
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.getAddresses().clear();
@@ -1692,14 +1716,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	public boolean isPersonSimilarToExisting(PersonDto referencePerson) {
 
-		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
-			.lastName(referencePerson.getLastName())
-			.sex(referencePerson.getSex())
-			.birthdateDD(referencePerson.getBirthdateDD())
-			.birthdateMM(referencePerson.getBirthdateMM())
-			.birthdateYYYY(referencePerson.getBirthdateYYYY())
-			.passportNumber(referencePerson.getPassportNumber())
-			.nationalHealthId(referencePerson.getNationalHealthId());
+		PersonSimilarityCriteria criteria = PersonSimilarityCriteria.forPerson(referencePerson);
 
 		return checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
 	}

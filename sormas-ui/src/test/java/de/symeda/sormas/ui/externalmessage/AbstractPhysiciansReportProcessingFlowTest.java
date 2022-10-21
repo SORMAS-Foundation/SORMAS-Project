@@ -25,9 +25,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -53,6 +50,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -62,6 +60,8 @@ import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.AbstractPhysiciansReportProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
 import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest {
 
@@ -512,7 +512,7 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest
 		Consumer<ExternalMessageDto> customConfig) {
 		ExternalMessageDto externalMessage = ExternalMessageDto.build();
 
-		externalMessage.setTestedDisease(disease);
+		externalMessage.setDisease(disease);
 		externalMessage.setReportId(reportId);
 		externalMessage.setStatus(status);
 

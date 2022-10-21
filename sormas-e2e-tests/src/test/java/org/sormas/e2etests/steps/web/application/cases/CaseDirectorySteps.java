@@ -40,7 +40,6 @@ import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPOR
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_DETAILED_EXPORT_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV;
@@ -50,9 +49,11 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -77,6 +78,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -161,6 +163,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -378,6 +381,9 @@ public class CaseDirectorySteps implements En {
         "I click first result in grid on Link to Event form",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID));
 
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Case Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_DELETE_BUTTON));
     When(
         "I filter by CaseID on Case directory page",
         () -> {
@@ -497,14 +503,14 @@ public class CaseDirectorySteps implements En {
         "I click on new entry button from Epidemiological Data tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
 
     Then(
         "I click on new entry button from Epidemiological Data tab for DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
 
     And(
@@ -725,6 +731,15 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               getMergeDuplicatesButtonById(EditCaseSteps.aCase.getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    When(
+        "I check that Share option is not visible in Bulk Actions dropdown in Case Directory for DE specific",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(SHARE_OPTION_BULK_ACTION_COMBOBOX, 3),
+              "Share is visible!");
+          softly.assertAll();
         });
     When(
         "I collect the leading case UUID displayed on Case Directory Page",
@@ -960,8 +975,16 @@ public class CaseDirectorySteps implements En {
         });
     And(
         "I apply {string} to combobox on Case Directory Page",
-        (String caseParameter) ->
-            webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter));
+        (String caseParameter) -> {
+          webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
+          TimeUnit.SECONDS.sleep(2);
+        });
+    And(
+        "I apply {string} to ownership combobox on Case Directory Page",
+        (String caseParameter) -> {
+          webDriverHelpers.selectFromCombobox(CASE_OWNERSHIP_FILTER_COMBOBOX, caseParameter);
+          TimeUnit.SECONDS.sleep(2);
+        });
 
     And(
         "I apply Month filter different than Person has on Case directory page",
@@ -1073,6 +1096,20 @@ public class CaseDirectorySteps implements En {
                   + "_.xlsx";
           FilesHelper.waitForFileToDownload(fileName, 20);
           FilesHelper.deleteFile(fileName);
+        });
+    When(
+        "I check if citizenship and country of birth is not present in Detailed Case export file",
+        () -> {
+          String fileName = "sormas_f\u00E4lle_" + LocalDate.now() + "_.csv";
+          String[] headers = parseDetailedCaseExportHeaders(userDirPath + "/downloads/" + fileName);
+          FilesHelper.deleteFile(fileName);
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("citizenship"::equals),
+              "Citizenship is present in file");
+          softly.assertFalse(
+              Arrays.stream(headers).anyMatch("countryOfBirth"::equals),
+              "Country of birth is present in file");
+          softly.assertAll();
         });
     When(
         "I check that ([^\"]*) is visible in Pick or Create Person popup for De",
@@ -1372,5 +1409,25 @@ public class CaseDirectorySteps implements En {
     } catch (IOException e) {
       log.error("IOException csvWriter: ", e);
     }
+  }
+
+  public String[] parseDetailedCaseExportHeaders(String fileName) {
+    List<String[]> r = null;
+    String[] values = new String[] {};
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
+    try (CSVReader reader =
+        new CSVReaderBuilder(new FileReader(fileName)).withCSVParser(csvParser).build()) {
+      r = reader.readAll();
+    } catch (IOException e) {
+      log.error("IOException parseDetailedCaseExportHeaders: {}", e.getCause());
+    } catch (CsvException e) {
+      log.error("CsvException parseDetailedCaseExportHeaders: {}", e.getCause());
+    }
+    try {
+      values = r.get(1);
+    } catch (NullPointerException e) {
+      log.error("Null pointer exception parseDetailedCaseExportHeaders: {}", e.getCause());
+    }
+    return values;
   }
 }

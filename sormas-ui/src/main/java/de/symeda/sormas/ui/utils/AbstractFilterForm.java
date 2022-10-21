@@ -47,8 +47,12 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		this(type, propertyI18nPrefix, null);
 	}
 
+	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, boolean addFields) {
+		this(type, propertyI18nPrefix, null, Captions.actionApplyFilters, Captions.actionResetFilters, addFields);
+	}
+
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
-		this(type, propertyI18nPrefix, fieldVisibilityCheckers, Captions.actionApplyFilters, Captions.actionResetFilters);
+		this(type, propertyI18nPrefix, fieldVisibilityCheckers, Captions.actionApplyFilters, Captions.actionResetFilters, true);
 	}
 
 	protected AbstractFilterForm(
@@ -56,9 +60,10 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		String propertyI18nPrefix,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		String applyCaptionTag,
-		String resetCaptionTag) {
+		String resetCaptionTag,
+		boolean addFields) {
 
-		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, null), true);
+		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, null), addFields);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
@@ -220,7 +225,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 				this.getFieldGroup().commit();
 				this.fireValueChange(true);
 			} catch (FieldGroup.CommitException ex) {
-				ex.printStackTrace();
+				// do nothing
 			}
 		}
 	}

@@ -32,31 +32,32 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import de.symeda.sormas.api.event.EventInvestigationStatus;
-import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
-import de.symeda.sormas.api.share.ExternalShareStatus;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.backend.MockProducer;
 import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class EventServiceTest extends AbstractBeanTest {
@@ -100,7 +101,7 @@ public class EventServiceTest extends AbstractBeanTest {
 	public void testHasRegionAndDistrict() {
 
 		EventDto event1 = creator.createEvent(nationalUser.toReference());
-		assertFalse(getEventService().hasRegionAndDistrict(event1.getUuid()));
+		assertTrue(getEventService().hasRegionAndDistrict(event1.getUuid()));
 
 		EventDto event2 = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
 			e.getEventLocation().setRegion(rdcf.region);
@@ -229,7 +230,7 @@ public class EventServiceTest extends AbstractBeanTest {
 			user,
 			user,
 			Disease.DENGUE,
-			rdcf.district);
+			rdcf);
 
 		Event event = getEventService().getByUuid(eventDto.getUuid());
 		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
@@ -263,7 +264,7 @@ public class EventServiceTest extends AbstractBeanTest {
 			user,
 			user,
 			Disease.DENGUE,
-			rdcf.district);
+			rdcf);
 
 		Event event = getEventService().getByUuid(eventDto.getUuid());
 		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);

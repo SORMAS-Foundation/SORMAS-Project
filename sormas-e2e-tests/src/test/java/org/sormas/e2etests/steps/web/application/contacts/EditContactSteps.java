@@ -36,13 +36,17 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPID_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_POPUP_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_COMMENT_FIELD;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.HAND_THE_OWNERSHIP_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
@@ -55,6 +59,7 @@ import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
@@ -67,6 +72,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
 
 import cucumber.api.java8.En;
 import java.io.FileInputStream;
@@ -92,6 +98,7 @@ import org.sormas.e2etests.enums.TaskTypeValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.cases.SymptomsTabPage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
@@ -489,6 +496,19 @@ public class EditContactSteps implements En {
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
+    When(
+        "I click to hand over the ownership of the contact in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
+    When(
+        "I accept first contact in Shares Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
+    When(
+        "I click to accept potential duplicate in Shares Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM));
+
+    When(
+        "I click on share contact button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
 
     When(
         "I check if Follow up until date is ([^\"]*) days after last contact date of recently created contact",
@@ -784,6 +804,12 @@ public class EditContactSteps implements En {
         () ->
             webDriverHelpers.clickWebElementByText(
                 CONTACT_CLASSIFICATION_RADIO_BUTTON, "BEST\u00C4TIGTER KONTAKT"));
+
+    When(
+        "^I click on CONFIRMED CONTACT radio button Contact Data tab$",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, "CONFIRMED CONTACT"));
 
     When(
         "^I click SAVE button on Edit Contact Page$",
@@ -1248,6 +1274,13 @@ public class EditContactSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
 
     And(
+        "^I fill follow-up status comment from Edit contact page$",
+        () -> {
+          editedContact = contactService.buildEditContact();
+          fillFollowUpStatusComment(editedContact.getFollowUpStatusComment());
+        });
+
+    And(
         "^I set the last contact date to (\\d+) days before the vaccination date$",
         (Integer numberOfDays) -> {
           fillDateOfLastContactDE(LocalDate.now().minusDays(35 + numberOfDays));
@@ -1298,6 +1331,30 @@ public class EditContactSteps implements En {
     And(
         "^I click on the Edit Vaccination icon on vaccination card on Edit contact page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_VACCINATION_BUTTON));
+
+    And(
+        "^I click on Open case of this contact person on Edit contact page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EPID_NUMBER_INPUT);
+        });
+
+    And(
+        "^I check that follow-up status comment is correctly displayed on Edit contact page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SymptomsTabPage.SAVE_BUTTON);
+          String followUpStatusComment =
+              webDriverHelpers.getValueFromWebElement(FOLLOW_UP_COMMENT_FIELD);
+          softly.assertEquals(
+              followUpStatusComment,
+              EditContactSteps.editedContact.getFollowUpStatusComment()
+                  + "\n[System] Follow-up automatically canceled because contact was converted to a case",
+              "Follow-up status comment is incorrect!");
+          softly.assertAll();
+        });
   }
 
   private void selectContactClassification(String classification) {

@@ -153,7 +153,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		restorePseudonymizedDto(source, existingTreatment, existingDto);
 
-		Treatment entity = fromDto(source, existingTreatment, true);
+		Treatment entity = fillOrBuildEntity(source, existingTreatment, true);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -185,22 +185,27 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@Override
 	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		User user = userService.getCurrentUser();
-		if (user == null) {
+
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActiveTreatmentsAfter(date, user, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(t -> convertToDto(t, pseudonymizer))
-			.collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getAllAfter(date, batchSize, lastSynchronizedUuid));
 	}
 
 	@Override
 	public List<TreatmentDto> getByUuids(List<String> uuids) {
+
+		return toPseudonymizedDtos(service.getByUuids(uuids));
+	}
+
+	private List<TreatmentDto> toPseudonymizedDtos(List<Treatment> entities) {
+
+		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByUuids(uuids).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
+		List<TreatmentDto> dtos =
+			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
+		return dtos;
 	}
 
 	@Override
@@ -255,16 +260,26 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	private TreatmentDto convertToDto(Treatment source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		boolean inJurisdiction = service.inJurisdictionOrOwned(source);
+		return convertToDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	
+	private TreatmentDto convertToDto(Treatment source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		TreatmentDto dto = toDto(source);
-
-		pseudonymizeDto(source, dto, pseudonymizer);
-
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
 		return dto;
 	}
 
-	private void pseudonymizeDto(Treatment source, TreatmentDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonymizeDto(Treatment source, TreatmentDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 		if (source != null && dto != null) {
-			pseudonymizer.pseudonymizeDto(TreatmentDto.class, dto, caseService.inJurisdictionOrOwned(source.getTherapy().getCaze()), null);
+			pseudonymizer.pseudonymizeDto(TreatmentDto.class, dto, inJurisdiction, null);
 		}
 	}
 
@@ -275,7 +290,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				TreatmentDto.class,
 				source,
 				existingDto,
-				caseService.inJurisdictionOrOwned(existingTreatment.getTherapy().getCaze()));
+				service.inJurisdictionOrOwned(existingTreatment));
 		}
 	}
 
@@ -303,8 +318,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		return target;
 	}
 
-	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target, boolean checkChangeDate) {
-
+	public Treatment fillOrBuildEntity(@NotNull TreatmentDto source, Treatment target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Treatment::new, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));

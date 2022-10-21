@@ -465,7 +465,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 				if (!visibleAndRequired) {
 					facilityDetails.clear();
-				} else {
+				} else if (!facility.isAttached()) {
 					String facilityDetailsValue = getValue() != null ? getValue().getFacilityDetails() : null;
 					facilityDetails.setValue(facilityDetailsValue);
 				}
@@ -582,6 +582,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			}
 			facility.setValue(locationDto.getFacility());
 			facility.setComponentError(null);
+			facilityDetails.setValue(locationDto.getFacilityDetails());
 		}
 	}
 

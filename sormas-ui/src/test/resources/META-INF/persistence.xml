@@ -83,6 +83,7 @@
 		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
 		<class>de.symeda.sormas.backend.externalmessage.labmessage.TestReport</class>
 		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
+		<class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
 
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
@@ -101,7 +102,11 @@
 			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
-	    	
+
+			<!-- Temporary solution for org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: de.symeda.sormas.backend.person.Person.addresses, could not initialize proxy - no Session -->
+			<!-- TODO Should be removed when  replacing the testing framework: https://github.com/hzi-braunschweig/SORMAS-Project/issues/10074 -->
+			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
+
 			<!-- 			
 			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> 
 			<property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform"/>		

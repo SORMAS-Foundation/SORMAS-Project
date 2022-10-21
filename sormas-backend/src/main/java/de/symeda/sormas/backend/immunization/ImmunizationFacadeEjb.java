@@ -44,7 +44,6 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -337,7 +336,7 @@ public class ImmunizationFacadeEjb
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingImmunization, userService, UserRight.IMMUNIZATION_CREATE, UserRight.IMMUNIZATION_EDIT);
 
-		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
 		}
 
@@ -373,12 +372,16 @@ public class ImmunizationFacadeEjb
 		return convertToDto(immunization, pseudonymizer);
 	}
 
-	protected void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer) {
+	@Override
+	protected void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		if (dto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(
+					source.getReportingUser(),
+					currentUser,
+					dto::setReportingUser);
 				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
 			});
 		}
@@ -414,6 +417,10 @@ public class ImmunizationFacadeEjb
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (immunizationDto.getPerson() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
+		}
+
+		if (immunizationDto.getReportingUser() == null && !immunizationDto.isPseudonymized()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
 		}
 	}
 
@@ -470,11 +477,8 @@ public class ImmunizationFacadeEjb
 		return fillOrBuildEntity(source, target, checkChangeDate, true);
 	}
 
-	protected Immunization fillOrBuildEntity(
-		@NotNull ImmunizationDto source,
-		Immunization target,
-		boolean checkChangeDate,
-		boolean includeVaccinations) {
+	protected Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target,
+		boolean checkChangeDate, boolean includeVaccinations) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
@@ -512,7 +516,8 @@ public class ImmunizationFacadeEjb
 		if (includeVaccinations) {
 			List<Vaccination> vaccinationEntities = new ArrayList<>();
 			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-				Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
+				Vaccination existingVaccination = vaccinationService.getByUuid(source.getUuid());
+				Vaccination vaccination = vaccinationFacade.fillOrBuildEntity(vaccinationDto, existingVaccination, checkChangeDate);
 				vaccination.setImmunization(target);
 				vaccinationEntities.add(vaccination);
 			}
@@ -690,18 +695,15 @@ public class ImmunizationFacadeEjb
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._PERSON_EDIT })
 	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson, List<VaccinationDto> leadPersonVaccinations) {
+		Immunization immunization = fillOrBuildEntity(immunizationDto, null, false, false);
+		immunization.setUuid(DataHelper.createUuid());
 
-		Immunization newImmunization = new Immunization();
-		newImmunization.setUuid(DataHelper.createUuid());
+		immunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
+		service.persist(immunization);
 
-		newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, false);
+		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, immunization, leadPersonVaccinations);
 
-		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
-		service.persist(newImmunization);
-
-		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinations);
-
-		service.ensurePersisted(newImmunization);
+		service.ensurePersisted(immunization);
 	}
 
 	@Override

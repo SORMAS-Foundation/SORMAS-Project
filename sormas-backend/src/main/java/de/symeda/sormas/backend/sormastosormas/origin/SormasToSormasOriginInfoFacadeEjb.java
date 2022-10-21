@@ -59,6 +59,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setWithEventParticipants(source.isWithEventParticipants());
 		target.setWithImmunizations(source.isWithImmunizations());
 		target.setComment(source.getComment());
+		target.setPseudonymizedData(source.isPseudonymizedData());
 
 		return target;
 	}
@@ -67,24 +68,21 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		UserRight._SORMAS_TO_SORMAS_PROCESS,
 		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
-
-		SormasToSormasOriginInfo originInfo = fromDto(originInfoDto, true);
+		SormasToSormasOriginInfo existingSormasToSormasOriginInfo = sormasToSormasOriginInfoService.getByUuid(originInfoDto.getUuid());
+		SormasToSormasOriginInfo originInfo = fillOrBuildEntity(originInfoDto, existingSormasToSormasOriginInfo, true);
 
 		originInfoService.ensurePersisted(originInfo);
 
 		return toDto(originInfo);
 	}
 
-	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_PROCESS,
-		UserRight._SORMAS_TO_SORMAS_CLIENT })
-	public SormasToSormasOriginInfo fromDto(SormasToSormasOriginInfoDto source, boolean checkChangeDate) {
+	@RightsAllowed({UserRight._SORMAS_TO_SORMAS_PROCESS, UserRight._SORMAS_TO_SORMAS_CLIENT})
+	public SormasToSormasOriginInfo fillOrBuildEntity(SormasToSormasOriginInfoDto source, SormasToSormasOriginInfo target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		SormasToSormasOriginInfo target = DtoHelper
-			.fillOrBuildEntity(source, sormasToSormasOriginInfoService.getByUuid(source.getUuid()), SormasToSormasOriginInfo::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, SormasToSormasOriginInfo::new, checkChangeDate);
 
 		target.setOrganizationId(source.getOrganizationId());
 		target.setSenderName(source.getSenderName());
@@ -96,6 +94,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setWithEventParticipants(source.isWithEventParticipants());
 		target.setWithImmunizations(source.isWithImmunizations());
 		target.setComment(source.getComment());
+		target.setPseudonymizedData(source.isPseudonymizedData());
 
 		return target;
 	}

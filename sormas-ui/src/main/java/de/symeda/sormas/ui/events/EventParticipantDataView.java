@@ -159,7 +159,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addSidePanelComponent(contactsLayout, CONTACTS_LOC);
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_EVENTS);
 		if (sormasToSormasEnabled || eventParticipant.getSormasToSormasOriginInfo() != null || eventParticipant.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
@@ -175,7 +175,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		VaccinationListCriteria vaccinationCriteria =
 			new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
 		QuarantineOrderDocumentsComponent.addComponentToLayout(
-			layout.getSidePanelComponent(),
+			layout,
 			eventParticipantRef,
 			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
 			sampleCriteria,
@@ -210,7 +210,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			}
 		}
 
-		EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().isEditAllowed(eventParticipantRef.getUuid());
+		EditPermissionType eventParticipantEditAllowed =
+			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantRef.getUuid());
 
 		if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
@@ -29,7 +28,6 @@ import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.utils.AbstractForm;
@@ -49,16 +47,27 @@ public class UserRoleFormHelper {
 			Arrays.asList(JurisdictionLevel.COMMUNITY, JurisdictionLevel.HEALTH_FACILITY),
 			true);
 		FieldHelper
+			.setDisabledWhen(
+				fieldGroup,
+				UserRoleDto.JURISDICTION_LEVEL,
+				JurisdictionLevel.HEALTH_FACILITY,
+				UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY,
+				false);
+		FieldHelper
 			.setDisabledWhen(fieldGroup, UserRoleDto.JURISDICTION_LEVEL, JurisdictionLevel.POINT_OF_ENTRY, UserRoleDto.PORT_HEALTH_USER, false);
 		fieldGroup.getField(UserRoleDto.JURISDICTION_LEVEL).addValueChangeListener(e -> {
 			CheckBox portHealthUserCb = (CheckBox) fieldGroup.getField(UserRoleDto.PORT_HEALTH_USER);
 			portHealthUserCb.setValue(e.getProperty().getValue() == JurisdictionLevel.POINT_OF_ENTRY);
+
+			CheckBox optionalHealthFacilityCb = (CheckBox) fieldGroup.getField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY);
+			//initial default false should be set for any jurisdiction level
+			optionalHealthFacilityCb.setValue(false);
 		});
 	}
 
 	public static void setTemplateRoleItems(ComboBox templateRoleCombo) {
 		List<UserRoleDto> existingUserRoles =
-			FacadeProvider.getUserRoleFacade().getAll().stream().sorted(Comparator.comparing(UserRoleDto::getCaption)).collect(Collectors.toList());
+			FacadeProvider.getUserRoleFacade().getAllActive().stream().sorted(Comparator.comparing(UserRoleDto::getCaption)).collect(Collectors.toList());
 		List<UserRoleDto> defaultUserRoles = FacadeProvider.getUserRoleFacade()
 			.getDefaultUserRolesAsDto()
 			.stream()
@@ -71,19 +80,6 @@ public class UserRoleFormHelper {
 
 		FieldHelper.updateItems(templateRoleCombo, templateItems);
 		templateItems.forEach(t -> templateRoleCombo.setItemCaption(t, t.getCaption()));
-	}
-
-	public static void setTemplateRoleValue(ComboBox templateRoleCombo, DefaultUserRole defaultUserRole) {
-		if (defaultUserRole != null) {
-			final Optional<?> optionalUserRoleDto = templateRoleCombo.getItemIds().stream().filter(o -> {
-				UserRoleDto userRoleDto = (UserRoleDto) o;
-				return userRoleDto.getCaption().contains(defaultCaptionExtension()) && userRoleDto.getLinkedDefaultUserRole() == defaultUserRole;
-			}).findFirst();
-
-			if (optionalUserRoleDto.isPresent()) {
-				templateRoleCombo.setValue(optionalUserRoleDto.get());
-			}
-		}
 	}
 
 	private static String defaultCaptionExtension() {

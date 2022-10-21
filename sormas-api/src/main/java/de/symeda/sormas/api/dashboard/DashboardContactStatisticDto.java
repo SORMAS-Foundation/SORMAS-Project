@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.AuditedClass;
 
+@AuditedClass
 public class DashboardContactStatisticDto implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207649L;

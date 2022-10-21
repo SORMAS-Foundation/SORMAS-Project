@@ -1,24 +1,36 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.externalmessage;
 
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class ExternalMessageIndexDto implements Serializable {
+public class ExternalMessageIndexDto extends AbstractUuidDto {
 
 	public static final String I18N_PREFIX = "ExternalMessage";
 
-	public static final String UUID = "uuid";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String TYPE = "type";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
-	public static final String TESTED_DISEASE = "testedDisease";
-	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
+	public static final String DISEASE = "disease";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_BIRTH_DATE = "personBirthDate";
@@ -26,13 +38,11 @@ public class ExternalMessageIndexDto implements Serializable {
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
 
-	private String uuid;
 	private ExternalMessageType type;
 	private Date messageDateTime;
 	private String reporterName;
 	private String reporterPostalCode;
-	private Disease testedDisease;
-	private PathogenTestResultType sampleOverallTestResult;
+	private Disease disease;
 	private String personFirstName;
 	private String personLastName;
 	private Date personBirthDate;
@@ -46,8 +56,7 @@ public class ExternalMessageIndexDto implements Serializable {
 		Date messageDateTime,
 		String reporterName,
 		String reporterPostalCode,
-		Disease testedDisease,
-		PathogenTestResultType sampleOverallTestResult,
+		Disease disease,
 		String personFirstName,
 		String personLastName,
 		Integer personBirthDateYYYY,
@@ -59,13 +68,12 @@ public class ExternalMessageIndexDto implements Serializable {
 		String assigneeFirstName,
 		String assigneeLastName) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.type = type;
 		this.messageDateTime = messageDateTime;
 		this.reporterName = reporterName;
 		this.reporterPostalCode = reporterPostalCode;
-		this.testedDisease = testedDisease;
-		this.sampleOverallTestResult = sampleOverallTestResult;
+		this.disease = disease;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
@@ -84,14 +92,6 @@ public class ExternalMessageIndexDto implements Serializable {
 				personBirthDate = null;
 			}
 		}
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public ExternalMessageType getType() {
@@ -126,20 +126,12 @@ public class ExternalMessageIndexDto implements Serializable {
 		this.reporterPostalCode = testLabPostalCode;
 	}
 
-	public Disease getTestedDisease() {
-		return testedDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setTestedDisease(Disease testedDisease) {
-		this.testedDisease = testedDisease;
-	}
-
-	public PathogenTestResultType getSampleOverallTestResult() {
-		return sampleOverallTestResult;
-	}
-
-	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
-		this.sampleOverallTestResult = sampleOverallTestResult;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	public String getPersonFirstName() {

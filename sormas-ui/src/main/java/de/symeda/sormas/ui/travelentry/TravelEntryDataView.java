@@ -87,7 +87,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), getTravelEntryRef(), documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getTravelEntryRef(), documentList);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.TRAVEL_ENTRY, getTravelEntryRef(), travelEntryDto.getDisease());
@@ -95,7 +95,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().isEditAllowed(travelEntryDto.getUuid());
+		EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryDto.getUuid());
 
 		if (travelEntryEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

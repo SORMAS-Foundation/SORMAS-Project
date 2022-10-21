@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.user.DefaultUserRole;
 import org.junit.After;
 import org.mockito.Mockito;
 
@@ -34,6 +33,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
@@ -58,10 +59,11 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -125,11 +127,12 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		return false;
 	}
 
-	protected SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(String serverId, boolean ownershipHandedOver) {
+	protected SormasToSormasOriginInfoDto createSormasToSormasOriginInfoDto(String serverId, boolean ownershipHandedOver) {
 		SormasToSormasOriginInfoDto source = new SormasToSormasOriginInfoDto();
 		source.setOrganizationId(serverId);
 		source.setSenderName("John doe");
 		source.setOwnershipHandedOver(ownershipHandedOver);
+		source.setComment("Test comment");
 
 		return source;
 	}
@@ -163,6 +166,16 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		person.getAddress().setCommunity(rdcf.community);
 
 		return person;
+	}
+
+	protected CaseDataDto createCaseDto(TestDataCreator.RDCF remoteRdcf, PersonDto person) {
+		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
+		caze.setResponsibleRegion(remoteRdcf.region);
+		caze.setResponsibleDistrict(remoteRdcf.district);
+		caze.setResponsibleCommunity(remoteRdcf.community);
+		caze.setHealthFacility(remoteRdcf.facility);
+		caze.setFacilityType(FacilityType.HOSPITAL);
+		return caze;
 	}
 
 	protected SormasToSormasSampleDto createRemoteSampleDtoWithTests(

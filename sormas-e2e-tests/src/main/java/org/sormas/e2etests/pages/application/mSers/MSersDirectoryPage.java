@@ -31,7 +31,7 @@ public class MSersDirectoryPage {
   public static By getEditButtonByIndex(int idx) {
     return By.xpath(
         String.format(
-            "(//tr[contains(@class,'v-grid-row-has-data')]//span[@class=\"v-button-wrap\"])[%x]",
+            "(//tr[contains(@class,'v-grid-row-has-data')]//td[1]//span[@class=\"v-button-wrap\"])[%x]",
             idx));
   }
 
@@ -44,5 +44,9 @@ public class MSersDirectoryPage {
 
   public static By getColumnSelectorByName(String name) {
     return By.xpath(String.format("//div[text()=\"%s\"]", name));
+  }
+
+  public static By getNumberOfSuspectedCasesByIndex(int idx) {
+    return By.xpath(String.format("//tbody//tr[%x]//td[7]", idx));
   }
 }

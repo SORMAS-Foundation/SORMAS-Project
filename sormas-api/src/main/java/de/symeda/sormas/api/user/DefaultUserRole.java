@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1033,7 +1033,8 @@ public enum DefaultUserRole {
 					EVENT_VIEW,
 					EVENT_IMPORT,
 					EVENTPARTICIPANT_VIEW,
-					EVENTPARTICIPANT_IMPORT));
+					EVENTPARTICIPANT_IMPORT,
+					PERSON_VIEW));
 			break;
 		case LAB_USER:
 			userRights.addAll(
@@ -1447,6 +1448,7 @@ public enum DefaultUserRole {
 			userRights.addAll(
 				Arrays.asList(
 					CASE_VIEW,
+					PERSON_VIEW,
 					SEE_PERSONAL_DATA_IN_JURISDICTION,
 					SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION,
 					SEE_SENSITIVE_DATA_IN_JURISDICTION,
@@ -1572,6 +1574,7 @@ public enum DefaultUserRole {
 					IMMUNIZATION_DELETE,
 					PERSON_VIEW,
 					PERSON_EDIT,
+					PERSON_DELETE,
 					SAMPLE_CREATE,
 					SAMPLE_VIEW,
 					SAMPLE_EDIT,
@@ -1589,6 +1592,7 @@ public enum DefaultUserRole {
 					CONTACT_REASSIGN_CASE,
 					MANAGE_EXTERNAL_SYMPTOM_JOURNAL,
 					VISIT_EXPORT,
+					VISIT_DELETE,
 					TASK_CREATE,
 					TASK_VIEW,
 					TASK_EDIT,
@@ -1709,9 +1713,6 @@ public enum DefaultUserRole {
 	public static DefaultUserRole getByCaption(String caption) {
 		Optional<DefaultUserRole> defaultUserRole =
 			Arrays.stream(values()).filter(dur -> dur.name().equals(caption) || I18nProperties.getEnumCaption(dur).equals(caption)).findAny();
-		if (defaultUserRole.isPresent()) {
-			return defaultUserRole.get();
-		}
-		return null;
+		return defaultUserRole.orElse(null);
 	}
 }

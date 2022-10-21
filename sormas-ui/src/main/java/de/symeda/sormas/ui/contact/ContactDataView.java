@@ -195,7 +195,8 @@ public class ContactDataView extends AbstractContactView {
 			layout.addSidePanelComponent(buttonsLayout, CASE_BUTTONS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
@@ -248,13 +249,14 @@ public class ContactDataView extends AbstractContactView {
 			}
 		}
 
-		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser();
+		boolean sormasToSormasfeatureEnabled =
+			FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
 		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null || contactDto.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
 
-			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, sormasToSormasfeatureEnabled);
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
@@ -269,9 +271,9 @@ public class ContactDataView extends AbstractContactView {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), contactDto, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
-		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().isEditAllowed(contactDto.getUuid());
+		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
 
 		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

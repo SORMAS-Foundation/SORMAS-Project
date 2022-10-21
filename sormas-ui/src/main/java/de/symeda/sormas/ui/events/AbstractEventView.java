@@ -18,26 +18,32 @@
 package de.symeda.sormas.ui.events;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Component;
 
-import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 @SuppressWarnings("serial")
-public abstract class AbstractEventView extends AbstractDetailView<EventReferenceDto> {
+public abstract class AbstractEventView extends AbstractEditAllowedDetailView<EventReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = EventsView.VIEW_NAME;
 
 	protected AbstractEventView(String viewName) {
 		super(viewName);
+	}
+
+	@Override
+	protected CoreFacade getCoreFacade() {
+		return FacadeProvider.getEventFacade();
 	}
 
 	@Override
@@ -57,7 +63,9 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 		menu.removeAllViews();
 		menu.addView(EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventsList));
 		menu.addView(EventDataView.VIEW_NAME, I18nProperties.getCaption(EventDto.I18N_PREFIX), params);
-		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventParticipants), params);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+			menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventParticipants), params);
+		}
 		menu.addView(EventActionsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventActions), params);
 
 		setMainHeaderComponent(ControllerProvider.getEventController().getEventViewTitleLayout(getReference().getUuid()));
@@ -87,16 +95,6 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 		if (getReference() != null && FacadeProvider.getEventFacade().isDeleted(getReference().getUuid())) {
 			newComponent.setEnabled(false);
 		}
-	}
-
-	public void setEventEditPermission(Component component) {
-		if (!isEventEditAllowed()) {
-			component.setEnabled(false);
-		}
-	}
-
-	protected boolean isEventEditAllowed() {
-		return FacadeProvider.getEventFacade().isEditAllowed(getEventRef().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
 	protected boolean isEventDeleted() {

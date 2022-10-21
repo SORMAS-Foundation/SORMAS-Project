@@ -98,7 +98,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			dto.setMimeType(MIME_TYPE_DEFAULT);
 		}
 
-		Document document = fromDto(dto, true);
+		Document document = fillOrBuildEntity(dto, existingDocument,true);
 
 		String storageReference = documentStorageService.save(document, content);
 		try {
@@ -160,8 +160,12 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		}
 	}
 
-	public Document fromDto(DocumentDto source, boolean checkChangeDate) {
-		Document target = DtoHelper.fillOrBuildEntity(source, documentService.getByUuid(source.getUuid()), Document::new, checkChangeDate);
+	public Document fillOrBuildEntity(DocumentDto source, Document target, boolean checkChangeDate) {
+		if (source == null) {
+			return null;
+		}
+
+		target = DtoHelper.fillOrBuildEntity(source, target, Document::new, checkChangeDate);
 
 		target.setUploadingUser(userService.getByReferenceDto(source.getUploadingUser()));
 		target.setName(source.getName());
@@ -188,7 +192,10 @@ public class DocumentFacadeEjb implements DocumentFacade {
 				DocumentDto.class,
 				dto,
 				inJurisdiction,
-				(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
+				(e) -> pseudonymizer.pseudonymizeUser(
+					document.getUploadingUser(),
+					userService.getCurrentUser(),
+					dto::setUploadingUser));
 		}
 	}
 
@@ -199,7 +206,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			return caseService.inJurisdictionOrOwned(caze);
 		case CONTACT:
 			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
-			return contactService.inJurisdictionOrOwned(contact).getInJurisdiction();
+			return contactService.inJurisdictionOrOwned(contact);
 		case EVENT:
 			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
 			return eventService.inJurisdictionOrOwned(event);

@@ -74,6 +74,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -99,6 +100,29 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@After
 	public void teardown() {
 		clearExternalSurvToolUrlForWireMock();
+	}
+
+	@Test(expected = ValidationRuntimeException.class)
+	public void testValidateWithNullReportingUser() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			null,
+			null,
+			Disease.EVD,
+			rdcf);
+
+		EventFacadeEjb.EventFacadeEjbLocal eventFacadeEjb = getBean(EventFacadeEjb.EventFacadeEjbLocal.class);
+		eventFacadeEjb.validate(event);
 	}
 
 	@Test
@@ -129,7 +153,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description", user.toReference());
 		ActionDto action = creator.createAction(event.toReference());
@@ -175,7 +199,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		final String testDescription = "testDescription";
 		final Date startDate = DateHelper.subtractDays(new Date(), 1);
@@ -212,7 +236,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		creator.createEvent(
 			EventStatus.EVENT,
@@ -228,7 +252,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		EventCriteria eventCriteria = new EventCriteria();
 		List<EventIndexDto> results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
@@ -266,7 +290,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.setDisease(Disease.EVD);
@@ -300,7 +324,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		creator.createEventParticipant(eventDto.toReference(), eventPerson, "Description", user.toReference());
 		Date testStartDate = new Date();
@@ -308,7 +332,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
 		assertEquals(1, getEventFacade().getAllAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
-		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(1, getEventParticipantFacade().getAllAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
 		stubFor(
@@ -324,7 +348,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
 		assertEquals(0, getEventFacade().getAllAfter(null).size());
 		assertEquals(0, getEventFacade().getAllActiveUuids().size());
-		assertEquals(0, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(0, getEventParticipantFacade().getAllAfter(null).size());
 		assertEquals(0, getEventParticipantFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 1
@@ -335,7 +359,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
 		assertEquals(1, getEventFacade().getAllAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
-		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(1, getEventParticipantFacade().getAllAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 0
@@ -364,7 +388,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user,
 			user,
 			Disease.ANTHRAX,
-			rdcf.district);
+			rdcf);
 
 		Event event1 = getEventService().getByUuid(eventDto1.getUuid());
 		getExternalShareInfoService().createAndPersistShareInfo(event1, ExternalShareStatus.SHARED);
@@ -392,7 +416,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user,
 			user,
 			Disease.DENGUE,
-			rdcf.district);
+			rdcf);
 
 		assertTrue(cut.isArchived(eventDto1.getUuid()));
 		assertFalse(cut.isArchived(eventDto2.getUuid()));
@@ -424,8 +448,11 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setReportDateTime(new Date());
 		event.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		event.setEventTitle("Test event");
-		event.setEventLocation(new LocationDto());
-
+		LocationDto eventLocation = LocationDto.build();
+		eventLocation.setRegion(rdcf.region);
+		eventLocation.setDistrict(rdcf.district);
+		event.setEventLocation(eventLocation);
+		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
 		EventDto savedEvent = getEventFacade().save(event);
 
 		MatcherAssert.assertThat(savedEvent.getUuid(), not(isEmptyOrNullString()));
@@ -551,16 +578,16 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		EventDto event1 = creator.createEvent(reportingUser.toReference());
 		EventDto event2 = creator.createEvent(reportingUser.toReference());
-		EventDto subordinateEvent_1_1 =
-			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.1", null, reportingUser.toReference(), (e) -> {
+		EventDto subordinateEvent_1_1 = creator
+			.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.1", null, reportingUser.toReference(), null, (e) -> {
 				e.setSuperordinateEvent(event1.toReference());
 			});
-		EventDto subordinateEvent_1_2 =
-			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.2", null, reportingUser.toReference(), (e) -> {
+		EventDto subordinateEvent_1_2 = creator
+			.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.2", null, reportingUser.toReference(), null, (e) -> {
 				e.setSuperordinateEvent(event1.toReference());
 			});
-		EventDto subordinateEvent_2_1 =
-			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 2.1", null, reportingUser.toReference(), (e) -> {
+		EventDto subordinateEvent_2_1 = creator
+			.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 2.1", null, reportingUser.toReference(), null, (e) -> {
 				e.setSuperordinateEvent(event2.toReference());
 			});
 

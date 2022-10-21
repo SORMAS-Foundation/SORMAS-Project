@@ -171,7 +171,7 @@ Feature: Sample Functionalities
     And I complete all fields from Additional test result popup and save
     And I check that the created Additional test is correctly displayed
 
-    @env_main @#8556
+  @#8556 @env_main
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
