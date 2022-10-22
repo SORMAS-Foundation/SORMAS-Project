@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.visit;
 
-import static de.symeda.sormas.api.uuid.HasUuid.UUID_REGEX;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MAX;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MIN;
+import static de.symeda.sormas.api.uuid.HasUuid.UUID_REGEX;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +17,8 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Required;
@@ -25,6 +27,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 /**
  * The class ExternalVisitDto.
  */
+@AuditedClass
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExternalVisitDto implements Serializable, Cloneable {
 
@@ -33,10 +36,12 @@ public class ExternalVisitDto implements Serializable, Cloneable {
 	@Required
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
 	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
+	@AuditInclude
 	private String personUuid;
 	@Required
 	private Disease disease;
 	@Required
+	@AuditInclude
 	private Date visitDateTime;
 	@Required
 	private VisitStatus visitStatus;

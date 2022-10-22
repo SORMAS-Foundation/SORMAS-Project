@@ -29,6 +29,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -631,8 +632,15 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	 */
 	public static CaseDataDto buildFromContact(ContactDto contact) {
 
-		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease(), contact.getHealthConditions());
-		migratesAttributes(contact, cazeData);
+		HealthConditionsDto healthConditionsClone = null;
+		try {
+			healthConditionsClone = (HealthConditionsDto)contact.getHealthConditions().clone();
+			healthConditionsClone.setUuid(DataHelper.createUuid());
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease(), healthConditionsClone);
+		copyEpiData(contact, cazeData);
 		List<ExposureDto> exposures = cazeData.getEpiData().getExposures();
 		if (exposures.size() == 1) {
 			exposures.get(0).setProbableInfectionEnvironment(true);
@@ -644,12 +652,26 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	public static CaseDataDto buildFromUnrelatedContact(ContactDto contact, Disease disease) {
 
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), disease);
-		migratesAttributes(contact, cazeData);
+		copyEpiData(contact, cazeData);
 		return cazeData;
 	}
 
-	private static void migratesAttributes(ContactDto contact, CaseDataDto cazeData) {
-		cazeData.setEpiData(contact.getEpiData());
+	private static void copyEpiData(ContactDto contact, CaseDataDto cazeData) {
+		try {
+			EpiDataDto epiDataClone = contact.getEpiData().clone();
+			epiDataClone.setUuid(cazeData.getEpiData().getUuid());
+			for (ActivityAsCaseDto activityAsCase : epiDataClone.getActivitiesAsCase()) {
+				activityAsCase.setUuid(DataHelper.createUuid());
+				activityAsCase.getLocation().setUuid(DataHelper.createUuid());
+			}
+			for (ExposureDto exposure : epiDataClone.getExposures()) {
+				exposure.setUuid(DataHelper.createUuid());
+				exposure.getLocation().setUuid(DataHelper.createUuid());
+			}
+			cazeData.setEpiData(epiDataClone);
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 		cazeData.setFollowUpComment(contact.getFollowUpComment());
 	}
 

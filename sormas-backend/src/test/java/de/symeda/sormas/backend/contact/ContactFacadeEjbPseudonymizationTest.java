@@ -422,7 +422,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private PersonDto createPerson() {
 
-		LocationDto address = new LocationDto();
+		LocationDto address = LocationDto.build();
 		address.setRegion(rdcf1.region);
 		address.setDistrict(rdcf1.district);
 		address.setCommunity(rdcf1.community);

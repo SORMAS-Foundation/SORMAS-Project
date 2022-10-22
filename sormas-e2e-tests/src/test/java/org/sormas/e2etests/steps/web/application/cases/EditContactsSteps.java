@@ -413,6 +413,27 @@ public class EditContactsSteps implements En {
           webDriverHelpers.scrollToElement(POPUP_YES_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(POPUP_YES_BUTTON);
         });
+
+    When(
+        "I check if editable fields are read only for shared contact",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACTS_LIST);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(REPORT_DATE),
+              false,
+              "Report date is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_INPUT),
+              false,
+              "Responsible district input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_INPUT),
+              false,
+              "Responsible region input is not editable state but it should be since archived entities default value is true!");
+          softly.assertAll();
+        });
     When(
         "I check if editable fields are read only for an archived contact",
         () -> {

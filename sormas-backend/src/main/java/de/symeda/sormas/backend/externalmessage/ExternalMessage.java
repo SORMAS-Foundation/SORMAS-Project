@@ -43,7 +43,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String SAMPLE_REPORTS = "sampleReports";
 
 	public static final String TYPE = "type";
-	public static final String TESTED_DISEASE = "testedDisease";
+	public static final String DISEASE = "disease";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
@@ -68,7 +68,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String CAZE = "caze";
 
 	private ExternalMessageType type;
-	private Disease testedDisease;
+	private Disease disease;
 	private Date messageDateTime;
 
 	private String reporterName;
@@ -109,12 +109,12 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public Disease getTestedDisease() {
-		return testedDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setTestedDisease(Disease testedDisease) {
-		this.testedDisease = testedDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

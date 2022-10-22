@@ -22,6 +22,7 @@ import static de.symeda.sormas.api.audit.Constants.readPrefix;
 import static de.symeda.sormas.api.audit.Constants.updatePrefix;
 import static org.reflections.ReflectionUtils.Fields;
 import static org.reflections.ReflectionUtils.Methods;
+import static org.reflections.ReflectionUtils.SuperTypes;
 import static org.reflections.scanners.Scanners.FieldsAnnotated;
 import static org.reflections.scanners.Scanners.MethodsAnnotated;
 import static org.reflections.scanners.Scanners.SubTypes;
@@ -68,9 +69,11 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import de.symeda.sormas.api.audit.AuditExclude;
 import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
@@ -584,27 +587,30 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	private String tryPrintFromAnnotation(Object object) {
 		StringBuilder finalValue = new StringBuilder();
 
-		String auditedClassName = getClassNameAnnotatedWithAuditedClass(object.getClass());
+		final Class<?> clazz = object.getClass();
+		String auditedClassName = getClassNameAnnotatedWithAuditedClass(clazz);
 		if (auditedClassName != null) {
 			finalValue.append(auditedClassName);
 		}
 
 		String fieldValue = null;
 
-		List<Field> fields = getFieldsAnnotatedWithAuditInclude(object.getClass());
+		List<Field> fields = getFieldsAnnotatedWithAuditIncludeOrIncludeAll(clazz);
 		if (!fields.isEmpty()) {
 			fieldValue = printFromFieldAnnotations(object, fields);
 		}
 
 		String methodValue = null;
 
-		List<Method> methods = getMethodsAnnotatedWithAuditInclude(object.getClass());
+		List<Method> methods = getMethodsAnnotatedWithAuditInclude(clazz);
 		if (!methods.isEmpty()) {
 			methodValue = printFromMethodAnnotations(object, methods);
 		}
 
 		if (finalValue.length() == 0) {
-			logger.debug("Audit logging for object of type {} is not implemented. Please file an issue.", object.getClass());
+			if (!DataHelper.isValueType(clazz)){
+				logger.debug("Audit logging for object of type {} is not implemented. Please file an issue.", clazz);
+			}
 			return object.toString();
 		}
 
@@ -680,9 +686,21 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		});
 	}
 
-	private List<Field> getFieldsAnnotatedWithAuditInclude(Class<?> type) {
+	private List<Field> getFieldsAnnotatedWithAuditIncludeOrIncludeAll(Class<?> type) {
 		return cachedAnnotatedFields.computeIfAbsent(type, k -> {
-			Set<Field> fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditInclude.class)));
+			boolean includeAllFields = !reflections.get(
+				SuperTypes.of(type).filter(t -> t.isAnnotationPresent(AuditedClass.class) && t.getAnnotation(AuditedClass.class).includeAllFields()))
+				.isEmpty();
+
+			Set<Field> fieldsFound;
+
+			if (includeAllFields) {
+				fieldsFound = reflections
+					.get(Fields.of(type).filter(f -> !f.toString().contains("static final") && !f.isAnnotationPresent(AuditExclude.class)));
+			} else {
+				fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditInclude.class)));
+			}
+
 			final ArrayList<Field> fields = new ArrayList<>(fieldsFound);
 			return fields.stream().sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
 		});

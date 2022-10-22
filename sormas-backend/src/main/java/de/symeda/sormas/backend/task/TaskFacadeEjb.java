@@ -149,13 +149,12 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private NotificationService notificationService;
 
-	public Task fromDto(TaskDto source, boolean checkChangeDate) {
-
+	public Task fillOrBuildEntity(TaskDto source, Task target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		Task target = DtoHelper.fillOrBuildEntity(source, taskService.getByUuid(source.getUuid()), Task::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Task::new, checkChangeDate);
 
 		target.setAssigneeUser(userService.getByReferenceDto(source.getAssigneeUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
@@ -319,7 +318,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		// Let's retrieve the old assignee before updating the task
 		User oldAssignee = existingTask != null ? existingTask.getAssigneeUser() : null;
 
-		Task ado = fromDto(dto, true);
+		Task ado = fillOrBuildEntity(dto, existingTask,true);
 
 		validate(dto);
 
@@ -329,7 +328,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		notifyAboutNewAssignee(ado, newAssignee, oldAssignee);
 
-		// once we have to handle additional logic this should be moved to it's own function or even class 
+		// once we have to handle additional logic this should be moved to it's own function or even class
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION && ado.getCaze() != null) {
 			caseFacade.updateInvestigationByTask(ado.getCaze());
 		}

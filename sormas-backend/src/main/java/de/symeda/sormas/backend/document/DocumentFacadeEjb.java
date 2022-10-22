@@ -109,7 +109,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			dto.setMimeType(MIME_TYPE_DEFAULT);
 		}
 
-		Document document = fromDto(dto, true);
+		Document document = fillOrBuildEntity(dto, existingDocument,true);
 
 		String[] allowedFileExtensions = configFacade.getAllowedFileExtensions();
 
@@ -192,8 +192,12 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		}
 	}
 
-	public Document fromDto(DocumentDto source, boolean checkChangeDate) {
-		Document target = DtoHelper.fillOrBuildEntity(source, documentService.getByUuid(source.getUuid()), Document::new, checkChangeDate);
+	public Document fillOrBuildEntity(DocumentDto source, Document target, boolean checkChangeDate) {
+		if (source == null) {
+			return null;
+		}
+
+		target = DtoHelper.fillOrBuildEntity(source, target, Document::new, checkChangeDate);
 
 		target.setUploadingUser(userService.getByReferenceDto(source.getUploadingUser()));
 		target.setName(source.getName());

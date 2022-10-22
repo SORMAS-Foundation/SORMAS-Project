@@ -115,7 +115,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		restorePseudonymizedDto(prescription, existingPrescription, existingPrescriptionDto);
 
-		Prescription entity = fromDto(prescription, existingPrescription, true);
+		Prescription entity = fillOrBuildEntity(prescription, existingPrescription, true);
 
 		service.ensurePersisted(entity);
 
@@ -283,8 +283,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		return reference;
 	}
 
-	public Prescription fromDto(@NotNull PrescriptionDto source, Prescription target, boolean checkChangeDate) {
-
+	public Prescription fillOrBuildEntity(@NotNull PrescriptionDto source, Prescription target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Prescription::new, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));

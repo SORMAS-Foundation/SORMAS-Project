@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import static java.util.Objects.isNull;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -1163,7 +1165,12 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	public Event fillOrBuildEntity(@NotNull EventDto source, Event target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
 		target = DtoHelper.fillOrBuildEntity(source, target, Event::new, checkChangeDate);
+
+		if (targetWasNull) {
+			target.getEventLocation().setUuid(source.getEventLocation().getUuid());
+		}
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
@@ -1182,7 +1189,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEvolutionDate(source.getEvolutionDate());
 		target.setEvolutionComment(source.getEvolutionComment());
-		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
+		target.setEventLocation(locationFacade.fillOrBuildEntity(source.getEventLocation(), target.getEventLocation(), checkChangeDate));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());

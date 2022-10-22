@@ -528,11 +528,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return vaccinationService.getLastVaccinationType();
 	}
 
-	private Vaccination fillOrBuildEntity(@NotNull VaccinationDto source, Vaccination target, boolean checkChangeDate) {
+	public Vaccination fillOrBuildEntity(@NotNull VaccinationDto source, Vaccination target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Vaccination::new, checkChangeDate);
 
 		target.setImmunization(immunizationService.getByReferenceDto(source.getImmunization()));
-		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
+		target.setHealthConditions(healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setVaccinationDate(source.getVaccinationDate());
@@ -582,13 +582,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return dto;
 	}
 
-	public Vaccination fromDto(@NotNull VaccinationDto source, boolean checkChangeDate) {
-		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
-	}
-
 	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
 	public void copyOrMergeVaccinations(ImmunizationDto immunizationDto, Immunization newImmunization, List<VaccinationDto> leadPersonVaccinations) {
-
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
 		List<VaccinationDto> followPersonVaccinationWithoutDuplicates = getMergedVaccination(immunizationDto.getVaccinations());
 
@@ -597,22 +592,20 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).collect(Collectors.toList())
 				: new ArrayList<>();
 			duplicateLeadVaccinations.sort(Comparator.comparing(EntityDto::getChangeDate).reversed());
-			if (duplicateLeadVaccinations.size() > 0) {
-				VaccinationDto duplicateVaccination = duplicateLeadVaccinations.get(0);
-				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination, vaccinationDto, false);
-				save(updatedVaccination);
-			} else {
-				Vaccination vaccination = new Vaccination();
+			if (duplicateLeadVaccinations.isEmpty()) {
+				Vaccination vaccination = fillOrBuildEntity(vaccinationDto, null, false);
 				vaccination.setUuid(DataHelper.createUuid());
-				vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
 
-				HealthConditions healthConditions = new HealthConditions();
+				HealthConditions healthConditions = healthConditionsMapper.fillOrBuildEntity(vaccinationDto.getHealthConditions(), null, false);
 				healthConditions.setUuid(DataHelper.createUuid());
-				healthConditions = healthConditionsMapper.fillOrBuildEntity(vaccinationDto.getHealthConditions(), healthConditions, false);
 				vaccination.setHealthConditions(healthConditions);
 
 				vaccination.setImmunization(newImmunization);
 				vaccinationEntities.add(vaccination);
+			} else {
+				VaccinationDto duplicateVaccination = duplicateLeadVaccinations.get(0);
+				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination, vaccinationDto, false);
+				save(updatedVaccination);
 			}
 		}
 		newImmunization.getVaccinations().clear();

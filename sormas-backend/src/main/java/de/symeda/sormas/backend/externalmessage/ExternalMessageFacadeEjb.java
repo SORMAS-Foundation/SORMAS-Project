@@ -87,7 +87,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		ExternalMessageIndexDto.REPORTER_POSTAL_CODE,
 		ExternalMessageIndexDto.MESSAGE_DATE_TIME,
 		ExternalMessageIndexDto.STATUS,
-		ExternalMessageIndexDto.TESTED_DISEASE);
+		ExternalMessageIndexDto.DISEASE);
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -110,13 +110,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@EJB
 	private UserService userService;
 
-	ExternalMessage fromDto(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
+	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, ExternalMessage::new, checkChangeDate);
 
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
-		target.setTestedDisease(source.getTestedDisease());
+		target.setDisease(source.getDisease());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
@@ -185,7 +185,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {
 		ExternalMessage externalMessage = externalMessageService.getByUuid(dto.getUuid());
 
-		externalMessage = fromDto(dto, externalMessage, checkChangeDate);
+		externalMessage = fillOrBuildEntity(dto, externalMessage, checkChangeDate);
 		if (newTransaction) {
 			externalMessageService.ensurePersistedInNewTransaction(externalMessage);
 		} else {
@@ -204,7 +204,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
-		target.setTestedDisease(source.getTestedDisease());
+		target.setDisease(source.getDisease());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
@@ -331,7 +331,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			labMessage.get(ExternalMessage.MESSAGE_DATE_TIME),
 			labMessage.get(ExternalMessage.REPORTER_NAME),
 			labMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
-			labMessage.get(ExternalMessage.TESTED_DISEASE),
+			labMessage.get(ExternalMessage.DISEASE),
 			labMessage.get(ExternalMessage.PERSON_FIRST_NAME),
 			labMessage.get(ExternalMessage.PERSON_LAST_NAME),
 			labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),
