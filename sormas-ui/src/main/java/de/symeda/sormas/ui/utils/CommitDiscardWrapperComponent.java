@@ -814,10 +814,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		deleteWithDetailsListeners.add((deleteDetails) -> UI.getCurrent().getNavigator().navigateTo(viewName));
 	}
 
-	public boolean hasDeleteListener() {
-		return !deleteListeners.isEmpty();
-	}
-
 	private void onDelete() {
 		for (DeleteListener listener : deleteListeners)
 			listener.onDelete();
