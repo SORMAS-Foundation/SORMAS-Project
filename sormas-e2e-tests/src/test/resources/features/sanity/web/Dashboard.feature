@@ -18,7 +18,7 @@ Feature: Dashboard counters
     When I select "COVID-19" in TabSheet of Surveillance Dashboard
     Then I check that previous saved Surveillance Dashboard counters for COVID-19 have been increment
 
-  @env_main
+  @env_main @testIt
   Scenario: Check contacts counter in Contacts Dashboard
     Given I log in as a National User
     When I click on the Dashboard button from navbar and access Contacts Dashboard
