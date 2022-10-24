@@ -1144,7 +1144,7 @@ public class CaseController {
 				} else {
 					deleteCase(caze, false, deleteDetails);
 				}
-			}, I18nProperties.getString(Strings.entityCase));
+			}, I18nProperties.getString(Strings.entityCase), getDeleteConfirmationDetails(Collections.singletonList(caze.getUuid())));
 		}
 
 		// Initialize 'Archive' button
@@ -1157,6 +1157,12 @@ public class CaseController {
 					editView,
 					() -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
 		}
+	}
+
+	private String getDeleteConfirmationDetails(List<String> caseUuids) {
+		boolean hasPendingRequest = FacadeProvider.getSormasToSormasCaseFacade().hasPendingRequest(caseUuids);
+
+		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : null;
 	}
 
 	private void deleteCase(CaseDataDto caze, boolean withContacts, DeletionDetails deletionDetails) {
@@ -1575,7 +1581,10 @@ public class CaseController {
 				false).show(Page.getCurrent());
 		} else {
 			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()),
+				String.format(
+					I18nProperties.getString(Strings.confirmationDeleteCases),
+					selectedRows.size(),
+					getDeleteConfirmationDetails(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()))),
 				(deleteDetails) -> {
 					int countNotDeletedCases = 0;
 					StringBuilder nonDeletableCases = new StringBuilder();

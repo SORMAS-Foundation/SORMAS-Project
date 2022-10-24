@@ -484,6 +484,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		return sormasToSormasEncryptionEjb.signAndEncrypt(shares, encryptedCriteria.getSenderId());
 	}
 
+	@Override
+	@PermitAll
+	public boolean hasPendingRequest(List<String> entityUuids) {
+		return shareInfoService.hasPendingRequest(getShareInfoAssociatedObjectField(), entityUuids);
+	}
+
+	protected abstract String getShareInfoAssociatedObjectField();
+
 	private <T> T decryptAndPersist(SormasToSormasEncryptedDataDto encryptedData, Persister<T> persister)
 		throws SormasToSormasException, SormasToSormasValidationException {
 

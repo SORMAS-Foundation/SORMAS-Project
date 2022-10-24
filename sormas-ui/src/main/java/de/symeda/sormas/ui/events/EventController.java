@@ -816,7 +816,7 @@ public class EventController {
 						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityEvent));
+			}, I18nProperties.getString(Strings.entityEvent), getDeleteConfirmationDetails(Collections.singletonList(eventUuid)));
 		}
 
 		// Initialize 'Archive' button
@@ -831,6 +831,12 @@ public class EventController {
 		}
 
 		return editView;
+	}
+
+	private String getDeleteConfirmationDetails(List<String> eventUuids) {
+		boolean hasPendingRequest = FacadeProvider.getSormasToSormasEventFacade().hasPendingRequest(eventUuids);
+
+		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
 	private void saveEvent(Consumer<EventStatus> saveCallback, EventDto eventDto) {
@@ -930,7 +936,10 @@ public class EventController {
 				false).show(Page.getCurrent());
 		} else {
 			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()),
+				String.format(
+					I18nProperties.getString(Strings.confirmationDeleteEvents),
+					selectedRows.size(),
+					getDeleteConfirmationDetails(selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()))),
 				(deleteDetails) -> {
 					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
 					int countNotDeletedEventsWithParticipants = 0;
