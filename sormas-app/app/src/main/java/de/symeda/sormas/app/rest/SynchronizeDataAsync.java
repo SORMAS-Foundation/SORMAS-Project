@@ -65,6 +65,7 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelpe
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.DtoFeatureConfigHelper;
 import de.symeda.sormas.app.backend.common.DtoUserRightsHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
@@ -363,6 +364,37 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities(context, syncCallbacks);
 		boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities(context, syncCallbacks);
 
+		boolean casesVisible = DtoUserRightsHelper.isViewAllowed(CaseDataDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled();
+		boolean immunizationsVisible = DtoUserRightsHelper.isViewAllowed(ImmunizationDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled();
+		boolean eventsVisible = DtoUserRightsHelper.isViewAllowed(EventDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled();
+		boolean eventParticipantsVisible = DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled();
+		boolean samplesVisible = DtoUserRightsHelper.isViewAllowed(SampleDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled();
+		boolean sampleTestsVisible = DtoUserRightsHelper.isViewAllowed(PathogenTestDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForSampleTestsEnabled();
+		boolean additionalTestsVisible = DtoUserRightsHelper.isViewAllowed(AdditionalTestDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled();
+		boolean contactsVisible = DtoUserRightsHelper.isViewAllowed(ContactDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled();
+		boolean visitsVisible = DtoUserRightsHelper.isViewAllowed(VisitDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled();
+		boolean tasksVisible = DtoUserRightsHelper.isViewAllowed(TaskDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled();
+		boolean weeklyReportsVisible = DtoUserRightsHelper.isViewAllowed(WeeklyReportDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForWeeklyReportsEnabled();
+		boolean aggregateReportsVisible = DtoUserRightsHelper.isViewAllowed(AggregateReportDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled();
+		boolean prescriptionsVisible = DtoUserRightsHelper.isViewAllowed(PrescriptionDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForPrescriptionsEnabled();
+		boolean treatmentsVisible = DtoUserRightsHelper.isViewAllowed(TreatmentDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForTreatmentsEnabled();
+		boolean clinicalVisitsVisible = DtoUserRightsHelper.isViewAllowed(ClinicalVisitDto.class)
+			&& DtoFeatureConfigHelper.isFeatureConfigForClinicalVisitsEnabled();
+
 		syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.PULL_MODIFIED));
 
 		casesNeedPull |= clinicalVisitsNeedPull;
@@ -370,68 +402,95 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		if (personsNeedPull) {
 			personDtoHelper.pullEntities(true, context, syncCallbacks, false);
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (casesNeedPull) {
-			caseDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (casesVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (casesNeedPull) {
+				caseDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (immunizationsNeedPull) {
-			immunizationDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (immunizationsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (immunizationsNeedPull) {
+				immunizationDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (eventsNeedPull) {
-			eventDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (eventsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (eventsNeedPull) {
+				eventDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (eventParticipantsNeedPull) {
-			eventParticipantDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (eventParticipantsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (eventParticipantsNeedPull) {
+				eventParticipantDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (samplesNeedPull) {
-			sampleDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (samplesVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (samplesNeedPull) {
+				sampleDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (sampleTestsNeedPull) {
-			pathogenTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (sampleTestsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (sampleTestsNeedPull) {
+				pathogenTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		if (DtoUserRightsHelper.isViewAllowed(AdditionalTestDto.class)
-			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
+		if (additionalTestsVisible) {
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 			if (additionalTestsNeedPull) {
 				additionalTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
 			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (contactsNeedPull) {
-			contactDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (contactsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (contactsNeedPull) {
+				contactDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (visitsNeedPull) {
-			visitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (visitsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (visitsNeedPull) {
+				visitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (tasksNeedPull) {
-			taskDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (tasksVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (tasksNeedPull) {
+				taskDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (weeklyReportsNeedPull) {
-			weeklyReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (weeklyReportsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (weeklyReportsNeedPull) {
+				weeklyReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (aggregateReportsNeedPull) {
-			aggregateReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (aggregateReportsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (aggregateReportsNeedPull) {
+				aggregateReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (prescriptionsNeedPull) {
-			prescriptionDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (prescriptionsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (prescriptionsNeedPull) {
+				prescriptionDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (treatmentsNeedPull) {
-			treatmentDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (treatmentsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (treatmentsNeedPull) {
+				treatmentDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (clinicalVisitsNeedPull) {
-			clinicalVisitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (clinicalVisitsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (clinicalVisitsNeedPull) {
+				clinicalVisitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
 		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
