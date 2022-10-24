@@ -393,13 +393,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		// Database should contain the created sample and sample test
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
-		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(sampleTest.getUuid()));
 
 		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
 		assertEquals(DeletionReason.OTHER_REASON, getSampleFacade().getSampleByUuid(sample.getUuid()).getDeletionReason());
 		assertEquals("test reason", getSampleFacade().getSampleByUuid(sample.getUuid()).getOtherDeletionReason());
 	}
@@ -445,7 +445,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		AdditionalTestDto firstSampleAdditionalTest = creator.createAdditionalTest(firstSample.toReference());
 
 		// Database should contain the created sample and sample test
-		assertNotNull(getSampleTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 
 		getSampleFacade().deleteAllSamples(
@@ -456,7 +456,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
 		assertTrue(sampleUuids.contains(firstSample.getUuid()));
 		assertTrue(sampleUuids.contains(secondSample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(firstSamplePathogenTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(firstSamplePathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 	}
 
@@ -511,8 +511,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		AdditionalTestDto thirdSampleAdditionalTest = creator.createAdditionalTest(forthSample.toReference());
 
 		// Database should contain the created sample, sample test and additional tests
-		assertNotNull(getSampleTestFacade().getByUuid(secondSamplePathogenTest.getUuid()));
-		assertNotNull(getSampleTestFacade().getByUuid(thirdSamplePathogenTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(secondSamplePathogenTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(thirdSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 
@@ -524,8 +524,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
 		assertTrue(sampleUuids.contains(thirdSample.getUuid()));
 		assertTrue(sampleUuids.contains(forthSample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(secondSamplePathogenTest.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(thirdSamplePathogenTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(secondSamplePathogenTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(thirdSamplePathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 	}
@@ -565,24 +565,24 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
+		assertEquals(1, getPathogenTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getPathogenTestFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
 		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(0, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
-		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
+		assertEquals(0, getPathogenTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(0, getPathogenTestFacade().getAllActiveUuids().size());
 
 		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
+		assertEquals(1, getPathogenTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getPathogenTestFacade().getAllActiveUuids().size());
 	}
 
 	@Test
