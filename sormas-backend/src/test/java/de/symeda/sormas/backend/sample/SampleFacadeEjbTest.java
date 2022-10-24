@@ -62,6 +62,8 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -83,6 +85,7 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -1032,12 +1035,49 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().archive(contact.getUuid(), null);
 		getEventParticipantFacade().archive(eventParticipantDto.getUuid(), null);
 
+		FeatureConfigurationIndexDto indexFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(indexFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+		assertFalse(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES));
 		Boolean editable = getSampleFacade().isEditAllowed(sampleCase.getUuid());
 		assertFalse(editable);
 		editable = getSampleFacade().isEditAllowed(sampleContact.getUuid());
 		assertFalse(editable);
 		editable = getSampleFacade().isEditAllowed(sampleEventParticipant.getUuid());
 		assertFalse(editable);
+	}
+
+	@Test
+	public void testIsEditAllowedSampleWithInactiveEntityAndFeaturePropTrue() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), person, user.toReference());
+
+		SampleDto sampleCase = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sampleContact = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
+		SampleDto sampleEventParticipant = creator.createSample(eventParticipantDto.toReference(), user.toReference(), rdcf.facility);
+
+		getCaseFacade().archive(caze.getUuid(), null);
+		getContactFacade().archive(contact.getUuid(), null);
+		getEventParticipantFacade().archive(eventParticipantDto.getUuid(), null);
+
+		FeatureConfigurationIndexDto indexFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(indexFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+		assertTrue(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES));
+		Boolean editable = getSampleFacade().isEditAllowed(sampleCase.getUuid());
+		assertTrue(editable);
+		editable = getSampleFacade().isEditAllowed(sampleContact.getUuid());
+		assertTrue(editable);
+		editable = getSampleFacade().isEditAllowed(sampleEventParticipant.getUuid());
+		assertTrue(editable);
 	}
 
 	@Test
