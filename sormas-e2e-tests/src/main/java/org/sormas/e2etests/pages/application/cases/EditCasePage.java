@@ -387,6 +387,7 @@ public class EditCasePage {
   public static By getEditTaskButtonByNumber(Integer number) {
     return By.cssSelector(String.format("#edit-task-%x", number));
   }
+
   public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
       By.xpath(
           "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");

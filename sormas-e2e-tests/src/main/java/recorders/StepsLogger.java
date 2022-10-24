@@ -22,11 +22,9 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.StepResult;
-import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -59,25 +57,25 @@ public class StepsLogger implements StepLifecycleListener {
       takeScreenshot();
     }
     if (isScreenshotEnabled && driver != null) {
-//      if (!stepResult.getStatus().value().contains("pass")) {
-//        attachConsoleLog();
-//      }
+      //      if (!stepResult.getStatus().value().contains("pass")) {
+      //        attachConsoleLog();
+      //      }
     }
     isScreenshotEnabled = true;
     log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, stepResult.getName());
   }
 
-//  @SneakyThrows
-//  @Attachment(value = "Browser console log", type = "text/json")
-//  private void attachConsoleLog() {
-//    try {
-//      Allure.getLifecycle()
-//          .addAttachment(
-//              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
-//    } catch (Exception any) {
-//      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
-//    }
-//  }
+  //  @SneakyThrows
+  //  @Attachment(value = "Browser console log", type = "text/json")
+  //  private void attachConsoleLog() {
+  //    try {
+  //      Allure.getLifecycle()
+  //          .addAttachment(
+  //              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
+  //    } catch (Exception any) {
+  //      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
+  //    }
+  //  }
 
   @Attachment(value = "After step screenshot", type = "image/png")
   public void takeScreenshot() {
