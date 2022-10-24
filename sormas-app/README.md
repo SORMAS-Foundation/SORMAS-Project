@@ -54,3 +54,67 @@ Each Android device using SORMAS should ahve device encryption enabled. This is 
 
 The data relevant to the user is stored on the device in an SQLite database. 
 The version of SQLite included in Android 8 does not allow operations like renaming of database columns (needs SQLite 3.25.0, thus Android 11), which makes it quite inconvenient to work with.
+
+### Firebase Crashlytics & Performance Monitoring
+
+The SORMAS app is using Google Firebase to track crashes and performance.
+
+Based on https://firebase.google.com/support/privacy the following data listed in the details is collected.
+
+<details>
+
+* An RFC-4122 UUID which permits us to deduplicate crashes
+* The timestamp of when the crash occurred
+* The app's bundle identifier and full version number
+* The device's operating system name and version number
+* A boolean indicating whether the device was jailbroken/rooted
+* The device's model name, CPU architecture, amount of RAM and disk space
+* The uint64 instruction pointer of every frame of every currently running thread
+* If available in the runtime, the plain-text method or function name containing each instruction pointer.
+* If an exception was thrown, the plain-text class name and message value of the exception
+* If a fatal signal was raised, its name and integer code
+* For each binary image loaded into the application, its name, UUID, byte size, and the uint64 base address at which it was loaded into RAM
+* A boolean indicating whether or not the app was in the background at the time it crashed
+* An integer value indicating the rotation of the screen at the time of crash
+* A boolean indicating whether the device's proximity sensor was triggered
+
+Data within the framework of Firebase Performance Monitoring:
+
+* General device information, such as model, OS, and orientation
+* RAM and disk size
+* CPU usage
+* Carrier (based on Mobile Country and Network Code)
+* Radio/Network information (for example, WiFi, LTE, 3G)
+* Country (based on IP address)
+* Locale/language
+* App version
+* App foreground or background state
+* App package name
+* Firebase installation IDs
+* Duration times for automated traces
+* Network URLs (not including URL parameters or payload content) and the following corresponding information:
+* Response codes (for example, 403, 200)
+* Payload size in bytes
+* Response times
+
+Data that Firebase basically collects:
+
+| User dimension                                          | Type   | Description                                                                                          |
+| ------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| Age                                                     | Text   | Identifies users by six categories: 18-24, 25-34, 35-44, 45-54, 55-64, and 65+.                      |
+| App Store                                               | Text   | The store from which the app was downloaded and installed.                                           |
+| App Version                                             | Text   | The versionName (Android) or the Bundle version (iOS).                                               |
+| Country                                                 | Text   | The country the user resides in.                                                                     |
+| Device Brand                                            | Text   | The brand name of the mobile device (e.g., Motorola, LG, or Samsung).                                |
+| Device Category                                         | Text   | The category of the mobile device (e.g., mobile or tablet).                                          |
+| Device Model                                            | Text   | The mobile device model name (e.g., iPhone 5s or SM-J500M).                                          |
+| First Open Time                                         | Number | The time (in milliseconds, UTC) at which the user first opened the app, rounded up to the next hour. |
+| Gender                                                  | Text   | Identifies users as either male or female.                                                           |
+| Interests                                               | Text   | Lists the interests of the user (e.g., "Arts & Entertainment, Games, Sports").                       |
+| Language                                                | Text   | The language setting of the device OS (e.g., en-us or pt-br).                                        |
+| New/Established                                         | N/A    | New: First opened the app within the last 7 days.                                                    |
+| Established: First opened the app more than 7 days ago. |
+| OS Version                                              | Text   | The version of the device OS (e.g., 9.3.2 or 5.1.1).                                                 |
+
+Plus: UUID of the SORMAS users.
+</details>
