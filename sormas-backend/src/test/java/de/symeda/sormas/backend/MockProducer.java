@@ -127,6 +127,7 @@ public class MockProducer implements InitialContextFactory {
 	private static void resetProperties() {
 
 		properties.clear();
+		properties.setProperty(ConfigFacadeEjb.ALLOWED_FILE_EXTENSIONS, "pdf,txt,doc,docx,odt,xls,xlsx,ods,ppt,pptx,odp,jpg,png,gif,msg");
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
 		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);

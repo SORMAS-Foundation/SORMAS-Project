@@ -1912,6 +1912,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
 
+		byte[] contentAsBytes =  ("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
+				"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
+				"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
+				"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
+				"0 R>>\nstartxref\n149\n%EOF").getBytes();
+
 		DocumentDto document = creator.createDocument(
 			leadUserReference,
 			"document.pdf",
@@ -1919,7 +1925,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			42L,
 			DocumentRelatedEntityType.CONTACT,
 			leadContact.getUuid(),
-			"content".getBytes(StandardCharsets.UTF_8));
+			contentAsBytes);
 		DocumentDto otherDocument = creator.createDocument(
 			leadUserReference,
 			"other_document.pdf",
@@ -1927,7 +1933,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			42L,
 			DocumentRelatedEntityType.CONTACT,
 			otherContact.getUuid(),
-			"other content".getBytes(StandardCharsets.UTF_8));
+			contentAsBytes);
 
 		// 2. Merge
 
