@@ -1111,7 +1111,7 @@ public class CaseController {
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
-			editView.addDeleteWithReasonListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 					long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
 					if (contactCount > 0) {

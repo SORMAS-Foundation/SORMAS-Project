@@ -95,9 +95,13 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryDto.getUuid());
+		final String uuid = travelEntryDto.getUuid();
+		final EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(uuid);
+		final boolean deleted = FacadeProvider.getTravelEntryFacade().isDeleted(uuid);
 
-		if (travelEntryEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (travelEntryEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (travelEntryEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();

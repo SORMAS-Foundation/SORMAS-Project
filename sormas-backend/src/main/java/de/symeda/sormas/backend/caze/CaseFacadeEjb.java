@@ -2532,6 +2532,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_DELETE)
 	public void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails) {
 
 		Case caze = service.getByUuid(caseUuid);

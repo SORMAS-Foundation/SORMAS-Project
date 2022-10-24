@@ -311,6 +311,12 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
+	@Override
+	@RightsAllowed(UserRight._EVENT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()

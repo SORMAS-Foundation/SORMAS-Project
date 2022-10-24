@@ -114,7 +114,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		setHeightUndefined();
 
 		final EventParticipantReferenceDto eventParticipantRef = getReference();
-		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(eventParticipantRef.getUuid());
+		final String uuid = eventParticipantRef.getUuid();
+		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(uuid);
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -209,10 +210,12 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			}
 		}
 
-		EditPermissionType eventParticipantEditAllowed =
-			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantRef.getUuid());
+		final EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().getEditPermissionType(uuid);
+		final boolean deleted = FacadeProvider.getEventParticipantFacade().isDeleted(uuid);
 
-		if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (eventParticipantEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();

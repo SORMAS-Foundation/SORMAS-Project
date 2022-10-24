@@ -133,7 +133,7 @@ public class VaccinationController {
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			createComponent.addDeleteWithReasonListener((deleteDetails) -> {
+			createComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				popupWindow.close();
 				if (doSave) {
 					List<CaseDataDto> cases = getCaseFacade().getRelevantCasesForVaccination(vaccination)

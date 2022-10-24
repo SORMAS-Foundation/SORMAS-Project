@@ -549,6 +549,12 @@ public class ContactFacadeEjb
 		deleteContact(contact, deletionDetails);
 	}
 
+	@Override
+	@RightsAllowed(UserRight._CONTACT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		service.delete(contact, deletionDetails);

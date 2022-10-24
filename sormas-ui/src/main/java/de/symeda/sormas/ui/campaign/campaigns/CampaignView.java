@@ -74,9 +74,12 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
 		getViewTitleLabel().setValue(campaignDto.getName());
 
-		EditPermissionType campaignEditAllowed = FacadeProvider.getCampaignFacade().getEditPermissionType(campaignDto.getUuid());
+		final EditPermissionType campaignEditAllowed = FacadeProvider.getCampaignFacade().getEditPermissionType(campaignDto.getUuid());
+		final boolean deleted = FacadeProvider.getCampaignFacade().isDeleted(campaignDto.getUuid());
 
-		if (campaignEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+		if (deleted) {
+			editComponent.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (campaignEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			editComponent.setEditable(false, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (campaignEditAllowed.equals(EditPermissionType.REFUSED)) {
 			editComponent.setEditable(false, "");

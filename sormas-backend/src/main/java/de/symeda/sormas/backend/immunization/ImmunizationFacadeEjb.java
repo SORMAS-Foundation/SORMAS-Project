@@ -307,6 +307,12 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
 	public List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
 		return service.getSimilarImmunizations(criteria).stream().map(result -> {
 			ImmunizationDto immunizationDto = new ImmunizationDto();

@@ -57,7 +57,6 @@ import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -768,7 +767,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteListeners.add(listener);
 	}
 
-	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener, String entityName) {
+	public void addDeleteWithReasonOrUndeleteListener(DeleteWithDetailsListener listener, String entityName) {
 
 		if (deleteWithDetailsListeners.isEmpty()) {
 			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, false), 0);
@@ -778,7 +777,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 	
-	public void addDeleteWithReasonListener(
+	public void addDeleteWithReasonOrUndeleteListener(
 		DeleteWithDetailsListener deleteListener,
 		DeleteWithDetailsListener undeleteListener,
 		String entityName,
@@ -807,9 +806,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 
 		if (!deleted) {
-			deleteWithDetailsListeners.add((deleteDetails) -> FacadeProvider.getContactFacade().delete(entityUuid, deleteDetails));
+			deleteWithDetailsListeners.add((deleteDetails) -> coreFacade.delete(entityUuid, deleteDetails));
 		} else {
-			deleteWithDetailsListeners.add((deleteDetails) -> FacadeProvider.getContactFacade().undelete(entityUuid));
+			deleteWithDetailsListeners.add((deleteDetails) -> coreFacade.undelete(entityUuid));
 		}
 		deleteWithDetailsListeners.add((deleteDetails) -> UI.getCurrent().getNavigator().navigateTo(viewName));
 	}

@@ -107,7 +107,7 @@ public class PathogenTestController {
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
-			editView.addDeleteWithReasonListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTestUuid, deleteDetails);
 				UI.getCurrent().removeWindow(popupWindow);
 				doneCallback.run();

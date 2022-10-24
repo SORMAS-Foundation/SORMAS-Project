@@ -128,6 +128,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addSidePanelComponent(createCaseInfoLayout(caseDto), CASE_LOC);
 		}
 
+		final String uuid = contactDto.getUuid();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_REASSIGN_CASE)) {
 			HorizontalLayout buttonsLayout = new HorizontalLayout();
 			buttonsLayout.setSpacing(true);
@@ -155,7 +156,7 @@ public class ContactDataView extends AbstractContactView {
 						layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()), CASE_LOC);
 						removeCaseButton.setVisible(true);
 						chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
-						ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
+						ControllerProvider.getContactController().navigateToData(uuid);
 						new Notification(null, I18nProperties.getString(Strings.messageContactCaseChanged), Type.TRAY_NOTIFICATION, false)
 							.show(Page.getCurrent());
 					}
@@ -184,7 +185,7 @@ public class ContactDataView extends AbstractContactView {
 								FacadeProvider.getContactFacade().save(contactToChange);
 								removeCaseButton.setVisible(false);
 								chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChooseSourceCase));
-								ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
+								ControllerProvider.getContactController().navigateToData(uuid);
 								new Notification(null, I18nProperties.getString(Strings.messageContactCaseRemoved), Type.TRAY_NOTIFICATION, false)
 									.show(Page.getCurrent());
 							}
@@ -273,18 +274,17 @@ public class ContactDataView extends AbstractContactView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
-		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactDto.getUuid());
+		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(uuid);
+		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 
-		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(contactDto.getUuid());
-
-		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID, deleted ? CommitDiscardWrapperComponent.DELETE_UNDELETE : "");
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
-			layout.disable(true, deleted ? CommitDiscardWrapperComponent.DELETE_UNDELETE : "");
-		} else if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disable(true);
 		}
 	}
 
