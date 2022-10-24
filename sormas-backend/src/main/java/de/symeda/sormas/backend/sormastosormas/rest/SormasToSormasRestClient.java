@@ -188,6 +188,7 @@ public class SormasToSormasRestClient {
 			String errorI18nTag = null;
 			List<ValidationErrors> errors = null;
 			Object[] args = null;
+			boolean debug = false;
 
 			try {
 				SormasToSormasErrorResponse errorResponse = mapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
@@ -197,11 +198,11 @@ public class SormasToSormasRestClient {
 				errors = errorResponse.getErrors();
 				args = errorResponse.getArgs();
 			} catch (IOException e) {
-				boolean debug = true;
+				debug = true;
 				// do nothing, keep the unparsed response as error message
 			}
 
-			if (statusCode != HttpStatus.SC_BAD_REQUEST) {
+			if (statusCode != HttpStatus.SC_BAD_REQUEST && debug) {
 				// don't log validation errors, will be displayed on the UI
 				LOGGER.error("Sending request failed: {}; {}", statusCode, errorMessage);
 			}
