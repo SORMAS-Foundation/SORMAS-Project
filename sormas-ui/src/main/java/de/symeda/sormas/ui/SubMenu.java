@@ -84,9 +84,10 @@ public class SubMenu extends CssLayout {
 			tabItem.addStyleName("back");
 		}
 		tabItemCell.addComponent(tabItem);
+		String iii ="";
 		// insert if statements to take care of null here
 		if (UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null) {
-			String iii = (UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null
+			 iii = (UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null
 					? UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria").toString()
 					: target); // this
 			// gives me
@@ -102,11 +103,11 @@ public class SubMenu extends CssLayout {
 			// to it
 
 			System.out.println("========================= " + iii);
-			String targetttt = "#!" + name + (iii != null ? "/"
-					+ "formType=Intra-campaign&area=UC5BUE-L2P2UF-P2B7XZ-HEOO2EHM&campaign=VPRWOX-M7VHMR-2AALCV-3BSK2PDI"
-					: "");
+//			String targetttt = "#!" + name + (iii != null ? "/"
+//					+ "formType=Intra-campaign&area=UC5BUE-L2P2UF-P2B7XZ-HEOO2EHM&campaign=VPRWOX-M7VHMR-2AALCV-3BSK2PDI"
+//					: "");
 			System.out.println("tttaaarrrrggggeeetttttt " + target);
-
+		} 
 			Link link = new Link();
 			if (isBackNavigation) { // need to check if the view is campaign or campaign data
 				if (Page.getCurrent().getLocation().toString().contains("campaigndata")) {
@@ -127,9 +128,7 @@ public class SubMenu extends CssLayout {
 
 			}
 			tabItem.addComponent(link);
-		} else {
-
-		}
+		
 		menuItemsLayout.addComponent(tabItemCell);
 		viewMenuItemMap.put(name, tabItem);
 	}
