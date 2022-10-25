@@ -26,4 +26,8 @@ public class OutbreaksTabPage {
       By.cssSelector("[class='v-grid-cell']");
   public static final By REGION_DISEASE_MATRIX_OUTBREAKS_CONFIGURATION =
       By.cssSelector("[class='v-button']");
+  public static final By SET_OUTBREAK_RADIO_BUTTONS =
+      By.cssSelector("[role='radiogroup']>:nth-child(1)");
+  public static final By SAVE_OUTBREAK_CONFIGURATION_BUTTON = By.id("commit");
+  public static final By DISCARD_OUTBREAK_CONFIGURATION_BUTTON = By.id("discard");
 }

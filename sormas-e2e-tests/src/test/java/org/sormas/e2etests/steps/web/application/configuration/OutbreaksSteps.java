@@ -16,8 +16,11 @@
 package org.sormas.e2etests.steps.web.application.configuration;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_OUTBREAKS_TAB;
+import static org.sormas.e2etests.pages.application.configuration.OutbreaksTabPage.DISCARD_OUTBREAK_CONFIGURATION_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.OutbreaksTabPage.DISEASE_GRID_CELL_HEADERS_OUTBREAKS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.OutbreaksTabPage.REGION_DISEASE_MATRIX_OUTBREAKS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.OutbreaksTabPage.SAVE_OUTBREAK_CONFIGURATION_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.OutbreaksTabPage.SET_OUTBREAK_RADIO_BUTTONS;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
@@ -134,8 +137,55 @@ public class OutbreaksSteps implements En {
     When(
         "I Verify the presence of Matrix in Outbreaks Configuration Page",
         () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(REGION_DISEASE_MATRIX_OUTBREAKS_CONFIGURATION),
+              "Error: Matrix is not present in Outbreaks Configuration page ");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on one of the Outbreaks Matrix element in Outbreaks Configuration Page",
+        () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               REGION_DISEASE_MATRIX_OUTBREAKS_CONFIGURATION);
+          webDriverHelpers.clickOnWebElementBySelectorAndIndex(
+              REGION_DISEASE_MATRIX_OUTBREAKS_CONFIGURATION, 1);
+        });
+
+    Then(
+        "I verify the Disease-Region popup elements are displayed in Outbreaks Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SET_OUTBREAK_RADIO_BUTTONS);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SET_OUTBREAK_RADIO_BUTTONS),
+              "Error: Radio buttons are not present in the Disease-region popup ");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SAVE_OUTBREAK_CONFIGURATION_BUTTON),
+              "Error: Save button is not present in the Disease-region popup ");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DISCARD_OUTBREAK_CONFIGURATION_BUTTON),
+              "Error: Discard button is not present in the Disease-region popup ");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I Click the ([^\"]*) button in Outbreaks Configuration Page$",
+        (String button) -> {
+          switch (button) {
+            case "Save":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SAVE_OUTBREAK_CONFIGURATION_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_OUTBREAK_CONFIGURATION_BUTTON);
+              break;
+            case "Discard":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DISCARD_OUTBREAK_CONFIGURATION_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DISCARD_OUTBREAK_CONFIGURATION_BUTTON);
+              break;
+            default:
+              throw new IllegalArgumentException("No valid options were provided");
+          }
         });
   }
 }
