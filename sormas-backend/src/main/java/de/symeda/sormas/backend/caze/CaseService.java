@@ -270,6 +270,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		from.fetch(Case.SYMPTOMS);
 		from.fetch(Case.THERAPY);
+		from.fetch(Case.CLINICAL_COURSE);
 		from.fetch(Case.HEALTH_CONDITIONS);
 		from.fetch(Case.HOSPITALIZATION);
 		from.fetch(Case.EPI_DATA);

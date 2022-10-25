@@ -12183,3 +12183,9 @@ ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
 
 INSERT INTO schema_version (version_number, comment) VALUES (496, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+
+ALTER TABLE surveillancereports ADD COLUMN externalid varchar(255);
+ALTER TABLE surveillancereports_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalId to surveillance reports #6621');
+

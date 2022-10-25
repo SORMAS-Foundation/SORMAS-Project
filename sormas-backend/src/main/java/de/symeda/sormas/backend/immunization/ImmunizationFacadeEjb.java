@@ -384,10 +384,7 @@ public class ImmunizationFacadeEjb
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(
-					source.getReportingUser(),
-					currentUser,
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
 			});
 		}
@@ -483,8 +480,11 @@ public class ImmunizationFacadeEjb
 		return fillOrBuildEntity(source, target, checkChangeDate, true);
 	}
 
-	protected Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target,
-		boolean checkChangeDate, boolean includeVaccinations) {
+	protected Immunization fillOrBuildEntity(
+		@NotNull ImmunizationDto source,
+		Immunization target,
+		boolean checkChangeDate,
+		boolean includeVaccinations) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
@@ -522,8 +522,8 @@ public class ImmunizationFacadeEjb
 		if (includeVaccinations) {
 			List<Vaccination> vaccinationEntities = new ArrayList<>();
 			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-				Vaccination existingVaccination = vaccinationService.getByUuid(source.getUuid());
-				Vaccination vaccination = vaccinationFacade.fillOrBuildEntity(vaccinationDto, existingVaccination, checkChangeDate);
+				Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+				vaccination = vaccinationFacade.fillOrBuildEntity(vaccinationDto, vaccination, checkChangeDate);
 				vaccination.setImmunization(target);
 				vaccinationEntities.add(vaccination);
 			}

@@ -177,9 +177,9 @@ public final class DtoHelper {
 		return target;
 	}
 
-	// todo this really should return void. Taking a target/receiver argument and then return it anyways does not make sense
-	// NOT REALLY, TARGET CAN BE NULL -> WE WONT HAVE ACCESS TO IT IN THE METHOD AFTER CALLING fillOrBuildEntity
-	// FIXME(#6880)
+	/**
+	 * @return The target entity or a new entity of target was null
+	 */
 	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
 		if (target == null) {
 			target = newEntity.get();
@@ -190,8 +190,15 @@ public final class DtoHelper {
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
-		} else if(!target.getUuid().equals(source.getUuid())) {
-			throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
+		} else {
+			if (DataHelper.isNullOrEmpty(target.getUuid())) {
+				String uuid = source.getUuid() != null ? source.getUuid() : DataHelper.createUuid();
+				target.setUuid(uuid);
+			} else if (DataHelper.isNullOrEmpty(source.getUuid())) {
+				// target has a uuid. do nothing -> gracefully handle missing uuids of children
+			} else if (!target.getUuid().equals(source.getUuid())) {
+				throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
+			}
 		}
 
 		DtoHelper.validateDto(source, target, checkChangeDate);

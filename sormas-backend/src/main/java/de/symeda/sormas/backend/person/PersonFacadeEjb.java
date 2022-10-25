@@ -1640,8 +1640,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setAddress(locationFacade.fillOrBuildEntity(source.getAddress(), target.getAddress(), checkChangeDate));
 		List<Location> locations = new ArrayList<>();
 		for (LocationDto locationDto : source.getAddresses()) {
-			Location existingLocation = locationService.getByUuid(source.getUuid());
-			Location location = locationFacade.fillOrBuildEntity(locationDto, existingLocation, checkChangeDate);
+			Location location = locationService.getByUuid(locationDto.getUuid());
+			location = locationFacade.fillOrBuildEntity(locationDto, location, checkChangeDate);
 			locations.add(location);
 		}
 		if (!DataHelper.equalContains(target.getAddresses(), locations)) {
