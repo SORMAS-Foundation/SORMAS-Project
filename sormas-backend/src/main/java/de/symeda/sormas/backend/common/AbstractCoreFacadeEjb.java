@@ -143,6 +143,9 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@DenyAll
 	public void undelete(String uuid) {
 		ADO ado = service.getByUuid(uuid);
+		if (ado == null) {
+			throw new IllegalArgumentException("Cannot undelete non existing entity: [" + getCoreEntityType() + "] - " + uuid);
+		}
 		service.undelete(ado);
 	}
 

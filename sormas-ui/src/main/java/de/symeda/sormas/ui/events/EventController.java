@@ -818,7 +818,7 @@ public class EventController {
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, (deleteDetails) -> {
-				FacadeProvider.getContactFacade().undelete(uuid);
+				FacadeProvider.getEventFacade().undelete(uuid);
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent), uuid, FacadeProvider.getEventFacade());
 		}
