@@ -79,6 +79,9 @@ public class CreateNewCasePage {
       By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'firstName')]//input");
   public static final By LAST_NAME_LIKE_INPUT =
       By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'lastName')]//input");
+
+  public static final By NAME_UUID_EXTERNAL_ID_TOKEN_LIKE =
+      By.id("nameUuidExternalIdExternalTokenLike");
   public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
   public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON =
       By.xpath("//div[@class='v-select-optiongroup v-widget']/span");
@@ -88,6 +91,9 @@ public class CreateNewCasePage {
       By.xpath("//*[text()='Create a new person']");
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
       By.xpath("//div[@class='v-window v-widget']//following::div[@id='commit'][2]");
+
+  public static final By SELECT_COMMIT_BUTTON =
+      By.xpath("//div[@class='v-window v-widget']//following::div[@id='commit'][1]");
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
       By.xpath(
           "//div[@class='v-grid v-widget v-has-width']//div[@class='v-grid-tablewrapper']/table/tbody[@class='v-grid-body']/tr[@class='v-grid-row v-grid-row-has-data']");

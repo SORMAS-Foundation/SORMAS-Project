@@ -59,6 +59,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NAME_UUID_EXTERNAL_ID_TOKEN_LIKE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_ATTRIBUTE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NICKNAME_ATTRIBUTE;
@@ -84,7 +85,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESP
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_JURISDICTION_LABEL;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_PERSON_WINDOW_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
@@ -697,11 +698,17 @@ public class CreateNewCaseSteps implements En {
     When(
         "^I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window$",
         () -> {
-          webDriverHelpers.fillInWebElement(
-              FIRST_NAME_LIKE_INPUT, personSharedForAllEntities.getFirstName());
-          webDriverHelpers.fillInWebElement(
-              LAST_NAME_LIKE_INPUT, personSharedForAllEntities.getLastName());
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+          //          webDriverHelpers.fillInWebElement(
+          //              FIRST_NAME_LIKE_INPUT, personSharedForAllEntities.getFirstName());
+          //          webDriverHelpers.fillInWebElement(
+          //              LAST_NAME_LIKE_INPUT, personSharedForAllEntities.getLastName());
+          //
+          // webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              NAME_UUID_EXTERNAL_ID_TOKEN_LIKE,
+              personSharedForAllEntities.getFirstName()
+                  + " "
+                  + personSharedForAllEntities.getLastName());
         });
 
     When(
@@ -711,10 +718,9 @@ public class CreateNewCaseSteps implements En {
               PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
           webDriverHelpers.clickOnWebElementBySelector(
               PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SELECT_COMMIT_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for system reaction
-          webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_COMMIT_BUTTON);
         });
 
     When(
