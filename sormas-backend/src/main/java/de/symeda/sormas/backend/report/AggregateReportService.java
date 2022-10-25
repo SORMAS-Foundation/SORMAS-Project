@@ -130,9 +130,6 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		Join<AggregateReport, User> reportingUser = joins.getReportingUser();
 		Predicate filter = cb.equal(reportingUser, currentUser);
 		boolean isPortHealthUser = userService.isPortHealthUser();
-		if (isPortHealthUser) {
-			filter = cb.or(filter, cb.isNotNull(from.get(AggregateReport.POINT_OF_ENTRY)));
-		}
 		switch (jurisdictionLevel) {
 		case REGION:
 			final Region region = currentUser.getRegion();
@@ -140,7 +137,7 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 				Predicate regionPredicate = cb.equal(from.get(AggregateReport.REGION), region);
 				if (isPortHealthUser) {
 					Join<AggregateReport, PointOfEntry> pointOfEntryJoin = from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
-					regionPredicate = cb.and(regionPredicate, cb.isNotNull(pointOfEntryJoin.get(PointOfEntry.REGION)));
+					regionPredicate = cb.and(regionPredicate, cb.equal(pointOfEntryJoin.get(PointOfEntry.REGION), region));
 				}
 				filter = cb.or(filter, regionPredicate);
 			}
@@ -153,8 +150,8 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 					Join<AggregateReport, PointOfEntry> pointOfEntryJoin = from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
 					districtPredicate = cb.and(
 						districtPredicate,
-						cb.isNotNull(pointOfEntryJoin.get(PointOfEntry.REGION)),
-						cb.isNotNull(pointOfEntryJoin.get(PointOfEntry.DISTRICT)));
+						cb.equal(pointOfEntryJoin.get(PointOfEntry.REGION), currentUser.getRegion()),
+						cb.equal(pointOfEntryJoin.get(PointOfEntry.DISTRICT), district));
 				}
 				filter = cb.or(filter, districtPredicate);
 			}
@@ -169,6 +166,11 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 			final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
 			if (pointOfEntry != null) {
 				filter = cb.or(filter, cb.equal(from.get(AggregateReport.POINT_OF_ENTRY), pointOfEntry));
+			}
+			break;
+		case NATION:
+			if (isPortHealthUser) {
+				filter = cb.or(filter, cb.isNotNull(from.get(AggregateReport.POINT_OF_ENTRY)));
 			}
 			break;
 		default:
