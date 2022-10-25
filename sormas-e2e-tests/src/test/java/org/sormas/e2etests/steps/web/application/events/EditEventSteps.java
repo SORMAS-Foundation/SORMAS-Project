@@ -836,8 +836,10 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.selectFromCombobox(
               DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(dateOfBirth.getYear()));
+          String month = String.valueOf(dateOfBirth.getMonth());
           webDriverHelpers.selectFromCombobox(
-              DATE_OF_BIRTH_MONTH_COMBOBOX, String.valueOf(dateOfBirth.getMonth().getValue()));
+              DATE_OF_BIRTH_MONTH_COMBOBOX,
+              month.substring(0, 1).toUpperCase() + month.substring(1).toLowerCase());
           webDriverHelpers.selectFromCombobox(
               DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(dateOfBirth.getDayOfMonth()));
         });
