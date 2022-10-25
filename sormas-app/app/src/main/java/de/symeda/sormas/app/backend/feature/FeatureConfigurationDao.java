@@ -76,6 +76,19 @@ public class FeatureConfigurationDao extends AbstractAdoDao<FeatureConfiguration
 		}
 	}
 
+	public boolean isFeatureEnabled(FeatureType featureType) {
+		try {
+			QueryBuilder builder = queryBuilder();
+			Where where = builder.where();
+			where.eq(FeatureConfiguration.FEATURE_TYPE, featureType);
+			where.and().eq(FeatureConfiguration.ENABLED, true);
+			return builder.countOf() > 0;
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform isFeatureEnabled");
+			throw new RuntimeException(e);
+		}
+	}
+
 	public boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property) {
 		if (!featureType.getSupportedProperties().contains(property)) {
 			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
