@@ -44,6 +44,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered;
@@ -55,6 +56,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -71,6 +73,7 @@ import de.symeda.sormas.ui.person.PersonEditForm;
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
+	public static final String DELETE_UNDELETE = "deleteUndelete";
 
 	public static interface PreCommitListener {
 
@@ -420,33 +423,43 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 									? String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName)
 									: confirmationMessage,
 							this::onDelete);
-				});
+				}, false);
 		}
 
 		return deleteButton;
 	}
 
-	public Button getDeleteWithReasonButton(String entityName) {
+	public Button getDeleteWithReasonOrUndeleteButton(String entityName, boolean deleted) {
 
 		if (deleteButton == null) {
-			deleteButton = buildDeleteButton(
-				() -> DeletableUtils.showDeleteWithReasonPopup(
-					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-					this::onDeleteWithReason));
+			deleteButton = buildDeleteButton(() -> {
+				if (!deleted) {
+					DeletableUtils.showDeleteWithReasonPopup(
+						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+						this::onDeleteWithReason);
+				} else {
+					onDeleteWithReason(null);
+				}
+			}, deleted);
 		}
 
 		return deleteButton;
 	}
 
-	private Button buildDeleteButton(Runnable deletePopupCallback) {
+	private Button buildDeleteButton(Runnable deletePopupCallback, boolean deleted) {
 
-		Button deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), e -> {
-			if (isDirty()) {
-				DirtyCheckPopup.show(this, () -> deletePopupCallback.run());
-			} else {
-				deletePopupCallback.run();
-			}
-		}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
+		Button deleteButton = ButtonHelper.createButton(
+				DELETE_UNDELETE,
+			deleted ? I18nProperties.getCaption(Captions.actionUnDelete) : I18nProperties.getCaption(Captions.actionDelete),
+			e -> {
+				if (isDirty()) {
+					DirtyCheckPopup.show(this, () -> deletePopupCallback.run());
+				} else {
+					deletePopupCallback.run();
+				}
+			},
+			ValoTheme.BUTTON_DANGER,
+			CssStyles.BUTTON_BORDER_NEUTRAL);
 
 		return deleteButton;
 	}
@@ -754,18 +767,50 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteListeners.add(listener);
 	}
 
-	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener, String entityName) {
+	public void addDeleteWithReasonOrUndeleteListener(DeleteWithDetailsListener listener, String entityName) {
 
 		if (deleteWithDetailsListeners.isEmpty()) {
-			buttonsPanel.addComponent(getDeleteWithReasonButton(entityName), 0);
+			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, false), 0);
 		}
 		if (!deleteWithDetailsListeners.contains(listener)) {
 			deleteWithDetailsListeners.add(listener);
 		}
 	}
+	
+	public void addDeleteWithReasonOrUndeleteListener(
+		DeleteWithDetailsListener deleteListener,
+		DeleteWithDetailsListener undeleteListener,
+		String entityName,
+		String entityUuid,
+		CoreFacade coreFacade) {
 
-	public boolean hasDeleteListener() {
-		return !deleteListeners.isEmpty();
+		final boolean deleted = coreFacade.isDeleted(entityUuid);
+
+		if (deleteWithDetailsListeners.isEmpty()) {
+			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, deleted), 0);
+		}
+
+		if (!deleted) {
+			deleteWithDetailsListeners.add(deleteListener);
+		} else {
+			deleteWithDetailsListeners.add(undeleteListener);
+		}
+	}
+
+	public void addDeleteWithReasonOrUndeleteListener(String viewName, String entityName, String entityUuid, CoreFacade coreFacade) {
+
+		final boolean deleted = coreFacade.isDeleted(entityUuid);
+
+		if (deleteWithDetailsListeners.isEmpty()) {
+			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, deleted), 0);
+		}
+
+		if (!deleted) {
+			deleteWithDetailsListeners.add((deleteDetails) -> coreFacade.delete(entityUuid, deleteDetails));
+		} else {
+			deleteWithDetailsListeners.add((deleteDetails) -> coreFacade.undelete(entityUuid));
+		}
+		deleteWithDetailsListeners.add((deleteDetails) -> UI.getCurrent().getNavigator().navigateTo(viewName));
 	}
 
 	private void onDelete() {

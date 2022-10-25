@@ -1428,7 +1428,7 @@ public class TestDataCreator {
 			extraConfig.accept(sampleTest);
 		}
 
-		sampleTest = beanTest.getSampleTestFacade().savePathogenTest(sampleTest);
+		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
 		return sampleTest;
 	}
 
@@ -1457,7 +1457,7 @@ public class TestDataCreator {
 			extraConfig.accept(sampleTest);
 		}
 
-		sampleTest = beanTest.getSampleTestFacade().savePathogenTest(sampleTest);
+		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
 		return sampleTest;
 	}
 
