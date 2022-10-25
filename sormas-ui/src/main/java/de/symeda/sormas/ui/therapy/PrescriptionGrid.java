@@ -84,7 +84,8 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 		} else {
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHidden(true);
 		}
-
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE))
+			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHidden(true);
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_PERIOD).setConverter(new PeriodDtoConverter());
 
