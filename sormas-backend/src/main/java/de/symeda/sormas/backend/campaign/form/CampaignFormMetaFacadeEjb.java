@@ -59,7 +59,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	private EntityManager em;
 
 	@EJB
-	private CampaignFormMetaService service;
+	private CampaignFormMetaService service; 
 	@EJB
 	private UserService userService;
 
