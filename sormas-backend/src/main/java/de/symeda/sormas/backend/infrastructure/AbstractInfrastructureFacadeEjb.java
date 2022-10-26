@@ -215,9 +215,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	// todo this can be moved up
-	@RightsAllowed({
-		UserRight._INFRASTRUCTURE_VIEW,
-		UserRight._SYSTEM })
+	@PermitAll
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
