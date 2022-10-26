@@ -319,11 +319,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public PersonDto getByUuid(String uuid) {
-		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return Optional.of(uuid)
-			.map(u -> service.getByUuid(u))
-			.map(p -> convertToDto(p, pseudonymizer, service.inJurisdictionOrOwned(p)))
-			.orElse(null);
+		final Pseudonymizer pseudonymizer = createPseudonymizer();
+		return Optional.of(uuid).map(u -> service.getByUuid(u)).map(p -> toPseudonymizedDto(p, pseudonymizer)).orElse(null);
 	}
 
 	@Override
@@ -462,7 +459,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		PersonDto existingPerson = toDto(person);
 
-		restorePseudonymizedDto(source, person, existingPerson);
+		restorePseudonymizedDto(source, existingPerson, person);
 
 		validateUserRights(source, existingPerson);
 		if (!skipValidation) {
@@ -482,7 +479,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		onPersonChanged(existingPerson, person, syncShares);
 
-		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || service.inJurisdictionOrOwned(person));
+		return toPseudonymizedDto(person, createPseudonymizer(), existingPerson == null || isAdoInJurisdiction(person));
 	}
 
 	/**
@@ -513,7 +510,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		computeApproximateAgeReferenceDate(existingPersonDto, source);
 
-		restorePseudonymizedDto(source, existingPerson, existingPersonDto);
+		restorePseudonymizedDto(source, existingPersonDto, existingPerson);
 
 		validate(source);
 
@@ -1541,20 +1538,14 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
-		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		final Pseudonymizer pseudonymizer = createPseudonymizer();
 		final List<Long> inJurisdictionIDs = service.getInJurisdictionIds(persons);
 
-		return persons.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
+		return persons.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
 	}
 
-	public PersonDto convertToDto(Person p, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
-		final PersonDto personDto = toDto(p);
-		pseudonymizeDto(personDto, pseudonymizer, inJurisdiction);
-
-		return personDto;
-	}
-
-	private void pseudonymizeDto(PersonDto dto, Pseudonymizer pseudonymizer, boolean isInJurisdiction) {
+	@Override
+	protected void pseudonymizeDto(Person source, PersonDto dto, Pseudonymizer pseudonymizer, boolean isInJurisdiction) {
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
 				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
@@ -1564,10 +1555,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		}
 	}
 
-	private void restorePseudonymizedDto(PersonDto source, Person person, PersonDto existingPerson) {
+	@Override
+	protected void restorePseudonymizedDto(PersonDto source, PersonDto existingPerson, Person person, Pseudonymizer pseudonymizer) {
 		if (person != null && existingPerson != null) {
-			boolean isInJurisdiction = service.inJurisdictionOrOwned(person);
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			boolean isInJurisdiction = isAdoInJurisdiction(person);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
 			source.getAddresses()
@@ -1598,6 +1589,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			return null;
 		}
 		return new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
+	}
+
+	@Override
+	protected boolean isAdoInJurisdiction(Person source) {
+		return service.inJurisdictionOrOwned(source);
 	}
 
 	@Override
@@ -1789,7 +1785,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		Person person = em.createQuery(cq).getSingleResult();
 
-		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), service.inJurisdictionOrOwned(person));
+		return toPseudonymizedDto(person, createPseudonymizer());
 	}
 
 	@LocalBean
