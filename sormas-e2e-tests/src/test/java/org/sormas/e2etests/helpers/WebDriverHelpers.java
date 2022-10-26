@@ -93,7 +93,6 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
-    log.info(PID + "Waiting for element [{}] to be visible and clickable", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -127,7 +126,6 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
-    log.info(PID + "Waiting for element [{}] to disappear", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -523,10 +521,8 @@ public class WebDriverHelpers {
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     try {
       if (selector instanceof WebElement) {
-        log.info(PID + "Scrolling to element [{}]", selector);
         javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
-        log.info(PID + "Scrolling to element [{}]", selector);
         javascriptExecutor.executeScript(
             SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
