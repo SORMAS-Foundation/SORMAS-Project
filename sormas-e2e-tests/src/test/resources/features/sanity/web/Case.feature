@@ -145,7 +145,7 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
-  @env_main
+  @env_main @testIt
   Scenario: Delete created case
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1391,7 +1391,7 @@ Feature: Case end to end tests
     And I filter for SAMPLE TOKEN in Cases Directory
     Then I check that at least one SAMPLE TOKEN is displayed in table
 
-  @tmsLink=SORDEV-11422 @env_main
+  @tmsLink=SORDEV-11422 @env_main @testIt
     Scenario: Add reason for deletion to confirmation dialogue
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1422,7 +1422,7 @@ Feature: Case end to end tests
     And I check if EPID number input is disabled in Edit Case
     And I check if General comment test area is disabled in Edit Case
 
-  @tmsLink=SORDEV-11422 @env_de
+  @tmsLink=SORDEV-11422 @env_de @testIt
   Scenario: Add reason for deletion to confirmation dialogue in DE version
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1867,7 +1867,7 @@ Feature: Case end to end tests
     And I click on Bulk Actions combobox on Case Directory Page
     Then I check that Share option is not visible in Bulk Actions dropdown in Case Directory for DE specific
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a case in source system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"
@@ -1909,7 +1909,7 @@ Feature: Case end to end tests
     And I select first created case for person from Cases list
     Then I check if editable fields are read only for an archived case
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a case in target system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"
@@ -1942,7 +1942,7 @@ Feature: Case end to end tests
     And I select first created case for person from Cases list
     Then I check if editable fields are read only for an archived case
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a case in source system without handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"
@@ -1974,7 +1974,7 @@ Feature: Case end to end tests
     And I select first created case for person from Cases list
     Then I check if editable fields are read only for an archived case
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a case in target system without handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"
@@ -2009,7 +2009,7 @@ Feature: Case end to end tests
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a case in source system with handing ownership before acceptance
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"

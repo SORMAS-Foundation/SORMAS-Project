@@ -372,7 +372,7 @@ Feature: Create travel entries
     And I click on first filtered record in Travel Entry
     And I check that Point of Entry and Point of Entry details are generated automatically by system and appear on Edit Travel Entry page
 
-    @tmsLink=SORDEV-11453 @env_de
+    @tmsLink=SORDEV-11453 @env_de @testIt
       Scenario: [Travel Entry] Add reason for deletion to confirmation dialogue
       Given I log in as a Admin User
       And I click on the Entries button from navbar
@@ -402,7 +402,7 @@ Feature: Create travel entries
       When I back to deleted travel entry by url
       Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
       And I check if External ID input on travel entry edit page is disabled
-  @tmsLink=SORDEV-10227 @env_de
+  @tmsLink=SORDEV-10227 @env_de @testIt
   Scenario: Test Permanent deletion for Person for Travel Entry
     Given I log in as a National User
     And I click on the Entries button from navbar

@@ -12,7 +12,7 @@ Feature: Contacts end to end tests
     Then I open Contact Person tab
     And I check the created data is correctly displayed on Edit Contact Person page
 
-  @env_main
+  @env_main @testIt
   Scenario: Delete created contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -902,7 +902,7 @@ Feature: Contacts end to end tests
     And I apply filter by duplicated contact Person data on Contact Directory Page
     And I check that number of displayed contact results is 1
 
-  @tmsLink=SORDEV-11451 @env_main
+  @tmsLink=SORDEV-11451 @env_main @testIt
   Scenario: Add reason for deletion to confirmation dialogue
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -934,7 +934,7 @@ Feature: Contacts end to end tests
     And I check if External token input on case edit page is disabled
     And I check if Case or event information text area on case edit page is disabled
 
-  @tmsLink=SORDEV-11451 @env_de
+  @tmsLink=SORDEV-11451 @env_de @testIt
   Scenario: Add reason for deletion to confirmation dialogue for DE version
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -1114,7 +1114,7 @@ Feature: Contacts end to end tests
     And I click on Open case of this contact person on Edit contact page
     And I check that follow-up status comment is correctly displayed on Edit case page
 
-  @issue=SORDEV-10227 @env_de
+  @issue=SORDEV-10227 @env_de @testIt
   Scenario: Test Permanent deletion for Person for Contact
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -1245,7 +1245,7 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     And I search after last created contact via API by UUID and open
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a contact in target system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"
@@ -1291,7 +1291,7 @@ Feature: Contacts end to end tests
     And I open the first contact from contacts list
     And I check if editable fields are read only for shared contact
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a contact in source system without handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"
@@ -1384,7 +1384,7 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     And I search after last created contact via API by UUID and open
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a contact in source system with handing ownership before acceptance
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"

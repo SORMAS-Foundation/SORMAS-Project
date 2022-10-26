@@ -170,7 +170,7 @@ Feature: Dashboard counters
     And I select "COVID-19" in TabSheet of Surveillance Dashboard
     Then I check that the Total number of COVID-19 cases excludes those marked "not a case" in German
 
-  @tmsLink=SORDEV-6142 @env_main
+  @tmsLink=SORDEV-6142 @env_main @testIt
   Scenario: Check that number of cases on the dashboard map is rendered by the time filter
       Given I log in as a National User
       When I click on the Dashboard button from navbar
@@ -215,7 +215,7 @@ Feature: Dashboard counters
       And I click on the first Case ID from Case Directory
       And I delete the case
 
-  @tmsLink=SORDEV-6142 @env_main
+  @tmsLink=SORDEV-6142 @env_main @testIt
   Scenario: Check that number of contacts on the dashboard map is rendered by the time filter
     Given I log in as a National User
     When I click on the Dashboard button from navbar

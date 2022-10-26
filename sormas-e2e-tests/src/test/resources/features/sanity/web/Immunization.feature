@@ -102,7 +102,7 @@ Feature: Immunization end to end tests
     Then I click on first person in person directory
     And I check if data of created immunization is in Immunization tab on Edit Person Page
 
-  @tmsLink=SORDEV-11454 @env_main
+  @tmsLink=SORDEV-11454 @env_main @testIt
   Scenario: Add reason for deletion to confirmation dialogue
     Given I log in as a Admin User
     And I click on the Immunizations button from navbar
