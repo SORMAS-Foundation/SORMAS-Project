@@ -116,6 +116,12 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
 	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
 	}
 

@@ -44,6 +44,7 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
+		container.setEnabled(true);
 
 		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, SORMAS_TO_SORMAS_LOC);
 

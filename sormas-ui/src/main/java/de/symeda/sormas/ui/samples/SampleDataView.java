@@ -184,5 +184,12 @@ public class SampleDataView extends AbstractSampleView {
 		}
 
 		setSampleEditPermission(container);
+
+		final String uuid = sampleDto.getUuid();
+		final boolean deleted = FacadeProvider.getImmunizationFacade().isDeleted(uuid);
+
+		if (deleted) {
+			editComponent.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		}
 	}
 }
