@@ -27,7 +27,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -170,7 +169,8 @@ public class CampaignFacadeEjb
 	@RightsAllowed(UserRight._CAMPAIGN_EDIT)
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
-		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
+		Campaign existingCampaign = service.getByUuid(dto.getUuid());
+		Campaign campaign = fillOrBuildEntity(dto, existingCampaign, true);
 		if (!service.isEditAllowed(campaign)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}
@@ -356,6 +356,12 @@ public class CampaignFacadeEjb
 	public void delete(String campaignUuid, DeletionDetails deletionDetails) {
 
 		service.delete(service.getByUuid(campaignUuid), deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
 	}
 
 	@Override

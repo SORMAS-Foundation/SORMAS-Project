@@ -2574,6 +2574,49 @@ public class EditCaseSteps implements En {
               "Archive case button is visible!");
           softly.assertAll();
         });
+
+    And(
+        "^I check if date of report is set for (\\d+) day ago from today on Edit Case page for DE version$",
+        (Integer days) -> {
+          String actualReportDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+          String expectedReportDate =
+              (LocalDate.now().minusDays(days)).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+          Assert.assertEquals(actualReportDate, expectedReportDate, "Report date is incorrect!");
+        });
+
+    And(
+        "^I choose the reason of deletion in popup for Vaccination for DE version$",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              DELETE_VACCINATION_REASON_POPUP_DE_VERSION, "Anderer Grund");
+          webDriverHelpers.fillInWebElement(REASON_FOR_DELETION_DETAILS_TEXTAREA, "Other reason");
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+        });
+
+    And(
+        "^I choose \"([^\"]*)\" in Vaccination Status update popup for DE version$",
+        (String option) -> {
+          webDriverHelpers.isElementVisibleWithTimeout(VACCINATION_STATUS_UPDATE_POPUP_HEADER, 5);
+          switch (option) {
+            case "JA":
+              webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+              break;
+            case "NEIN":
+              webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+              break;
+          }
+          TimeUnit.SECONDS.sleep(3); // wait for reaction
+        });
+
+    And(
+        "^I check that vaccination is removed from vaccination card on Edit Case page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          boolean elementVisible =
+              webDriverHelpers.isElementVisibleWithTimeout(EDIT_VACCINATION_BUTTON, 5);
+          softly.assertFalse(elementVisible, "Vaccination ID is visible!");
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {

@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import static java.util.Objects.isNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -238,7 +240,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		restorePseudonymizedDto(clinicalVisit, existingClinicalVisit);
 
-		ClinicalVisit entity = fromDto(clinicalVisit, existingClinicalVisit, true);
+		ClinicalVisit entity = fillOrBuildEntity(clinicalVisit, existingClinicalVisit, true);
 
 		service.ensurePersisted(entity);
 
@@ -428,11 +430,17 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		return target;
 	}
 
-	public ClinicalVisit fromDto(@NotNull ClinicalVisitDto source, ClinicalVisit target, boolean checkChangeDate) {
+	public ClinicalVisit fillOrBuildEntity(@NotNull ClinicalVisitDto source, ClinicalVisit target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
+
 		target = DtoHelper.fillOrBuildEntity(source, target, ClinicalVisit::new, checkChangeDate);
 
+		if (targetWasNull) {
+			target.getSymptoms().setUuid(source.getSymptoms().getUuid());
+		}
+
 		target.setClinicalCourse(clinicalCourseService.getByReferenceDto(source.getClinicalCourse()));
-		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms(), checkChangeDate));
+		target.setSymptoms(symptomsFacade.fillOrBuildEntity(source.getSymptoms(), target.getSymptoms(), checkChangeDate));
 		target.setDisease(source.getDisease());
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());

@@ -501,7 +501,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testContactDeletion() {
+	public void testContactDeletionAndUndeletion() {
 
 		Date since = new Date();
 
@@ -572,6 +572,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
 		assertEquals(DeletionReason.OTHER_REASON, getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
 		assertEquals("test reason", getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
+
+		getContactFacade().undelete(contact.getUuid());
+
+		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
+		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
+		assertNull(getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
+		assertNull(getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -1715,7 +1724,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testCreateWithoutUuid() {
 		RDCF rdcf = creator.createRDCF();
 
-		ContactDto contact = new ContactDto();
+		ContactDto contact = ContactDto.build();
 		contact.setReportDateTime(new Date());
 		contact.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		contact.setDisease(Disease.CORONAVIRUS);

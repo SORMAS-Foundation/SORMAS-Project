@@ -276,7 +276,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		EventGroup existingEventGroup = eventGroupService.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingEventGroup, userService, UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_EDIT);
 
-		EventGroup eventGroup = fromDto(dto, checkChangeDate);
+		EventGroup eventGroup = fillOrBuildEntity(dto, existingEventGroup, checkChangeDate);
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
@@ -613,8 +613,8 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		return target;
 	}
 
-	public EventGroup fromDto(@NotNull EventGroupDto source, boolean checkChangeDate) {
-		EventGroup target = DtoHelper.fillOrBuildEntity(source, eventGroupService.getByUuid(source.getUuid()), EventGroup::new, checkChangeDate);
+	public EventGroup fillOrBuildEntity(@NotNull EventGroupDto source, EventGroup target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, EventGroup::new, checkChangeDate);
 
 		target.setName(source.getName());
 

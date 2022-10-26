@@ -467,14 +467,14 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		PathogenTestDto sampleTest =
 			creator.createPathogenTest(caze, Disease.YELLOW_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
-		getSampleTestFacade().savePathogenTest(sampleTest);
+		getPathogenTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().save(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
 		sampleTest = creator.createPathogenTest(caze, Disease.YELLOW_FEVER, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
-		getSampleTestFacade().savePathogenTest(sampleTest);
+		getPathogenTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 	}
@@ -599,7 +599,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		PathogenTestDto sampleTest =
 			creator.createPathogenTest(caze, Disease.DENGUE, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
-		getSampleTestFacade().savePathogenTest(sampleTest);
+		getPathogenTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 	}
@@ -706,7 +706,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		PathogenTestDto sampleTest =
 			creator.createPathogenTest(caze, Disease.NEW_INFLUENZA, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
-		getSampleTestFacade().savePathogenTest(sampleTest);
+		getPathogenTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 	}

@@ -600,10 +600,11 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
-			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
-				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
-				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityContact));
+			editComponent.addDeleteWithReasonOrUndeleteListener(
+				ContactsView.VIEW_NAME,
+				I18nProperties.getString(Strings.entityContact),
+				contactUuid,
+				FacadeProvider.getContactFacade());
 		}
 
 		// Initialize 'Archive' button

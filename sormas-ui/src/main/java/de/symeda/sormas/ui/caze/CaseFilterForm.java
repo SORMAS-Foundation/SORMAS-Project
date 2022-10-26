@@ -261,7 +261,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		Field<?> quarantineTo = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
 		quarantineTo.removeAllValidators();
 
-		addBirthDateFields(CaseCriteria.BIRTHDATE_YYYY, CaseCriteria.BIRTHDATE_MM, CaseCriteria.BIRTHDATE_DD);
+		addBirthDateFields(moreFiltersContainer, CaseCriteria.BIRTHDATE_YYYY, CaseCriteria.BIRTHDATE_MM, CaseCriteria.BIRTHDATE_DD);
 
 		addField(
 			moreFiltersContainer,

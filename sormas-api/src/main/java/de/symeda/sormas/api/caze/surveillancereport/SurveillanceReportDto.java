@@ -15,13 +15,12 @@
 
 package de.symeda.sormas.api.caze.surveillancereport;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -29,6 +28,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -41,6 +41,7 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 	public static final String I18N_PREFIX = "SurveillanceReport";
 
 	public static final String REPORTING_TYPE = "reportingType";
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String CREATING_USER = "creatingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String DATE_OF_DIAGNOSIS = "dateOfDiagnosis";
@@ -62,6 +63,8 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 	}
 
 	private ReportingType reportingType;
+
+	private String externalId;
 
 	private UserReferenceDto creatingUser;
 
@@ -93,6 +96,14 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 
 	public void setReportingType(ReportingType reportingType) {
 		this.reportingType = reportingType;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public UserReferenceDto getCreatingUser() {

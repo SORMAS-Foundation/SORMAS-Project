@@ -60,7 +60,7 @@ public class EventParticipantsPage {
       By.cssSelector("tr[role='row'] > td:nth-of-type(2) a");
   public static final By CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW =
       By.cssSelector("[scroll] [role='dialog']:nth-of-type(5) #commit");
-  public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#delete");
+  public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#deleteUndelete");
   public static final By CONFIRM_DELETION_OF_EVENT_PARTICIPANT = By.id("actionConfirm");
   public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By POPUP_DISCARD_CHANGES_BUTTON = By.id("actionCancel");

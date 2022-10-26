@@ -117,8 +117,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	List<String> getDeletedUuidsSince(Date since);
 
-	boolean isDeleted(String contactUuid);
-
 	List<ContactFollowUpDto> getContactFollowUpList(
 		ContactCriteria contactCriteria,
 		Date referenceDate,

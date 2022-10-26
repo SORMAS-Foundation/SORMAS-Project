@@ -153,7 +153,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		restorePseudonymizedDto(source, existingTreatment, existingDto);
 
-		Treatment entity = fromDto(source, existingTreatment, true);
+		Treatment entity = fillOrBuildEntity(source, existingTreatment, true);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -318,8 +318,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		return target;
 	}
 
-	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target, boolean checkChangeDate) {
-
+	public Treatment fillOrBuildEntity(@NotNull TreatmentDto source, Treatment target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Treatment::new, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));

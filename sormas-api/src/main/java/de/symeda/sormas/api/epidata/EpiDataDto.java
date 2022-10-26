@@ -27,6 +27,7 @@ import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
@@ -143,5 +144,19 @@ public class EpiDataDto extends PseudonymizableDto {
 		EpiDataDto epiData = new EpiDataDto();
 		epiData.setUuid(DataHelper.createUuid());
 		return epiData;
+	}
+
+	@Override
+	public EpiDataDto clone() throws CloneNotSupportedException {
+		EpiDataDto clone = (EpiDataDto) super.clone();
+		clone.getActivitiesAsCase().clear();
+		for (ActivityAsCaseDto activityAsCase : getActivitiesAsCase()) {
+			clone.getActivitiesAsCase().add(activityAsCase.clone());
+		}
+		clone.getExposures().clear();
+		for (ExposureDto exposure : getExposures()) {
+			clone.getExposures().add(exposure.clone());
+		}
+		return clone;
 	}
 }

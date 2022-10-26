@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,12 +17,17 @@ package de.symeda.sormas.api.importexport;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public class ImportLineResultDto<E> implements Serializable {
 
 	private static final long serialVersionUID = -9004769653154669800L;
-
+	@AuditInclude
 	private final ImportLineResult result;
 	private final String message;
+	@AuditInclude
 	private final E importEntities;
 
 	private ImportLineResultDto(ImportLineResult result, String message, E importEntities) {

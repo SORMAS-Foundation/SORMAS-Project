@@ -695,14 +695,6 @@ public class CaseController {
 					}
 
 					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-					dto.getSymptoms().setUuid(DataHelper.createUuid());
-					dto.getHealthConditions().setUuid(DataHelper.createUuid());
-					dto.getEpiData().setUuid(DataHelper.createUuid());
-					dto.getEpiData().getExposures().forEach(exposure -> {
-						exposure.setUuid(DataHelper.createUuid());
-						exposure.getLocation().setUuid(DataHelper.createUuid());
-					});
-
 					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
 
 					transferDataToPerson(createForm, person);
@@ -1120,7 +1112,7 @@ public class CaseController {
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
-			editView.addDeleteWithReasonListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 					long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
 					if (contactCount > 0) {
@@ -1145,7 +1137,13 @@ public class CaseController {
 				} else {
 					deleteCase(caze, false, deleteDetails);
 				}
-			}, I18nProperties.getString(Strings.entityCase));
+			}, (deleteDetails) -> {
+				FacadeProvider.getCaseFacade().undelete(caze.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
+			},
+				I18nProperties.getString(Strings.entityCase),
+				caze.getUuid(),
+				FacadeProvider.getCaseFacade());
 		}
 
 		// Initialize 'Archive' button

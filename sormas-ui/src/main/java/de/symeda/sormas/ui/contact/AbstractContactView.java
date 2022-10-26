@@ -42,7 +42,6 @@ import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
-import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
 
 public abstract class AbstractContactView extends AbstractEditAllowedDetailView<ContactReferenceDto> {
@@ -128,15 +127,6 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 	@Override
 	protected String getRootViewName() {
 		return ROOT_VIEW_NAME;
-	}
-
-	@Override
-	protected void setSubComponent(DirtyStateComponent newComponent) {
-		super.setSubComponent(newComponent);
-
-		if (FacadeProvider.getContactFacade().isDeleted(getReference().getUuid())) {
-			newComponent.setEnabled(false);
-		}
 	}
 
 	public ContactReferenceDto getContactRef() {

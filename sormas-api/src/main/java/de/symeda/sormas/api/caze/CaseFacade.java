@@ -133,10 +133,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	Date getOldestCaseOutcomeDate();
 
-	boolean isDeleted(String caseUuid);
-
-	boolean isArchived(String caseUuid);
-
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date since);

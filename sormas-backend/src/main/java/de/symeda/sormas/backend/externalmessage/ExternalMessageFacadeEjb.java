@@ -110,7 +110,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@EJB
 	private UserService userService;
 
-	ExternalMessage fromDto(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
+	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, ExternalMessage::new, checkChangeDate);
 
@@ -185,7 +185,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {
 		ExternalMessage externalMessage = externalMessageService.getByUuid(dto.getUuid());
 
-		externalMessage = fromDto(dto, externalMessage, checkChangeDate);
+		externalMessage = fillOrBuildEntity(dto, externalMessage, checkChangeDate);
 		if (newTransaction) {
 			externalMessageService.ensurePersistedInNewTransaction(externalMessage);
 		} else {

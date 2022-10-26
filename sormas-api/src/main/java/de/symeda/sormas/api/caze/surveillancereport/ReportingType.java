@@ -21,6 +21,7 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 public enum ReportingType {
 
 	DOCTOR,
+	LABORATORY,
 	FORWARDING,
 	HOSPITAL_OR_STATIONARY_CARE,
 	COMMUNITY_FACILITY,

@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import org.apache.commons.io.input.BOMInputStream;
 import org.junit.Before;
 
@@ -53,7 +54,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
@@ -86,6 +86,7 @@ import info.novatec.beantest.api.BaseBeanTest;
 public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator();
+
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.
@@ -120,7 +121,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 		user.setChangeDate(new Date());
 		user.setLanguage(Language.EN);
-		user.setAddress(LocationDto.build());
 		user.getUserRoles().add(creator.getUserRoleReference(DefaultUserRole.ADMIN));
 		user.getUserRoles().add(creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
@@ -146,19 +146,24 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		em.getTransaction().begin();
 
 		Query nativeQuery = em.createNativeQuery(
-			"INSERT INTO users (id, uuid, creationdate, changedate, username, firstName, lastName, password, seed, active, hasconsentedtogdpr, jurisdictionlevel) values (1, '"
-				+ DataHelper.createUuid() + "', now(), now(), 'admin', 'ad', 'min', 'testpass', 'seed', true, true, 'NONE')");
+				"INSERT INTO location (id, uuid, creationdate, changedate) values (0, '"
+						+ DataHelper.createUuid() + "', now(), now())");
 		nativeQuery.executeUpdate();
 
 		nativeQuery = em.createNativeQuery(
-			"INSERT INTO userroles (id, uuid, creationdate, changedate, caption, jurisdictionLevel, enabled, porthealthuser, hasassociateddistrictuser, hasoptionalhealthfacility) values (1, '"
+			"INSERT INTO users (id, uuid, creationdate, changedate, username, firstName, lastName, password, seed, active, hasconsentedtogdpr, jurisdictionlevel, address_id) values (0, '"
+				+ DataHelper.createUuid() + "', now(), now(), 'admin', 'ad', 'min', 'testpass', 'seed', true, true, 'NONE', 0)");
+		nativeQuery.executeUpdate();
+
+		nativeQuery = em.createNativeQuery(
+			"INSERT INTO userroles (id, uuid, creationdate, changedate, caption, jurisdictionLevel, enabled, porthealthuser, hasassociateddistrictuser, hasoptionalhealthfacility) values (0, '"
 				+ DataHelper.createUuid() + "', now(), now(), 'Admin init', 'NONE', false, false, false, false)");
 		nativeQuery.executeUpdate();
 
-		nativeQuery = em.createNativeQuery("INSERT INTO userroles_userrights (userrole_id, userright) values (1, 'USER_EDIT')");
+		nativeQuery = em.createNativeQuery("INSERT INTO userroles_userrights (userrole_id, userright) values (0, 'USER_EDIT')");
 		nativeQuery.executeUpdate();
 
-		nativeQuery = em.createNativeQuery("INSERT INTO users_userroles (user_id, userrole_id) values (1, 1)");
+		nativeQuery = em.createNativeQuery("INSERT INTO users_userroles (user_id, userrole_id) values (0, 0)");
 		nativeQuery.executeUpdate();
 
 		em.getTransaction().commit();

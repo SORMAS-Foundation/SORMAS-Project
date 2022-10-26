@@ -1150,6 +1150,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				final CaseDataDto entity = postBody.getCases().get(0).getEntity();
 
 				entity.setUuid(uuid);
+				entity.getHospitalization().setUuid(DataHelper.createUuid());
+				entity.getSymptoms().setUuid(DataHelper.createUuid());
+				entity.getEpiData().setUuid(DataHelper.createUuid());
 				entity.getTherapy().setUuid(DataHelper.createUuid());
 				entity.getHealthConditions().setUuid(DataHelper.createUuid());
 				entity.getPortHealthInfo().setUuid(DataHelper.createUuid());
