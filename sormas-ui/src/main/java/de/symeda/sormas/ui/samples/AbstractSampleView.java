@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.samples;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Component;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -104,13 +103,6 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 	@Override
 	protected String getRootViewName() {
 		return ROOT_VIEW_NAME;
-	}
-
-	public void setSampleEditPermission(Component component) {
-
-		if (!isEditAllowed()) {
-			component.setEnabled(false);
-		}
 	}
 
 	protected boolean isEditAllowed() {

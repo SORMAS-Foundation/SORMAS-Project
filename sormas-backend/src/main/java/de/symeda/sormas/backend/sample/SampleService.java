@@ -912,7 +912,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.select(cb.literal(true));
 
 		Predicate predicate =
-			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), cb.isFalse(from.get(Sample.DELETED)), assignedToActiveEntity(cb, joins));
+			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), assignedToActiveEntity(cb, joins));
 
 		cq.where(predicate);
 
