@@ -60,7 +60,11 @@ public class StepsLogger implements StepLifecycleListener {
     if (takeScreenshotAfterStep) {
       takeScreenshot();
     }
-    boolean logData = Boolean.parseBoolean(System.getProperty("generateLogs"));
+    boolean logData = false;
+    try{
+      logData = Boolean.parseBoolean(System.getProperty("generateLogs"));
+    }
+    catch (Exception any){}
     boolean isDriverNotNull = driver != null;
     boolean isStepFailed = !stepResult.getStatus().value().contains("pass");
     if (isScreenshotEnabled && logData && isDriverNotNull && isStepFailed) {
