@@ -185,6 +185,7 @@ public class MSersDirectorySteps implements En {
         "I click to edit {int} result in mSers directory page",
         (Integer ide) -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getEditButtonByIndex(ide));
+          TimeUnit.SECONDS.sleep(2); // waiting for grid refresh
           webDriverHelpers.doubleClickOnWebElementBySelector(getEditButtonByIndex(ide));
         });
     When(
