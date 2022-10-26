@@ -117,6 +117,8 @@ You can configure the audit logger of SORMAS by providing a Logback [configurati
 
 ## Keycloak Server
 
+**Note**: SORMAS also comes with a basic auth mechanism using an JEE authentication realm. This authentication mechanism should only be used for development environments. For **production environments always use the keycloak authentication mechansim.** See [Authentication & Authorization](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Authentication-&-Authorization).
+
 Keycloak can be set up in two ways:
 * as a Docker container (for just using Keycloak approach)
 * as a Standalone installation (for doing development in Keycloak like themes, SPIs)

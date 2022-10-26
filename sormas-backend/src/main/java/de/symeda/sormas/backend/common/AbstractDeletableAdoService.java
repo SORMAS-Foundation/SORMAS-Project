@@ -24,6 +24,15 @@ public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> exte
 		em.flush();
 	}
 
+	public void undelete(ADO ado) {
+
+		ado.setDeletionReason(null);
+		ado.setOtherDeletionReason(null);
+		ado.setDeleted(false);
+		em.persist(ado);
+		em.flush();
+	}
+
 	protected <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
 		From<?, ?> parent = path;
 		for (String joinField : joinFields) {

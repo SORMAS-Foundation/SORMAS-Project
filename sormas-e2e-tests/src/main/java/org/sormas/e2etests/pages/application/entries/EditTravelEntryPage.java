@@ -59,9 +59,9 @@ public class EditTravelEntryPage {
           "//div[text()='Dokumente']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By NEW_TASK_DE = By.id("taskNewTask");
   public static final By EDIT_TASK_DE = By.id("edit-task-0");
-  public static final By DELETE_TASK_BUTTON = By.cssSelector(".popupContent #delete");
+  public static final By DELETE_TASK_BUTTON = By.cssSelector(".popupContent #deleteUndelete");
   public static final By DISCARD_TASK_BUTTON = By.cssSelector(".popupContent #discard");
   public static final By SAVE_TASK_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By TASK_STATUS_RADIOBUTTON = By.cssSelector(".popupContent #taskStatus");
-  public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETE_BUTTON = By.id("deleteUndelete");
 }

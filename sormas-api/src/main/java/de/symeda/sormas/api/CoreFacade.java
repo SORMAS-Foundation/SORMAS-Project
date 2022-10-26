@@ -29,7 +29,11 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	boolean isArchived(String uuid);
 
+	boolean isDeleted(String uuid);
+
 	void delete(String uuid, DeletionDetails deletionDetails);
+
+	void undelete(String uuid);
 
 	boolean exists(String uuid);
 

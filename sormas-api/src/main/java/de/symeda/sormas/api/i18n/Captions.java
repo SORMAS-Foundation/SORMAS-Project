@@ -120,6 +120,7 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
+	String actionUnDelete = "actionUnDelete";
 	String actionYes = "actionYes";
 	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";
@@ -2064,14 +2065,17 @@ public interface Captions {
 	String SurveillanceReport = "SurveillanceReport";
 	String SurveillanceReport_creatingUser = "SurveillanceReport.creatingUser";
 	String SurveillanceReport_dateOfDiagnosis = "SurveillanceReport.dateOfDiagnosis";
+	String SurveillanceReport_externalId = "SurveillanceReport.externalId";
 	String SurveillanceReport_facility = "SurveillanceReport.facility";
 	String SurveillanceReport_facilityDetails = "SurveillanceReport.facilityDetails";
 	String SurveillanceReport_facilityDistrict = "SurveillanceReport.facilityDistrict";
 	String SurveillanceReport_facilityRegion = "SurveillanceReport.facilityRegion";
 	String SurveillanceReport_facilityType = "SurveillanceReport.facilityType";
+	String SurveillanceReport_facilityTypeGroup = "SurveillanceReport.facilityTypeGroup";
 	String SurveillanceReport_notificationDetails = "SurveillanceReport.notificationDetails";
 	String SurveillanceReport_reportDate = "SurveillanceReport.reportDate";
 	String SurveillanceReport_reportingType = "SurveillanceReport.reportingType";
+	String SurveillanceReport_uuid = "SurveillanceReport.uuid";
 	String surveillanceReportNewReport = "surveillanceReportNewReport";
 	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
 	String symptomJournalOptionsButton = "symptomJournalOptionsButton";

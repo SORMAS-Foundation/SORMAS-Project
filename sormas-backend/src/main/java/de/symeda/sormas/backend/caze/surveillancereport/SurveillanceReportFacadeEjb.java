@@ -81,6 +81,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setReportingType(source.getReportingType());
+		target.setExternalId(source.getExternalId());
 		target.setCreatingUser(source.getCreatingUser().toReference());
 		target.setReportDate(source.getReportDate());
 		target.setDateOfDiagnosis(source.getDateOfDiagnosis());
@@ -146,10 +147,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 		}, (reportDto, inJurisdiction) -> {
 			Optional<SurveillanceReport> report = resultList.stream().filter(r -> r.getUuid().equals(r.getUuid())).findFirst();
 			report.ifPresent(
-				surveillanceReport -> pseudonymizer.pseudonymizeUser(
-					surveillanceReport.getCreatingUser(),
-					currentUser,
-					reportDto::setCreatingUser));
+				surveillanceReport -> pseudonymizer.pseudonymizeUser(surveillanceReport.getCreatingUser(), currentUser, reportDto::setCreatingUser));
 		});
 
 		return reports;
@@ -177,6 +175,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), SurveillanceReport::new, checkChangeDate);
 
 		target.setReportingType(source.getReportingType());
+		target.setExternalId(source.getExternalId());
 		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
 		target.setReportDate(source.getReportDate());
 		target.setDateOfDiagnosis(source.getDateOfDiagnosis());

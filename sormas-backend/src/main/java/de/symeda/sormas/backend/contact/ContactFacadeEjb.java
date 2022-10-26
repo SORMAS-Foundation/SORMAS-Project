@@ -549,6 +549,12 @@ public class ContactFacadeEjb
 		deleteContact(contact, deletionDetails);
 	}
 
+	@Override
+	@RightsAllowed(UserRight._CONTACT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		service.delete(contact, deletionDetails);
@@ -1473,19 +1479,6 @@ public class ContactFacadeEjb
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
-	}
-
-	@Override
-	public boolean isDeleted(String contactUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Contact> from = cq.from(Contact.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(Contact.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), contactUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
 	}
 
 	@Override

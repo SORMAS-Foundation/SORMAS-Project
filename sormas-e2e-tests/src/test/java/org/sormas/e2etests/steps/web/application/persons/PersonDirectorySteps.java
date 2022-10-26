@@ -31,6 +31,7 @@ import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelE
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -257,8 +258,12 @@ public class PersonDirectorySteps implements En {
     Then(
         "I fill Month of birth filter in Persons with the month of the last created person via API",
         () -> {
-          String monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM().toString();
-          webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth);
+          String month =
+              new DateFormatSymbols()
+                  .getMonths()[apiState.getLastCreatedPerson().getBirthdateMM() - 1];
+          webDriverHelpers.selectFromCombobox(
+              BIRTH_MONTH_COMBOBOX,
+              month.substring(0, 1).toUpperCase() + month.substring(1).toLowerCase());
         });
 
     Then(
@@ -356,8 +361,8 @@ public class PersonDirectorySteps implements En {
           Integer monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM();
           Integer differentMonthOfBirth =
               (monthOfBirth.intValue() == 12) ? monthOfBirth - 1 : monthOfBirth + 1;
-          webDriverHelpers.selectFromCombobox(
-              BIRTH_MONTH_COMBOBOX, differentMonthOfBirth.toString());
+          String month = new DateFormatSymbols().getMonths()[differentMonthOfBirth - 1];
+          webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, month);
         });
 
     Then(

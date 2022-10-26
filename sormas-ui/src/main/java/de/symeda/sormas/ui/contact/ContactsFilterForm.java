@@ -249,7 +249,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				140));
 		quarantineTo.removeAllValidators();
 
-		addBirthDateFields(ContactCriteria.BIRTHDATE_YYYY, ContactCriteria.BIRTHDATE_MM, ContactCriteria.BIRTHDATE_DD);
+		addBirthDateFields(moreFiltersContainer, ContactCriteria.BIRTHDATE_YYYY, ContactCriteria.BIRTHDATE_MM, ContactCriteria.BIRTHDATE_DD);
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(

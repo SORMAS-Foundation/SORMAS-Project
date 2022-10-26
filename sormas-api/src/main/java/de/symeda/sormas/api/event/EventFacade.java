@@ -49,8 +49,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max);
 
-	boolean isDeleted(String eventUuid);
-
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date since);

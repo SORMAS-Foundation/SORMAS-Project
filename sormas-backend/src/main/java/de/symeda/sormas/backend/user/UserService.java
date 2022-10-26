@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
@@ -926,5 +928,11 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		} catch (Throwable e) {
 			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", user.getUuid()), e);
 		}
+	}
+
+	public boolean isPortHealthUser() {
+		User user = getCurrentUser();
+		Set<UserRoleDto> userRoleDtos = user.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet());
+		return userRoleFacade.isPortHealthUser(userRoleDtos);
 	}
 }
