@@ -979,9 +979,16 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			pathogenTestService.delete(pathogenTest, deletionDetails);
 		}
 
-		deleteSampleLinks(sample);
-
 		super.delete(sample, deletionDetails);
+	}
+
+	@Override
+	public void undelete(Sample sample) {
+
+		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+			pathogenTestService.undelete(pathogenTest);
+		}
+		super.undelete(sample);
 	}
 
 	public void unlinkFromEventParticipant(Sample sample) {

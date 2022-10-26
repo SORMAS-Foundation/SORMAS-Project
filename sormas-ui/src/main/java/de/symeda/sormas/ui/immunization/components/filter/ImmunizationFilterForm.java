@@ -88,7 +88,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 				200));
 		searchField.setNullRepresentation("");
 
-		addBirthDateFields(ImmunizationCriteria.BIRTHDATE_YYYY, ImmunizationCriteria.BIRTHDATE_MM, ImmunizationCriteria.BIRTHDATE_DD);
+		addBirthDateFields(getContent(), ImmunizationCriteria.BIRTHDATE_YYYY, ImmunizationCriteria.BIRTHDATE_MM, ImmunizationCriteria.BIRTHDATE_DD);
 
 		addFields(
 			FieldConfiguration.pixelSized(ImmunizationCriteria.MEANS_OF_IMMUNIZATION, 140),

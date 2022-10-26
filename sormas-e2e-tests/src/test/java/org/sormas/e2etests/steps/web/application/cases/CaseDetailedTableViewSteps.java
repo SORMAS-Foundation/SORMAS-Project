@@ -237,6 +237,13 @@ public class CaseDetailedTableViewSteps implements En {
               detailedCaseDTableRow.containsValue("SAMPLE TOKEN"), "SAMPLE TOKEN was not found!");
           softly.assertAll();
         });
+
+    And(
+        "^I check that I get navigated to the Case directory page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_ORIGIN_FILTER_COMBOBOX);
+        });
   }
 
   private boolean checkDateFormatDE(Map<String, String> map, String row) {

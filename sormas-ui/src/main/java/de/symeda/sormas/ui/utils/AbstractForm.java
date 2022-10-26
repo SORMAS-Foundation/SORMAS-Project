@@ -345,18 +345,18 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
-	public void addBirthDateFields(String yearPropertyId, String monthPropertyId, String dayPropertyId) {
-		final ComboBox birthDateYYYY = addField(getContent(), yearPropertyId, ComboBox.class);
+	public void addBirthDateFields(CustomLayout moreFiltersContainer, String yearPropertyId, String monthPropertyId, String dayPropertyId) {
+		final ComboBox birthDateYYYY = addField(moreFiltersContainer, yearPropertyId, ComboBox.class);
 		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
 		birthDateYYYY.setWidth(140, Sizeable.Unit.PIXELS);
 		birthDateYYYY.addItems(DateHelper.getYearsToNow());
 		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
-		final ComboBox birthDateMM = addField(getContent(), monthPropertyId, ComboBox.class);
+		final ComboBox birthDateMM = addField(moreFiltersContainer, monthPropertyId, ComboBox.class);
 		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
 		birthDateMM.setWidth(140, Sizeable.Unit.PIXELS);
 		birthDateMM.addItems(DateHelper.getMonthsInYear());
 		DateHelper.getMonthsInYear().forEach(month -> birthDateMM.setItemCaption(month, Month.values()[month - 1].toString()));
-		final ComboBox birthDateDD = addField(getContent(), dayPropertyId, ComboBox.class);
+		final ComboBox birthDateDD = addField(moreFiltersContainer, dayPropertyId, ComboBox.class);
 		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
 		birthDateDD.setWidth(140, Sizeable.Unit.PIXELS);
 	}

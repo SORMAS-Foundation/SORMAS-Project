@@ -66,9 +66,13 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		EditPermissionType immunizationEditAllowed = FacadeProvider.getImmunizationFacade().getEditPermissionType(immunization.getUuid());
+		final String uuid = immunization.getUuid();
+		final EditPermissionType immunizationEditAllowed = FacadeProvider.getImmunizationFacade().getEditPermissionType(uuid);
+		final boolean deleted = FacadeProvider.getImmunizationFacade().isDeleted(uuid);
 
-		if (immunizationEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (immunizationEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (immunizationEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();

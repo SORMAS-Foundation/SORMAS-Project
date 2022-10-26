@@ -25,6 +25,7 @@ public class DeletableUtils {
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setMargin(false);
 		Label contentLabel = new Label(message);
+		contentLabel.setWidthFull();
 		verticalLayout.addComponent(contentLabel);
 
 		ComboBox<DeletionReason> deleteReasonComboBox = new ComboBox(null, Arrays.asList(DeletionReason.values()));

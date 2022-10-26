@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.sample;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -48,8 +49,8 @@ public class SampleServiceTest extends AbstractBeanTest {
 		assertEquals(1, pathogenTests.size());
 		assertTrue(pathogenTests.get(0).isDeleted());
 		assertEquals(1, getAdditionalTestService().count());
-		assertNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
-		assertNull(getSampleReportService().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample());
+		assertNotNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
+		assertNotNull(getSampleReportService().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample());
 
 		getSampleService().deletePermanent(getEntityAttached(sampleEntity));
 
@@ -59,5 +60,7 @@ public class SampleServiceTest extends AbstractBeanTest {
 		assertEquals(1, getExternalMessageService().count());
 		assertEquals(1, getSampleReportService().count());
 		assertEquals(1, getTestReportService().count());
+		assertNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
+		assertNull(getSampleReportService().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample());
 	}
 }
