@@ -166,7 +166,7 @@ public class ContactController {
 						}
 					}
 					if (adoptHomeAddress && ContactRelation.SAME_HOUSEHOLD.equals(newContact.getRelationToCase())) {
-						FacadeProvider.getContactFacade().startHomeAddressAdoption(newContact);
+						FacadeProvider.getPersonFacade().copyHomeAddress(FacadeProvider.getCaseFacade().getByUuid(newContact.getCaze().getUuid()).getPerson(), newContact.getPerson());
 					}
 				}, true);
 		}
@@ -470,7 +470,7 @@ public class ContactController {
 									});
 								}
 								if (createForm.adoptAddressLayout.isAdoptAddress()) {
-									FacadeProvider.getContactFacade().startHomeAddressAdoption(dto);
+									FacadeProvider.getPersonFacade().copyHomeAddress(FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(), dto.getPerson());
 								}
 							}, true);
 					}

@@ -86,4 +86,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	boolean isEnrolledInExternalJournal(String uuid);
 
 	boolean isPersonAssociatedWithNotDeletedEntities(String uuid);
+
+	void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target);
 }

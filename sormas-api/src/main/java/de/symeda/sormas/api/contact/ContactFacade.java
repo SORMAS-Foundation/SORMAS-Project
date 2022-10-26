@@ -159,6 +159,4 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 		boolean contactOfficerChange);
 
 	long getContactCount(CaseReferenceDto caze);
-
-	void startHomeAddressAdoption(ContactDto dto);
 }

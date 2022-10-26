@@ -2391,17 +2391,6 @@ public class ContactFacadeEjb
 		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
 	}
 
-	@Override
-	@RightsAllowed(UserRight._PERSON_EDIT)
-	public void startHomeAddressAdoption(ContactDto dto) {
-		LocationDto casePersonAddress = personFacade.getByUuid(caseFacade.getByUuid(dto.getCaze().getUuid()).getPerson().getUuid()).getAddress();
-		PersonDto contactPerson = personFacade.getByUuid(dto.getPerson().getUuid());
-		LocationDto contactPersonAddress = contactPerson.getAddress();
-		contactPersonAddress = DtoHelper.copyDtoValues(contactPersonAddress, casePersonAddress, true);
-		contactPerson.setAddress(contactPersonAddress);
-		personFacade.save(contactPerson);
-	}
-
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {
