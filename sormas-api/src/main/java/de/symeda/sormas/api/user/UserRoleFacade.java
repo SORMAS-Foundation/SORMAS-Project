@@ -55,7 +55,7 @@ public interface UserRoleFacade {
 
 	boolean hasAnyUserRight(Collection<UserRoleDto> userRoles, Collection<UserRight> userRights);
 
-	Set<UserRoleReferenceDto> getAllAsReference();
+	List<UserRoleReferenceDto> getAllAsReference();
 
 	List<UserRoleReferenceDto> getAllActiveAsReference();
 
