@@ -34,7 +34,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
@@ -1506,6 +1505,14 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		deleteContactLinks(contact);
 
 		super.delete(contact, deletionDetails);
+	}
+
+	@Override
+	public void undelete(Contact contact) {
+		// undelete all samples only associated with this contact
+		contact.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
+
+		super.undelete(contact);
 	}
 
 	@Override

@@ -64,9 +64,9 @@ public class EditSamplePage {
   public static final By SPECIFY_TEST_DETAILS_INPUT =
       By.cssSelector("[class='popupContent'] [id='testTypeText']");
   public static final By TYPING_ID_INPUT = By.cssSelector("[class='popupContent'] [id='typingId']");
-  public static final By DELETE_SAMPLE_BUTTON = By.cssSelector("#delete");
+  public static final By DELETE_SAMPLE_BUTTON = By.cssSelector("#deleteUndelete");
   public static final By DELETE_PATHOGEN_TEST_RESULT =
-      By.cssSelector("[class='popupContent'] [id='delete']");
+      By.cssSelector("[class='popupContent'] [id='deleteUndelete']");
   public static final By SAMPLE_DELETION_POPUP = By.cssSelector(".v-window .popupContent");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SAVE_SAMPLE_BUTTON = By.id("commit");

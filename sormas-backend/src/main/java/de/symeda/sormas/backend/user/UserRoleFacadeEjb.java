@@ -273,9 +273,11 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public Set<UserRoleReferenceDto> getAllAsReference() {
+	public List<UserRoleReferenceDto> getAllAsReference() {
 		List<UserRoleDto> all = getAll();
-		return all != null ? all.stream().map(userRole -> userRole.toReference()).collect(Collectors.toSet()) : null;
+		Set<UserRoleReferenceDto> uniqueUserRoles =
+			all != null ? all.stream().map(userRole -> userRole.toReference()).collect(Collectors.toSet()) : null;
+		return new ArrayList<>(uniqueUserRoles);
 	}
 
 	@Override

@@ -11,8 +11,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryCriteria> {
 
-	boolean isDeleted(String eventUuid);
-
 	long count(TravelEntryCriteria criteria, boolean ignoreUserFilter);
 
 	List<DeaContentEntry> getDeaContentOfLastTravelEntry();

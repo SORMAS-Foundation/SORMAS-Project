@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -204,6 +203,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImm
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SormasToSormasSampleDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
@@ -491,10 +491,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public SampleService getSampleService() {
 		return getBean(SampleService.class);
-	}
-
-	public PathogenTestFacade getSampleTestFacade() {
-		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 
 	public AdditionalTestFacade getAdditionalTestFacade() {

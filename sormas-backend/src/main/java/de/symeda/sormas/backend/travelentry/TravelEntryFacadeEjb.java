@@ -105,11 +105,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public boolean isDeleted(String travelEntryUuid) {
-		return service.isDeleted(travelEntryUuid);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);

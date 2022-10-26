@@ -59,7 +59,7 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 				I18nProperties.getString(Strings.promptPersonDuplicateSearchIdExternalId),
 				150)).addStyleName(CssStyles.HSPACE_RIGHT_3);
 
-		addBirthDateFields(PersonSimilarityCriteria.BIRTHDATE_YYYY, PersonSimilarityCriteria.BIRTHDATE_MM, PersonSimilarityCriteria.BIRTHDATE_DD);
+		addBirthDateFields(getContent(), PersonSimilarityCriteria.BIRTHDATE_YYYY, PersonSimilarityCriteria.BIRTHDATE_MM, PersonSimilarityCriteria.BIRTHDATE_DD);
 	}
 
 	public boolean validateFields() {

@@ -158,7 +158,7 @@ public class EditCasePage {
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By ACTION_CANCEL = By.cssSelector(".popupContent #actionCancel");
-  public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETE_BUTTON = By.id("deleteUndelete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EXTRA_COMMENT_INPUT =
@@ -387,4 +387,12 @@ public class EditCasePage {
   public static By getEditTaskButtonByNumber(Integer number) {
     return By.cssSelector(String.format("#edit-task-%x", number));
   }
+
+  public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");
+  public static final By REASON_FOR_DELETION_DETAILS_TEXTAREA =
+      By.cssSelector(".popupContent textarea");
+  public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
+      By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
 }

@@ -22,10 +22,12 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.StepResult;
+
 import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;

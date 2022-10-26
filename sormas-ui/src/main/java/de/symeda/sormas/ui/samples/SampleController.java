@@ -353,7 +353,7 @@ public class SampleController {
 		});
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
-			editView.addDeleteWithReasonListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), deleteDetails);
 				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);

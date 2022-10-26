@@ -1537,6 +1537,7 @@ Feature: Case end to end tests
       And I click on the Cases button from navbar
       And I click on the NEW CASE button
       And I create a new case with specific data for DE version with date 2 days ago
+      And I click SAVE button on Create New Case form
       Then I collect uuid of the case
       Then I click on the Archive case button
       Then I check the end of processing date in the archive popup and select Archive cases checkbox
