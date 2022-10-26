@@ -435,7 +435,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				//Notification.show("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd"+ event.getProperty().getValue());
-				//System.out.println("dddddddddddddddddddddddddlkjhguijhghj " + clusterfieldx.getCaption());
 				
 				
 				Page.getCurrent().getJavaScript().execute("documentGetElementById('formidx').display = 'none'; alert();");

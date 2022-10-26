@@ -54,12 +54,10 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 		setSubComponent(container);
 		
 		if (params.contains(",")) {
-			System.out.println("}}}}}1111111111111111111111111111111111111111111111111111111111111111");
 			String[] paraObj = params.split(",");
 			CampaignReferenceDto camref = FacadeProvider.getCampaignFacade().getReferenceByUuid((String) paraObj[0]);
 			CampaignFormMetaReferenceDto amformmeta = FacadeProvider.getCampaignFormMetaFacade()
 					.getCampaignFormMetaReferenceByUuid((String) paraObj[1]);
-			System.out.println("}}}}}}}}}}}}}}}}}222222222222222222222222222222222222222222222222222222");
 			editComponent = ControllerProvider.getCampaignController().getCampaignFormDataComponent(null, camref,
 					amformmeta,
 					false, false, () -> {
@@ -71,7 +69,6 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 						Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
 								amformmeta.getCaption()), TRAY_NOTIFICATION);
 					}, true);
-			System.out.println("3333333333333333333333333333333333333333}}}}}}}}}}}}}}}}}}}}}}");
 			editComponent.setMargin(false);
 			editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 			editComponent.setHeightUndefined();

@@ -103,12 +103,10 @@ public class InfrastructureSyncDto implements Serializable {
 	}
 
 	public List<CommunityDto> getCommunities() {
-		System.out.println("____________________++++!!!!: "+communities.toString());
 		return communities;
 	}
 
 	public void setCommunities(List<CommunityDto> list) {
-		System.out.println("____________________++++####: "+list.toString());
 		
 		this.communities = list;
 	}

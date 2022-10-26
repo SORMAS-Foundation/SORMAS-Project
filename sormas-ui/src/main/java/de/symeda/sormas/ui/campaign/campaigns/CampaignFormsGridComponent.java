@@ -82,7 +82,6 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 			
 		}
 		
-		System.out.println("dddddddddddddddddddddd++++++++++++===================");
 		//grid.removeAllColumns();
 		grid.getDataProvider().refreshAll(); 
 

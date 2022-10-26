@@ -154,8 +154,7 @@ public class CampaignController {
 
 	public void createCampaignDataForm(CampaignReferenceDto campaign, CampaignFormMetaReferenceDto campaignForm) {
 		Window window = VaadinUiUtil.createPopupWindow();
-		System.out.println("ddddddddddddddd");
-
+		
 		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
 			getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
 				window.close();

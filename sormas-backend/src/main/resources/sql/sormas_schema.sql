@@ -8632,6 +8632,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (429, 'add form cate
 ALTER TABLE campaigns add column openandclose boolean default false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (430, 'add openandClose campaign function');
+
+--Adding the Modality category to the forms #279
+ALTER TABLE campaignformmeta ADD COLUMN modality character varying(50);
+
+ALTER TABLE campaignformmeta ADD COLUMN expiry_day_capaign character varying(50);
+
+INSERT INTO schema_version (version_number, comment) VALUES (431, 'Adding the Modality category to the forms #279');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

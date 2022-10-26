@@ -467,7 +467,6 @@ public class UserFacadeEjb implements UserFacade {
 		}
 
 		if (filter != null) {
-			System.out.println("DEBUGGER: 45fffffffiiilibraryiiddddddddddddddd = "+filter);
 			/*
 			 * No preemptive distinct because this does collide with
 			 * ORDER BY User.location.address (which is not part of the SELECT clause). UserType

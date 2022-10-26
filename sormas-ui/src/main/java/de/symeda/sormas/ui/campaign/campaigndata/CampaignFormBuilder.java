@@ -373,7 +373,6 @@ public class CampaignFormBuilder {
 	private <T extends AbstractComponent> void prepareComponent(T field, String fieldId, String caption,
 			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError, String errormsg, String defaultvalue, boolean required_valx) {
 		
-		System.out.println(fieldId+" dddddddddd required_valx  ddddddddd "+required_valx); 
 		CampaignFormElementOptions constrainsVal = new CampaignFormElementOptions();
 
 		Styles cssStyles = Page.getCurrent().getStyles();

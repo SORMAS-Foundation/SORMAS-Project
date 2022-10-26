@@ -136,7 +136,6 @@ public class DistrictDto extends EntityDto {
 	}
 
 	public Long getExternalId() {
-		System.out.println("ddddddddddddddddddddddd?????????getExternalId??//===================ddddddddddddddd");
 		return externalId;
 	}
 
@@ -145,7 +144,6 @@ public class DistrictDto extends EntityDto {
 	}
 
 	public DistrictReferenceDto toReference() {
-		System.out.println("ddddddddddddddddddddddddddddddddddddddddddddd=========DistrictReferenceDto========================ddddddddddddddd");
 	//	return new DistrictReferenceDto(getUuid());
 		return new DistrictReferenceDto(getUuid(), name, externalId);
 	}

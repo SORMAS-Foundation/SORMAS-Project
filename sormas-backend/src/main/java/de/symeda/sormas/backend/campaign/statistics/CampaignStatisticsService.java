@@ -75,26 +75,18 @@ public class CampaignStatisticsService {
 			.append(CampaignFormData.TABLE_NAME)
 			.toString();
 		String joinExpression = new StringBuilder().append(buildJoinExpression()).append(buildJsonJoinExpression()).toString();
-		System.out.println("1111111111111111111111111111111111111111111111111111111111111");
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append(selectExpression).append(joinExpression);
-		System.out.println("22222222222222222222222222222222222222222222222222222222222222222222222222");
 		queryBuilder.append(" WHERE ");
-		System.out.println("33333333333333333333333333333333333333333333333333333333");
 		String whereExpression = buildWhereExpression(criteria);
-		System.out.println("4444444444444444444444444444444444444444444444444444444444444");
 		if (!whereExpression.isEmpty()) {
 			queryBuilder.append(whereExpression).append(" AND ");
 		}
-		System.out.println("555555555555555555555555555555555555555555555555555555555555555555");
 		queryBuilder.append(buildJsonWhereExpression());
-		System.out.println("6666666666666666666666666666666666666666666666666666666666");
-		System.out.println(">????"+queryBuilder.toString());
 		
 		queryBuilder.append(buildGroupByExpression(criteria)).append(buildJsonGroupByExpression()).append(buildOrderByExpression(criteria));
 		
-		System.out.println(">>>>>>>>>>>>>>>>>>> xxxxxxxxxxxxxxxxxxxxx"+queryBuilder.toString()); 
-
+		
 		return queryBuilder.toString();
 	}
 	

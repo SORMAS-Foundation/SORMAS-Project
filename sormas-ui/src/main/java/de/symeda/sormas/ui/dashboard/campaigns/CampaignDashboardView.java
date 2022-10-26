@@ -53,30 +53,6 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		dataProvider = new CampaignDashboardDataProvider();
 		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider);
-		
-		setSizeFull();
-		setMargin(false);
-		setSpacing(false);
-		//addStyleName("setwith-700px");
-
-		
-		//filterLayout.addStyleName("view-headerxxxx");
-	//	filterLayout.setHeightUndefined();
-		filterLayout.setMargin(new MarginInfo(false, true));
-		filterLayout.setSpacing(true);
-		
-		
-		filterLayout.setHeightUndefined();
-		filterLayout.setWidthFull();
-		filterLayout.setSizeUndefined();
-		//filterLayout.setMargin(new MarginInfo(false, true));
-	//	filterLayout.setSpacing(false);
-		
-		
-		
-		
-		
-		
 		dashboardLayout.addComponent(filterLayout);
 		dashboardLayout.setMargin(false);
 
@@ -124,15 +100,6 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			tabSwitcher.addItem(tabId);
 			tabSwitcher.setItemCaption(tabId, tabId);
 		});
-		/*
-		 
-	tabId = WordUtils.capitalizeFully(tabId);
-			tabSwitcher.addItem(WordUtils.capitalizeFully(tabId));
-			tabSwitcher.setItemCaption(tabId, WordUtils.capitalizeFully(tabId)); 
-		});	
-		 */
-		
-		
 		if (!(tabs.size() > 1)) {
 			tabSwitcherLayout.setVisible(false);
 		}
@@ -207,7 +174,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				campaignFormDataMap.keySet().stream().map(CampaignDashboardDiagramDto::getCampaignDashboardElement).collect(Collectors.toList());
 
 			final GridTemplateAreaCreator gridTemplateAreaCreator = new GridTemplateAreaCreator(dashboardElements);
-			
+
 			final VerticalLayout diagramsWrapper = new VerticalLayout();
 			diagramsWrapper.setMargin(new MarginInfo(false, true, false, true));
 			diagramsWrapper.setId(tabId + "_" + subTabId);
@@ -220,20 +187,16 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 			final CssLayout diagramsLayout = new CssLayout();
 			diagramsLayout.setSizeFull();
-			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;// +" dashgrid ";//+" default-height-720px";
-		
-			
-			styles.add( //add style to the grid created by the grid template area creator
+			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;
+
+			styles.add(
 				createDiagramGridStyle(
 					gridCssClass,
 					gridTemplateAreaCreator.getFormattedGridTemplate(),
 					gridTemplateAreaCreator.getGridRows(),
-					gridTemplateAreaCreator.getGridColumns())
-					);
-			
+					gridTemplateAreaCreator.getGridColumns()));
 			diagramsLayout.setStyleName(gridCssClass);
-			
-			//diagramsLayout.setStyleName(newstyle);
+
 			campaignFormDataMap.forEach((campaignDashboardDiagramDto, diagramData) -> {
 				final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto();
 				final String diagramId = campaignDiagramDefinitionDto.getDiagramId();
@@ -244,10 +207,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					diagramData,
 					dataProvider.getCampaignFormTotalsMap(tabId, subTabId).get(campaignDashboardDiagramDto),
 					dataProvider.getCampaignJurisdictionLevelGroupBy());
-				
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
-				diagramComponent.setStyleName("dashgrid");
 
 				diagramsLayout.addComponent(diagramComponent);
 			});
@@ -273,26 +234,10 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 	private String createDiagramGridStyle(String gridCssClass, String gridAreasTemplate, int rows, int columns) {
 		final String s = "." + gridCssClass;
-
 		campaignDashboardDiagramStyles.add(s);
-		
-		 return s + "{ display: grid; grid-gap:1%; grid-auto-columns: " + (100 / columns - 1) + "%; grid-auto-rows: " + (100 / rows - 1)
-			+ "%; grid-template-areas:" + gridAreasTemplate + ";}"; // position: relative;\r\n"
-					//+ "    min-height: 1px;\r\n"
-					//+ "    padding-left: 15px;\r\n"
-				//	+ "    padding-right: 15px;"
-					//+ "	   float: left}";
+		return s + "{ display: grid; grid-gap:1%; grid-auto-columns: " + (100 / columns - 1) + "%; grid-auto-rows: " + (100 / rows - 1)
+			+ "%; grid-template-areas:" + gridAreasTemplate + "; }";
 	}
-	
-	//private String createDiagramGridNewStyle(String style) {
-		//final String s = "." + style;
-		//
-		//campaignDashboardDiagramStyles.add(s);
-		
-		 //return s + "{@media (min-width: 600px) {\r\n"
-		 	//	+ "  .style { grid-template-columns: repeat(2, 1fr); }\r\n"
-		 		//+ "}}";
-	//}
 
 	private String createDiagramStyle(String diagramCssClass, String diagramId) {
 		final String s = "." + diagramCssClass;

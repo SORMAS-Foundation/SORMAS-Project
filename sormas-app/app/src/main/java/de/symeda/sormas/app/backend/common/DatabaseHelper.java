@@ -374,7 +374,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-		System.out.println(newVersion+": TRACKING DB UPGRADE!!!!! +++++++++++++++++++ old version = "+oldVersion);
+		System.out.println(newVersion+": TRACKING DB UPGRADE!!!!! ++++++++ IMPORTANT +++++++++++ old version = "+oldVersion);
 
 		if (oldVersion < 91) {
 			upgradeFromUnupgradableVersion(db, connectionSource, oldVersion);

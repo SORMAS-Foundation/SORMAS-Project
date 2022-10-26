@@ -100,7 +100,7 @@ public class ExpressionProcessor {
 				final Object value = expression.getValue(context, valueType); 
 				//final Object valx = Precision.round((double) value, 3);
 				//final List <String> opt = null;
-				System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context));
+				//System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context));
 				String valuex = value +"";
 			
 				if(!valuex.isBlank() && value != null) {

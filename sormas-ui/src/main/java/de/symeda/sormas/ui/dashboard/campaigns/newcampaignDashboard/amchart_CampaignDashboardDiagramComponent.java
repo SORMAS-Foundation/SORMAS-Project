@@ -359,7 +359,6 @@ public class amchart_CampaignDashboardDiagramComponent extends VerticalLayout{
 					//hcjsaw.append(seriesData.get(axisKey).getFieldCaption()).append(" : "+seriesData.get(axisKey).getValueSum().toString()).append("}");
 				}
 			}
-			System.out.println("++++_____________________________+++++ "+hcjsaw);
 			return hcjsaw;
 		}
 	private String assembleFieldname(final Collection<CampaignDiagramDataDto> values, final CampaignDiagramSeries series, final String defaultValue) {

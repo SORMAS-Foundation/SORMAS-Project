@@ -175,8 +175,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         
         
       //  UserDto userDtoxx = FacadeProvider.getUserFacade().getByUuid(communityUUID);
-        System.out.println(communityUUID+" :))))))))(((((((((((dddddddddddddddd: ");
-
+      
        // community.setValue(userDtoxx.getCommunity());
         
         area.addValueChangeListener(e -> {
@@ -187,13 +186,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     .updateItems(region, areaDto != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(areaDto.getUuid()) : null);
         });
         
-        System.out.println("ddddddddddddddddddddddddddddregion setting event chNGER!!ssssssssssefasdfa");
         region.addValueChangeListener(e -> {
-        	System.out.println("ddddddddddddddddddddddddddddregion CHANGES!!ssssssssssefasdfa");
         	FieldHelper.removeItems(district);
             RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
-            System.out.println("ddddddddddddddddddddddddddddregion CHANGES!!ssssssssssefasdfa");
-            FieldHelper
+             FieldHelper
                     .updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
         });
         
@@ -209,8 +205,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             Set<CommunityReferenceDto> data = Collections.<CommunityReferenceDto>emptySet(); 
             currentUser.setCommunity(data);
             FacadeProvider.getUserFacade().saveUser(currentUser);
-        	  System.out.println(districtDto+" ddddddddddddddddddddddddddddDISTRICT CHANGES!!ssssssssssefasdfa:"+ e.getProperty().getValue());
-              
+        	   
 			if (districtDto != null) {
 				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade()
 						.getAllActiveByDistrict(districtDto.getUuid());
@@ -240,8 +235,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        System.out.println("ddddddddddddddddddddddddddddddddssssssssssssssssssssefasdfas "+FacadeProvider.getAreaFacade().getAllActiveAsReference());
-        area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+         area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
         setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES, UserDto.FORM_ACCESS);
         addValidators(UserDto.USER_NAME, new UserNameValidator());
@@ -382,7 +376,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
     @Override
     public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
-    	 System.out.println(userDto.getCommunity()+" ddddddddddddddddSET VALUESsssssssefasdf");
     	 
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.removeAllItems();
