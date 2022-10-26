@@ -450,7 +450,7 @@ Feature: Case filter functionality
       | Ungeimpft |
       | Unbekannt |
 
-  @tmsLink=SORDEV-5568 @env_main @testIt
+  @tmsLink=SORDEV-5568 @env_main
   Scenario Outline: Test text search filed handling with special characters
     Given I log in as a National User
     And I click on the Cases button from navbar

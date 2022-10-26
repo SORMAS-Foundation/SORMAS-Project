@@ -94,7 +94,7 @@ Feature: Sample Functionalities
     And I complete all fields from Pathogen test result popup and save
     Then I check that the created Pathogen is correctly displayed
 
-  @env_main @testIt
+  @env_main
   Scenario: Delete created sample
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

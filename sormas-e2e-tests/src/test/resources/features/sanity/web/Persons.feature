@@ -169,7 +169,7 @@ Feature: Edit Persons
     And I add only first and last name data and check is sex combobox required for event participant creation
     When I check if error display correctly expecting sex error
 
-  @tmsLink=SORDEV-10227 @env_de @testIt
+  @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Travel Entry, Event Participant, Case and Contact combined
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

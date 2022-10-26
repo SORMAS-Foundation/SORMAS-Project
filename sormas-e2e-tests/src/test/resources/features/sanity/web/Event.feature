@@ -980,7 +980,7 @@ Feature: Create events
     And I filter for SAMPLE TOKEN in Events Directory
     Then I check that at least one SAMPLE TOKEN is displayed in table
 
-  @tmsLink=SORDEV-11455 @env_main @testIt
+  @tmsLink=SORDEV-11455 @env_main
   Scenario: Add reason for deletion to confirmation dialogue
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1048,7 +1048,7 @@ Feature: Create events
     When I confirm Archive event popup
     And I check event is it archived
 
-  @tmsLink=SORDEV-11452 @env_main @testIt
+  @tmsLink=SORDEV-11452 @env_main
   Scenario: Add reason for deletion to confirmation dialogue
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -1084,7 +1084,7 @@ Feature: Create events
     And I check if General comment on event participant edit page is disabled
     And I check if Passport number input on event participant edit page is disabled
 
-  @tmsLink=SORDEV-11452 @env_de @testIt
+  @tmsLink=SORDEV-11452 @env_de
   Scenario: Add reason for deletion to confirmation dialogue for DE version
     Given I log in as a Admin User
     And I click on the Events button from navbar
