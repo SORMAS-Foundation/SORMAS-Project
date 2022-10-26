@@ -98,6 +98,36 @@ tasks.withType(Test) {
 	systemProperties.remove("java.endorsed.dirs") // needs to be removed from Java 9
 }
 
+task deleteLogbackXml(type: Delete) {
+	println "Removing logback XML file"
+	delete 'src/main/resources/logback.xml'
+}
+
+task copyLogbackXml(type: Copy) {
+	dependsOn deleteLogbackXml
+	println "Adding logback XML file"
+	boolean createLogsFile
+	try{
+		createLogsFile = System.getProperty("generateLogs").equalsIgnoreCase("true")
+		println "generateLogs is " + createLogsFile
+	}
+	catch (Exception any){
+		println "Unable to get generateLogs parameter, setting it to default false as Cucumber rerun is enabled"
+		createLogsFile = false
+	}
+
+	if(createLogsFile){
+		println "Enabling logs file generation"
+		from layout.buildDirectory.file("$rootDir/src/main/resources/logbackXMLS/logs/logback.xml")
+		into layout.buildDirectory.dir("$rootDir/src/main/resources")
+	}
+	else{
+		println "Using only console logs"
+		from layout.buildDirectory.file("$rootDir/src/main/resources/logbackXMLS/console/logback.xml")
+		into layout.buildDirectory.dir("$rootDir/src/main/resources")
+	}
+}
+
 task createReportFolderIfNotExist() {
 	def folder = new File("allureReports")
 	if (!folder.exists()) {
@@ -154,6 +184,8 @@ test {
 }
 
 compileJava.dependsOn format
+startTests.dependsOn deleteLogbackXml
+deleteLogbackXml.finalizedBy copyLogbackXml
 //startTests.dependsOn printConfiguration
 startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
