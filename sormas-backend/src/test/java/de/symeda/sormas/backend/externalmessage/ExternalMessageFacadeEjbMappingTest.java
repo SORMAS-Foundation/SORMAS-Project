@@ -63,7 +63,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
 		source.setReporterCity("Test Lab City");
-		source.setTestedDisease(Disease.CORONAVIRUS);
+		source.setDisease(Disease.CORONAVIRUS);
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
@@ -81,7 +81,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setAssignee(assignee.toReference());
 		source.setType(ExternalMessageType.LAB_MESSAGE);
 
-		ExternalMessage result = sut.fromDto(source, null, true);
+		ExternalMessage result = sut.fillOrBuildEntity(source, null, true);
 
 		assertEquals(source.getSampleReports(), result.getSampleReports());
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
@@ -92,7 +92,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
 		assertEquals(source.getReporterCity(), result.getReporterCity());
-		assertEquals(source.getTestedDisease(), result.getTestedDisease());
+		assertEquals(source.getDisease(), result.getDisease());
 		assertEquals(source.getPersonFirstName(), result.getPersonFirstName());
 		assertEquals(source.getPersonLastName(), result.getPersonLastName());
 		assertEquals(source.getPersonSex(), result.getPersonSex());
@@ -134,7 +134,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
 		source.setReporterCity("Test Lab City");
-		source.setTestedDisease(Disease.CORONAVIRUS);
+		source.setDisease(Disease.CORONAVIRUS);
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
@@ -164,7 +164,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
 		assertEquals(source.getReporterCity(), result.getReporterCity());
-		assertEquals(source.getTestedDisease(), result.getTestedDisease());
+		assertEquals(source.getDisease(), result.getDisease());
 		assertEquals(source.getPersonFirstName(), result.getPersonFirstName());
 		assertEquals(source.getPersonLastName(), result.getPersonLastName());
 		assertEquals(source.getPersonSex(), result.getPersonSex());

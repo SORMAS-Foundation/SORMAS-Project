@@ -93,6 +93,7 @@ public class ContactDirectoryPage {
   public static final By FIRST_PERSON_ID = By.xpath("//td[6]//a");
   public static final By FIRST_CONTACT_ID = By.xpath("//td[1]//a");
   public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-8");
+  public static final By BULK_DELETE_BUTTON_CONTACT_PAGE = By.id("bulkActions-6");
   public static final By CONTACT_MERGE_DUPLICATES = By.id("contactMergeDuplicates");
   public static final By CONTACT_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");

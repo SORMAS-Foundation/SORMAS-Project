@@ -72,7 +72,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@Override
 	public DTO getByUuid(String uuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(service.getByUuid(uuid), pseudonymizer);
+		return convertToDto(service.getByUuid(uuid, true), pseudonymizer);
 	}
 
 	@Override
@@ -140,8 +140,21 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		service.delete(ado, deletionDetails);
 	}
 
+	@DenyAll
+	public void undelete(String uuid) {
+		ADO ado = service.getByUuid(uuid);
+		if (ado == null) {
+			throw new IllegalArgumentException("Cannot undelete non existing entity: [" + getCoreEntityType() + "] - " + uuid);
+		}
+		service.undelete(ado);
+	}
+
 	public boolean isArchived(String uuid) {
 		return service.isArchived(uuid);
+	}
+
+	public boolean isDeleted(String uuid) {
+		return service.isDeleted(uuid);
 	}
 
 	public DTO convertToDto(ADO source, Pseudonymizer pseudonymizer) {

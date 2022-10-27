@@ -249,8 +249,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 		final PersonSimilarityCriteria searchCriteria = new PersonSimilarityCriteria();
 		if (referencePerson != null) {
-			searchCriteria.setFirstName(referencePerson.getFirstName());
-			searchCriteria.setLastName(referencePerson.getLastName());
+			searchCriteria.setName(referencePerson);
 		}
 		filterForm.setValue(searchCriteria);
 		filterForm.addApplyHandler((e) -> {

@@ -86,7 +86,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		return target;
 	}
 
-	public TestReport fromDto(@NotNull TestReportDto source, @NotNull SampleReport sampleReport, boolean checkChangeDate) {
+	public TestReport fillOrBuildEntity(@NotNull TestReportDto source, @NotNull SampleReport sampleReport, boolean checkChangeDate) {
 		TestReport target = DtoHelper.fillOrBuildEntity(source, testReportService.getByUuid(source.getUuid()), TestReport::new, checkChangeDate);
 
 		target.setSampleReport(sampleReport);
@@ -113,7 +113,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 	public TestReport fromDto(@NotNull TestReportDto source, boolean checkChangeDate) {
 		SampleReport sampleReport = sampleReportService.getByReferenceDto(source.getSampleReport());
 
-		return fromDto(source, sampleReport, checkChangeDate);
+		return fillOrBuildEntity(source, sampleReport, checkChangeDate);
 	}
 
 	@LocalBean

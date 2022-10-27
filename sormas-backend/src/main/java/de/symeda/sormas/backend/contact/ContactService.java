@@ -34,7 +34,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
@@ -168,6 +167,14 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 
 	public ContactService() {
 		super(Contact.class);
+	}
+
+
+	@Override
+	protected void fetchReferences(From<?, Contact> from) {
+
+		from.fetch(Contact.HEALTH_CONDITIONS);
+		from.fetch(Contact.EPI_DATA);
 	}
 
 	public List<Contact> findBy(ContactCriteria contactCriteria, User user) {
@@ -1501,6 +1508,14 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	}
 
 	@Override
+	public void undelete(Contact contact) {
+		// undelete all samples only associated with this contact
+		contact.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
+
+		super.undelete(contact);
+	}
+
+	@Override
 	public void deletePermanent(Contact contact) {
 
 		// Delete all tasks associated with this case
@@ -1512,16 +1527,12 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		// Delete all visits that are only associated with this contact
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
-		Root<Visit> visitRoot = cd.from(Visit.class);
-		Subquery<Long> visitContactSubquery = getVisitsContactSubqueryForDelete(cb, cd, visitRoot);
-		cd.where(cb.and(cb.isNull(visitRoot.get(Visit.CAZE).get(Case.ID)), cb.lessThanOrEqualTo(visitContactSubquery, 1L)));
-		em.createQuery(cd).executeUpdate();
-
 		// Remove the contact that will be deleted from contact_visits
 		em.createNativeQuery("delete from contacts_visits cv where cv.contact_id = ?1").setParameter(1, contact.getId()).executeUpdate();
+
+		// Delete all visits that are not associated with any contact or case
+		em.createNativeQuery("delete from visit v where v.caze_id is null and not exists(select from contacts_visits cv where cv.visit_id = v.id)")
+			.executeUpdate();
 
 		// Delete documents related to this contact
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
@@ -1541,17 +1552,6 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		deleteContactLinks(contact);
 
 		super.deletePermanent(contact);
-	}
-
-	private Subquery<Long> getVisitsContactSubqueryForDelete(CriteriaBuilder cb, CriteriaDelete<Visit> cd, Root<Visit> visitRoot) {
-		Subquery<Long> contactVisitsSubquery = cd.subquery(Long.class);
-		Root<Visit> subqueryRoot = contactVisitsSubquery.from(Visit.class);
-		Join<Visit, Contact> visitContactJoin = subqueryRoot.join(Visit.CONTACTS, JoinType.INNER);
-		contactVisitsSubquery.where(cb.equal(subqueryRoot.get(Visit.ID), visitRoot.get(Visit.ID)));
-
-		contactVisitsSubquery.select(cb.count(visitContactJoin.get(Contact.ID)));
-
-		return contactVisitsSubquery;
 	}
 
 	private void deleteContactLinks(Contact contact) {

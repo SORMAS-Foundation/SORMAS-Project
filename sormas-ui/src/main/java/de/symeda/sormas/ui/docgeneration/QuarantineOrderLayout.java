@@ -26,6 +26,8 @@ import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
@@ -192,8 +194,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 				}
 
 				return stream;
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (DocumentTemplateException e) {
+				LoggerFactory.getLogger(getClass()).error("Error while reading document variables.", e);
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
 					.show(Page.getCurrent());
 				return null;

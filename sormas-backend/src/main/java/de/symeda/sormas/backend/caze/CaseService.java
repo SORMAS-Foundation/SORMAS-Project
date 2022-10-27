@@ -270,6 +270,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		from.fetch(Case.SYMPTOMS);
 		from.fetch(Case.THERAPY);
+		from.fetch(Case.CLINICAL_COURSE);
 		from.fetch(Case.HEALTH_CONDITIONS);
 		from.fetch(Case.HOSPITALIZATION);
 		from.fetch(Case.EPI_DATA);
@@ -1106,6 +1107,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		// Mark the case as deleted
 		super.delete(caze, deletionDetails);
+	}
+
+	@Override
+	public void undelete(Case caze) {
+		// un-delete all samples that are only associated with this case
+		caze.getSamples()
+				.stream()
+				.forEach(sample -> sampleService.undelete(sample));
+		super.undelete(caze);
 	}
 
 	private void deleteCaseInExternalSurveillanceTool(Case caze) {

@@ -12150,4 +12150,42 @@ ALTER TABLE sormastosormasorigininfo_history ADD COLUMN pseudonymizeddata BOOLEA
 
 INSERT INTO schema_version (version_number, comment) VALUES (494, '[S2S] Add a duplicate detection warning when sharing a case with another instance #9527');
 
+-- 2022-10-13 S2S_case editable on two systems, behavior of jurisdiction level wrong if share is without ownership #10553
+
+ALTER TABLE sharerequestinfo ADD COLUMN ownershiphandedover BOOLEAN DEFAULT false;
+ALTER TABLE sharerequestinfo_history ADD COLUMN ownershiphandedover BOOLEAN DEFAULT false;
+
+-- set ownershiphandedover to true on latest requests where the share info has ownershiphandedover = true
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT si.id FROM sharerequestinfo si
+                                         JOIN sharerequestinfo_shareinfo ss ON si.id = ss.sharerequestinfo_id
+                                         JOIN sormastosormasshareinfo s ON s.id = ss.shareinfo_id
+                   WHERE
+                           s.ownershiphandedover = true AND
+                           si.creationdate = (SELECT max(creationdate) FROM sharerequestinfo sri
+                                                JOIN sharerequestinfo_shareinfo srisi ON sri.id = srisi.sharerequestinfo_id
+                                              WHERE srisi.shareinfo_id = s.id
+                                              GROUP BY srisi.shareinfo_id)
+            LOOP
+                UPDATE sharerequestinfo SET ownershiphandedover = true WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (495, 'S2S_case editable on two systems, behavior of jurisdiction level wrong if share is without ownership #10553');
+
+-- 2022-10-10 [DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733
+
+ALTER TABLE externalmessage RENAME COLUMN testeddisease to disease;
+ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (496, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+
+ALTER TABLE surveillancereports ADD COLUMN externalid varchar(255);
+ALTER TABLE surveillancereports_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalId to surveillance reports #6621');
+

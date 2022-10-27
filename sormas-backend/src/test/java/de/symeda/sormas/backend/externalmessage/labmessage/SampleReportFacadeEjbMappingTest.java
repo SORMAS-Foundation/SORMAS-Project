@@ -74,7 +74,7 @@ public class SampleReportFacadeEjbMappingTest extends TestCase {
 		TestReport testReport = new TestReport();
 		testReport.setUuid("testreport-uuid");
 		TestReportDto testReportDto = TestReportFacadeEjb.toDto(testReport);
-		when(testReportFacade.fromDto(eq(testReportDto), any(SampleReport.class), eq(false))).thenReturn(testReport);
+		when(testReportFacade.fillOrBuildEntity(eq(testReportDto), any(SampleReport.class), eq(false))).thenReturn(testReport);
 
 		Sample sample = new Sample();
 		sample.setUuid("sample-uuid");

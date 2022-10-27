@@ -153,7 +153,8 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	public OutbreakDto saveOutbreak(@Valid OutbreakDto outbreakDto) {
 		final User currentUser = userService.getCurrentUser();
 		outbreakDto.setReportingUser(currentUser.toReference());
-		Outbreak outbreak = fromDto(outbreakDto, true);
+		Outbreak existingOutbreak = outbreakService.getByUuid(outbreakDto.getUuid());
+		Outbreak outbreak = fillOrBuildEntity(outbreakDto, existingOutbreak, true);
 		outbreakService.ensurePersisted(outbreak);
 		return toDto(outbreak);
 	}
@@ -166,13 +167,12 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		outbreakService.deletePermanent(outbreak);
 	}
 
-	public Outbreak fromDto(OutbreakDto source, boolean checkChangeDate) {
-
+	public Outbreak fillOrBuildEntity(OutbreakDto source, Outbreak target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		Outbreak target = DtoHelper.fillOrBuildEntity(source, outbreakService.getByUuid(source.getUuid()), Outbreak::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Outbreak::new, checkChangeDate);
 
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());

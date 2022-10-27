@@ -29,6 +29,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
@@ -171,6 +172,14 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getActionFacade().getByUuid(action.getUuid())); // actions get deleted only with permanent delete
 		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
 		assertEquals("test reason", getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
+
+		getEventFacade().undelete(event.getUuid());
+
+		assertFalse(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
+		assertFalse(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
+		assertNotNull(getActionFacade().getByUuid(action.getUuid())); // actions get deleted only with permanent delete
+		assertNull(getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
+		assertNull(getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -448,7 +457,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setReportDateTime(new Date());
 		event.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		event.setEventTitle("Test event");
-		LocationDto eventLocation = new LocationDto();
+		LocationDto eventLocation = LocationDto.build();
 		eventLocation.setRegion(rdcf.region);
 		eventLocation.setDistrict(rdcf.district);
 		event.setEventLocation(eventLocation);

@@ -22,10 +22,12 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.StepResult;
+
 import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
@@ -58,10 +60,15 @@ public class StepsLogger implements StepLifecycleListener {
     if (takeScreenshotAfterStep) {
       takeScreenshot();
     }
-    if (isScreenshotEnabled && driver != null) {
-      if (!stepResult.getStatus().value().contains("pass")) {
-        attachConsoleLog();
-      }
+    boolean logData = false;
+    try{
+      logData = Boolean.parseBoolean(System.getProperty("generateLogs"));
+    }
+    catch (Exception any){}
+    boolean isDriverNotNull = driver != null;
+    boolean isStepFailed = !stepResult.getStatus().value().contains("pass");
+    if (isScreenshotEnabled && logData && isDriverNotNull && isStepFailed) {
+      attachConsoleLog();
     }
     isScreenshotEnabled = true;
     log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, stepResult.getName());

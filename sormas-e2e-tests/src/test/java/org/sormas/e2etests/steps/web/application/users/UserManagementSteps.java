@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.users;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.*;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
 
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
@@ -28,13 +29,15 @@ import javax.inject.Inject;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class UserManagementSteps implements En {
   public static int numberOfUsers;
   protected WebDriverHelpers webDriverHelpers;
 
   @Inject
-  public UserManagementSteps(WebDriverHelpers webDriverHelpers, AssertHelpers assertHelpers) {
+  public UserManagementSteps(
+      WebDriverHelpers webDriverHelpers, AssertHelpers assertHelpers, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -190,6 +193,30 @@ public class UserManagementSteps implements En {
                       numberOfTotalUsers == numberOfSpecificUsers,
                       "User Roles Filer ComboBox failed in User Management Page"),
               10);
+        });
+
+    And(
+        "^I click on User roles tab from User Management Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(USER_ROLES_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(USER_ROLES_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_RIGHTS_INPUT);
+        });
+
+    And(
+        "^I check that \"([^\"]*)\" is not available in the user role filter$",
+        (String userRole) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(USER_ROLES_COMBOBOX, userRole),
+              "Provided user role is available in the user role template dropdown menu!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I filter users by \"([^\"]*)\" user role$",
+        (String userRole) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_ROLES_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, userRole);
         });
   }
 
