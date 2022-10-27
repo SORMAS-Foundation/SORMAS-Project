@@ -411,27 +411,26 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public Button getDeleteButton(String entityName, Supplier<String> confirmationMessageSupplier) {
 		if (deleteButton == null) {
-			deleteButton = buildDeleteButton(
-				() -> {
-					String confirmationMessage = confirmationMessageSupplier == null ? null : confirmationMessageSupplier.get();
+			deleteButton = buildDeleteButton(() -> {
+				String confirmationMessage = confirmationMessageSupplier == null ? null : confirmationMessageSupplier.get();
 
-					VaadinUiUtil.showDeleteConfirmationWindow(
-							StringUtils.isBlank(confirmationMessage)
-									? String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName)
-									: confirmationMessage,
-							this::onDelete);
-				});
+				VaadinUiUtil.showDeleteConfirmationWindow(
+					StringUtils.isBlank(confirmationMessage)
+						? String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName)
+						: confirmationMessage,
+					this::onDelete);
+			});
 		}
 
 		return deleteButton;
 	}
 
-	public Button getDeleteWithReasonButton(String entityName) {
+	public Button getDeleteWithReasonButton(String entityName, String details) {
 
 		if (deleteButton == null) {
 			deleteButton = buildDeleteButton(
 				() -> DeletableUtils.showDeleteWithReasonPopup(
-					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName, details != null ? details : ""),
 					this::onDeleteWithReason));
 		}
 
@@ -756,8 +755,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener, String entityName) {
 
+		addDeleteWithReasonListener(listener, entityName, null);
+	}
+
+	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener, String entityName, String details) {
+
 		if (deleteWithDetailsListeners.isEmpty()) {
-			buttonsPanel.addComponent(getDeleteWithReasonButton(entityName), 0);
+			buttonsPanel.addComponent(getDeleteWithReasonButton(entityName, details), 0);
 		}
 		if (!deleteWithDetailsListeners.contains(listener)) {
 			deleteWithDetailsListeners.add(listener);

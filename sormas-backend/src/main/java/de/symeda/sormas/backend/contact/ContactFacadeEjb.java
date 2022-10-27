@@ -120,6 +120,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -550,6 +552,12 @@ public class ContactFacadeEjb
 
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
+		try {
+			sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares());
+		} catch (SormasToSormasException e) {
+			throw new SormasToSormasRuntimeException(e);
+		}
+
 		service.delete(contact, deletionDetails);
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());
@@ -1267,10 +1275,7 @@ public class ContactFacadeEjb
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		User currentUser = userService.getCurrentUser();
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
-			pseudonymizer.pseudonymizeUser(
-				userService.getByUuid(c.getReportingUser().getUuid()),
-				currentUser,
-				c::setReportingUser);
+			pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c::setReportingUser);
 			if (c.getCaze() != null) {
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
 			}
@@ -1616,8 +1621,7 @@ public class ContactFacadeEjb
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, inJurisdiction, (c) -> {
-				pseudonymizer
-					.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 
 				if (c.getCaze() != null) {
 					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), jurisdictionFlags.getCaseInJurisdiction(), null);
