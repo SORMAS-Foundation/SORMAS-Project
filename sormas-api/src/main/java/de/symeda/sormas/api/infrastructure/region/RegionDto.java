@@ -128,7 +128,6 @@ public class RegionDto extends EntityDto {
 	}
 
 	public Long getExternalId() {
-		System.out.println(externalId + " getExternalId??//===================ddddddddddddddd");
 		return externalId;
 	}
 

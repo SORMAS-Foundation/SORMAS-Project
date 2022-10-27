@@ -192,7 +192,6 @@ public class NumberNumericValueValidator extends AbstractValidator<String> {
 
 		} else {
 			
-		//	System.out.println("ddddddddddddddddddddddddddddddddddddddddddddddddd");
 			if (minValue != null && minValue.compareTo(decimalNumber) > 0) {
 				Notification.show("WARNING! ", getErrorMessage(), Type.ERROR_MESSAGE);
 				return onError;

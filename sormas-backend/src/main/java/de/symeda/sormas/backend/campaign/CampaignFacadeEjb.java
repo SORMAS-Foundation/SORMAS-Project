@@ -386,7 +386,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		CampaignDto target = new CampaignDto();
 		DtoHelper.fillDto(target, source);
-		System.out.println("++++++++++++++++ "+UserFacadeEjb.toReferenceDto(source.getCreatingUser()));
+		//System.out.println("++++++++++++++++ "+UserFacadeEjb.toReferenceDto(source.getCreatingUser()));
 		target.setCreatingUser(UserFacadeEjb.toReferenceDto(source.getCreatingUser()));
 		target.setDescription(source.getDescription());
 		target.setEndDate(source.getEndDate());

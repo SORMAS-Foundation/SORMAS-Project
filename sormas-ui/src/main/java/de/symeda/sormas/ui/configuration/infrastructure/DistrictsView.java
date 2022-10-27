@@ -241,7 +241,6 @@ public class DistrictsView extends AbstractConfigurationView {
 		riskFilter.addValueChangeListener(e -> {
 			
 			if(e.getProperty().getValue() != null) {
-				System.out.println("ddddddddddfasdfasdfasdvaseafsdvas "+e.getProperty().getValue().toString());
 				criteria.risk(e.getProperty().getValue().toString());
 				//navigateTo(criteria);
 				

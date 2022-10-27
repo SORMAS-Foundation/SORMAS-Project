@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -46,11 +47,19 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 		if (!findReferenceByParams(params)) {
 			return;
 		}
+		UI.getCurrent().getSession();
+		//adding a if else to take care of clicking the form at the first time which was generating null pointer
+		if(VaadinSession.getCurrent().getAttribute("lastcriteria") != null) {
 		String lasturl = UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria").toString();
-		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"+ UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria").toString());
 		menu.removeAllViews();
 		menu.addView(CampaignDataView.VIEW_NAME, I18nProperties.getCaption(Captions.campaignCampaignData), lasturl, true);
 		menu.addView(CampaignFormDataView.VIEW_NAME, I18nProperties.getCaption(Captions.campaignCampaignDataForm), params);
+		}else {
+			menu.removeAllViews();
+			menu.addView(CampaignDataView.VIEW_NAME, I18nProperties.getCaption(Captions.campaignCampaignData));
+			menu.addView(CampaignFormDataView.VIEW_NAME, I18nProperties.getCaption(Captions.campaignCampaignDataForm), params);
+
+		}
 	}
 
 	@Override

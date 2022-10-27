@@ -132,6 +132,7 @@ public class SettingsFragment extends BaseLandingFragment {
 				try {
 					User user = binding.getData();
 					if (user != null) {
+						user.setLanguage(newLanguage);
 						DatabaseHelper.getUserDao().saveAndSnapshot(user);
 					}
 					if (newLanguage != null) {

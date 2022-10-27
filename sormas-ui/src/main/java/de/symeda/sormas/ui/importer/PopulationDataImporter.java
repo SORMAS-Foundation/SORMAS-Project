@@ -73,7 +73,7 @@ public class PopulationDataImporter extends DataImporter {
 		// Retrieve the region and district from the database or throw an error if more or less than one entry have been retrieved
 		for (int i = 0; i < entityProperties.length; i++) {
 			if (PopulationDataDto.REGION.equalsIgnoreCase(entityProperties[i])) {
-				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getReferencesByName(values[i], false);
+				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getByExternalId(Long.parseLong(values[i]), false);
 				if (regions.size() != 1) {
 					writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
 					return ImportLineResult.ERROR;
@@ -84,7 +84,7 @@ public class PopulationDataImporter extends DataImporter {
 				if (DataHelper.isNullOrEmpty(values[i])) {
 					district = null;
 				} else {
-					List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getByName(values[i], region, false);
+					List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getByExternalID(Long.parseLong(values[i]), region, false);
 					if (districts.size() != 1) {
 						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
 						return ImportLineResult.ERROR;
@@ -113,8 +113,6 @@ public class PopulationDataImporter extends DataImporter {
 			//patch to use cluster No for data import
 			
 			if (PopulationDataDto.COMMUNITY_EXTID.equalsIgnoreCase(entityProperties[i])) { 
-				System.out.println("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt "+entityProperties[i]);
-				
 				if (DataHelper.isNullOrEmpty(values[i])) {
 					community = null;
 				} else {

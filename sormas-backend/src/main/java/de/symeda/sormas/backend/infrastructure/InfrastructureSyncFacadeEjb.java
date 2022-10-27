@@ -84,14 +84,10 @@ public class InfrastructureSyncFacadeEjb implements InfrastructureSyncFacade {
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
 
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
-		System.out.println("__+_ttdddddddddddddddddddddddddddttt");
 		if (communityService.countAfter(changeDates.getCommunityChangeDate()) > 80000) {
-			System.out.println("__+_ttttt");
 			sync.setInitialSyncRequired(true);
 			return sync;
 		}
-		
-		System.out.println("__+_ttttt TTT = "+sync.isInitialSyncRequired());
 		
 		if(userFacade.getCurrentUser().getCommunity() != null) {
 

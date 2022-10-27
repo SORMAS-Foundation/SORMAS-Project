@@ -416,7 +416,6 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setArchived(entity.isArchived());
-		System.out.println("ddddddddddddddddddddddddd=============dddddddddddddddd");
 		dto.setExternalId(entity.getExternalId());
 
 		return dto;
