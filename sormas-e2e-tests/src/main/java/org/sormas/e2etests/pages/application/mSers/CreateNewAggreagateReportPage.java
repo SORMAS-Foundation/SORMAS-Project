@@ -20,12 +20,12 @@ public class CreateNewAggreagateReportPage {
           "//div[text()=\"Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.\"]");
 
   public static By getDeathInputByDisease(String disease) {
-    return By.xpath(String.format("//div[text()='%s']/../..//input[@id=\"deaths\"]", disease));
+    return By.xpath(String.format("//div[text()='%s']/../../..//input[@id=\"deaths\"]", disease));
   }
 
   public static By getLabConfirmationsInputByDisease(String disease) {
     return By.xpath(
-        String.format("//div[text()='%s']/../..//input[@id=\"labConfirmations\"]", disease));
+        String.format("//div[text()='%s']/../../..//input[@id=\"labConfirmations\"]", disease));
   }
 
   public static By getCasesInputByDisease(String disease) {
