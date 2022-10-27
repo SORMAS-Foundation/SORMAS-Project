@@ -94,7 +94,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private OptionGroup clusterfieldx;
 
 	private static final String HTML_LAYOUT = loc(CAMPAIGN_BASIC_HEADING_LOC)
-		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER, CampaignDto.CAMPAIGN_YEAR)
+		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER_NAME, CampaignDto.CAMPAIGN_YEAR)
 		+ fluidRowLocs(CampaignDto.NAME, CampaignDto.ROUND) 
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
