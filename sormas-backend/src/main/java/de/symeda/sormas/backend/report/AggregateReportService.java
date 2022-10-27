@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.report;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,10 +23,14 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class AggregateReportService extends AdoServiceWithUserFilter<AggregateReport> {
+
+	@EJB
+	private UserService userService;
 
 	public AggregateReportService() {
 		super(AggregateReport.class);
@@ -124,18 +129,31 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		// Whoever created the weekly report is allowed to access it
 		Join<AggregateReport, User> reportingUser = joins.getReportingUser();
 		Predicate filter = cb.equal(reportingUser, currentUser);
-
+		boolean isPortHealthUser = userService.isPortHealthUser();
 		switch (jurisdictionLevel) {
 		case REGION:
 			final Region region = currentUser.getRegion();
 			if (region != null) {
-				filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), region));
+				Predicate regionPredicate = cb.equal(from.get(AggregateReport.REGION), region);
+				if (isPortHealthUser) {
+					Join<AggregateReport, PointOfEntry> pointOfEntryJoin = from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
+					regionPredicate = cb.and(regionPredicate, cb.equal(pointOfEntryJoin.get(PointOfEntry.REGION), region));
+				}
+				filter = cb.or(filter, regionPredicate);
 			}
 			break;
 		case DISTRICT:
 			final District district = currentUser.getDistrict();
 			if (district != null) {
-				filter = cb.or(filter, cb.equal(from.get(AggregateReport.DISTRICT), district));
+				Predicate districtPredicate = cb.equal(from.get(AggregateReport.DISTRICT), district);
+				if (isPortHealthUser) {
+					Join<AggregateReport, PointOfEntry> pointOfEntryJoin = from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
+					districtPredicate = cb.and(
+						districtPredicate,
+						cb.equal(pointOfEntryJoin.get(PointOfEntry.REGION), currentUser.getRegion()),
+						cb.equal(pointOfEntryJoin.get(PointOfEntry.DISTRICT), district));
+				}
+				filter = cb.or(filter, districtPredicate);
 			}
 			break;
 		case HEALTH_FACILITY:
@@ -148,6 +166,11 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 			final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
 			if (pointOfEntry != null) {
 				filter = cb.or(filter, cb.equal(from.get(AggregateReport.POINT_OF_ENTRY), pointOfEntry));
+			}
+			break;
+		case NATION:
+			if (isPortHealthUser) {
+				filter = cb.or(filter, cb.isNotNull(from.get(AggregateReport.POINT_OF_ENTRY)));
 			}
 			break;
 		default:
