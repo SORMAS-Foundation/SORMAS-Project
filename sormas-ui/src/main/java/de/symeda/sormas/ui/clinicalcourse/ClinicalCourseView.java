@@ -101,8 +101,9 @@ public class ClinicalCourseView extends AbstractCaseView {
 				ControllerProvider.getClinicalCourseController()
 					.openClinicalVisitCreateForm(clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
 			}, ValoTheme.BUTTON_PRIMARY);
-			if (!UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_CREATE))
+			if (!UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_CREATE)) {
 				newClinicalVisitButton.setEnabled(false);
+			}
 
 			headlineRow.addComponent(newClinicalVisitButton);
 

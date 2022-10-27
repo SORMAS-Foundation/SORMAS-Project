@@ -113,8 +113,9 @@ public class TherapyView extends AbstractCaseView {
 				ControllerProvider.getTherapyController().openPrescriptionCreateForm(prescriptionCriteria.getTherapy(), this::reloadPrescriptionGrid);
 			}, ValoTheme.BUTTON_PRIMARY);
 
-			if (!UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE))
+			if (!UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE)) {
 				newPrescriptionButton.setEnabled(false);
+			}
 			headlineRow.addComponent(newPrescriptionButton);
 
 			headlineRow.setComponentAlignment(newPrescriptionButton, Alignment.MIDDLE_RIGHT);
@@ -186,8 +187,9 @@ public class TherapyView extends AbstractCaseView {
 			Button newTreatmentButton = ButtonHelper.createButton(Captions.treatmentNewTreatment, e -> {
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
 			});
-			if (!UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE))
+			if (!UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE)) {
 				newTreatmentButton.setEnabled(false);
+			}
 
 			headlineRow.addComponent(newTreatmentButton);
 			headlineRow.setComponentAlignment(newTreatmentButton, Alignment.MIDDLE_RIGHT);
