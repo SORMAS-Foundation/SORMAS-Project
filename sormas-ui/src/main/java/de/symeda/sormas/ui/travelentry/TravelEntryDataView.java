@@ -58,6 +58,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
+		container.setEnabled(true);
 
 		LayoutWithSidePanel layout =
 			new LayoutWithSidePanel(editComponent, CASE_LOC, DOCUMENTS_LOC, QuarantineOrderDocumentsComponent.QUARANTINE_LOC, TASKS_LOC);

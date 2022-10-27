@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -260,6 +261,16 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			reference = null;
 		}
 		return reference;
+	}
+
+	@Override
+	protected void setSubComponent(DirtyStateComponent newComponent) {
+
+		super.setSubComponent(newComponent);
+
+		if (getReference() != null && FacadeProvider.getCaseFacade().isDeleted(getReference().getUuid())) {
+			newComponent.setEnabled(false);
+		}
 	}
 
 	public CaseReferenceDto getCaseRef() {

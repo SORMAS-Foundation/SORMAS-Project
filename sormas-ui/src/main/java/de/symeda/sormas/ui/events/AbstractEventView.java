@@ -30,6 +30,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEventView extends AbstractEditAllowedDetailView<EventReferenceDto> {
@@ -86,6 +87,16 @@ public abstract class AbstractEventView extends AbstractEditAllowedDetailView<Ev
 	protected String getRootViewName() {
 		return ROOT_VIEW_NAME;
 	}
+
+	@Override
+	protected void setSubComponent(DirtyStateComponent newComponent) {
+		super.setSubComponent(newComponent);
+
+		if (getReference() != null && isEventDeleted()) {
+			newComponent.setEnabled(false);
+		}
+	}
+
 
 	protected boolean isEventDeleted() {
 		return FacadeProvider.getEventFacade().isDeleted(getEventRef().getUuid());
