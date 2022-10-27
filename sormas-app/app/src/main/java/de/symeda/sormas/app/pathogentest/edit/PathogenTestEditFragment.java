@@ -147,8 +147,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		contentBinding.pathogenTestPcrTestSpecification.initializeSpinner(pcrTestSpecificationList);
 
 		contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
-		if (diseaseVariantList.isEmpty())
+		if (diseaseVariantList.isEmpty()) {
 			contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(GONE);
+		}
 
 		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList, new ValueChangeListener() {
 
