@@ -2572,7 +2572,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						deleteCase(caseToBeDeleted, deletionDetails);
 						deletedCasesUuids.add(caseToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException e) {
-						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted", e);
+						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
 					}
 				}
 			});

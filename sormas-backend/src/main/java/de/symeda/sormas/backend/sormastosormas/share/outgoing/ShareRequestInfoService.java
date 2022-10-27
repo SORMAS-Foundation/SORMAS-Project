@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
@@ -75,8 +72,10 @@ public class ShareRequestInfoService extends AdoServiceWithUserFilter<ShareReque
 		cq.select(from.get(ShareRequestInfo.UUID));
 		cq.groupBy(from.get(ShareRequestInfo.ID));
 
+		//All the ShareRequestInfos in REVOKED status which still have joins but should be considered as non referenced
 		Predicate revokedStatus = cb.equal(from.get(ShareRequestInfo.REQUEST_STATUS), ShareRequestStatus.REVOKED);
 		List<String> revokedRequests = em.createQuery(cq.where(revokedStatus)).getResultList();
+		//All the ShareRequestInfos which do not have joins
 		List<String> requestsWithoutJoins = em.createQuery(cq.having(cb.equal(cb.count(shareRequestJoin), 0))).getResultList();
 
 		List<String> allNonReferencedShareRequestInfo = new ArrayList<>();
