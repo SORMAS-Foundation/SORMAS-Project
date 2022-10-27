@@ -35,7 +35,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigns";
 
-	public static final String GRID_CONTAINER = "grid-container";
+	public static final String GRID_CONTAINER = "container-fluid";
 
 	protected CampaignDashboardFilterLayout filterLayout;
 	protected CampaignDashboardDataProvider dataProvider;
@@ -53,6 +53,30 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		dataProvider = new CampaignDashboardDataProvider();
 		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider);
+		
+		setSizeFull();
+		setMargin(false);
+		setSpacing(false);
+		//addStyleName("setwith-700px");
+
+		
+		//filterLayout.addStyleName("view-headerxxxx");
+	//	filterLayout.setHeightUndefined();
+		filterLayout.setMargin(new MarginInfo(false, true));
+		filterLayout.setSpacing(true);
+		
+		
+		filterLayout.setHeightUndefined();
+		filterLayout.setWidthFull();
+		filterLayout.setSizeUndefined();
+		//filterLayout.setMargin(new MarginInfo(false, true));
+	//	filterLayout.setSpacing(false);
+		
+		
+		
+		
+		
+		
 		dashboardLayout.addComponent(filterLayout);
 		dashboardLayout.setMargin(false);
 

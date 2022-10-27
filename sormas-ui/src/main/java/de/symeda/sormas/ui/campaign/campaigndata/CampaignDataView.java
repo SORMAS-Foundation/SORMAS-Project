@@ -363,6 +363,8 @@ public class CampaignDataView extends AbstractCampaignView {
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
 
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
+		
+		System.out.println(phase+ " #############################");
 
 		if (phase != null && campaignReferenceDtx != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
@@ -373,7 +375,9 @@ public class CampaignDataView extends AbstractCampaignView {
 
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
+					
 					System.out.println(criteria.getCampaign().getUuid()+ " ####################################################################"+ campaignForm.getUuid());
+					
 					ControllerProvider.getCampaignController().navigateToFormDataView(criteria.getCampaign().getUuid(),
 							campaignForm.getUuid());
 

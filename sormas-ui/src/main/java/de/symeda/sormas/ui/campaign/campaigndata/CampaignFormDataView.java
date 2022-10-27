@@ -80,17 +80,9 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 			getViewTitleLabel().setValue(amformmeta.getCaption());// campaignFormData.getCampaignFormMeta().toString());querySelector
 			Page.getCurrent().getJavaScript().execute(
 					"$(document).ready(function() {"
-				//	+ "alert();"
-					//+ "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").hide();"
-					//+ "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').removeClass('v-align-right');"
-					+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').hide();"
-					
-				//+"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
-					+"});"
+			+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').hide();"
+			+"});"
 					);
-			//"$('#formidx').find('td:contains('Void')').parent('tr').hide()");
-			
-			
 
 		} else {
 			CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade()
