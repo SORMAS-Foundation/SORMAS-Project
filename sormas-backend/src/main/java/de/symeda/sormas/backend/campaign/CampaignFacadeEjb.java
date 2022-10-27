@@ -27,7 +27,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -357,6 +356,12 @@ public class CampaignFacadeEjb
 	public void delete(String campaignUuid, DeletionDetails deletionDetails) {
 
 		service.delete(service.getByUuid(campaignUuid), deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
 	}
 
 	@Override

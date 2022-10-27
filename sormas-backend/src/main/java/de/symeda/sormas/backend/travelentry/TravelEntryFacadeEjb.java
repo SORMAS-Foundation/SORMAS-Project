@@ -105,11 +105,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public boolean isDeleted(String travelEntryUuid) {
-		return service.isDeleted(travelEntryUuid);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
@@ -118,6 +113,12 @@ public class TravelEntryFacadeEjb
 		if (travelEntry.getResultingCase() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
 		}
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
 	}
 
 	@Override

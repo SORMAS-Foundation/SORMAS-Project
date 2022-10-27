@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.samples;
 import java.util.function.Consumer;
 
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -183,6 +184,27 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		setSampleEditPermission(container);
+		final String uuid = sampleDto.getUuid();
+		final boolean deleted = FacadeProvider.getSampleFacade().isDeleted(uuid);
+
+		if (deleted) {
+			editComponent.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			disableComponentIfNotNull(layout.getComponent(CASE_LOC));
+			disableComponentIfNotNull(layout.getComponent(CONTACT_LOC));
+			disableComponentIfNotNull(layout.getComponent(EVENT_PARTICIPANT_LOC));
+			disableComponentIfNotNull(layout.getComponent(PATHOGEN_TESTS_LOC));
+			disableComponentIfNotNull(layout.getComponent(ADDITIONAL_TESTS_LOC));
+			disableComponentIfNotNull(layout.getComponent(SORMAS_TO_SORMAS_LOC));
+		}
+
+		if (!isEditAllowed()) {
+			container.setEnabled(false);
+		}
+	}
+
+	private void disableComponentIfNotNull(Component component){
+		if (component != null) {
+			component.setEnabled(false);
+		}
 	}
 }

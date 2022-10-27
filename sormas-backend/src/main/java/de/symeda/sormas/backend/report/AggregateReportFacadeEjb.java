@@ -154,6 +154,10 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		if (aggregateReportDto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
+
+		if (userService.isPortHealthUser() && aggregateReportDto.getPointOfEntry() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
+		}
 	}
 
 	@Override

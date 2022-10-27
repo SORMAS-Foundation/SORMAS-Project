@@ -530,7 +530,7 @@ Feature: Case end to end tests
     And I click on first person in person directory
     And I check if Date of dead for specified case is correct
 
-  @tmsLink=SORDEV-6843 @env_main
+  @tmsLink=SORDEV-6843 @env_main @ignore
   Scenario: Refine the update mechanism between case outcome and person other cause date
     Given I log in as a National User
     And I click on the Cases button from navbar

@@ -43,7 +43,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 	@Override
 	protected void addFields() {
 
-		addBirthDateFields(PersonCriteria.BIRTHDATE_YYYY, PersonCriteria.BIRTHDATE_MM, PersonCriteria.BIRTHDATE_DD);
+		addBirthDateFields(getContent(), PersonCriteria.BIRTHDATE_YYYY, PersonCriteria.BIRTHDATE_MM, PersonCriteria.BIRTHDATE_DD);
 
 		final TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
