@@ -29,7 +29,7 @@ public class CreateNewAggreagateReportPage {
   }
 
   public static By getCasesInputByDisease(String disease) {
-    return By.xpath(String.format("//div[text()='%s']/../..//input[@id=\"newCases\"]", disease));
+    return By.xpath(String.format("//div[text()='%s']/../../..//input[@id=\"newCases\"]", disease));
   }
 
   public static final By YEAR_COMBOBOX_POPUP =
