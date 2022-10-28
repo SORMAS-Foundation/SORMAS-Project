@@ -25,6 +25,8 @@ public class ContinentsTabPage {
           "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
   public static final By CONTINENTS_TABLE_DATA = By.tagName("td");
   public static final By CONTINENTS_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By CONTINENTS_NAME_CONTINENTS_CONFIGURATION =
+      By.cssSelector("div.v-grid-tablewrapper tbody tr >:nth-child(2)");
   public static final By CONTINENTS_COLUMN_HEADERS =
       By.cssSelector("thead" + " .v-grid-column-default-header-content");
   public static final By IMPORT_BUTTON_CONTINENTS_CONFIGURATION = By.id("actionImport");

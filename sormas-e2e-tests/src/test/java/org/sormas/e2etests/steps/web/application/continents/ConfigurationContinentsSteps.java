@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.continents;
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_CONTINENTS_TAB;
 import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_DROPDOWN_CONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_NAME_CONTINENTS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.ENTER_BULK_EDIT_MODE_CONTINENTS_CONFIGURATION;
@@ -210,6 +211,28 @@ public class ConfigurationContinentsSteps implements En {
             default:
               throw new IllegalArgumentException("No valid options were provided");
           }
+        });
+    When(
+        "I verify the Search and Reset filter functionality in Continents Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
+          String Continent =
+              webDriverHelpers.getTextFromWebElement(CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_FILTER_INPUT_CONTINENTS_CONFIGURATION, Continent);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, Continent);
+          webDriverHelpers.clickOnWebElementBySelector(
+              RESET_FILTERS_BUTTON_CONTINENTS_CONFIGURATION);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, 6);
         });
   }
 

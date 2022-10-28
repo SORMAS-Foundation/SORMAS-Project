@@ -30,3 +30,10 @@ Feature: Continent end to end tests
     Then I Verify the Presence of the element Search Input in Continents Configuration page
     Then I Verify the Presence of the element Reset Filters in Continents Configuration page
     Then I Verify the Presence of the element Continents dropdown in Continents Configuration page
+
+  @env_main @#7468
+  Scenario: Check Continents Configuration search and reset functionalities
+    Given I log in as a Admin User
+    And I click on the Configuration button from navbar
+    When I navigate to continents tab in Configuration
+    Then I verify the Search and Reset filter functionality in Continents Configuration page
