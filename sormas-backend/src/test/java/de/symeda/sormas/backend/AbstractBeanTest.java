@@ -25,8 +25,11 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import de.hilling.junit.cdi.CdiTestJunitExtension;
+import de.hilling.junit.cdi.ContextControlWrapper;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -234,26 +237,25 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
-import info.novatec.beantest.api.BaseBeanTest;
-import info.novatec.beantest.api.BeanProviderHelper;
 
-public abstract class AbstractBeanTest extends BaseBeanTest {
+@ExtendWith(CdiTestJunitExtension.class)
+public abstract class AbstractBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
-	public static final String CONFIDENTIAL = "Confidential";
 
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.
 	 */
-	@Before
+	@BeforeEach
 	public void init() {
+
 		MockProducer.resetMocks();
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
-		UserDto user = creator.createTestUser();
 
+		UserDto user = creator.createTestUser();
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 
 		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
@@ -266,12 +268,24 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		});
 
 		I18nProperties.setUserLanguage(Language.EN);
+		createDiseaseConfigurations();
+	}
 
+	private void createDiseaseConfigurations() {
+		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
+		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
+			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
+			getDiseaseConfigurationService().ensurePersisted(configuration);
+		});
+	}
+
+	protected <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {
+		return ContextControlWrapper.getInstance().getContextualReference(beanClass, qualifiers);
 	}
 
 	protected void initH2Functions() {
 		EntityManager em = getEntityManager();
-		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
@@ -291,24 +305,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
 		nativeQuery.executeUpdate();
-		em.getTransaction().commit();
-	}
-
-	@Before
-	public void createDiseaseConfigurations() {
-		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
-		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
-			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
-			getDiseaseConfigurationService().ensurePersisted(configuration);
-		});
-	}
-
-	/**
-	 * Use Case: Static methods when a bean test is already running.
-	 */
-	public static <T> T getBeanStatic(Class<T> beanClass, Annotation... qualifiers) {
-		return BeanProviderHelper.getInstance().getBean(beanClass, qualifiers);
 	}
 
 	/**
@@ -317,11 +313,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	 */
 	@SuppressWarnings("unchecked")
 	public <E extends AbstractDomainObject> E getEntityAttached(E entity) {
-		return (E) QueryHelper.simpleSingleQuery(
-			getBeanStatic(EntityManagerWrapper.class).getEntityManager(),
-			entity.getClass(),
-			AbstractDomainObject.UUID,
-			entity.getUuid());
+		return (E) QueryHelper.simpleSingleQuery(getEntityManager(), entity.getClass(), AbstractDomainObject.UUID, entity.getUuid());
 	}
 
 	public UserRole getEagerUserRole(String uuid) {
@@ -365,7 +357,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public EntityManager getEntityManager() {
-		return getBean(EntityManagerWrapper.class).getEntityManager();
+		return getBean(EntityManager.class);
 	}
 
 	public ConfigFacade getConfigFacade() {

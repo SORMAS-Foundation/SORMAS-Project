@@ -27,15 +27,26 @@ import static org.junit.Assert.fail;
 import java.time.Duration;
 import java.util.UUID;
 
-import org.junit.Test;
+import javax.inject.Inject;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
+import de.hilling.junit.cdi.CdiTestJunitExtension;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.utils.InfoProvider;
-import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 
-public class ConfigFacadeEjbTest extends AbstractBeanTest {
+@ExtendWith(CdiTestJunitExtension.class)
+public class ConfigFacadeEjbTest {
+
+	@Inject
+	ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+
+	private ConfigFacade getConfigFacade() {
+		return configFacadeEjb;
+	}
 
 	@Test
 	public void testValidateExternalUrls() {

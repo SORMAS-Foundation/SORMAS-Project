@@ -1,24 +1,29 @@
 package de.symeda.sormas.backend.feature;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.region.Region;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertTrue;
+import javax.inject.Inject;
+
+import org.junit.jupiter.api.Test;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 
 public class FeatureConfigurationServiceTest extends AbstractBeanTest {
+
+	@Inject
+	FeatureConfigurationService featureConfigurationService;
 
 	@Test
 	public void testCreateMissingFeatureConfigurations() {
 
 		createConfigurations();
-		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
 		featureConfigurationService.createMissingFeatureConfigurations();
 		assertTrue(
 			featureConfigurationService.getAll()
@@ -32,7 +37,6 @@ public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 	public void testUpdateFeatureConfigurations() {
 
 		createConfigurations();
-		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
 
 		/*
 		 * update relies on that all serverFeature configurations are already present,
@@ -49,7 +53,7 @@ public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 		build(FeatureType.TASK_MANAGEMENT);
 
 		// Some features configured on district level
-		RDCF rdcf = creator.createRDCF();
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		Region region = getRegionService().getByUuid(rdcf.region.getUuid());
 		build(FeatureType.LINE_LISTING, null, region, getDistrictService().getByUuid(rdcf.district.getUuid()));
 		build(FeatureType.LINE_LISTING, null, region, creator.createDistrict("d2", region));
@@ -61,8 +65,6 @@ public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 	}
 
 	private FeatureConfiguration build(FeatureType type, Disease disease, Region region, District district) {
-
-		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
 
 		FeatureConfiguration entity = new FeatureConfiguration();
 		entity.setFeatureType(type);

@@ -62,13 +62,17 @@ import de.symeda.sormas.backend.user.CurrentUserService;
  */
 public class MockProducer implements InitialContextFactory {
 
+	private InitialContext mockCtx;
+
 	@Override
 	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
 
-		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
-		CurrentUserService currentUserService = mock(CurrentUserService.class);
-		InitialContext mockCtx = mock(InitialContext.class);
-		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
+		if (mockCtx == null) {
+			// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+			CurrentUserService currentUserService = mock(CurrentUserService.class);
+			mockCtx = mock(InitialContext.class);
+			when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
+		}
 
 		return mockCtx;
 	}

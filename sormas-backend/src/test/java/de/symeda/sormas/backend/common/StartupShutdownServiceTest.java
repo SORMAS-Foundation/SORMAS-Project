@@ -28,6 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import de.hilling.junit.cdi.annotations.BypassTestInterceptor;
 import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
@@ -36,9 +37,7 @@ import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
-import info.novatec.beantest.api.BaseBeanTest;
-
-public class StartupShutdownServiceTest extends BaseBeanTest {
+public class StartupShutdownServiceTest { //extends BaseBeanTest {
 
 	private final String[] SUPPORTED_DATABASE_VERSIONS = new String[] {
 		"9.5",
@@ -199,6 +198,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		}
 	}
 
+	@BypassTestInterceptor
 	public static class SormasPostgresSQLContainer extends JdbcDatabaseContainer<SormasPostgresSQLContainer> {
 
 		public SormasPostgresSQLContainer() {
