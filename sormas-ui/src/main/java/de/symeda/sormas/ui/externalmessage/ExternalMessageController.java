@@ -46,17 +46,26 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -180,6 +189,50 @@ public class ExternalMessageController {
 		externalMessage.setCaze(caze);
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
+	}
+
+	private void createSurveillanceReport(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
+		SurveillanceReportDto surveillanceReport = SurveillanceReportDto.build(caze, FacadeProvider.getUserFacade().getCurrentUserAsReference());
+		setSurvReportFacility(surveillanceReport, externalMessage, caze);
+		surveillanceReport.setReportDate(externalMessage.getMessageDateTime());
+		setSurvReportingType(surveillanceReport, externalMessage);
+
+	}
+
+	private void setSurvReportFacility(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseReferenceDto caze) {
+		FacilityReferenceDto reporterReference = ExternalMessageMapper.getFacilityReference(externalMessage.getReporterExternalIds());
+		FacilityDto reporter;
+		if (reporterReference != null) {
+			reporter = FacadeProvider.getFacilityFacade().getByUuid(reporterReference.getUuid());
+			surveillanceReport.setFacility(reporterReference);
+			surveillanceReport.setFacilityDistrict(reporter.getDistrict());
+			surveillanceReport.setFacilityRegion(reporter.getRegion());
+			surveillanceReport.setFacilityType(reporter.getType());
+		} else {
+			reporter = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID);
+			surveillanceReport.setFacility(reporter.toReference());
+			surveillanceReport.setFacilityDetails(externalMessage.getReporterName());
+			DataHelper.Pair<RegionReferenceDto, DistrictReferenceDto> regionAndDistrict =
+				FacadeProvider.getCaseFacade().getRegionAndDistrictRefsOf(caze);
+			surveillanceReport.setFacilityRegion(regionAndDistrict.getElement0());
+			surveillanceReport.setFacilityDistrict(regionAndDistrict.getElement1());
+			if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())) {
+				surveillanceReport.setFacilityType(FacilityType.LABORATORY);
+			} else if (ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())) {
+				surveillanceReport.setFacilityType(FacilityType.HOSPITAL);
+			}
+		}
+	}
+
+	private void setSurvReportingType(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage) {
+		if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())) {
+			surveillanceReport.setReportingType(ReportingType.LABORATORY);
+		} else if (ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())) {
+			surveillanceReport.setReportingType(ReportingType.DOCTOR);
+		} else {
+			throw new UnsupportedOperationException(
+				String.format("There is no reporting type defined for this type of external message: %s", externalMessage.getType()));
+		}
 	}
 
 	public void assignAllSelectedItems(Collection<ExternalMessageIndexDto> selectedRows, Runnable callback) {

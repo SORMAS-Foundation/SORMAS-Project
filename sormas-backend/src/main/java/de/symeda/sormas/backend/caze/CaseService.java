@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -86,6 +87,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -133,9 +135,13 @@ import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
@@ -227,6 +233,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private VaccinationService vaccinationService;
 	@EJB
 	private ExternalMessageService externalMessageService;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
 
 	public CaseService() {
 		super(Case.class);
@@ -2108,6 +2118,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public DataHelper.Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		Root<Case> root = cq.from(Case.class);
+
+		cq.multiselect(root.get(Case.RESPONSIBLE_REGION), root.get(Case.RESPONSIBLE_DISTRICT));
+		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+
+		Tuple singleResult = em.createQuery(cq).getSingleResult();
+		Region region = (Region) singleResult.get(0);
+		District district = (District) singleResult.get(1);
+		return new DataHelper.Pair<>(RegionFacadeEjb.toReferenceDto(region), DistrictFacadeEjb.toReferenceDto(district));
 	}
 
 	private List<Case> getCasesSetAsDuplicate(Long caseId) {
