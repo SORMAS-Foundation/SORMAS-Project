@@ -399,10 +399,9 @@ public class SymptomsTabSteps implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_OPTIONS))
         .otherNonHemorrhagicSymptoms(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    OTHER_CLINICAL_SYMPTOMS_OPTIONS))
+                OTHER_CLINICAL_SYMPTOMS_OPTIONS))
         .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
-        .symptomsComments(
-            webDriverHelpers.getValueFromWebElement(SPECIFY_OTHER_SYMPTOMS_INPUT))
+        .symptomsComments(webDriverHelpers.getValueFromWebElement(SPECIFY_OTHER_SYMPTOMS_INPUT))
         .abnormalLungXrayFindings(
             (webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 ABNORMAL_LUNG_XRAY_FINDINGS_OPTIONS)))
@@ -621,13 +620,11 @@ public class SymptomsTabSteps implements En {
   }
 
   private void selectOtherClinicalSymptoms(String otherClinicalSymptoms) {
-    webDriverHelpers.clickWebElementByText(
-            OTHER_CLINICAL_SYMPTOMS_OPTIONS, otherClinicalSymptoms);
+    webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS_OPTIONS, otherClinicalSymptoms);
   }
 
   private void fillOtherSymptoms(String otherSymptoms) {
-    webDriverHelpers.fillInWebElement(
-            SPECIFY_OTHER_SYMPTOMS_INPUT, otherSymptoms);
+    webDriverHelpers.fillInWebElement(SPECIFY_OTHER_SYMPTOMS_INPUT, otherSymptoms);
   }
 
   private void fillSymptomsComments(String symptomsComments) {
