@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.v7.data.Validator;
@@ -41,6 +44,7 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -78,6 +82,48 @@ public class PersonController {
 		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
+	}
+
+	public void mergePersons(Set<PersonIndexDto> personIndexDtos) {
+		final PersonGrid personGrid = new PersonGrid();
+		personGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+		personGrid.setFixDataProvider(new ArrayList<>(personIndexDtos));
+		personGrid.setVisible(true);
+		VaadinUiUtil.showThreeOptionsPopup(
+			I18nProperties.getString(Strings.headingPickOrMergePerson),
+			personGrid,
+			I18nProperties.getString(Strings.infoPersonMergeDescription),
+			I18nProperties.getCaption(Captions.actionMerge),
+			I18nProperties.getCaption(Captions.actionPick),
+			I18nProperties.getCaption(Captions.actionDiscard),
+			1024,
+			option -> {
+
+				switch (option) {
+				case OPTION1: {
+					final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
+					if (selectedItems.size() == 1) {
+						final PersonIndexDto leadPerson = selectedItems.iterator().next();
+						final PersonIndexDto otherPerson =
+							personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
+						FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+					}
+				}
+					break;
+				case OPTION2: {
+					final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
+					if (selectedItems.size() == 1) {
+						final PersonIndexDto leadPerson = selectedItems.iterator().next();
+						final PersonIndexDto otherPerson =
+							personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
+						FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), false);
+					}
+				}
+					break;
+				case OPTION3:
+					break;
+				}
+			});
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {

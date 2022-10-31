@@ -1754,6 +1754,12 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
+	@RightsAllowed(UserRight._PERSON_EDIT)
+	public void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties) {
+
+	}
+
+	@Override
 	public boolean isPersonAssociatedWithNotDeletedEntities(String uuid) {
 		return service.isPersonAssociatedWithNotDeletedEntities(uuid);
 	}

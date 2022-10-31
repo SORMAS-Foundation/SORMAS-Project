@@ -12182,10 +12182,17 @@ ALTER TABLE externalmessage RENAME COLUMN testeddisease to disease;
 ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
 
 INSERT INTO schema_version (version_number, comment) VALUES (496, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 ALTER TABLE surveillancereports ADD COLUMN externalid varchar(255);
 ALTER TABLE surveillancereports_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalId to surveillance reports #6621');
 
+-- 2022-10-25 [Merging] Merge persons via bulk actions [5] #5606
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_USER';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN_SUPERVISOR';
+
+INSERT INTO schema_version (version_number, comment) VALUES (498, '[Merging] Merge persons via bulk actions [5] #5606');
+
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

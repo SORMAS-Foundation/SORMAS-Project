@@ -70,6 +70,41 @@ public class SimilarPersonDto extends AbstractUuidDto {
 		super(uuid);
 	}
 
+	public SimilarPersonDto(
+		String uuid,
+		String firstName,
+		String lastName,
+		String nickname,
+		String ageAndBirthDate,
+		Sex sex,
+		PresentCondition presentCondition,
+		String phone,
+		String districtName,
+		String communityName,
+		String postalCode,
+		String city,
+		String street,
+		String houseNumber,
+		String nationalHealthId,
+		String passportNumber) {
+		super(uuid);
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.nickname = nickname;
+		this.ageAndBirthDate = ageAndBirthDate;
+		this.sex = sex;
+		this.presentCondition = presentCondition;
+		this.phone = phone;
+		this.districtName = districtName;
+		this.communityName = communityName;
+		this.postalCode = postalCode;
+		this.city = city;
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.nationalHealthId = nationalHealthId;
+		this.passportNumber = passportNumber;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
