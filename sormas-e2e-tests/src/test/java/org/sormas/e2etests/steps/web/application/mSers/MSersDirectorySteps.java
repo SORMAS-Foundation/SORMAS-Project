@@ -347,7 +347,7 @@ public class MSersDirectorySteps implements En {
               .year(values[3])
               .epiWeek(values[4])
               .ageGroupForAcuteViralHepatitisLabConfirmations(values[5])
-              .acuteViralHepatitisCases(Integer.parseInt(values[6]))
+              .acuteViralHepatitisCases(Integer.parseInt(values[8]))
               .build();
     } catch (NullPointerException e) {
       log.error("Null pointer exception parseOneDiseaseExport: {}", e.getCause());
