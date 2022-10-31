@@ -220,19 +220,21 @@ public class ConfigurationContinentsSteps implements En {
               CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(
               CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
-          String Continent =
+          Integer defaultContinentCount =
+              webDriverHelpers.getNumberOfElements(CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
+          String continent =
               webDriverHelpers.getTextFromWebElement(CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
           webDriverHelpers.fillAndSubmitInWebElement(
-              SEARCH_FILTER_INPUT_CONTINENTS_CONFIGURATION, Continent);
+              SEARCH_FILTER_INPUT_CONTINENTS_CONFIGURATION, continent);
           webDriverHelpers.waitUntilNumberOfElementsIsExactly(
               CONTINENTS_NAME_CONTINENTS_CONFIGURATION, 1);
           webDriverHelpers.waitUntilAListOfElementsHasText(
-              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, Continent);
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, continent);
           webDriverHelpers.clickOnWebElementBySelector(
               RESET_FILTERS_BUTTON_CONTINENTS_CONFIGURATION);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilNumberOfElementsIsExactly(
-              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, 6);
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, defaultContinentCount);
         });
   }
 

@@ -19,6 +19,15 @@
 package org.sormas.e2etests.steps.web.application.subcontinents;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_SUBCONTINENTS_TAB;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.ENTER_BULK_EDIT_MODE_BUTTON_SUBCONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.EXPORT_BUTTON_SUBCONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.IMPORT_BUTTON_SUBCONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.IMPORT_DEFAULT_BUTTON_SUBCONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.NEW_ENTRY_BUTTON_SUBCONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.RELEVANCE_STATUS_COMBO_BOX_SUBCONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.RESET_FILTERS_BUTTON_SUBCONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SEARCH_INPUT_SUBCONTINENTS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_TABLE_ROW;
@@ -91,6 +100,45 @@ public class ConfigurationSubcontinentsSteps implements En {
                   .toString()
                   .contains("KONTINENTNAME=Afrika, EXTERNE ID=31001115, NAME=Zentralafrika"),
               "Central Africa is not correctly displayed!");
+          softly.assertAll();
+        });
+
+    Then(
+        "I Verify the page elements are present in Subcontinents Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              IMPORT_BUTTON_SUBCONTINENTS_CONFIGURATION);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(IMPORT_BUTTON_SUBCONTINENTS_CONFIGURATION),
+              "Import Button is Not present in Subcontinents Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(IMPORT_DEFAULT_BUTTON_SUBCONTINENTS_CONFIGURATION),
+              "Import Default Button is Not present in Subcontinents Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(EXPORT_BUTTON_SUBCONTINENTS_CONFIGURATION),
+              "Export Button is Not present in Subcontinents Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(NEW_ENTRY_BUTTON_SUBCONTINENTS_CONFIGURATION),
+              "New Entry Button is Not present in Subcontinents Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  ENTER_BULK_EDIT_MODE_BUTTON_SUBCONTINENTS_CONFIGURATION),
+              "Enter Bulk Edit Mode Button is Not present in Subcontinents Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SEARCH_INPUT_SUBCONTINENTS_CONFIGURATION),
+              "Search Input is Not present in Subcontinents Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION),
+              "Continent Name Combo box is Not present in Subcontinents Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RESET_FILTERS_BUTTON_SUBCONTINENTS_CONFIGURATION),
+              "Reset Filters Button is Not present in Subcontinents Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  RELEVANCE_STATUS_COMBO_BOX_SUBCONTINENTS_CONFIGURATION),
+              "Relevance status Combo box is Not present in Subcontinents Configuration");
+
           softly.assertAll();
         });
   }

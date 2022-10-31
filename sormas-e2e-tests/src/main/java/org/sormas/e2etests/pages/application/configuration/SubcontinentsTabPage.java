@@ -28,4 +28,17 @@ public class SubcontinentsTabPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By SUBCONTINENTS_COLUMN_HEADERS =
       By.cssSelector("thead" + " .v-grid-column-default-header-content");
+  public static final By IMPORT_BUTTON_SUBCONTINENTS_CONFIGURATION = By.id("actionImport");
+  public static final By IMPORT_DEFAULT_BUTTON_SUBCONTINENTS_CONFIGURATION =
+      By.id("actionImportAllSubcontinents");
+  public static final By EXPORT_BUTTON_SUBCONTINENTS_CONFIGURATION = By.id("export");
+  public static final By NEW_ENTRY_BUTTON_SUBCONTINENTS_CONFIGURATION = By.id("actionNewEntry");
+  public static final By ENTER_BULK_EDIT_MODE_BUTTON_SUBCONTINENTS_CONFIGURATION =
+      By.id("actionEnterBulkEditMode");
+  public static final By SEARCH_INPUT_SUBCONTINENTS_CONFIGURATION = By.id("search");
+  public static final By CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION = By.id("continent");
+  public static final By RESET_FILTERS_BUTTON_SUBCONTINENTS_CONFIGURATION =
+      By.id("actionResetFilters");
+  public static final By RELEVANCE_STATUS_COMBO_BOX_SUBCONTINENTS_CONFIGURATION =
+      By.id("relevanceStatus");
 }
