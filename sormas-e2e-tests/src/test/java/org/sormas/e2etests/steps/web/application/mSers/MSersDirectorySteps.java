@@ -315,9 +315,10 @@ public class MSersDirectorySteps implements En {
           String fileName = "./downloads/sormas_aggregate_reports_" + LocalDate.now() + "_.csv";
           AggregateReport reader = parseOneDiseaseExport(fileName);
           softly.assertEquals(
-              reader.getAgeGroupForAcuteViralHepatitisLabConfirmations(),
-              CreateNewAggregateReportSteps.report.getAgeGroupForAcuteViralHepatitisLabConfirmations(),
-              "Age group for Acute Viral Hepatitis is different!");
+              reader.getAgeGroupForMalaria(),
+              CreateNewAggregateReportSteps.report
+              .getAgeGroupForMalaria(),
+              "Age group for Malaria is different!");
           softly.assertAll();
         });
   }
@@ -346,7 +347,7 @@ public class MSersDirectorySteps implements En {
           AggregateReport.builder()
               .year(values[3])
               .epiWeek(values[4])
-              .ageGroupForAcuteViralHepatitisLabConfirmations(values[8])
+              .ageGroupForMalaria(values[8])
               .acuteViralHepatitisCases(Integer.parseInt(values[6]))
               .build();
     } catch (NullPointerException e) {
