@@ -82,6 +82,17 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		return count > 0;
 	}
 
+	public boolean isDeleted(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		cq.where(cb.and(cb.isTrue(from.get(CoreAdo.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, ADO> adoPath, boolean includeExtendedChangeDateFilters) {
 		return builder.add(adoPath);
 	}

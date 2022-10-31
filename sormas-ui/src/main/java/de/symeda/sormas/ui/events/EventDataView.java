@@ -88,6 +88,7 @@ public class EventDataView extends AbstractEventView {
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
+		container.setEnabled(true);
 
 		editComponent =
 			ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setExternalSurvToolLayoutVisibility);
@@ -208,9 +209,13 @@ public class EventDataView extends AbstractEventView {
 			layout.setEnabled(false);
 		}
 
-		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(event.getUuid());
+		final String uuid = event.getUuid();
+		final EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(uuid);
+		final boolean deleted = FacadeProvider.getEventFacade().isDeleted(uuid);
 
-		if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (eventEditAllowed == EditPermissionType.REFUSED) {
 			layout.disable();

@@ -567,6 +567,16 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
+	public void undelete(Event event) {
+		// undelete all event participants associated with this event
+		List<EventParticipant> eventParticipants = eventParticipantService.getAllByEventAfter(null, event);
+		for (EventParticipant eventParticipant : eventParticipants) {
+			eventParticipantService.undelete(eventParticipant);
+		}
+		super.undelete(event);
+	}
+
+	@Override
 	public void deletePermanent(Event event) {
 
 		// Delete all tasks associated with this event

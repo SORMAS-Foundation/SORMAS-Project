@@ -797,16 +797,17 @@ public class EventController {
 			}
 		});
 
+		final String uuid = event.getUuid();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
-			editView.addDeleteWithReasonListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					try {
-						FacadeProvider.getEventFacade().delete(event.getUuid(), deleteDetails);
+						FacadeProvider.getEventFacade().delete(uuid, deleteDetails);
 					} catch (ExternalSurveillanceToolRuntimeException e) {
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
-								DataHelper.getShortUuid(event.getUuid())),
+								DataHelper.getShortUuid(uuid)),
 							"",
 							Type.ERROR_MESSAGE);
 					}
@@ -816,7 +817,10 @@ public class EventController {
 						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityEvent));
+			}, (deleteDetails) -> {
+				FacadeProvider.getEventFacade().undelete(uuid);
+				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityEvent), uuid, FacadeProvider.getEventFacade());
 		}
 
 		// Initialize 'Archive' button
@@ -827,7 +831,7 @@ public class EventController {
 					FacadeProvider.getEventFacade(),
 					CoreEntityArchiveMessages.EVENT,
 					editView,
-					() -> navigateToData(event.getUuid()));
+					() -> navigateToData(uuid));
 		}
 
 		return editView;

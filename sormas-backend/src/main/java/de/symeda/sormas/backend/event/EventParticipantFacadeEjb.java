@@ -457,6 +457,12 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
 	public List<EventParticipantIndexDto> getIndexList(
 		EventParticipantCriteria eventParticipantCriteria,
 		Integer first,

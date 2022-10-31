@@ -204,6 +204,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 
 		if (showExtraMenuEntries) {
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_FOLLOW_UP)
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {

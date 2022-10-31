@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -193,10 +192,11 @@ public class ImmunizationController {
 
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
-				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid(), deleteDetails);
-				UI.getCurrent().getNavigator().navigateTo(ImmunizationsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityImmunization));
+			editComponent.addDeleteWithReasonOrUndeleteListener(
+				ImmunizationsView.VIEW_NAME,
+				I18nProperties.getString(Strings.entityImmunization),
+				immunizationDto.getUuid(),
+				FacadeProvider.getImmunizationFacade());
 		}
 
 		// Initialize 'Archive' button

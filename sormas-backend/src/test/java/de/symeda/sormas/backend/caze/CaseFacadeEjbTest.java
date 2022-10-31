@@ -1310,7 +1310,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCaseDeletion() throws ExternalSurveillanceToolRuntimeException {
+	public void testCaseDeletionAndUndeletion() throws ExternalSurveillanceToolRuntimeException {
 		Date since = new Date();
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -1359,7 +1359,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
 		assertNotNull(getContactFacade().getByUuid(contact.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
-		assertNotNull(getSampleTestFacade().getByUuid(pathogenTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
@@ -1370,11 +1370,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
+
+		getCaseFacade().undelete(caze.getUuid());
+
+		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
+		assertFalse(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
+		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
+		assertFalse(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
+		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test

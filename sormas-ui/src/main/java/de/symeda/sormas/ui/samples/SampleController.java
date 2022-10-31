@@ -353,11 +353,15 @@ public class SampleController {
 		});
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
-			editView.addDeleteWithReasonListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), deleteDetails);
 				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entitySample));
+			}, (deletionDetails) -> {
+				FacadeProvider.getSampleFacade().undelete(dto.toReference());
+				updateAssociationsForSample(dto);
+				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entitySample), FacadeProvider.getSampleFacade().isDeleted(dto.getUuid()));
 		}
 
 		if (dto.getReferredTo() != null || dto.getSamplePurpose() == SamplePurpose.EXTERNAL) {
