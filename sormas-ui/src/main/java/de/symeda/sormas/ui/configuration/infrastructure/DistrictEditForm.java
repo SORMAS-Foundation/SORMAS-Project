@@ -58,7 +58,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	protected void addFields() {
 
 		addField(DistrictDto.NAME, TextField.class);
-		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		addField(RegionDto.EXTERNAL_ID, TextField.class).setCaption("DCode");;
 		//addField(DistrictDto.EPID_CODE, TextField.class);
 		ComboBox region = addInfrastructureField(DistrictDto.REGION);
 		

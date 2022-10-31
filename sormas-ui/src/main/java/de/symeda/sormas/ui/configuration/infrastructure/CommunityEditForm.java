@@ -62,7 +62,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 
 		addField(CommunityDto.NAME, TextField.class);
 		addField(CommunityDto.CLUSTER_NUMBER, TextField.class);
-		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		addField(RegionDto.EXTERNAL_ID, TextField.class).setCaption("CCode");;
 		ComboBox region = addInfrastructureField(CommunityDto.REGION);
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
 		
