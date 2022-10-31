@@ -469,7 +469,7 @@ public class CreateNewAggregateReportSteps implements En {
     fillDistrict(report.getDistrict());
     fillCasesWithAgeGroupFor("Malaria", "3-12 months", report.getMalariaCases());
     fillLabConfirmationsWithAgeGroupFor(
-        "Acute Viral Hepatitis", "16+ years", report.getAcuteViralHepatitisLabConfirmations());
+        "Acute Viral Hepatitis", report.getAgeGroupForAcuteViralHepatitisLabConfirmations(), report.getAcuteViralHepatitisLabConfirmations());
     fillDeathsWithAgeGroupFor("HIV", "0-28 days", report.getHivDeaths());
   }
 

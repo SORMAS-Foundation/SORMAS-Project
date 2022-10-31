@@ -406,5 +406,5 @@ Feature: mSERS functionalities
     And I navigate to Report data tab
     Then I click to edit 1 result in mSers directory page
     And I click to delete aggregated report
-    And I check if exported aggregate report for last created report is correct
+    And I check if exported aggregate report contains correct age groups
     And I delete exported report

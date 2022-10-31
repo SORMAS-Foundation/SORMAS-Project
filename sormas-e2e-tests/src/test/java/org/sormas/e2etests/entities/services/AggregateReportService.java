@@ -220,6 +220,7 @@ public class AggregateReportService {
         .acuteViralHepatitisLabConfirmations(faker.number().numberBetween(2, 12))
         .malariaCases(faker.number().numberBetween(2, 12))
         .hivDeaths(faker.number().numberBetween(2, 12))
+        .ageGroupForAcuteViralHepatitisLabConfirmations("16+ years")
         .build();
   }
 }

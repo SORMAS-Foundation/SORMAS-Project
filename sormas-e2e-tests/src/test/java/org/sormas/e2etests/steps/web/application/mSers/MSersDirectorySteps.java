@@ -308,6 +308,18 @@ public class MSersDirectorySteps implements En {
               "Age group is incorrect");
           softly.assertAll();
         });
+
+    And(
+        "^I check if exported aggregate report contains correct age groups$",
+        () -> {
+          String fileName = "./downloads/sormas_aggregate_reports_" + LocalDate.now() + "_.csv";
+          AggregateReport reader = parseOneDiseaseExport(fileName);
+          softly.assertEquals(
+              reader.getAgeGroupForAcuteViralHepatitisLabConfirmations(),
+              CreateNewAggregateReportSteps.report.getAgeGroupForAcuteViralHepatitisLabConfirmations(),
+              "Age group for Acute Viral Hepatitis is different!");
+          softly.assertAll();
+        });
   }
 
   public AggregateReport parseOneDiseaseExport(String fileName) {
@@ -334,6 +346,7 @@ public class MSersDirectorySteps implements En {
           AggregateReport.builder()
               .year(values[3])
               .epiWeek(values[4])
+              .ageGroupForAcuteViralHepatitisLabConfirmations(values[5])
               .acuteViralHepatitisCases(Integer.parseInt(values[6]))
               .build();
     } catch (NullPointerException e) {
