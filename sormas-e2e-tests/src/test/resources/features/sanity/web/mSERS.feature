@@ -380,3 +380,31 @@ Feature: mSERS functionalities
     And I click to delete aggregated report
     And I click on the APPLY FILTERS button
     Then I check if there number of results in grid in mSers directory is 0
+
+  @tmsLink=SORDEV-11692 @env_main
+  Scenario: Addition of age categories to aggregate module (mSERS)
+    Given I log in as a Admin User
+    When I click on the mSERS button from navbar
+    And I click on the NEW AGGREGATE REPORT button
+    And I check if age groups are visible for "Acute Viral Hepatitis"
+    And I check if age groups are visible for "HIV"
+    And I check if age groups are visible for "Malaria"
+    Then I click on SPECIFY Radiobutton in Create Aggregated Report form
+    And I fill a new aggregate report with specific age groups
+    And I click to save aggregated report
+    And I navigate to Report data tab
+    And I set Epi Year from filter to "2012" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2012 (12/26 - 1/1)" in mSers directory page
+    And I set Epi Year to filter to "2012" in mSers directory page
+    And I set Epi week to filter to "Wk 1-2012 (12/26 - 1/1)" in mSers directory page
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 3
+    And I check that Age group for 1 result in grid in mSers directory is "16+ years"
+    And I check that Age group for 2 result in grid in mSers directory is "0-28 days"
+    And I check that Age group for 3 result in grid in mSers directory is "3-12 months"
+    And I click to Export aggregate report
+    And I navigate to Report data tab
+    Then I click to edit 1 result in mSers directory page
+    And I click to delete aggregated report
+    And I check if exported aggregate report for last created report is correct
+    And I delete exported report

@@ -25,6 +25,7 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEA
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_INPUT;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getAgeGroupByResultNumber;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getColumnSelectorByName;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getEditButtonByIndex;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getNumberOfSuspectedCasesByIndex;
@@ -296,6 +297,16 @@ public class MSersDirectorySteps implements En {
                       expectedSuspectedCases,
                       "Number of suspected cases visible in grid is different than expected"),
               10);
+        });
+
+    And(
+        "^I check that Age group for (\\d+) result in grid in mSers directory is \"([^\"]*)\"$",
+        (Integer resultNumber, String ageGroup) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(getAgeGroupByResultNumber(resultNumber)),
+              ageGroup,
+              "Age group is incorrect");
+          softly.assertAll();
         });
   }
 
