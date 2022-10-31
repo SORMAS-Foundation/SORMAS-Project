@@ -71,6 +71,7 @@ public class ReceivedContactProcessor
 
 		ContactDto contact = sharedData.getEntity();
 		PersonDto person = sharedData.getPerson();
+		sormasToSormasEntitiesHelper.updateIfNecessaryOccupationType(sharedData.getPerson());
 
 		contact.setPerson(person.toReference());
 		updateReportingUser(contact, existingData);
