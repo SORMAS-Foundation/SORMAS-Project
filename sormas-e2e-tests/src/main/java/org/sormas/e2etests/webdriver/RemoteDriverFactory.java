@@ -62,7 +62,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.merge(desiredCapabilities);
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
     options.addArguments("disable-infobars");
-//    options.addArguments("--headless");
+    options.addArguments("--headless");
     options.addArguments("--no-sandbox");
     options.addArguments("--disable-browser-side-navigation");
     options.addArguments("--disable-gpu-sandbox");
