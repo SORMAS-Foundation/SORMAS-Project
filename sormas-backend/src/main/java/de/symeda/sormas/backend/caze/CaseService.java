@@ -2079,6 +2079,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid),
 				cb.equal(root.get(Case.DISEASE), disease),
+				cb.isFalse(root.get(Case.DELETED)),
 				cb.or(
 					cb.lessThan(symptomsJoin.get(Symptoms.ONSET_DATE), startDate),
 					cb.and(cb.isNull(symptomsJoin.get(Symptoms.ONSET_DATE)), cb.lessThan(root.get(Case.REPORT_DATE), startDate)))));
