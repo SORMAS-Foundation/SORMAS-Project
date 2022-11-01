@@ -222,7 +222,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
-		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		EventDataForm eventCreateForm = new EventDataForm(true, false, true);
 		eventCreateForm.setValue(event);
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
@@ -261,7 +261,13 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		HandlerCallback<EventParticipantDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		EventParticipantEditForm createForm = new EventParticipantEditForm(event, false, eventParticipant.getPerson().isPseudonymized(), false);
+		EventParticipantEditForm createForm = new EventParticipantEditForm(
+			event,
+			false,
+			true,
+			eventParticipant.getPerson().isPseudonymized(),
+			false,
+			eventParticipant.isInJurisdiction());
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,

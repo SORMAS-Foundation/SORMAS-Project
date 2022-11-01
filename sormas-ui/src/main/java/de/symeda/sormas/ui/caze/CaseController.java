@@ -873,7 +873,8 @@ public class CaseController {
 			caze.getDisease(),
 			caze.getSymptoms(),
 			viewMode,
-			caze.isPseudonymized());
+			caze.isPseudonymized(),
+			caze.isInJurisdiction());
 		caseEditForm.setValue(caze);
 
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
@@ -1140,10 +1141,7 @@ public class CaseController {
 			}, (deleteDetails) -> {
 				FacadeProvider.getCaseFacade().undelete(caze.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-			},
-				I18nProperties.getString(Strings.entityCase),
-				caze.getUuid(),
-				FacadeProvider.getCaseFacade());
+			}, I18nProperties.getString(Strings.entityCase), caze.getUuid(), FacadeProvider.getCaseFacade());
 		}
 
 		// Initialize 'Archive' button
@@ -1212,7 +1210,7 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, viewMode, caze.isPseudonymized());
+		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, viewMode, caze.isPseudonymized(), caze.isInJurisdiction());
 		hospitalizationForm.setValue(caze.getHospitalization());
 
 		final CommitDiscardWrapperComponent<HospitalizationForm> editView = new CommitDiscardWrapperComponent<HospitalizationForm>(
@@ -1282,7 +1280,8 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<MaternalHistoryForm> getMaternalHistoryComponent(final String caseUuid, ViewMode viewMode) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		MaternalHistoryForm form = new MaternalHistoryForm(viewMode, caze.getMaternalHistory().isPseudonymized());
+		MaternalHistoryForm form =
+			new MaternalHistoryForm(viewMode, caze.getMaternalHistory().isPseudonymized(), caze.getMaternalHistory().isInJurisdiction());
 		form.setValue(caze.getMaternalHistory());
 
 		final CommitDiscardWrapperComponent<MaternalHistoryForm> component = new CommitDiscardWrapperComponent<MaternalHistoryForm>(
@@ -1335,7 +1334,9 @@ public class CaseController {
 			person,
 			SymptomsContext.CASE,
 			viewMode,
-			UiFieldAccessCheckers.forSensitiveData(caseDataDto.isPseudonymized()));
+			UiFieldAccessCheckers.forDataAccessLevel(
+				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(caseDataDto.isInJurisdiction()),
+				caseDataDto.isPseudonymized()));
 		symptomsForm.setValue(caseDataDto.getSymptoms());
 
 		CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(
@@ -1355,7 +1356,8 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, Consumer<Boolean> sourceContactsToggleCallback) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), CaseDataDto.class, caze.isPseudonymized(), sourceContactsToggleCallback);
+		EpiDataForm epiDataForm =
+			new EpiDataForm(caze.getDisease(), CaseDataDto.class, caze.isPseudonymized(), caze.isInJurisdiction(), sourceContactsToggleCallback);
 		epiDataForm.setValue(caze.getEpiData());
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
@@ -1383,7 +1385,7 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<ClinicalCourseForm> getClinicalCourseComponent(String caseUuid) {
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		ClinicalCourseForm form = new ClinicalCourseForm(caze.isPseudonymized());
+		ClinicalCourseForm form = new ClinicalCourseForm(caze.isPseudonymized(), caze.isInJurisdiction());
 		form.setValue(caze.getClinicalCourse());
 
 		final CommitDiscardWrapperComponent<ClinicalCourseForm> view =
@@ -1406,7 +1408,10 @@ public class CaseController {
 
 		CaseDataDto caseDataDto = findCase(caseUuid);
 
-		CaseExternalDataForm caseExternalDataForm = new CaseExternalDataForm(UiFieldAccessCheckers.forSensitiveData(caseDataDto.isPseudonymized()));
+		CaseExternalDataForm caseExternalDataForm = new CaseExternalDataForm(
+			UiFieldAccessCheckers.forDataAccessLevel(
+				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(caseDataDto.isInJurisdiction()),
+				caseDataDto.isPseudonymized()));
 		caseExternalDataForm.setValue(caseDataDto);
 
 		DetailSubComponentWrapper wrapper = new DetailSubComponentWrapper(() -> null);
