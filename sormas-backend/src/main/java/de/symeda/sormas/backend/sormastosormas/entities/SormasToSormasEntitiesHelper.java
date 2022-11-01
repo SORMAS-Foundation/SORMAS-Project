@@ -48,23 +48,19 @@ public class SormasToSormasEntitiesHelper {
 	public static final String HAS_DETAILS = "hasDetails";
 
 	public void updateIfNecessaryOccupationType(PersonDto sharedPersonData) {
-		if (sharedPersonData.getOccupationType() != null) {
-			String occupationTypeValue = sharedPersonData.getOccupationType().getValue();
-			if (occupationTypeValue != null) {
+		OccupationType occupationType = sharedPersonData.getOccupationType();
+
+		if (occupationType != null) {
 				//checking if there are persons with the given occupationType
-				List<Person> personList = personService.getByOccupationType(occupationTypeValue);
+				List<Person> personList = personService.getByOccupationType(occupationType);
 				if (personList == null) {
-					OccupationType occupationType = sharedPersonData.getOccupationType();
 					Map<String, Object> propertiesDetailsTrue = new HashMap<>();
 					propertiesDetailsTrue.put(HAS_DETAILS, true);
 
 					occupationType.setCaption("OTHER");
 					occupationType.setValue("OTHER");
 					occupationType.setProperties(propertiesDetailsTrue);
-
-					sharedPersonData.setOccupationType(occupationType);
 				}
-			}
 		}
 	}
 
