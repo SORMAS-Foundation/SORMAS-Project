@@ -64,7 +64,6 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -914,16 +913,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
 
 		return q.getResultList().stream().findFirst().orElse(null);
-	}
-
-	public List<Person> getByOccupationType(OccupationType occupationType) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
-		Root<Person> from = cq.from(getElementClass());
-		cq.where(cb.equal(from.get(Person.OCCUPATION_TYPE), occupationType));
-
-		return em.createQuery(cq).getResultList();
 	}
 
 	public List<Person> getByExternalIds(List<String> externalIds) {
