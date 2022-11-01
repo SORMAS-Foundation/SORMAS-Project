@@ -89,6 +89,7 @@ public class CaseDataView extends AbstractCaseView {
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
+		container.setEnabled(true);
 
 		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
 
@@ -182,7 +183,7 @@ public class CaseDataView extends AbstractCaseView {
 		ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, caze);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SURVEILLANCE_REPORTS)) {
-			SurveillanceReportListComponent surveillanceReportList = new SurveillanceReportListComponent(caze.toReference());
+			SurveillanceReportListComponent surveillanceReportList = new SurveillanceReportListComponent(caze.toReference(), UserRight.CASE_EDIT);
 			surveillanceReportList.addStyleNames(CssStyles.SIDE_COMPONENT);
 			VerticalLayout surveillanceReportListLocLayout = new VerticalLayout();
 			surveillanceReportListLocLayout.setMargin(false);

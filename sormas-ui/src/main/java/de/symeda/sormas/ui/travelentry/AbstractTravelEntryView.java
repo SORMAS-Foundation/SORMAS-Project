@@ -17,6 +17,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 public abstract class AbstractTravelEntryView extends AbstractEditAllowedDetailView<TravelEntryReferenceDto> {
 
@@ -59,6 +60,15 @@ public abstract class AbstractTravelEntryView extends AbstractEditAllowedDetailV
 
 	public TravelEntryReferenceDto getTravelEntryRef() {
 		return getReference();
+	}
+
+	@Override
+	protected void setSubComponent(DirtyStateComponent newComponent) {
+		super.setSubComponent(newComponent);
+
+		if (FacadeProvider.getTravelEntryFacade().isDeleted(getReference().getUuid())) {
+			newComponent.setEnabled(false);
+		}
 	}
 
 	@Override

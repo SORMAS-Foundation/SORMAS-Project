@@ -61,6 +61,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -92,6 +93,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -133,6 +135,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalMessageService externalMessageService;
+	@EJB
+	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public SampleService() {
 		super(Sample.class);
@@ -912,7 +916,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.select(cb.literal(true));
 
 		Predicate predicate =
-			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), cb.isFalse(from.get(Sample.DELETED)), assignedToActiveEntity(cb, joins));
+			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), assignedToActiveEntity(cb, joins));
 
 		cq.where(predicate);
 
@@ -1143,7 +1147,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			return false;
 		}
 
-		if(!sampleAssignedToActiveEntity(sample.getUuid())){
+		if (featureConfigurationFacade.isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES) && !sampleAssignedToActiveEntity(sample.getUuid())) {
 			return false;
 		}
 

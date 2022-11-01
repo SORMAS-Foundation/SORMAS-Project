@@ -116,6 +116,12 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
 	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
 	}
 
@@ -125,7 +131,7 @@ public class TravelEntryFacadeEjb
 
 		if (lastTravelEntry != null) {
 			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
-			TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, aDefault);
+			TravelEntryDto travelEntryDto = toPseudonymizedDto(lastTravelEntry, aDefault);
 			return travelEntryDto.getDeaContent();
 		}
 

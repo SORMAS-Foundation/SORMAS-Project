@@ -65,6 +65,15 @@
         </filter>
     </appender>
 
+     <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>logs/file.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <root level="info">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="file"/>
