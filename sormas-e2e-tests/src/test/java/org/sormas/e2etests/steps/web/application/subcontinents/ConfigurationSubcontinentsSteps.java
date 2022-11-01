@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.configuration.SubcontinentsT
 import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.RESET_FILTERS_BUTTON_SUBCONTINENTS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SEARCH_INPUT_SUBCONTINENTS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_NAME_TABLE_ROWS;
 import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_TABLE_ROW;
 
@@ -63,7 +64,9 @@ public class ConfigurationSubcontinentsSteps implements En {
 
     When(
         "I navigate to subcontinents tab in Configuration",
-        () -> webDriverHelpers.clickOnWebElementBySelector(CONFIGURATION_SUBCONTINENTS_TAB));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONFIGURATION_SUBCONTINENTS_TAB);
+        });
 
     Then(
         "I check that number of subcontinents is at least (\\d+)",
@@ -138,8 +141,71 @@ public class ConfigurationSubcontinentsSteps implements En {
               webDriverHelpers.isElementPresent(
                   RELEVANCE_STATUS_COMBO_BOX_SUBCONTINENTS_CONFIGURATION),
               "Relevance status Combo box is Not present in Subcontinents Configuration");
-
           softly.assertAll();
+        });
+
+    Then(
+        "I verify the Search and Reset filter functionality in Subcontinents Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(SUBCONTINENTS_NAME_TABLE_ROWS);
+          Integer defaultSubContinentCount =
+              webDriverHelpers.getNumberOfElements(SUBCONTINENTS_NAME_TABLE_ROWS);
+          String subContinent =
+              webDriverHelpers.getTextFromWebElement(SUBCONTINENTS_NAME_TABLE_ROWS);
+          System.out.println(defaultSubContinentCount);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_INPUT_SUBCONTINENTS_CONFIGURATION, subContinent);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              SUBCONTINENTS_NAME_TABLE_ROWS, subContinent);
+          webDriverHelpers.clickOnWebElementBySelector(
+              RESET_FILTERS_BUTTON_SUBCONTINENTS_CONFIGURATION);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              SUBCONTINENTS_NAME_TABLE_ROWS, defaultSubContinentCount);
+        });
+
+    Then(
+        "^I verify the Continent ([^\"]*) combo box returns appropriate filter results in Subcontinents Configuration page$",
+        (String Continent) -> {
+          switch (Continent) {
+            case "Africa":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "Africa");
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 9);
+              break;
+            case "America":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "America");
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 3);
+              break;
+            case "Asia":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "Asia");
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 6);
+              break;
+            case "Australia (Continent)":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "Australia (Continent)");
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 2);
+              break;
+            case "Europe":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "Europe");
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 7);
+              break;
+          }
         });
   }
 

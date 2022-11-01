@@ -146,6 +146,7 @@ public class OutbreaksSteps implements En {
     When(
         "I click on one of the Outbreaks Matrix element in Outbreaks Configuration Page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               REGION_DISEASE_MATRIX_OUTBREAKS_CONFIGURATION);
           webDriverHelpers.clickOnWebElementBySelectorAndIndex(

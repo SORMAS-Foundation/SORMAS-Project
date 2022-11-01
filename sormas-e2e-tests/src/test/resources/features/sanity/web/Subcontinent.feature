@@ -23,3 +23,15 @@ Feature: Subcontinent end to end tests
     And I click on the Configuration button from navbar
     When I navigate to subcontinents tab in Configuration
     Then I Verify the page elements are present in Subcontinents Configuration Page
+
+  @env_main @#7468
+  Scenario: Check Subcontinents Configuration search and reset functionalities
+    Given I log in as a Admin User
+    And I click on the Configuration button from navbar
+    When I navigate to subcontinents tab in Configuration
+    Then I verify the Search and Reset filter functionality in Subcontinents Configuration page
+    Then I verify the Continent Africa combo box returns appropriate filter results in Subcontinents Configuration page
+    Then I verify the Continent America combo box returns appropriate filter results in Subcontinents Configuration page
+    Then I verify the Continent Asia combo box returns appropriate filter results in Subcontinents Configuration page
+    Then I verify the Continent Australia (Continent) combo box returns appropriate filter results in Subcontinents Configuration page
+    Then I verify the Continent Europe combo box returns appropriate filter results in Subcontinents Configuration page
