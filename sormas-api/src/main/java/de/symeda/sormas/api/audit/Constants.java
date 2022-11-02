@@ -1,7 +1,5 @@
 package de.symeda.sormas.api.audit;
 
-import org.apache.commons.collections.set.UnmodifiableSet;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -68,6 +66,7 @@ public class Constants {
 				"reset",
 				"enable",
 				"disable",
-				"log")));
+				"log",
+				"copy")));
 
 }
