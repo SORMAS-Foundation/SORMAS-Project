@@ -2541,12 +2541,6 @@ public class EditCaseSteps implements En {
                 webDriverHelpers.isElementEnabled(
                     getPreExistingConditionComboboxWithValue_DE(preExistingCondition, value))));
 
-    Then(
-        "I check that Clinical Assessments heading is visible in DE",
-        () ->
-            Assert.assertTrue(
-                webDriverHelpers.isElementVisibleWithTimeout(CLINICAL_ASSESSMENTS_LABEL_DE, 15)));
-
     And(
         "I select {string} from documents templates list",
         (String templateName) -> {
