@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.eventparticipant;
 
 import java.util.Optional;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -24,6 +25,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
@@ -33,6 +35,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntitiesHelper;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -40,6 +43,9 @@ import de.symeda.sormas.backend.user.UserService;
 public class ReceivedEventParticipantProcessor
 	extends
 	ReceivedDataProcessor<EventParticipant, EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant, EventParticipantService, SormasToSormasEventParticipantDtoValidator> {
+
+	@EJB
+	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
 
 	public ReceivedEventParticipantProcessor() {
 	}
@@ -54,11 +60,19 @@ public class ReceivedEventParticipantProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData, SormasToSormasOriginInfoDto originInfo) {
+	public void handleReceivedData(
+		SormasToSormasEventParticipantDto sharedData,
+		EventParticipant existingData,
+		SormasToSormasOriginInfoDto originInfo) {
+		final EventParticipantDto entity = sharedData.getEntity();
+		final PersonDto person = entity.getPerson();
+
 		handleIgnoredProperties(
-			sharedData.getEntity().getPerson(),
+				person,
 			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toPersonDto(c.getPerson())).orElse(null));
-		updateReportingUser(sharedData.getEntity(), existingData);
+
+		sormasToSormasEntitiesHelper.updateIfNecessaryOccupationType(person);
+		updateReportingUser(entity, existingData);
 	}
 
 	@Override

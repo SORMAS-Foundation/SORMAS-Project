@@ -126,7 +126,6 @@ public class EventDto extends SormasToSormasShareableDto {
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private SpecificRisk specificRisk;
-	@NotNull(message = Validations.validEventInvestigationStatus)
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
