@@ -318,8 +318,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public PersonDto getByUuid(String uuid) {
-		final Pseudonymizer pseudonymizer = createPseudonymizer();
-		return Optional.of(uuid).map(u -> service.getByUuid(u)).map(p -> toPseudonymizedDto(p, pseudonymizer)).orElse(null);
+		return Optional.of(uuid).map(u -> service.getByUuid(u)).map(this::toPseudonymizedDto).orElse(null);
 	}
 
 	@Override
@@ -1779,7 +1778,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		Person person = em.createQuery(cq).getSingleResult();
 
-		return toPseudonymizedDto(person, createPseudonymizer());
+		return toPseudonymizedDto(person);
 	}
 
 	@LocalBean
