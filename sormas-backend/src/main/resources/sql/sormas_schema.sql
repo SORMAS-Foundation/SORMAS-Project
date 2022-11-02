@@ -12182,10 +12182,19 @@ ALTER TABLE externalmessage RENAME COLUMN testeddisease to disease;
 ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
 
 INSERT INTO schema_version (version_number, comment) VALUES (496, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 ALTER TABLE surveillancereports ADD COLUMN externalid varchar(255);
 ALTER TABLE surveillancereports_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalId to surveillance reports #6621');
+
+-- 2022-11-02 Add indices to improve getIndexList methods #8938
+
+CREATE INDEX IF NOT EXISTS idx_vaccination_immunization_id ON vaccination USING btree (immunization_id);
+CREATE INDEX IF NOT EXISTS idx_person_address_id ON person USING btree (address_id);
+CREATE INDEX IF NOT EXISTS idx_task_travelentry_id ON task USING btree (travelentry_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (498, 'Improve performance of PersonFacadeEjb.getIndexList #8938');
+
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
