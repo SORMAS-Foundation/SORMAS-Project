@@ -92,10 +92,11 @@ public abstract class AbstractEventView extends AbstractEditAllowedDetailView<Ev
 	protected void setSubComponent(DirtyStateComponent newComponent) {
 		super.setSubComponent(newComponent);
 
-		if (getReference() != null && FacadeProvider.getEventFacade().isDeleted(getReference().getUuid())) {
+		if (getReference() != null && isEventDeleted()) {
 			newComponent.setEnabled(false);
 		}
 	}
+
 
 	protected boolean isEventDeleted() {
 		return FacadeProvider.getEventFacade().isDeleted(getEventRef().getUuid());

@@ -73,8 +73,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalizationDto prevDto : source.getPreviousHospitalizations()) {
 			//prevHospitalization will be present in 1st level cache based on #10214
-			PreviousHospitalization existingPreviousHospitalization = previousHospitalizationService.getByUuid(source.getUuid());
-			PreviousHospitalization prevHosp = fillOrBuildEntity(prevDto, existingPreviousHospitalization, checkChangeDate);
+			PreviousHospitalization prevHosp = previousHospitalizationService.getByUuid(prevDto.getUuid());
+			prevHosp = fillOrBuildEntity(prevDto, prevHosp, checkChangeDate);
 			prevHosp.setHospitalization(target);
 			previousHospitalizations.add(prevHosp);
 		}

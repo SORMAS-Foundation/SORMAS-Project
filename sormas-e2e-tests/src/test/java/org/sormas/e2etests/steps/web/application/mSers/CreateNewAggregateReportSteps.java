@@ -15,9 +15,13 @@ import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateRep
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.WEEK_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.YEAR_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.YEAR_INPUT_POPUP;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getAgeGroupDiseaseByDiseaseAndAgeGroup;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getCasesInputByDisease;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getCasesInputByDiseaseAndAgeGroup;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getDeathInputByDisease;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getDeathInputByDiseaseAndAgeGroup;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getLabConfirmationsInputByDisease;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.getLabConfirmationsInputByDiseaseAndAgeGroup;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -207,6 +211,30 @@ public class CreateNewAggregateReportSteps implements En {
         "^I fill a new aggregate report with specific data for duplicates with jurisdiction$",
         () -> {
           fillFieldsForDuplicateReportWithJurisdiction(duplicateReportWithJurisdiction);
+        });
+    And(
+        "^I check if age groups are visible for \"([^\"]*)\"$",
+        (String disease) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              DISTRICT_COMBOBOX_POPUP_DIV);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getAgeGroupDiseaseByDiseaseAndAgeGroup(disease, "0-28 days"));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getAgeGroupDiseaseByDiseaseAndAgeGroup(disease, "29 days - 2 months"));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getAgeGroupDiseaseByDiseaseAndAgeGroup(disease, "3-12 months"));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getAgeGroupDiseaseByDiseaseAndAgeGroup(disease, "1-4 years"));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getAgeGroupDiseaseByDiseaseAndAgeGroup(disease, "5-15 years"));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getAgeGroupDiseaseByDiseaseAndAgeGroup(disease, "16+ years"));
+        });
+    And(
+        "^I fill a new aggregate report with specific age groups$",
+        () -> {
+          report = aggregateReportService.buildAggregateReportForSpecificAgeGroups();
+          fillSpecificFieldsForAggregateReportAgeGroups(report);
         });
   }
 
@@ -432,6 +460,17 @@ public class CreateNewAggregateReportSteps implements En {
     fillLabConfirmationsFor(
         "Yaws and Endemic Syphilis", report.getYawsAndEndemicSyphilisLabConfirmations());
     fillDeathsFor("Yaws and Endemic Syphilis", report.getYawsAndEndemicSyphilisDeaths());
+  }
+
+  private void fillSpecificFieldsForAggregateReportAgeGroups(AggregateReport report) {
+    fillYear(report.getYear());
+    fillEpiWeek(report.getEpiWeek());
+    fillRegion(report.getRegion());
+    fillDistrict(report.getDistrict());
+    fillCasesWithAgeGroupFor("Malaria", report.getAgeGroupForMalaria(), report.getMalariaCases());
+    fillLabConfirmationsWithAgeGroupFor(
+        "Acute Viral Hepatitis", "16+ years", report.getAcuteViralHepatitisLabConfirmations());
+    fillDeathsWithAgeGroupFor("HIV", "0-28 days", report.getHivDeaths());
   }
 
   private AggregateReport collectEditedAggregateReport() {
@@ -1023,14 +1062,31 @@ public class CreateNewAggregateReportSteps implements En {
         getCasesInputByDisease(disease), String.valueOf(numberOfCases));
   }
 
+  private void fillCasesWithAgeGroupFor(String disease, String ageGroup, int numberOfCases) {
+    webDriverHelpers.fillInWebElement(
+        getCasesInputByDiseaseAndAgeGroup(disease, ageGroup), String.valueOf(numberOfCases));
+  }
+
   private void fillLabConfirmationsFor(String disease, int numberOfLabConfirmations) {
     webDriverHelpers.fillInWebElement(
         getLabConfirmationsInputByDisease(disease), String.valueOf(numberOfLabConfirmations));
   }
 
+  private void fillLabConfirmationsWithAgeGroupFor(
+      String disease, String ageGroup, int numberOfLabConfirmations) {
+    webDriverHelpers.fillInWebElement(
+        getLabConfirmationsInputByDiseaseAndAgeGroup(disease, ageGroup),
+        String.valueOf(numberOfLabConfirmations));
+  }
+
   private void fillDeathsFor(String disease, int numberOfDeaths) {
     webDriverHelpers.fillInWebElement(
         getDeathInputByDisease(disease), String.valueOf(numberOfDeaths));
+  }
+
+  private void fillDeathsWithAgeGroupFor(String disease, String ageGroup, int numberOfDeaths) {
+    webDriverHelpers.fillInWebElement(
+        getDeathInputByDiseaseAndAgeGroup(disease, ageGroup), String.valueOf(numberOfDeaths));
   }
 
   private void fillYear(String year) {

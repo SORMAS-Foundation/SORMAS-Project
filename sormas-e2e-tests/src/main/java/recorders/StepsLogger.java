@@ -58,26 +58,31 @@ public class StepsLogger implements StepLifecycleListener {
     if (takeScreenshotAfterStep) {
       takeScreenshot();
     }
-    if (isScreenshotEnabled && driver != null) {
-//      if (!stepResult.getStatus().value().contains("pass")) {
-//        attachConsoleLog();
-//      }
+    boolean logData = false;
+    try {
+      logData = Boolean.parseBoolean(System.getProperty("generateLogs"));
+    } catch (Exception any) {
+    }
+    boolean isDriverNotNull = driver != null;
+    boolean isStepFailed = !stepResult.getStatus().value().contains("pass");
+    if (isScreenshotEnabled && logData && isDriverNotNull && isStepFailed) {
+      attachConsoleLog();
     }
     isScreenshotEnabled = true;
     log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, stepResult.getName());
   }
 
-//  @SneakyThrows
-//  @Attachment(value = "Browser console log", type = "text/json")
-//  private void attachConsoleLog() {
-//    try {
-//      Allure.getLifecycle()
-//          .addAttachment(
-//              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
-//    } catch (Exception any) {
-//      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
-//    }
-//  }
+  @SneakyThrows
+  @Attachment(value = "Browser console log", type = "text/json")
+  private void attachConsoleLog() {
+    try {
+      Allure.getLifecycle()
+          .addAttachment(
+              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
+    } catch (Exception any) {
+      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
+    }
+  }
 
   @Attachment(value = "After step screenshot", type = "image/png")
   public void takeScreenshot() {

@@ -90,6 +90,7 @@ import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -1310,7 +1311,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCaseDeletion() throws ExternalSurveillanceToolRuntimeException {
+	public void testCaseDeletionAndUndeletion() throws ExternalSurveillanceToolRuntimeException {
 		Date since = new Date();
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -1359,7 +1360,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
 		assertNotNull(getContactFacade().getByUuid(contact.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
-		assertNotNull(getSampleTestFacade().getByUuid(pathogenTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
@@ -1370,11 +1371,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
+
+		getCaseFacade().undelete(caze.getUuid());
+
+		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
+		assertFalse(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
+		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
+		assertFalse(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
+		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -2951,6 +2966,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(
 			getCaseFacade().getMostRecentPreviousCase(person1.toReference(), Disease.EVD, newCase.getReportDate()).getUuid(),
 			is(previousCase1.getUuid()));
+	}
+
+	@Test
+	public void testGetMostRecentPreviousCaseWhenPreviousCaseIsDeleted() {
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person1 = creator.createPerson();
+		Date now = new Date();
+
+		CaseDataDto newCase = creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> c.setDisease(Disease.EVD));
+		CaseDataDto previousCase1 = creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+			c.setReportDate(DateHelper.subtractDays(now, 1));
+			c.getSymptoms().setOnsetDate(DateHelper.subtractDays(now, 7));
+		});
+
+		PreviousCaseDto mostRecentPreviousCase =
+			getCaseFacade().getMostRecentPreviousCase(person1.toReference(), Disease.EVD, newCase.getReportDate());
+		assertEquals(previousCase1.getUuid(), mostRecentPreviousCase.getUuid());
+
+		getCaseFacade().delete(previousCase1.getUuid(), new DeletionDetails());
+		mostRecentPreviousCase = getCaseFacade().getMostRecentPreviousCase(person1.toReference(), Disease.EVD, newCase.getReportDate());
+		assertNull(mostRecentPreviousCase);
 	}
 
 	@Test

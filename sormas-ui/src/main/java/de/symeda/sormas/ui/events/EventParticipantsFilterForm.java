@@ -39,7 +39,7 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 	@Override
 	protected void addFields() {
 
-		addBirthDateFields(EventParticipantCriteria.BIRTHDATE_YYYY, EventParticipantCriteria.BIRTHDATE_MM, EventParticipantCriteria.BIRTHDATE_DD);
+		addBirthDateFields(getContent(), EventParticipantCriteria.BIRTHDATE_YYYY, EventParticipantCriteria.BIRTHDATE_MM, EventParticipantCriteria.BIRTHDATE_DD);
 
 		addField(
 			FieldConfiguration.withCaptionAndPixelSized(

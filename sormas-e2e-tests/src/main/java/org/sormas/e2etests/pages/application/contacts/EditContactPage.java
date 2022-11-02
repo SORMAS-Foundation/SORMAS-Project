@@ -50,7 +50,7 @@ public class EditContactPage {
   public static final By TYPE_OF_CONTACT_OPTIONS = By.cssSelector("#contactProximity label");
   public static final By CONTACT_CATEGORY_OPTIONS = By.cssSelector("#contactCategory label");
   public static final By CONTACT_CREATED_POPUP = By.cssSelector(".v-Notification-caption");
-  public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETE_BUTTON = By.id("deleteUndelete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CONTACT_CLASSIFICATION_OPTIONS =
       By.cssSelector("#contactClassification label");

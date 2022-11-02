@@ -214,7 +214,7 @@ public class EventParticipantFacadeEjb
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllByEventAfter(date, event).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return service.getAllByEventAfter(date, event).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -297,7 +297,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return toPseudonymizedDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -362,7 +362,7 @@ public class EventParticipantFacadeEjb
 
 		onEventParticipantChanged(eventFacade.toDto(entity.getEvent()), existingDto, entity, internal);
 
-		return convertToDto(entity, pseudonymizer);
+		return toPseudonymizedDto(entity, pseudonymizer);
 	}
 
 	@PermitAll
@@ -454,6 +454,12 @@ public class EventParticipantFacadeEjb
 	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant, deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
 	}
 
 	@Override
@@ -944,7 +950,7 @@ public class EventParticipantFacadeEjb
 		}
 
 		return service.getFirst(criteria)
-			.map(e -> convertToDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
+			.map(e -> toPseudonymizedDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
 			.orElse(null);
 	}
 
@@ -1052,7 +1058,7 @@ public class EventParticipantFacadeEjb
 	@Override
 	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return service.getByEventUuids(eventUuids).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override

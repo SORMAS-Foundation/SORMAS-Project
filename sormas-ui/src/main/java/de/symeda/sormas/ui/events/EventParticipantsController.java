@@ -227,10 +227,11 @@ public class EventParticipantsController {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
-				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid(), deleteDetails);
-				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
-			}, I18nProperties.getString(Strings.entityEventParticipant));
+			editComponent.addDeleteWithReasonOrUndeleteListener(
+				EventParticipantsView.VIEW_NAME + "/" + eventParticipant.getEvent().getUuid(),
+				I18nProperties.getString(Strings.entityEventParticipant),
+				eventParticipant.getUuid(),
+				FacadeProvider.getEventParticipantFacade());
 		}
 
 		// Initialize 'Archive' button

@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.report;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,8 +38,10 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -408,5 +411,91 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertFalse(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
 		Assert.assertTrue(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
 		Assert.assertTrue(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport3)).isExpiredAgeGroup());
+	}
+
+	@Test
+	public void testGetReportsWithPoeUsers() {
+		RDCF rdcf1 = creator.createRDCF("Region1", "District1", "Community1", "Facility1", "PointOfEntry1");
+		RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", "Facility2", "PointOfEntry2");
+
+		UserDto poeNatUser = creator.createUser("", "", "", "POE Nat", "User", creator.getUserRoleReference(DefaultUserRole.POE_NATIONAL_USER));
+		UserDto poeSup =
+				creator.createUser(rdcf1.region.getUuid(), "", "", "POE Sup", "User", creator.getUserRoleReference(DefaultUserRole.POE_SUPERVISOR));
+		UserDto poeInfor =
+				creator.createUser(rdcf1, creator.getUserRoleReference(DefaultUserRole.POE_INFORMANT), user -> user.setPointOfEntry(rdcf1.pointOfEntry));
+
+		UserDto natUser = useNationalUserLogin();
+		loginWith(natUser);
+
+		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
+
+		createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf1.region, rdcf1.district, null, null, 1, 1, 1);
+		createAggregateReportDto(Disease.CHOLERA, epiWeek, "1Y_100Y", rdcf1.region, rdcf1.district, null, rdcf1.pointOfEntry, 1, 1, 1);
+		createAggregateReportDto(Disease.HIV, epiWeek, "1Y_100Y", rdcf2.region, rdcf2.district, null, null, 1, 1, 1);
+		createAggregateReportDto(Disease.POLIO, epiWeek, "1Y_100Y", rdcf2.region, rdcf2.district, null, rdcf2.pointOfEntry, 1, 1, 1);
+
+		AggregateReportCriteria criteria = new AggregateReportCriteria();
+		criteria.setShowZeroRows(false);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		List<AggregateCaseCountDto> reportList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(4, reportList.size());
+		List<Disease> reportDiseases = reportList.stream().map(r -> r.getDisease()).collect(Collectors.toList());
+		Assert.assertTrue(reportDiseases.containsAll(Arrays.asList(Disease.MALARIA, Disease.CHOLERA, Disease.HIV, Disease.POLIO)));
+
+		loginWith(poeNatUser);
+		reportList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(2, reportList.size());
+		reportDiseases = reportList.stream().map(r -> r.getDisease()).collect(Collectors.toList());
+		Assert.assertTrue(reportDiseases.containsAll(Arrays.asList(Disease.CHOLERA, Disease.POLIO)));
+
+		loginWith(poeSup);
+		reportList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, reportList.size());
+		reportDiseases = reportList.stream().map(r -> r.getDisease()).collect(Collectors.toList());
+		Assert.assertTrue(reportDiseases.contains(Disease.CHOLERA));
+
+		loginWith(poeInfor);
+		reportList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, reportList.size());
+		reportDiseases = reportList.stream().map(r -> r.getDisease()).collect(Collectors.toList());
+		Assert.assertTrue(reportDiseases.contains(Disease.CHOLERA));
+	}
+
+	@Test
+	public void testCreateReportsWithPoeUsers() {
+		UserDto poeNatUser = creator.createUser("", "", "", "POE Nat", "User", creator.getUserRoleReference(DefaultUserRole.POE_NATIONAL_USER));
+		UserDto poeSup =
+			creator.createUser(rdcf.region.getUuid(), "", "", "POE Sup", "User", creator.getUserRoleReference(DefaultUserRole.POE_SUPERVISOR));
+		UserDto poeInfor =
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.POE_INFORMANT), user -> user.setPointOfEntry(rdcf.pointOfEntry));
+		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
+
+		loginWith(poeNatUser);
+		try {
+			//cannot create report without pointOfEntry
+			createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1);
+			Assert.fail();
+		} catch (ValidationRuntimeException e) {
+			e.getMessage().equals("You have to specify a valid point of entry");
+		}
+
+		loginWith(poeSup);
+		try {
+			//cannot create report without pointOfEntry
+			createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1);
+			Assert.fail();
+		} catch (ValidationRuntimeException e) {
+			e.getMessage().equals("You have to specify a valid point of entry");
+		}
+
+		loginWith(poeInfor);
+		try {
+			//cannot create report without pointOfEntry
+			createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1);
+			Assert.fail();
+		} catch (ValidationRuntimeException e) {
+			e.getMessage().equals("You have to specify a valid point of entry");
+		}
 	}
 }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
@@ -32,7 +33,9 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -519,6 +522,26 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	}
 
 	@Test
+	public void testUndelete() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
+
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		assertEquals(0, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());
+
+		getImmunizationFacade().undelete(immunization.getUuid());
+		List<ImmunizationIndexDto> indexList = getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null);
+		assertEquals(1, indexList.size());
+		Immunization undeletedImmunization = getImmunizationService().getByUuid(indexList.get(0).getUuid());
+		assertNull(undeletedImmunization.getDeletionReason());
+		assertNull(undeletedImmunization.getOtherDeletionReason());
+	}
+
+	@Test
 	public void testContactPermanentDeletion() {
 
 		// the Visit will be added only to contacts that have REPORT_DATE_TIME, LAST_CONTACT_DATE or FOLLOW_UP_UNTIL within less than ALLOWED_DATE_OFFSET days from Visit report date
@@ -864,6 +887,9 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 
+		assertEquals(0, getCaseService().count());
+		assertEquals(0, getShareRequestInfoService().count());
+		assertEquals(0, getSormasToSormasShareInfoService().count());
 		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
@@ -893,6 +919,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		loginWith(user);
 
 		assertEquals(0, getCaseService().count());
+		assertEquals(0, getSormasToSormasShareRequestService().count());
 		assertEquals(0, getShareRequestInfoService().count());
 		assertEquals(0, getSormasToSormasShareInfoService().count());
 	}

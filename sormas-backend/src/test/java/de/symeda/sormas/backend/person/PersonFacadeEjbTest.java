@@ -341,7 +341,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		criteria.setBirthdateMM(1);
 		criteria.setBirthdateDD(1);
 		List<String> relevantNameUuids =
-				getPersonFacade().getSimilarPersonDtos(criteria).stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(criteria).stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
 		Assert.assertEquals(1, relevantNameUuids.size());
 		Assert.assertEquals(person1.getUuid(), relevantNameUuids.get(0));
 	}
@@ -740,7 +740,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person.setLastName("Lname");
 		person.setSex(Sex.UNKNOWN);
 		person.setAddress(LocationDto.build());
-		person.setAddresses(Collections.singletonList(new LocationDto()));
+		person.setAddresses(Collections.singletonList(LocationDto.build()));
 
 		PersonDto savedPerson = getPersonFacade().save(person);
 
@@ -1060,12 +1060,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(firstNames.contains(personWithDengue.getFirstName()));
 
 		//login with a user wiht limieted disease restrictions
-		final UserDto user = creator.createUser(
-			rdcf,
-			"Limieted Disease",
-			"National User",
-			Disease.DENGUE,
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		final UserDto user = creator
+			.createUser(rdcf, "Limieted Disease", "National User", Disease.DENGUE, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		loginWith(user);
 
 		personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);

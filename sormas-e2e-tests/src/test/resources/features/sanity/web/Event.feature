@@ -756,12 +756,6 @@ Feature: Create events
     And I click on Save Button in Edit Event directory
     And I click on the Event participant tab
     And I back to the Event tab
-    And I set Country combobox to "Germany" from Edit Event Page
-    And I set Country combobox to empty value from Edit Event Page
-    And I clear Region and District fields from Edit Event Directory
-    And I click on Save Button in Edit Event directory
-    Then I click on the Event participant tab
-    And I add a participant to the event
 
   @tmsLink=SORDEV-10254 @env_main
   Scenario: Manual archive Event participants/Events

@@ -121,6 +121,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -549,8 +551,20 @@ public class ContactFacadeEjb
 		deleteContact(contact, deletionDetails);
 	}
 
+	@Override
+	@RightsAllowed(UserRight._CONTACT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
+		try {
+			sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares());
+		} catch (SormasToSormasException e) {
+			throw new SormasToSormasRuntimeException(e);
+		}
+
 		service.delete(contact, deletionDetails);
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());
@@ -1268,10 +1282,7 @@ public class ContactFacadeEjb
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		User currentUser = userService.getCurrentUser();
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
-			pseudonymizer.pseudonymizeUser(
-				userService.getByUuid(c.getReportingUser().getUuid()),
-				currentUser,
-				c::setReportingUser);
+			pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c::setReportingUser);
 			if (c.getCaze() != null) {
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
 			}
@@ -1476,19 +1487,6 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public boolean isDeleted(String contactUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Contact> from = cq.from(Contact.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(Contact.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), contactUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
@@ -1583,29 +1581,29 @@ public class ContactFacadeEjb
 		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(entities);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
 		List<ContactDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
+			entities.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
 		return dtos;
 	}
 
 	@Override
-	public ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer) {
+	public ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer) {
 
 		if (source == null) {
 			return null;
 		}
 
 		ContactJurisdictionFlagsDto jurisdictionFlags = service.getJurisdictionFlags(source);
-		return convertToDto(source, pseudonymizer, jurisdictionFlags);
+		return toPseudonymizedDto(source, pseudonymizer, jurisdictionFlags);
 	}
 
 	@Deprecated
 	@Override
-	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	public ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		throw new UnsupportedOperationException("Use variant with jurisdictionFlags parameter");
 	}
 
-	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
+	protected ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
 
 		ContactDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer, jurisdictionFlags);
@@ -1626,8 +1624,7 @@ public class ContactFacadeEjb
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, inJurisdiction, (c) -> {
-				pseudonymizer
-					.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 
 				if (c.getCaze() != null) {
 					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), jurisdictionFlags.getCaseInJurisdiction(), null);

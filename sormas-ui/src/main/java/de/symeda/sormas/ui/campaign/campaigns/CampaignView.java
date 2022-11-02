@@ -9,7 +9,6 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -20,7 +19,6 @@ import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
@@ -76,9 +74,12 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
 		getViewTitleLabel().setValue(campaignDto.getName());
 
-		EditPermissionType campaignEditAllowed = FacadeProvider.getCampaignFacade().getEditPermissionType(campaignDto.getUuid());
+		final EditPermissionType campaignEditAllowed = FacadeProvider.getCampaignFacade().getEditPermissionType(campaignDto.getUuid());
+		final boolean deleted = FacadeProvider.getCampaignFacade().isDeleted(campaignDto.getUuid());
 
-		if (campaignEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+		if (deleted) {
+			editComponent.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (campaignEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			editComponent.setEditable(false, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (campaignEditAllowed.equals(EditPermissionType.REFUSED)) {
 			editComponent.setEditable(false, "");
@@ -93,15 +94,5 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		menu.removeAllViews();
 		menu.addView(CampaignsView.VIEW_NAME, I18nProperties.getCaption(Captions.campaignAllCampaigns));
 		menu.addView(CampaignView.VIEW_NAME, I18nProperties.getCaption(Captions.Campaign), params);
-	}
-
-	@Override
-	protected void setSubComponent(DirtyStateComponent newComponent) {
-		super.setSubComponent(newComponent);
-
-		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getByUuid(getReference().getUuid());
-		if (campaignDto.isDeleted()) {
-			newComponent.setEnabled(false);
-		}
 	}
 }

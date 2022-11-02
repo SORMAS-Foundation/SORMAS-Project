@@ -72,13 +72,13 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@Override
 	public DTO getByUuid(String uuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(service.getByUuid(uuid, true), pseudonymizer);
+		return toPseudonymizedDto(service.getByUuid(uuid, true), pseudonymizer);
 	}
 
 	@Override
 	public List<DTO> getByUuids(List<String> uuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -90,23 +90,14 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		List<ADO> entities = service.getAllAfter(date, batchSize, lastSynchronizedUuid);
-		List<DTO> dtos = toPseudonymizedDtos(entities);
-
-		return dtos;
-	}
-
-	protected Pseudonymizer createPseudonymizer() {
-
-		return Pseudonymizer.getDefault(userService::hasRight);
+		return toPseudonymizedDtos(entities);
 	}
 
 	protected List<DTO> toPseudonymizedDtos(List<ADO> entities) {
 
 		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		List<DTO> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		return entities.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
 
 	@DenyAll
@@ -127,7 +118,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		existingAdo = fillOrBuildEntity(dto, existingAdo, true);
 		service.ensurePersisted(existingAdo);
 
-		return convertToDto(existingAdo, pseudonymizer);
+		return toPseudonymizedDto(existingAdo, pseudonymizer);
 	}
 
 	public boolean exists(String uuid) {
@@ -140,25 +131,21 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		service.delete(ado, deletionDetails);
 	}
 
+	@DenyAll
+	public void undelete(String uuid) {
+		ADO ado = service.getByUuid(uuid);
+		if (ado == null) {
+			throw new IllegalArgumentException("Cannot undelete non existing entity: [" + getCoreEntityType() + "] - " + uuid);
+		}
+		service.undelete(ado);
+	}
+
 	public boolean isArchived(String uuid) {
 		return service.isArchived(uuid);
 	}
 
-	public DTO convertToDto(ADO source, Pseudonymizer pseudonymizer) {
-
-		if (source == null) {
-			return null;
-		}
-
-		boolean inJurisdiction = service.inJurisdictionOrOwned(source);
-		return convertToDto(source, pseudonymizer, inJurisdiction);
-	}
-
-	protected DTO convertToDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
-
-		DTO dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
-		return dto;
+	public boolean isDeleted(String uuid) {
+		return service.isDeleted(uuid);
 	}
 
 	public List<String> getUuidsForAutomaticDeletion(DeletionConfiguration entityConfig) {
@@ -292,5 +279,11 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@Override
 	public boolean isEditAllowed(String uuid) {
 		return service.isEditAllowed(service.getByUuid(uuid));
+	}
+
+	@Override
+
+	protected boolean isAdoInJurisdiction(ADO source) {
+		return service.inJurisdictionOrOwned(source);
 	}
 }
