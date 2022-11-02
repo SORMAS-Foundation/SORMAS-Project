@@ -12182,10 +12182,21 @@ ALTER TABLE externalmessage RENAME COLUMN testeddisease to disease;
 ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
 
 INSERT INTO schema_version (version_number, comment) VALUES (496, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 ALTER TABLE surveillancereports ADD COLUMN externalid varchar(255);
 ALTER TABLE surveillancereports_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalId to surveillance reports #6621');
 
+-- 2022-11-02 Automatic deletion based on end of process date #8996
+
+UPDATE cases SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE contact SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE events SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE eventparticipant SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE immunization SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE travelentry SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (498, 'Automatic deletion based on end of process date #8996');
+
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
