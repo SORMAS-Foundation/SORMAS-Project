@@ -27,12 +27,17 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.DescriptionGenerator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -43,6 +48,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareReq
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
@@ -50,6 +56,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import org.apache.commons.lang3.StringUtils;
+
+import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
 
 public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRequestCriteria> {
 
@@ -98,6 +107,8 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 		((Column<ShareRequestIndexDto, Date>) getColumn(ShareRequestIndexDto.CREATION_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 		getColumn(ShareRequestIndexDto.OWNERSHIP_HANDED_OVER).setRenderer(new BooleanRenderer());
+
+		getColumn(ShareRequestIndexDto.COMMENT).setDescriptionGenerator((DescriptionGenerator<ShareRequestIndexDto>) item -> item.getComment());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(

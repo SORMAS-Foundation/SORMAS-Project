@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.sormastosormas.entities;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.ejb.EJB;
@@ -11,11 +13,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -36,6 +42,29 @@ public class SormasToSormasEntitiesHelper {
 	private ExternalMessageService externalMessageService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
+
+	public static final String HAS_DETAILS = "hasDetails";
+
+	public void updateIfNecessaryOccupationType(PersonDto sharedPersonData) {
+		OccupationType occupationType = sharedPersonData.getOccupationType();
+
+		if (occupationType != null) {
+			// check if the given occupationType exists
+			boolean existingEnum =
+				customizableEnumFacade.getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null).stream().anyMatch(s -> s.equals(occupationType));
+
+			if (!existingEnum) {
+				Map<String, Object> propertiesDetailsTrue = new HashMap<>();
+				propertiesDetailsTrue.put(HAS_DETAILS, true);
+
+				occupationType.setCaption("OTHER");
+				occupationType.setValue("OTHER");
+				occupationType.setProperties(propertiesDetailsTrue);
+			}
+		}
+	}
 
 	public void updateReceivedCaseResponsibleDistrict(CaseDataDto caze) {
 		Optional<DistrictDto> districts = getS2SDistrictReference();

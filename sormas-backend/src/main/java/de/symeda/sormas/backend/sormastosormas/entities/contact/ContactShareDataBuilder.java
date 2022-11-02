@@ -72,7 +72,7 @@ public class ContactShareDataBuilder
 	@Override
 	protected ContactDto getDto(Contact contact, Pseudonymizer pseudonymizer) {
 
-		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
+		ContactDto contactDto = contactFacade.toPseudonymizedDto(contact, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		contactDto.setContactOfficer(null);

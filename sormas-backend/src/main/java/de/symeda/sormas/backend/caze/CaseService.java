@@ -88,6 +88,7 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -142,6 +143,7 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
@@ -202,6 +204,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
@@ -1027,6 +1031,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
 				sormasToSormasShareInfoService.ensurePersisted(s);
 			} else {
+				try {
+					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s));
+				} catch (SormasToSormasException e) {
+					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
+				}
 				sormasToSormasShareInfoService.deletePermanent(s);
 			}
 		});
@@ -2079,6 +2088,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid),
 				cb.equal(root.get(Case.DISEASE), disease),
+				cb.isFalse(root.get(Case.DELETED)),
 				cb.or(
 					cb.lessThan(symptomsJoin.get(Symptoms.ONSET_DATE), startDate),
 					cb.and(cb.isNull(symptomsJoin.get(Symptoms.ONSET_DATE)), cb.lessThan(root.get(Case.REPORT_DATE), startDate)))));
