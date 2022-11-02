@@ -210,4 +210,17 @@ public class AggregateReportService {
         .tuberculosisDeaths(faker.number().numberBetween(2, 12))
         .build();
   }
+
+  public AggregateReport buildAggregateReportForSpecificAgeGroups() {
+    return AggregateReport.builder()
+        .year("2012")
+        .epiWeek("Wk 1-2012 (12/26 - 1/1)")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .acuteViralHepatitisLabConfirmations(faker.number().numberBetween(2, 12))
+        .malariaCases(faker.number().numberBetween(2, 12))
+        .hivDeaths(faker.number().numberBetween(2, 12))
+        .ageGroupForMalaria("3-12 months")
+        .build();
+  }
 }

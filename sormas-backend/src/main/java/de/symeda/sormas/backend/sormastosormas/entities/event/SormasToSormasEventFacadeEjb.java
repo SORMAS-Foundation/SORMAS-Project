@@ -218,6 +218,11 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 		return shareInfoService.getEventUuidsWithPendingOwnershipHandOver(entities);
 	}
 
+	@Override
+	protected String getShareInfoAssociatedObjectField() {
+		return SormasToSormasShareInfo.EVENT;
+	}
+
 	private List<Immunization> getAssociatedImmunizations(List<EventParticipant> eventParticipants) {
 		List<Long> personIds = eventParticipants.stream().map(ep -> ep.getPerson().getId()).collect(Collectors.toList());
 		return immunizationService.getByPersonIds(personIds);

@@ -232,7 +232,6 @@ public interface Validations {
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validEmailAddress = "validEmailAddress";
-	String validEventInvestigationStatus = "validEventInvestigationStatus";
 	String validEventStatus = "validEventStatus";
 	String validEventTitle = "validEventTitle";
 	String validFacility = "validFacility";

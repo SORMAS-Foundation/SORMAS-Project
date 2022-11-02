@@ -177,6 +177,8 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -309,6 +311,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
@@ -471,6 +474,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
+	@EJB
+	private ShareRequestInfoService shareRequestInfoService;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
@@ -2525,7 +2530,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
-	public void delete(String caseUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
+	public void delete(String caseUuid, DeletionDetails deletionDetails)
+		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException {
 		Case caze = service.getByUuid(caseUuid);
 		deleteCase(caze, deletionDetails);
 	}
@@ -2546,9 +2552,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c, deletionDetails)));
 	}
 
-	private void deleteCase(Case caze, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
+	private void deleteCase(Case caze, DeletionDetails deletionDetails)
+		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException {
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
+
+		try {
+			sormasToSormasFacade.revokePendingShareRequests(caze.getSormasToSormasShares());
+		} catch (SormasToSormasException e) {
+			throw new SormasToSormasRuntimeException(e);
+		}
+
 		service.delete(caze, deletionDetails);
 	}
 
@@ -2564,8 +2578,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					try {
 						deleteCase(caseToBeDeleted, deletionDetails);
 						deletedCasesUuids.add(caseToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException e) {
-						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
+					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException e) {
+						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
 					}
 				}
 			});

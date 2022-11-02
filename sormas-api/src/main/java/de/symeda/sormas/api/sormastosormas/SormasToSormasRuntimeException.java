@@ -13,20 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.externalmessage.labmessage;
+package de.symeda.sormas.api.sormastosormas;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
+public class SormasToSormasRuntimeException extends RuntimeException {
 
-@DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
-public class SampleReportReferenceDto extends ReferenceDto {
-
-	private static final long serialVersionUID = -5497058456244885735L;
-
-	public SampleReportReferenceDto(@JsonProperty("uuid") String uuid) {
-		setUuid(uuid);
+	public SormasToSormasRuntimeException(SormasToSormasException exception) {
+		super(I18nProperties.getString(exception.getI18nTag()));
 	}
 }
