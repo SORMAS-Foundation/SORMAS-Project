@@ -12190,6 +12190,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalI
 
 -- 2022-11-02 Automatic deletion based on end of process date #8996
 
+UPDATE campaigns SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
 UPDATE cases SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
 UPDATE contact SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
 UPDATE events SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
