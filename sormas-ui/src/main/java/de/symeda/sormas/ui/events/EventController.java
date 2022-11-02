@@ -837,6 +837,12 @@ public class EventController {
 		return editView;
 	}
 
+	private String getDeleteConfirmationDetails(List<String> eventUuids) {
+		boolean hasPendingRequest = FacadeProvider.getSormasToSormasEventFacade().hasPendingRequest(eventUuids);
+
+		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
+	}
+
 	private void saveEvent(Consumer<EventStatus> saveCallback, EventDto eventDto) {
 		eventDto = FacadeProvider.getEventFacade().save(eventDto);
 		Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
@@ -934,7 +940,10 @@ public class EventController {
 				false).show(Page.getCurrent());
 		} else {
 			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()),
+				String.format(
+					I18nProperties.getString(Strings.confirmationDeleteEvents),
+					selectedRows.size(),
+					getDeleteConfirmationDetails(selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()))),
 				(deleteDetails) -> {
 					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
 					int countNotDeletedEventsWithParticipants = 0;
