@@ -2,9 +2,10 @@ package de.symeda.sormas.api.person;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PersonCriteriaTest {
 
@@ -22,17 +23,21 @@ public class PersonCriteriaTest {
 		assertThat(cut.getPersonAssociation(), equalTo(PersonAssociation.EVENT_PARTICIPANT));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testSetPersonAssociationNullInvalid() {
 
-		PersonCriteria cut = new PersonCriteria();
-		cut.setPersonAssociation(null);
+		assertThrows(IllegalArgumentException.class, () -> {
+			PersonCriteria cut = new PersonCriteria();
+			cut.setPersonAssociation(null);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testPersonAssociationNullInvalid() {
 
-		PersonCriteria cut = new PersonCriteria();
-		cut.personAssociation(null);
+		assertThrows(IllegalArgumentException.class, () -> {
+			PersonCriteria cut = new PersonCriteria();
+			cut.personAssociation(null);
+		});
 	}
 }

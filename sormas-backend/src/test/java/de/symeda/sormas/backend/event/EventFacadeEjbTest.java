@@ -15,22 +15,17 @@
 
 package de.symeda.sormas.backend.event;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -42,16 +37,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionDto;
@@ -65,7 +53,6 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -78,7 +65,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -86,44 +72,26 @@ import de.symeda.sormas.backend.share.ExternalShareInfo;
 
 public class EventFacadeEjbTest extends AbstractBeanTest {
 
-	private static final int WIREMOCK_TESTING_PORT = 8888;
-	private ExternalSurveillanceToolFacade subjectUnderTest;
-
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
-
-	@Before
-	public void setup() {
-		configureExternalSurvToolUrlForWireMock();
-		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
-	}
-
-	@After
-	public void teardown() {
-		clearExternalSurvToolUrlForWireMock();
-	}
-
-	@Test(expected = ValidationRuntimeException.class)
+	@Test
 	public void testValidateWithNullReportingUser() {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		EventDto event = creator.createEvent(
-			EventStatus.SIGNAL,
-			EventInvestigationStatus.PENDING,
-			"Title",
-			"Description",
-			"First",
-			"Name",
-			"12345",
-			TypeOfPlace.PUBLIC_PLACE,
-			DateHelper.subtractDays(new Date(), 1),
-			new Date(),
-			null,
-			null,
-			Disease.EVD,
-			rdcf);
-
-		EventFacadeEjb.EventFacadeEjbLocal eventFacadeEjb = getBean(EventFacadeEjb.EventFacadeEjbLocal.class);
-		eventFacadeEjb.validate(event);
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> creator.createEvent(
+				EventStatus.SIGNAL,
+				EventInvestigationStatus.PENDING,
+				"Title",
+				"Description",
+				"First",
+				"Name",
+				"12345",
+				TypeOfPlace.PUBLIC_PLACE,
+				DateHelper.subtractDays(new Date(), 1),
+				new Date(),
+				null,
+				null,
+				Disease.EVD,
+				rdcf));
 	}
 
 	@Test
@@ -216,8 +184,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setStartDate(startDate);
 
 		final EventDto updatedEvent = getEventFacade().save(event);
-		Assert.assertEquals(testDescription, updatedEvent.getEventDesc());
-		Assert.assertEquals(startDate, updatedEvent.getStartDate());
+		assertEquals(testDescription, updatedEvent.getEventDesc());
+		assertEquals(startDate, updatedEvent.getStartDate());
 	}
 
 	@Test
@@ -344,14 +312,6 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getEventParticipantFacade().getAllAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
-				.withRequestBody(containing("eventUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
-		Event event1 = getEventService().getByUuid(eventDto.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(event1, ExternalShareStatus.SHARED);
-
 		getEventFacade().archive(eventDto.getUuid(), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
@@ -399,14 +359,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.ANTHRAX,
 			rdcf);
 
-		Event event1 = getEventService().getByUuid(eventDto1.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(event1, ExternalShareStatus.SHARED);
 		EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(eventDto1.getUuid()))
-				.withRequestBody(containing("eventUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		cut.archive(eventDto1.getUuid(), null);
 
@@ -429,14 +382,6 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		assertTrue(cut.isArchived(eventDto1.getUuid()));
 		assertFalse(cut.isArchived(eventDto2.getUuid()));
-
-		Event event2 = getEventService().getByUuid(eventDto2.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(event2, ExternalShareStatus.SHARED);
-
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(eventDto2.getUuid()))
-				.withRequestBody(containing("eventUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		// Event of "today" shouldn't be archived
 		cut.archiveAllArchivableEvents(70, LocalDate.now().plusDays(69));
@@ -628,17 +573,9 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingEventInJurisdiction(event.toReference());
-		Assert.assertNotNull(userReferenceDtos);
-		Assert.assertTrue(userReferenceDtos.contains(userDto));
-		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
-		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
-	}
-
-	private void configureExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
-	}
-
-	private void clearExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", "");
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(userDto));
+		assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 }

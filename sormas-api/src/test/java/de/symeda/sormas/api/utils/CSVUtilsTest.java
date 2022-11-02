@@ -15,14 +15,15 @@
 
 package de.symeda.sormas.api.utils;
 
-import com.opencsv.CSVWriter;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import com.opencsv.CSVWriter;
 
 /**
  * @author Alex Vidrean

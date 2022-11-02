@@ -1,16 +1,18 @@
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.Mockito.when;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
@@ -19,10 +21,9 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
-import junit.framework.TestCase;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TestReportFacadeEjbMappingTest extends TestCase {
+@ExtendWith(MockitoExtension.class)
+public class TestReportFacadeEjbMappingTest {
 
 	@InjectMocks
 	private TestReportFacadeEjb sut;

@@ -27,12 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -50,7 +48,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
 
-@RunWith(MockitoJUnitRunner.class)
 public class NotificationServiceTest extends AbstractBeanTest {
 
 	@Mock

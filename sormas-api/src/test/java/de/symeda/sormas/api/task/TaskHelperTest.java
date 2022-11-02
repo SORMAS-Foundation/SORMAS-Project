@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.lessThan;
 
 import java.time.LocalDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.utils.UtilDate;
 
