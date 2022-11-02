@@ -32,3 +32,10 @@ Feature: Country end to end tests
     When I navigate to countries tab in Configuration
     Then I check that number of countries is at least 195
     And I check that Albania is correctly displayed in German
+
+  @env_main @#7468
+  Scenario: Validate Countries Configuration section
+    Given I log in as a Admin User
+    And I click on the Configuration button from navbar
+    When I navigate to countries tab in Configuration
+    Then I Verify the page elements are present in Countries Configuration Page

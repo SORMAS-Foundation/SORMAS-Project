@@ -20,7 +20,19 @@ package org.sormas.e2etests.pages.application.configuration;
 import org.openqa.selenium.By;
 
 public class CountriesTabPage {
+  public static final By IMPORT_BUTTON_COUNTRIES_CONFIGURATION = By.id("actionImport");
+  public static final By IMPORT_DEFAULT_BUTTON_COUNTRIES_CONFIGURATION =
+      By.id("actionImportAllCountries");
+  public static final By EXPORT_BUTTON_COUNTRIES_CONFIGURATION = By.id("export");
+  public static final By NEW_ENTRY_BUTTON_COUNTRIES_CONFIGURATION = By.id("actionNewEntry");
+  public static final By ENTER_BULK_EDIT_MODE_BUTTON_COUNTRIES_CONFIGURATION =
+      By.id("actionEnterBulkEditMode");
   public static final By SEARCH_COUNTRY = By.id("search");
+  public static final By SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION =
+      By.cssSelector("[id='subcontinent']>div");
+  public static final By RESET_FILTERS_BUTTON_COUNTRIES_CONFIGURATION = By.id("actionResetFilters");
+  public static final By RELEVANCE_STATUS_COMBO_BOX_COUNTRIES_CONFIGURATION =
+      By.id("relevanceStatus");
   public static final By SUBCONTINENT_TABLE_VALUE = By.xpath("//table//tbody//tr[1]/td[4]");
   public static final By COUNTRY_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static final By NUMBER_OF_COUNTRIES =
