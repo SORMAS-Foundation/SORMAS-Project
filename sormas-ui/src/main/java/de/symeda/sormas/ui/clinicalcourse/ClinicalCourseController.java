@@ -36,7 +36,7 @@ public class ClinicalCourseController {
 			clinicalVisit.getDisease(),
 			FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid()),
 			false,
-			true);
+			true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(clinicalVisit);
 
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =

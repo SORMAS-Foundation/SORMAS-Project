@@ -84,7 +84,7 @@ public class PathogenTestController {
 		int caseSampleCount,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
-		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true);
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created 
 		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,

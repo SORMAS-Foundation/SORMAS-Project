@@ -266,8 +266,8 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			false,
 			true,
 			eventParticipant.getPerson().isPseudonymized(),
-			false,
-			eventParticipant.isInJurisdiction());
+			eventParticipant.getPerson().isInJurisdiction(),
+			false);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,

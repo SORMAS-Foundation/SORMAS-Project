@@ -55,6 +55,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -818,13 +819,10 @@ public class ContactController {
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(
-			contact.getDisease(),
-			ContactDto.class,
-			contact.getEpiData().isPseudonymized(),
-			contact.getEpiData().isInJurisdiction(),
-			null);
-		epiDataForm.setValue(contact.getEpiData());
+		EpiDataDto epiData = contact.getEpiData();
+		EpiDataForm epiDataForm =
+			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null);
+		epiDataForm.setValue(epiData);
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
 			epiDataForm,

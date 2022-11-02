@@ -109,8 +109,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			false,
 			FieldVisibilityCheckers.withDisease(null).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			UiFieldAccessCheckers.forDataAccessLevel(
-				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(create || inJurisdiction),
-				!create && isPseudonymized));
+				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(create || inJurisdiction), // Jurisdiction doesn't matter for creation forms
+				!create && isPseudonymized)); // Pseudonymization doesn't matter for creation forms
 
 		this.sample = sample;
 		this.caseSampleCount = caseSampleCount;

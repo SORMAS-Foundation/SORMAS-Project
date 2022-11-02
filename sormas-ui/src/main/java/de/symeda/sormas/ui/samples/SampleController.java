@@ -174,7 +174,7 @@ public class SampleController {
 		sampleComponent.addComponent(horizontalRule, sampleComponent.getComponentCount() - 1);
 
 		PathogenTestForm pathogenTestForm =
-			new PathogenTestForm(sampleComponent.getWrappedComponent().getValue(), true, caseSampleCount, false, true);
+			new PathogenTestForm(sampleComponent.getWrappedComponent().getValue(), true, caseSampleCount, false, true);  // Valid because jurisdiction doesn't matter for entities that are about to be created
 		// prefill fields
 		if (pathogenTest != null) {
 			pathogenTestForm.setValue(pathogenTest);

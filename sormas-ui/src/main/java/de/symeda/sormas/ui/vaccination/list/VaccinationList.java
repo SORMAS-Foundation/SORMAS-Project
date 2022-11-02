@@ -69,19 +69,19 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 	protected void drawDisplayedEntries() {
 		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
-			listEntry.addEditButton(
-				"edit-vaccination-" + listEntry.getVaccination().getUuid(),
-				e -> actionCallback.accept(
-					() -> ControllerProvider.getVaccinationController()
-						.edit(
-							FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
-							listEntry.getVaccination().getDisease(),
-							UiFieldAccessCheckers.forDataAccessLevel(
-								UserProvider.getCurrent().getPseudonymizableDataAccessLevel(listEntry.getVaccination().isInJurisdiction()),
-								listEntry.getVaccination().isPseudonymized()),
-							true,
-							v -> SormasUI.refreshView(),
-							deleteCallback())));
+			listEntry.addEditButton("edit-vaccination-" + listEntry.getVaccination().getUuid(), e -> actionCallback.accept(() -> {
+				VaccinationListEntryDto vaccination = listEntry.getVaccination();
+				ControllerProvider.getVaccinationController()
+					.edit(
+						FacadeProvider.getVaccinationFacade().getByUuid(vaccination.getUuid()),
+						vaccination.getDisease(),
+						UiFieldAccessCheckers.forDataAccessLevel(
+							UserProvider.getCurrent().getPseudonymizableDataAccessLevel(vaccination.isInJurisdiction()),
+							vaccination.isPseudonymized()),
+						true,
+						v -> SormasUI.refreshView(),
+						deleteCallback());
+			}));
 			listLayout.addComponent(listEntry);
 		}
 	}
