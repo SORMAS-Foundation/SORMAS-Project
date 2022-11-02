@@ -414,22 +414,21 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public Button getDeleteButton(String entityName, Supplier<String> confirmationMessageSupplier) {
 		if (deleteButton == null) {
-			deleteButton = buildDeleteButton(
-				() -> {
-					String confirmationMessage = confirmationMessageSupplier == null ? null : confirmationMessageSupplier.get();
+			deleteButton = buildDeleteButton(() -> {
+				String confirmationMessage = confirmationMessageSupplier == null ? null : confirmationMessageSupplier.get();
 
-					VaadinUiUtil.showDeleteConfirmationWindow(
-							StringUtils.isBlank(confirmationMessage)
-									? String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName)
-									: confirmationMessage,
-							this::onDelete);
-				}, false);
+				VaadinUiUtil.showDeleteConfirmationWindow(
+					StringUtils.isBlank(confirmationMessage)
+						? String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName)
+						: confirmationMessage,
+					this::onDelete);
+			}, false);
 		}
 
 		return deleteButton;
 	}
 
-	public Button getDeleteWithReasonOrUndeleteButton(String entityName, boolean deleted) {
+	public Button getDeleteWithReasonOrUndeleteButton(String entityName, boolean deleted, String details) {
 
 		if (deleteButton == null) {
 			deleteButton = buildDeleteButton(() -> {
@@ -438,7 +437,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
 						this::onDeleteWithReason);
 				} else {
-					onDeleteWithReason(null);
+					DeletableUtils.showDeleteWithReasonPopup(
+						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName, details != null ? details : ""),
+						this::onDeleteWithReason);
 				}
 			}, deleted);
 		}
@@ -449,7 +450,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Button buildDeleteButton(Runnable deletePopupCallback, boolean deleted) {
 
 		Button deleteButton = ButtonHelper.createButton(
-				DELETE_UNDELETE,
+			DELETE_UNDELETE,
 			deleted ? I18nProperties.getCaption(Captions.actionUnDelete) : I18nProperties.getCaption(Captions.actionDelete),
 			e -> {
 				if (isDirty()) {
@@ -770,7 +771,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	public void addDeleteWithReasonOrUndeleteListener(DeleteWithDetailsListener listener, String entityName) {
 
 		if (deleteWithDetailsListeners.isEmpty()) {
-			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, false), 0);
+			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, false, null), 0);
 		}
 		if (!deleteWithDetailsListeners.contains(listener)) {
 			deleteWithDetailsListeners.add(listener);
@@ -779,6 +780,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	
 	public void addDeleteWithReasonOrUndeleteListener(
 		DeleteWithDetailsListener deleteListener,
+		String details,
 		DeleteWithDetailsListener undeleteListener,
 		String entityName,
 		String entityUuid,
@@ -787,7 +789,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		final boolean deleted = coreFacade.isDeleted(entityUuid);
 
 		if (deleteWithDetailsListeners.isEmpty()) {
-			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, deleted), 0);
+			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, deleted, details), 0);
 		}
 
 		if (!deleted) {
@@ -804,7 +806,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		boolean isDeleted) {
 
 		if (deleteWithDetailsListeners.isEmpty()) {
-			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, isDeleted), 0);
+			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, isDeleted, null), 0);
 		}
 
 		if (!isDeleted) {
@@ -814,12 +816,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
-	public void addDeleteWithReasonOrUndeleteListener(String viewName, String entityName, String entityUuid, CoreFacade coreFacade) {
+	public void addDeleteWithReasonOrUndeleteListener(String viewName, String details, String entityName, String entityUuid, CoreFacade coreFacade) {
 
 		final boolean deleted = coreFacade.isDeleted(entityUuid);
 
 		if (deleteWithDetailsListeners.isEmpty()) {
-			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, deleted), 0);
+			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, deleted, details), 0);
 		}
 
 		if (!deleted) {

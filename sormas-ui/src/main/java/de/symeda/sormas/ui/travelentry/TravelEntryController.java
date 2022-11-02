@@ -163,10 +163,11 @@ public class TravelEntryController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteWithReasonOrUndeleteListener(
-					TravelEntriesView.VIEW_NAME,
-					I18nProperties.getString(Strings.entityTravelEntry),
-					travelEntry.getUuid(),
-					FacadeProvider.getTravelEntryFacade());
+				TravelEntriesView.VIEW_NAME,
+				null,
+				I18nProperties.getString(Strings.entityTravelEntry),
+				travelEntry.getUuid(),
+				FacadeProvider.getTravelEntryFacade());
 		}
 
 		// Initialize 'Archive' button

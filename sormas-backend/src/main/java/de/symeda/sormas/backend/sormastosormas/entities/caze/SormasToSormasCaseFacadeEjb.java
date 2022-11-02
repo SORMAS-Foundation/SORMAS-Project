@@ -224,6 +224,11 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 		return shareInfoService.getCaseUuidsWithPendingOwnershipHandOver(entities);
 	}
 
+	@Override
+	protected String getShareInfoAssociatedObjectField() {
+		return SormasToSormasShareInfo.CAZE;
+	}
+
 	private List<Sample> getAssociatedSamples(CaseReferenceDto caseReferenceDto, List<Contact> associatedContacts, User user) {
 		List<Sample> samples;
 		final List<Sample> caseSamples = sampleService.findBy(new SampleCriteria().caze(caseReferenceDto), user);

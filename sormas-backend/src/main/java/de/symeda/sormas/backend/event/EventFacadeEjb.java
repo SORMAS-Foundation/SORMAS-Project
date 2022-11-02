@@ -89,6 +89,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -304,6 +306,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@RightsAllowed(UserRight._EVENT_DELETE)
 	public void delete(String eventUuid, DeletionDetails deletionDetails) {
 		Event event = service.getByUuid(eventUuid);
+
+		try {
+			sormasToSormasFacade.revokePendingShareRequests(event.getSormasToSormasShares());
+		} catch (SormasToSormasException e) {
+			throw new SormasToSormasRuntimeException(e);
+		}
+
 		try {
 			deleteEvent(event, deletionDetails);
 		} catch (ExternalSurveillanceToolException e) {
@@ -1141,10 +1150,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, e -> {
-				pseudonymizer.pseudonymizeUser(
-					event.getReportingUser(),
-					userService.getCurrentUser(),
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
 			});
 		}
 	}

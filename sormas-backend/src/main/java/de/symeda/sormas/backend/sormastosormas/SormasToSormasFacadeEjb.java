@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -366,6 +367,23 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@PermitAll
 	public boolean isSharingExternalMessagesEnabledForUser() {
 		return isShareEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES);
+	}
+
+	@RightsAllowed({
+		UserRight._CASE_DELETE,
+		UserRight._CONTACT_DELETE,
+		UserRight._EVENT_DELETE,
+		UserRight._SYSTEM })
+	public void revokePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares) throws SormasToSormasException {
+		List<ShareRequestInfo> pendingRequests = sormasToSormasShares.stream()
+			.map(SormasToSormasShareInfo::getRequests)
+			.flatMap(Collection::stream)
+			.filter(r -> r.getRequestStatus() == ShareRequestStatus.PENDING)
+			.collect(Collectors.toList());
+
+		for (ShareRequestInfo r : pendingRequests) {
+			revokeShareRequest(r.getUuid());
+		}
 	}
 
 	private SormasToSormasEntityInterface getEntityInterface(ShareRequestDataType dataType) {
