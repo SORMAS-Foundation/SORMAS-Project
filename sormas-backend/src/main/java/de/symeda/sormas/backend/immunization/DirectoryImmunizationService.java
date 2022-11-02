@@ -41,7 +41,6 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationIndexDtoRe
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.user.User;
@@ -338,7 +337,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 			filter = CriteriaBuilderHelper.or(
 				cb,
 				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
-				PersonJurisdictionPredicateValidator.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
+				PersonJurisdictionPredicateValidator.of(qc.getQuery(), cb, qc.getJoins().getPersonJoins(), currentUser, false)
 					.inJurisdictionOrOwned());
 		}
 		return filter;
