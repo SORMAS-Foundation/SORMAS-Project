@@ -636,7 +636,6 @@ public class TestDataCreator {
 
 	public RegionDto createRegion(String regionName) {
 
-
 		RegionDto region = RegionDto.build();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
@@ -736,7 +735,7 @@ public class TestDataCreator {
 		return campaignForm;
 	}
 
-	public ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> config) {
+	public ExternalMessageDto createExternalMessage(Consumer<ExternalMessageDto> config) {
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
 		config.accept(labMessage);
