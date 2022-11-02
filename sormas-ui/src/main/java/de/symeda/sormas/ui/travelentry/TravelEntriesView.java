@@ -232,9 +232,6 @@ public class TravelEntriesView extends AbstractView {
 			});
 			actionButtonsLayout.addComponent(relevanceStatusFilter);
 		}
-		statusFilterLayout.addComponent(actionButtonsLayout);
-		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
-		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		// Bulk operation dropdown
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)
@@ -253,6 +250,12 @@ public class TravelEntriesView extends AbstractView {
 			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 			bulkOperationsDropdown.setCaption("");
 			actionButtonsLayout.addComponent(bulkOperationsDropdown);
+		}
+
+		if (actionButtonsLayout.getComponentCount() > 0) {
+			statusFilterLayout.addComponent(actionButtonsLayout);
+			statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+			statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 		}
 
 		return statusFilterLayout;

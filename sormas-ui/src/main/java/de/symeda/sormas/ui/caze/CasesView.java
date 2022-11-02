@@ -573,20 +573,19 @@ public class CasesView extends AbstractView {
 		});
 		filterLayout.addComponent(filterForm);
 
-		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
-		actionButtonsLayout.setSpacing(true);
-		{
-			// Follow-up overview scrolling
-			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-				filterLayout.setWidth(100, Unit.PERCENTAGE);
-				HorizontalLayout scrollLayout = dateRangeFollowUpVisitsFilterLayout();
-				actionButtonsLayout.addComponent(scrollLayout);
+		// Follow-up overview scrolling
+		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+			actionButtonsLayout.setSpacing(true);
 
-			}
+			filterLayout.setWidth(100, Unit.PERCENTAGE);
+			HorizontalLayout scrollLayout = dateRangeFollowUpVisitsFilterLayout();
+			actionButtonsLayout.addComponent(scrollLayout);
+
+			filterLayout.addComponent(actionButtonsLayout);
+			filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+			filterLayout.setExpandRatio(actionButtonsLayout, 1);
 		}
-		filterLayout.addComponent(actionButtonsLayout);
-		filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
-		filterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return filterLayout;
 	}
