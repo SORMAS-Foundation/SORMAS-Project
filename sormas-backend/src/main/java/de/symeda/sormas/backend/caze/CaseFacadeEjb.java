@@ -1419,7 +1419,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid, true), createPseudonymizer());
+		return toPseudonymizedDto(service.getByUuid(uuid, true), createPseudonymizer());
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
@@ -1612,7 +1612,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Case caze = service.getByUuid(dto.getUuid());
 		caze.setFollowUpComment(dto.getFollowUpComment());
 		service.ensurePersisted(caze);
-		return convertToDto(caze, pseudonymizer);
+		return toPseudonymizedDto(caze, pseudonymizer);
 	}
 
 	private CaseDataDto caseSave(
@@ -1643,7 +1643,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		doSave(caze, handleChanges, existingCaseDto, syncShares);
 
-		return convertToDto(caze, pseudonymizer);
+		return toPseudonymizedDto(caze, pseudonymizer);
 	}
 
 	@RightsAllowed(UserRight._CASE_EDIT)
@@ -4184,7 +4184,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	public List<CaseDataDto> getByExternalId(String externalId) {
 
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return service.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return service.getByExternalId(externalId).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override

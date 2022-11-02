@@ -49,4 +49,8 @@ public class MSersDirectoryPage {
   public static By getNumberOfSuspectedCasesByIndex(int idx) {
     return By.xpath(String.format("//tbody//tr[%x]//td[7]", idx));
   }
+
+  public static By getAgeGroupByResultNumber(int resultNumber) {
+    return By.xpath(String.format("//tbody/tr[%x]/td[10]", resultNumber));
+  }
 }

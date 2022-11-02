@@ -770,6 +770,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public void addDeleteWithReasonOrUndeleteListener(DeleteWithDetailsListener listener, String entityName) {
 
+		addDeleteWithReasonListener(listener, entityName, null);
+	}
+
+	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener, String entityName, String details) {
+
 		if (deleteWithDetailsListeners.isEmpty()) {
 			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, false, null), 0);
 		}

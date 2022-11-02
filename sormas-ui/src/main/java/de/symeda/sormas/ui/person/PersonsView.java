@@ -3,10 +3,8 @@ package de.symeda.sormas.ui.person;
 import static java.util.Objects.nonNull;
 
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -24,10 +22,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -49,6 +44,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PersonsView extends AbstractView {
 
+	private static final long serialVersionUID = -6292580716619536538L;
+
 	public static final String VIEW_NAME = "persons";
 
 	private final PersonCriteria criteria;
@@ -57,8 +54,6 @@ public class PersonsView extends AbstractView {
 	private LinkedHashMap<Button, PersonAssociation> associationButtons;
 	private Button activeAssociationButton;
 	private PersonFilterForm filterForm;
-	private final Map<PersonAssociation, Boolean> associationAllowedValues = new EnumMap<>(PersonAssociation.class);
-	private final Map<PersonAssociation, Boolean> associationActiveValues = new EnumMap<>(PersonAssociation.class);
 
 	public PersonsView() {
 		super(VIEW_NAME);
@@ -187,7 +182,7 @@ public class PersonsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		if (criteria.getPersonAssociation() != null && !isPersonAssociationAllowed(criteria.getPersonAssociation())) {
+		if (criteria.getPersonAssociation() != null && !associationButtons.values().contains(criteria.getPersonAssociation())) {
 			PersonAssociation firstAllowedAssociation = getFirstAllowedPersonAssociation();
 			// The following line is needed because we want to correct the value in PersonCriteria in order to have a consistent state; setting the default association is 
 			// necessary because calling PersonCriteria.setPersonAssociation with null throws an exception.
@@ -244,6 +239,7 @@ public class PersonsView extends AbstractView {
 	}
 
 	public HorizontalLayout createAssociationFilterBar() {
+
 		HorizontalLayout associationFilterLayout = new HorizontalLayout();
 		associationFilterLayout.setSpacing(true);
 		associationFilterLayout.setMargin(false);
@@ -251,11 +247,7 @@ public class PersonsView extends AbstractView {
 		associationFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		associationButtons = new LinkedHashMap<>();
-
-		for (PersonAssociation association : PersonAssociation.values()) {
-			if (!isPersonAssociationAllowed(association)) {
-				continue;
-			}
+		for (PersonAssociation association : FacadeProvider.getPersonFacade().getPermittedAssociations()) {
 
 			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
 				if ((nonNull(UserProvider.getCurrent()) && !UserProvider.getCurrent().hasNationJurisdictionLevel())
@@ -303,44 +295,4 @@ public class PersonsView extends AbstractView {
 		}
 		return defaultAssociation;
 	}
-
-	private boolean isPersonAssociationAllowed(PersonAssociation personAssociation) {
-
-		if (associationAllowedValues.isEmpty()) {
-			associationAllowedValues.put(PersonAssociation.IMMUNIZATION, UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW));
-			associationActiveValues.put(
-				PersonAssociation.IMMUNIZATION,
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-					&& !FacadeProvider.getFeatureConfigurationFacade()
-						.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
-			associationAllowedValues.put(PersonAssociation.TRAVEL_ENTRY, UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW));
-			associationActiveValues.put(
-				PersonAssociation.TRAVEL_ENTRY,
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
-					&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY));
-			associationAllowedValues.put(PersonAssociation.CONTACT, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW));
-			associationActiveValues
-				.put(PersonAssociation.CONTACT, FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING));
-			associationAllowedValues.put(PersonAssociation.CASE, UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW));
-			associationActiveValues
-				.put(PersonAssociation.CASE, FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE));
-			associationAllowedValues
-				.put(PersonAssociation.EVENT_PARTICIPANT, UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW));
-			associationActiveValues.put(
-				PersonAssociation.EVENT_PARTICIPANT,
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE));
-		}
-
-		if (personAssociation == PersonAssociation.ALL) {
-			return (associationAllowedValues.get(PersonAssociation.IMMUNIZATION) || !associationActiveValues.get(PersonAssociation.IMMUNIZATION))
-				&& (associationAllowedValues.get(PersonAssociation.TRAVEL_ENTRY) || !associationActiveValues.get(PersonAssociation.TRAVEL_ENTRY))
-				&& (associationAllowedValues.get(PersonAssociation.CONTACT) || !associationActiveValues.get(PersonAssociation.CONTACT))
-				&& (associationAllowedValues.get(PersonAssociation.CASE) || !associationActiveValues.get(PersonAssociation.CASE))
-				&& (associationAllowedValues.get(PersonAssociation.EVENT_PARTICIPANT)
-					|| !associationActiveValues.get(PersonAssociation.EVENT_PARTICIPANT));
-		} else {
-			return (associationAllowedValues.get(personAssociation) && associationActiveValues.get(personAssociation));
-		}
-	}
-
 }

@@ -1582,29 +1582,29 @@ public class ContactFacadeEjb
 		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(entities);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
 		List<ContactDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
+			entities.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
 		return dtos;
 	}
 
 	@Override
-	public ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer) {
+	public ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer) {
 
 		if (source == null) {
 			return null;
 		}
 
 		ContactJurisdictionFlagsDto jurisdictionFlags = service.getJurisdictionFlags(source);
-		return convertToDto(source, pseudonymizer, jurisdictionFlags);
+		return toPseudonymizedDto(source, pseudonymizer, jurisdictionFlags);
 	}
 
 	@Deprecated
 	@Override
-	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	public ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		throw new UnsupportedOperationException("Use variant with jurisdictionFlags parameter");
 	}
 
-	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
+	protected ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
 
 		ContactDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer, jurisdictionFlags);

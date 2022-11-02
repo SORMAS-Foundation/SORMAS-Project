@@ -375,7 +375,7 @@ public class ImmunizationFacadeEjb
 
 		onImmunizationChanged(immunization, internal);
 
-		return convertToDto(immunization, pseudonymizer);
+		return toPseudonymizedDto(immunization, pseudonymizer);
 	}
 
 	@Override

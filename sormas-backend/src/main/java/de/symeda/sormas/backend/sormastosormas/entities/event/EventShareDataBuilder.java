@@ -71,7 +71,7 @@ public class EventShareDataBuilder
 	@Override
 	protected EventDto getDto(Event event, Pseudonymizer pseudonymizer) {
 
-		EventDto eventDto = eventFacade.convertToDto(event, pseudonymizer);
+		EventDto eventDto = eventFacade.toPseudonymizedDto(event, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		eventDto.setSormasToSormasOriginInfo(null);
