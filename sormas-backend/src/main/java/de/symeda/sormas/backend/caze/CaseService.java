@@ -205,7 +205,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
-	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
