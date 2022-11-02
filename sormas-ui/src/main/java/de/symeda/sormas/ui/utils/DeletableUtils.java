@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
@@ -24,7 +25,9 @@ public class DeletableUtils {
 	public static void showDeleteWithReasonPopup(String message, Consumer<DeletionDetails> handler) {
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setMargin(false);
-		Label contentLabel = new Label(message);
+
+		Label contentLabel = new Label(message, ContentMode.HTML);
+		contentLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		contentLabel.setWidthFull();
 		verticalLayout.addComponent(contentLabel);
 

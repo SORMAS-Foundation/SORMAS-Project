@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -621,6 +622,12 @@ public class ContactController {
 		return editComponent;
 	}
 
+	private String getDeleteConfirmationDetails(List<String> contactUuids) {
+		boolean hasPendingRequest = FacadeProvider.getSormasToSormasContactFacade().hasPendingRequest(contactUuids);
+
+		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
+	}
+
 	public void showBulkContactDataEditComponent(Collection<? extends ContactIndexDto> selectedContacts, String caseUuid) {
 		if (selectedContacts.size() == 0) {
 			new Notification(
@@ -706,7 +713,10 @@ public class ContactController {
 				false).show(Page.getCurrent());
 		} else {
 			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()),
+				String.format(
+					I18nProperties.getString(Strings.confirmationDeleteContacts),
+					selectedRows.size(),
+					getDeleteConfirmationDetails(selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()))),
 				(deleteDetails) -> {
 					for (ContactIndexDto selectedRow : selectedRows) {
 						FacadeProvider.getContactFacade().delete(selectedRow.getUuid(), deleteDetails);
