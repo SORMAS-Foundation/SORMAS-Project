@@ -1751,6 +1751,17 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
+	@RightsAllowed(UserRight._PERSON_EDIT)
+	public void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target) {
+		LocationDto sourceAddress = getByUuid(source.getUuid()).getAddress();
+		PersonDto targetPerson = getByUuid(target.getUuid());
+		LocationDto targetAddress = targetPerson.getAddress();
+		targetAddress = DtoHelper.copyDtoValues(targetAddress, sourceAddress, true);
+		targetPerson.setAddress(targetAddress);
+		save(targetPerson);
+	}
+
+	@Override
 	public PersonDto getByContext(PersonContext context, String contextUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Person> cq = cb.createQuery(Person.class);
