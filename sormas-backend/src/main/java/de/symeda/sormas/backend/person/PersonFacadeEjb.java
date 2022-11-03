@@ -136,7 +136,6 @@ import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -144,6 +143,8 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -168,6 +169,8 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -178,6 +181,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "PersonFacade")
 @RightsAllowed(UserRight._PERSON_VIEW)
@@ -224,9 +229,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
-	private EventParticipantFacadeEjbLocal eventParticipantFacade;
+	private VisitService visitService;
 	@EJB
-	private EventFacadeEjbLocal eventFacade;
+	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
@@ -235,6 +240,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
+	@EJB
+	private ImmunizationService immunizationService;
+	@EJB
+	private TravelEntryService travelEntryService;
 
 	public PersonFacadeEjb() {
 	}
@@ -1757,6 +1766,71 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@RightsAllowed(UserRight._PERSON_EDIT)
 	public void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties) {
 
+		if (leadPersonUuid.equals(otherPersonUuid)) {
+			throw new UnsupportedOperationException("Two different persons need to be selected for merge!");
+		}
+
+		if (mergeProperties) {
+			final PersonDto leadPersonDto = getByUuid(leadPersonUuid);
+			final PersonDto otherPersonDto = getByUuid(otherPersonUuid);
+
+			// Make sure the resulting person does not have multiple primary contact details
+			Set<PersonContactDetailType> primaryContactDetailTypes = new HashSet<>();
+			for (PersonContactDetailDto contactDetailDto : leadPersonDto.getPersonContactDetails()) {
+				if (contactDetailDto.isPrimaryContact()) {
+					primaryContactDetailTypes.add(contactDetailDto.getPersonContactDetailType());
+				}
+			}
+			for (PersonContactDetailDto contactDetailDto : otherPersonDto.getPersonContactDetails()) {
+				if (contactDetailDto.isPrimaryContact() && primaryContactDetailTypes.contains(contactDetailDto.getPersonContactDetailType())) {
+					contactDetailDto.setPrimaryContact(false);
+				}
+			}
+			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false);
+			otherPersonDto.setAddress(null);
+			otherPersonDto.setAddresses(new ArrayList<>());
+			otherPersonDto.setPersonContactDetails(new ArrayList<>());
+			save(otherPersonDto);
+			save(leadPersonDto);
+		}
+
+		final Person leadPerson = service.getByUuid(leadPersonUuid);
+		final Person otherPerson = service.getByUuid(otherPersonUuid);
+
+		final List<Immunization> immunizations = immunizationService.getByPersonUuids(Collections.singletonList(otherPersonUuid));
+		immunizations.forEach(o -> {
+			o.setPerson(leadPerson);
+			immunizationService.ensurePersisted(o);
+		});
+		final List<TravelEntry> travelEntries = travelEntryService.getByPersonUuids(Collections.singletonList(otherPersonUuid));
+		travelEntries.forEach(o -> {
+			o.setPerson(leadPerson);
+			travelEntryService.ensurePersisted(o);
+		});
+		final List<Case> cases = new ArrayList<>(caseService.getByPersonUuids(Collections.singletonList(otherPersonUuid)));
+		cases.forEach(o -> {
+			o.setPerson(leadPerson);
+			caseService.ensurePersisted(o);
+		});
+		final List<Contact> contacts = new ArrayList<>(contactService.getByPersonUuids(Collections.singletonList(otherPersonUuid)));
+		contacts.forEach(o -> {
+			o.setPerson(leadPerson);
+			contactService.ensurePersisted(o);
+		});
+		final List<EventParticipant> eventParticipants =
+			new ArrayList<>(eventParticipantService.getByPersonUuids(Collections.singletonList(otherPersonUuid)));
+		eventParticipants.forEach(o -> {
+			o.setPerson(leadPerson);
+			eventParticipantService.ensurePersisted(o);
+		});
+		final List<Visit> visits = new ArrayList<>(visitService.getByPersonUuids(Collections.singletonList(otherPersonUuid)));
+		visits.forEach(o -> {
+			o.setPerson(leadPerson);
+			visitService.ensurePersisted(o);
+		});
+
+		service.deletePermanent(otherPerson);
+		service.ensurePersisted(leadPerson);
 	}
 
 	@Override
