@@ -25,6 +25,7 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEA
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_INPUT;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getAgeGroupByResultNumber;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getColumnSelectorByName;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getEditButtonByIndex;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getNumberOfSuspectedCasesByIndex;
@@ -297,6 +298,29 @@ public class MSersDirectorySteps implements En {
                       "Number of suspected cases visible in grid is different than expected"),
               10);
         });
+
+    And(
+        "^I check that Age group for (\\d+) result in grid in mSers directory is \"([^\"]*)\"$",
+        (Integer resultNumber, String ageGroup) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(getAgeGroupByResultNumber(resultNumber)),
+              ageGroup,
+              "Age group is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if exported aggregate report contains correct age groups$",
+        () -> {
+          String fileName = "./downloads/sormas_aggregate_reports_" + LocalDate.now() + "_.csv";
+          AggregateReport reader = parseOneDiseaseExport(fileName);
+          softly.assertEquals(
+              reader.getAgeGroupForMalaria(),
+              CreateNewAggregateReportSteps.report
+              .getAgeGroupForMalaria(),
+              "Age group for Malaria is different!");
+          softly.assertAll();
+        });
   }
 
   public AggregateReport parseOneDiseaseExport(String fileName) {
@@ -323,6 +347,7 @@ public class MSersDirectorySteps implements En {
           AggregateReport.builder()
               .year(values[3])
               .epiWeek(values[4])
+              .ageGroupForMalaria(values[8])
               .acuteViralHepatitisCases(Integer.parseInt(values[6]))
               .build();
     } catch (NullPointerException e) {

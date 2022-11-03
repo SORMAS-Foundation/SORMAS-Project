@@ -282,6 +282,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
 

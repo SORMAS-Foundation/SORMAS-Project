@@ -19,6 +19,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilter<ADO>, CRITERIA extends BaseCriteria>
 	implements BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
@@ -74,6 +75,35 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return service.getObsoleteUuidsSince(since);
 	}
 
+	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
+		if (source == null) {
+			return null;
+		}
+
+		DTO dto = toDto(source);
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
+		return dto;
+	}
+
+	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer) {
+
+		if (source == null) {
+			return null;
+		}
+
+		boolean inJurisdiction = isAdoInJurisdiction(source);
+		return toPseudonymizedDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity) {
+		restorePseudonymizedDto(dto, existingDto, entity, createPseudonymizer());
+	}
+
+	protected Pseudonymizer createPseudonymizer() {
+		return Pseudonymizer.getDefault(userService::hasRight);
+	}
+
 	// todo find a better name, it is not clear what it does
 	protected abstract void selectDtoFields(CriteriaQuery<DTO> cq, Root<ADO> root);
 
@@ -82,4 +112,10 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	public abstract DTO toDto(ADO ado);
 
 	protected abstract REF_DTO toRefDto(ADO ado);
+
+	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction);
+
+	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
+
+	protected abstract boolean isAdoInJurisdiction(ADO ado);
 }
