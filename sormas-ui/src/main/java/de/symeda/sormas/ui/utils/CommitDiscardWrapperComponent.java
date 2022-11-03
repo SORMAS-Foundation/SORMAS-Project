@@ -414,9 +414,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public Button getDeleteButton(String entityName, Supplier<String> confirmationMessageSupplier) {
 		if (deleteButton == null) {
-			deleteButton = buildDeleteButton(
-				() -> {
-					String confirmationMessage = confirmationMessageSupplier == null ? null : confirmationMessageSupplier.get();
+			deleteButton = buildDeleteButton(() -> {
+				String confirmationMessage = confirmationMessageSupplier == null ? null : confirmationMessageSupplier.get();
 
 					VaadinUiUtil.showDeleteConfirmationWindow(
 							StringUtils.isBlank(confirmationMessage)
@@ -768,6 +767,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	public void addDeleteWithReasonOrUndeleteListener(DeleteWithDetailsListener listener, String entityName) {
+
+		addDeleteWithReasonListener(listener, entityName, null);
+	}
+
+	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener, String entityName, String details) {
 
 		if (deleteWithDetailsListeners.isEmpty()) {
 			buttonsPanel.addComponent(getDeleteWithReasonOrUndeleteButton(entityName, false), 0);

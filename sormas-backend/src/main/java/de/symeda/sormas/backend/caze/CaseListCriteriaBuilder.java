@@ -28,14 +28,14 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.backend.user.CurrentUserService;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -50,8 +50,10 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonContactDetail;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -113,10 +115,10 @@ public class CaseListCriteriaBuilder {
 				Join<EventParticipant, Event> event = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
 				Join<EventParticipant, Case> resultingCase = eventCountRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
 				eventCountSq.where(
-						cb.and(
-								cb.equal(resultingCase.get(Case.ID), caze.get(Case.ID)),
-								cb.isFalse(event.get(Event.DELETED)),
-								cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
+					cb.and(
+						cb.equal(resultingCase.get(Case.ID), caze.get(Case.ID)),
+						cb.isFalse(event.get(Event.DELETED)),
+						cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
 				eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 				selectionList.add(eventCountSq);
 			}
@@ -292,6 +294,13 @@ public class CaseListCriteriaBuilder {
 
 		CaseJoins joins = caseQueryContext.getJoins();
 
+		Join<Person, PersonContactDetail> phone = joins.getPersonJoins().getPhone();
+		CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		phone.on(
+			cb.and(
+				cb.isTrue(phone.get(PersonContactDetail.PRIMARY_CONTACT)),
+				cb.equal(phone.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
+
 		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, caseQueryContext));
 		selections.addAll(
 			Arrays.asList(
@@ -301,7 +310,7 @@ public class CaseListCriteriaBuilder {
 				joins.getPersonAddress().get(Location.HOUSE_NUMBER),
 				joins.getPersonAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getPersonAddress().get(Location.POSTAL_CODE),
-				caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
+				phone.get(PersonContactDetail.CONTACT_INFORMATION),
 				joins.getReportingUser().get(User.UUID),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
@@ -322,7 +331,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDetailedDto.POSTAL_CODE:
 			return Collections.singletonList(joins.getPersonAddress().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.PHONE:
-			return Collections.singletonList(cb.literal(49));
+			return Collections.singletonList(joins.getPersonJoins().getPhone().get(PersonContactDetail.CONTACT_INFORMATION));
 		case CaseIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:

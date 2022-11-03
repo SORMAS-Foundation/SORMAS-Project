@@ -53,9 +53,9 @@ public class SymptomsTabPage {
   public static final By NAUSEA_OPTIONS = By.cssSelector("#nausea label");
   public static final By LOSS_OF_SMELL_OPTIONS = By.cssSelector("#lossOfSmell label");
   public static final By LOSS_OF_TASTE_OPTIONS = By.cssSelector("#lossOfTaste label");
-  public static final By OTHER_NON_HEMORRHAGIC_SYMPTOMS_OPTIONS =
+  public static final By OTHER_CLINICAL_SYMPTOMS_OPTIONS =
       By.cssSelector("#otherNonHemorrhagicSymptoms label");
-  public static final By OTHER_NON_HEMORRHAGIC_SYMPTOMS_INPUT =
+  public static final By SPECIFY_OTHER_SYMPTOMS_INPUT =
       By.cssSelector("#otherNonHemorrhagicSymptomsText");
   public static final By SYMPTOMS_COMMENTS_INPUT = By.cssSelector("#symptomsComments");
   public static final By FIRST_SYMPTOM_COMBOBOX = By.cssSelector("#onsetSymptom div");

@@ -54,17 +54,17 @@ public class ContactsDashboardPage {
       By.id("dashboardShowFirstDiseases");
   public static final By CONTACTS_DASHBOARD_NAME = By.cssSelector("[class*=\"h1 v-label-h1\"]");
   public static final By ALL_CONTACTS_COUNTER =
-      By.cssSelector("[location='firstLoc']>div>div>:nth-child(1)>div>div>div>:nth-child(2)>div");
-  public static final By UNDER_FOLLOWUP_COUNTER =
-      By.cssSelector("[location='secondLoc']>div>div>:nth-child(1)>div>div>div>:nth-child(2)>div");
-  public static final By STOPPED_FOLLOWUP_COUNTER =
       By.cssSelector(
-          "[location='thirdLoc']>div>:nth-child(1)>:nth-child(1)>div>div>div>:nth-child(2)>div");
+          "[location='firstLoc']>div>:nth-child(1)>div>div>div>div>div:nth-child(2)>div");
+  public static final By UNDER_FOLLOWUP_COUNTER =
+      By.cssSelector("[location='secondLoc']>div>:nth-child(1)>div>div>div>div>:nth-child(2)>div");
+  public static final By STOPPED_FOLLOWUP_COUNTER =
+      By.cssSelector("[location='thirdLoc']>div>:nth-child(1)>div>div>div>div>:nth-child(2)>div");
   public static final By VISITS_COUNTER =
       By.cssSelector(
-          "[location='fourthLoc']>div>:nth-child(1)>:nth-child(1)>div>div>div>:nth-child(2)>div");
+          "[location='fourthLoc']>div:nth-child(1)>:nth-child(1)>div>div>div>div>:nth-child(2)>div");
   public static final By UNCONFIRMED_CONTACT_COUNTER =
-      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(1)");
+      By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>div>div>div>div>div");
   public static final By CONFIRMED_CONTACT_COUNTER =
       By.cssSelector("[location='firstLoc']>div>:nth-child(2)>div>:nth-child(1)>div>:nth-child(2)");
   public static final By NOT_A_CONTACT_COUNTER =
@@ -111,7 +111,7 @@ public class ContactsDashboardPage {
           "[location='fourthLoc']>div>:nth-child(2)>div>:nth-child(5)>div>:nth-child(1)>div>div>:nth-child(2)");
   public static final By CONTACTS_COVID19_COUNTER =
       By.cssSelector(
-          "[location='firstLoc']>div>div>:nth-child(2)>div>:nth-child(2)>div>div:nth-child(1)>:nth-child(5)>div");
+          "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(2)>div>div:nth-child(1)>:nth-child(5)>div");
   public static final By CONTACTS_CHOLERA_COUNTER =
       By.cssSelector(
           "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(3)>div>:nth-child(1)>:nth-child(5)");

@@ -29,6 +29,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 public abstract class AbstractInfrastructureFacadeEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
@@ -215,9 +216,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	// todo this can be moved up
-	@RightsAllowed({
-		UserRight._INFRASTRUCTURE_VIEW,
-		UserRight._SYSTEM })
+	@PermitAll
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
@@ -243,5 +242,21 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		UserRight._INFRASTRUCTURE_VIEW })
 	public void validate(@Valid DTO dto) throws ValidationRuntimeException {
 		// todo we do not run any generic validation logic for infra yet
+	}
+
+	@Override
+	protected void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+		// we do not pseudonymize infra data
+	}
+
+	@Override
+	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer) {
+		// we do not pseudonymize infra data
+	}
+
+	@Override
+	protected boolean isAdoInJurisdiction(ADO ado) {
+		// we do not pseudonymize infra data
+		return false;
 	}
 }

@@ -384,10 +384,7 @@ public class EditImmunizationSteps implements En {
               webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
               false,
               "Responsible community input shouldn't be editable, but it is!");
-          softly.assertEquals(
-              webDriverHelpers.isElementEnabled(DATE_OF_REPORT_INPUT),
-              false,
-              "Date of report input shouldn't be editable, but it is!");
+          TimeUnit.SECONDS.sleep(2);
           softly.assertAll();
         });
 
