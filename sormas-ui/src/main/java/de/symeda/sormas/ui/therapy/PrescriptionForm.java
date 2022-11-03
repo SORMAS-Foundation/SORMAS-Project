@@ -19,6 +19,7 @@ import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -36,13 +37,13 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		+ fluidRowLocs(PrescriptionDto.ROUTE, PrescriptionDto.ROUTE_DETAILS)
 		+ loc(PrescriptionDto.ADDITIONAL_NOTES);
 
-	public PrescriptionForm(boolean create, boolean readOnly, boolean isPseudonymized) {
+	public PrescriptionForm(boolean create, boolean readOnly, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			PrescriptionDto.class,
 			PrescriptionDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers(),
-			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		getFieldGroup().setReadOnly(readOnly);
 

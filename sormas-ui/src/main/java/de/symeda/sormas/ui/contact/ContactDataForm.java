@@ -194,13 +194,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private DateField reportDate;
 	private Button toCaseButton;
 
-	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
+	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.viewMode = viewMode;
 		this.disease = disease;

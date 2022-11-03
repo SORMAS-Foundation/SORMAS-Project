@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +53,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -64,6 +64,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -464,7 +465,7 @@ public class ContactController {
 								if (selectedPerson != null) {
 									dto.setPerson(selectedPerson);
 
-									selectOrCreateContact(dto, person, selectedContactUuid -> {
+									selectOrCreateContact(dto, selectedPerson, selectedContactUuid -> {
 										if (selectedContactUuid != null) {
 											editData(selectedContactUuid);
 										}
@@ -527,9 +528,13 @@ public class ContactController {
 		return createComponent;
 	}
 
-	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
+	private void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
+		selectOrCreateContact(contact, personDto.toReference(), resultConsumer);
+	}
+
+	public void selectOrCreateContact(final ContactDto contact, final PersonReferenceDto personReferenceDto, Consumer<String> resultConsumer) {
 		ContactSelectionField contactSelect =
-			new ContactSelectionField(contact, personDto.toReference(), I18nProperties.getString(Strings.infoSelectOrCreateContact));
+			new ContactSelectionField(contact, personReferenceDto, I18nProperties.getString(Strings.infoSelectOrCreateContact));
 		contactSelect.setWidth(1024, Unit.PIXELS);
 
 		if (contactSelect.hasMatches()) {
@@ -573,7 +578,7 @@ public class ContactController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getContactFacade().getManuallyDeletionInfo(contactUuid);
 
-		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
+		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized, contact.isInJurisdiction());
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
 			editForm,
@@ -829,8 +834,10 @@ public class ContactController {
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), ContactDto.class, contact.getEpiData().isPseudonymized(), null);
-		epiDataForm.setValue(contact.getEpiData());
+		EpiDataDto epiData = contact.getEpiData();
+		EpiDataForm epiDataForm =
+			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null);
+		epiDataForm.setValue(epiData);
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
 			epiDataForm,

@@ -17,6 +17,8 @@ package de.symeda.sormas.api.externaldata;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import java.io.Serializable;
+
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.audit.AuditInclude;
@@ -24,7 +26,7 @@ import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
 @AuditedClass
-public class ExternalDataDto implements HasExternalData {
+public class ExternalDataDto implements Serializable, HasExternalData {
 
 	@AuditInclude
 	private String uuid;

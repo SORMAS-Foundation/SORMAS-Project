@@ -75,15 +75,8 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return service.getObsoleteUuidsSince(since);
 	}
 
-	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
-
-		if (source == null) {
-			return null;
-		}
-
-		DTO dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
-		return dto;
+	public DTO toPseudonymizedDto(ADO source) {
+		return toPseudonymizedDto(source, createPseudonymizer());
 	}
 
 	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer) {
@@ -94,6 +87,17 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 		boolean inJurisdiction = isAdoInJurisdiction(source);
 		return toPseudonymizedDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
+		if (source == null) {
+			return null;
+		}
+
+		DTO dto = toDto(source);
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
+		return dto;
 	}
 
 	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity) {
