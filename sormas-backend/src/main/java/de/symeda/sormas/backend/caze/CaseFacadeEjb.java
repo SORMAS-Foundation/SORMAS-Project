@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.caze;
 
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
@@ -513,6 +511,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	protected Pseudonymizer createPseudonymizer() {
 		return getPseudonymizerForDtoWithClinician("");
+	}
+
+	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
+
+		UserRightFieldAccessChecker clinicianViewRightChecker =
+			new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
+		pseudonymizer.addFieldAccessChecker(clinicianViewRightChecker, clinicianViewRightChecker);
+
+		return pseudonymizer;
 	}
 
 	@Override
@@ -1323,12 +1331,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		District district = districtService.getByReferenceDto(districtRef);
 
 		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType);
-
+		// todo shouldn't this also use the overridden createPseudonymizer method?
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		pseudonymizer.pseudonymizeDtoCollection(
 			MapCaseDto.class,
 			cases,
-			c -> c.getInJurisdiction(),
+			MapCaseDto::getInJurisdiction,
 			(c, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), isInJurisdiction, null));
 
 		return cases;
@@ -1419,7 +1427,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return toPseudonymizedDto(service.getByUuid(uuid, true), createPseudonymizer());
+		// todo this plainly duplicates getByUuid from AbstractCoreFacade
+		return toPseudonymizedDto(service.getByUuid(uuid, true));
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
@@ -1608,11 +1617,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		UserRight._CASE_EDIT })
 	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
 		Case caze = service.getByUuid(dto.getUuid());
 		caze.setFollowUpComment(dto.getFollowUpComment());
 		service.ensurePersisted(caze);
-		return toPseudonymizedDto(caze, pseudonymizer);
+		return toPseudonymizedDto(caze);
 	}
 
 	private CaseDataDto caseSave(
@@ -3030,7 +3038,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (source.getHealthConditions() == null) {
 			source.setHealthConditions(HealthConditionsDto.build());
 		}
-		target.setHealthConditions(healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
+		target.setHealthConditions(
+			healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
 		if (source.getClinicalCourse() == null) {
 			source.setClinicalCourse(ClinicalCourseDto.build());
 		}
@@ -4176,7 +4185,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return service.getByPersonUuids(personUuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -4202,16 +4211,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		SymptomsHelper.updateSymptoms(SymptomsFacadeEjb.toDto(visit.getSymptoms()), caseSymptoms);
 
 		caseSave(cazeDto, true, visit.getCaze(), cazeDto, true, true);
-	}
-
-	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
-
-		UserRightFieldAccessChecker clinicianViewRightChecker =
-			new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
-		pseudonymizer.addFieldAccessChecker(clinicianViewRightChecker, clinicianViewRightChecker);
-
-		return pseudonymizer;
 	}
 
 	@LocalBean
