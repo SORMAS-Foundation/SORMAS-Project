@@ -80,7 +80,6 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -241,6 +240,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@Inject
 	protected PersonFacadeEjb(PersonService service, UserService userService) {
 		super(Person.class, PersonDto.class, service, userService);
+	}
+
+	@Override
+	public Set<PersonAssociation> getPermittedAssociations() {
+		return service.getPermittedAssociations();
 	}
 
 	@Override
@@ -1019,10 +1023,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
 			// Fetch Person.id per association and find the distinct count.
 			Set<Long> distinctPersonIds = new HashSet<>();
-			boolean immunizationModuleReduced =
-				featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
 			Arrays.stream(PersonAssociation.getSingleAssociations())
-				.filter(e -> !(immunizationModuleReduced && e == PersonAssociation.IMMUNIZATION))
+				.filter(e -> service.isPermittedAssociation(e))
 				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
 				.forEach(distinctPersonIds::addAll);
 			count = distinctPersonIds.size();
@@ -1746,6 +1748,17 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@Override
 	public boolean isPersonAssociatedWithNotDeletedEntities(String uuid) {
 		return service.isPersonAssociatedWithNotDeletedEntities(uuid);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._PERSON_EDIT)
+	public void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target) {
+		LocationDto sourceAddress = getByUuid(source.getUuid()).getAddress();
+		PersonDto targetPerson = getByUuid(target.getUuid());
+		LocationDto targetAddress = targetPerson.getAddress();
+		targetAddress = DtoHelper.copyDtoValues(targetAddress, sourceAddress, true);
+		targetPerson.setAddress(targetAddress);
+		save(targetPerson);
 	}
 
 	@Override

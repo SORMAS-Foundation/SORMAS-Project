@@ -222,6 +222,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		case CREATION:
 			return AbstractDomainObject.CREATION_DATE;
 		case END:
+			return CoreAdo.END_OF_PROCESSING_DATE;
 		case MANUAL_DELETION:
 			return AbstractDomainObject.CHANGE_DATE;
 		default:
