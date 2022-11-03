@@ -34,6 +34,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.FileContentsDoNotMatchExtensionException;
+import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -67,11 +69,19 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 							if (ok) {
 								FacadeProvider.getDocumentFacade().deleteDocument(existing);
 								try {
-									DocumentDto documentDto = saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
-									boolean fileTypeOK = checkFileType(documentDto);
-									if (filesLeftInQueue == 0 && fileTypeOK) {
-										Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
-									}
+									saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+								} catch (FileExtensionNotAllowedException e) {
+									new Notification(
+											I18nProperties.getString(Strings.headingImportError),
+											I18nProperties.getString(Strings.messageImportFileTypeNotAllowed),
+											Notification.Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent());
+								} catch (FileContentsDoNotMatchExtensionException e) {
+									new Notification(
+											I18nProperties.getString(Strings.headingImportError),
+											I18nProperties.getString(Strings.messageImportExtensionDoesNotMatchContent),
+											Notification.Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent());
 								} catch (Exception e) {
 									new Notification(
 										I18nProperties.getString(Strings.headingImportError),
@@ -79,6 +89,9 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 										Notification.Type.ERROR_MESSAGE,
 										false).show(Page.getCurrent());
 									throw new RuntimeException(e);
+								}
+								if (filesLeftInQueue == 0) {
+									Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
 								}
 							}
 							if (filesLeftInQueue == 0) {
@@ -97,12 +110,19 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 						ok -> {
 							if (ok) {
 								try {
-									DocumentDto documentDto = saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
-									boolean fileTypeOK = checkFileType(documentDto);
-									if (filesLeftInQueue == 0 && fileTypeOK) {
-										Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
-
-									}
+									saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+								} catch (FileExtensionNotAllowedException e) {
+									new Notification(
+											I18nProperties.getString(Strings.headingImportError),
+											I18nProperties.getString(Strings.messageImportFileTypeNotAllowed),
+											Notification.Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent());
+								} catch (FileContentsDoNotMatchExtensionException e) {
+									new Notification(
+											I18nProperties.getString(Strings.headingImportError),
+											I18nProperties.getString(Strings.messageImportExtensionDoesNotMatchContent),
+											Notification.Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent());
 								} catch (Exception e) {
 									new Notification(
 										I18nProperties.getString(Strings.headingImportError),
@@ -110,6 +130,9 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 										Notification.Type.ERROR_MESSAGE,
 										false).show(Page.getCurrent());
 									throw new RuntimeException(e);
+								}
+								if (filesLeftInQueue == 0) {
+									Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
 								}
 							}
 							if (filesLeftInQueue == 0) {
@@ -120,9 +143,22 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 						});
 				}
 			} else {
-				DocumentDto documentDto = saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
-				boolean fileTypeOK = checkFileType(documentDto);
-				if (filesLeftInQueue == 0 && fileTypeOK) {
+				try {
+					saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+				} catch (FileExtensionNotAllowedException e) {
+					new Notification(
+							I18nProperties.getString(Strings.headingImportError),
+							I18nProperties.getString(Strings.messageImportFileTypeNotAllowed),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+				} catch (FileContentsDoNotMatchExtensionException e) {
+					new Notification(
+							I18nProperties.getString(Strings.headingImportError),
+							I18nProperties.getString(Strings.messageImportExtensionDoesNotMatchContent),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+				}
+				if (filesLeftInQueue == 0) {
 					Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
 					if (callback != null) {
 						callback.run();
@@ -139,26 +175,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		}
 	}
 
-	private static boolean checkFileType(DocumentDto documentDto) {
-		if(documentDto.getFileTypeNotAllowed()) {
-			new Notification(
-					I18nProperties.getString(Strings.headingImportError),
-					I18nProperties.getString(Strings.messageImportFileTypeNotAllowed),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
-			return false;
-		} else if(documentDto.getFileContentAndExtensionsDoNotMatch()){
-			new Notification(
-					I18nProperties.getString(Strings.headingImportError),
-					I18nProperties.getString(Strings.messageImportExtensionDoesNotMatchContent),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
-			return false;
-		}
-		return true;
-	}
-
-	private DocumentDto saveDocument(
+	private void saveDocument(
 		String fileName,
 		String mimeType,
 		Long length,
@@ -169,7 +186,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
 		if (isFileSizeLimitExceeded(length, fileSizeLimitMb)) {
 			Notification.show(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
-			return new DocumentDto();
+			return;
 		}
 		DocumentDto document = DocumentDto.build();
 		document.setUploadingUser(Objects.requireNonNull(UserProvider.getCurrent()).getUserReference());
@@ -179,6 +196,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		document.setRelatedEntityType(relatedEntityType);
 		document.setRelatedEntityUuid(relatedEntityUuid);
 
-		return FacadeProvider.getDocumentFacade().saveDocument(document, bytes);
+		FacadeProvider.getDocumentFacade().saveDocument(document, bytes);
 	}
+
 }

@@ -50,9 +50,6 @@ public class DocumentDto extends PseudonymizableDto {
 	@Required
 	private DocumentRelatedEntityType relatedEntityType;
 
-	private boolean fileTypeNotAllowed;
-	private boolean fileContentAndExtensionsDoNotMatch;
-
 	public static DocumentDto build() {
 		DocumentDto document = new DocumentDto();
 		document.setUuid(DataHelper.createUuid());
@@ -106,15 +103,5 @@ public class DocumentDto extends PseudonymizableDto {
 
 	public void setRelatedEntityType(DocumentRelatedEntityType relatedEntityType) {
 		this.relatedEntityType = relatedEntityType;
-	}
-
-	public boolean getFileTypeNotAllowed() { return fileTypeNotAllowed; }
-
-	public void setFileTypeNotAllowed(boolean fileTypeNotAllowed) { this.fileTypeNotAllowed = fileTypeNotAllowed; }
-
-	public boolean getFileContentAndExtensionsDoNotMatch() { return fileContentAndExtensionsDoNotMatch; }
-
-	public void setFileContentAndExtensionsDoNotMatch(boolean fileContentAndExtensionsDoNotMatch) {
-		this.fileContentAndExtensionsDoNotMatch = fileContentAndExtensionsDoNotMatch;
 	}
 }
