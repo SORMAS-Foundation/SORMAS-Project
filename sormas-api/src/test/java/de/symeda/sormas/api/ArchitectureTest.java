@@ -92,9 +92,6 @@ public class ArchitectureTest {
 		.haveSimpleNameEndingWith("Dto")
 		.and()
 		.containAnyFieldsThat(name("uuid"))
-		.and()
-//TODO: #10750 Remove exception from test
-		.doNotHaveSimpleName("ExternalDataDto")
 		.should()
 		.implement(HasUuid.class);
 
