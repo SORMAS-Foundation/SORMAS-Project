@@ -1835,8 +1835,6 @@ Feature: Case end to end tests
     And I check that "chronicKidneyDisease" Pre-existing condition is visible on page
     And I check that "chronicNeurologicCondition" Pre-existing condition is visible on page
     And I check that "cardiovascularDiseaseIncludingHypertension" Pre-existing condition is visible on page
-    Then I click on Clinical Course tab from Edit Case page
-    Then I check that Clinical Assessments heading is visible in DE
 
   @tmsLink=SORDEV-9789 @env_de
   Scenario: Test health conditions document template export

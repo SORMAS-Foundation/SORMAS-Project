@@ -1,11 +1,10 @@
 package de.symeda.sormas.ui.clinicalcourse;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 public class ClinicalCourseForm extends AbstractEditForm<ClinicalCourseDto> {
@@ -14,13 +13,13 @@ public class ClinicalCourseForm extends AbstractEditForm<ClinicalCourseDto> {
 
 	private static final String HTML_LAYOUT = "";
 
-	public ClinicalCourseForm(boolean isPseudonymized) {
+	public ClinicalCourseForm(boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			ClinicalCourseDto.class,
 			ClinicalCourseDto.I18N_PREFIX,
 			true,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 	}
 
 	@Override
