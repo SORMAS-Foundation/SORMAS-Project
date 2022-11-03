@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +63,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -464,7 +464,7 @@ public class ContactController {
 								if (selectedPerson != null) {
 									dto.setPerson(selectedPerson);
 
-									selectOrCreateContact(dto, person, selectedContactUuid -> {
+									selectOrCreateContact(dto, selectedPerson, selectedContactUuid -> {
 										if (selectedContactUuid != null) {
 											editData(selectedContactUuid);
 										}
@@ -527,9 +527,13 @@ public class ContactController {
 		return createComponent;
 	}
 
-	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
+	private void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
+		selectOrCreateContact(contact, personDto.toReference(), resultConsumer);
+	}
+
+	public void selectOrCreateContact(final ContactDto contact, final PersonReferenceDto personReferenceDto, Consumer<String> resultConsumer) {
 		ContactSelectionField contactSelect =
-			new ContactSelectionField(contact, personDto.toReference(), I18nProperties.getString(Strings.infoSelectOrCreateContact));
+			new ContactSelectionField(contact, personReferenceDto, I18nProperties.getString(Strings.infoSelectOrCreateContact));
 		contactSelect.setWidth(1024, Unit.PIXELS);
 
 		if (contactSelect.hasMatches()) {
