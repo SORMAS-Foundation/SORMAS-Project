@@ -642,6 +642,7 @@ public interface Strings {
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
 	String headingPickOrMergePerson = "headingPickOrMergePerson";
+	String headingPickOrMergePersonConfirmation = "headingPickOrMergePersonConfirmation";
 	String headingPlaceOfStayInHospital = "headingPlaceOfStayInHospital";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
@@ -843,6 +844,8 @@ public interface Strings {
 	String infoNoSuperordinateEvent = "infoNoSuperordinateEvent";
 	String infoObserverMissingEmail = "infoObserverMissingEmail";
 	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
+	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
+	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
 	String infoPersonMergeDescription = "infoPersonMergeDescription";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";

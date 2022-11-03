@@ -17,8 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -30,6 +31,7 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -92,10 +94,11 @@ public class PersonController {
 		return titleLayout;
 	}
 
-	public void mergePersons(Set<PersonIndexDto> personIndexDtos) {
+	public void mergePersons(PersonIndexDto person1, PersonIndexDto person2) {
 		final PersonGrid personGrid = new PersonGrid();
 		personGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		personGrid.setFixDataProvider(new ArrayList<>(personIndexDtos));
+		List<PersonIndexDto> persons = Arrays.asList(person1, person2);
+		personGrid.setFixDataProvider(persons);
 		personGrid.setVisible(true);
 
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
@@ -115,24 +118,12 @@ public class PersonController {
 
 			@Override
 			protected void onConfirm() {
-				final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
-				if (selectedItems.size() == 1) {
-					final PersonIndexDto leadPerson = selectedItems.iterator().next();
-					final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
-					FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
-				}
-				popupWindow.close();
+				PersonController.this.mergePersons(personGrid, persons, popupWindow, true);
 			}
 
 			@Override
 			protected void onCancel() {
-				final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
-				if (selectedItems.size() == 1) {
-					final PersonIndexDto leadPerson = selectedItems.iterator().next();
-					final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
-					FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), false);
-				}
-				popupWindow.close();
+				PersonController.this.mergePersons(personGrid, persons, popupWindow, false);
 			}
 		};
 		final Button mergeButton = confirmationComponent.getConfirmButton();
@@ -162,6 +153,25 @@ public class PersonController {
 		popupWindow.setClosable(false);
 
 		UI.getCurrent().addWindow(popupWindow);
+	}
+
+	private void mergePersons(PersonGrid personGrid, List<PersonIndexDto> personIndexDtos, Window popupWindow, boolean mergeProperties) {
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
+			new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmation)),
+			I18nProperties.getCaption(Captions.actionConfirm),
+			I18nProperties.getCaption(Captions.actionDiscard),
+			confirm -> {
+				if (Boolean.TRUE.equals(confirm)) {
+					final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
+					final PersonIndexDto leadPerson = selectedItems.iterator().next();
+					final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
+					FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties);
+					popupWindow.close();
+					SormasUI.refreshView();
+				}
+			});
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {

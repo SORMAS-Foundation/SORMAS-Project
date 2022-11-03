@@ -83,6 +83,8 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties);
 
+	boolean isPersonSimilar(PersonSimilarityCriteria criteria, String personUuid);
+
 	PersonDto getByContext(PersonContext context, String contextUuid);
 
 	boolean isEnrolledInExternalJournal(String uuid);

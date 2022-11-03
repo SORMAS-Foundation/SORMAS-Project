@@ -37,6 +37,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -344,12 +347,40 @@ public class PersonsView extends AbstractView {
 							VaadinIcons.COMPRESS_SQUARE,
 							mi -> grid.bulkActionHandler(
 									items -> {
-										if(items.size()!= 2) {
-											VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageCannotMergeMoreThanTwoPersons));
-										} else {
-											ControllerProvider.getPersonController().mergePersons(items);
+							if (items.size() != 2) {
+								VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageCannotMergeMoreThanTwoPersons));
+							} else {
+
+								Iterator selectionsIterator = items.iterator();
+								final PersonIndexDto person1 = (PersonIndexDto) selectionsIterator.next();
+								final PersonIndexDto person2 =(PersonIndexDto) selectionsIterator.next();
+
+											final PersonDto leadPersonDto = FacadeProvider.getPersonFacade().getByUuid(person1.getUuid());
+											final PersonSimilarityCriteria criteria = new PersonSimilarityCriteria()
+													.sex(leadPersonDto.getSex())
+													.nationalHealthId(leadPersonDto.getNationalHealthId())
+													.passportNumber(leadPersonDto.getPassportNumber())
+													.birthdateDD(leadPersonDto.getBirthdateDD())
+													.birthdateMM(leadPersonDto.getBirthdateMM())
+													.birthdateYYYY(leadPersonDto.getBirthdateYYYY());
+											criteria.setName(leadPersonDto);
+
+											if (!FacadeProvider.getPersonFacade().isPersonSimilar(criteria, person2.getUuid())) {
+												VaadinUiUtil.showConfirmationPopup(
+														I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
+														new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmationForNonSimilarPersons)),
+														I18nProperties.getCaption(Captions.actionProceed),
+														I18nProperties.getCaption(Captions.actionCancel),
+														confirmAgain -> {
+															if (Boolean.TRUE.equals(confirmAgain)) {
+																ControllerProvider.getPersonController().mergePersons(person1, person2);
+															}
+														});
+											} else {
+												ControllerProvider.getPersonController().mergePersons(person1, person2);
+											}
+											
 											grid.deselectAll();
-											((PersonGrid) grid).reload();
 										}
 									},
 									true)));

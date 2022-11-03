@@ -1787,10 +1787,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				}
 			}
 			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false);
-			otherPersonDto.setAddress(null);
-			otherPersonDto.setAddresses(new ArrayList<>());
-			otherPersonDto.setPersonContactDetails(new ArrayList<>());
-			save(otherPersonDto);
+
 			save(leadPersonDto);
 		}
 
@@ -1831,6 +1828,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		service.deletePermanent(otherPerson);
 		service.ensurePersisted(leadPerson);
+	}
+
+	@Override
+	public boolean isPersonSimilar(PersonSimilarityCriteria criteria, String personUuid) {
+		return service.isPersonSimilar(criteria, personUuid);
 	}
 
 	@Override
