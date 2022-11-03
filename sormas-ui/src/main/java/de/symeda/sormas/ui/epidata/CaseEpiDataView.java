@@ -99,7 +99,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 			sourceContactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sourceContactsLayout.addComponent(sourceContactList);
 
-			if (currentUser.hasUserRight(UserRight.CONTACT_CREATE)) {
+			if (currentUser.hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CASE_EDIT)) {
 				sourceContactList.addStyleName(CssStyles.VSPACE_NONE);
 				Label contactCreationDisclaimer = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewContactDiscardsChanges),
@@ -107,6 +107,8 @@ public class CaseEpiDataView extends AbstractCaseView {
 				contactCreationDisclaimer.addStyleName(CssStyles.VSPACE_TOP_4);
 
 				sourceContactsLayout.addComponent(contactCreationDisclaimer);
+			} else {
+				sourceContactsLayout.setEnabled(false);
 			}
 
 			epiDataComponent.getWrappedComponent().setGetSourceContactsCallback(sourceContactList::getEntries);
