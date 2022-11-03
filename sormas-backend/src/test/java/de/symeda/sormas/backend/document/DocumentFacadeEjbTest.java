@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeNotNull;
 import static org.junit.Assume.assumeThat;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -118,10 +120,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf);
 		EventDto event = creator.createEvent(user.toReference());
-
-		DocumentDto document =
-			creator.createDocument(user.toReference(), "Mail.msg", null, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
-
-		assertNull("application/octet-stream", getDocumentFacade().getDocumentByUuid(document.getUuid()));
+		assertThrows(FileExtensionNotAllowedException.class, () ->
+				creator.createDocument(user.toReference(), "test.json", null, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8)));
 	}
 }
