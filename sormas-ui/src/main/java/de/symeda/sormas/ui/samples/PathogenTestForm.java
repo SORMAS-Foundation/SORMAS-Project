@@ -55,6 +55,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -101,13 +102,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private ComboBox pcrTestSpecification;
 	private TextField typingIdField;
 
-	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isPseudonymized) {
+	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			PathogenTestDto.class,
 			PathogenTestDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(null).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.forSensitiveData(!create && isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(
+				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(create || inJurisdiction), // Jurisdiction doesn't matter for creation forms
+				!create && isPseudonymized)); // Pseudonymization doesn't matter for creation forms
 
 		this.sample = sample;
 		this.caseSampleCount = caseSampleCount;

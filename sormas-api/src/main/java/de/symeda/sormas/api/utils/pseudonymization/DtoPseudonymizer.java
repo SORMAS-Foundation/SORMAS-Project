@@ -240,6 +240,7 @@ public class DtoPseudonymizer {
 
 		if (Pseudonymizable.class.isAssignableFrom(dto.getClass())) {
 			((Pseudonymizable) dto).setPseudonymized(didPersonalOrSensitiveDataPseudonymization);
+			((Pseudonymizable) dto).setInJurisdiction(inJurisdiction);
 		}
 
 		if (customPseudonymization != null) {

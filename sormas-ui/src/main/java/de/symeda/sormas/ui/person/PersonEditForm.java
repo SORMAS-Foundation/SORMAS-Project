@@ -80,6 +80,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
@@ -181,7 +182,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private PresentConditionChangeListener presentConditionChangeListener;
 	//@formatter:on
 
-	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
+	public PersonEditForm(
+		PersonContext personContext,
+		Disease disease,
+		String diseaseDetails,
+		ViewMode viewMode,
+		boolean isPseudonymized,
+		boolean inJurisdiction) {
 		super(
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
@@ -189,7 +196,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-			UiFieldAccessCheckers.getDefault(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.personContext = personContext;
 		this.disease = disease;
@@ -205,14 +212,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields();
 	}
 
-	public PersonEditForm(boolean isPseudonymized) {
+	public PersonEditForm(boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-			UiFieldAccessCheckers.getDefault(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
@@ -256,7 +263,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateMonth.setPageLength(12);
 		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
 		birthDateMonth.setCaption("");
-		DateHelper.getMonthsInYear().forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
+		DateHelper.getMonthsInYear()
+			.forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
 		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
 		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
