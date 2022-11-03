@@ -39,3 +39,15 @@ Feature: Country end to end tests
     And I click on the Configuration button from navbar
     When I navigate to countries tab in Configuration
     Then I Verify the page elements are present in Countries Configuration Page
+
+  @env_main @#7468
+  Scenario: Check Countries Configuration search and reset functionalities
+    Given I log in as a Admin User
+    And I click on the Configuration button from navbar
+    When I navigate to countries tab in Configuration
+    Then I verify the Search and Reset filter functionality in Countries Configuration page
+    Then I verify the Subcontinent Australia (Subcontinent) combo box returns appropriate filter results in Countries Configuration page
+    Then I verify the Subcontinent Central Africa combo box returns appropriate filter results in Countries Configuration page
+    Then I verify the Subcontinent Central America combo box returns appropriate filter results in Countries Configuration page
+    Then I verify the Subcontinent Central Asia combo box returns appropriate filter results in Countries Configuration page
+    Then I verify the Subcontinent Central EuropeCentral Europe combo box returns appropriate filter results in Countries Configuration page

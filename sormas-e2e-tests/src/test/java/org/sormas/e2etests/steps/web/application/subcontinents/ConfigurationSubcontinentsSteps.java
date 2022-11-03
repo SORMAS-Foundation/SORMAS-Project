@@ -149,11 +149,11 @@ public class ConfigurationSubcontinentsSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(SUBCONTINENTS_NAME_TABLE_ROWS);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           Integer defaultSubContinentCount =
               webDriverHelpers.getNumberOfElements(SUBCONTINENTS_NAME_TABLE_ROWS);
           String subContinent =
               webDriverHelpers.getTextFromWebElement(SUBCONTINENTS_NAME_TABLE_ROWS);
-          System.out.println(defaultSubContinentCount);
           webDriverHelpers.fillAndSubmitInWebElement(
               SEARCH_INPUT_SUBCONTINENTS_CONFIGURATION, subContinent);
           webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 1);
