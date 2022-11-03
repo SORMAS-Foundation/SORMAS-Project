@@ -288,11 +288,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public List<PersonDto> getByUuids(List<String> uuids) {
-		return toPseudonymizedDtos(service.getByUuids(uuids));
-	}
-
-	@Override
 	public List<PersonDto> getByExternalIds(List<String> externalIds) {
 		return toPseudonymizedDtos(service.getByExternalIds(externalIds));
 	}
@@ -322,7 +317,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public PersonDto getByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> service.getByUuid(u)).map(this::toPseudonymizedDto).orElse(null);
+		return super.getByUuid(uuid);
 	}
 
 	@Override
