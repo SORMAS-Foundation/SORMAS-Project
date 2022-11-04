@@ -18,13 +18,13 @@
 package de.symeda.auditlog.api.value.format;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.Month;
 
 import javax.persistence.TemporalType;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.backend.auditlog.AuditLogDateHelper;
 

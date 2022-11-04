@@ -16,8 +16,8 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -35,8 +35,8 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
@@ -84,7 +84,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	private SampleDto sampleDto;
 	private PathogenTestDto pathogenTestDto;
 
-	@Before
+	@BeforeEach
 	public void setup() throws URISyntaxException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
 
@@ -354,7 +354,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		assertEquals(expectedVariables.size(), additionalVariables.size());
 
 		for (String usedEntity : expectedUsedEntities) {
-			assertTrue("Used entity not detected: " + usedEntity, documentVariables.isUsedEntity(usedEntity));
+			assertTrue(documentVariables.isUsedEntity(usedEntity), "Used entity not detected: " + usedEntity);
 		}
 		assertEquals(expectedUsedEntities.size(), documentVariables.getUsedEntities().size());
 

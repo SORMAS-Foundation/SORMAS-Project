@@ -20,12 +20,9 @@ package org.sormas.e2etests.steps.api;
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.api.Case;
-import org.sormas.e2etests.entities.pojo.api.Lab;
 import org.sormas.e2etests.entities.pojo.api.Person;
 import org.sormas.e2etests.entities.pojo.api.Sample;
 import org.sormas.e2etests.entities.services.api.CaseApiService;
@@ -79,15 +76,6 @@ public class BusinessFlows implements En {
             apiState.setCreatedCase(caze);
 
             Sample sample = sampleApiService.buildGeneratedSample(apiState.getCreatedCase());
-            sample =
-                sample.toBuilder()
-                    .labSampleID(UUID.randomUUID().toString())
-                    .receivedDate(new Date())
-                    .received(true)
-                    .pathogenTestResult(PathogenTestResults.getRandomResult())
-                    .specimenCondition(SpecimenConditions.getRandomCondition())
-                    .lab(Lab.builder().uuid(LaboratoryValues.getRandomUUID()).build())
-                    .build();
             sampleHelper.createSample(sample);
             sampleList.add(sample);
           }

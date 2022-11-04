@@ -1,8 +1,8 @@
 package de.symeda.sormas.backend.crypt;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -16,12 +16,13 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bouncycastle.cms.jcajce.JcaSignerId;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CmsReaderTest {
 
@@ -96,7 +97,7 @@ public class CmsReaderTest {
 		}
 	};
 
-	@BeforeClass
+	@BeforeAll
 	public static void createCertificates() throws KeyStoreException {
 		aliceKs = X509CertBuilder.createTemporaryCert("cn1", ALICE_ALIAS, PASSWORD);
 		bobKs = X509CertBuilder.createTemporaryCert("cn2", BOB_ALIAS, PASSWORD);
@@ -106,7 +107,7 @@ public class CmsReaderTest {
 		charlieCert = (X509Certificate) chrKs.getCertificate(CHARLIE_ALIAS);
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void cleanup() {
 		aliceKs = null;
 		bobKs = null;

@@ -4,12 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -63,7 +63,7 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 		getCampaignFacade().save(campaign3);
 
 		CampaignReferenceDto lastStartedCampaign = getCampaignFacade().getLastStartedCampaign();
-		Assert.assertEquals(campaign2.getUuid(), lastStartedCampaign.getUuid());
+		assertEquals(campaign2.getUuid(), lastStartedCampaign.getUuid());
 	}
 
 	@Test
@@ -83,52 +83,34 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 		getCampaignDiagramDefinitionFacade().save(creator.createCampaignDiagramDefinition("diagram2", "Diagram two"));
 		getCampaignDiagramDefinitionFacade().save(creator.createCampaignDiagramDefinition("diagram3", "Diagram three"));
 
-		try {
-			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
-		} catch (ValidationRuntimeException e) {
-			Assert.fail(e.getMessage());
-		}
+		getCampaignFacade().validate(campaign);
 
 		campaign.getCampaignDashboardElements().get(0).setSubTabId("subTab1");
-		try {
-			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
-			Assert.fail("Campaign dashboard elements subTabId is missing. Validation should catch this!");
-		} catch (ValidationRuntimeException e) {
-			Assert.assertEquals("Campaign dashboard elements subTabId of campaign CampaignName are missing!", e.getMessage());
-		}
+		assertThrowsWithMessage(
+			ValidationRuntimeException.class,
+			"Campaign dashboard elements subTabId of campaign CampaignName are missing!",
+			() -> getCampaignFacade().validate(campaign));
 
 		campaign.getCampaignDashboardElements().get(0).setSubTabId(null);
 		campaign.getCampaignDashboardElements().get(1).setSubTabId("subTab2");
-		try {
-			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
-			Assert.fail("Campaign dashboard elements subTabId is missing. Validation should catch this!");
-		} catch (ValidationRuntimeException e) {
-			Assert.assertEquals("Campaign dashboard elements subTabId of campaign CampaignName are missing!", e.getMessage());
-		}
+		assertThrowsWithMessage(
+			ValidationRuntimeException.class,
+			"Campaign dashboard elements subTabId of campaign CampaignName are missing!",
+			() -> getCampaignFacade().validate(campaign));
 
 		campaign.getCampaignDashboardElements().get(0).setSubTabId("subTab1");
 		campaign.getCampaignDashboardElements().get(1).setSubTabId("subTab2");
 		campaign.getCampaignDashboardElements().get(2).setSubTabId("subTab3");
-		try {
-			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
-		} catch (ValidationRuntimeException e) {
-			Assert.fail(e.getMessage());
-		}
+		getCampaignFacade().validate(campaign);
 
 		campaign.getCampaignDashboardElements().get(2).setSubTabId(null);
-		try {
-			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
-		} catch (ValidationRuntimeException e) {
-			Assert.fail(e.getMessage());
-		}
+		getCampaignFacade().validate(campaign);
 
 		final String nonExistingDiagramId = "nonExistingDiagramId";
 		campaign.getCampaignDashboardElements().get(0).setDiagramId(nonExistingDiagramId);
-		try {
-			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
-			Assert.fail("Diagram " + nonExistingDiagramId + " does not exist. Validation should catch this!");
-		} catch (ValidationRuntimeException e) {
-			Assert.assertEquals("Diagram nonExistingDiagramId from campaign CampaignName does not exist!", e.getMessage());
-		}
+		assertThrowsWithMessage(
+			ValidationRuntimeException.class,
+			"Diagram nonExistingDiagramId from campaign CampaignName does not exist!",
+			() -> getCampaignFacade().validate(campaign));
 	}
 }
