@@ -191,7 +191,7 @@ public class ExternalMessageController {
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}
 
-	private void createSurveillanceReport(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
+	protected void createSurveillanceReport(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
 		SurveillanceReportDto surveillanceReport = SurveillanceReportDto.build(caze, FacadeProvider.getUserFacade().getCurrentUserAsReference());
 		setSurvReportFacility(surveillanceReport, externalMessage, caze);
 		surveillanceReport.setReportDate(externalMessage.getMessageDateTime());
@@ -224,7 +224,7 @@ public class ExternalMessageController {
 		}
 	}
 
-	private void setSurvReportingType(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage) {
+	protected void setSurvReportingType(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage) {
 		if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())) {
 			surveillanceReport.setReportingType(ReportingType.LABORATORY);
 		} else if (ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())) {

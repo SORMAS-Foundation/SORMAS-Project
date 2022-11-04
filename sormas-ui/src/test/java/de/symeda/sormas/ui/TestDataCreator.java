@@ -280,6 +280,20 @@ public class TestDataCreator {
 		return contact;
 	}
 
+	public CaseDataDto createCase(RDCF rdcf) {
+		UserDto user = createUser(rdcf, DefaultUserRole.NATIONAL_USER.toUserRole().toReference());
+		PersonDto person = createPerson();
+		return createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			DataHelper.createUuid());
+	}
+
 	public CaseDataDto createCase(
 		UserReferenceDto user,
 		PersonReferenceDto cazePerson,
