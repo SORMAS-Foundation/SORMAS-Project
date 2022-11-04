@@ -48,4 +48,31 @@ public class CreateNewAggreagateReportPage {
       By.xpath("(//div[text()=\"Snake Bite\"]/..//following-sibling::div//input)[1]");
   public static final By POPUP_HEADER = By.cssSelector(".popupContent .v-window-outerheader");
   public static final By POPUP_MESSAGE_WINDOW = By.cssSelector(".v-Notification-description");
+
+  public static By getAgeGroupDiseaseByDiseaseAndAgeGroup(String disease, String ageGroup) {
+    return By.xpath(
+        String.format("//div[text()='%s']/following::div[text()='%s'][1]", disease, ageGroup));
+  }
+
+  public static final By getDeathInputByDiseaseAndAgeGroup(String disease, String ageGroup) {
+    return By.xpath(
+        String.format(
+            "//div[text()='%s']//following::div[text()='%s'][1]/../following-sibling::div[@location='deaths']/div/input",
+            disease, ageGroup));
+  }
+
+  public static final By getLabConfirmationsInputByDiseaseAndAgeGroup(
+      String disease, String ageGroup) {
+    return By.xpath(
+        String.format(
+            "//div[text()='%s']//following::div[text()='%s'][1]/../following-sibling::div[@location='labConfirmations']/div/input",
+            disease, ageGroup));
+  }
+
+  public static final By getCasesInputByDiseaseAndAgeGroup(String disease, String ageGroup) {
+    return By.xpath(
+        String.format(
+            "//div[text()='%s']//following::div[text()='%s'][1]/../following-sibling::div[@location='newCases']/div/input",
+            disease, ageGroup));
+  }
 }

@@ -138,8 +138,11 @@ public class ImmunizationController {
 		ImmunizationDto immunizationDto,
 		Consumer<Runnable> actionCallback) {
 
-		ImmunizationDataForm immunizationDataForm =
-			new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase(), actionCallback);
+		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(
+			immunizationDto.isPseudonymized(),
+			immunizationDto.isInJurisdiction(),
+			immunizationDto.getRelatedCase(),
+			actionCallback);
 		immunizationDataForm.setValue(immunizationDto);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();

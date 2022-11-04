@@ -1,14 +1,14 @@
 package de.symeda.sormas.backend.caze;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.IntegerRange;

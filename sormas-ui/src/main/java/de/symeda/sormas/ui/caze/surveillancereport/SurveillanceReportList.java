@@ -32,10 +32,10 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -96,7 +96,8 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 		public SurveillanceReportListEntry(SurveillanceReportDto report) {
 			this.report = report;
-			this.fieldAccessCheckers = UiFieldAccessCheckers.forSensitiveData(report.isPseudonymized());
+			this.fieldAccessCheckers = UiFieldAccessCheckers
+				.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(report.isInJurisdiction()), report.isPseudonymized());
 
 			setMargin(false);
 			setSpacing(true);

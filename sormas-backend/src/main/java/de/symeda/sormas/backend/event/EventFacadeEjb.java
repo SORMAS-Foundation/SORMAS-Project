@@ -86,6 +86,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -235,8 +237,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
 		return (detailedReferences)
-			? convertToDetailedReferenceDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight))
-			: toPseudonymizedDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+			? convertToDetailedReferenceDto(service.getByUuid(uuid), createPseudonymizer())
+			: toPseudonymizedDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -271,7 +273,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		EventDto existingDto = toDto(existingEvent);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingEvent, pseudonymizer);
 
 		validate(dto);
@@ -301,6 +303,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@RightsAllowed(UserRight._EVENT_DELETE)
 	public void delete(String eventUuid, DeletionDetails deletionDetails) {
 		Event event = service.getByUuid(eventUuid);
+
+		try {
+			sormasToSormasFacade.revokePendingShareRequests(event.getSormasToSormasShares());
+		} catch (SormasToSormasException e) {
+			throw new SormasToSormasRuntimeException(e);
+		}
+
 		try {
 			deleteEvent(event, deletionDetails);
 		} catch (ExternalSurveillanceToolException e) {

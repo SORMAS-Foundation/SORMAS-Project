@@ -31,11 +31,9 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -87,7 +85,6 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
@@ -519,7 +516,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		EventDto event =
-				creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, rdcf, null);
+			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, rdcf, null);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), creator.createPerson(), officer);
 		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
 

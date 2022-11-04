@@ -1,20 +1,20 @@
 package de.symeda.sormas.backend.contact;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
@@ -58,8 +58,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllRelevantContacts() {
 
-		UserDto user =
-			creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		Date referenceDate = DateHelper.subtractDays(new Date(), FollowUpLogic.ALLOWED_DATE_OFFSET * 2);
 		PersonDto contactPerson = creator.createPerson();

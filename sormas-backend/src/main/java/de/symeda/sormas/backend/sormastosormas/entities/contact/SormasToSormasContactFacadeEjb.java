@@ -271,6 +271,11 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 		return shareInfoService.getContactUuidsWithPendingOwnershipHandOver(entities);
 	}
 
+	@Override
+	protected String getShareInfoAssociatedObjectField() {
+		return SormasToSormasShareInfo.CONTACT;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasContactFacadeEjbLocal extends SormasToSormasContactFacadeEjb {

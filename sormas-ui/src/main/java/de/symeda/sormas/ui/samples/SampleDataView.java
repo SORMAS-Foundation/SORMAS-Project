@@ -111,8 +111,11 @@ public class SampleDataView extends AbstractSampleView {
 
 			disease = contactDto.getDisease();
 
-			final ContactInfoLayout contactInfoLayout =
-				new ContactInfoLayout(contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
+			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(
+				contactDto,
+				UiFieldAccessCheckers.forDataAccessLevel(
+					UserProvider.getCurrent().getPseudonymizableDataAccessLevel(contactDto.isInJurisdiction()),
+					contactDto.isPseudonymized()));
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
 
@@ -128,14 +131,17 @@ public class SampleDataView extends AbstractSampleView {
 			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(
 				eventParticipantDto,
 				eventDto,
-				UiFieldAccessCheckers.getDefault(eventParticipantDto.isPseudonymized()));
+				UiFieldAccessCheckers.forDataAccessLevel(
+					UserProvider.getCurrent().getPseudonymizableDataAccessLevel(eventParticipantDto.isInJurisdiction()),
+					eventParticipantDto.isPseudonymized()));
 
 			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
 		SampleController sampleController = ControllerProvider.getSampleController();
-		editComponent = sampleController.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease, true);
+		editComponent = sampleController
+			.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), sampleDto.isInJurisdiction(), disease, true);
 
 		Consumer<Disease> createReferral = (relatedDisease) -> {
 			// save changes before referral creation
@@ -202,7 +208,7 @@ public class SampleDataView extends AbstractSampleView {
 		}
 	}
 
-	private void disableComponentIfNotNull(Component component){
+	private void disableComponentIfNotNull(Component component) {
 		if (component != null) {
 			component.setEnabled(false);
 		}

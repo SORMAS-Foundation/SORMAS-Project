@@ -32,11 +32,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -80,7 +78,6 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 
 	@Test

@@ -59,6 +59,7 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryD
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
@@ -75,6 +76,8 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 @LocalBean
 public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
+	@EJB
+	private PersonService personService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -159,7 +162,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			filter = CriteriaBuilderHelper.or(
 				cb,
 				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
-				PersonJurisdictionPredicateValidator.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
+				PersonJurisdictionPredicateValidator
+					.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, personService.getPermittedAssociations())
 					.inJurisdictionOrOwned());
 		}
 		return filter;

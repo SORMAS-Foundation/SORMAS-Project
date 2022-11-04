@@ -2,7 +2,7 @@ package de.symeda.sormas.ui.importer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,9 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
 
@@ -37,9 +35,6 @@ import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
 
-// Using Silent Runner to ignore unnecessary stubbing exception
-// which is a side effect of extending AbstractBeanTest
-@RunWith(MockitoJUnitRunner.Silent.class)
 public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	@Test

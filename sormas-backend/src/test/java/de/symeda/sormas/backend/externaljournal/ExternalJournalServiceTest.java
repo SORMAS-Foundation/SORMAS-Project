@@ -22,10 +22,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -35,16 +34,17 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
@@ -62,31 +62,24 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
+@WireMockTest(httpPort = 7777)
 public class ExternalJournalServiceTest extends AbstractBeanTest {
 
-	private static final int WIREMOCK_TESTING_PORT = 7777;
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+	@BeforeEach
+	public void setup(WireMockRuntimeInfo wireMockRuntime) {
 
-	public void init() {
-		super.init();
-		creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
-
-		MockitoAnnotations.initMocks(this);
-
-		String wireMockUrl = "http://localhost:" + WIREMOCK_TESTING_PORT;
+		String wireMockUrl = "http://localhost:" + wireMockRuntime.getHttpPort();
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_AUTH_URL, wireMockUrl + "/auth");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_EMAIL, "test@patientdiary.de");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_PASSWORD, "testpass");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_PROBANDS_URL, wireMockUrl);
 		stubFor(post(urlEqualTo("/auth")).willReturn(aResponse().withBody("{\"success\": true, \"token\": \"token\"}").withStatus(HttpStatus.SC_OK)));
 		stubFor(
-			get(urlPathEqualTo("/probands")).atPriority(2)
-				.willReturn(
-					aResponse().withBody("{ \"total\": 0, \"count\": 0, \"results\": [] }")
-						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-						.withStatus(HttpStatus.SC_OK)));
+				get(urlPathEqualTo("/probands")).atPriority(2)
+						.willReturn(
+								aResponse().withBody("{ \"total\": 0, \"count\": 0, \"results\": [] }")
+										.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+										.withStatus(HttpStatus.SC_OK)));
 
 		// Pretend that the number +49 621 121 849-3 already is in use by another person
 		PatientDiaryQueryResponse queryResponse = new PatientDiaryQueryResponse();
@@ -102,12 +95,12 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		try {
 			stubFor(
-				get(urlPathEqualTo("/probands")).withQueryParam("q", matching("\"Mobile phone\" = \"\\+49 621 121 849-3\".*"))
-					.atPriority(1)
-					.willReturn(
-						aResponse().withBody(new ObjectMapper().writeValueAsString(queryResponse))
-							.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-							.withStatus(HttpStatus.SC_OK)));
+					get(urlPathEqualTo("/probands")).withQueryParam("q", matching("\"Mobile phone\" = \"\\+49 621 121 849-3\".*"))
+							.atPriority(1)
+							.willReturn(
+									aResponse().withBody(new ObjectMapper().writeValueAsString(queryResponse))
+											.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+											.withStatus(HttpStatus.SC_OK)));
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -115,19 +108,26 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		// Pretend that the number taken@test.de already is in use by another person
 		try {
 			stubFor(
-				get(urlPathEqualTo("/probands")).withQueryParam("q", matching("\"Email\" = \"taken@test.de\".*"))
-					.atPriority(1)
-					.willReturn(
-						aResponse().withBody(new ObjectMapper().writeValueAsString(queryResponse))
-							.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-							.withStatus(HttpStatus.SC_OK)));
+					get(urlPathEqualTo("/probands")).withQueryParam("q", matching("\"Email\" = \"taken@test.de\".*"))
+							.atPriority(1)
+							.willReturn(
+									aResponse().withBody(new ObjectMapper().writeValueAsString(queryResponse))
+											.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+											.withStatus(HttpStatus.SC_OK)));
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e.getMessage());
 		}
+	}
+
+	public void init() {
+		super.init();
+		creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
+
 
 	}
 
-	@After
+	@AfterEach
 	public void teardown() {
 		MockProducer.getProperties().remove(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_AUTH_URL);
 		MockProducer.getProperties().remove(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_EMAIL);
@@ -191,7 +191,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertEquals(result.getMessage(), I18nProperties.getValidationError(PatientDiaryValidationError.INVALID_PHONE.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -256,7 +256,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertTrue(result.getMessage().isEmpty());
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -320,7 +320,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertEquals(result.getMessage(), I18nProperties.getValidationError(PatientDiaryValidationError.INVALID_PHONE.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -384,7 +384,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertEquals(result.getMessage(), I18nProperties.getValidationError(PatientDiaryValidationError.NO_EMAIL.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -458,7 +458,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertEquals(result.getMessage(), I18nProperties.getValidationError(PatientDiaryValidationError.INVALID_PHONE.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -530,7 +530,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertEquals(result.getMessage(), I18nProperties.getValidationError(PatientDiaryValidationError.SEVERAL_EMAILS.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -599,7 +599,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 				+ I18nProperties.getValidationError(PatientDiaryValidationError.INVALID_PHONE.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -667,7 +667,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertEquals(result.getMessage(), I18nProperties.getValidationError(PatientDiaryValidationError.INVALID_EMAIL.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -739,7 +739,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 				+ I18nProperties.getValidationError(PatientDiaryValidationError.INVALID_PHONE.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -809,7 +809,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertEquals(result.getMessage(), I18nProperties.getValidationError(PatientDiaryValidationError.INVALID_EMAIL.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -830,7 +830,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		response.setCount(0);
 		PersonDto person = PersonDto.build();
 		person.setFirstName("James");
-		// this address is pretended to be already in use (see @Before)
+		// this address is pretended to be already in use (see @BeforeEach)
 		person.setEmailAddress("taken@test.de");
 
 		ExternalJournalValidation result;
@@ -879,7 +879,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 				+ I18nProperties.getValidationError(PatientDiaryValidationError.EMAIL_TAKEN.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);
@@ -905,7 +905,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		response.setCount(0);
 		PersonDto person = PersonDto.build();
 		person.setFirstName("James");
-		// this address is pretended to be already in use (see @Before)
+		// this address is pretended to be already in use (see @BeforeEach)
 		person.setEmailAddress("taken@test.de");
 
 		ExternalJournalValidation result;
@@ -948,7 +948,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		assertEquals(result.getMessage(), I18nProperties.getValidationError(PatientDiaryValidationError.EMAIL_TAKEN.getErrorLanguageKey()));
 
 		// phone taken
-		// this number is pretended to be already in use (see @Before)
+		// this number is pretended to be already in use (see @BeforeEach)
 		person.setPhone("+49 621 121 849-3");
 
 		result = getExternalJournalService().validatePatientDiaryPerson(person);

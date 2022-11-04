@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.externalmessage;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -10,11 +12,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -28,10 +29,10 @@ import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import junit.framework.TestCase;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ExternalMessageFacadeEjbMappingTest extends TestCase {
+@ExtendWith(MockitoExtension.class)
+public class ExternalMessageFacadeEjbMappingTest {
 
 	@Mock
 	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;

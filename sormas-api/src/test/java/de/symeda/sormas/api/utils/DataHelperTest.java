@@ -1,17 +1,17 @@
 package de.symeda.sormas.api.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -70,15 +70,10 @@ public class DataHelperTest {
 		assertEquals("UZOUEH", DataHelper.getShortUuid("UZOUEH-HP7DRG-YOJ74F-PXWL2JZ4"));
 		assertNull(DataHelper.getShortUuid((String) null));
 
-		boolean exceptionThrown = false;
-		try {
-			assertEquals("A", DataHelper.getShortUuid("A"));
-			fail("getShortUuid should not be graceful on Uuids that are too short.");
-		} catch (StringIndexOutOfBoundsException e) {
-			exceptionThrown = true;
-		}
-
-		assertTrue("getShortUuid should throw StringIndexOutOfBoundsException on Uuids that are too short.", exceptionThrown);
+		assertThrows(
+			StringIndexOutOfBoundsException.class,
+			() -> DataHelper.getShortUuid("A"),
+			"getShortUuid should throw StringIndexOutOfBoundsException on Uuids that are too short.");
 	}
 
 	@Test

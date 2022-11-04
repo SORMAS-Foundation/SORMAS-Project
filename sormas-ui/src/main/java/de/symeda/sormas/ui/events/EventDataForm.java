@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,6 +40,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -50,6 +50,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
@@ -79,6 +80,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
@@ -87,6 +89,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 
@@ -160,22 +163,24 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private final Boolean isCreateForm;
 	private final boolean isPseudonymized;
+	private final boolean inJurisdiction;
 	private List<UserReferenceDto> regionEventResponsibles = new ArrayList<>();
 	private List<UserReferenceDto> districtEventResponsibles = new ArrayList<>();
 	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
 	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
 	private LocationEditForm locationForm;
 
-	public EventDataForm(boolean create, boolean isPseudonymized) {
+	public EventDataForm(boolean create, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			EventDto.class,
 			EventDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			createFieldAccessCheckers(isPseudonymized, true));
+			createFieldAccessCheckers(isPseudonymized, inJurisdiction, true));
 
 		isCreateForm = create;
 		this.isPseudonymized = isPseudonymized;
+		this.inJurisdiction = inJurisdiction;
 
 		if (create) {
 			hideValidationUntilNextCommit();
@@ -188,9 +193,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addFields();
 	}
 
-	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
+	private static UiFieldAccessCheckers createFieldAccessCheckers(
+		boolean isPseudonymized,
+		boolean inJurisdiction,
+		boolean withPersonalAndSensitive) {
+
 		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers.getDefault(isPseudonymized);
+			return UiFieldAccessCheckers
+				.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
 		}
 
 		return UiFieldAccessCheckers.getNoop();
@@ -359,7 +369,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
 		TextField srcLastName = addField(EventDto.SRC_LAST_NAME, TextField.class);
 		TextField srcTelNo = addField(EventDto.SRC_TEL_NO, TextField.class);
-		addField(EventDto.SRC_EMAIL, TextField.class);
+		TextField srcEmail = addField(EventDto.SRC_EMAIL, TextField.class);
+		srcTelNo.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, srcTelNo.getCaption())));
+		srcEmail.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, srcEmail.getCaption())));
 
 		TextField srcMediaWebsite = addField(EventDto.SRC_MEDIA_WEBSITE, TextField.class);
 		TextField srcMediaName = addField(EventDto.SRC_MEDIA_NAME, TextField.class);
@@ -382,8 +394,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			Collections.singletonList(InstitutionalPartnerType.OTHER),
 			true);
 
-		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
-			.setCaption(null);
+		addField(
+			EventDto.EVENT_LOCATION,
+			new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, inJurisdiction, false))).setCaption(null);
 
 		locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
 		locationForm.setDistrictRequiredOnDefaultCountry(true);

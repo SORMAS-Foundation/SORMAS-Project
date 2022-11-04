@@ -19,10 +19,10 @@ package de.symeda.auditlog.api.value;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -31,7 +31,7 @@ import java.time.Month;
 import java.util.Date;
 import java.util.SortedMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.auditlog.api.sample.CustomEnum;
 import de.symeda.auditlog.api.sample.Entity;
