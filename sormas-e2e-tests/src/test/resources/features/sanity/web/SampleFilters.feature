@@ -1,7 +1,7 @@
 @UI @Sanity @Sample
 Feature: Sample filter functionality
 
-  @env_main
+  @env_main @check
   Scenario: Check Filters on Sample page work as expected
     Given API: I create 10 new cases with a new sample foreach of them
     Then API: I check that POST call body is "OK"
