@@ -149,7 +149,6 @@ public class RestAssuredClient {
       default:
         throw new IllegalAccessException("Incorrect provided API method");
     }
-    response.getStatusCode();
     apiState.setResponse(response);
   }
 

@@ -1,15 +1,6 @@
 @UI @Sanity @Users
 Feature: Create user
 
-  @env_de
-  Scenario: Create a new userrrrr
-    Given I log in as a Admin User
-    And I click on the Users from navbar
-    And I click on the NEW USER button
-    And I create a new user with National User
-    When I search for created user
-    Then I check the created data is correctly displayed on Edit User Page for selected National User>
-
   @env_main
   Scenario Outline: Create a new user
     Given I log in as a Admin User
