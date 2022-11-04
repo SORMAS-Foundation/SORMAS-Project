@@ -34,12 +34,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-// Using Silent Runner to ignore unnecessary stubbing exception
-// which is a side effect of extending AbstractBeanTest
-// @RunWith(MockitoJUnitRunner.Silent.class)
 public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	@Test

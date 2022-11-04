@@ -25,9 +25,6 @@ import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.caze.importer.CountryImporter;
 
-// Using Silent Runner to ignore unnecessary stubbing exception
-// which is a side effect of extending AbstractBeanTest
-// @RunWith(MockitoJUnitRunner.Silent.class)
 public class CountryImporterTest extends AbstractBeanTest {
 
 	@Test
