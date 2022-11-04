@@ -59,11 +59,11 @@ public class VisitController {
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false, !contact.isPseudonymized());
+			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
 		} else if (caseRef != null) {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false, !caze.isPseudonymized());
+			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false);
 		} else {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
@@ -74,10 +74,8 @@ public class VisitController {
 
 	private void editVisit(VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer, boolean canEdit) {
 
-		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT),
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<VisitEditForm> editView =
+			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT), editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
 
 		if (!canEdit) {
@@ -111,9 +109,9 @@ public class VisitController {
 
 	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer) {
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
-				createForm,
-				UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE),
-				createForm.getFieldGroup());
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE),
+			createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -130,12 +128,12 @@ public class VisitController {
 		window.setWidth(createForm.getWidth() + 64 + 24, Unit.PIXELS);
 		window.setHeight(80, Unit.PERCENTAGE);
 	}
-	
+
 	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
 		createForm.setValue(visit);
 
 		createVisit(createForm, doneConsumer);
@@ -145,7 +143,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(caseRef);
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true);
 		createForm.setValue(visit);
 
 		createVisit(createForm, doneConsumer);

@@ -130,7 +130,8 @@ public class TravelEntryController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getAutomaticDeletionInfo(travelEntryUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getManuallyDeletionInfo(travelEntryUuid);
 
-		TravelEntryDataForm travelEntryEditForm = new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized());
+		TravelEntryDataForm travelEntryEditForm =
+			new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized(), travelEntry.isInJurisdiction());
 		travelEntryEditForm.setValue(travelEntry);
 
 		CommitDiscardWrapperComponent<TravelEntryDataForm> editComponent = new CommitDiscardWrapperComponent<>(

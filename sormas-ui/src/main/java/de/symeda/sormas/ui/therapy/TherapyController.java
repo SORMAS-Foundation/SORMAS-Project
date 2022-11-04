@@ -40,7 +40,7 @@ public class TherapyController {
 	}
 
 	public void openPrescriptionCreateForm(TherapyReferenceDto therapy, Runnable callback) {
-		PrescriptionForm form = new PrescriptionForm(true, false, false);
+		PrescriptionForm form = new PrescriptionForm(true, false, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(PrescriptionDto.buildPrescription(therapy));
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
@@ -63,7 +63,7 @@ public class TherapyController {
 
 	public void openPrescriptionEditForm(PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly) {
 		PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
-		PrescriptionForm form = new PrescriptionForm(false, readOnly, prescription.isPseudonymized());
+		PrescriptionForm form = new PrescriptionForm(false, readOnly, prescription.isPseudonymized(), prescription.isInJurisdiction());
 		form.setValue(prescription);
 
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
@@ -97,10 +97,9 @@ public class TherapyController {
 					List<String> prescriptionUuids = new ArrayList<>();
 					prescriptionUuids.add(prescription.getUuid());
 					List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
-					if(treatmentDtos.size() > 0 ){
+					if (treatmentDtos.size() > 0) {
 						handleDeletePrescriptionWithTreatments(treatmentDtos, prescriptionUuids);
-					}
-					else {
+					} else {
 						FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid());
 					}
 					popupWindow.close();
@@ -112,35 +111,34 @@ public class TherapyController {
 		}
 	}
 
-	private void handleDeletePrescriptionWithTreatments(List<TreatmentIndexDto> treatmentIndexDtos , List<String> prescriptionUuids){
+	private void handleDeletePrescriptionWithTreatments(List<TreatmentIndexDto> treatmentIndexDtos, List<String> prescriptionUuids) {
 		Consumer<Boolean> resultConsumer = new Consumer<Boolean>() {
 
 			@Override
 			public void accept(Boolean option) {
-				List<String> treatmentUuids = treatmentIndexDtos.stream().map(t->t.getUuid()).collect(Collectors.toList());
+				List<String> treatmentUuids = treatmentIndexDtos.stream().map(t -> t.getUuid()).collect(Collectors.toList());
 				if (Boolean.TRUE.equals(option)) {
 					//delete just prescription and leave the treatments standalone
 					FacadeProvider.getTreatmentFacade().unlinkPrescriptionFromTreatments(treatmentUuids);
 
-				}
-				else {
+				} else {
 					//delete the prescription and all the treatments assign with
 					FacadeProvider.getTreatmentFacade().deleteTreatments(treatmentUuids);
 				}
-				for(String prescriptionUuid : prescriptionUuids){
+				for (String prescriptionUuid : prescriptionUuids) {
 					FacadeProvider.getPrescriptionFacade().deletePrescription(prescriptionUuid);
 				}
 				SormasUI.refreshView();
 			}
 		};
 		VaadinUiUtil.showChooseOptionPopup(
-				I18nProperties.getCaption(Captions.prescriptionWithTreatmentTitleDelete),
-				new Label(I18nProperties.getString(Strings.confirmationDeletePrescriptionWithTreatment)),
-				I18nProperties.getCaption(Captions.prescriptionAlone),
-				I18nProperties.getCaption(Captions.prescriptionWithTreatment),
-				650,
-				resultConsumer,
-				true);
+			I18nProperties.getCaption(Captions.prescriptionWithTreatmentTitleDelete),
+			new Label(I18nProperties.getString(Strings.confirmationDeletePrescriptionWithTreatment)),
+			I18nProperties.getCaption(Captions.prescriptionAlone),
+			I18nProperties.getCaption(Captions.prescriptionWithTreatment),
+			650,
+			resultConsumer,
+			true);
 	}
 
 	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean readOnly) {
@@ -148,7 +146,7 @@ public class TherapyController {
 	}
 
 	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
-		TreatmentForm form = new TreatmentForm(true, false);
+		TreatmentForm form = new TreatmentForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(TreatmentDto.build(therapy));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
@@ -170,7 +168,7 @@ public class TherapyController {
 	}
 
 	public void openTreatmentCreateForm(PrescriptionDto prescription, Runnable callback) {
-		TreatmentForm form = new TreatmentForm(true, false);
+		TreatmentForm form = new TreatmentForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(TreatmentDto.build(prescription));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
@@ -193,7 +191,7 @@ public class TherapyController {
 
 	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
-		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized());
+		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized(), treatment.isInJurisdiction());
 		form.setValue(treatment);
 
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
@@ -252,11 +250,10 @@ public class TherapyController {
 						}
 
 						List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
-						if(treatmentDtos.size() > 0 ){
+						if (treatmentDtos.size() > 0) {
 							handleDeletePrescriptionWithTreatments(treatmentDtos, prescriptionUuids);
-						}
-						else {
-							for(String prescriptionUuid : prescriptionUuids) {
+						} else {
+							for (String prescriptionUuid : prescriptionUuids) {
 								FacadeProvider.getPrescriptionFacade().deletePrescription(prescriptionUuid);
 							}
 						}
