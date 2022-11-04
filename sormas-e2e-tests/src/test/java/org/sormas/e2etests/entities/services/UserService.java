@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.steps.BaseSteps.locale;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalTime;
@@ -26,36 +28,42 @@ import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 
 public class UserService {
   private final Faker faker;
+  private RunningConfiguration runningConfiguration;
 
   @Inject
-  public UserService(Faker faker) {
+  public UserService(Faker faker, RunningConfiguration runningConfiguration) {
     this.faker = faker;
+    this.runningConfiguration = runningConfiguration;
   }
 
   private String firstName;
   private String lastName;
+  private String language;
   private final String emailDomain = "@USER.com";
 
   public User buildGeneratedUserWithRole(String role) {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
+    language = runningConfiguration.getEnvironmentLanguageForMarket(locale);
     return User.builder()
         .firstName(firstName)
         .lastName(lastName)
         .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .phoneNumber(generatePhoneNumber())
-        .language("Dari")
-        .country("Germany")
+        .language(language)
+        .country((language.equalsIgnoreCase("English")) ? "Germany" : "Deutschland")
         .region(RegionsValues.VoreingestellteBundeslander.getName())
         .district(DistrictsValues.VoreingestellterLandkreis.getName())
         .community(CommunityValues.VoreingestellteGemeinde.getName())
-        .facilityCategory("Accommodation")
-        .facilityType("Campsite")
-        .facility("Other facility")
+        .facilityCategory(
+            (language.equalsIgnoreCase("English")) ? "Accommodation" : "Pflegeeinrichtung")
+        .facilityType((language.equalsIgnoreCase("English")) ? "Campsite" : "Ferienlager")
+        .facility((language.equalsIgnoreCase("English")) ? "Other facility" : "Andere Einrichtung")
         .facilityNameAndDescription("qa-automation run")
         .street(faker.address().streetAddress())
         .houseNumber(faker.address().buildingNumber())
@@ -63,14 +71,17 @@ public class UserService {
             "Additional Information ".concat(String.valueOf(System.currentTimeMillis())))
         .postalCode(faker.address().zipCode())
         .city(faker.address().city())
-        .areaType("Urban")
+        .areaType((language.equalsIgnoreCase("English")) ? "Urban" : "Unbekannt")
         .gpsLatitude(faker.random().nextInt(10, 20).toString())
         .gpsLongitude(faker.random().nextInt(20, 40).toString())
         .gpsAccuracy("1")
         .active(true)
         .userName("AutomationUser-".concat(LocalTime.now().toString()))
         .userRole(role)
-        .limitedDisease(DiseasesValues.getRandomDiseaseCaption())
+        .limitedDisease(
+            (language.equalsIgnoreCase("English"))
+                ? DiseasesValues.getRandomDiseaseCaption()
+                : DiseasesValues.getRandomDiseaseCaptionDE())
         .build();
   }
 

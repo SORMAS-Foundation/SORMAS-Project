@@ -384,7 +384,7 @@ public class EditImmunizationSteps implements En {
               webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
               false,
               "Responsible community input shouldn't be editable, but it is!");
-           TimeUnit.SECONDS.sleep(2);
+          TimeUnit.SECONDS.sleep(2);
           softly.assertAll();
         });
 
