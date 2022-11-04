@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.caze;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.caze.CaseJurisdictionType;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -31,26 +32,62 @@ public class CaseCriteriaHelper {
 	private CaseCriteriaHelper() {
 	}
 
-	public static Predicate createRegionFilterWithFallback(CriteriaBuilder cb, CaseJoins joins, RegionReferenceDto region) {
-		return CriteriaBuilderHelper.or(
-			cb,
-			cb.and(cb.isNotNull(joins.getRegion()), cb.equal(joins.getRegion().get(Region.UUID), region.getUuid())),
-			cb.and(cb.isNotNull(joins.getResponsibleRegion()), cb.equal(joins.getResponsibleRegion().get(Region.UUID), region.getUuid())));
+	public static Predicate createRegionCriteriaFilter(
+		CriteriaBuilder cb,
+		CaseJoins joins,
+		RegionReferenceDto region,
+		CaseJurisdictionType jurisdictionType) {
+
+		Predicate responsibleJurisdictionPredicate =
+			cb.and(cb.isNotNull(joins.getResponsibleRegion()), cb.equal(joins.getResponsibleRegion().get(Region.UUID), region.getUuid()));
+		Predicate placeOfStayPredicate = cb.and(cb.isNotNull(joins.getRegion()), cb.equal(joins.getRegion().get(Region.UUID), region.getUuid()));
+
+		if (jurisdictionType == null || jurisdictionType == CaseJurisdictionType.ALL) {
+			return CriteriaBuilderHelper.or(cb, responsibleJurisdictionPredicate, placeOfStayPredicate);
+		} else if (jurisdictionType == CaseJurisdictionType.RESPONSIBLE) {
+			return responsibleJurisdictionPredicate;
+		} else {
+			return placeOfStayPredicate;
+		}
 	}
 
-	public static Predicate createDistrictFilterWithFallback(CriteriaBuilder cb, CaseJoins joins, DistrictReferenceDto district) {
-		return CriteriaBuilderHelper.or(
-			cb,
-			cb.and(cb.isNotNull(joins.getDistrict()), cb.equal(joins.getDistrict().get(District.UUID), district.getUuid())),
-			cb.and(cb.isNotNull(joins.getResponsibleDistrict()), cb.equal(joins.getResponsibleDistrict().get(District.UUID), district.getUuid())));
+	public static Predicate createDistrictCriteriaFilter(
+		CriteriaBuilder cb,
+		CaseJoins joins,
+		DistrictReferenceDto district,
+		CaseJurisdictionType jurisdictionType) {
+
+		Predicate responsibleJurisdictionPredicate =
+			cb.and(cb.isNotNull(joins.getResponsibleDistrict()), cb.equal(joins.getResponsibleDistrict().get(District.UUID), district.getUuid()));
+		Predicate placeOfStayPredicate =
+			cb.and(cb.isNotNull(joins.getDistrict()), cb.equal(joins.getDistrict().get(District.UUID), district.getUuid()));
+
+		if (jurisdictionType == null || jurisdictionType == CaseJurisdictionType.ALL) {
+			return CriteriaBuilderHelper.or(cb, responsibleJurisdictionPredicate, placeOfStayPredicate);
+		} else if (jurisdictionType == CaseJurisdictionType.RESPONSIBLE) {
+			return responsibleJurisdictionPredicate;
+		} else {
+			return placeOfStayPredicate;
+		}
 	}
 
-	public static Predicate createCommunityFilterWithFallback(CriteriaBuilder cb, CaseJoins joins, CommunityReferenceDto community) {
-		return CriteriaBuilderHelper.or(
-			cb,
-			cb.and(cb.isNotNull(joins.getCommunity()), cb.equal(joins.getCommunity().get(Community.UUID), community.getUuid())),
-			cb.and(
-				cb.isNotNull(joins.getResponsibleCommunity()),
-				cb.equal(joins.getResponsibleCommunity().get(Community.UUID), community.getUuid())));
+	public static Predicate createCommunityCriteriaFilter(
+		CriteriaBuilder cb,
+		CaseJoins joins,
+		CommunityReferenceDto community,
+		CaseJurisdictionType jurisdictionType) {
+
+		Predicate responsibleJurisdictionPredicate =
+			cb.and(cb.isNotNull(joins.getResponsibleCommunity()), cb.equal(joins.getResponsibleCommunity().get(Community.UUID), community.getUuid()));
+		Predicate placeOfStayPredicate =
+			cb.and(cb.isNotNull(joins.getCommunity()), cb.equal(joins.getCommunity().get(Community.UUID), community.getUuid()));
+
+		if (jurisdictionType == null || jurisdictionType == CaseJurisdictionType.ALL) {
+			return CriteriaBuilderHelper.or(cb, responsibleJurisdictionPredicate, placeOfStayPredicate);
+		} else if (jurisdictionType == CaseJurisdictionType.RESPONSIBLE) {
+			return responsibleJurisdictionPredicate;
+		} else {
+			return placeOfStayPredicate;
+		}
 	}
 }

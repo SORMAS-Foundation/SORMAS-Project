@@ -535,6 +535,7 @@ public interface Captions {
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
+	String caseJurisdictionType = "caseJurisdictionType";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";

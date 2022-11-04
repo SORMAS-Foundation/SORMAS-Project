@@ -84,6 +84,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
 	public static final String PERSON_LIKE = "personLike";
+	public static final String JURISDICTION_TYPE = "jurisdictionType";
 
 	private UserRoleReferenceDto reportingUserRole;
 	private Disease disease;
@@ -92,6 +93,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private PresentCondition presentCondition;
+	private CaseJurisdictionType jurisdictionType;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -211,6 +213,19 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
+	}
+
+	public void setJurisdictionType(CaseJurisdictionType jurisdictionType) {
+		this.jurisdictionType = jurisdictionType;
+	}
+
+	public CaseCriteria jurisdictionType(CaseJurisdictionType jurisdictionType) {
+		setJurisdictionType(jurisdictionType);
+		return this;
+	}
+
+	public CaseJurisdictionType getJurisdictionType() {
+		return jurisdictionType;
 	}
 
 	public void setRegion(RegionReferenceDto region) {
