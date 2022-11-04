@@ -1,8 +1,8 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +13,8 @@ import java.util.Properties;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionContext;
@@ -38,7 +38,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 
 	private EventDto eventDto;
 
-	@Before
+	@BeforeEach
 	public void setup() throws ParseException, URISyntaxException {
 		eventDocumentFacade = getEventDocumentFacade();
 		reset();

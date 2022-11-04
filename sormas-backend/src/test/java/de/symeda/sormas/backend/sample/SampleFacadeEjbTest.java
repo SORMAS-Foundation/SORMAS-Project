@@ -23,12 +23,12 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,8 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -255,24 +254,24 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(4, sampleList1.size());
 
 		final SampleIndexDto sample11 = sampleList1.get(0);
-		Assert.assertEquals(cazeSample.getUuid(), sample11.getUuid());
-		Assert.assertEquals(caze.getUuid(), sample11.getAssociatedCase().getUuid());
-		Assert.assertTrue(sample11.getAssociatedCase().getCaption().startsWith("Case PERSON1"));
+		assertEquals(cazeSample.getUuid(), sample11.getUuid());
+		assertEquals(caze.getUuid(), sample11.getAssociatedCase().getUuid());
+		assertTrue(sample11.getAssociatedCase().getCaption().startsWith("Case PERSON1"));
 
 		final SampleIndexDto sample12 = sampleList1.get(1);
-		Assert.assertEquals(sample.getUuid(), sample12.getUuid());
-		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
-		Assert.assertTrue(sample12.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
+		assertEquals(sample.getUuid(), sample12.getUuid());
+		assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
+		assertTrue(sample12.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
 
 		final SampleIndexDto sample13 = sampleList1.get(2);
-		Assert.assertEquals(referredSample.getUuid(), sample13.getUuid());
-		Assert.assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
-		Assert.assertTrue(sample13.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
+		assertEquals(referredSample.getUuid(), sample13.getUuid());
+		assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
+		assertTrue(sample13.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
 
 		final SampleIndexDto sample14 = sampleList1.get(3);
-		Assert.assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
-		Assert.assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
-		Assert.assertEquals(rdcf.district.getCaption(), sample14.getDistrict());
+		assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
+		assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
+		assertEquals(rdcf.district.getCaption(), sample14.getDistrict());
 
 		assertEquals(2, getSampleFacade().count(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT)));
 		assertEquals(
@@ -348,14 +347,14 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, samplesOfConvertedCase.size());
 
 		final SampleIndexDto sample11 = samplesOfConvertedCase.get(0);
-		Assert.assertEquals(sample.getUuid(), sample11.getUuid());
-		Assert.assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
-		Assert.assertEquals(contact.getUuid(), sample11.getAssociatedContact().getUuid());
+		assertEquals(sample.getUuid(), sample11.getUuid());
+		assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
+		assertEquals(contact.getUuid(), sample11.getAssociatedContact().getUuid());
 
 		final SampleIndexDto sample12 = samplesOfConvertedCase.get(1);
-		Assert.assertEquals(referredSample.getUuid(), sample12.getUuid());
-		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
-		Assert.assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
+		assertEquals(referredSample.getUuid(), sample12.getUuid());
+		assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
+		assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
 	}
 
 	@Test

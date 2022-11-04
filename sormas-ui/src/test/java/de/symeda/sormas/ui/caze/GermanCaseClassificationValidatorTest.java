@@ -15,11 +15,13 @@
 
 package de.symeda.sormas.ui.caze;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -41,7 +43,7 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 	public static final String INVALID_CASE_CLASSIFICATION = "invalid case classification";
 
 	@Test
-	@Ignore("see #2599")
+	@Disabled("see #2599")
 	public void testCaseClassificationValidator() {
 
 		final TestDataCreator creator = new TestDataCreator();
@@ -151,10 +153,10 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 	}
 
 	private void invalid(CaseClassification caseClassification, GermanCaseClassificationValidator validator) {
-		Assert.assertFalse(validator.isValidValue(caseClassification));
+		assertFalse(validator.isValidValue(caseClassification));
 	}
 
 	private void valid(CaseClassification caseClassification, GermanCaseClassificationValidator validator) {
-		Assert.assertTrue(validator.isValidValue(caseClassification));
+		assertTrue(validator.isValidValue(caseClassification));
 	}
 }

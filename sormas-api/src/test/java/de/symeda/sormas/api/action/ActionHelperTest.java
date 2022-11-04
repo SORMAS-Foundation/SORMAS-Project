@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.utils.UtilDate;
 

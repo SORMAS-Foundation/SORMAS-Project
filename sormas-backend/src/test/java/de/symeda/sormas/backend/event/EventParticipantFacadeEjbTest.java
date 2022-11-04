@@ -24,10 +24,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -38,8 +39,7 @@ import java.util.stream.Collectors;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -83,18 +83,16 @@ import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
-	@Test(expected = ValidationRuntimeException.class)
+	@Test
 	public void testValidateWithNullReportingUser() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = createUser(rdcf);
 		EventDto event = createEvent(user, rdcf);
 
 		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "event Director", null);
-
-		EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacadeEjb =
-			getBean(EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal.class);
-		eventParticipantFacadeEjb.validate(eventParticipant);
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> creator.createEventParticipant(event.toReference(), eventPerson, "event Director", null));
 	}
 
 	@Test
@@ -335,7 +333,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(event.toReference(), person, user.toReference());
 
 		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
-		Assert.assertTrue(exist);
+		assertTrue(exist);
 	}
 
 	@Test
@@ -421,7 +419,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(PathogenTestResultType.NEGATIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
 		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
 	}
-	
+
 	@Test
 	public void testEventParticipantIndexListSorting() {
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
@@ -567,6 +565,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
 		assertEquals(0, eventParticipantIndexDtos.size());
 	}
+
 	@Test
 	public void testSaveEventParticipantWithEventArchiving() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -575,17 +574,20 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		// Validate that for a newly created Event Participant the archived status is kept from the Event
 		getEventFacade().archive(Collections.singletonList(event.getUuid()));
 		PersonDto eventPersonArchived = creator.createPerson("EventArchived", "OrganizerArchived");
-		EventParticipantDto archivedEventParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
+		EventParticipantDto archivedEventParticipantDto =
+			creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
 		assertTrue(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
 
 		// Validate that for a newly created Event Participant the active status is kept from the Event
 		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), "reason");
 		PersonDto eventPersonActive = creator.createPerson("EventActive", "OrganizerActive");
-		EventParticipantDto activeEventParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonActive, "event Director", user.toReference());
+		EventParticipantDto activeEventParticipantDto =
+			creator.createEventParticipant(event.toReference(), eventPersonActive, "event Director", user.toReference());
 		assertFalse(getEventParticipantFacade().isArchived(activeEventParticipantDto.getUuid()));
 
 		//Validate that the newly created Event Participant status is in sync with Event and with existing Event Participant
-		EventParticipantDto alreadyArchivedParticipantDto = creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
+		EventParticipantDto alreadyArchivedParticipantDto =
+			creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
 		assertFalse(getEventFacade().isArchived(event.getUuid()));
 		assertFalse(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
 		assertFalse(getEventParticipantFacade().isArchived(alreadyArchivedParticipantDto.getUuid()));

@@ -23,7 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.info.InfoFacadeEjb.InfoFacadeEjbLocal;

@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
@@ -36,7 +37,7 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -476,7 +477,7 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest
 		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 	}
 
-	@Test(expected = ExecutionException.class)
+	@Test
 	public void testExceptionInFlow() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson("Ftest", "Ltest");
@@ -493,7 +494,9 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest
 
 		doThrow(new RuntimeException("Error")).when(handlePickOrCreateEntry).handle(any(), any());
 
-		runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
+		assertThrows(
+			ExecutionException.class,
+			() -> runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED)));
 	}
 
 	private ProcessingResult<CaseDataDto> runFlow(ExternalMessageDto externalMessage) throws ExecutionException, InterruptedException {
