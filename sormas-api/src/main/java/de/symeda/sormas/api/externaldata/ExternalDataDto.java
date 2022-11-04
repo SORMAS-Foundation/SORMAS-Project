@@ -19,14 +19,16 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 @AuditedClass
-public class ExternalDataDto implements Serializable, HasExternalData {
+public class ExternalDataDto implements Serializable, HasExternalData, HasUuid {
 
 	@AuditInclude
 	private String uuid;
@@ -37,6 +39,9 @@ public class ExternalDataDto implements Serializable, HasExternalData {
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
 
+	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
+
+	@Override
 	public String getUuid() {
 		return uuid;
 	}
