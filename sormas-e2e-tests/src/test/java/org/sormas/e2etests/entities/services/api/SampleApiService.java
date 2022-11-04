@@ -28,6 +28,7 @@ import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.pojo.api.Lab;
 import org.sormas.e2etests.entities.pojo.api.ReportingUser;
 import org.sormas.e2etests.entities.pojo.api.Sample;
+import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
@@ -66,11 +67,11 @@ public class SampleApiService {
         .pathogenTestResult("PENDING")
         .lab(
             Lab.builder()
-                .caption("Voreingestelltes Labor")
+                .caption(LaboratoryValues.VOREINGESTELLTES_LABOR.getCaptionEnglish())
                 .uuid(
                     environmentManager.getLaboratoryUUID(
                         RegionsValues.VoreingestellteBundeslander.getName(),
-                        "Voreingestelltes Labor"))
+                        LaboratoryValues.VOREINGESTELLTES_LABOR.getCaptionEnglish()))
                 .build())
         .labDetails("Dexter's laboratory")
         .build();
