@@ -47,13 +47,18 @@ Before creating a bug report, please check the following rules:
 
 1. If something seems to be working correctly but does not necessarily match your expectations of how it should be working, please consider opening a change request instead. This applies also for slow performing features.
 2. If you have more than one possible bug - especially when you are tempted to create a list of independent findings in the **Bug Description** - then please document each bug as separate issue.
-3. Bugs are only valid to create if you can point to a released version where the problem is occuring, not on the version currently und development.
+3. Bugs are only valid to create if you can point to a released version where the problem is occuring, not on the version currently under development.
+
+#### Why are bugs only valid on released versions?
+
+1. If there is a problem newly introduced on the `development` branch, it means that an issue recently worked on is not yet finished (so to be reopened and continued to work on). It's relevant for reviewing (now, soon or far later) to keep changes logically together as good as possible.
+2. For the Release Notes it is only relevant to mention changes from one version to the next, so listing fixed bugs that never existed from the end users point of view is pointless, confusing and noisy.
 
 ### Change Request
 
 Change requests cover features that are already part of SORMAS. This primarily includes aspects (or whole features) for which you would like to request an altered behavior, but also small extensions (e.g. additional values being added to a dropdown field).
 
-* **Problem Description:** Tell us why you want us to changeor extend an existing feature and what you believe is wrong or could be improved about the way it is currently designed.
+* **Problem Description:** Tell us why you want us to change or extend an existing feature. Is there something working differently than you expect it? What can be improved about the way it is currently designed?
 * **Proposed Change:** Describe in as much detail as possible how you would like us to change the feature and what the expected outcome of your request should look like. If possible, provide alternative solutions in case your proposed change can not be implemented in the way you outlined it for any reason.
 * **Acceptance Criteria:** Describes what conditions should apply to the requested change. These can be functional or non-functional requirements, that are usually specified by the developers.
 * **Implementation Details:** While refining an issue, a developer usually gives hints what to consider or change in the source code.
@@ -63,7 +68,7 @@ Change requests cover features that are already part of SORMAS. This primarily i
 
 These types of issue cover everything that involves adding new features to SORMAS. This includes both very large additions like completely new app sections, but also smaller ones like adding a new field to an existing form.
 
-* **Feature Description:** Please describe why your proposed feature is required, why SORMAS in its current state is not able to do what you want it to do, and in which way it would benefit from your feature being implemented.
+* **Feature Description:** Please describe why your proposed feature is required, why SORMAS in its current state is not able to do what you want it to do. How would you benefit from this feature being implemented?
 * **Proposed Change:** Describe in as much detail as possible how your proposed feature should look like, what it should do and how it should be linked to existing features or processes. If possible, provide alternative solutions in case your proposed feature can not be implemented in the way you outlined it for any reason.
 * **Acceptance Criteria:** Describes what conditions should apply to the requested change. These can be functional or non-functional requirements, that are usually specified by the developers.
 * **Implementation Details:** While refining an issue, a developer usually gives hints what to consider or change in the source code.
@@ -71,7 +76,7 @@ These types of issue cover everything that involves adding new features to SORMA
 
 ### Task
 
-A task that needs to be done but does not directly change anything about the product. This could for example be the preparation of an upcoming feature/change, optimization of processes on GitHub, working on automated tests or update of one of the guides or Wiki articles in this repository.
+A task that needs to be done but does not directly change anything about the product. This could for example be the preparation of an upcoming feature/change, optimization of processes on GitHub, working on automated tests, or update of one of the guides or Wiki articles in this repository.
 
 * **Problem Description:** Please describe the requirement or problem that is supposed to be solved.
 * **Proposed Solution:** Describe in as much detail how the proposed solution should look like and what should be done in order to achieve it.
@@ -135,8 +140,8 @@ In addition to the guidelines covered in the Development Environment Setup Instr
 4. If an issue requires a lot of code changes, consider breaking down these changes in logical steps. They are then easier to review, have more meaningful commit messages and deliver partly the intended value.
 5. Don't mix refactoring with functional changes (new functionality, changes on features, bugfixes) within the same commit, since it makes reviewing the changes much harder. Usually the refactoring of existing code has to happen beforehand in at least one separate commits. This means refactoring (no functional change): Cleaner code, renaming, restructuring.
 6. If it helps, it is okay to have several branches and pull requests for the same ticket (usually one after another, sometimes to work in parallel or to prepare changes in advance).
-7. If you feel an issue consists out of several parts, feel free to document this in the **Implementation Details** as task list and check what you consider as finished. Do not break down an issue into sub-issues, this is to clarified with the development team.
-8. If there is a finding concerning your already closed issue, it will be reopened if that version is not yet released and you or someone else will have to quickly fix the finding before the version is released. If the version was already released, the issue will be kept closed and a new issue has to be documented.
+7. If you feel an issue consists out of several parts, feel free to document this in the **Implementation Details** as task list and check what you consider as finished. Do not break down an issue into sub-issues, unless this has been discussed with the development team.
+8. If there is a finding concerning an issue which has been already closed, it will be reopened if that version is not yet released. You (or someone else) will have to quickly fix the finding before the version is released. If the version has been released already, the issue will stay closed and a new issue has to be filed.
 
 ### Picking Issues for Development
 
