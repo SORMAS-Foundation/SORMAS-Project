@@ -50,4 +50,4 @@ Feature: Country end to end tests
     Then I verify the Subcontinent Central Africa combo box returns appropriate filter results in Countries Configuration page
     Then I verify the Subcontinent Central America combo box returns appropriate filter results in Countries Configuration page
     Then I verify the Subcontinent Central Asia combo box returns appropriate filter results in Countries Configuration page
-    Then I verify the Subcontinent Central EuropeCentral Europe combo box returns appropriate filter results in Countries Configuration page
+    Then I verify the Subcontinent Central Europe combo box returns appropriate filter results in Countries Configuration page

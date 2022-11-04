@@ -148,6 +148,7 @@ public class ConfigurationSubcontinentsSteps implements En {
         "I verify the Search and Reset filter functionality in Subcontinents Configuration page",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(SUBCONTINENTS_NAME_TABLE_ROWS);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           Integer defaultSubContinentCount =
@@ -156,6 +157,7 @@ public class ConfigurationSubcontinentsSteps implements En {
               webDriverHelpers.getTextFromWebElement(SUBCONTINENTS_NAME_TABLE_ROWS);
           webDriverHelpers.fillAndSubmitInWebElement(
               SEARCH_INPUT_SUBCONTINENTS_CONFIGURATION, subContinent);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 1);
           webDriverHelpers.waitUntilAListOfElementsHasText(
               SUBCONTINENTS_NAME_TABLE_ROWS, subContinent);
@@ -175,6 +177,8 @@ public class ConfigurationSubcontinentsSteps implements En {
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
               webDriverHelpers.selectFromCombobox(
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "Africa");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
               webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 9);
               break;
             case "America":
@@ -182,6 +186,8 @@ public class ConfigurationSubcontinentsSteps implements En {
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
               webDriverHelpers.selectFromCombobox(
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "America");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
               webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 3);
               break;
             case "Asia":
@@ -189,6 +195,8 @@ public class ConfigurationSubcontinentsSteps implements En {
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
               webDriverHelpers.selectFromCombobox(
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "Asia");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
               webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 6);
               break;
             case "Australia (Continent)":
@@ -196,6 +204,8 @@ public class ConfigurationSubcontinentsSteps implements En {
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
               webDriverHelpers.selectFromCombobox(
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "Australia (Continent)");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
               webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 2);
               break;
             case "Europe":
@@ -203,6 +213,8 @@ public class ConfigurationSubcontinentsSteps implements En {
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION);
               webDriverHelpers.selectFromCombobox(
                   CONTINENT_NAME_COMBO_BOX_SUBCONTINENTS_CONFIGURATION, "Europe");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
               webDriverHelpers.waitUntilNumberOfElementsIsExactly(SUBCONTINENTS_NAME_TABLE_ROWS, 7);
               break;
           }
