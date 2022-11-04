@@ -434,12 +434,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteButton = buildDeleteButton(() -> {
 				if (!deleted) {
 					DeletableUtils.showDeleteWithReasonPopup(
-						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-						this::onDeleteWithReason);
-				} else {
-					DeletableUtils.showDeleteWithReasonPopup(
 						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName, details != null ? details : ""),
 						this::onDeleteWithReason);
+				} else {
+					onDeleteWithReason(null);
 				}
 			}, deleted);
 		}
@@ -782,7 +780,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteWithDetailsListeners.add(listener);
 		}
 	}
-	
+
 	public void addDeleteWithReasonOrUndeleteListener(
 		DeleteWithDetailsListener deleteListener,
 		String details,
