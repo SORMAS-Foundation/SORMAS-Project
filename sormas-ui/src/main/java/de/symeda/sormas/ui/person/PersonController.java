@@ -97,22 +97,21 @@ public class PersonController {
 	public void mergePersons(PersonIndexDto person1, PersonIndexDto person2) {
 		final PersonGrid personGrid = new PersonGrid();
 		personGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		List<PersonIndexDto> persons = Arrays.asList(person1, person2);
+		final List<PersonIndexDto> persons = Arrays.asList(person1, person2);
 		personGrid.setFixDataProvider(persons);
 		personGrid.setVisible(true);
+		personGrid.setWidth(100, Unit.PERCENTAGE);
 
-		Window popupWindow = VaadinUiUtil.createPopupWindow();
+		final Window popupWindow = VaadinUiUtil.createPopupWindow();
 		popupWindow.setWidth(1024, Unit.PIXELS);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingPickOrMergePerson));
 
-		VerticalLayout layout = new VerticalLayout();
+		final VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
-		personGrid.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoPersonMergeDescription)));
-
 		layout.addComponent(personGrid);
 
-		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+		final ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
 
 			private static final long serialVersionUID = 1L;
 
@@ -126,6 +125,7 @@ public class PersonController {
 				PersonController.this.mergePersons(personGrid, persons, popupWindow, false);
 			}
 		};
+		
 		final Button mergeButton = confirmationComponent.getConfirmButton();
 		mergeButton.setCaption(I18nProperties.getCaption(Captions.actionMerge));
 		mergeButton.setEnabled(false);

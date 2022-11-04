@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -332,51 +331,48 @@ public class PersonsView extends AbstractView {
 
 		// Bulk operation dropdown
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_MERGE)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
 			bulkActions.add(
-					new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.actionMerge),
-							VaadinIcons.COMPRESS_SQUARE,
-							mi -> grid.bulkActionHandler(
-									items -> {
-							if (items.size() != 2) {
-								VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageCannotMergeMoreThanTwoPersons));
-							} else {
+				new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.actionMerge),
+					VaadinIcons.COMPRESS_SQUARE,
+					mi -> grid.bulkActionHandler(items -> {
+						if (items.size() != 2) {
+							VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageCannotMergeMoreThanTwoPersons));
+						} else {
 
-								Iterator selectionsIterator = items.iterator();
-								final PersonIndexDto person1 = (PersonIndexDto) selectionsIterator.next();
-								final PersonIndexDto person2 =(PersonIndexDto) selectionsIterator.next();
+							Iterator selectionsIterator = items.iterator();
+							final PersonIndexDto person1 = (PersonIndexDto) selectionsIterator.next();
+							final PersonIndexDto person2 = (PersonIndexDto) selectionsIterator.next();
 
-											final PersonDto leadPersonDto = FacadeProvider.getPersonFacade().getByUuid(person1.getUuid());
-											final PersonSimilarityCriteria criteria = new PersonSimilarityCriteria()
-													.sex(leadPersonDto.getSex())
-													.nationalHealthId(leadPersonDto.getNationalHealthId())
-													.passportNumber(leadPersonDto.getPassportNumber())
-													.birthdateDD(leadPersonDto.getBirthdateDD())
-													.birthdateMM(leadPersonDto.getBirthdateMM())
-													.birthdateYYYY(leadPersonDto.getBirthdateYYYY());
-											criteria.setName(leadPersonDto);
+							final PersonDto leadPersonDto = FacadeProvider.getPersonFacade().getByUuid(person1.getUuid());
+							final PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(leadPersonDto.getSex())
+								.nationalHealthId(leadPersonDto.getNationalHealthId())
+								.passportNumber(leadPersonDto.getPassportNumber())
+								.birthdateDD(leadPersonDto.getBirthdateDD())
+								.birthdateMM(leadPersonDto.getBirthdateMM())
+								.birthdateYYYY(leadPersonDto.getBirthdateYYYY());
+							criteria.setName(leadPersonDto);
 
-											if (!FacadeProvider.getPersonFacade().isPersonSimilar(criteria, person2.getUuid())) {
-												VaadinUiUtil.showConfirmationPopup(
-														I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
-														new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmationForNonSimilarPersons)),
-														I18nProperties.getCaption(Captions.actionProceed),
-														I18nProperties.getCaption(Captions.actionCancel),
-														confirmAgain -> {
-															if (Boolean.TRUE.equals(confirmAgain)) {
-																ControllerProvider.getPersonController().mergePersons(person1, person2);
-															}
-														});
-											} else {
-												ControllerProvider.getPersonController().mergePersons(person1, person2);
-											}
-
-											grid.deselectAll();
+							if (!FacadeProvider.getPersonFacade().isPersonSimilar(criteria, person2.getUuid())) {
+								VaadinUiUtil.showConfirmationPopup(
+									I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
+									new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmationForNonSimilarPersons)),
+									I18nProperties.getCaption(Captions.actionProceed),
+									I18nProperties.getCaption(Captions.actionCancel),
+									confirmAgain -> {
+										if (Boolean.TRUE.equals(confirmAgain)) {
+											ControllerProvider.getPersonController().mergePersons(person1, person2);
 										}
-									},
-									true)));
+									});
+							} else {
+								ControllerProvider.getPersonController().mergePersons(person1, person2);
+							}
+
+							grid.deselectAll();
+						}
+					}, true)));
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 			bulkOperationsDropdown.setVisible(false);
