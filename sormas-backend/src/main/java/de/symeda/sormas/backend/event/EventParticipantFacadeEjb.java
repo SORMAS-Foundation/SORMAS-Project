@@ -213,8 +213,8 @@ public class EventParticipantFacadeEjb
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllByEventAfter(date, event).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		return service.getAllByEventAfter(date, event).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -297,7 +297,8 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		// todo plainly duplicated from AbstractCoreFacadeEjb.getByUuid
+		return toPseudonymizedDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -344,7 +345,7 @@ public class EventParticipantFacadeEjb
 			dto.setDistrict(district != null ? new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()) : null);
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingParticipant, pseudonymizer);
 
 		validate(dto);
@@ -362,7 +363,7 @@ public class EventParticipantFacadeEjb
 
 		onEventParticipantChanged(eventFacade.toDto(entity.getEvent()), existingDto, entity, internal);
 
-		return convertToDto(entity, pseudonymizer);
+		return toPseudonymizedDto(entity, pseudonymizer);
 	}
 
 	@PermitAll
@@ -950,7 +951,7 @@ public class EventParticipantFacadeEjb
 		}
 
 		return service.getFirst(criteria)
-			.map(e -> convertToDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
+			.map(e -> toPseudonymizedDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
 			.orElse(null);
 	}
 
@@ -1052,13 +1053,13 @@ public class EventParticipantFacadeEjb
 			return Collections.emptyList();
 		}
 
-		return service.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
+		return service.getAllActiveByEvent(event).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		return service.getByEventUuids(eventUuids).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -1108,8 +1109,8 @@ public class EventParticipantFacadeEjb
 
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(SimilarEventParticipantDto.class, participants, p -> p.getInJurisdiction(), null);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		pseudonymizer.pseudonymizeDtoCollection(SimilarEventParticipantDto.class, participants, SimilarEventParticipantDto::getInJurisdiction, null);
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
 			participants = participants.stream().filter(e -> !e.isPseudonymized()).collect(Collectors.toList());

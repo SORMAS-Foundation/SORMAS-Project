@@ -27,7 +27,9 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -38,10 +40,13 @@ public class SurveillanceReportListComponent extends VerticalLayout {
 	private final SurveillanceReportList list;
 	private final Button createButton;
 
-	public SurveillanceReportListComponent(CaseReferenceDto caze) {
+	public SurveillanceReportListComponent(CaseReferenceDto caze, UserRight editRight) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
+		if (!UserProvider.getCurrent().hasUserRight(editRight)) {
+			setEnabled(false);
+		}
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setMargin(false);

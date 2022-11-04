@@ -17,11 +17,13 @@ package de.symeda.sormas.backend.person;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
@@ -37,15 +39,13 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final PersonJoins joins;
-
 	private PersonJurisdictionPredicateValidator(
 		CriteriaBuilder cb,
 		PersonJoins joins,
 		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+
 		super(cb, user, null, associatedJurisdictionValidators);
-		this.joins = joins;
 	}
 
 	public static PersonJurisdictionPredicateValidator of(
@@ -53,19 +53,37 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 		CriteriaBuilder cb,
 		PersonJoins joins,
 		User user,
-		boolean includeImmunizations) {
-		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
+		Set<PersonAssociation> permittedAssociations) {
 
-		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, joins.getCaseJoins()), user));
-		associatedJurisdictionValidators
-			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, joins.getContactJoins()), user));
-		associatedJurisdictionValidators
-			.add(EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()), user));
-		associatedJurisdictionValidators
-			.add(TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()), user));
-		if (includeImmunizations) {
-			associatedJurisdictionValidators
-				.add(ImmunizationJurisdictionPredicateValidator.of(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins()), user));
+		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
+		for (PersonAssociation personAssociation : permittedAssociations) {
+			switch (personAssociation) {
+			case CASE:
+				associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, joins.getCaseJoins()), user));
+				break;
+			case CONTACT:
+				associatedJurisdictionValidators
+					.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, joins.getContactJoins()), user));
+				break;
+			case EVENT_PARTICIPANT:
+				associatedJurisdictionValidators.add(
+					EventParticipantJurisdictionPredicateValidator
+						.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()), user));
+				break;
+			case IMMUNIZATION:
+				associatedJurisdictionValidators
+					.add(ImmunizationJurisdictionPredicateValidator.of(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins()), user));
+				break;
+			case TRAVEL_ENTRY:
+				associatedJurisdictionValidators
+					.add(TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()), user));
+				break;
+			case ALL:
+				// NOOP: Persons need to be identified by permitted explicit associations
+				break;
+			default:
+				throw new IllegalArgumentException(personAssociation.toString());
+			}
 		}
 
 		return new PersonJurisdictionPredicateValidator(cb, joins, user, associatedJurisdictionValidators);
@@ -78,7 +96,9 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+
+		// Fallback if no associatedJurisdictionValidator was linked: No persons can to be identified by permitted explicit associations
+		return cb.disjunction();
 	}
 
 	@Override
@@ -88,7 +108,7 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 	@Override
 	protected Predicate whenNationalLevel() {
-		return cb.conjunction();
+		return cb.disjunction();
 	}
 
 	@Override

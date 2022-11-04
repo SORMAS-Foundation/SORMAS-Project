@@ -151,4 +151,8 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 	public void addDiseaseChangeHandler(Consumer<Disease> diseaseChangeHandler) {
 		disease.addValueChangeListener(e -> diseaseChangeHandler.accept(disease.getValue()));
 	}
+
+	public CaseSelector getCaseSelector() {
+		return caseSelector;
+	}
 }

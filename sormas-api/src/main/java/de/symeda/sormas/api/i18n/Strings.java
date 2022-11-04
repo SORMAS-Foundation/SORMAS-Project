@@ -1033,6 +1033,7 @@ public interface Strings {
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
+	String messageDeleteWithPendingShareRequest = "messageDeleteWithPendingShareRequest";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDiseaseNotSpecifiedInLabMessage = "messageDiseaseNotSpecifiedInLabMessage";
 	String messageDistrictArchived = "messageDistrictArchived";

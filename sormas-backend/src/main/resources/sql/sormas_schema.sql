@@ -12188,11 +12188,23 @@ ALTER TABLE surveillancereports_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalId to surveillance reports #6621');
 
+-- 2022-11-02 Automatic deletion based on end of process date #8996
+
+UPDATE campaigns SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE cases SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE contact SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE events SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE eventparticipant SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE immunization SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE travelentry SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (498, 'Automatic deletion based on end of process date #8996');
+
 -- 2022-10-25 [Merging] Merge persons via bulk actions [5] #5606
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_USER';
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN_SUPERVISOR';
 
-INSERT INTO schema_version (version_number, comment) VALUES (498, '[Merging] Merge persons via bulk actions [5] #5606');
+INSERT INTO schema_version (version_number, comment) VALUES (499, '[Merging] Merge persons via bulk actions [5] #5606');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

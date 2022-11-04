@@ -20,16 +20,17 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonDto;
@@ -240,11 +241,11 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.pointOfEntry);
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingTravelEntryInJurisdiction(travelEntry.toReference());
-		Assert.assertNotNull(userReferenceDtos);
-		Assert.assertTrue(userReferenceDtos.contains(nationalUser));
-		Assert.assertTrue(userReferenceDtos.contains(districtUser1));
-		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
-		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(nationalUser));
+		assertTrue(userReferenceDtos.contains(districtUser1));
+		assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 
 	@Test

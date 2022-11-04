@@ -1,8 +1,8 @@
 package de.symeda.sormas.backend.sormastosormas.validation;
 
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,8 +25,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.classmate.MemberResolver;
 import com.fasterxml.classmate.ResolvedType;
@@ -534,10 +534,10 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		Set<String> expected = getExpected(entity, rootNode);
 		if (expected.isEmpty()) {
 			assertEquals(
+				SormasToSormasExternalMessageDto.class.getTypeName(),
+				typeResolver.resolve(entity.getClass()).getTypeName(),
 				"SormasToSormasExternalMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
-					+ "Other types are not expected to be completely empty.",
-					SormasToSormasExternalMessageDto.class.getTypeName(),
-				typeResolver.resolve(entity.getClass()).getTypeName());
+					+ "Other types are not expected to be completely empty.");
 			return;
 		}
 		Set<String> foundFieldsIncoming = getRejectedFields(getDtoValidationErrors(entity, validator));
@@ -755,7 +755,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	}
 
 	@Test
-	@Ignore("samples depend on facilities which are not yet supported")
+	@Disabled("samples depend on facilities which are not yet supported")
 	public void testShareSampleValidation()
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 

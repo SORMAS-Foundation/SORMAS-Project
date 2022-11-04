@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -28,10 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -49,7 +47,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
-@RunWith(MockitoJUnitRunner.class)
 public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
@@ -396,7 +393,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(exportedPerson.getLastName(), is("Smith"));
 		assertThat(exportedPerson.getBirthdate().getDateOfBirthDD(), is(1));
 
-		Assert.assertEquals(Optional.empty(), exportList.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst());
+		assertEquals(Optional.empty(), exportList.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst());
 	}
 
 	private PersonDto createPerson() {

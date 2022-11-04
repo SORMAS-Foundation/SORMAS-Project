@@ -48,4 +48,5 @@ public interface SormasToSormasEntityInterface {
 
 	SormasToSormasEncryptedDataDto getShareTrees(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException;
 
+	boolean hasPendingRequest(List<String> entityUuids);
 }

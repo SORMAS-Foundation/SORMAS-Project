@@ -1,10 +1,10 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,8 +17,8 @@ import javax.validation.ConstraintViolationException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -70,7 +70,7 @@ import de.symeda.sormas.backend.user.User;
 
 public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
-	@Before
+	@BeforeEach
 	public void setupConfig() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_URL, "url");
 	}
@@ -887,6 +887,9 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 
+		assertEquals(0, getCaseService().count());
+		assertEquals(0, getShareRequestInfoService().count());
+		assertEquals(0, getSormasToSormasShareInfoService().count());
 		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
@@ -916,6 +919,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		loginWith(user);
 
 		assertEquals(0, getCaseService().count());
+		assertEquals(0, getSormasToSormasShareRequestService().count());
 		assertEquals(0, getShareRequestInfoService().count());
 		assertEquals(0, getSormasToSormasShareInfoService().count());
 	}
