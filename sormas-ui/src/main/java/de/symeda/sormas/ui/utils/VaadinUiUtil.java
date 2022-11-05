@@ -198,7 +198,7 @@ public final class VaadinUiUtil {
 		});
 	}
 
-	public static void setupEditColumn(Grid.Column column) {
+	public static void setupActionColumn(Grid.Column column) {
 		column.setRenderer(new HtmlRenderer());
 		column.setWidth(20);
 		column.setSortable(false);

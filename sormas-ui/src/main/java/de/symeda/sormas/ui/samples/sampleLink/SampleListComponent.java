@@ -28,28 +28,29 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class SampleListComponent extends SideComponent {
 
-	public SampleListComponent(SampleCriteria sampleCriteria, Consumer<Runnable> actionCallback) {
+	public SampleListComponent(SampleCriteria sampleCriteria, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 		super(I18nProperties.getString(Strings.entitySamples), actionCallback);
 
-		SampleList sampleList = new SampleList(sampleCriteria);
+		SampleList sampleList = new SampleList(sampleCriteria, isEditAllowed);
 
-		addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), () -> {
-			switch (sampleCriteria.getSampleAssociationType()) {
-			case CASE:
-				ControllerProvider.getSampleController().create(sampleCriteria.getCaze(), sampleCriteria.getDisease(), SormasUI::refreshView);
-				break;
-			case CONTACT:
-				ControllerProvider.getSampleController().create(sampleCriteria.getContact(), sampleCriteria.getDisease(), SormasUI::refreshView);
-				break;
-			case EVENT_PARTICIPANT:
-				ControllerProvider.getSampleController()
-					.create(sampleCriteria.getEventParticipant(), sampleCriteria.getDisease(), SormasUI::refreshView);
-				break;
-			default:
-				throw new IllegalArgumentException("Invalid sample association type:" + sampleCriteria.getSampleAssociationType());
-			}
-		}, UserRight.SAMPLE_CREATE);
-
+		if (isEditAllowed) {
+			addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), () -> {
+				switch (sampleCriteria.getSampleAssociationType()) {
+				case CASE:
+					ControllerProvider.getSampleController().create(sampleCriteria.getCaze(), sampleCriteria.getDisease(), SormasUI::refreshView);
+					break;
+				case CONTACT:
+					ControllerProvider.getSampleController().create(sampleCriteria.getContact(), sampleCriteria.getDisease(), SormasUI::refreshView);
+					break;
+				case EVENT_PARTICIPANT:
+					ControllerProvider.getSampleController()
+						.create(sampleCriteria.getEventParticipant(), sampleCriteria.getDisease(), SormasUI::refreshView);
+					break;
+				default:
+					throw new IllegalArgumentException("Invalid sample association type:" + sampleCriteria.getSampleAssociationType());
+				}
+			}, UserRight.SAMPLE_CREATE);
+		}
 		addComponent(sampleList);
 		sampleList.reload();
 	}

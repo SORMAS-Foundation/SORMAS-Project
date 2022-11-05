@@ -54,6 +54,7 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -915,8 +916,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		cq.select(cb.literal(true));
 
-		Predicate predicate =
-			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), assignedToActiveEntity(cb, joins));
+		Predicate predicate = cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), assignedToActiveEntity(cb, joins));
 
 		cq.where(predicate);
 
@@ -1141,7 +1141,6 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return cb.isFalse(root.get(Sample.DELETED));
 	}
 
-
 	public boolean isEditAllowed(Sample sample) {
 		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return false;
@@ -1151,7 +1150,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			return false;
 		}
 
-		return getJurisdictionFlags(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
+		return getJurisdictionFlags(sample).getInJurisdiction()
+			&& !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample)
+			&& getSampleAssociatedEntitiesEditPermission(sample);
 	}
 
 	public Date getEarliestSampleDate(Collection<Sample> samples) {
@@ -1201,4 +1202,23 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return em.createQuery(cq).getResultList();
 	}
 
+	public boolean getSampleAssociatedEntitiesEditPermission(Sample sample) {
+		EditPermissionType associatedCasePermission = null;
+		EditPermissionType associatedContactPermission = null;
+		EditPermissionType associatedEventParticipantPermission = null;
+
+		if (sample.getAssociatedCase() != null) {
+			associatedCasePermission = caseService.getEditPermissionType(sample.getAssociatedCase());
+		}
+		if (sample.getAssociatedContact() != null) {
+			associatedContactPermission = contactService.getEditPermissionType(sample.getAssociatedContact());
+		}
+		if (sample.getAssociatedEventParticipant() != null) {
+			associatedEventParticipantPermission = eventParticipantService.getEditPermissionType(sample.getAssociatedEventParticipant());
+		}
+
+		return EditPermissionType.ALLOWED.equals(associatedCasePermission)
+			|| EditPermissionType.ALLOWED.equals(associatedContactPermission)
+			|| EditPermissionType.ALLOWED.equals(associatedEventParticipantPermission);
+	}
 }

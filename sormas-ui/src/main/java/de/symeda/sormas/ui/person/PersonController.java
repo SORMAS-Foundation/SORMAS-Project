@@ -203,6 +203,39 @@ public class PersonController {
 		return editView;
 	}
 
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
+		PersonContext personContext,
+		String personUuid,
+		Disease disease,
+		String diseaseDetails,
+		UserRight editUserRight,
+		final ViewMode viewMode,
+		boolean isEditAllowed) {
+		PersonDto personDto = personFacade.getByUuid(personUuid);
+
+		PersonEditForm editForm = new PersonEditForm(
+			personContext,
+			disease,
+			diseaseDetails,
+			viewMode,
+			personDto.isPseudonymized(),
+			personDto.isInJurisdiction(),
+			isEditAllowed);
+		editForm.setValue(personDto);
+
+		final CommitDiscardWrapperComponent<PersonEditForm> editView =
+			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!editForm.getFieldGroup().isModified()) {
+				PersonDto dto = editForm.getValue();
+				savePerson(dto);
+			}
+		});
+
+		return editView;
+	}
+
 	private void savePerson(PersonDto personDto) {
 		DataHelper.Pair<CaseClassification, PersonDto> saveResult = personFacade.savePersonWithoutNotifyingExternalJournal(personDto);
 

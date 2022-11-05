@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.hospitalization;
 
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -34,8 +35,8 @@ public class HospitalizationView extends AbstractCaseView {
 	protected void initView(String params) {
 
 		CommitDiscardWrapperComponent<HospitalizationForm> hospitalizationForm =
-			ControllerProvider.getCaseController().getHospitalizationComponent(getCaseRef().getUuid(), getViewMode());
+			ControllerProvider.getCaseController().getHospitalizationComponent(getCaseRef().getUuid(), getViewMode(), isEditAllowed());
 		setSubComponent(hospitalizationForm);
-		setEditPermission(hospitalizationForm);
+		setEditPermission(hospitalizationForm, HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
 	}
 }

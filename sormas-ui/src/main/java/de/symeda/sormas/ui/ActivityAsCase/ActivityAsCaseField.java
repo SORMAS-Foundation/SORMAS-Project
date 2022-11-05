@@ -62,11 +62,12 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private boolean isPseudonymized;
+	private boolean isEditAllowed;
 
-	public ActivityAsCaseField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
-
-		super(fieldAccessCheckers);
+	public ActivityAsCaseField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers, boolean isEditAllowed) {
+		super(fieldAccessCheckers, isEditAllowed);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -75,13 +76,14 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
 		addGeneratedColumns(table);
 
-		table.setVisibleColumns(EDIT_COLUMN_ID, COLUMN_ACTIVITY_AS_CASE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
+		table
+			.setVisibleColumns(ACTION_COLUMN_ID, COLUMN_ACTIVITY_AS_CASE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
 
 		table.setCellStyleGenerator(
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ActivityAsCaseDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!columnId.equals(EDIT_COLUMN_ID)) {
+			if (!columnId.equals(ACTION_COLUMN_ID)) {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ActivityAsCaseDto.I18N_PREFIX, (String) columnId));
 			}
 		}
@@ -162,25 +164,30 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
 		final CommitDiscardWrapperComponent<ActivityAsCaseForm> component = new CommitDiscardWrapperComponent<>(
 			activityAsCaseForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && isEditAllowed,
 			activityAsCaseForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.entityActivityAsCase));
 		popupWindow.setHeight(90, Unit.PERCENTAGE);
 
-		component.addCommitListener(() -> {
-			if (!activityAsCaseForm.getFieldGroup().isModified()) {
-				commitCallback.accept(activityAsCaseForm.getValue());
+		if (isEditAllowed) {
+			component.addCommitListener(() -> {
+				if (!activityAsCaseForm.getFieldGroup().isModified()) {
+					commitCallback.accept(activityAsCaseForm.getValue());
+				}
+			});
+
+			if (!create) {
+				component.addDeleteListener(() -> {
+					popupWindow.close();
+					ActivityAsCaseField.this.removeEntry(entry);
+
+				}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
 			}
-		});
-
-		if (!create) {
-			component.addDeleteListener(() -> {
-				popupWindow.close();
-				ActivityAsCaseField.this.removeEntry(entry);
-
-			}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
+		} else {
+			component.getCommitButton().setVisible(false);
+			component.getDiscardButton().setVisible(false);
 		}
 	}
 
@@ -206,7 +213,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
 	@Override
 	public Property<Collection<ActivityAsCaseDto>> getPropertyDataSource() {
-		getAddButton().setVisible(!isPseudonymized);
+		getAddButton().setVisible(!isPseudonymized && isEditAllowed);
 		return super.getPropertyDataSource();
 	}
 }
