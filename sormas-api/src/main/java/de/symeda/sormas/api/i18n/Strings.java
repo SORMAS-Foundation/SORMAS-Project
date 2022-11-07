@@ -126,6 +126,7 @@ public interface Strings {
 	String confirmationDeleteCases = "confirmationDeleteCases";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
+	String confirmationDeleteEntityWithDetails= "confirmationDeleteEntityWithDetails";
 	String confirmationDeleteEventParticipants = "confirmationDeleteEventParticipants";
 	String confirmationDeleteEvents = "confirmationDeleteEvents";
 	String confirmationDeleteExternalMessages = "confirmationDeleteExternalMessages";

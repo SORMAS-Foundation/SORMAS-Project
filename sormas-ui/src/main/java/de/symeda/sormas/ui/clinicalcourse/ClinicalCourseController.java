@@ -119,6 +119,7 @@ public class ClinicalCourseController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
+			// todo confirmationDeleteEntity has only one format string so selectedRows.size() is not used
 			VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), selectedRows.size()), () -> {
 					for (Object selectedRow : selectedRows) {
