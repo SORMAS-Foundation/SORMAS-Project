@@ -213,8 +213,8 @@ public class EventParticipantsController {
 			eventParticipant.isPseudonymized(),
 			eventParticipant.isInJurisdiction(),
 			eventParticipant.getPerson().isPseudonymized(),
-			false,
-			eventParticipant.isInJurisdiction());
+			eventParticipant.getPerson().isInJurisdiction(),
+			false);
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 
