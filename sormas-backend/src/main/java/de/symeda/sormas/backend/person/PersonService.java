@@ -606,6 +606,37 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 			.inJurisdictionOrOwned();
 	}
 
+	public boolean isPersonSimilar(PersonSimilarityCriteria criteria, String personUuid){
+		if (personUuid == null) {
+			return false;
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Person> from = cq.from(Person.class);
+
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, from);
+		final PersonJoins joins = personQueryContext.getJoins();
+
+		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, from);
+
+		cq.select(cb.count(from.get(AbstractDomainObject.ID)));
+
+		Predicate predicate = cb.or(
+				cb.isFalse(joins.getCaze().get(Case.DELETED)),
+				cb.isFalse(joins.getContact().get(Contact.DELETED)),
+				cb.isFalse(joins.getTravelEntry().get(TravelEntry.DELETED)),
+				cb.isFalse(joins.getImmunization().get(Immunization.DELETED)),
+				cb.isFalse(joins.getEventParticipant().get(EventParticipant.DELETED)));
+		predicate = cb.and(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam), predicate, personSimilarityFilter);
+
+		cq.where(predicate);
+
+		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, personUuid);
+		return q.getSingleResult() > 0;
+	}
+
 	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria, Integer limit) {
 
 		setSimilarityThresholdQuery();

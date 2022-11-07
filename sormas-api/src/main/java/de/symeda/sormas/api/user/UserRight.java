@@ -64,6 +64,7 @@ public enum UserRight {
 	PERSON_DELETE(UserRightGroup.PERSON, UserRight._PERSON_VIEW, UserRight._VISIT_DELETE),
 	PERSON_EXPORT(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 	PERSON_CONTACT_DETAILS_DELETE(UserRightGroup.PERSON, UserRight._PERSON_EDIT),
+	PERSON_MERGE(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 
 	SAMPLE_VIEW(UserRightGroup.SAMPLE),
 	SAMPLE_CREATE(UserRightGroup.SAMPLE, UserRight._SAMPLE_VIEW),
