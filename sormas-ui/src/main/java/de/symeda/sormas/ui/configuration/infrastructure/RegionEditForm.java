@@ -74,7 +74,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 		}
 
 		addField(RegionDto.NAME, TextField.class);
-		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		addField(RegionDto.EXTERNAL_ID, TextField.class).setCaption("PCode");;
 		//addField(RegionDto.EPID_CODE, TextField.class);
 		//ComboBox country = addInfrastructureField(RegionDto.COUNTRY);
 		ComboBox area = addInfrastructureField(RegionDto.AREA);
