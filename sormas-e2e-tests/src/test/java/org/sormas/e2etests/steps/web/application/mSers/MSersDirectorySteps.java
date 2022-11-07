@@ -325,7 +325,7 @@ public class MSersDirectorySteps implements En {
         });
 
     And(
-        "^I check for aggregate reports and delete them if so$",
+        "^I check aggregate reports and delete them if they are listed$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_AGGREGATE_REPORT_BUTTON);
           while (webDriverHelpers.getNumberOfElements(RESULT_IN_GRID) > 0) {

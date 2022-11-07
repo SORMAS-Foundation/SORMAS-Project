@@ -42,7 +42,7 @@ Feature: mSERS functionalities
     And I set Epi Year to filter to "2003" in mSers directory page
     Then I set Epi week to filter to "Wk 2-2003 (1/6 - 1/12)" in mSers directory page
     And I click on the APPLY FILTERS button
-    And I check for aggregate reports and delete them if so
+    And I check aggregate reports and delete them if they are listed
     When I click on the NEW AGGREGATE REPORT button
     Then I check if Region combobox is set to "Voreingestellte Bundesländer" and is not editable in Create New Aggregate Report popup
     And I check if District combobox is set to "Voreingestellter Landkreis" and is not editable in Create New Aggregate Report popup
