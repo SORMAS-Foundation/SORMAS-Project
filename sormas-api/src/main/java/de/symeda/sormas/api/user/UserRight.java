@@ -31,7 +31,7 @@ public enum UserRight {
 
 	//@formatter:off
 	CASE_VIEW(UserRightGroup.CASE, UserRight._PERSON_VIEW),
-	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW),
+	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_VIEW),
 	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT),
 	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
@@ -64,6 +64,7 @@ public enum UserRight {
 	PERSON_DELETE(UserRightGroup.PERSON, UserRight._PERSON_VIEW, UserRight._VISIT_DELETE),
 	PERSON_EXPORT(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 	PERSON_CONTACT_DETAILS_DELETE(UserRightGroup.PERSON, UserRight._PERSON_EDIT),
+	PERSON_MERGE(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 
 	SAMPLE_VIEW(UserRightGroup.SAMPLE),
 	SAMPLE_CREATE(UserRightGroup.SAMPLE, UserRight._SAMPLE_VIEW),

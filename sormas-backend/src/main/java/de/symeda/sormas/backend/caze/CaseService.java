@@ -655,15 +655,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, caseCriteria.getRegion()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createRegionCriteriaFilter(cb, joins, caseCriteria.getRegion(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createDistrictFilterWithFallback(cb, joins, caseCriteria.getDistrict()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createDistrictCriteriaFilter(cb, joins, caseCriteria.getDistrict(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getCommunity() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createCommunityFilterWithFallback(cb, joins, caseCriteria.getCommunity()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createCommunityCriteriaFilter(cb, joins, caseCriteria.getCommunity(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getFollowUpStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
@@ -1121,9 +1128,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@Override
 	public void undelete(Case caze) {
 		// un-delete all samples that are only associated with this case
-		caze.getSamples()
-				.stream()
-				.forEach(sample -> sampleService.undelete(sample));
+		caze.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
 		super.undelete(caze);
 	}
 
@@ -1849,7 +1854,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate regionFilter = null;
 		RegionReferenceDto criteriaRegion = caseCriteria.getRegion();
 		if (criteriaRegion != null) {
-			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, criteriaRegion));
+			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionCriteriaFilter(cb, joins, criteriaRegion, null));
 		}
 
 		Predicate reportDateFilter = criteria.getReportDate() != null

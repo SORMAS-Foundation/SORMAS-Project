@@ -2,9 +2,11 @@ package de.symeda.sormas.ui.person;
 
 import static java.util.Objects.nonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -13,11 +15,13 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -28,6 +32,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -39,8 +46,10 @@ import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.PersonDownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 public class PersonsView extends AbstractView {
 
@@ -54,6 +63,9 @@ public class PersonsView extends AbstractView {
 	private LinkedHashMap<Button, PersonAssociation> associationButtons;
 	private Button activeAssociationButton;
 	private PersonFilterForm filterForm;
+
+	// Bulk operations
+	private MenuBar bulkOperationsDropdown;
 
 	public PersonsView() {
 		super(VIEW_NAME);
@@ -134,6 +146,40 @@ public class PersonsView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
+
+		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_MERGE)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(true);
+			moreButton.addMenuEntry(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+					ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(false);
+			moreButton.addMenuEntry(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				((PersonGrid) grid).reload();
+				((PersonGrid) grid).setBulkEditMode(true);
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+				((PersonGrid) grid).setBulkEditMode(false);
+			});
+		}
+
+		if (moreButton.hasMenuEntries()) {
+			addHeaderComponent(moreButton);
+		}
 	}
 
 	private void showMissingCoordinatesPopUp() {
@@ -242,7 +288,7 @@ public class PersonsView extends AbstractView {
 
 		HorizontalLayout associationFilterLayout = new HorizontalLayout();
 		associationFilterLayout.setSpacing(true);
-		associationFilterLayout.setMargin(false);
+		associationFilterLayout.setMargin(new MarginInfo(true, false, false, false));
 		associationFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		associationFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
@@ -282,6 +328,56 @@ public class PersonsView extends AbstractView {
 		associationFilterLayout.addComponent(emptyLabel);
 		associationFilterLayout.setComponentAlignment(emptyLabel, Alignment.MIDDLE_RIGHT);
 		associationFilterLayout.setExpandRatio(emptyLabel, 1);
+
+		// Bulk operation dropdown
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_MERGE)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
+			bulkActions.add(
+				new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.actionMerge),
+					VaadinIcons.COMPRESS_SQUARE,
+					mi -> grid.bulkActionHandler(items -> {
+						if (items.size() != 2) {
+							VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageCannotMergeMoreThanTwoPersons));
+						} else {
+
+							Iterator selectionsIterator = items.iterator();
+							final PersonIndexDto person1 = (PersonIndexDto) selectionsIterator.next();
+							final PersonIndexDto person2 = (PersonIndexDto) selectionsIterator.next();
+
+							final PersonDto leadPersonDto = FacadeProvider.getPersonFacade().getByUuid(person1.getUuid());
+							final PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(leadPersonDto.getSex())
+								.nationalHealthId(leadPersonDto.getNationalHealthId())
+								.passportNumber(leadPersonDto.getPassportNumber())
+								.birthdateDD(leadPersonDto.getBirthdateDD())
+								.birthdateMM(leadPersonDto.getBirthdateMM())
+								.birthdateYYYY(leadPersonDto.getBirthdateYYYY());
+							criteria.setName(leadPersonDto);
+
+							if (!FacadeProvider.getPersonFacade().isPersonSimilar(criteria, person2.getUuid())) {
+								VaadinUiUtil.showConfirmationPopup(
+									I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
+									new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmationForNonSimilarPersons)),
+									I18nProperties.getCaption(Captions.actionProceed),
+									I18nProperties.getCaption(Captions.actionCancel),
+									confirmAgain -> {
+										if (Boolean.TRUE.equals(confirmAgain)) {
+											ControllerProvider.getPersonController().mergePersons(person1, person2);
+										}
+									});
+							} else {
+								ControllerProvider.getPersonController().mergePersons(person1, person2);
+							}
+
+							grid.deselectAll();
+						}
+					}, true)));
+
+			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
+			bulkOperationsDropdown.setVisible(false);
+			associationFilterLayout.addComponent(bulkOperationsDropdown);
+		}
 
 		return associationFilterLayout;
 	}
