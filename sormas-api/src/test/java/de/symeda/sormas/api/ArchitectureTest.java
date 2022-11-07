@@ -17,14 +17,12 @@ import java.util.Set;
 
 import javax.ejb.Remote;
 
-import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.junit.ArchUnitRunner;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
@@ -35,7 +33,6 @@ import de.symeda.sormas.api.audit.AuditInclude;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.uuid.HasUuid;
 
-@RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = "de.symeda.sormas.api")
 public class ArchitectureTest {
 
@@ -92,9 +89,6 @@ public class ArchitectureTest {
 		.haveSimpleNameEndingWith("Dto")
 		.and()
 		.containAnyFieldsThat(name("uuid"))
-		.and()
-//TODO: #10750 Remove exception from test
-		.doNotHaveSimpleName("ExternalDataDto")
 		.should()
 		.implement(HasUuid.class);
 

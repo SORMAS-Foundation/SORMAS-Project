@@ -17,10 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -49,6 +50,6 @@ public class DefaultUserRoleTest {
 	}
 
 	private void assertJurisdictionForRoles(final JurisdictionLevel jurisdictionLevel, final DefaultUserRole... userRoles) {
-		Assert.assertEquals(jurisdictionLevel, DefaultUserRole.getJurisdictionLevel(Arrays.asList(userRoles)));
+		assertEquals(jurisdictionLevel, DefaultUserRole.getJurisdictionLevel(Arrays.asList(userRoles)));
 	}
 }

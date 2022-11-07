@@ -1,13 +1,15 @@
 package de.symeda.sormas.backend;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public class DtoEntityTest extends AbstractBeanTest {
 
-	@Test(expected = OutdatedEntityException.class)
+	@Test
 	public void testDtoTooOld() {
 
 		RegionDto region = RegionDto.build();
@@ -15,6 +17,6 @@ public class DtoEntityTest extends AbstractBeanTest {
 		getRegionFacade().save(region);
 
 		region.setName("Region2");
-		getRegionFacade().save(region);
+		assertThrows(OutdatedEntityException.class, () -> getRegionFacade().save(region));
 	}
 }

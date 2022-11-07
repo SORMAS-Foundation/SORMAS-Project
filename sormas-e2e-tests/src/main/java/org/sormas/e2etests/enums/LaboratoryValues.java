@@ -18,35 +18,20 @@
 
 package org.sormas.e2etests.enums;
 
-import java.util.Random;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
 public enum LaboratoryValues {
-  VOREINGESTELLTES_LABOR(
-      "Voreingestelltes Labor", "Voreingestelltes Labor", "VQL6NJ-HPJY24-56F2R5-T5UV2HUI"),
-  OTHER_FACILITY("Andere Einrichtung", "Other facility", "SORMAS-CONSTID-OTHERS-FACILITY");
+  VOREINGESTELLTES_LABOR("Voreingestelltes Labor", "Voreingestelltes Labor"),
+  OTHER_FACILITY("Andere Einrichtung", "Other facility");
 
   private final String caption;
   private final String captionEnglish;
-  private final String uuidValue;
 
-  LaboratoryValues(String captionType, String captionTypeEnglish, String idValue) {
+  LaboratoryValues(String captionType, String captionTypeEnglish) {
     caption = captionType;
     captionEnglish = captionTypeEnglish;
-    uuidValue = idValue;
-  }
-
-  public static String getRandomCaption() {
-    Random random = new Random();
-    return String.valueOf(LaboratoryValues.values()[random.nextInt(values().length)].caption);
-  }
-
-  public static String getRandomUUID() {
-    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
-    Random random = new Random();
-    return String.valueOf(LaboratoryValues.values()[random.nextInt(values().length)].uuidValue);
   }
 }
