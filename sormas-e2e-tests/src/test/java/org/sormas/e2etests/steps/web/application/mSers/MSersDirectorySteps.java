@@ -4,6 +4,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_PO
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_CONTACT_EXPORT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_INPUT;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DELETE_AGGREGATED_REPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DELETE_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISPLAY_ONLY_DUPLICATE_REPORTS_CHECKBOX;
@@ -185,6 +186,7 @@ public class MSersDirectorySteps implements En {
     When(
         "I click to edit {int} result in mSers directory page",
         (Integer ide) -> {
+          TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getEditButtonByIndex(ide));
           webDriverHelpers.doubleClickOnWebElementBySelector(getEditButtonByIndex(ide));
         });
@@ -320,6 +322,18 @@ public class MSersDirectorySteps implements En {
               .getAgeGroupForMalaria(),
               "Age group for Malaria is different!");
           softly.assertAll();
+        });
+
+    And(
+        "^I check for aggregate reports and delete them if so$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_AGGREGATE_REPORT_BUTTON);
+          while (webDriverHelpers.getNumberOfElements(RESULT_IN_GRID) > 0) {
+            webDriverHelpers.waitUntilIdentifiedElementIsPresent(getEditButtonByIndex(1));
+            webDriverHelpers.doubleClickOnWebElementBySelector(getEditButtonByIndex(1));
+            webDriverHelpers.clickOnWebElementBySelector(DELETE_AGGREGATED_REPORT_BUTTON);
+            TimeUnit.SECONDS.sleep(1);
+          }
         });
   }
 

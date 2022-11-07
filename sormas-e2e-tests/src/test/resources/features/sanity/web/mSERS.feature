@@ -36,15 +36,19 @@ Feature: mSERS functionalities
     When I click on the mSERS button from navbar
     Then I check if Region combobox is set to "Voreingestellte Bundesländer" and is not editable on mSERS directory page
     And I check if District combobox is set to "Voreingestellter Landkreis" and is not editable on mSERS directory page
+    And I navigate to Report data tab
+    And I set Epi Year from filter to "2003" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2003 (12/30 - 1/5)" in mSers directory page
+    And I set Epi Year to filter to "2003" in mSers directory page
+    Then I set Epi week to filter to "Wk 2-2003 (1/6 - 1/12)" in mSers directory page
+    And I click on the APPLY FILTERS button
+    And I check for aggregate reports and delete them if so
     When I click on the NEW AGGREGATE REPORT button
     Then I check if Region combobox is set to "Voreingestellte Bundesländer" and is not editable in Create New Aggregate Report popup
     And I check if District combobox is set to "Voreingestellter Landkreis" and is not editable in Create New Aggregate Report popup
     Then I click on SPECIFY Radiobutton in Create Aggregated Report form
     And I fill a new aggregate report with specific data
     And I click to save aggregated report
-    And I navigate to Report data tab
-    And I set Epi Year from filter to "2003" in mSers directory page
-    Then I set Epi week from filter to "Wk 1-2003 (12/30 - 1/5)" in mSers directory page
     And I click on the APPLY FILTERS button
     And I check that number of results in grid in mSers directory greater than 1
     Then I click to edit 1 result in mSers directory page
