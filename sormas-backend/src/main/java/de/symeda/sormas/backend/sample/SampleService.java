@@ -54,7 +54,6 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -1150,9 +1149,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			return false;
 		}
 
-		return getJurisdictionFlags(sample).getInJurisdiction()
-			&& !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample)
-			&& getSampleAssociatedEntitiesEditPermission(sample);
+		return getJurisdictionFlags(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
 	}
 
 	public Date getEarliestSampleDate(Collection<Sample> samples) {
@@ -1200,25 +1197,5 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.where(filter);
 		cq.select(pathogenTestJoin.get(PathogenTest.TESTED_DISEASE_VARIANT));
 		return em.createQuery(cq).getResultList();
-	}
-
-	public boolean getSampleAssociatedEntitiesEditPermission(Sample sample) {
-		EditPermissionType associatedCasePermission = null;
-		EditPermissionType associatedContactPermission = null;
-		EditPermissionType associatedEventParticipantPermission = null;
-
-		if (sample.getAssociatedCase() != null) {
-			associatedCasePermission = caseService.getEditPermissionType(sample.getAssociatedCase());
-		}
-		if (sample.getAssociatedContact() != null) {
-			associatedContactPermission = contactService.getEditPermissionType(sample.getAssociatedContact());
-		}
-		if (sample.getAssociatedEventParticipant() != null) {
-			associatedEventParticipantPermission = eventParticipantService.getEditPermissionType(sample.getAssociatedEventParticipant());
-		}
-
-		return EditPermissionType.ALLOWED.equals(associatedCasePermission)
-			|| EditPermissionType.ALLOWED.equals(associatedContactPermission)
-			|| EditPermissionType.ALLOWED.equals(associatedEventParticipantPermission);
 	}
 }

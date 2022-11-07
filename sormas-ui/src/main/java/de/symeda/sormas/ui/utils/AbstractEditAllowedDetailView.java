@@ -55,13 +55,6 @@ public abstract class AbstractEditAllowedDetailView<R extends ReferenceDto> exte
 			for (String singleExcludedField : excludeFields) {
 				root.getWrappedComponent().getFieldGroup().getField(singleExcludedField).setEnabled(true);
 			}
-
-//			for (Object propertyId : root.getWrappedComponent().getFieldGroup().getBoundPropertyIds()) {
-//				Field<?> field = root.getWrappedComponent().getFieldGroup().getField(propertyId);
-//				if (!ArrayUtils.contains(excludeFields, field.getId())){
-//					field.setEnabled(false);
-//				}
-//			}
 		}
 	}
 }
