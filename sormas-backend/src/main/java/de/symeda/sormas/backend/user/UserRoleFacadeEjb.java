@@ -207,20 +207,21 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	private String buildUserRightsDependencyErrorMessage(Map<UserRight, Set<UserRight>> missingDependencies) {
-		Set<String> errorMessageText = new HashSet<>();
+
+		StringBuilder errorMessageText = new StringBuilder();
 		for (Map.Entry<UserRight, Set<UserRight>> missingDependency : missingDependencies.entrySet()) {
 			Set<UserRight> dependencyList = missingDependency.getValue();
 			if (dependencyList == null || dependencyList.size() == 0) {
 				errorMessageText
-					.add(I18nProperties.getValidationError(Validations.missingRequiredUserRightsNoDependency, missingDependency.getKey()));
+					.append(I18nProperties.getValidationError(Validations.missingRequiredUserRightsNoDependency, missingDependency.getKey()));
 			} else if (dependencyList.size() < 4) {
-				errorMessageText.add(
+				errorMessageText.append(
 					I18nProperties.getValidationError(
 						Validations.missingRequiredUserRightsSmallDependency,
 						missingDependency.getKey(),
 						dependencyList.stream().map(UserRight::toString).collect(Collectors.joining("', '"))));
 			} else {
-				errorMessageText.add(
+				errorMessageText.append(
 					I18nProperties.getValidationError(
 						Validations.missingRequiredUserRightsLargeDependency,
 						missingDependency.getKey(),
@@ -228,7 +229,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 						dependencyList.iterator().next().toString()));
 			}
 		}
-		return errorMessageText.stream().collect(Collectors.joining());
+		return errorMessageText.toString();
 	}
 
 	@Override
