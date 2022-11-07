@@ -88,7 +88,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = CriteriaBuilderHelper.and(cb, createActiveCampaignsFilter(cb, from), userFilter);
+			filter = CriteriaBuilderHelper.and(cb, createActiveCampaignsFilterForMobile(cb, from), userFilter);
 		}
 
 		cq.where(filter);
@@ -197,5 +197,11 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
 		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
+	}
+	
+	
+	
+	public Predicate createActiveCampaignsFilterForMobile(CriteriaBuilder cb, Root<Campaign> root) {
+		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isTrue(root.get(Campaign.CLOSEOPEN)), cb.isFalse(root.get(Campaign.DELETED)));
 	}
 }
