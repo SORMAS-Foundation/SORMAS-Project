@@ -28,6 +28,8 @@
     }
   }
 
+
+
   .force-caption {
     margin-top: 1.5em;
     margin-bottom: 16px;
@@ -390,4 +392,11 @@
 
 
 
+
+:root .sormas .v-select-optiongroup-horizontal .v-checkbox > input:checked ~ label {
+	
+	background: green !important;
+	color: white !important;
+    border: 2px solid white !important;
+	}
 

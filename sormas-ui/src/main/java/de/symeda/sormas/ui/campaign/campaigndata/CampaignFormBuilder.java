@@ -185,7 +185,7 @@ public class CampaignFormBuilder {
 				}
 
 			}
-			
+			//input:checked 
 		
 
 			String dependingOnId = formElement.getDependingOn();

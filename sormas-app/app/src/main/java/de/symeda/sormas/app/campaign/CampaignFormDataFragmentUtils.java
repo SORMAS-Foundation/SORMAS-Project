@@ -19,6 +19,7 @@ import static de.symeda.sormas.api.campaign.ExpressionProcessorUtils.refreshEval
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,7 @@ import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
+import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.controls.ControlTextReadField;
 
@@ -141,8 +143,8 @@ public class CampaignFormDataFragmentUtils {
                 depenValuexd = lstItemsx.next().toString();
             }
         }
-        final String depenValuex = depenValuexd;
 
+        final String depenValuex = depenValuexd;
 
         if (dependingOn != null && depenValuex != null) {
             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
@@ -168,7 +170,9 @@ public class CampaignFormDataFragmentUtils {
                 field.setVisibility(View.VISIBLE);
             }
         } else {
-            if (!dependingOnValues.contains(parsedDependingOnFieldValue)) {
+            System.out.println(dependingOnValues+"  ????????????_____------____???????????????  "+parsedDependingOnFieldValue);
+
+            if (dependingOnValues.contains(parsedDependingOnFieldValue)) {
                 field.setVisibility(View.GONE);
             } else {
                 field.setVisibility(View.VISIBLE);
@@ -456,6 +460,52 @@ public class CampaignFormDataFragmentUtils {
             }
         };
     }
+
+
+
+    public static ControlSwitchField createControlYesNoUnknownField(
+            CampaignFormElement campaignFormElement,
+            Context context,
+            Map<String, String> userTranslations) {
+        return new ControlSwitchField(context) {
+
+            @Override
+            protected String getPrefixDescription() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
+
+            @Override
+            protected String getPrefixCaption() {
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
+            }
+
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
+
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
+
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initLabelAndValidationListeners();
+                //required = true;
+
+               // initialize();
+
+
+                initInput();
+            }
+        };
+    }
+
+
+
 
     public static ControlTextReadField createControlTextReadField(
             CampaignFormElement campaignFormElement,

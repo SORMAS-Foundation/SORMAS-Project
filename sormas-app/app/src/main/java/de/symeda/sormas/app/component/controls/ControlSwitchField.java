@@ -45,6 +45,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.StateDrawableBuilder;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.YesNo;
 
 public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
@@ -110,10 +111,11 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
 			List<Item> items = DataUtils.getEnumItems(c, false);
 
-			int itemTotal = items.size();
+			int itemTotal = 2;
 			for (int i = 0; i < items.size(); i++) {
 				addItem(i, itemTotal - 1, items.get(i));
 			}
+			System.out.println("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP "+radioGroupElements.size());
 
 			enumClass = c;
 			suppressListeners = false;
@@ -143,6 +145,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
 	private void removeAllItems() {
 		input.removeAllViews();
+		radioGroupElements = new ArrayList<>();
 		radioGroupElements.clear();
 	}
 
@@ -207,10 +210,10 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
 	private Drawable getButtonDrawable(boolean lastButton, boolean hasError) {
 		return new StateDrawableBuilder().setCheckedAndDisabledDrawable(ControlSwitchState.DISABLED.getDrawable(lastButton, hasError, getResources()))
-			.setPressedDrawable(ControlSwitchState.PRESSED.getDrawable(lastButton, hasError, getResources()))
-			.setCheckedDrawable(ControlSwitchState.CHECKED.getDrawable(lastButton, hasError, getResources()))
-			.setNormalDrawable(ControlSwitchState.NORMAL.getDrawable(lastButton, hasError, getResources()))
-			.build();
+				.setPressedDrawable(ControlSwitchState.PRESSED.getDrawable(lastButton, hasError, getResources()))
+				.setCheckedDrawable(ControlSwitchState.CHECKED.getDrawable(lastButton, hasError, getResources()))
+				.setNormalDrawable(ControlSwitchState.NORMAL.getDrawable(lastButton, hasError, getResources()))
+				.build();
 	}
 
 	private void setUpOnClickListener(RadioButton button, ControlSwitchField field) {
@@ -231,13 +234,22 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 		});
 	}
 
+	public void initializeYESNOField(Class<? extends Enum> fm) {
+		this.enumClass = fm;
+	}
+
 	// Overrides
 
 	@Override
 	protected void initialize(Context context, AttributeSet attrs, int defStyle) {
+
+		//AttributeSet attrsx = context.getAttributeSet(R.styleable.ControlSwitchField);
+//		System.out.println("++++++++++vvvv+++++++ "+attrs+" 1111-------");
+//		System.out.println("++++++++++vvvv+++++++++ "+context+" 22222-------");
+//		System.out.println("++++++++++vv++++++++++ "+defStyle+" 333333-------");
 		if (attrs != null) {
 			TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ControlSwitchField, 0, 0);
-
+;
 			try {
 				useAbbreviations = a.getBoolean(R.styleable.ControlSwitchField_useAbbreviations, isSlim());
 				useBoolean = a.getBoolean(R.styleable.ControlSwitchField_useBoolean, false);
@@ -267,16 +279,28 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
+		initInput();
+	}
+
+	protected void initInput() {
+		//List<Object> radioGroupElementsx = new ArrayList<>();
+		//radioGroupElements = radioGroupElementsx;
+		System.out.println("OOOOOOOOOOOOOPS "+radioGroupElements.size());
+
+
+
 		input = (RadioGroup) this.findViewById(R.id.switch_input);
 		input.setOrientation(HORIZONTAL);
 		background = getResources().getDrawable(R.drawable.control_switch_background_border);
 		textColor = getResources().getColorStateList(R.color.control_switch_color_selector);
 		input.setBackground(background.mutate());
-
+		System.out.println("+++++++++++++++++++++++++ "+enumClass+" 1111-------");
 		if (useBoolean) {
 			setBooleanContent();
+			System.out.println("+++++++++++++++++++++++++ "+useBoolean+" 2222-------");
 		} else if (enumClass == null) {
-			setEnumClass(YesNoUnknown.class);
+			System.out.println("+++++++++++++++++++++++++ "+enumClass+" 33333-------");
+			setEnumClass(YesNo.class);
 		}
 
 		input.setOnCheckedChangeListener((radioGroup, i) -> {
@@ -301,9 +325,14 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 		int selectedValueId = input.getCheckedRadioButtonId();
 
 		if (selectedValueId >= 0) {
+
 			View selectedValue = input.findViewById(selectedValueId);
 			if (selectedValue != null) {
+				setEnumClass(YesNo.class);
 				int selectedValueIndex = input.indexOfChild(selectedValue);
+				System.out.println("GGGGGGGG "+radioGroupElements.size());
+				System.out.println("HHHHHHHHHHH "+selectedValueIndex);
+
 				return radioGroupElements.get(selectedValueIndex);
 			}
 
@@ -410,10 +439,10 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 	}
 
 	@BindingAdapter(value = {
-		"value",
-		"useBoolean",
-		"enumClass",
-		"defaultValue" }, requireAll = false)
+			"value",
+			"useBoolean",
+			"enumClass",
+			"defaultValue" }, requireAll = false)
 	public static void setValue(ControlSwitchField view, Object value, Boolean useBoolean, Class enumClass, Object defaultValue) {
 		if (enumClass != null) {
 			view.setEnumClass((Class<? extends Enum>) enumClass);

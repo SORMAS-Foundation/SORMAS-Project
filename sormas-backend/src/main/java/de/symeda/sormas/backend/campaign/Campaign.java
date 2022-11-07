@@ -44,6 +44,7 @@ public class Campaign extends CoreAdo {
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 	public static final String CAMPAIGN_DASHBOARD_ELEMENTS = "dashboardElements";
 	public static final String ARCHIVED = "archived";
+	public static final String CLOSEOPEN = "openandclose";
 
 	private String name;
 	private String round;
@@ -53,6 +54,7 @@ public class Campaign extends CoreAdo {
 	private Date endDate;
 	private User creatingUser;
 	private boolean archived;
+	private boolean openandclose;
 	private List<CampaignDashboardElement> dashboardElements;
 	private Set<CampaignFormMeta> campaignFormMetas = new HashSet<>();
 
@@ -127,6 +129,15 @@ public class Campaign extends CoreAdo {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	@Column
+	public boolean isOpenandclose() {
+		return openandclose;
+	}
+
+	public void setOpenandclose(boolean openandclose) {
+		this.openandclose = openandclose;
 	}
 
 	@Override
