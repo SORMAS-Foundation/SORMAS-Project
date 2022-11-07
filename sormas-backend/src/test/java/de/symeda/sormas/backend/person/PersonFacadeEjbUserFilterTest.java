@@ -15,14 +15,15 @@
 
 package de.symeda.sormas.backend.person;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -36,7 +37,9 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 
@@ -128,6 +131,7 @@ public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 		List<PersonIndexDto> travelEntryPersonsFornationalUser = getPersonFacade().getIndexList(criteria, null, null, null);
 		assertEquals(1, travelEntryPersonsFornationalUser.size());
 		assertEquals(person1.getUuid(), travelEntryPersonsFornationalUser.get(0).getUuid());

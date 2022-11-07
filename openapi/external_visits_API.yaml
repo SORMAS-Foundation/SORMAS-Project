@@ -512,6 +512,8 @@ components:
           type: string
         pseudonymized:
           type: boolean
+        inJurisdiction:
+          type: boolean
         abdominalPain:
           type: string
           enum:

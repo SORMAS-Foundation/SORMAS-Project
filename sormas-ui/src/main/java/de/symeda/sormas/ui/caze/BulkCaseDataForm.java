@@ -499,7 +499,6 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
 			if (otherHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
-				tfFacilityDetails.setRequired(visibleAndRequired);
 			}
 			if (noneHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));

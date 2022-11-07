@@ -74,7 +74,7 @@ public class CreateNewCasePage {
       By.cssSelector(".v-window #diseaseVariant div");
   public static final By PERSON_SEARCH_LOCATOR_BUTTON = By.id("personSearchLoc");
   public static final By UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT =
-      By.id("uuidExternalIdExternalTokenLike");
+      By.id("nameUuidExternalIdExternalTokenLike");
   public static final By FIRST_NAME_LIKE_INPUT =
       By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'firstName')]//input");
   public static final By LAST_NAME_LIKE_INPUT =

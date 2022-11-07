@@ -130,8 +130,7 @@ public class TravelEntryFacadeEjb
 		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 
 		if (lastTravelEntry != null) {
-			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
-			TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, aDefault);
+			TravelEntryDto travelEntryDto = toPseudonymizedDto(lastTravelEntry);
 			return travelEntryDto.getDeaContent();
 		}
 

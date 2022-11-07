@@ -9,11 +9,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -73,6 +73,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
@@ -121,6 +122,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(user);
+
+		// TravelEntry only active for Germany
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 
 		// 1a. Test for all available PersonAssociations
 		for (PersonAssociation pa : PersonAssociation.values()) {
@@ -342,8 +346,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		criteria.setBirthdateDD(1);
 		List<String> relevantNameUuids =
 			getPersonFacade().getSimilarPersonDtos(criteria).stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
-		Assert.assertEquals(1, relevantNameUuids.size());
-		Assert.assertEquals(person1.getUuid(), relevantNameUuids.get(0));
+		assertEquals(1, relevantNameUuids.size());
+		assertEquals(person1.getUuid(), relevantNameUuids.get(0));
 	}
 
 	@Test
@@ -708,6 +712,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
 		// 3a. Found by TravelEntry
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getAllAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
@@ -867,7 +872,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> mergedPersonImmunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
 
-		Assert.assertEquals(mergedPersonImmunizationDtoList.size(), 2);
+		assertEquals(mergedPersonImmunizationDtoList.size(), 2);
 	}
 
 	@Test
@@ -879,8 +884,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> immunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithVaccination.getUuid()));
 
-		Assert.assertEquals(immunizationDtoList.size(), 1);
-		Assert.assertEquals(immunizationDtoList.get(0).getVaccinations().size(), 2);
+		assertEquals(immunizationDtoList.size(), 1);
+		assertEquals(immunizationDtoList.get(0).getVaccinations().size(), 2);
 	}
 
 	@Test
@@ -892,7 +897,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> immunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
 
-		Assert.assertEquals(immunizationDtoList.size(), 1);
+		assertEquals(immunizationDtoList.size(), 1);
 	}
 
 	@Test
@@ -905,7 +910,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
 
 		// both persons are without immunization and vaccination so the merged person should not have immunization
-		Assert.assertEquals(immunizationDtoList.size(), 0);
+		assertEquals(immunizationDtoList.size(), 0);
 	}
 
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
@@ -1029,6 +1034,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testUserWithLimitedDiseaseSeeOnlyLimitedTravelEntry() {
+
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
 
@@ -1051,6 +1057,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.region,
 			rdcf.district,
 			rdcf.pointOfEntry);
+
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 
 		//National User with no restrictions can see all the travel entries
 		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);

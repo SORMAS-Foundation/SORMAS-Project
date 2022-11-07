@@ -313,7 +313,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private final Map<ReinfectionDetailGroup, CaseReinfectionCheckBoxTree> reinfectionTrees = new EnumMap<>(ReinfectionDetailGroup.class);
 
-	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
+	public CaseDataForm(
+		String caseUuid,
+		PersonDto person,
+		Disease disease,
+		SymptomsDto symptoms,
+		ViewMode viewMode,
+		boolean isPseudonymized,
+		boolean inJurisdiction) {
 
 		super(
 			CaseDataDto.class,
@@ -323,7 +330,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()))
 				.add(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)),
-			UiFieldAccessCheckers.getDefault(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.caseUuid = caseUuid;
 		this.person = person;
