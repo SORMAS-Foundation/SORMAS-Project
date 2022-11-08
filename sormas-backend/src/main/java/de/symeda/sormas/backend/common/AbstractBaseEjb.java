@@ -101,13 +101,17 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return dto;
 	}
 
-	public List<DTO> toPseudonymizedDtos(List<ADO> sources) {
-		if (sources == null) {
+	public List<DTO> toPseudonymizedDtos(List<ADO> adoList) {
+		if (adoList == null) {
 			return Collections.emptyList();
 		}
 
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return sources.stream().map(s -> toPseudonymizedDto(s, pseudonymizer)).collect(Collectors.toList());
+		List<Long> jurisdictionIds = service.getInJurisdictionIds(adoList);
+
+		return adoList.stream()
+			.map(ado -> toPseudonymizedDto(ado, pseudonymizer, jurisdictionIds.contains(ado.getId())))
+			.collect(Collectors.toList());
 	}
 
 	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity) {
