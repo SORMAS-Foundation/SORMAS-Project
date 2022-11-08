@@ -24,7 +24,6 @@ import de.symeda.sormas.ui.UserProvider;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
-	public static final String EDIT_BTN_ID = "edit";
 	public static final String ACTION_BTN_ID = "action";
 
 	private static final long serialVersionUID = 8116377533153377424L;
@@ -148,7 +147,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 		Column<T, String> editColumn = addColumn(entry -> isEditAction ? VaadinIcons.EDIT.getHtml() : VaadinIcons.EYE.getHtml(), new HtmlRenderer());
 		editColumn.setId(ACTION_BTN_ID);
-		editColumn.setCaption(I18nProperties.getCaption(ACTION_BTN_ID));
+		editColumn.setCaption(isEditAction? I18nProperties.getCaption(Captions.edit): I18nProperties.getCaption(Captions.view));
 		editColumn.setSortable(false);
 		editColumn.setWidth(20);
 
