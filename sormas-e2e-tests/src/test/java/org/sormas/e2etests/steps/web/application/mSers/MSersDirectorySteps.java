@@ -5,6 +5,7 @@ import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_INPUT;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DELETE_AGGREGATED_REPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.AGGREGATE_REPORTING_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DELETE_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISPLAY_ONLY_DUPLICATE_REPORTS_CHECKBOX;
@@ -334,6 +335,12 @@ public class MSersDirectorySteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(DELETE_AGGREGATED_REPORT_BUTTON);
             TimeUnit.SECONDS.sleep(1);
           }
+        });
+
+    And(
+        "^I click on aggregate reporting tab$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(AGGREGATE_REPORTING_BUTTON);
         });
   }
 
