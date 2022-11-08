@@ -13,11 +13,11 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 
 @Stateless
 @LocalBean
-public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFormMeta> {
+public class CampaignFormMetaService extends AdoServiceWithUserFilterAndJurisdiction<CampaignFormMeta> {
 
 	public CampaignFormMetaService() {
 		super(CampaignFormMeta.class);

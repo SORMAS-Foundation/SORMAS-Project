@@ -26,14 +26,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.person.Person;
 
 @Stateless
 @LocalBean
-public class SormasToSormasOriginInfoService extends AdoServiceWithUserFilter<SormasToSormasOriginInfo> {
+public class SormasToSormasOriginInfoService extends AdoServiceWithUserFilterAndJurisdiction<SormasToSormasOriginInfo> {
 
 	public SormasToSormasOriginInfoService() {
 		super(SormasToSormasOriginInfo.class);

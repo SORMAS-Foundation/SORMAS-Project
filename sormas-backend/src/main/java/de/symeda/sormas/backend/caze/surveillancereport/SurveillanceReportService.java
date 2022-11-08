@@ -35,15 +35,14 @@ import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
-public class SurveillanceReportService extends BaseAdoService<SurveillanceReport> implements JurisdictionCheckService<SurveillanceReport> {
+public class SurveillanceReportService extends AdoServiceWithUserFilterAndJurisdiction<SurveillanceReport> {
 
 	@EJB
 	private CaseService caseService;
@@ -80,13 +79,18 @@ public class SurveillanceReportService extends BaseAdoService<SurveillanceReport
 	}
 
 	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, SurveillanceReport> from) {
+		return null;
+	}
+
+	@Override
 	public boolean inJurisdictionOrOwned(SurveillanceReport entity) {
-		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
 	@Override
 	public List<Long> getInJurisdictionIds(List<SurveillanceReport> entities) {
-		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return getIdList(entities, this::inJurisdictionOrOwned);
 	}
 
 	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, SurveillanceReport> from) {
