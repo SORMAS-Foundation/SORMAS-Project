@@ -76,6 +76,22 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return service.getObsoleteUuidsSince(since);
 	}
 
+	@Override
+	public List<DTO> getAllAfter(Date date) {
+		return getAllAfter(date, null, null);
+	}
+
+	@Override
+	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		List<ADO> entities = service.getAllAfter(date, batchSize, lastSynchronizedUuid);
+		return toPseudonymizedDtos(entities);
+	}
+
 	public DTO toPseudonymizedDto(ADO source) {
 		return toPseudonymizedDto(source, createPseudonymizer());
 	}

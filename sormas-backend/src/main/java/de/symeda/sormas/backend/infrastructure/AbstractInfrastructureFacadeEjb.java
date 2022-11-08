@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
@@ -63,7 +63,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	@Override
 	@PermitAll
 	public List<DTO> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream().map(this::toDto).collect(Collectors.toList());
+		return super.getAllAfter(date);
 	}
 
 	@Override
@@ -188,7 +188,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	public List<String> archive(List<String> entityUuids) {
 		List<String> archivedEntityUuids = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
-			if (!isUsedInOtherInfrastructureData(Arrays.asList(entityUuid))) {
+			if (!isUsedInOtherInfrastructureData(Collections.singletonList(entityUuid))) {
 				archive(entityUuid);
 				archivedEntityUuids.add(entityUuid);
 			}
