@@ -1,5 +1,13 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -14,10 +22,14 @@ import java.util.Date;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.HttpStatus;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -66,6 +78,11 @@ import de.symeda.sormas.backend.user.User;
 
 public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
+	private static final int WIREMOCK_TESTING_PORT = 8888;
+
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
 	@Before
 	public void setupConfig() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_URL, "url");
@@ -81,7 +98,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		UserDto user = creator
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
-		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDontShareWithReportingTool(true));
 
 		creator.createClinicalVisit(caze);
 		creator.createTreatment(caze);
@@ -155,7 +172,13 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(2, getCaseService().count());
 
 		useSystemUser();
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		getCoreEntityDeletionService().executeAutomaticDeletion();
+		wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 		loginWith(user);
 
 		ContactDto resultingContactUpdated = getContactFacade().getByUuid(resultingContact.getUuid());

@@ -24,7 +24,6 @@ import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
@@ -110,9 +109,6 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		// set expansion to 1 by default
 		setExpandRatio(c, 1);
 	}
-
-	@Override
-	public abstract void enter(ViewChangeEvent event);
 
 	public Label getViewTitleLabel() {
 		return viewTitleLabel;

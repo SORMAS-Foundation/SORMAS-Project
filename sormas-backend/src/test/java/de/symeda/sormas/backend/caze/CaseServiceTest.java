@@ -1,6 +1,22 @@
 package de.symeda.sormas.backend.caze;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+
+import org.apache.http.HttpStatus;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
@@ -13,20 +29,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import org.apache.http.HttpStatus;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 public class CaseServiceTest extends AbstractBeanTest {
 
@@ -66,13 +68,14 @@ public class CaseServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSetArchiveInExternalSurveillanceToolForEntity_WithProperEntity() throws ExternalSurveillanceToolException {
+	public void testSetArchiveInExternalSurveillanceToolForEntity_WithProperEntity_WithCaseAllowedToShare() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		CaseDataDto caze = creator.createCase(user, person, rdcf, c -> c.setDontShareWithReportingTool(false));
 		Case case1 = getCaseService().getByUuid(caze.getUuid());
+		case1.setDontShareWithReportingTool(false);
 		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
 		CaseService caseService = getBean(CaseService.class);
 
@@ -83,6 +86,28 @@ public class CaseServiceTest extends AbstractBeanTest {
 
 		caseService.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
 		wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
+	}
+
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForEntity_WithProperEntity_WithoutCaseAllowedToShare()
+		throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		CaseDataDto caze = creator.createCase(user, person, rdcf, c -> c.setDontShareWithReportingTool(true));
+
+		Case case1 = getCaseService().getByUuid(caze.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
+		CaseService caseService = getBean(CaseService.class);
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		caseService.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+		wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
 
 	@Test
