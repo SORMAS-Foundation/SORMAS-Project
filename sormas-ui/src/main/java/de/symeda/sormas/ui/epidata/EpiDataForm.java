@@ -91,13 +91,15 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		Class<? extends EntityDto> parentClass,
 		boolean isPseudonymized,
 		boolean inJurisdiction,
-		Consumer<Boolean> sourceContactsToggleCallback) {
+		Consumer<Boolean> sourceContactsToggleCallback,
+		boolean isEditAllowed) {
 		super(
 			EpiDataDto.class,
 			EpiDataDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized),
+			isEditAllowed);
 		this.disease = disease;
 		this.parentClass = parentClass;
 		this.sourceContactsToggleCallback = sourceContactsToggleCallback;

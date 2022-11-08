@@ -150,7 +150,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 						new VaccinationListComponent(
 							() -> new VaccinationListCriteria.Builder(getReference()).build(),
 							this::showUnsavedChangesPopup,
-							false)),
+							false,
+							true)),
 					VACCINATIONS_LOC);
 			}
 		}

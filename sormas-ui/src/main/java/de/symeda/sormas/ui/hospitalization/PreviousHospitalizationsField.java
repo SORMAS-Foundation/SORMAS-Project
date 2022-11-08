@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.hospitalization;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Window;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -48,10 +49,15 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 	private static final String DISTRICT = Captions.District;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
+	private boolean isEditAllowed;
 
-	public PreviousHospitalizationsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
-		super(fieldAccessCheckers);
+	public PreviousHospitalizationsField(
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		boolean isEditAllowed) {
+		super(fieldAccessCheckers, isEditAllowed);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -103,15 +109,15 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		});
 
 		table.setVisibleColumns(
-			EDIT_COLUMN_ID,
+			ACTION_COLUMN_ID,
 			PERIOD,
 			PreviousHospitalizationDto.HEALTH_FACILITY,
 			COMMUNITY,
 			DISTRICT,
 			PreviousHospitalizationDto.DESCRIPTION,
 			PreviousHospitalizationDto.ISOLATED);
+		table.setColumnExpandRatio(ACTION_COLUMN_ID, 0);
 
-		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.HEALTH_FACILITY, 0);
 		table.setColumnExpandRatio(COMMUNITY, 0);
@@ -120,8 +126,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-
-			if (columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(ACTION_COLUMN_ID)) {
 				table.setColumnHeader(columnId, "&nbsp");
 			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
@@ -165,31 +170,42 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView =
 			new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(
 				editForm,
-				UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+				UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && isEditAllowed,
 				editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(PreviousHospitalizationDto.I18N_PREFIX));
 
-		editView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				if (!editForm.getFieldGroup().isModified()) {
-					commitCallback.accept(editForm.getValue());
-				}
-			}
-		});
-
-		if (!isEmpty(entry)) {
-			editView.addDeleteListener(new DeleteListener() {
+		if (isEditAllowed) {
+			editView.addCommitListener(new CommitListener() {
 
 				@Override
-				public void onDelete() {
-					popupWindow.close();
-					PreviousHospitalizationsField.this.removeEntry(entry);
+				public void onCommit() {
+					if (!editForm.getFieldGroup().isModified()) {
+						commitCallback.accept(editForm.getValue());
+					}
 				}
-			}, I18nProperties.getCaption(PreviousHospitalizationDto.I18N_PREFIX));
+			});
+
+			if (!isEmpty(entry)) {
+				editView.addDeleteListener(new DeleteListener() {
+
+					@Override
+					public void onDelete() {
+						popupWindow.close();
+						PreviousHospitalizationsField.this.removeEntry(entry);
+					}
+				}, I18nProperties.getCaption(PreviousHospitalizationDto.I18N_PREFIX));
+			}
+		} else {
+			editView.getCommitButton().setVisible(false);
+			editView.getDiscardButton().setVisible(false);
 		}
+	}
+
+	@Override
+	public void setPropertyDataSource(Property newDataSource) {
+		super.setPropertyDataSource(newDataSource);
+		getAddButton().setVisible(isEditAllowed);
 	}
 }
