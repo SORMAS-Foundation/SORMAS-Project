@@ -122,5 +122,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
-	protected abstract boolean isAdoInJurisdiction(ADO ado);
+	protected boolean isAdoInJurisdiction(ADO ado){
+		return service.inJurisdictionOrOwned(ado);
+	}
 }
