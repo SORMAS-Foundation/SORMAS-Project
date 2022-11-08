@@ -176,8 +176,10 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ShareRequestInfo> requestRoot = cq.from(ShareRequestInfo.class);
+		requestRoot.join(ShareRequestInfo.SHARES);
 
 		Predicate filter = null;
+
 		if (criteria != null) {
 			filter = shareRequestInfoService.buildCriteriaFilter(criteria, cb, requestRoot);
 		}
@@ -186,7 +188,7 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 			cq.where(filter);
 		}
 
-		cq.select(cb.count(requestRoot));
+		cq.select(cb.countDistinct(requestRoot));
 
 		return em.createQuery(cq).getSingleResult();
 	}
