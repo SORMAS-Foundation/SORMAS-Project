@@ -196,6 +196,13 @@ Feature: mSERS functionalities
   Scenario:Add a duplicate warning when creating and editing aggregate reports
     Given I log in as a Surveillance Officer
     When I click on the mSERS button from navbar
+    And I navigate to Report data tab
+    And I set Epi Year from filter to "2004" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)" in mSers directory page
+    And I set Epi Year to filter to "2004" in mSers directory page
+    Then I set Epi week to filter to "Wk 1-2004 (12/29 - 1/4)" in mSers directory page
+    And I click on the APPLY FILTERS button
+    And I check aggregate reports and delete them if they are listed
     When I click on the NEW AGGREGATE REPORT button
     Then I click on SPECIFY Radiobutton in Create Aggregated Report form
     And I fill a new aggregate report with specific data for duplicates
@@ -205,9 +212,6 @@ Feature: mSERS functionalities
     And I fill a new aggregate report with specific data for duplicates with different disease
     Then I check if message about duplicated reports is visible
     And I click to save aggregated report
-    And I navigate to Report data tab
-    And I set Epi Year from filter to "2004" in mSers directory page
-    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)" in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 2
     Then I click to edit 1 result in mSers directory page
