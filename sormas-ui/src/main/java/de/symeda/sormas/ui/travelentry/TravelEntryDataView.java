@@ -91,7 +91,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getTravelEntryRef(), documentList);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			TaskListComponent taskList = new TaskListComponent(
 				TaskContext.TRAVEL_ENTRY,
 				getTravelEntryRef(),
