@@ -70,17 +70,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@Override
-	public DTO getByUuid(String uuid) {
-		return toPseudonymizedDto(service.getByUuid(uuid, true));
-	}
-
-	@Override
-	public List<DTO> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByUuids(uuids).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<DTO> getAllAfter(Date date) {
 		return getAllAfter(date, null, null);
 	}
