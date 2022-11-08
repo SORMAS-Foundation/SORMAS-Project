@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.person;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Window;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -22,10 +23,12 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 	private static final String STREET = Captions.Location_street;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
+	private boolean isEditAllowed;
 
-	public LocationsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
-		super(fieldAccessCheckers);
+	public LocationsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers, boolean isEditAllowed) {
+		super(fieldAccessCheckers, isEditAllowed);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -40,22 +43,27 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<LocationEditForm> editView =
-			new CommitDiscardWrapperComponent<>(editForm, true, editForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(editForm, isEditAllowed, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(LocationDto.I18N_PREFIX));
 
-		editView.addCommitListener(() -> {
-			if (!editForm.getFieldGroup().isModified()) {
-				commitCallback.accept(editForm.getValue());
-			}
-		});
+		if (isEditAllowed) {
+			editView.addCommitListener(() -> {
+				if (!editForm.getFieldGroup().isModified()) {
+					commitCallback.accept(editForm.getValue());
+				}
+			});
 
-		if (!isEmpty(entry)) {
-			editView.addDeleteListener(() -> {
-				popupWindow.close();
-				LocationsField.this.removeEntry(entry);
-			}, I18nProperties.getCaption(LocationDto.I18N_PREFIX));
+			if (!isEmpty(entry)) {
+				editView.addDeleteListener(() -> {
+					popupWindow.close();
+					LocationsField.this.removeEntry(entry);
+				}, I18nProperties.getCaption(LocationDto.I18N_PREFIX));
+			}
+		} else {
+			editView.getCommitButton().setVisible(false);
+			editView.getDiscardButton().setVisible(false);
 		}
 	}
 
@@ -77,15 +85,15 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		});
 
 		table.setVisibleColumns(
-			EDIT_COLUMN_ID,
+			ACTION_COLUMN_ID,
 			LocationDto.ADDRESS_TYPE,
 			STREET,
 			LocationDto.CITY,
 			LocationDto.POSTAL_CODE,
 			LocationDto.DISTRICT,
 			LocationDto.COMMUNITY);
+		table.setColumnExpandRatio(ACTION_COLUMN_ID, 0);
 
-		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(LocationDto.ADDRESS_TYPE, 0);
 		table.setColumnExpandRatio(STREET, 0);
 		table.setColumnExpandRatio(LocationDto.CITY, 0);
@@ -94,7 +102,7 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		table.setColumnExpandRatio(LocationDto.COMMUNITY, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(ACTION_COLUMN_ID)) {
 				table.setColumnHeader(columnId, "&nbsp");
 			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, (String) columnId));
@@ -156,5 +164,11 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		location.setCountry(FacadeProvider.getCountryFacade().getServerCountry());
 
 		return location;
+	}
+
+	@Override
+	public void setPropertyDataSource(Property newDataSource) {
+		super.setPropertyDataSource(newDataSource);
+		getAddButton().setVisible(isEditAllowed);
 	}
 }

@@ -168,7 +168,10 @@ public class ContactController {
 						}
 					}
 					if (adoptHomeAddress && ContactRelation.SAME_HOUSEHOLD.equals(newContact.getRelationToCase())) {
-						FacadeProvider.getPersonFacade().copyHomeAddress(FacadeProvider.getCaseFacade().getByUuid(newContact.getCaze().getUuid()).getPerson(), newContact.getPerson());
+						FacadeProvider.getPersonFacade()
+							.copyHomeAddress(
+								FacadeProvider.getCaseFacade().getByUuid(newContact.getCaze().getUuid()).getPerson(),
+								newContact.getPerson());
 					}
 				}, true);
 		}
@@ -472,7 +475,10 @@ public class ContactController {
 									});
 								}
 								if (createForm.adoptAddressLayout.isAdoptAddress()) {
-									FacadeProvider.getPersonFacade().copyHomeAddress(FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(), dto.getPerson());
+									FacadeProvider.getPersonFacade()
+										.copyHomeAddress(
+											FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(),
+											dto.getPerson());
 								}
 							}, true);
 					}
@@ -831,12 +837,12 @@ public class ContactController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, boolean isEditAllowed) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 		EpiDataDto epiData = contact.getEpiData();
 		EpiDataForm epiDataForm =
-			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null);
+			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null, isEditAllowed);
 		epiDataForm.setValue(epiData);
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(

@@ -19,12 +19,12 @@ import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -38,7 +38,7 @@ import de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class CaseEpiDataView extends AbstractCaseView {
@@ -62,21 +62,10 @@ public class CaseEpiDataView extends AbstractCaseView {
 
 		setHeightUndefined();
 
-		String htmlLayout = LayoutUtil.fluidRow(
-			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, LOC_EPI_DATA),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, LOC_SOURCE_CONTACTS),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC));
-
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> epiDataComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
-		CustomLayout layout = new CustomLayout();
-		layout.addStyleName(CssStyles.ROOT_COMPONENT);
-		layout.setTemplateContents(htmlLayout);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeightUndefined();
-		container.addComponent(layout);
 
 		UserProvider currentUser = UserProvider.getCurrent();
 		boolean sourceContactsVisible = currentUser != null && currentUser.hasUserRight(UserRight.CONTACT_VIEW);
@@ -84,18 +73,17 @@ public class CaseEpiDataView extends AbstractCaseView {
 		Consumer<Boolean> sourceContactsToggleCallback =
 			(visible) -> sourceContactsLayout.setVisible(visible != null && sourceContactsVisible ? visible : false);
 
-		epiDataComponent = ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), sourceContactsToggleCallback);
-		epiDataComponent.setMargin(false);
-		epiDataComponent.setWidth(100, Unit.PERCENTAGE);
-		epiDataComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		epiDataComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-		layout.addComponent(epiDataComponent, LOC_EPI_DATA);
+		epiDataComponent =
+			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), sourceContactsToggleCallback, isEditAllowed());
+
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(epiDataComponent, LOC_SOURCE_CONTACTS, TRAVEL_ENTRIES_LOC);
+		container.addComponent(layout);
 
 		if (sourceContactsVisible) {
 			sourceContactsLayout.setMargin(false);
 			sourceContactsLayout.setSpacing(false);
 
-			final SourceContactListComponent sourceContactList = new SourceContactListComponent(getCaseRef(), this);
+			final SourceContactListComponent sourceContactList = new SourceContactListComponent(getCaseRef(), this, isEditAllowed());
 			sourceContactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sourceContactsLayout.addComponent(sourceContactList);
 
@@ -111,18 +99,18 @@ public class CaseEpiDataView extends AbstractCaseView {
 
 			epiDataComponent.getWrappedComponent().setGetSourceContactsCallback(sourceContactList::getEntries);
 		}
-		layout.addComponent(sourceContactsLayout, LOC_SOURCE_CONTACTS);
+		layout.addSidePanelComponent(sourceContactsLayout, LOC_SOURCE_CONTACTS);
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
 			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withCase(getCaseRef()).build();
-			layout.addComponent(
-				new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria, this::showUnsavedChangesPopup)),
+			layout.addSidePanelComponent(
+				new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria, this::showUnsavedChangesPopup, isEditAllowed())),
 				TRAVEL_ENTRIES_LOC);
 		}
 
-		setEditPermission(container);
+		setEditPermission(epiDataComponent, EpiDataDto.EXPOSURES, EpiDataDto.ACTIVITIES_AS_CASE);
 	}
 }

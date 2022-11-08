@@ -716,7 +716,11 @@ public interface Strings {
 	String headingUsersEnabled = "headingUsersEnabled";
 	String headingUserSettings = "headingUserSettings";
 	String headingVaccination = "headingVaccination";
+	String headingViewAdditionalTest = "headingViewAdditionalTest";
 	String headingViewNotFound = "headingViewNotFound";
+	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
+	String headingViewSurveillanceReport = "headingViewSurveillanceReport";
+	String headingViewVisit = "headingViewVisit";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";
 	String headingVisualization = "headingVisualization";
