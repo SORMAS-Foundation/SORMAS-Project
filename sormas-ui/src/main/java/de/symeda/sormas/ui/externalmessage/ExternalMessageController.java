@@ -16,6 +16,7 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -228,23 +229,25 @@ public class ExternalMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		Button deleteButton = ButtonHelper.createButton(
-			Captions.actionDelete,
-			I18nProperties.getCaption(Captions.actionDelete),
-			e -> VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.ExternalMessage)),
-				() -> {
-					if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
-						showAlreadyProcessedPopup(null, false);
-					} else {
-						FacadeProvider.getExternalMessageFacade().deleteExternalMessage(externalMessage.getUuid());
-						callback.run();
-					}
-				}),
-			ValoTheme.BUTTON_DANGER,
-			CssStyles.BUTTON_BORDER_NEUTRAL);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+			Button deleteButton = ButtonHelper.createButton(
+				Captions.actionDelete,
+				I18nProperties.getCaption(Captions.actionDelete),
+				e -> VaadinUiUtil.showDeleteConfirmationWindow(
+					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.ExternalMessage)),
+					() -> {
+						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
+							showAlreadyProcessedPopup(null, false);
+						} else {
+							FacadeProvider.getExternalMessageFacade().deleteExternalMessage(externalMessage.getUuid());
+							callback.run();
+						}
+					}),
+				ValoTheme.BUTTON_DANGER,
+				CssStyles.BUTTON_BORDER_NEUTRAL);
 
-		buttonsPanel.addComponent(deleteButton);
+			buttonsPanel.addComponent(deleteButton);
+		}
 
 		Button unclearButton = ButtonHelper.createButton(
 			Captions.actionUnclearLabMessage,
