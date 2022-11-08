@@ -165,6 +165,7 @@ import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -1274,7 +1275,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testCaseDeletionAndUndeletion() throws ExternalSurveillanceToolRuntimeException {
 		Date since = new Date();
 
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -1292,7 +1293,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcf);
+			rdcf,
+			c -> c.setDontShareWithReportingTool(true));
+
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
@@ -1324,7 +1327,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 
 		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
 		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
@@ -2105,6 +2114,72 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		 * and are not supposed to be bigger than Integer maxvalue.
 		 */
 		assertThrows(IllegalArgumentException.class, () -> getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER));
+	}
+
+	@Test
+	public void testArchiveAllArchivableCases() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		// One archived case
+		CaseDataDto case1 = creator.createCase(user, person, rdcf);
+		Case caze1 = getCaseService().getByUuid(case1.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze1, ExternalShareStatus.SHARED);
+
+		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		cut.archive(case1.getUuid(), null);
+		assertTrue(cut.isArchived(case1.getUuid()));
+
+		// One other case
+		CaseDataDto case2 = creator.createCase(user, person, rdcf, c -> c.setDontShareWithReportingTool(true));
+		Case caze2 = getCaseService().getByUuid(case2.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze2, ExternalShareStatus.SHARED);
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case2.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		// Case of "today" shouldn't be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		// Case of "yesterday" should be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertTrue(cut.isArchived(case2.getUuid()));
+	}
+
+	@Test
+	public void testArchiveAllArchivableCases_WithNotAllowedCaseToShareWithReportingTool() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+
+		CaseDataDto case2 = creator.createCase(user, person, rdcf, c -> c.setDontShareWithReportingTool(true));
+		Case caze2 = getCaseService().getByUuid(case2.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze2, ExternalShareStatus.SHARED);
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case2.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		// Case of "yesterday" should be archived but the case should not be shared with the Reporting Tool
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
+		assertTrue(cut.isArchived(case2.getUuid()));
+		wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
 
 	@Test

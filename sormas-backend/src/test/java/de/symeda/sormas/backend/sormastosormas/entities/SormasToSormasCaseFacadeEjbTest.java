@@ -15,6 +15,14 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.hasSize;
@@ -37,6 +45,8 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -95,8 +105,13 @@ import de.symeda.sormas.backend.user.User;
 
 public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
+	private static final int WIREMOCK_TESTING_PORT = 8888;
+
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
 	@Test
-	public void testShareCase() throws SormasToSormasException {
+	public void testShareCase_WithCaseNotAllowedToBeSharedWithReportingTool() throws SormasToSormasException {
 
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		useSurveillanceOfficerLogin(rdcf);
@@ -106,6 +121,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 			dto.setPerson(person.toReference());
 			dto.setSurveillanceOfficer(officer);
 			dto.setClassificationUser(officer);
+			dto.setDontShareWithReportingTool(true);
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
@@ -141,7 +157,13 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
+		wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);
