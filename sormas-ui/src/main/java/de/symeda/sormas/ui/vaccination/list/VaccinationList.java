@@ -39,15 +39,18 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 	private Disease disease;
 	private final Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier;
 	private final Consumer<Runnable> actionCallback;
+	private final boolean isEditAllowed;
 
 	public VaccinationList(
 		Disease disease,
 		Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier,
-		Consumer<Runnable> actionCallback) {
+		Consumer<Runnable> actionCallback,
+		boolean isEditAllowed) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.vaccinationListSupplier = vaccinationListSupplier;
 		this.disease = disease;
 		this.actionCallback = actionCallback;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -69,19 +72,22 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 	protected void drawDisplayedEntries() {
 		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
-			listEntry.addEditButton("edit-vaccination-" + listEntry.getVaccination().getUuid(), e -> actionCallback.accept(() -> {
+			listEntry.addActionButton(listEntry.getVaccination().getUuid(), e -> actionCallback.accept(() -> {
 				VaccinationListEntryDto vaccination = listEntry.getVaccination();
 				ControllerProvider.getVaccinationController()
 					.edit(
-						FacadeProvider.getVaccinationFacade().getByUuid(vaccination.getUuid()),
-						vaccination.getDisease(),
+						FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
+						listEntry.getVaccination().getDisease(),
 						UiFieldAccessCheckers.forDataAccessLevel(
 							UserProvider.getCurrent().getPseudonymizableDataAccessLevel(vaccination.isInJurisdiction()),
 							vaccination.isPseudonymized()),
 						true,
 						v -> SormasUI.refreshView(),
-						deleteCallback());
-			}));
+						deleteCallback(),
+						isEditAllowed);
+			}), isEditAllowed);
+
+			listEntry.setEnabled(isEditAllowed);
 			listLayout.addComponent(listEntry);
 		}
 	}

@@ -188,6 +188,38 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		String diseaseDetails,
 		ViewMode viewMode,
 		boolean isPseudonymized,
+		boolean inJurisdiction,
+		boolean isEditAllowed) {
+		super(
+			PersonDto.class,
+			PersonDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withDisease(disease)
+				.add(new OutbreakFieldVisibilityChecker(viewMode))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized),
+			isEditAllowed);
+
+		this.personContext = personContext;
+		this.disease = disease;
+		this.diseaseDetails = diseaseDetails;
+		this.isPseudonymized = isPseudonymized;
+
+		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(addressHeader, ADDRESS_HEADER);
+		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
+		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
+
+		addFields();
+	}
+
+	public PersonEditForm(
+		PersonContext personContext,
+		Disease disease,
+		String diseaseDetails,
+		ViewMode viewMode,
+		boolean isPseudonymized,
 		boolean inJurisdiction) {
 		super(
 			PersonDto.class,

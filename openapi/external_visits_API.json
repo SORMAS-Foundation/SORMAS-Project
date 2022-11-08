@@ -323,6 +323,9 @@
           "pseudonymized" : {
             "type" : "boolean"
           },
+          "inJurisdiction" : {
+            "type" : "boolean"
+          },
           "abdominalPain" : {
             "type" : "string",
             "enum" : [ "Yes", "No", "Unknown" ]

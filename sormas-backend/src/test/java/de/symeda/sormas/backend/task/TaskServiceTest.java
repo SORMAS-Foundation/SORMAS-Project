@@ -1,12 +1,13 @@
 package de.symeda.sormas.backend.task;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -14,12 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -49,11 +50,6 @@ public class TaskServiceTest extends AbstractBeanTest {
 
 	@Mock
 	private UserService userService;
-
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	public void testGetAllAfter() {
@@ -124,7 +120,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		assertEquals(actualAssignee.getId(), contactSupervisor.getId());
 	}
 
-	@Test(expected = TaskCreationException.class)
+	@Test
 	public void testGetTaskAssigneeException() throws TaskCreationException {
 		Contact contact = new Contact();
 		Location location = new Location();
@@ -136,7 +132,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 
 		Mockito.when(userService.getRandomRegionUser(any(Region.class), any())).thenReturn(null);
 
-		taskService.getTaskAssignee(contact);
+		assertThrows(TaskCreationException.class, () -> taskService.getTaskAssignee(contact));
 	}
 
 	@Test

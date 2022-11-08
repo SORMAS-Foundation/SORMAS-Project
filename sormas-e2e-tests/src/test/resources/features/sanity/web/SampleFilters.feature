@@ -1,7 +1,7 @@
 @UI @Sanity @Sample
 Feature: Sample filter functionality
 
-  @env_main
+  @env_main @check
   Scenario: Check Filters on Sample page work as expected
     Given API: I create 10 new cases with a new sample foreach of them
     Then API: I check that POST call body is "OK"
@@ -13,7 +13,7 @@ Feature: Sample filter functionality
     When I search for samples created with the API
     Then I check the displayed specimen condition filter dropdown
     When I search for samples created with the API
-    Then I check the displayed Laboratory filter dropdown
+    Then I validate that number of displayed samples is correct for applied Voreingestelltes Labor filter
 
   @tmsLink=SORDEV-5981 @env_main
   Scenario: Check all filters are work properly in Samples directory

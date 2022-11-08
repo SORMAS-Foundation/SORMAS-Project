@@ -20,10 +20,10 @@ package de.symeda.sormas.api.utils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Language;
 
@@ -308,7 +308,9 @@ public class DateHelperTest {
 		assertFalse(DateHelper.isDateBefore(null, null));
 		// is time properly ignored?
 		assertTrue(DateHelper.isDateBefore(UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 8, 0)), UtilDate.of(2022, Month.MAY, 2)));
-		assertFalse(DateHelper.isDateBefore(UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 8, 0)), UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 10, 0))));
+		assertFalse(
+			DateHelper
+				.isDateBefore(UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 8, 0)), UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 10, 0))));
 	}
 
 	@Test
@@ -322,7 +324,9 @@ public class DateHelperTest {
 		assertFalse(DateHelper.isDateAfter(null, null));
 		// is time properly ignored?
 		assertTrue(DateHelper.isDateAfter(UtilDate.from(LocalDateTime.of(2022, Month.MAY, 2, 8, 0)), UtilDate.of(2022, Month.MAY, 1)));
-		assertFalse(DateHelper.isDateAfter(UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 10, 0)), UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 8, 0))));
+		assertFalse(
+			DateHelper
+				.isDateAfter(UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 10, 0)), UtilDate.from(LocalDateTime.of(2022, Month.MAY, 1, 8, 0))));
 	}
 
 	@Test

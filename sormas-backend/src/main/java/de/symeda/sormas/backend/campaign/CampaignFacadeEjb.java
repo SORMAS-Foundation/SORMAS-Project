@@ -380,11 +380,6 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public List<CampaignDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<String> getAllActiveUuids() {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();

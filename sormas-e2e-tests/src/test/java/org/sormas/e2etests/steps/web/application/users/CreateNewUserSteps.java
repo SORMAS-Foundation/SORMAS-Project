@@ -231,7 +231,6 @@ public class CreateNewUserSteps implements En {
     When(
         "I create {int} new users with National User via UI",
         (Integer users) -> {
-          List<User> userList = new ArrayList<>();
           for (int i = 0; i < users; i++) {
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
@@ -668,6 +667,7 @@ public class CreateNewUserSteps implements En {
   }
 
   private void fillPostalCode(String postalCode) {
+    webDriverHelpers.scrollToElement(POSTAL_CODE_INPUT);
     webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, postalCode);
   }
 

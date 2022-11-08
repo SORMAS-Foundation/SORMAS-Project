@@ -44,7 +44,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public DTO getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return Optional.of(uuid).map(u -> service.getByUuid(u, true)).map(this::toPseudonymizedDto).orElse(null);
 	}
 
 	@Override
@@ -54,7 +54,8 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public List<DTO> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		return service.getByUuids(uuids).stream().map(source -> toPseudonymizedDto(source, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -75,15 +76,8 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return service.getObsoleteUuidsSince(since);
 	}
 
-	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
-
-		if (source == null) {
-			return null;
-		}
-
-		DTO dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
-		return dto;
+	public DTO toPseudonymizedDto(ADO source) {
+		return toPseudonymizedDto(source, createPseudonymizer());
 	}
 
 	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer) {
@@ -94,6 +88,17 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 		boolean inJurisdiction = isAdoInJurisdiction(source);
 		return toPseudonymizedDto(source, pseudonymizer, inJurisdiction);
+	}
+
+	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
+		if (source == null) {
+			return null;
+		}
+
+		DTO dto = toDto(source);
+		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
+		return dto;
 	}
 
 	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity) {

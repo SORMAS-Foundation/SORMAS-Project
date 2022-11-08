@@ -237,8 +237,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
 		return (detailedReferences)
-			? convertToDetailedReferenceDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight))
-			: toPseudonymizedDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+			? convertToDetailedReferenceDto(service.getByUuid(uuid), createPseudonymizer())
+			: toPseudonymizedDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -273,7 +273,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		EventDto existingDto = toDto(existingEvent);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingEvent, pseudonymizer);
 
 		validate(dto);

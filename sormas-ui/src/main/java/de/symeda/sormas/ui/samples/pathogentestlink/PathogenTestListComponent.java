@@ -30,16 +30,18 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends SideComponent {
 
-	public PathogenTestListComponent(SampleReferenceDto sampleRef, Consumer<Runnable> actionCallback) {
+	public PathogenTestListComponent(SampleReferenceDto sampleRef, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 
 		super(I18nProperties.getString(Strings.headingTests), actionCallback);
 
-		addCreateButton(
-			I18nProperties.getCaption(Captions.pathogenTestNewTest),
-			() -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, (pathogenTest, callback) -> callback.run()),
-			UserRight.PATHOGEN_TEST_CREATE);
+		if (isEditAllowed) {
+			addCreateButton(
+				I18nProperties.getCaption(Captions.pathogenTestNewTest),
+				() -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, (pathogenTest, callback) -> callback.run()),
+				UserRight.PATHOGEN_TEST_CREATE);
+		}
 
-		PathogenTestList pathogenTestList = new PathogenTestList(sampleRef, actionCallback);
+		PathogenTestList pathogenTestList = new PathogenTestList(sampleRef, actionCallback, isEditAllowed);
 		addComponent(pathogenTestList);
 		pathogenTestList.reload();
 	}

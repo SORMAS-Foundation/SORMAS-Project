@@ -123,13 +123,14 @@ public class VaccinationController {
 		UiFieldAccessCheckers fieldAccessCheckers,
 		boolean doSave,
 		Consumer<VaccinationDto> commitCallback,
-		Runnable deleteCallback) {
+		Runnable deleteCallback,
+		boolean isEditAllowed) {
 
 		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
 		form.setValue(vaccination);
 
 		final CommitDiscardWrapperComponent<VaccinationEditForm> createComponent =
-			getVaccinationEditComponent(vaccination, disease, fieldAccessCheckers, doSave, commitCallback);
+			getVaccinationEditComponent(vaccination, disease, fieldAccessCheckers, doSave, commitCallback, isEditAllowed);
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
@@ -177,27 +178,32 @@ public class VaccinationController {
 		Disease disease,
 		UiFieldAccessCheckers fieldAccessCheckers,
 		boolean doSave,
-		Consumer<VaccinationDto> commitCallback) {
+		Consumer<VaccinationDto> commitCallback,
+		boolean isEditAllowed) {
 
 		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
 		form.setValue(vaccination);
 
-		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent = new CommitDiscardWrapperComponent<>(
+			form,
+			UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT) && isEditAllowed,
+			form.getFieldGroup());
 		editComponent.getCommitButton().setCaption(doSave ? I18nProperties.getCaption(Captions.actionSave) : I18nProperties.getString(Strings.done));
 
-		editComponent.addCommitListener(() -> {
-			if (!form.getFieldGroup().isModified()) {
-				if (doSave) {
-					FacadeProvider.getVaccinationFacade().save(form.getValue());
+		if (isEditAllowed) {
+			editComponent.addCommitListener(() -> {
+				if (!form.getFieldGroup().isModified()) {
+					if (doSave) {
+						FacadeProvider.getVaccinationFacade().save(form.getValue());
+					}
+					if (commitCallback != null) {
+						commitCallback.accept(form.getValue());
+					}
 				}
-				if (commitCallback != null) {
-					commitCallback.accept(form.getValue());
-				}
-			}
-		});
+			});
+		}
+		editComponent.getButtonsPanel().setVisible(isEditAllowed);
 
 		return editComponent;
 	}
-
 }

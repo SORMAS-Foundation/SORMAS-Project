@@ -33,32 +33,45 @@ public class SurveillanceReportController {
 			SurveillanceReportDto.build(caze, FacadeProvider.getUserFacade().getCurrentUser().toReference()),
 			Strings.headingCreateSurveillanceReport,
 			false,
-			callback);
+			callback,
+			true);
 	}
 
-	public void editSurveillanceReport(SurveillanceReportDto report, Runnable callback) {
-		openEditWindow(report, Strings.headingEditSurveillanceReport, true, callback);
+	public void editSurveillanceReport(SurveillanceReportDto report, Runnable callback, boolean isEditAllowed) {
+		openEditWindow(
+			report,
+			isEditAllowed ? Strings.headingEditSurveillanceReport : Strings.headingViewSurveillanceReport,
+			true,
+			callback,
+			isEditAllowed);
 	}
 
-	private void openEditWindow(SurveillanceReportDto report, String titleTag, boolean canDelete, Runnable callback) {
+	private void openEditWindow(SurveillanceReportDto report, String titleTag, boolean canDelete, Runnable callback, boolean isEditAllowed) {
 		SurveillanceReportForm surveillanceReportForm = new SurveillanceReportForm(report);
 		surveillanceReportForm.setWidth(600, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<SurveillanceReportForm> editView =
-			new CommitDiscardWrapperComponent<>(surveillanceReportForm, surveillanceReportForm.getFieldGroup());
-		editView.addCommitListener(() -> {
-			FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReportForm.getValue());
-			callback.run();
-		});
+			new CommitDiscardWrapperComponent<>(surveillanceReportForm, isEditAllowed, surveillanceReportForm.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(titleTag));
 
-		if (canDelete) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getSurveillanceReportFacade().deleteSurveillanceReport(report.getUuid());
-				window.close();
+		if (isEditAllowed) {
+			editView.addCommitListener(() -> {
+				FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReportForm.getValue());
 				callback.run();
-			}, I18nProperties.getCaption(SurveillanceReportDto.I18N_PREFIX));
+			});
+			if (canDelete) {
+				editView.addDeleteListener(() -> {
+					FacadeProvider.getSurveillanceReportFacade().deleteSurveillanceReport(report.getUuid());
+					window.close();
+					callback.run();
+				}, I18nProperties.getCaption(SurveillanceReportDto.I18N_PREFIX));
+			}
 		}
+		editView.getButtonsPanel().setVisible(isEditAllowed);
+	}
+
+	public void viewSurveillanceReport(SurveillanceReportDto report, Runnable callback, boolean isEditAllowed) {
+		openEditWindow(report, Strings.headingViewSurveillanceReport, false, callback, isEditAllowed);
 	}
 }

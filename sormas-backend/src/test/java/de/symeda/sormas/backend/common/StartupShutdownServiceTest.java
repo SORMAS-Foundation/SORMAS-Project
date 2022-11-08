@@ -4,9 +4,8 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.testcontainers.containers.PostgreSQLContainer.POSTGRESQL_PORT;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +29,7 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
@@ -59,14 +57,14 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 		for (String version : SUPPORTED_DATABASE_VERSIONS) {
 			assertTrue(
-				String.format("Supported version not recognized correctly: '%s'", version),
-				StartupShutdownService.isSupportedDatabaseVersion(version));
+				StartupShutdownService.isSupportedDatabaseVersion(version),
+				String.format("Supported version not recognized correctly: '%s'", version));
 		}
 
 		for (String version : UNSUPPORTED_DATABASE_VERSIONS) {
 			assertFalse(
-				String.format("Unsupported version not recognized correctly: '%s'", version),
-				StartupShutdownService.isSupportedDatabaseVersion(version));
+				StartupShutdownService.isSupportedDatabaseVersion(version),
+				String.format("Unsupported version not recognized correctly: '%s'", version));
 		}
 	}
 
@@ -158,7 +156,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 			result.append("\n");
 			Arrays.stream(objects).forEach(o -> result.append((o != null ? o.toString() : "") + " "));
 		});
-		assertTrue(result.toString(), CollectionUtils.isEmpty(results));
+		assertTrue(CollectionUtils.isEmpty(results), result.toString());
 	}
 
 	/**
@@ -188,8 +186,8 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 						for (int v = currentVersion + 1; v < nextVersion; v++) {
 							assertTrue(
-								"Missing version: " + v + " ( found " + nextVersion + " after " + currentVersion + ")",
-								omittedVersionsList.contains(v));
+								omittedVersionsList.contains(v),
+								"Missing version: " + v + " ( found " + nextVersion + " after " + currentVersion + ")");
 						}
 
 						currentVersion = nextVersion;
@@ -209,7 +207,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 			this.waitStrategy = new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*\\s")
 				.withTimes(2)
 				.withStartupTimeout(Duration.of(60, SECONDS));
-			addExposedPort(POSTGRESQL_PORT);
+			addExposedPort(5432);
 			withEnv("POSTGRES_USER", getUsername());
 			withEnv("POSTGRES_PASSWORD", getPassword());
 			withEnv("POSTGRES_DB", getDatabaseName());
@@ -223,8 +221,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		@Override
 		public String getJdbcUrl() {
 			String additionalUrlParams = constructUrlParameters("?", "&");
-			return "jdbc:postgresql://" + getContainerIpAddress() + ":" + getMappedPort(POSTGRESQL_PORT) + "/" + getDatabaseName()
-				+ additionalUrlParams;
+			return "jdbc:postgresql://" + getContainerIpAddress() + ":" + getMappedPort(5432) + "/" + getDatabaseName() + additionalUrlParams;
 		}
 
 		@Override

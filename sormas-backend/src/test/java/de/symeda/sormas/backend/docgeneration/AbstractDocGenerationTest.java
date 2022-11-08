@@ -4,7 +4,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -32,7 +32,7 @@ public abstract class AbstractDocGenerationTest extends AbstractBeanTest {
 		MockProducer.getProperties().remove(ConfigFacadeEjb.DOCGENERATION_NULL_REPLACEMENT);
 	}
 
-	@After
+	@AfterEach
 	public void teardown() throws URISyntaxException {
 		reset();
 	}

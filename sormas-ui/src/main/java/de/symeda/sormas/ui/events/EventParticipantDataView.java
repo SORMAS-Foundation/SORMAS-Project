@@ -135,13 +135,17 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
+		EditPermissionType eventParticipantEditAllowed =
+			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantRef.getUuid());
+
 		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				sampleCriteria.eventParticipant(eventParticipantRef)
 					.disease(event.getDisease())
 					.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
-				this::showUnsavedChangesPopup);
+				this::showUnsavedChangesPopup,
+				true);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -206,11 +210,10 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 						.eventParticipantReference(getReference())
 						.region(region)
 						.district(district);
-				}, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
+				}, this::showUnsavedChangesPopup, true)), VACCINATIONS_LOC);
 			}
 		}
 
-		final EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getEventParticipantFacade().isDeleted(uuid);
 
 		if (deleted) {
