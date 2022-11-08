@@ -1,16 +1,17 @@
 package de.symeda.sormas.backend.feature;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Test;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import org.junit.Test;
-
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertTrue;
 
 public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 

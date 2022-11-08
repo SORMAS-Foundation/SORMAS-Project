@@ -99,6 +99,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionProceed = "actionProceed";
 	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
 	String actionReset = "actionReset";
@@ -535,6 +536,7 @@ public interface Captions {
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
+	String caseJurisdictionType = "caseJurisdictionType";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";

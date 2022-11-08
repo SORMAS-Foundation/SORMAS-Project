@@ -71,8 +71,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	@Override
 	public DTO getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return toPseudonymizedDto(service.getByUuid(uuid, true), pseudonymizer);
+		return toPseudonymizedDto(service.getByUuid(uuid, true));
 	}
 
 	@Override
@@ -110,7 +109,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		DTO existingDto = toDto(existingAdo);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingAdo, pseudonymizer);
 
 		validate(dto);
@@ -248,10 +247,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	protected abstract CoreEntityType getCoreEntityType();
-
-	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction);
-
-	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
 	@DenyAll
 	public void archive(String entityUuid, Date endOfProcessingDate) {

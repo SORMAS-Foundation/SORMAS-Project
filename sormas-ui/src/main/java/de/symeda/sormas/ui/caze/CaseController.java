@@ -1214,10 +1214,14 @@ public class CaseController {
 				callback);
 	}
 
-	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
+	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(
+		final String caseUuid,
+		ViewMode viewMode,
+		boolean isEditAllowed) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, viewMode, caze.isPseudonymized(), caze.isInJurisdiction());
+		HospitalizationForm hospitalizationForm =
+			new HospitalizationForm(caze, viewMode, caze.isPseudonymized(), caze.isInJurisdiction(), isEditAllowed);
 		hospitalizationForm.setValue(caze.getHospitalization());
 
 		final CommitDiscardWrapperComponent<HospitalizationForm> editView = new CommitDiscardWrapperComponent<HospitalizationForm>(
@@ -1360,11 +1364,19 @@ public class CaseController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, Consumer<Boolean> sourceContactsToggleCallback) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(
+		final String caseUuid,
+		Consumer<Boolean> sourceContactsToggleCallback,
+		boolean isEditAllowed) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		EpiDataForm epiDataForm =
-			new EpiDataForm(caze.getDisease(), CaseDataDto.class, caze.isPseudonymized(), caze.isInJurisdiction(), sourceContactsToggleCallback);
+		EpiDataForm epiDataForm = new EpiDataForm(
+			caze.getDisease(),
+			CaseDataDto.class,
+			caze.isPseudonymized(),
+			caze.isInJurisdiction(),
+			sourceContactsToggleCallback,
+			isEditAllowed);
 		epiDataForm.setValue(caze.getEpiData());
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();

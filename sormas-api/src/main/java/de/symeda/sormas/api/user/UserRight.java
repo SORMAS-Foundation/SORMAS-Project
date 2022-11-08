@@ -20,6 +20,7 @@ package de.symeda.sormas.api.user;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public enum UserRight {
 
 	//@formatter:off
 	CASE_VIEW(UserRightGroup.CASE, UserRight._PERSON_VIEW),
-	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW),
+	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_VIEW),
 	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT),
 	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
@@ -64,6 +65,7 @@ public enum UserRight {
 	PERSON_DELETE(UserRightGroup.PERSON, UserRight._PERSON_VIEW, UserRight._VISIT_DELETE),
 	PERSON_EXPORT(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 	PERSON_CONTACT_DETAILS_DELETE(UserRightGroup.PERSON, UserRight._PERSON_EDIT),
+	PERSON_MERGE(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 
 	SAMPLE_VIEW(UserRightGroup.SAMPLE),
 	SAMPLE_CREATE(UserRightGroup.SAMPLE, UserRight._SAMPLE_VIEW),
@@ -478,5 +480,17 @@ public enum UserRight {
 
 	public static Set<UserRight> getUserRightsOfGroup(UserRightGroup userRightGroup) {
 		return Arrays.stream(values()).filter(userRight -> userRight.getUserRightGroup() == userRightGroup).collect(Collectors.toSet());
+	}
+
+	public static Set<UserRight> requiredRightFromUserRights(UserRight userRight, Set<UserRight> userRights) {
+
+		Set<UserRight> requiredRights = new HashSet<>();
+		for (Map.Entry<UserRight, Set<UserRight>> entry : userRightDependencies.entrySet()) {
+			UserRight keyRight = entry.getKey();
+			if (entry.getValue().contains(userRight) && userRights.contains(keyRight)) {
+				requiredRights.add(keyRight);
+			}
+		}
+		return requiredRights;
 	}
 }

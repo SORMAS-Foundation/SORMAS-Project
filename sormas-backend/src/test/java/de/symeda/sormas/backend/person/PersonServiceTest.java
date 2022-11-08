@@ -2,9 +2,9 @@ package de.symeda.sormas.backend.person;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.person.PersonAssociation;

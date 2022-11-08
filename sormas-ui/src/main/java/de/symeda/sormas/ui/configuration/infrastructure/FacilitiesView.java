@@ -433,7 +433,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
-		searchField.setValue(criteria.getNameCityLike());
+		searchField.setValue(criteria.getNameAddressLike());
 		typeGroupFilter.setValue(criteria.getTypeGroup());
 		typeFilter.setValue(criteria.getType());
 		countryFilter.setValue(criteria.getCountry());

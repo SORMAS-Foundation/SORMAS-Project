@@ -219,7 +219,8 @@ public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWra
 					if (!vaccinationsToCreate.contains(v)) {
 						vaccinationsToUpdate.add(v);
 					}
-				});
+				},
+				true);
 
 		currentVaccinationEditComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 		currentVaccinationEditComponent.getButtonsPanel()

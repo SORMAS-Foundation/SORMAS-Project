@@ -45,14 +45,17 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PaginationList;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
 public class SurveillanceReportList extends PaginationList<SurveillanceReportDto> {
 
 	private final SurveillanceReportCriteria criteria = new SurveillanceReportCriteria();
+	private final boolean isEditAllowed;
 
-	public SurveillanceReportList(CaseReferenceDto caze) {
+	public SurveillanceReportList(CaseReferenceDto caze, boolean isEditAllowed) {
 		super(5);
 		criteria.caze(caze);
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -77,16 +80,19 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			SurveillanceReportDto report = displayedEntries.get(i);
 			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(report);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
-				listEntry.addEditListener(
-					i,
+				listEntry.addActionButton(
+					report.getUuid(),
 					(Button.ClickListener) event -> ControllerProvider.getSurveillanceReportController()
-						.editSurveillanceReport(listEntry.getReport(), this::reload));
+						.editSurveillanceReport(listEntry.getReport(), this::reload, isEditAllowed),
+					isEditAllowed);
+
 			}
+			listEntry.setEnabled(isEditAllowed);
 			listLayout.addComponent(listEntry);
 		}
 	}
 
-	public class SurveillanceReportListEntry extends HorizontalLayout {
+	public class SurveillanceReportListEntry extends SideComponentField {
 
 		private final SurveillanceReportDto report;
 
@@ -99,17 +105,11 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			this.fieldAccessCheckers = UiFieldAccessCheckers
 				.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(report.isInJurisdiction()), report.isPseudonymized());
 
-			setMargin(false);
-			setSpacing(true);
-			setWidth(100, Unit.PERCENTAGE);
-			addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-
 			VerticalLayout mainLayout = new VerticalLayout();
 			mainLayout.setWidth(100, Unit.PERCENTAGE);
 			mainLayout.setMargin(false);
 			mainLayout.setSpacing(false);
-			addComponent(mainLayout);
-			setExpandRatio(mainLayout, 1);
+			addComponentToField(mainLayout);
 
 			Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
 			mainLayout.addComponent(createRow(null, report.getReportingType(), SurveillanceReportDto.REPORTING_TYPE));

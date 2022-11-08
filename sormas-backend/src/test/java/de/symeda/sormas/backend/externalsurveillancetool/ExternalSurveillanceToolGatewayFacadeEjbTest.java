@@ -2,29 +2,41 @@ package de.symeda.sormas.backend.externalsurveillancetool;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventService;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -50,35 +62,29 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
+@WireMockTest(httpPort = 8888)
 public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTest {
 
-	private static final int WIREMOCK_TESTING_PORT = 7777;
 
-	private ExternalSurveillanceToolFacade subjectUnderTest;
-
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
-
-	@Before
-	public void setup() {
-		configureExternalSurvToolUrlForWireMock();
-		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+	@BeforeEach
+	public void setup(WireMockRuntimeInfo wireMockRuntime) {
+		configureExternalSurvToolUrlForWireMock(wireMockRuntime);
 	}
 
-	@After
+	@AfterEach
 	public void teardown() {
 		clearExternalSurvToolUrlForWireMock();
 	}
 
 	@Test
 	public void testFeatureIsEnabledWhenExternalSurvToolUrlIsSet() {
-		assertTrue(subjectUnderTest.isFeatureEnabled());
+		assertTrue(getExternalSurveillanceToolGatewayFacade().isFeatureEnabled());
 	}
 
 	@Test
 	public void testFeatureIsDisabledWhenExternalSurvToolUrlIsEmpty() {
 		MockProducer.getProperties().setProperty("survnet.url", "");
-		assertFalse(subjectUnderTest.isFeatureEnabled());
+		assertFalse(getExternalSurveillanceToolGatewayFacade().isFeatureEnabled());
 	}
 
 	@Test
@@ -92,7 +98,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid()), true);
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), true);
 
 		ExternalShareInfoCriteria externalShareInfoCriteria1 = new ExternalShareInfoCriteria().caze(case1.toReference());
 		assertThat(getExternalShareInfoFacade().getIndexList(externalShareInfoCriteria1, 0, 100), hasSize(1));
@@ -111,7 +117,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()), true);
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()), true);
 
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case1.toReference()), 0, 100), hasSize(1));
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case2.toReference()), 0, 100), hasSize(1));
@@ -125,7 +131,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		try {
-			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"), true);
+			getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"), true);
 		} catch (ExternalSurveillanceToolException e) {
 			assertThat(e.getMessage(), Matchers.is(I18nProperties.getString("ExternalSurveillanceToolGateway.notificationErrorSending")));
 		}
@@ -133,13 +139,13 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 
 	@Test
 	public void testSendingEventsOk() throws ExternalSurveillanceToolException {
-        EventDto event1 = createEventDto("event1", "description1", "Event1", "Event1", "123");
+		EventDto event1 = createEventDto("event1", "description1", "Event1", "Event1", "123");
 
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(event1.getUuid()))
-                        .withRequestBody(containing("eventUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-        subjectUnderTest.sendEvents(Arrays.asList(event1.getUuid()), true);
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(event1.getUuid()))
+				.withRequestBody(containing("eventUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		getExternalSurveillanceToolGatewayFacade().sendEvents(Arrays.asList(event1.getUuid()), true);
 
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().event(event1.toReference()), 0, 100), hasSize(1));
 	}
@@ -156,7 +162,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		EventDto event = createEventDto("Test", "Description", "John", "Doe", "123456");
 
-		subjectUnderTest.deleteEvents(Collections.singletonList(event));
+		getExternalSurveillanceToolGatewayFacade().deleteEvents(Collections.singletonList(event));
 
 		List<ExternalShareInfoDto> shareInfoList =
 			getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().event(event.toReference()), 0, 100);
@@ -177,7 +183,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		EventDto event = createEventDto("xyz", "nope", "Jane", "D", "111222333");
-		subjectUnderTest.deleteEvents(Collections.singletonList(event));
+		getExternalSurveillanceToolGatewayFacade().deleteEvents(Collections.singletonList(event));
 
 		List<ExternalShareInfoDto> shareInfoList =
 			getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().event(event.toReference()), 0, 100);
@@ -196,7 +202,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		CaseDataDto caze = createCaseDataDto();
 
-		subjectUnderTest.deleteCases(Collections.singletonList(caze));
+		getExternalSurveillanceToolGatewayFacade().deleteCases(Collections.singletonList(caze));
 
 		List<ExternalShareInfoDto> shareInfoList =
 			getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(caze.toReference()), 0, 100);
@@ -205,12 +211,134 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		assertThat(shareInfoList.get(0).getStatus(), is(ExternalShareStatus.DELETED));
 	}
 
-	private void configureExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForCase_WithProperEntity(WireMockRuntimeInfo wireMockRuntime) {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		Case case1 = getCaseService().getByUuid(caze.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
+
+		stubFor(
+				post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+						.withRequestBody(containing("caseUuids"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+
+		wireMockRuntime.getWireMock().verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
 	}
 
-	private void clearExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", "");
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForCase_WithoutProperEntity(WireMockRuntimeInfo wireMockRuntime) {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		CaseDataDto caze = creator.createCase(user, person, rdcf);
+
+		stubFor(
+				post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+						.withRequestBody(containing("caseUuids"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		//the case does not have an externalId set and after the filtering the sendCases will not be called
+		getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
+	}
+
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForCase_Exception() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		CaseDataDto caseDataDto = creator.createCase(user, person, rdcf);
+		Case caze = getCaseService().getByUuid(caseDataDto.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
+
+		stubFor(
+				post(urlEqualTo("/export")).withRequestBody(containing(caseDataDto.getUuid()))
+						.withRequestBody(containing("caseUuids"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+
+		assertThrows(
+				ExternalSurveillanceToolRuntimeException.class,
+				() -> getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true));
+	}
+
+
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForEvent_WithProperEntity(WireMockRuntimeInfo wireMockRuntime) {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+
+		EventDto eventDto = creator.createEvent(
+				EventStatus.SIGNAL,
+				EventInvestigationStatus.PENDING,
+				"",
+				"",
+				"",
+				"",
+				"",
+				TypeOfPlace.FACILITY,
+				new Date(),
+				new Date(),
+				user,
+				user,
+				Disease.DENGUE,
+				rdcf);
+
+		Event event = getEventService().getByUuid(eventDto.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
+		EventService eventService = getBean(EventService.class);
+
+		stubFor(
+				post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
+						.withRequestBody(containing("eventUuids"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		eventService.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), false);
+		wireMockRuntime.getWireMock().verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
+	}
+
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForEvent_Exception() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+
+		EventDto eventDto = creator.createEvent(
+				EventStatus.SIGNAL,
+				EventInvestigationStatus.PENDING,
+				"",
+				"",
+				"",
+				"",
+				"",
+				TypeOfPlace.FACILITY,
+				new Date(),
+				new Date(),
+				user,
+				user,
+				Disease.DENGUE,
+				rdcf);
+
+		Event event = getEventService().getByUuid(eventDto.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
+
+		EventService eventService = getBean(EventService.class);
+
+		stubFor(
+				post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
+						.withRequestBody(containing("eventUuids"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+
+		assertThrows(
+				ExternalSurveillanceToolRuntimeException.class,
+				() -> eventService.setArchiveInExternalSurveillanceToolForEntity(eventDto.getUuid(), true));
 	}
 
 	private EventDto createEventDto(
@@ -287,5 +415,13 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 			p.getAddresses().add(isolationAddress);
 		});
 		return creator.createCase(user.toReference(), personDto.toReference(), rdcf);
+	}
+
+	private void configureExternalSurvToolUrlForWireMock(WireMockRuntimeInfo wireMockRuntime) {
+		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", wireMockRuntime.getHttpPort()));
+	}
+
+	private void clearExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", "");
 	}
 }

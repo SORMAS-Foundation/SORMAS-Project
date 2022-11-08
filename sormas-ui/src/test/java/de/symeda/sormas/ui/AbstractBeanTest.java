@@ -34,9 +34,11 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import org.apache.commons.io.input.BOMInputStream;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.opencsv.CSVReader;
 
@@ -82,18 +84,29 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import info.novatec.beantest.api.BaseBeanTest;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator();
 
+	@BeforeEach
+	public void beforeEach() {
+		// so we can override init
+		init();
+	}
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.
 	 */
-	@Before
 	public void init() {
-		MockProducer.resetMocks();
+
+		super.initilaize();
+
+		MockProducer.wireMocks();
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
@@ -110,6 +123,14 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 //				.stream()
 //				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
 //		});
+		createDiseaseConfigurations();
+	}
+
+	@AfterEach
+	public void cleanUp() {
+
+		super.cleanUp();
+		MockProducer.resetMocks();
 	}
 
 	private void createTestUser() {
@@ -141,13 +162,21 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		em.getTransaction().commit();
 	}
 
+	private void createDiseaseConfigurations() {
+		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
+			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
+			getDiseaseConfigurationService().ensurePersisted(configuration);
+		});
+	}
+
 	private void initTestUser() {
 		EntityManager em = getEntityManager();
 		em.getTransaction().begin();
 
 		Query nativeQuery = em.createNativeQuery(
-				"INSERT INTO location (id, uuid, creationdate, changedate) values (0, '"
-						+ DataHelper.createUuid() + "', now(), now())");
+			"INSERT INTO location (id, uuid, creationdate, changedate) values (0, '" + DataHelper.createUuid() + "', now(), now())");
 		nativeQuery.executeUpdate();
 
 		nativeQuery = em.createNativeQuery(
@@ -167,16 +196,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 
 		em.getTransaction().commit();
-	}
-
-	@Before
-	public void createDiseaseConfigurations() {
-		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
-		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
-			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
-			getDiseaseConfigurationService().ensurePersisted(configuration);
-		});
 	}
 
 	public CurrentUserService getCurrentUserService() {

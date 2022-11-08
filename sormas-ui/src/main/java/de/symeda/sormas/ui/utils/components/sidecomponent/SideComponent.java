@@ -50,7 +50,7 @@ public class SideComponent extends VerticalLayout {
 	}
 
 	protected void addCreateButton(String caption, Runnable callback, UserRight... userRights) {
-		if (userHasRight(userRights)) {
+		if (userRights.length == 0 || userHasRight(userRights)) {
 			Button createButton = ButtonHelper.createButton(caption);
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);

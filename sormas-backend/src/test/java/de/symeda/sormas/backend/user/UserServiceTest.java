@@ -7,10 +7,10 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -20,9 +20,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -40,7 +40,7 @@ public class UserServiceTest extends AbstractBeanTest {
 
 	private static MockedStatic<AuthProvider> mockAuthProvider;
 
-	@BeforeClass
+	@BeforeAll
 	public static void beforeClass() {
 		AuthProvider authProvider = mock(AuthProvider.class);
 		mockAuthProvider = mockStatic(AuthProvider.class);
@@ -48,8 +48,8 @@ public class UserServiceTest extends AbstractBeanTest {
 		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	public static void AfterAll() {
 		assertNotNull(mockAuthProvider);
 		//Important: release static mock.
 		mockAuthProvider.closeOnDemand();

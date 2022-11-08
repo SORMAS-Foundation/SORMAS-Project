@@ -131,6 +131,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>PERSON_MERGE</role-name>
+        <group-name>PERSON_MERGE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>SAMPLE_CREATE</role-name>
         <group-name>SAMPLE_CREATE</group-name>
     </security-role-mapping>

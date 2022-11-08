@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.opencsv.bean.AbstractFieldMap;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
@@ -60,7 +60,6 @@ public class LayoutWithSidePanel extends CustomLayout {
 	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
 	public void disable(String... excludedButtons) {
 		editComponent.setEditable(false, excludedButtons);
-		sidePanel.setEnabled(false);
 	}
 
 	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling

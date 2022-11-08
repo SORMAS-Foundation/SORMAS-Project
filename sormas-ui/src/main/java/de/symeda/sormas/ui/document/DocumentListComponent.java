@@ -45,15 +45,20 @@ public class DocumentListComponent extends SideComponent {
 	private final DocumentList documentList;
 	private PopupButton mainButton;
 
-	public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight, boolean pseudonymized) {
+	public DocumentListComponent(
+		DocumentRelatedEntityType relatedEntityType,
+		ReferenceDto entityRef,
+		UserRight editRight,
+		boolean pseudonymized,
+		boolean isEditAllowed) {
 		super(I18nProperties.getString(Strings.entityDocuments));
 
-		documentList = new DocumentList(relatedEntityType, entityRef, editRight, pseudonymized);
+		documentList = new DocumentList(relatedEntityType, entityRef, editRight, pseudonymized, isEditAllowed);
 		addComponent(documentList);
 		documentList.reload();
 
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_UPLOAD)) {
+		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_UPLOAD) && isEditAllowed) {
 			Button uploadButton = buildUploadButton(relatedEntityType, entityRef);
 			addCreateButton(uploadButton);
 		}
@@ -65,7 +70,8 @@ public class DocumentListComponent extends SideComponent {
 		uploadLayout.setMargin(true);
 		uploadLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 
-		mainButton = ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
+		mainButton =
+			ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
 
 		boolean multipleUpload = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS_MULTI_UPLOAD);
 
