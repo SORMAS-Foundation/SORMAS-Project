@@ -19,9 +19,17 @@ Feature: Region end to end tests
     Then I check that number of regions is at least 17
     And I check that Voreingestellte Bundeslander is correctly displayed in German
 
-  @env_main @#7468_1
+  @env_main @#7468
   Scenario: Validate Regions Configuration section
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
     Then I navigate to regions tab in Configuration
     Then I Verify the page elements are present in Regions Configuration Page
+
+  @env_main @#7468
+  Scenario: Check Regions Configuration search and reset functionalities
+    Given I log in as a Admin User
+    And I click on the Configuration button from navbar
+    Then I navigate to regions tab in Configuration
+    Then I verify the Search and Reset filter functionality in Regions Configuration page
+    Then I verify the Country combo box returns appropriate filter results in Regions Configuration page

@@ -34,6 +34,8 @@ public class RegionsTabPage {
           "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
   public static final By REGIONS_TABLE_DATA = By.tagName("td");
   public static final By REGIONS_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By REGIONS_NAME_TABLE_ROW =
+      By.cssSelector("div.v-grid-tablewrapper tbody tr >:nth-child(2)");
   public static final By REGIONS_COLUMN_HEADERS =
       By.cssSelector("thead" + " .v-grid-column-default-header-content");
   public static final By COUNTRY_REGION_FILTER_COMBOBOX =

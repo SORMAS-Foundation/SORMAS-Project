@@ -25,6 +25,7 @@ import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.IMPORT_BUTTON_REGIONS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.NEW_ENTRY_BUTTON_REGIONS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.REGIONS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.REGIONS_NAME_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.REGIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.REGIONS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.RELEVANCE_STATUS_COMBO_BOX_REGIONS_CONFIGURATION;
@@ -138,6 +139,37 @@ public class ConfigurationRegionsSteps implements En {
               webDriverHelpers.isElementPresent(RELEVANCE_STATUS_COMBO_BOX_REGIONS_CONFIGURATION),
               "Relevance status Combo box is Not present in Regions Configuration");
           softly.assertAll();
+        });
+
+    Then(
+        "I verify the Search and Reset filter functionality in Regions Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_REGIONS_CONFIGURATION);
+          Integer defaultCountriesCount =
+              webDriverHelpers.getNumberOfElements(REGIONS_NAME_TABLE_ROW);
+          String countries = webDriverHelpers.getTextFromWebElement(REGIONS_NAME_TABLE_ROW);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_INPUT_REGIONS_CONFIGURATION, countries);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(REGIONS_NAME_TABLE_ROW, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(REGIONS_NAME_TABLE_ROW, countries);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON_REGIONS_CONFIGURATION);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              REGIONS_NAME_TABLE_ROW, defaultCountriesCount);
+        });
+
+    Then(
+        "I verify the Country combo box returns appropriate filter results in Regions Configuration page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              COUNTRY_REGION_FILTER_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(COUNTRY_REGION_FILTER_COMBOBOX, "Germany");
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(REGIONS_NAME_TABLE_ROW, 19);
         });
   }
 
