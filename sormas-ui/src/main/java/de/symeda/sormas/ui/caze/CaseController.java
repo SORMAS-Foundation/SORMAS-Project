@@ -1139,7 +1139,7 @@ public class CaseController {
 				} else {
 					deleteCase(caze, false, deleteDetails);
 				}
-			}, (deleteDetails) -> {
+			}, getDeleteConfirmationDetails(Collections.singletonList(caze.getUuid())), (deleteDetails) -> {
 				FacadeProvider.getCaseFacade().undelete(caze.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCase), caze.getUuid(), FacadeProvider.getCaseFacade());
