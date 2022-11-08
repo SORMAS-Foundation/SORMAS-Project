@@ -1536,13 +1536,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		return new Page<>(personIndexList, offset, size, totalElementCount);
 	}
 
-	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
-		final Pseudonymizer pseudonymizer = createPseudonymizer();
-		final List<Long> inJurisdictionIDs = service.getInJurisdictionIds(persons);
-
-		return persons.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
-	}
-
 	@Override
 	protected void pseudonymizeDto(Person source, PersonDto dto, Pseudonymizer pseudonymizer, boolean isInJurisdiction) {
 		if (dto != null) {
