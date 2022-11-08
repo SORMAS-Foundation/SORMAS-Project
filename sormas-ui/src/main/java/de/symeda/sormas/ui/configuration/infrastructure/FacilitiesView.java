@@ -249,7 +249,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 
 		searchField = new SearchField();
 		searchField.addTextChangeListener(e -> {
-			criteria.nameCityLike(e.getText());
+			criteria.nameAddressLike(e.getText());
 			grid.reload();
 			rowCount.update(grid.getItemCount());
 		});
