@@ -1045,9 +1045,9 @@ public class EditEventSteps implements En {
         "I click to edit {int} vaccination on Edit Event Participant page",
         (Integer index) -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              getVaccinationByIndex(String.valueOf(index + 1)));
+              getVaccinationByIndex(String.valueOf(index)));
           webDriverHelpers.clickOnWebElementBySelector(
-              getVaccinationByIndex(String.valueOf(index + 1)));
+              getVaccinationByIndex(String.valueOf(index)));
         });
     When(
         "I close vaccination form in Edit Event Participant directory",
