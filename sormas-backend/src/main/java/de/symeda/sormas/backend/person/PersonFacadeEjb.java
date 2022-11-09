@@ -1391,7 +1391,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
 		}
 
-		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, first, max);
+		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, null, null);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
