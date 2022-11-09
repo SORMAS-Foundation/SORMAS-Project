@@ -915,8 +915,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		cq.select(cb.literal(true));
 
-		Predicate predicate =
-			cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), assignedToActiveEntity(cb, joins));
+		Predicate predicate = cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), assignedToActiveEntity(cb, joins));
 
 		cq.where(predicate);
 
@@ -1141,7 +1140,6 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return cb.isFalse(root.get(Sample.DELETED));
 	}
 
-
 	public boolean isEditAllowed(Sample sample) {
 		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return false;
@@ -1200,5 +1198,4 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.select(pathogenTestJoin.get(PathogenTest.TESTED_DISEASE_VARIANT));
 		return em.createQuery(cq).getResultList();
 	}
-
 }

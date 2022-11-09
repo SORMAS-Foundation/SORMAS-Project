@@ -129,7 +129,7 @@ public class ContinentsView extends AbstractConfigurationView {
 				grid,
 				this::getSelectedRows,
 				ExportEntityName.CONTINENTS,
-				Collections.singletonList(ContinentsGrid.EDIT_BTN_ID),
+				Collections.singletonList(ContinentsGrid.ACTION_BTN_ID),
 				Collections.singletonList(ContinentIndexDto.DEFAULT_NAME));
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);

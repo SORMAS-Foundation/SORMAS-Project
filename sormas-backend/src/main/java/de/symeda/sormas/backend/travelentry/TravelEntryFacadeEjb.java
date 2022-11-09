@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -185,6 +186,11 @@ public class TravelEntryFacadeEjb
 		List<TravelEntryIndexDto> travelEntryIndexList = service.getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(travelEntryIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
+	public List<TravelEntryDto> getByPersonUuids(List<String> uuids) {
+		return service.getByPersonUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

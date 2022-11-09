@@ -53,7 +53,12 @@ public class VisitController {
 
 	}
 
-	public void editVisit(String visitUuid, ContactReferenceDto contactRef, CaseReferenceDto caseRef, Consumer<VisitReferenceDto> doneConsumer) {
+	public void editVisit(
+		String visitUuid,
+		ContactReferenceDto contactRef,
+		CaseReferenceDto caseRef,
+		Consumer<VisitReferenceDto> doneConsumer,
+		boolean isEditAllowed) {
 		VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitUuid);
 		VisitEditForm editForm;
 		if (contactRef != null) {
@@ -68,21 +73,26 @@ public class VisitController {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
 		editForm.setValue(visit);
-		boolean canEdit = VisitOrigin.USER.equals(visit.getOrigin());
+		boolean canEdit = VisitOrigin.USER.equals(visit.getOrigin()) && isEditAllowed;
 		editVisit(editForm, visit.toReference(), doneConsumer, canEdit);
 	}
 
 	private void editVisit(VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer, boolean canEdit) {
 
-		final CommitDiscardWrapperComponent<VisitEditForm> editView =
-			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT), editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT) && canEdit,
+			editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
 
+		Window window;
 		if (!canEdit) {
-			editView.setEnabled(false);
+			editView.getButtonsPanel().setVisible(false);
+			window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingViewVisit));
+		} else {
+			window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
 		}
 
-		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
 		// visit form is too big for typical screens
 		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS);
 		window.setHeight(80, Unit.PERCENTAGE);

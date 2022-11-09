@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
@@ -76,19 +75,19 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	@Override
 	@PermitAll
 	public DTO getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return super.getByUuid(uuid);
 	}
 
 	@Override
 	@PermitAll
 	public REF_DTO getReferenceByUuid(String uuid) {
-		return Optional.ofNullable(uuid).map(u -> service.getByUuid(u)).map(this::toRefDto).orElse(null);
+		return super.getReferenceByUuid(uuid);
 	}
 
 	@Override
 	@PermitAll
 	public List<DTO> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return super.getByUuids(uuids);
 	}
 
 	@Override

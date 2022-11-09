@@ -99,6 +99,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionProceed = "actionProceed";
 	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
 	String actionReset = "actionReset";
@@ -2484,6 +2485,7 @@ public interface Captions {
 	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
 	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";
 	String versionIsMissing = "versionIsMissing";
+	String view = "view";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_aggregatereporting = "View.aggregatereports.aggregatereporting";

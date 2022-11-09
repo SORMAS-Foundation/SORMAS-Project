@@ -258,8 +258,8 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 				filter,
 				cb.equal(from.join(Facility.COMMUNITY, JoinType.LEFT).get(District.UUID), facilityCriteria.getCommunity().getUuid()));
 		}
-		if (facilityCriteria.getNameCityLike() != null) {
-			String[] textFilters = facilityCriteria.getNameCityLike().split("\\s+");
+		if (facilityCriteria.getNameAddressLike() != null) {
+			String[] textFilters = facilityCriteria.getNameAddressLike().split("\\s+");
 			for (String textFilter : textFilters) {
 				if (DataHelper.isNullOrEmpty(textFilter)) {
 					continue;
@@ -267,7 +267,11 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.CITY), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.POSTAL_CODE), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.CITY), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.STREET), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.HOUSE_NUMBER), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.ADDITIONAL_INFORMATION), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

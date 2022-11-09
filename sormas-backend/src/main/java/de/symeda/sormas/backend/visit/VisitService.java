@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -60,6 +61,8 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
@@ -104,6 +107,23 @@ public class VisitService extends BaseAdoService<Visit> implements JurisdictionC
 		resultSet.addAll(getAllActiveInContactsUuids());
 		resultSet.addAll(getAllActiveInCasesUuids());
 		return new ArrayList<>(resultSet);
+	}
+
+	public List<Visit> getByPersonUuids(List<String> personUuids) {
+
+		List<Visit> visits = new LinkedList<>();
+		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+			Root<Visit> root = cq.from(Visit.class);
+			Join<Visit, Person> personJoin = root.join(Visit.PERSON, JoinType.INNER);
+
+			cq.where(cb.and(personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids)));
+
+			visits.addAll(em.createQuery(cq).getResultList());
+		});
+		return visits;
 	}
 
 	private List<String> getAllActiveInContactsUuids() {

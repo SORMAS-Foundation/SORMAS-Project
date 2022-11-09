@@ -9,6 +9,7 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
@@ -27,11 +28,7 @@ public final class DirectoryImmunizationJurisdictionPredicateValidator extends P
 	}
 
 	public static DirectoryImmunizationJurisdictionPredicateValidator of(DirectoryImmunizationQueryContext qc, User user) {
-		return new DirectoryImmunizationJurisdictionPredicateValidator(
-			qc.getCriteriaBuilder(),
-			qc.getJoins(),
-			user,
-			null);
+		return new DirectoryImmunizationJurisdictionPredicateValidator(qc.getCriteriaBuilder(), qc.getJoins(), user, null);
 	}
 
 	@Override
@@ -73,7 +70,7 @@ public final class DirectoryImmunizationJurisdictionPredicateValidator extends P
 
 	@Override
 	protected Predicate whenFacilityLevel() {
-		return cb.disjunction();
+		return cb.equal(joins.getRoot().get(Immunization.HEALTH_FACILITY).get(Facility.ID), user.getHealthFacility().getId());
 	}
 
 	@Override

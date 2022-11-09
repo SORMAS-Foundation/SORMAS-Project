@@ -45,8 +45,6 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 			new FieldVisibilityCheckers(),
 			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
-		getFieldGroup().setReadOnly(readOnly);
-
 		addFields();
 
 		setWidth(680, Unit.PIXELS);

@@ -44,7 +44,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public DTO getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return Optional.of(uuid).map(u -> service.getByUuid(u, true)).map(this::toPseudonymizedDto).orElse(null);
 	}
 
 	@Override
@@ -54,7 +54,8 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public List<DTO> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		return service.getByUuids(uuids).stream().map(source -> toPseudonymizedDto(source, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
