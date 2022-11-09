@@ -423,6 +423,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
 			CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
+			if(FacadeProvider.getExternalShareInfoFacade().isSharedEntity(this.caseUuid)){
+				dontShareCheckbox.setEnabled(false);
+				dontShareCheckbox.setDescription(I18nProperties.getString(Strings.infoDontShareCheckboxAlreadyShared));
+			}
 		}
 
 		TextField externalTokenField = addField(CaseDataDto.EXTERNAL_TOKEN, TextField.class);

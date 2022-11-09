@@ -25,6 +25,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -33,7 +35,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
+import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -76,6 +81,24 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		return shareInfoList.stream().map(i -> convertToDto(i, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean isSharedEntity(String uuid) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<ExternalShareInfo> shareInfo = cq.from(ExternalShareInfo.class);
+
+		Join<ExternalShareInfo, Case> caseJoin = shareInfo.join(ExternalShareInfo.CAZE, JoinType.LEFT);
+		Join<ExternalShareInfo, Event> eventJoin = shareInfo.join(ExternalShareInfo.EVENT, JoinType.LEFT);
+
+		cq.select(cb.count(shareInfo));
+		Predicate predicate = cb.and(
+			cb.equal(shareInfo.get(ExternalShareInfo.STATUS), ExternalShareStatus.SHARED),
+			cb.or(cb.equal(caseJoin.get(Case.UUID), uuid), cb.equal(eventJoin.get(Event.UUID), uuid)));
+		cq.where(predicate);
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
 	}
 
 	private ExternalShareInfoDto convertToDto(ExternalShareInfo source, Pseudonymizer pseudonymizer) {
