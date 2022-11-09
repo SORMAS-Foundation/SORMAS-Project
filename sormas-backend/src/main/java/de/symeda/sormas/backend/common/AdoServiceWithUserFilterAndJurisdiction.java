@@ -164,7 +164,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 	 *            The entity to fetch the jurisdictions flags for.
 	 * @return {@code true}, if {@code entity} is within the current users jurisdiction or owned by him.
 	 */
-	protected boolean inJurisdictionOrOwned(ADO entity) {
+	public boolean inJurisdictionOrOwned(ADO entity) {
 		return false;
 	}
 
@@ -173,7 +173,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 	 *            The entities to fetch the jurisdictions flags for.
 	 * @return The ids of entities where the jurisdiction flag resulted {@code true}.
 	 */
-	protected List<Long> getInJurisdictionIds(List<ADO> entities) {
+	public List<Long> getInJurisdictionIds(List<ADO> entities) {
 		return Collections.emptyList();
 	}
 }
