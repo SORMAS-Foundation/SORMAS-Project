@@ -243,11 +243,13 @@ Feature: mSERS functionalities
     Then I check if popup message is "You have to specify a valid district"
     When I close popup message window in Create New Aggregate Report popup
 
-
   @tmsLink=SORDEV-11693 @env_main
   Scenario: Test Group aggregated reporting data (mSERS) by jurisdiction and epi week
     Given I log in as a Admin User
     When I click on the mSERS button from navbar
+    And I navigate to Report data tab
+    And I check aggregate reports and delete them if they are listed
+    Then I click on aggregate reporting tab
     Then I check that Grouping filter is visible in mSers directory
     And I check that Region filter is visible in mSers directory
     And I check that District filter is visible in mSers directory
