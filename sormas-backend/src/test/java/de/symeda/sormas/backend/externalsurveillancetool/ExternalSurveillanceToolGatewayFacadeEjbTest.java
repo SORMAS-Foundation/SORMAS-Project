@@ -10,33 +10,23 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventService;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -45,11 +35,12 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
@@ -61,6 +52,9 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventService;
 
 @WireMockTest(httpPort = 8888)
 public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTest {
@@ -339,6 +333,26 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		assertThrows(
 				ExternalSurveillanceToolRuntimeException.class,
 				() -> eventService.setArchiveInExternalSurveillanceToolForEntity(eventDto.getUuid(), true));
+	}
+
+	@Test
+	public void testIsSharedEntity() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		CaseDataDto case1 = creator.createCase(user, rdcf, null);
+		CaseDataDto case2 = creator.createCase(user, rdcf, null);
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
+
+		boolean shared = getExternalShareInfoFacade().isSharedEntity(case1.getUuid());
+		assertTrue(shared);
+		shared = getExternalShareInfoFacade().isSharedEntity(case2.getUuid());
+		assertFalse(shared);
 	}
 
 	private EventDto createEventDto(
