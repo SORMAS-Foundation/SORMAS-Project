@@ -194,6 +194,28 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 	}
 
 	@Override
+	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Person> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Person.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
+	@Override
+	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Person> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Person.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
+	@Override
 	public List<String> getAllUuids() {
 
 		Set<String> personUuids = new LinkedHashSet<>();
@@ -567,6 +589,13 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 				dateFilter = cb.or(dateFilter, referenceChangeDateFilterFunction.apply(referenceRoot, DateHelper.toTimestampUpper(timestamp)));
 			}
 			filter = and(cb, filter, dateFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = limitSynchronizationFilter(cb, personJoin);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, predicate);
+			}
 		}
 		if (filter != null) {
 			cq.where(filter);

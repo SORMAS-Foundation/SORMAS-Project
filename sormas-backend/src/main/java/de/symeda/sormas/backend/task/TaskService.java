@@ -42,6 +42,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -121,6 +122,28 @@ public class TaskService extends AdoServiceWithUserFilter<Task>
 		return filter;
 	}
 
+	@Override
+	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Task> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Task.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
+	@Override
+	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Task> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Task.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
 	public List<String> getAllActiveUuids(User user) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -133,6 +156,13 @@ public class TaskService extends AdoServiceWithUserFilter<Task>
 		if (user != null) {
 			Predicate userFilter = createUserFilter(taskQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = limitSynchronizationFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, predicate);
+			}
 		}
 
 		cq.where(filter);
@@ -246,7 +276,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task>
 
 		if ((taskCriteria == null || !taskCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
-				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+				.isPropertyValueTrue(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
 			&& RequestContextHolder.isMobileSync()) {
 
 			Predicate limitedCaseSyncPredicate = CriteriaBuilderHelper.and(
@@ -263,9 +293,9 @@ public class TaskService extends AdoServiceWithUserFilter<Task>
 	@Override
 	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Task> from) {
 
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED)
 			&& featureConfigurationFacade
-				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+				.isPropertyValueTrue(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
 
 			List<Predicate> predicates = new ArrayList<>();
 

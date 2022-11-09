@@ -40,9 +40,13 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
@@ -52,6 +56,7 @@ import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -61,6 +66,8 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	protected FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public PathogenTestService() {
 		super(PathogenTest.class);
@@ -79,6 +86,28 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		return filter;
 	}
 
+	@Override
+	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, PathogenTest> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(PathogenTest.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
+	@Override
+	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, PathogenTest> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(PathogenTest.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
 	public List<String> getAllActiveUuids(User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -90,6 +119,13 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = limitSynchronizationFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, predicate);
+			}
 		}
 
 		cq.where(filter);

@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -14,7 +15,11 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -23,6 +28,7 @@ import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.JurisdictionCheckService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
@@ -32,6 +38,8 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 
 	@EJB
 	private CaseService caseService;
+	@EJB
+	protected FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public ClinicalVisitService() {
 		super(ClinicalVisit.class);
@@ -75,6 +83,28 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		from.fetch(ClinicalVisit.SYMPTOMS);
 	}
 
+	@Override
+	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, ClinicalVisit> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(ClinicalVisit.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
+	@Override
+	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, ClinicalVisit> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(ClinicalVisit.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
 	public List<String> getAllActiveUuids(User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -88,6 +118,13 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = limitSynchronizationFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, predicate);
+			}
 		}
 
 		cq.where(filter);

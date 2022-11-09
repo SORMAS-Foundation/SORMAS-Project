@@ -11,6 +11,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.RequestContextHolder;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.backend.user.User;
@@ -28,6 +29,14 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 	 */
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
+
+	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, ADO> from) {
+		return null;
+	}
+
+	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, ADO> from) {
+		return null;
+	}
 
 	/**
 	 * Default filter for {@link #getAllAfter(Date)} to data that is allowed for the user to access and relevant for sync.
@@ -52,6 +61,11 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 				filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, from, since, lastSynchronizedUuid));
 			}
 
+			Predicate predicate = limitSynchronizationFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, predicate);
+			}
+
 			return filter;
 		}, batchSize);
 	}
@@ -63,6 +77,11 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		Root<ADO> from = cq.from(getElementClass());
 
 		Predicate filter = createUserFilter(cb, cq, from);
+		Predicate predicate = limitSynchronizationFilter(cb, from);
+		if (predicate != null) {
+			filter = CriteriaBuilderHelper.and(cb, predicate);
+		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -79,6 +98,11 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 
 		if (user != null) {
 			Predicate filter = createUserFilter(cb, cq, from);
+			Predicate predicate = limitSynchronizationFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, predicate);
+			}
+
 			if (filter != null) {
 				cq.where(filter);
 			}
@@ -114,6 +138,13 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, contentFilter);
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = limitSynchronizationFilterObsoleteEntities(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, predicate);
+			}
+		}
 
 		cq.where(filter);
 		cq.select(from.get(AbstractDomainObject.UUID));

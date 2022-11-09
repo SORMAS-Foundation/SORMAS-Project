@@ -40,8 +40,11 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -58,6 +61,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -72,6 +76,9 @@ public class VisitService extends BaseAdoService<Visit> implements JurisdictionC
 	private ContactService contactService;
 	@EJB
 	private CaseService caseService;
+
+	@EJB
+	protected FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public VisitService() {
 		super(Visit.class);
@@ -90,6 +97,26 @@ public class VisitService extends BaseAdoService<Visit> implements JurisdictionC
 	@SuppressWarnings("rawtypes")
 	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
 		return inJurisdictionOrOwned(new VisitQueryContext(cb, cq, from));
+	}
+
+	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Visit> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Visit.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
+	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Visit> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Visit.CHANGE_DATE), timestamp));
+		}
+		return null;
 	}
 
 	public Predicate inJurisdictionOrOwned(VisitQueryContext queryContext) {
@@ -170,12 +197,16 @@ public class VisitService extends BaseAdoService<Visit> implements JurisdictionC
 	public List<Visit> getAllAfter(Date since, Integer batchSize, String lastSynchronizedUuid) {
 
 		return getList((cb, cq, from) -> {
-
 			Predicate filter = createRelevantDataFilter(cb, cq, from);
 			if (since != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, from, since, lastSynchronizedUuid));
 			}
-
+			if (RequestContextHolder.isMobileSync()) {
+				Predicate predicate = limitSynchronizationFilter(cb, from);
+				if (predicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, predicate);
+				}
+			}
 			return filter;
 		}, batchSize);
 	}

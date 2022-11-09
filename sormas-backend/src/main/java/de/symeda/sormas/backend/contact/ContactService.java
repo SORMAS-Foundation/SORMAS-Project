@@ -202,6 +202,28 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	}
 
 	@Override
+	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Contact> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Contact.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
+	@Override
+	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Contact> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (maxChangeDatePeriod != null) {
+			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Contact.CHANGE_DATE), timestamp));
+		}
+		return null;
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> from) {
 
@@ -266,6 +288,13 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		if (user != null) {
 			Predicate userFilter = createUserFilter(contactQueryContext, null);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = limitSynchronizationFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, predicate);
+			}
 		}
 
 		cq.where(filter);
@@ -486,9 +515,9 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	@Override
 	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Contact> from) {
 
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED)
 			&& featureConfigurationFacade
-				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+				.isPropertyValueTrue(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
 
 			ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, from);
 			return Collections.singletonList(
@@ -1102,7 +1131,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 
 		if ((contactCriteria == null || !contactCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
-				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+				.isPropertyValueTrue(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
 			&& RequestContextHolder.isMobileSync()) {
 			final Predicate limitedCaseSyncPredicate = caseService.createLimitedSyncCasePredicate(cb, qc.getJoins().getCaze(), currentUser);
 			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
