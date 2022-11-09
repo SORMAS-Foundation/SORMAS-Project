@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public enum FormAccess {
-	ICM, PCA, REPORT, PRE, ADMIN;
+	ICM, PCA, REPORT, PRE, ADMIN, FMS, LQAS ;
 
 	public void addAssignableForms(Collection<FormAccess> collection) {
 

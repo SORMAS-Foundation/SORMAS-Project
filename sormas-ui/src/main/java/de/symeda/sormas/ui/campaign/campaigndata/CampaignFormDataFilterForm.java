@@ -56,7 +56,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	private static final long serialVersionUID = 718816470397296272L;
 
 	private Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback;
-	private ComboBox cbCampaignForm;
+	ComboBox cbCampaignForm;
 	private ComboBox areaFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
@@ -182,8 +182,6 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 						communityFilter.addItems(
 								user.getCommunity()); //toDto
 					}
-					
-					
 					if (userCommunity != null) {
 						communityFilter.setEnabled(false);
 					}
@@ -253,23 +251,23 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	@Override
 	protected void applyDependenciesOnNewValue(CampaignFormDataCriteria criteria) {
 		cbCampaignForm.removeAllItems();
-CampaignReferenceDto campaignReferenceDto = criteria.getCampaign();
-		
+		CampaignReferenceDto campaignReferenceDto = criteria.getCampaign();
+
 		String phase = criteria.getFormType();
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
 		if (criteria.getCampaign() != null && getPhaseFilterContent() == null) { // set the value of the campaign form
 																					// dropdown
-			//if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
-				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
-						.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
-								campaignReferenceDto.getUuid(), userFormAccess));
+			// if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
+			cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
+					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
+							campaignReferenceDto.getUuid(), userFormAccess));
 //			} else {
 //				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
 //						.getCampaignFormMetasAsReferencesByCampaign(criteria.getCampaign().getUuid()));
 //			}
 		} else if (criteria.getCampaign() != null && getPhaseFilterContent() != null
 				&& !"ALL PHASES".equals(getPhaseFilterContent())) {
-			//if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
+			// if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 
 			cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
 					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
