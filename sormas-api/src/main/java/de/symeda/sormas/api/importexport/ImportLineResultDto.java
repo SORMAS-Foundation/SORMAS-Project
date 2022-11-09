@@ -17,17 +17,17 @@ package de.symeda.sormas.api.importexport;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 @AuditedClass
 public class ImportLineResultDto<E> implements Serializable {
 
 	private static final long serialVersionUID = -9004769653154669800L;
-	@AuditInclude
+	@AuditIncludeProperty
 	private final ImportLineResult result;
 	private final String message;
-	@AuditInclude
+	@AuditIncludeProperty
 	private final E importEntities;
 
 	private ImportLineResultDto(ImportLineResult result, String message, E importEntities) {

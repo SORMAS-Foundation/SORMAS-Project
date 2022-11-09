@@ -17,7 +17,7 @@ package de.symeda.sormas.api.share;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -26,9 +26,9 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 public class ExternalShareInfoCriteria implements Serializable {
 
 	private static final long serialVersionUID = -4235095390812680609L;
-	@AuditInclude
+	@AuditIncludeProperty
 	private CaseReferenceDto caze;
-	@AuditInclude
+	@AuditIncludeProperty
 	private EventReferenceDto event;
 
 	public CaseReferenceDto getCaze() {

@@ -69,8 +69,8 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import de.symeda.sormas.api.audit.AuditExclude;
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditExcludeProperty;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -696,9 +696,9 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 			if (includeAllFields) {
 				fieldsFound = reflections
-					.get(Fields.of(type).filter(f -> !f.toString().contains("static final") && !f.isAnnotationPresent(AuditExclude.class)));
+					.get(Fields.of(type).filter(f -> !f.toString().contains("static final") && !f.isAnnotationPresent(AuditExcludeProperty.class)));
 			} else {
-				fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditInclude.class)));
+				fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditIncludeProperty.class)));
 			}
 
 			final ArrayList<Field> fields = new ArrayList<>(fieldsFound);
@@ -708,7 +708,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 	private List<Method> getMethodsAnnotatedWithAuditInclude(final Class<?> type) {
 		return cachedAnnotatedMethods.computeIfAbsent(type, k -> {
-			Set<Method> methodsFound = reflections.get(Methods.of(type).filter(withAnnotation(AuditInclude.class)));
+			Set<Method> methodsFound = reflections.get(Methods.of(type).filter(withAnnotation(AuditIncludeProperty.class)));
 			final ArrayList<Method> methods = new ArrayList<>(methodsFound);
 			return methods.stream().sorted(Comparator.comparing(Method::getName)).collect(Collectors.toList());
 		});
