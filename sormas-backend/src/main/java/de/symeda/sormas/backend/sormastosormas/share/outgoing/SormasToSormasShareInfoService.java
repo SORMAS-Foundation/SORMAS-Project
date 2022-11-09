@@ -38,7 +38,7 @@ import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInf
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
@@ -52,7 +52,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
-public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<SormasToSormasShareInfo> {
+public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJurisdiction<SormasToSormasShareInfo> {
 
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;

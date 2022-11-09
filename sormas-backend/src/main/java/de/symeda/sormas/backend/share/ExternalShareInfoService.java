@@ -45,14 +45,14 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalShareInfo> {
+public class ExternalShareInfoService extends AdoServiceWithUserFilterAndJurisdiction<ExternalShareInfo> {
 
 	@EJB
 	private UserService userService;
