@@ -1,9 +1,10 @@
 package de.symeda.sormas.backend.audit;
 
+import static org.reflections.scanners.Scanners.MethodsAnnotated;
 import static org.reflections.scanners.Scanners.SubTypes;
+import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -24,17 +25,9 @@ import javax.interceptor.InvocationContext;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
-import de.symeda.sormas.backend.auditlog.AuditContextProducer;
-import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
-import de.symeda.sormas.backend.i18n.I18nFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
-import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 public class AuditLoggerInterceptor {
 
@@ -72,33 +65,18 @@ public class AuditLoggerInterceptor {
 	static {
 
 		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-		configurationBuilder.forPackages("de.symeda.sormas.backend").addScanners(SubTypes).setParallel(false);
+		configurationBuilder.forPackages("de.symeda.sormas.backend", "de.symeda.sormas.api")
+			.addScanners(SubTypes, TypesAnnotated, MethodsAnnotated)
+			.setParallel(false); // <-- DO NOT USE PARALLEL SCANNING: Blocks deployment in some cases
+
 		reflections = new Reflections(configurationBuilder);
 
 		adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
 
-		ignoreAuditClasses = Collections.unmodifiableSet(
-			new HashSet<>(
-				Arrays.asList(
-					FeatureConfigurationFacadeEjb.class,
-					ConfigFacadeEjb.class,
-					CurrentUserService.class,
-					AuditContextProducer.class,
-					AuditLogServiceBean.class,
-					AuditLoggerEjb.class,
-					I18nFacadeEjb.class)));
+		ignoreAuditClasses =
+			Collections.unmodifiableSet(new HashSet<>(reflections.get(SubTypes.of(TypesAnnotated.with(AuditIgnore.class)).asClass())));
 
-		try {
-			ignoreAuditMethods = Collections.unmodifiableSet(
-				new HashSet<>(
-					Arrays.asList(
-						ContinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
-						SubcontinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
-						UserFacadeEjb.class.getMethod("getCurrentUser"),
-						UserFacadeEjb.class.getMethod("getValidLoginRights", String.class, String.class))));
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
+		ignoreAuditMethods = Collections.unmodifiableSet(new HashSet<>(reflections.getMethodsAnnotatedWith(AuditIgnore.class)));
 
 		// explicitly add all local methods which should be explicitly audited. Please note that this is a set of
 		// methods, therefore, its cardinality may be smaller than the size of the deletableAdoServiceClasses list as 

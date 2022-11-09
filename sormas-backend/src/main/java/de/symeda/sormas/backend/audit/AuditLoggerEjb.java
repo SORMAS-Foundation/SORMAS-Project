@@ -70,6 +70,7 @@ import org.slf4j.LoggerFactory;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import de.symeda.sormas.api.audit.AuditExcludeProperty;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
@@ -78,6 +79,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 
+@AuditIgnore
 @Singleton(name = "AuditLoggerFacade")
 public class AuditLoggerEjb implements AuditLoggerFacade {
 
@@ -151,6 +153,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		FhirContext fhirContext = FhirContext.forR4();
 		fhirJsonParser = fhirContext.newJsonParser();
+
 		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 		configurationBuilder.forPackages("de.symeda.sormas.api")
 			.addScanners(SubTypes, TypesAnnotated, FieldsAnnotated, MethodsAnnotated)
@@ -608,7 +611,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		}
 
 		if (finalValue.length() == 0) {
-			if (!DataHelper.isValueType(clazz)){
+			if (!DataHelper.isValueType(clazz)) {
 				logger.debug("Audit logging for object of type {} is not implemented. Please file an issue.", clazz);
 			}
 			return object.toString();
