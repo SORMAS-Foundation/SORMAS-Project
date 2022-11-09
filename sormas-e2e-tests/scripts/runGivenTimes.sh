@@ -19,6 +19,8 @@
 
 echo "I was called with $# parameters"
 echo "I will run $1 times the tests"
+echo "Script started at:"
+date +"%T"
 
 rm -rf ./allureReports
 ./gradlew clean goJF
@@ -26,7 +28,13 @@ for ((i = 1; i <= $1; ++i)); do
   rm -rf ./allure-results
   ./gradlew clean
   echo "Run: $i "
+  echo "Started at:"
+  date +"%T"
   ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9
+  echo "Finished at:"
+  date +"%T"
 done
+echo "Script finished at:"
+date +"%T"
 
 #NOTE: tag should be changed when populating task is done!

@@ -17,14 +17,17 @@ package de.symeda.sormas.api.caze;
 
 import java.io.Serializable;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.person.PersonDto;
 
 public class CasePersonDto implements Serializable {
 
 	private static final long serialVersionUID = 4238365446327936524L;
 
+	@Valid
 	private CaseDataDto caze;
-
+	@Valid
 	private PersonDto person;
 
 	public CasePersonDto() {

@@ -26,10 +26,10 @@ import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -104,7 +104,7 @@ public class WeeklyReportInformantsGrid extends Grid {
 			(a, b) -> {
 				// 1. community
 				if (a.getCommunity() != null && b.getCommunity() != null) {
-					int result = a.getCommunity().getCaption().compareTo(b.getCommunity().getCaption());
+					int result = 0;
 					if (result != 0)
 						return result;
 				} else if (a.getCommunity() != null) {
@@ -125,7 +125,7 @@ public class WeeklyReportInformantsGrid extends Grid {
 		for (UserDto informant : informants) {
 			WeeklyReportInformantSummary reportDetails = new WeeklyReportInformantSummary();
 			reportDetails.setInformant(informant.toReference());
-			reportDetails.setCommunity(informant.getCommunity());
+			reportDetails.setCommunity(null);
 			reportDetails.setFacility(informant.getHealthFacility());
 			WeeklyReportDto weeklyReport = FacadeProvider.getWeeklyReportFacade().getByEpiWeekAndUser(epiWeek, informant.toReference());
 			if (weeklyReport != null) {

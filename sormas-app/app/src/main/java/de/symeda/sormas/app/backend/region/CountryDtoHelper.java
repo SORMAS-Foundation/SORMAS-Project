@@ -3,8 +3,8 @@ package de.symeda.sormas.app.backend.region;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.region.CountryDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -25,12 +25,12 @@ public class CountryDtoHelper extends AdoDtoHelper<Country, CountryDto> {
 
 	@Override
 	protected Call<List<CountryDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getCountryFacade().pullAllSince(since);
+		return null;//RetroProvider.getCountryFacade().pullAllSince(since);
 	}
 
 	@Override
 	protected Call<List<CountryDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
-		return RetroProvider.getCountryFacade().pullByUuids(uuids);
+		return null;//RetroProvider.getCountryFacade().pullByUuids(uuids);
 	}
 
 	@Override

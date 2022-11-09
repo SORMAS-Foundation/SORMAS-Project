@@ -15,13 +15,13 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
-public class VaccinationDtoHelper extends AdoDtoHelper<VaccinationEntity, VaccinationDto> {
+public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationDto> {
 
 	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 
 	@Override
-	protected Class<VaccinationEntity> getAdoClass() {
-		return VaccinationEntity.class;
+	protected Class<Vaccination> getAdoClass() {
+		return Vaccination.class;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class VaccinationDtoHelper extends AdoDtoHelper<VaccinationEntity, Vaccin
 	}
 
 	@Override
-	protected void fillInnerFromDto(VaccinationEntity target, VaccinationDto source) {
+	protected void fillInnerFromDto(Vaccination target, VaccinationDto source) {
 
 		target.setImmunization(DatabaseHelper.getImmunizationDao().getByReferenceDto(source.getImmunization()));
 		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
@@ -54,10 +54,8 @@ public class VaccinationDtoHelper extends AdoDtoHelper<VaccinationEntity, Vaccin
 		target.setVaccinationDate(source.getVaccinationDate());
 		target.setVaccineName(source.getVaccineName());
 		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineNameDetails(source.getVaccineNameDetails());
 		target.setVaccineManufacturer(source.getVaccineManufacturer());
 		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineManufacturerDetails(source.getVaccineManufacturerDetails());
 		target.setVaccineType(source.getVaccineType());
 		target.setVaccineDose(source.getVaccineDose());
 		target.setVaccineInn(source.getVaccineInn());
@@ -71,7 +69,7 @@ public class VaccinationDtoHelper extends AdoDtoHelper<VaccinationEntity, Vaccin
 	}
 
 	@Override
-	protected void fillInnerFromAdo(VaccinationDto target, VaccinationEntity source) {
+	protected void fillInnerFromAdo(VaccinationDto target, Vaccination source) {
 
 		if (source.getImmunization() != null) {
 			Immunization immunization = DatabaseHelper.getImmunizationDao().queryForId(source.getImmunization().getId());
@@ -97,10 +95,8 @@ public class VaccinationDtoHelper extends AdoDtoHelper<VaccinationEntity, Vaccin
 		target.setVaccinationDate(source.getVaccinationDate());
 		target.setVaccineName(source.getVaccineName());
 		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineNameDetails(source.getVaccineNameDetails());
 		target.setVaccineManufacturer(source.getVaccineManufacturer());
 		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineManufacturerDetails(source.getVaccineManufacturerDetails());
 		target.setVaccineType(source.getVaccineType());
 		target.setVaccineDose(source.getVaccineDose());
 		target.setVaccineInn(source.getVaccineInn());

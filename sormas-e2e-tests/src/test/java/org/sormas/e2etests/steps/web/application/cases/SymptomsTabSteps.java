@@ -127,7 +127,9 @@ public class SymptomsTabSteps implements En {
 
     return Symptoms.builder()
         .maximumBodyTemperatureInC(
-            webDriverHelpers.getValueFromCombobox(MAXIMUM_BODY_TEMPERATURE_IN_C_COMBOBOX))
+            webDriverHelpers
+                .getValueFromCombobox(MAXIMUM_BODY_TEMPERATURE_IN_C_COMBOBOX)
+                .substring(0, 4))
         .sourceOfBodyTemperature(
             webDriverHelpers.getValueFromCombobox(SOURCE_OF_BODY_TEMPERATURE_COMBOBOX))
         .chillsOrSweats(

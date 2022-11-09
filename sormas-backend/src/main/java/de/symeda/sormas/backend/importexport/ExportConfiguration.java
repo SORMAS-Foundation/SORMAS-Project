@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.importexport;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -41,7 +41,7 @@ public class ExportConfiguration extends AbstractDomainObject {
 	private String propertiesString;
 	private Set<String> properties;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getName() {
 		return name;
 	}

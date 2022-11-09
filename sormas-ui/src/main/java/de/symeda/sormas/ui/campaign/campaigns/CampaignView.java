@@ -59,6 +59,7 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		setSubComponent(container);
 
 		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getByUuid(getReference().getUuid());
+		System.out.println("Campaign VIEW: "+ campaignDto.getCreatingUser());
 		editComponent = ControllerProvider.getCampaignController().getCampaignComponent(campaignDto, () -> {
 			Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignSaved), campaignDto.getName()), TRAY_NOTIFICATION);
 		});
@@ -67,10 +68,16 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		editComponent.setHeightUndefined();
 		editComponent.addStyleName(CssStyles.ROOT_COMPONENT);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
-
 		container.addComponent(editComponent);
 
-		getViewTitleLabel().setValue(campaignDto.getName());
+		boolean closex = FacadeProvider.getCampaignFacade().isClosedd(campaignDto.getUuid());
+		if(closex) {
+	
+		getViewTitleLabel().setValue(campaignDto.getName()+ " (Closed)");
+		setClosedTitleLabel("titletored");
+		}else {
+			getViewTitleLabel().setValue(campaignDto.getName());	
+		}
 	}
 
 	@Override

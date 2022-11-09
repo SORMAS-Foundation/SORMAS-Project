@@ -15,10 +15,12 @@ import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserType;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -58,6 +60,8 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 				CampaignStatisticsCriteria.CAMPAIGN_FORM_META,
 				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM_META),
 				200));
+		
+		
 		cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 
 		FieldHelper.addSoftRequiredStyle(cbCampaignForm);
@@ -86,7 +90,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 		UserDto user = currentUserDto();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
-		final CommunityReferenceDto userCommunity = user.getCommunity();
+		final CommunityReferenceDto userCommunity = null;
 		if (userRegion != null) {
 			regionFilter.setEnabled(false);
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
@@ -146,9 +150,15 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 	@Override
 	protected void applyDependenciesOnNewValue(CampaignStatisticsCriteria criteria) {
 		cbCampaignForm.removeAllItems();
+		
 		if (criteria.getCampaign() != null) {
-			cbCampaignForm
-				.addItems(FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(criteria.getCampaign().getUuid()));
+			if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
+				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
+						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(criteria.getCampaign().getUuid()));
+			} else {
+				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
+						.getCampaignFormMetasAsReferencesByCampaign(criteria.getCampaign().getUuid()));
+			}
 		} else {
 			cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 		}

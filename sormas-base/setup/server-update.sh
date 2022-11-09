@@ -78,7 +78,7 @@ fi
 
 if [ ! -d $DEPLOY_PATH/android ]; then
 	echo "Missing directory android in domain directory $DEPLOY_PATH. Re-download the deploy files and make sure the directory exists."
-	exit 1
+#	exit 1
 fi
 
 if [ ! -d $GLASSFISH_PATH ]; then
@@ -192,7 +192,7 @@ fi
 # You can use the following command to use a backup to restore the data in case the automatic database update process during deployment fails:
 # pg_restore --clean -U postgres -Fc -d sormas_db sormas_db_....dump
 
-if [ $(expr substr "$(uname -a)" 1 5) = "Linux" ]; then
+if [ $(expr substr "$(uname -a)" 1 5) = "Linuxx" ]; then
 	echo "Creating database backups..."
 	sudo -u postgres pg_dump -Fc -b $DATABASE_NAME > $DB_BACKUP_PATH/$DATABASE_NAME"_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"
 
@@ -230,7 +230,7 @@ fi
 echo "Server successfully started..."
 echo "Copying apk files..."
 
-cp $DEPLOY_PATH/android/release/*.apk $DOWNLOADS_PATH
+#cp $DEPLOY_PATH/android/release/*.apk $DOWNLOADS_PATH
 
 exec 2>&6
 

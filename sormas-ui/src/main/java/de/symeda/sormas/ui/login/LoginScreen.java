@@ -61,7 +61,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class LoginScreen extends CssLayout {
 
 	private static final String UTF_8 = "UTF-8";
-	private static final int LOGO_WIDTH = 250;
+	private static final int LOGO_WIDTH = 250; 
 	private static final int CUSTOM_BRANDING_LOGO_WIDTH = 150;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -75,7 +75,7 @@ public class LoginScreen extends CssLayout {
 		buildUI();
 	}
 
-	private void buildUI() {
+	private void buildUI() { 
 		addStyleName(CssStyles.LOGINSCREEN_BACK);
 
 		if (isCustomBranding && FacadeProvider.getConfigFacade().getLoginBackgroundPath() != null) {
@@ -90,10 +90,10 @@ public class LoginScreen extends CssLayout {
 		layout.addComponent(buildLoginLayout());
 
 		// custom html layout
-		if (!isCustomBranding || FacadeProvider.getConfigFacade().isUseLoginSidebar()) {
+	/*	if (!isCustomBranding || FacadeProvider.getConfigFacade().isUseLoginSidebar()) {
 			Layout loginSidebarLayout = buildLoginSidebarLayout();
-			layout.addComponent(loginSidebarLayout);
-		}
+			layout.addComponent(loginSidebarLayout); 
+		} */
 	}
 
 	private Component buildLoginLayout() {
@@ -135,9 +135,9 @@ public class LoginScreen extends CssLayout {
 
 		// header of the menu
 		final HorizontalLayout titleLayout = new HorizontalLayout();
-		titleLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+		titleLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT); 
 		titleLayout.setSpacing(false);
-		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
+		Label title = new Label(Captions.Login_APMIScaption);
 		CssStyles.style(title, CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.HSPACE_LEFT_3);
 
 		Image image;
@@ -153,7 +153,7 @@ public class LoginScreen extends CssLayout {
 		titleLayout.addComponent(title);
 		loginFormLayout.addComponent(titleLayout);
 
-		Label header = new Label(I18nProperties.getCaption(Captions.Login_login));
+		Label header = new Label(I18nProperties.getCaption(Captions.Login_login));  
 		CssStyles.style(header, CssStyles.H2);
 		loginFormLayout.addComponent(header);
 
@@ -240,7 +240,7 @@ public class LoginScreen extends CssLayout {
 		return loginDetailsLayout;
 	}
 
-	private Layout buildLoginSidebarLayout() {
+/*	private Layout buildLoginSidebarLayout() {
 
 		CssLayout loginSidebarLayout = new CssLayout();
 		CssStyles.style(loginSidebarLayout, CssStyles.LOGINSIDEBAR);
@@ -341,7 +341,7 @@ public class LoginScreen extends CssLayout {
 
 		loginSidebarLayout.addComponent(customSidebarLabel);
 		return loginSidebarLayout;
-	}
+	} */
 
 	private void login(String username, String password) {
 		if (LoginHelper.login(username, password)) {

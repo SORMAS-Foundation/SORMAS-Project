@@ -24,8 +24,8 @@ import androidx.core.content.ContextCompat;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -56,7 +56,7 @@ public class LbdsIntentSender {
 
 		try {
 			PublicKey lbdsSormasPublicKey = ConfigProvider.getLbdsSormasPublicKey();
-			Log.i("SORMAS_LBDS", "send SORMAS public key: " + KeySerializationUtil.serializePublicKey(lbdsSormasPublicKey));
+			Log.i("SORMAS_LBDS", "send APMISpublic key: " + KeySerializationUtil.serializePublicKey(lbdsSormasPublicKey));
 			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(lbdsSormasPublicKey);
 
 			NotificationHelper.showNotification(

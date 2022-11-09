@@ -26,6 +26,7 @@ import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
@@ -42,7 +43,7 @@ public class TravelEntryImportLayout extends AbstractImportLayout {
 
 			resetDownloadErrorReportButton();
 			try {
-				TravelEntryImporter importer = new TravelEntryImporter(file, false, currentUser);
+				TravelEntryImporter importer = new TravelEntryImporter(file, false, currentUser, (ValueSeparator) separator.getValue());
 				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(

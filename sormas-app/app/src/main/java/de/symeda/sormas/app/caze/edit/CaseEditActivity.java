@@ -15,14 +15,11 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
-
-import java.util.List;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -59,6 +56,7 @@ import de.symeda.sormas.app.epidata.EpidemiologicalDataEditFragment;
 import de.symeda.sormas.app.event.EventPickOrCreateDialog;
 import de.symeda.sormas.app.event.edit.EventNewActivity;
 import de.symeda.sormas.app.event.eventparticipant.EventParticipantSaver;
+import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
@@ -68,6 +66,9 @@ import de.symeda.sormas.app.therapy.edit.TreatmentNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CaseEditActivity extends BaseEditActivity<Case> {
 
@@ -124,6 +125,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 		}
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.SAMPLES.ordinal(), null);
+		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
 		}
 		if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
 			|| (caze != null && caze.isUnreferredPortHealthCase())
@@ -200,6 +204,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			break;
 		case EVENTS:
 			fragment = CaseEditEventListFragment.newInstance(activityRootData);
+			break;
+		case IMMUNIZATIONS:
+			fragment = CaseEditImmunizationListFragment.newInstance(activityRootData);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -307,6 +314,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			TaskNewActivity.startActivityFromCase(getContext(), getRootUuid());
 		} else if (activeSection == CaseSection.EVENTS) {
 			linkEventToCase();
+		} else if (activeSection == CaseSection.IMMUNIZATIONS) {
+			ImmunizationNewActivity.startActivityFromCase(getContext(), getRootUuid());
 		} else if (activeSection == CaseSection.CLINICAL_VISITS) {
 			ClinicalVisitNewActivity.startActivity(getContext(), getRootUuid());
 		} else if (activeSection == CaseSection.PRESCRIPTIONS) {

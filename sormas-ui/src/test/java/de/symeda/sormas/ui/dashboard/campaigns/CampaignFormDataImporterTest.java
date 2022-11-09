@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -45,12 +48,8 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
 		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_success.csv").toURI());
-		CampaignFormDataImporterExtension campaignFormDataImporter = new CampaignFormDataImporterExtension(
-			csvFile,
-			false,
-			user,
-			campaignForm.getUuid(),
-			new CampaignReferenceDto(campaign.getUuid()));
+		CampaignFormDataImporterExtension campaignFormDataImporter =
+			new CampaignFormDataImporterExtension(csvFile, false, user, campaignForm.getUuid(), new CampaignReferenceDto(campaign.getUuid()));
 		ImportResultStatus importResult = campaignFormDataImporter.runImport();
 
 		assertTrue(campaignFormDataImporter.getErrorMessages().isEmpty());
@@ -70,12 +69,8 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
 		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_wrong_type.csv").toURI());
-		CampaignFormDataImporterExtension campaignFormDataImporter = new CampaignFormDataImporterExtension(
-			csvFile,
-			false,
-			user,
-			campaignForm.getUuid(),
-			new CampaignReferenceDto(campaign.getUuid()));
+		CampaignFormDataImporterExtension campaignFormDataImporter =
+			new CampaignFormDataImporterExtension(csvFile, false, user, campaignForm.getUuid(), new CampaignReferenceDto(campaign.getUuid()));
 		ImportResultStatus importResult = campaignFormDataImporter.runImport();
 
 		assertFalse(campaignFormDataImporter.getErrorMessages().isEmpty());
@@ -96,12 +91,8 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
 		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_nonexisting_column.csv").toURI());
-		CampaignFormDataImporterExtension campaignFormDataImporter = new CampaignFormDataImporterExtension(
-			csvFile,
-			false,
-			user,
-			campaignForm.getUuid(),
-			new CampaignReferenceDto(campaign.getUuid()));
+		CampaignFormDataImporterExtension campaignFormDataImporter =
+			new CampaignFormDataImporterExtension(csvFile, false, user, campaignForm.getUuid(), new CampaignReferenceDto(campaign.getUuid()));
 
 		campaignFormDataImporter.runImport();
 
@@ -117,8 +108,9 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 			boolean hasEntityClassRow,
 			UserDto currentUser,
 			String campaignFormMetaUUID,
-			CampaignReferenceDto campaignReferenceDto) {
-			super(inputFile, hasEntityClassRow, currentUser, campaignFormMetaUUID, campaignReferenceDto);
+			CampaignReferenceDto campaignReferenceDto)
+			throws IOException {
+			super(inputFile, hasEntityClassRow, currentUser, campaignFormMetaUUID, campaignReferenceDto, ValueSeparator.DEFAULT);
 		}
 
 		@Override
@@ -138,6 +130,11 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 		public List<String> getErrorMessages() {
 			return errorMessages;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

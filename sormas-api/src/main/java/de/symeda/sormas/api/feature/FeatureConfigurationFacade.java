@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.task.TaskType;
 
@@ -36,9 +37,9 @@ public interface FeatureConfigurationFacade {
 
 	List<FeatureConfigurationIndexDto> getFeatureConfigurations(FeatureConfigurationCriteria criteria, boolean includeInactive);
 
-	void saveFeatureConfigurations(Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType);
+	void saveFeatureConfigurations(@Valid Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType);
 
-	void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType);
+	void saveFeatureConfiguration(@Valid FeatureConfigurationIndexDto configuration, FeatureType featureType);
 
 	void deleteAllFeatureConfigurations(FeatureConfigurationCriteria criteria);
 

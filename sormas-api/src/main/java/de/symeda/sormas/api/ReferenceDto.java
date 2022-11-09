@@ -23,6 +23,7 @@ import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Required;
 
 @SuppressWarnings("serial")
@@ -31,9 +32,11 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	public static final String CAPTION = "caption";
 
 	@Required
-	@Pattern(regexp = UUID_REGEX)
+	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	private String uuid;
 	private String caption;
+	private String formType;
+//	private Long externalId;
 
 	public ReferenceDto() {
 
@@ -47,6 +50,26 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 		this.uuid = uuid;
 		this.caption = caption;
 	}
+	
+	public ReferenceDto(String uuid, String caption, String type) {
+		this.uuid = uuid;
+		this.caption = caption;
+		this.formType = type; 
+	}
+	
+	/*public ReferenceDto(String uuid, Long externalId) {
+		this.uuid = uuid;
+		this.externalId = externalId;
+	}
+	
+	public ReferenceDto(String uuid, String caption, Long externalId) {
+		this.uuid = uuid;
+		this.caption = caption;
+		this.externalId = externalId;
+	}
+	
+	*/
+	
 
 	@Override
 	public String getUuid() {
@@ -63,6 +86,30 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 
 	public void setCaption(String caption) {
 		this.caption = caption;
+	}
+	
+	
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormtype(String formType) {
+		this.formType = formType;
+	}
+
+	/*public Long getExternalID() {
+		return externalId;
+	}
+
+	public void setExternalID(Long externalId) {
+		this.externalId = externalId;
+	}
+*/
+	
+
+	public void setFormType(String formType) {
+		this.formType = formType;
 	}
 
 	@Override

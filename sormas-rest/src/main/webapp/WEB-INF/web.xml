@@ -17,7 +17,7 @@
 		<role-name>REST_USER</role-name>
     </security-role>
 	<security-role>
-        <role-name>SURVEILLANCE_OFFICER</role-name>
+        <role-name>COMMUNITY_OFFICER</role-name>
     </security-role>
 	<security-role>
         <role-name>HOSPITAL_INFORMANT</role-name>

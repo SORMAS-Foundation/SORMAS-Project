@@ -50,7 +50,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 	@SuppressWarnings("unchecked")
 	public CampaignGrid(CampaignCriteria criteria) {
 
-		super(CampaignIndexDto.class);
+		super(CampaignIndexDto.class); 
 
 		setSizeFull();
 
@@ -66,16 +66,25 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		}
 
 		final boolean canEditCampaigns = UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT);
-		final String navigateToCampaignColumnIcon = canEditCampaigns ? VaadinIcons.EDIT.getHtml() : VaadinIcons.EYE.getHtml();
-		final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon, new HtmlRenderer());
-		final String navigateToCampaignColumnId = canEditCampaigns ? EDIT_BTN_ID : OPEN_BTN_ID;
-		navigateToCampaignColumn.setId(navigateToCampaignColumnId);
-		navigateToCampaignColumn.setSortable(false);
-		navigateToCampaignColumn.setWidth(20);
+		final String navigateToCampaignColumnIcon = canEditCampaigns ? VaadinIcons.COPY.getHtml() : VaadinIcons.EYE.getHtml();
+		//final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon+" Clone", new HtmlRenderer());
+		final String navigateToCampaignColumnId = canEditCampaigns ? CLONE_BTN_ID : OPEN_BTN_ID;
+		//navigateToCampaignColumn.setId(navigateToCampaignColumnId);
+		//navigateToCampaignColumn.setSortable(false);
+		//navigateToCampaignColumn.setWidth(20);
 
-		addItemClickListener(new ShowDetailsListener<>(navigateToCampaignColumnId, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
+		//addItemClickListener(new ShowDetailsListener<>(navigateToCampaignColumnId, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())))  campaign data and dashboard definitions by clicking inside one o
+		
+		if(canEditCampaigns){
+			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.NAME, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.START_DATE, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.END_DATE, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.CAMPAIGN_YEAR, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
+			
+			}
 
-		setColumns(navigateToCampaignColumnId, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
+		//setColumns(, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
+		setColumns(CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE, CampaignIndexDto.CAMPAIGN_YEAR);
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
@@ -85,7 +94,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
-		getColumn(navigateToCampaignColumnId).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
+		//getColumn(navigateToCampaignColumnId).setWidth(100).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 	}
 
 	public void setLazyDataProvider() {

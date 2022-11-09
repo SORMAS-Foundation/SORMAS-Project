@@ -3,7 +3,7 @@
     <parent>
         <groupId>de.symeda.sormas</groupId>
         <artifactId>sormas-base</artifactId>
-        <version>1.63.1</version>
+        <version>1.0.15</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
 
@@ -16,6 +16,7 @@
     </properties>
 
     <dependencies>
+    
         <dependency>
             <groupId>de.symeda.sormas</groupId>
             <artifactId>sormas-serverlibs</artifactId>
@@ -47,7 +48,8 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
+                
+                 <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>copy-resources-1</id>
@@ -180,7 +182,7 @@
                                 <todir>sormas/config/</todir>
                             </configfile>
                         </configfiles>
-                    </configuration>
+                    </configuration> 
                     <deployables>
                         <deployable>
                             <groupId>de.symeda.sormas</groupId>

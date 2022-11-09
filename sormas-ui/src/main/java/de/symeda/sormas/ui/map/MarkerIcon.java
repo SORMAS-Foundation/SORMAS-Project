@@ -34,7 +34,10 @@ public enum MarkerIcon {
 	CONTACT_OVERDUE,
 	CONTACT_OK,
 	EVENT_OUTBREAK,
-	EVENT_RUMOR;
+	EVENT_RUMOR,
+	CAMPAIGNDATA;
+	
+	//ADD MARKER ICONS FOR CAMPAIGN HERE -IYANUU
 
 	/**
 	 * E.g. "contact long-overdue"

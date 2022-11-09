@@ -9,9 +9,9 @@ $login-background-image: null !default;
 	
   .login-screen-back {
     background: #FFFFFF;
-    background-image: url(../img/world.png);
+    background-image: url(../img/afghanistan-map.svg);
     background-size: cover;
- 	background-position: center;
+ 	background-position: center; 
  	
     display: flex;
     width: 100%;
@@ -20,7 +20,7 @@ $login-background-image: null !default;
   }
 	  
   .login-screen {
-    background-color: rgba(27,84,154,0.9);
+    background-color: rgba(8,0,113,0.6);
     display: flex;
     justify-content: space-between;
 

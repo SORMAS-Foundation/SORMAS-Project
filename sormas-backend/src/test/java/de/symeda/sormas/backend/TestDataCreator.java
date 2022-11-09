@@ -45,6 +45,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
@@ -65,9 +67,6 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
@@ -75,10 +74,18 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
@@ -88,10 +95,6 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
@@ -121,13 +124,13 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.Continent;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.continent.Continent;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
 public class TestDataCreator {
@@ -170,7 +173,7 @@ public class TestDataCreator {
 		UserDto user = user1;
 		user.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
-		user.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(communityUuid));
+		//user.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(communityUuid));
 		user.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
 		user = beanTest.getUserFacade().saveUser(user);
 
@@ -193,7 +196,27 @@ public class TestDataCreator {
 	}
 
 	public PersonDto createPerson(String firstName, String lastName) {
-		return createPerson(firstName, lastName, null);
+		return createPerson(firstName, lastName, Sex.UNKNOWN, null);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex) {
+		return createPerson(firstName, lastName, sex, null);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex, Consumer<PersonDto> customConfig) {
+
+		PersonDto person = PersonDto.build();
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		person.setSex(sex);
+
+		if (customConfig != null) {
+			customConfig.accept(person);
+		}
+
+		person = beanTest.getPersonFacade().savePerson(person);
+
+		return person;
 	}
 
 	public PersonDto createPerson(String firstName, String lastName, Consumer<PersonDto> customConfig) {
@@ -201,6 +224,7 @@ public class TestDataCreator {
 		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
 		person.setLastName(lastName);
+		person.setSex(Sex.UNKNOWN);
 
 		if (customConfig != null) {
 			customConfig.accept(person);
@@ -298,7 +322,7 @@ public class TestDataCreator {
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user =
 			createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = createPerson("Case", "Person");
+		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);
 		return createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -404,7 +428,6 @@ public class TestDataCreator {
 		return caze;
 	}
 
-
 	public ImmunizationDto createImmunization(
 		Disease disease,
 		PersonReferenceDto person,
@@ -414,11 +437,15 @@ public class TestDataCreator {
 		ImmunizationManagementStatus immunizationManagementStatus,
 		RDCF rdcf,
 		Date startDate,
-		Date endDate) {
+		Date endDate,
+		Date validFromDate,
+		Date validUntilDate) {
 		ImmunizationDto immunization =
 			createImmunizationDto(disease, person, reportingUser, immunizationStatus, meansOfImmunization, immunizationManagementStatus, rdcf);
 		immunization.setStartDate(startDate);
 		immunization.setEndDate(endDate);
+		immunization.setValidFrom(validFromDate);
+		immunization.setValidUntil(validUntilDate);
 
 		return beanTest.getImmunizationFacade().save(immunization);
 	}
@@ -438,7 +465,14 @@ public class TestDataCreator {
 	}
 
 	@NotNull
-	private ImmunizationDto createImmunizationDto(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, ImmunizationStatus immunizationStatus, MeansOfImmunization meansOfImmunization, ImmunizationManagementStatus immunizationManagementStatus, RDCF rdcf) {
+	public ImmunizationDto createImmunizationDto(
+		Disease disease,
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		ImmunizationStatus immunizationStatus,
+		MeansOfImmunization meansOfImmunization,
+		ImmunizationManagementStatus immunizationManagementStatus,
+		RDCF rdcf) {
 		ImmunizationDto immunization = new ImmunizationDto();
 		immunization.setUuid(DataHelper.createUuid());
 		immunization.setDisease(disease);
@@ -455,7 +489,16 @@ public class TestDataCreator {
 		return immunization;
 	}
 
-	public VaccinationDto createVaccinationEntity(
+	public VaccinationDto createVaccination(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions) {
+
+		return createVaccination(reportingUser, immunization, healthConditions, new Date(), null, null);
+	}
+
+	@NotNull
+	public VaccinationDto createVaccinationDto(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
 		HealthConditionsDto healthConditions) {
@@ -464,6 +507,28 @@ public class TestDataCreator {
 		vaccination.setReportingUser(reportingUser);
 		vaccination.setReportDate(new Date());
 
+		vaccination.setImmunization(immunization);
+		vaccination.setHealthConditions(healthConditions);
+		return vaccination;
+	}
+
+	public VaccinationDto createVaccination(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions,
+		Date vaccinationDate,
+		Vaccine vaccine,
+		VaccineManufacturer vaccineManufacturer) {
+
+		VaccinationDto vaccination = new VaccinationDto();
+		vaccination.setUuid(DataHelper.createUuid());
+		vaccination.setReportingUser(reportingUser);
+		vaccination.setReportDate(new Date());
+		vaccination.setVaccinationDate(new Date());
+		vaccination.setVaccineName(vaccine);
+		vaccination.setVaccineManufacturer(vaccineManufacturer);
+
+		vaccination.setVaccinationDate(vaccinationDate);
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
 
@@ -546,6 +611,14 @@ public class TestDataCreator {
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null);
+	}
+
+	public ContactDto createContact(
+		UserReferenceDto reportingUser,
+		PersonReferenceDto contactPerson,
+		Disease disease,
+		Consumer<ContactDto> customConfig) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null, customConfig);
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Date reportDateTime) {
@@ -700,6 +773,24 @@ public class TestDataCreator {
 	public EventDto createEvent(UserReferenceDto reportingUser) {
 
 		return createEvent(reportingUser, new Date());
+	}
+
+	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease) {
+		return createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"title",
+			"description",
+			"firstname",
+			"lastname",
+			null,
+			null,
+			new Date(),
+			new Date(),
+			reportingUser,
+			null,
+			disease,
+			null);
 	}
 
 	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {
@@ -1213,7 +1304,7 @@ public class TestDataCreator {
 		CampaignFormMetaReferenceDto campaignFormMetaReferenceDto = new CampaignFormMetaReferenceDto(campaignForm.getUuid());
 
 		CampaignFormDataDto campaignFormData =
-			CampaignFormDataDto.build(campaignReferenceDto, campaignFormMetaReferenceDto, rdcf.region, rdcf.district, rdcf.community);
+			CampaignFormDataDto.build(campaignReferenceDto, campaignFormMetaReferenceDto, rdcf.area, rdcf.region, rdcf.district, rdcf.community);
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -1254,16 +1345,17 @@ public class TestDataCreator {
 		}
 
 		return new RDCF(
-			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
-			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
-			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
+			//new AreaReferenceDto(area.getUuid(), area.getName(), area.getExternalID()),
+			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalId()),
+			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalId()),
+			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalId()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
 			pointOfEntry != null
 				? new PointOfEntryReferenceDto(
 					pointOfEntry.getUuid(),
 					pointOfEntry.getName(),
 					pointOfEntry.getPointOfEntryType(),
-					pointOfEntry.getExternalID())
+					pointOfEntry.getExternalId())
 				: null);
 	}
 
@@ -1305,12 +1397,12 @@ public class TestDataCreator {
 		return createRegion(regionName, null);
 	}
 
-	public Region createRegion(String regionName, String externalId) {
+	public Region createRegion(String regionName, Long externalId) {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
 		region.setEpidCode("COU-REG");
-		region.setExternalID(externalId);
+		region.setExternalId(externalId);
 
 		beanTest.getRegionService().persist(region);
 
@@ -1321,14 +1413,14 @@ public class TestDataCreator {
 		return createDistrict(districtName, region, null);
 	}
 
-	public District createDistrict(String districtName, Region region, String externalId) {
+	public District createDistrict(String districtName, Region region, Long externalId) {
 
 		District district = new District();
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
 		district.setEpidCode("DIS");
-		district.setExternalID(externalId);
+		district.setExternalId(externalId);
 		beanTest.getDistrictService().persist(district);
 
 		return district;
@@ -1338,13 +1430,13 @@ public class TestDataCreator {
 		return createCommunity(communityName, district, null);
 	}
 
-	public Community createCommunity(String communityName, District district, String externalId) {
+	public Community createCommunity(String communityName, District district, Long externalId) {
 
 		Community community = new Community();
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
-		community.setExternalID(externalId);
+		community.setExternalId(externalId);
 		beanTest.getCommunityService().persist(community);
 
 		return community;
@@ -1355,7 +1447,7 @@ public class TestDataCreator {
 		CommunityDto community = CommunityDto.build();
 		community.setName(communityName);
 		community.setDistrict(district);
-		beanTest.getCommunityFacade().saveCommunity(community);
+		beanTest.getCommunityFacade().save(community);
 		return community;
 	}
 
@@ -1367,7 +1459,7 @@ public class TestDataCreator {
 		return createFacility(facilityName, type, region, district, community, null);
 	}
 
-	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community, String externalId) {
+	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community, Long externalId) {
 
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
@@ -1404,7 +1496,7 @@ public class TestDataCreator {
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
-		beanTest.getFacilityFacade().saveFacility(facility);
+		beanTest.getFacilityFacade().save(facility);
 		return facility;
 	}
 
@@ -1412,7 +1504,7 @@ public class TestDataCreator {
 		return createPointOfEntry(pointOfEntryName, region, district, null);
 	}
 
-	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district, String externalId) {
+	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district, Long externalId) {
 
 		PointOfEntry pointOfEntry = new PointOfEntry();
 		pointOfEntry.setUuid(DataHelper.createUuid());
@@ -1420,7 +1512,7 @@ public class TestDataCreator {
 		pointOfEntry.setName(pointOfEntryName);
 		pointOfEntry.setDistrict(district);
 		pointOfEntry.setRegion(region);
-		pointOfEntry.setExternalID(externalId);
+		pointOfEntry.setExternalId(externalId);
 
 		beanTest.getPointOfEntryService().persist(pointOfEntry);
 
@@ -1615,18 +1707,19 @@ public class TestDataCreator {
 	}
 
 	public static class RDCF {
-
+		public AreaReferenceDto area;
 		public RegionReferenceDto region;
 		public DistrictReferenceDto district;
 		public CommunityReferenceDto community;
 		public FacilityReferenceDto facility;
 		public PointOfEntryReferenceDto pointOfEntry;
 
-		public RDCF(RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility) {
-			this(region, district, community, facility, null);
+		/*public RDCF(AreaReferenceDto area, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility) {
+			this(area, region, district, community, facility);
 		}
-
+*/
 		public RDCF(
+			//	AreaReferenceDto area,
 			RegionReferenceDto region,
 			DistrictReferenceDto district,
 			CommunityReferenceDto community,
@@ -1640,11 +1733,11 @@ public class TestDataCreator {
 		}
 
 		public RDCF(RDCFEntities rdcfEntities) {
-			this.region = new RegionReferenceDto(rdcfEntities.region.getUuid(), rdcfEntities.region.getName(), rdcfEntities.region.getExternalID());
+			this.region = new RegionReferenceDto(rdcfEntities.region.getUuid(), rdcfEntities.region.getName(), rdcfEntities.region.getExternalId());
 			this.district =
-				new DistrictReferenceDto(rdcfEntities.district.getUuid(), rdcfEntities.district.getName(), rdcfEntities.district.getExternalID());
+				new DistrictReferenceDto(rdcfEntities.district.getUuid(), rdcfEntities.district.getName(), rdcfEntities.district.getExternalId());
 			this.community =
-				new CommunityReferenceDto(rdcfEntities.community.getUuid(), rdcfEntities.community.getName(), rdcfEntities.community.getExternalID());
+				new CommunityReferenceDto(rdcfEntities.community.getUuid(), rdcfEntities.community.getName(), rdcfEntities.community.getExternalId());
 			this.facility =
 				new FacilityReferenceDto(rdcfEntities.facility.getUuid(), rdcfEntities.facility.getName(), rdcfEntities.facility.getExternalID());
 		}

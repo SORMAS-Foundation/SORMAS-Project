@@ -1,33 +1,47 @@
 package de.symeda.sormas.api.campaign.diagram;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
 import java.io.Serializable;
 import java.util.Objects;
+
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import de.symeda.sormas.api.AgeGroup;
+import de.symeda.sormas.api.i18n.Validations;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CampaignDiagramSeries implements Serializable {
 
 	private static final long serialVersionUID = 1420672609912364060L;
 
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fieldId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String formId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String referenceValue;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String stack;
 	private AgeGroup populationGroup;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String color;
-
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String averageDefault;
+	
 	public CampaignDiagramSeries() {
 	}
 
-	public CampaignDiagramSeries(String fieldId, String formId, String referenceValue, String stack) {
+	public CampaignDiagramSeries(String fieldId, String formId, String referenceValue, String stack, String averageDefault) {
 		this.fieldId = fieldId;
 		this.formId = formId;
 		this.referenceValue = referenceValue;
 		this.stack = stack;
+		this.averageDefault = averageDefault;
 	}
 
 	public String getFieldId() {
@@ -59,7 +73,7 @@ public class CampaignDiagramSeries implements Serializable {
 	}
 
 	public void setStack(String stack) {
-		this.stack = stack;
+		this.stack = stack; 
 	}
 
 	public String getCaption() {
@@ -95,7 +109,8 @@ public class CampaignDiagramSeries implements Serializable {
 			&& Objects.equals(stack, that.stack)
 			&& Objects.equals(caption, that.caption)
 			&& Objects.equals(color, that.color)
-			&& Objects.equals(populationGroup, that.populationGroup);
+			&& Objects.equals(populationGroup, that.populationGroup)
+			&& Objects.equals(averageDefault, that.averageDefault);
 	}
 
 	public AgeGroup getPopulationGroup() {
@@ -105,9 +120,19 @@ public class CampaignDiagramSeries implements Serializable {
 	public void setPopulationGroup(AgeGroup populationGroup) {
 		this.populationGroup = populationGroup;
 	}
+	
+	
+
+	public String getAverageDefault() {
+		return averageDefault;
+	}
+
+	public void setAverageDefault(String averageDefault) {
+	this.averageDefault = averageDefault;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fieldId, formId, referenceValue, stack, caption, color, populationGroup);
+		return Objects.hash(fieldId, formId, referenceValue, stack, caption, color, populationGroup, averageDefault);
 	}
 }

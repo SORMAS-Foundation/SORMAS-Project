@@ -138,6 +138,11 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 			fdFormDate.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.FORM_DATE));
 			fdFormDate.setWidthUndefined();
 			formDataLayout.addComponent(fdFormDate);
+			
+			Label fdFormType = new Label(formData.getFormType() != null ? formData.getFormType().toString() : "");
+			fdFormType.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.FORM_TYPE));
+			fdFormType.setWidthUndefined();
+			formDataLayout.addComponent(fdFormType);
 
 			if (existingData) {
 				Label fdCreatingUser = new Label(formData.getCreatingUser() != null ? formData.getCreatingUser().toString() : "");

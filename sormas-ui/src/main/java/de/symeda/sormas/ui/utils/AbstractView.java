@@ -27,6 +27,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
+import com.vaadin.server.Responsive;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -50,6 +51,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	private final HorizontalLayout viewHeader;
 	private final VerticalLayout viewTitleLayout;
 	private final Label viewTitleLabel;
+	private  String closedTitleLabel = "";
 	private final Label viewSubTitleLabel;
 
 	protected boolean applyingCriteria;
@@ -62,11 +64,13 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		setSpacing(false);
 
 		viewHeader = new HorizontalLayout();
-		viewHeader.setWidth(100, Unit.PERCENTAGE);
+		//viewHeader.setWidth(100, Unit.PERCENTAGE);
+		viewHeader.addStyleName("view-headerxxx");
+		viewHeader.addStyleName("view-headerxxxx");
 		viewHeader.setHeightUndefined();
 		viewHeader.setMargin(new MarginInfo(false, true));
 		viewHeader.setSpacing(true);
-		CssStyles.style(viewHeader, "view-header");
+		
 
 		viewTitleLayout = new VerticalLayout();
 		{
@@ -76,9 +80,11 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 			// note: splitting title and subtitle into labels does not work with the css
 			String viewTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", "."));
+			
 			String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".sub", "");
 			viewTitleLabel = new Label(viewTitle);
 			viewTitleLabel.setSizeUndefined();
+			viewTitleLabel.addStyleName(getClosedTitleLabel());
 			CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
 			viewTitleLayout.addComponent(viewTitleLabel);
 			viewSubTitleLabel = new Label(viewSubTitle);
@@ -96,6 +102,11 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	protected void addHeaderComponent(Component c) {
 		viewHeader.addComponent(c);
 		viewHeader.setComponentAlignment(c, Alignment.MIDDLE_RIGHT);
+		
+	}
+	
+	protected void removeHeaderComponent(Component c) {
+		viewHeader.removeComponent(c);
 	}
 
 	protected void setMainHeaderComponent(Component c) {
@@ -117,7 +128,18 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	public Label getViewTitleLabel() {
 		return viewTitleLabel;
 	}
+	
+	
 
+	public String getClosedTitleLabel() {
+		return closedTitleLabel;
+	}
+
+	public void setClosedTitleLabel(String closedTitleLabel) {
+		
+	this.closedTitleLabel = closedTitleLabel;
+	}
+	
 	public Label getViewSubTitleLabel() {
 		return viewSubTitleLabel;
 	}
@@ -203,6 +225,15 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 		new FileDownloader(streamResource).extend(exportButton);
 	}
+	
+	protected void removeExportButton(
+			
+			PopupButton exportPopupButton,
+			VerticalLayout exportLayout
+			) {
+			exportLayout.removeAllComponents();
+
+		}
 
 	/**
 	 * Iterates through the prefixes to determines the caption for the specified propertyId.

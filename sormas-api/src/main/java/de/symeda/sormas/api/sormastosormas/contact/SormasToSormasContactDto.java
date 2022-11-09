@@ -17,6 +17,8 @@ package de.symeda.sormas.api.sormastosormas.contact;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -27,8 +29,10 @@ public class SormasToSormasContactDto extends SormasToSormasDto<ContactDto> {
 
 	private static final long serialVersionUID = 7414547678077858460L;
 
+	@Valid
 	private PersonDto person;
 
+	@Valid
 	private List<SormasToSormasSampleDto> samples;
 
 	public SormasToSormasContactDto() {

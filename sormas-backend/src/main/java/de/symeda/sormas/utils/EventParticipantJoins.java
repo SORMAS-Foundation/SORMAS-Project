@@ -7,16 +7,15 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 public class EventParticipantJoins<T> extends AbstractDomainObjectJoins<T, EventParticipant> {
 
@@ -31,8 +30,6 @@ public class EventParticipantJoins<T> extends AbstractDomainObjectJoins<T, Event
 	private Join<Location, District> addressDistrict;
 	private Join<Location, Community> addressCommunity;
 	private Join<Location, Facility> addressFacility;
-
-	private Join<EventParticipant, VaccinationInfo> vaccinationInfo;
 
 	private Join<EventParticipant, Case> resultingCase;
 	private Join<Case, Person> casePerson;
@@ -130,14 +127,6 @@ public class EventParticipantJoins<T> extends AbstractDomainObjectJoins<T, Event
 
 	private void setAddressFacility(Join<Location, Facility> addressFacility) {
 		this.addressFacility = addressFacility;
-	}
-
-	public Join<EventParticipant, VaccinationInfo> getVaccinationInfo() {
-		return getOrCreate(vaccinationInfo, EventParticipant.VACCINATION_INFO, JoinType.LEFT, this::setVaccinationInfo);
-	}
-
-	private void setVaccinationInfo(Join<EventParticipant, VaccinationInfo> vaccinationInfo) {
-		this.vaccinationInfo = vaccinationInfo;
 	}
 
 	public Join<EventParticipant, Case> getResultingCase() {

@@ -1,7 +1,7 @@
 package de.symeda.sormas.backend.therapy;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -72,7 +72,7 @@ public class Treatment extends AbstractDomainObject {
 		this.treatmentDateTime = treatmentDateTime;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExecutingClinician() {
 		return executingClinician;
 	}
@@ -91,7 +91,7 @@ public class Treatment extends AbstractDomainObject {
 		this.treatmentType = treatmentType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTreatmentDetails() {
 		return treatmentDetails;
 	}
@@ -109,7 +109,7 @@ public class Treatment extends AbstractDomainObject {
 		this.typeOfDrug = typeOfDrug;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDose() {
 		return dose;
 	}
@@ -127,7 +127,7 @@ public class Treatment extends AbstractDomainObject {
 		this.route = route;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getRouteDetails() {
 		return routeDetails;
 	}
@@ -136,7 +136,7 @@ public class Treatment extends AbstractDomainObject {
 		this.routeDetails = routeDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getAdditionalNotes() {
 		return additionalNotes;
 	}

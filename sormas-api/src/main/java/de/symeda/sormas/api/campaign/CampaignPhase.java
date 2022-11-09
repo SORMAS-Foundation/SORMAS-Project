@@ -9,9 +9,14 @@ public enum CampaignPhase {
 
 	PRE,
 	INTRA,
-	POST;
+	POST,
+	ALL;
 
+//	public String toString() {
+//		return I18nProperties.getEnumCaption(this);
+	//}
+	
 	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+		return name().toUpperCase()+"-CAMPAIGN";
 	}
 }

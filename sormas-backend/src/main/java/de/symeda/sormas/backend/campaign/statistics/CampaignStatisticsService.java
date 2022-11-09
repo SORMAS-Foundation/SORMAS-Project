@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
@@ -22,10 +24,10 @@ import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsGroupingDto;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.backend.region.Area;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.area.Area;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
@@ -36,7 +38,7 @@ public class CampaignStatisticsService {
 	private EntityManager em;
 
 	public List<CampaignStatisticsDto> getCampaignStatistics(CampaignStatisticsCriteria criteria) {
-
+		//System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + buildStatisticsQuery(criteria));//SQLExtractor.from(em.createNativeQuery(buildStatisticsQuery(criteria))));
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		final CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
 		Map<CampaignStatisticsGroupingDto, CampaignStatisticsDto> results = new LinkedHashMap<>();
@@ -44,7 +46,8 @@ public class CampaignStatisticsService {
 			CampaignStatisticsGroupingDto campaignStatisticsGroupingDto = new CampaignStatisticsGroupingDto(
 				(String) result[1],
 				(String) result[2],
-				(String) result[3],
+				shouldIncludeNone(groupingLevel) ? (String) result[3] : "",
+				shouldIncludeArea(groupingLevel) ? (String) result[3] : "",
 				shouldIncludeRegion(groupingLevel) ? (String) result[4] : "",
 				shouldIncludeDistrict(groupingLevel) ? (String) result[5] : "",
 				shouldIncludeCommunity(groupingLevel) ? (String) result[6] : "");
@@ -72,30 +75,36 @@ public class CampaignStatisticsService {
 			.append(CampaignFormData.TABLE_NAME)
 			.toString();
 		String joinExpression = new StringBuilder().append(buildJoinExpression()).append(buildJsonJoinExpression()).toString();
-
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append(selectExpression).append(joinExpression);
-
 		queryBuilder.append(" WHERE ");
 		String whereExpression = buildWhereExpression(criteria);
 		if (!whereExpression.isEmpty()) {
 			queryBuilder.append(whereExpression).append(" AND ");
 		}
 		queryBuilder.append(buildJsonWhereExpression());
-
+		
 		queryBuilder.append(buildGroupByExpression(criteria)).append(buildJsonGroupByExpression()).append(buildOrderByExpression(criteria));
-
+		
+		
 		return queryBuilder.toString();
 	}
+	
+	
 
 	private String buildSelectExpression(CampaignStatisticsCriteria criteria) {
 		StringBuilder selectBuilder = new StringBuilder().append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
 			.append(", ")
-			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME))
-			.append(", ")
-			.append(buildSelectField(Area.TABLE_NAME, Area.NAME));
+			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME)) 
+			;
 
 		CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
+		if (shouldIncludeNone(groupingLevel)) {
+			
+		}
+		if (shouldIncludeArea(groupingLevel)) {
+			selectBuilder.append(", ").append(buildSelectField(Area.TABLE_NAME, Area.NAME));
+		}
 		if (shouldIncludeRegion(groupingLevel)) {
 			selectBuilder.append(", ").append(buildSelectField(Region.TABLE_NAME, Region.NAME));
 		}
@@ -105,7 +114,9 @@ public class CampaignStatisticsService {
 		if (shouldIncludeCommunity(groupingLevel)) {
 			selectBuilder.append(", ").append(buildSelectField(Community.TABLE_NAME, Community.NAME));
 		}
-
+		
+		
+		System.out.println(selectBuilder.toString());
 		return selectBuilder.toString();
 	}
 
@@ -119,6 +130,7 @@ public class CampaignStatisticsService {
 		StringBuilder joinBuilder = new StringBuilder();
 		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.CAMPAIGN, Campaign.TABLE_NAME, Campaign.ID));
 		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.CAMPAIGN_FORM_META, CampaignFormMeta.TABLE_NAME, CampaignFormMeta.ID));
+		
 		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.REGION, Region.TABLE_NAME, Region.ID));
 		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.DISTRICT, District.TABLE_NAME, District.ID));
 		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.COMMUNITY, Community.TABLE_NAME, Community.ID));
@@ -149,6 +161,7 @@ public class CampaignStatisticsService {
 		return joinConditionBuilder.toString();
 	}
 
+	
 	private String buildWhereExpression(CampaignStatisticsCriteria criteria) {
 		StringBuilder whereBuilder = new StringBuilder();
 		if (criteria.getCampaign() != null) {
@@ -210,11 +223,10 @@ public class CampaignStatisticsService {
 			.append(", ")
 			.append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
-			.append(CampaignFormMeta.FORM_NAME)
-			.append(", ")
-			.append(Area.TABLE_NAME)
-			.append(".")
-			.append(Area.NAME);
+			.append(CampaignFormMeta.FORM_NAME);
+		if (shouldIncludeArea(groupingLevel)) {
+			groupByFilter.append(", ").append(Area.TABLE_NAME).append(".").append(Area.NAME);
+		}
 		if (shouldIncludeRegion(groupingLevel)) {
 			groupByFilter.append(", ").append(Region.TABLE_NAME).append(".").append(Region.NAME);
 		}
@@ -238,10 +250,10 @@ public class CampaignStatisticsService {
 			.append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
 			.append(CampaignFormMeta.FORM_NAME)
-			.append(", ")
-			.append(Area.TABLE_NAME)
-			.append(".")
-			.append(Area.NAME);
+			;
+		if (shouldIncludeArea(groupingLevel)) {
+			orderByFilter.append(", ").append(Area.TABLE_NAME).append(".").append(Area.NAME);
+		}
 		if (shouldIncludeRegion(groupingLevel)) {
 			orderByFilter.append(", ").append(Region.TABLE_NAME).append(".").append(Region.NAME);
 		}
@@ -255,6 +267,16 @@ public class CampaignStatisticsService {
 		return orderByFilter.toString();
 	}
 
+	private boolean shouldIncludeNone(CampaignJurisdictionLevel groupingLevel) {
+		return CampaignJurisdictionLevel.COUNTRY.equals(groupingLevel);
+	}
+	
+	private boolean shouldIncludeArea(CampaignJurisdictionLevel groupingLevel) {
+		return CampaignJurisdictionLevel.AREA.equals(groupingLevel) || CampaignJurisdictionLevel.REGION.equals(groupingLevel)
+			|| CampaignJurisdictionLevel.DISTRICT.equals(groupingLevel)
+			|| CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel);
+	}
+	
 	private boolean shouldIncludeRegion(CampaignJurisdictionLevel groupingLevel) {
 		return CampaignJurisdictionLevel.REGION.equals(groupingLevel)
 			|| CampaignJurisdictionLevel.DISTRICT.equals(groupingLevel)
@@ -270,6 +292,9 @@ public class CampaignStatisticsService {
 	}
 
 	private String buildJsonSelectExpression() {
+		String eum_dug = CampaignFormElementType.YES_NO.toString();
+		
+		
 		StringBuilder jsonQueryExpression = new StringBuilder();
 		jsonQueryExpression.append(", jsonData->>'")
 			.append(CampaignFormElement.ID)
@@ -278,18 +303,66 @@ public class CampaignStatisticsService {
 			.append(CampaignFormElement.TYPE)
 			.append("') = '")
 			.append(CampaignFormElementType.NUMBER.toString())
-			.append("' THEN sum(cast_to_int(jsonData->>'")
+			.append("' OR ")
+			.append("(jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.DECIMAL.toString())
+			.append("' OR ")
+			.append("(jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.RANGE.toString())
+			//.append("' OR ")
+			.append("'  THEN sum(cast_to_int(jsonData->>'")
 			.append(CampaignFormDataEntry.VALUE)
 			.append("', 0))")
+			
 			.append(" WHEN (jsonMeta ->> '")
 			.append(CampaignFormElement.TYPE)
 			.append("') = '")
-			.append(CampaignFormElementType.YES_NO.toString())
+			.append(eum_dug.toLowerCase().replaceAll("-", "_"))
 			.append("' THEN sum(CASE WHEN(jsonData->>'")
 			.append(CampaignFormDataEntry.VALUE)
-			.append("') = 'true' THEN 1 ELSE 0 END) END as sumValue");
+			.append("') = 'true' THEN 1 ELSE 0 END)")
+			
+/*			
+			.append(" WHEN (jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.YES_NO.toStringJson())
+			.append("' THEN sum(CASE WHEN(jsonData->>'")
+			.append(CampaignFormDataEntry.VALUE)
+			.append("') = 'true' THEN 1 ELSE 0 END)")
+			
+			
+			.append(" WHEN (jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.YES_NO.toStringJson())
+			.append("' THEN sum(CASE WHEN(jsonData->>'")
+			.append(CampaignFormDataEntry.VALUE)
+			.append("') = 'true' THEN 1 ELSE 0 END)")
+			
+			
+			.append(" WHEN (jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.YES_NO.toStringJson())
+			.append("' THEN sum(CASE WHEN(jsonData->>'")
+			.append(CampaignFormDataEntry.VALUE)
+			.append("') = 'true' THEN 1 ELSE 0 END)")
+			
+			
+			*/	
+			
+			.append(" END as sumValue");
+		
+		System.out.println("))))))))))))))))))))))))))))))))))))))))))))))))))))) "+jsonQueryExpression);
 		return jsonQueryExpression.toString();
 	}
+	
+	
 
 	private String buildJsonJoinExpression() {
 		return new StringBuilder().append(", json_array_elements(")

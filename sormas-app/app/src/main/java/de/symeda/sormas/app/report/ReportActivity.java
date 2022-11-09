@@ -42,7 +42,7 @@ public class ReportActivity extends BaseReportActivity {
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(ReportSection.values(), getContext());
-		if (!(ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER))) {
+		if (!(ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_OFFICER))) {
 			menuItems.set(ReportSection.INFORMANT_REPORTS.ordinal(), null);
 			setPageMenuVisibility(false);
 		}

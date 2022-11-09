@@ -3,13 +3,17 @@ package de.symeda.sormas.api.campaign.form;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
+
+import de.symeda.sormas.api.user.FormAccess;
 
 @Remote
 public interface CampaignFormMetaFacade {
 
-	CampaignFormMetaDto saveCampaignFormMeta(CampaignFormMetaDto campaignFormMetaDto);
+	CampaignFormMetaDto saveCampaignFormMeta(@Valid CampaignFormMetaDto campaignFormMetaDto);
 
 	/**
 	 * Validates the campaign form by checking whether mandatory elements are included, only supported types are used
@@ -24,10 +28,20 @@ public interface CampaignFormMetaFacade {
 		throws IOException;
 
 	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferences();
+	
+	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRound(String round); 
+	
+	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRoundandCampaign(String round, String campaignUUID);
+
+	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(String round, String campaignUUID, Set<FormAccess> userFormAccess);
 
 	CampaignFormMetaDto getCampaignFormMetaByUuid(String campaignFormUuid);
+	
+	CampaignFormMetaReferenceDto getCampaignFormMetaReferenceByUuid(String campaignFormUuid);
 
 	List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid);
+	
+	List<CampaignFormMetaReferenceDto> getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(String uuid);
 
     List<CampaignFormMetaDto> getAllAfter(Date campaignFormMetaChangeDate);
 

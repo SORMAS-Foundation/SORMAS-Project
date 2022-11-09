@@ -53,7 +53,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
 		source.setLabName("Test Lab Name");
-		source.setLabExternalId("Test Lab External Id");
+		source.setLabExternalId(Long.parseLong("1"));
 		source.setLabPostalCode("Test Lab Postal Code");
 		source.setLabCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
@@ -126,7 +126,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
 		source.setLabName("Test Lab Name");
-		source.setLabExternalId("Test Lab External Id");
+		source.setLabExternalId(Long.parseLong("1"));
 		source.setLabPostalCode("Test Lab Postal Code");
 		source.setLabCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);

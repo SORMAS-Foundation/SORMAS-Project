@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +34,7 @@ import java.util.stream.StreamSupport;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
@@ -43,7 +45,7 @@ import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases;
@@ -243,7 +245,7 @@ public final class FieldHelper {
 
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(
-		Field sourceField,
+		Field sourceField, 
 		List<? extends Field<?>> targetFields,
 		Function<Field, Boolean> isVisibleFunction,
 		boolean clearOnHidden) {
@@ -464,6 +466,55 @@ public final class FieldHelper {
 		}
 	}
 
+	public static <T> void setValueWhen(
+			FieldGroup fieldGroup,
+			String sourceFieldId,
+			Object sourceValue,
+			String targetPropertyId,
+			T targetValue
+	) {
+		final Field<?> sourceField = fieldGroup.getField(sourceFieldId);
+		final List<Object> sourceValues = Collections.singletonList(sourceValue);
+		final Field<T> targetFields = (Field<T>) fieldGroup.getField(targetPropertyId);
+
+		setValueWhen(sourceField, sourceValues, targetFields, targetValue);
+	}
+
+	public static <T> void setValueWhen(Field<?> sourceField, final List<?> sourceValues, Field<T> targetField,
+									  T targetValue) {
+
+		if (sourceField instanceof AbstractField<?>) {
+			((AbstractField<?>) sourceField).setImmediate(true);
+		}
+
+		// initialize
+		{
+			if (sourceValues.contains(getNullableSourceFieldValue(sourceField))) {
+				targetField.setValue(targetValue);
+			}
+		}
+
+		sourceField.addValueChangeListener(event -> {
+			if(sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())))) {
+				targetField.setValue(targetValue);
+			}
+		});
+	}
+
+	public static void setEnabledWhen(
+		FieldGroup fieldGroup,
+		String sourceFieldId,
+		Object sourceValue,
+		String targetPropertyId,
+		boolean clearOnDisabled) {
+
+		final Field<?> sourceField = fieldGroup.getField(sourceFieldId);
+		final List<Object> sourceValues = Collections.singletonList(sourceValue);
+		final List<Field<?>> targetFields = Collections.singletonList(fieldGroup.getField(targetPropertyId));
+
+		setEnabledWhen(sourceField, sourceValues, targetFields, clearOnDisabled);
+	}
+	
 	/**
 	 * Sets the target fields to enabled when the source field has a value that's
 	 * contained in the sourceValues list.
@@ -542,6 +593,19 @@ public final class FieldHelper {
 		select.setValue(value);
 		select.setReadOnly(readOnly);
 	}
+	
+	public static void updateItems(ListSelect select, List<?> items) {
+		Object value = select.getValue();
+		boolean readOnly = select.isReadOnly();
+		select.setReadOnly(false);
+		select.clear();
+		if (items != null) {
+			select.setItems(items);
+		}
+		System.out.println("_+_+rrrrrrrrrrrrrrrr_+_+_+++++++++++++++: "+value);
+		//select.setValue(value);
+		select.setReadOnly(readOnly);
+	}
 
 	public static <T> void updateItems(ComboBox<T> select, Collection<T> items) {
 		T value = select.getValue();
@@ -557,6 +621,7 @@ public final class FieldHelper {
 		} else {
 			removeItems(select);
 		}
+		System.out.println("_+_cccccccccccccccccc_+_+_+++++++++++++++: "+value);
 		select.setReadOnly(readOnly);
 	}
 

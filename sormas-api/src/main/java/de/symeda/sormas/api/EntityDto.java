@@ -21,9 +21,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 
 /**
@@ -43,13 +46,12 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
 	public static final String UUID = "uuid";
-	public static final int COLUMN_LENGTH_DEFAULT = 512;
-	public static final int COLUMN_LENGTH_BIG = 4096;
 
 	private Date creationDate;
 	private Date changeDate;
 	@Outbreaks
-	@Pattern(regexp = UUID_REGEX)
+	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
+	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String uuid;
 
 	protected EntityDto() {

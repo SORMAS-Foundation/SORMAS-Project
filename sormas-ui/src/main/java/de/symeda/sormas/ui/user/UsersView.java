@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,8 +49,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -57,15 +60,18 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.configuration.infrastructure.RegionsGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -92,6 +98,7 @@ public class UsersView extends AbstractView {
 	// Filters
 	private ComboBox activeFilter;
 	private ComboBox userRolesFilter;
+	private ComboBox areaFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private TextField searchField;
@@ -133,9 +140,10 @@ public class UsersView extends AbstractView {
 
 			addHeaderComponent(createButton);
 
+			
 			Button exportUserRightsButton =
 				ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
-
+			
 			new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
 				try {
 					String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument(true);
@@ -150,8 +158,18 @@ public class UsersView extends AbstractView {
 				}
 			}, (e) -> {
 			}), createFileNameWithCurrentDate(ExportEntityName.USER_ROLES, ".xlsx"))).extend(exportUserRightsButton);
-
 			addHeaderComponent(exportUserRightsButton);
+
+			
+			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null,
+					ValoTheme.BUTTON_PRIMARY);
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			addHeaderComponent(exportButton);
+
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", grid,
+					ExportEntityName.USERS, UserGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
 		}
 
 		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()) {
@@ -170,7 +188,7 @@ public class UsersView extends AbstractView {
 				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
 
-			addHeaderComponent(btnLeaveBulkEditMode);
+			addHeaderComponent(btnLeaveBulkEditMode); 
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
@@ -193,13 +211,14 @@ public class UsersView extends AbstractView {
 
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
-		filterLayout.setSpacing(true);
-		filterLayout.setSizeUndefined();
+		filterLayout.setSpacing(true); 
+		filterLayout.setSizeUndefined(); 
 
 		activeFilter = ComboBoxHelper.createComboBoxV7();
+		activeFilter.setCaption(I18nProperties.getCaption(Captions.User_active)); 
 		activeFilter.setId(UserDto.ACTIVE);
 		activeFilter.setWidth(200, Unit.PIXELS);
-		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
+		activeFilter.setInputPrompt(I18nProperties.getCaption(Captions.User_active));
 		activeFilter.addItems(ACTIVE_FILTER, INACTIVE_FILTER);
 		activeFilter.addValueChangeListener(e -> {
 			criteria.active(
@@ -211,6 +230,7 @@ public class UsersView extends AbstractView {
 		filterLayout.addComponent(activeFilter);
 
 		userRolesFilter = ComboBoxHelper.createComboBoxV7();
+		userRolesFilter.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
@@ -222,14 +242,37 @@ public class UsersView extends AbstractView {
 		filterLayout.addComponent(userRolesFilter);
 
 		UserDto user = UserProvider.getCurrent().getUser();
+		
+		areaFilter = ComboBoxHelper.createComboBoxV7();
+		areaFilter.setId(CaseDataDto.AREA);
+
+		if (user.getArea() == null) {
+			areaFilter.setWidth(140, Unit.PIXELS);
+			areaFilter.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
+			areaFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
+			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+			areaFilter.addValueChangeListener(e -> {
+				AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
+
+				if (!DataHelper.equal(area, criteria.getArea())) {
+					criteria.region(null);
+				}
+
+				criteria.area(area);
+				navigateTo(criteria);
+			});
+			filterLayout.addComponent(areaFilter);
+		}
+
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(CaseDataDto.REGION);
 
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+			regionFilter.setInputPrompt(I18nProperties.getCaption(Captions.region));
+			regionFilter.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, I18nProperties.getCaption(Captions.region)));
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(areaFilter.getId()));
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 
@@ -242,11 +285,36 @@ public class UsersView extends AbstractView {
 			});
 			filterLayout.addComponent(regionFilter);
 		}
-
+		
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
+/*
+		if (user.getDistrict() == null) {
+			districtFilter.setWidth(140, Unit.PIXELS);
+			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionFilter.getId()));
+			districtFilter.addValueChangeListener(e -> {
+				DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+				criteria.district(district);
+				navigateTo(criteria);
+				
+				if (!DataHelper.equal(district, criteria.getDistrict())) {
+					criteria.district(null);
+				}
+
+				criteria.district(district);
+				navigateTo(criteria);
+			});
+			filterLayout.addComponent(districtFilter);
+		}
+		
+		*/
+		
+		districtFilter = ComboBoxHelper.createComboBoxV7();
+		districtFilter.setId(CaseDataDto.DISTRICT);
+		districtFilter.setCaption(I18nProperties.getCaption(Captions.district));
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+		districtFilter.setInputPrompt(I18nProperties.getCaption(Captions.district));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
@@ -255,7 +323,9 @@ public class UsersView extends AbstractView {
 		});
 		filterLayout.addComponent(districtFilter);
 
+
 		searchField = new TextField();
+		searchField.setCaption(I18nProperties.getString(Strings.promptUserSearch));
 		searchField.setId("search");
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
@@ -327,8 +397,21 @@ public class UsersView extends AbstractView {
 
 		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());
-		regionFilter.setValue(criteria.getRegion());
-
+		areaFilter.setValue(criteria.getArea());
+//work here TODO TONIGHT
+		
+		if (user.getArea() != null && user.getRegion() == null){
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(user.getArea().getUuid()));
+			regionFilter.setEnabled(true);
+		} else if (criteria.getArea() != null) {
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(criteria.getArea().getUuid()));
+			regionFilter.setEnabled(true);
+		} else {
+			regionFilter.setEnabled(false);
+		}
+		
+		
+		
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
@@ -339,6 +422,27 @@ public class UsersView extends AbstractView {
 			districtFilter.setEnabled(false);
 		}
 
+		
+		
+		/*
+		
+		if (user.getArea() != null && user.getRegion() == null){
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(user.getArea().getUuid()));
+			regionFilter.setEnabled(true);
+		} else if (criteria.getArea() != null) {
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(criteria.getArea().getUuid()));
+			regionFilter.setEnabled(true);
+		} else if (criteria.getRegion() != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(criteria.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else {
+			regionFilter.setEnabled(false);
+			districtFilter.setEnabled(false);
+		}
+		*/
+		
+		
+		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		searchField.setValue(criteria.getFreeText());
 

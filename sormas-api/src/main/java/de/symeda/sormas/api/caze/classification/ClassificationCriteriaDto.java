@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.caze.classification;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -58,7 +59,12 @@ public abstract class ClassificationCriteriaDto implements Serializable {
 
 	private static final long serialVersionUID = -3686569295881034008L;
 
-	public abstract boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events);
+	public abstract boolean eval(
+		CaseDataDto caze,
+		PersonDto person,
+		List<PathogenTestDto> pathogenTests,
+		List<EventDto> events,
+		Date lastVaccinationDate);
 
 	public abstract String buildDescription();
 

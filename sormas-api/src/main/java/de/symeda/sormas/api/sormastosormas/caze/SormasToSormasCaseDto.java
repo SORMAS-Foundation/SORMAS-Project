@@ -18,6 +18,8 @@ package de.symeda.sormas.api.sormastosormas.caze;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -29,10 +31,13 @@ public class SormasToSormasCaseDto extends SormasToSormasDto<CaseDataDto> {
 
 	private static final long serialVersionUID = 1811907980150876134L;
 
+	@Valid
 	private PersonDto person;
 
+	@Valid
 	private List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts;
 
+	@Valid
 	private List<SormasToSormasSampleDto> samples;
 
 	public SormasToSormasCaseDto() {
@@ -67,8 +72,10 @@ public class SormasToSormasCaseDto extends SormasToSormasDto<CaseDataDto> {
 
 		private static final long serialVersionUID = 1398270981748143566L;
 
+		@Valid
 		private PersonDto person;
 
+		@Valid
 		private ContactDto contact;
 
 		public AssociatedContactDto() {

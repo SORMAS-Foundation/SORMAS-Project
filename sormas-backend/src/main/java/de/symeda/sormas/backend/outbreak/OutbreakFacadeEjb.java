@@ -25,16 +25,19 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -95,6 +98,15 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		return result.stream().map(OutbreakFacadeEjb::toDto).findFirst().orElse(null);
 	}
 
+	public Page<OutbreakDto> getIndexPage(OutbreakCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<OutbreakDto> activeOutbreaksList = outbreakService.queryByCriteria(criteria, offset, size, sortProperties)
+			.stream()
+			.map(OutbreakFacadeEjb::toDto)
+			.collect(Collectors.toList());
+		long totalElementCount = outbreakService.countByCriteria(criteria, null);
+		return new Page<>(activeOutbreaksList, offset, size, totalElementCount);
+	}
+
 	@Override
 	public boolean hasOutbreak(DistrictReferenceDto district, Disease disease) {
 
@@ -129,7 +141,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
-	public OutbreakDto saveOutbreak(OutbreakDto outbreakDto) {
+	public OutbreakDto saveOutbreak(@Valid OutbreakDto outbreakDto) {
 
 		Outbreak outbreak = fromDto(outbreakDto, true);
 		outbreakService.ensurePersisted(outbreak);

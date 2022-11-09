@@ -123,7 +123,7 @@ public class EventParticipantsView extends AbstractEventView {
 		addHeaderComponent(exportPopupButton);
 
 		{
-			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems("","",
 				grid,
 				() -> this.grid.getSelectionModel() instanceof MultiSelectionModelImpl ? this.grid.asMultiSelect().getSelectedItems() : null,
 				ExportEntityName.EVENT_PARTICIPANTS);

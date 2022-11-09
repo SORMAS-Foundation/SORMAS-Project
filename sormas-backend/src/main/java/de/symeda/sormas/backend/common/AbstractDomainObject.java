@@ -60,6 +60,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	public static final String UUID = "uuid";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
+	public static final String FORM = "changeDate";
 
 	private Long id;
 	private String uuid;
@@ -92,7 +93,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	public String getUuid() {
 
 		if (uuid == null) {
-			/**
+			/*
 			 * New objects should automatically get a UUID.
 			 * This should be returned already before saving via getUuid().
 			 * The generation of UUIDs is relatively time-consuming. Most objects are loaded from the database.

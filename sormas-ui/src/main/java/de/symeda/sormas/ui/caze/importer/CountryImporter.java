@@ -5,11 +5,7 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.text.MessageFormat;
 import java.util.function.Consumer;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,9 +16,11 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -34,12 +32,12 @@ import de.symeda.sormas.ui.importer.InfrastructureImporter;
 
 public class CountryImporter extends InfrastructureImporter {
 
-	public CountryImporter(File inputFile, UserDto currentUser) {
-		this(inputFile, currentUser, false);
+	public CountryImporter(File inputFile, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
+		this(inputFile, currentUser, false, csvSeparator);
 	}
 
-	public CountryImporter(File inputFile, UserDto currentUser, boolean allowOverwrite) {
-		super(inputFile, currentUser, InfrastructureType.COUNTRY, allowOverwrite);
+	public CountryImporter(File inputFile, UserDto currentUser, boolean allowOverwrite, ValueSeparator csvSeparator) throws IOException {
+		super(inputFile, currentUser, InfrastructureType.COUNTRY, allowOverwrite, csvSeparator);
 	}
 
 	@Override
@@ -70,7 +68,7 @@ public class CountryImporter extends InfrastructureImporter {
 
 		if (!iHasImportError) {
 			try {
-				FacadeProvider.getCountryFacade().saveCountry(newEntityDto, allowOverwrite);
+				FacadeProvider.getCountryFacade().save(newEntityDto, allowOverwrite);
 				return ImportLineResult.SUCCESS;
 			} catch (EmptyValueException e) {
 				writeImportError(values, e.getMessage());
@@ -100,7 +98,6 @@ public class CountryImporter extends InfrastructureImporter {
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
-					validateFieldLength(headerPathElementName, value);
 					if (!executeDefaultInvoke(pd, currentElement, value, entityPropertyPath)) {
 						throw new UnsupportedOperationException(
 							I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
@@ -120,28 +117,10 @@ public class CountryImporter extends InfrastructureImporter {
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
 			}
 		}
-	}
 
-	private void validateFieldLength(String field, String value) throws ImportErrorException, InvalidColumnException {
-		try {
-			Size size = CountryDto.class.getDeclaredField(field).getAnnotation(Size.class);
-			boolean shouldNotBeBlank = CountryDto.class.isAnnotationPresent(NotBlank.class);
-			if (shouldNotBeBlank && StringUtils.isBlank(value)) {
-				String message = "The value {0} is blank.";
-				throw new ImportErrorException(MessageFormat.format(message, value));
-			}
-			if (size != null) {
-				if (value.length() < size.min()) {
-					String message = "The value {0} has length {1} but the minimum length is {2}";
-					throw new ImportErrorException(MessageFormat.format(message, value, value.length(), size.min()));
-				}
-				if (value.length() > size.max()) {
-					String message = "The value {0} has length {1} but the maximum length is {2}";
-					throw new ImportErrorException(MessageFormat.format(message, value, value.length(), size.max()));
-				}
-			}
-		} catch (NoSuchFieldException e) {
-			throw new InvalidColumnException(field);
+		ImportLineResultDto<CountryDto> constraintErrors = validateConstraints(newEntityDto);
+		if (constraintErrors.isError()) {
+			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 

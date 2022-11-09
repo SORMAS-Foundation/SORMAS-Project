@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.epidata;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 import java.util.List;
@@ -21,8 +20,8 @@ import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -45,7 +44,6 @@ import de.symeda.sormas.app.databinding.DialogActivityAsCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 public class ActivityAsCaseDialog extends FormDialog {
 

@@ -15,10 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
@@ -26,8 +23,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -37,14 +32,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -52,6 +48,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -63,12 +60,13 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
@@ -105,6 +103,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		PersonDto person = PersonDto.build();
 		person.setFirstName("John");
 		person.setLastName("Smith");
+		person.setSex(Sex.MALE);
 
 		person.getAddress().setDistrict(rdcf.remoteRdcf.district);
 		person.getAddress().setRegion(rdcf.remoteRdcf.region);
@@ -195,7 +194,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 	}
 
 	protected void mockS2Snetwork() throws SormasToSormasException {
-		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(),eq("/sormasToSormas/cert"), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(), eq("/sormasToSormas/cert"), Matchers.any()))
 			.thenAnswer(invocation -> {
 				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
 					mockDefaultServerAccess();
@@ -214,7 +213,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	protected void mockDefaultServerAccess() {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
-
+		
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_FILES_PATH, file.getAbsolutePath());
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_ID, DEFAULT_SERVER_ID);
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_KEYSTORE_NAME, "sormas_a.sormas2sormas.keystore.p12");
@@ -244,18 +243,25 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		String facilityName = "Facility";
 		String pointOfEntryName = "Point of Entry";
 
-		String regionExternalId = null;
-		String districtExternalId = null;
-		String communityExternalId = null;
-		String facilityExternalId = null;
-		String pointOfEntryExternalId = null;
+		Long regionExternalId = null;
+		Long districtExternalId = null;
+		Long communityExternalId = null;
+		Long facilityExternalId = null;
+		Long pointOfEntryExternalId = null;
 
 		if (withExternalId) {
+			/*
 			regionExternalId = "RegionExtId";
 			districtExternalId = "DistrictExtId";
 			communityExternalId = "CommunityExtId";
 			facilityExternalId = "FacilityExtId";
 			pointOfEntryExternalId = "Point of EntryExtId";
+			*/
+			regionExternalId = Long.parseLong("1");
+			districtExternalId = Long.parseLong("1");
+			communityExternalId = Long.parseLong("1");
+			facilityExternalId = Long.parseLong("1");
+			pointOfEntryExternalId = Long.parseLong("1");
 		}
 
 		MappableRdcf rdcf = new MappableRdcf();
@@ -277,18 +283,18 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
 
 		rdcf.localRdcf = new TestDataCreator.RDCF(
-			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
-			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
-			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
+			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalId()),
+			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalId()),
+			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalId()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
-			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
+			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalId()));
 
 		return rdcf;
 	}
 
-	protected static class MappableRdcf {
+	public static class MappableRdcf {
 
-		protected TestDataCreator.RDCF remoteRdcf;
-		protected TestDataCreator.RDCF localRdcf;
+		public TestDataCreator.RDCF remoteRdcf;
+		public TestDataCreator.RDCF localRdcf;
 	}
 }

@@ -38,11 +38,13 @@ import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonExportDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
@@ -89,8 +91,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// 2. Test paging windows
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
-		final CaseDataDto case1 = creator
-			.createCase(
+		final CaseDataDto case1 = creator.createCase(
 			user.toReference(),
 			person1.toReference(),
 			Disease.EVD,
@@ -255,7 +256,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson("James", "Smith", Sex.MALE, 1979, 5, 12);
 		PersonDto person3 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 5);
 		PersonDto person4 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1984, 12, 2);
-		PersonDto person5 = creator.createPerson("Maria", "Garcia", null, 1984, 7, 12);
+		PersonDto person5 = creator.createPerson("Maria", "Garcia", Sex.UNKNOWN, 1984, 7, 12);
 		PersonDto person6 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1984, null, null);
 		PersonDto person7 = creator.createPerson("James", "Smith", Sex.MALE, null, null, null);
 
@@ -373,7 +374,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 */
 	public void testGetFollowUpEndDatesContactsOnly() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_USER);
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
@@ -460,7 +461,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetFollowUpEndDatesCasesOnly() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_USER);
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
@@ -501,7 +502,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetFollowUpEndDatesContactsAndCases() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_USER);
 		Date now = new Date();
 
 		final PersonDto person1 = creator.createPerson();
@@ -609,6 +610,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = new PersonDto();
 		person.setFirstName("Fname");
 		person.setLastName("Lname");
+		person.setSex(Sex.UNKNOWN);
 		person.setAddress(new LocationDto());
 		person.setAddresses(Collections.singletonList(new LocationDto()));
 
@@ -623,7 +625,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	public void testGetMostRelevantFollowUpStatusByUuid() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		PersonDto person = creator.createPerson();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_USER);
 
 		ContactDto contact1 = creator.createContact(user.toReference(), person.toReference());
 
@@ -716,5 +718,87 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	public void testSetMissingGeoCoordinates() {
 
 		assertThat(getPersonFacade().setMissingGeoCoordinates(false), equalTo(0L));
+	}
+
+	@Test
+	public void testGetExportList() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.REST_USER);
+
+		PersonDto casePerson = creator.createPerson("Test Fname", "Test Lname", p -> {
+			p.setBirthdateYYYY(1999);
+			p.setBirthdateMM(3);
+			p.setBirthdateDD(28);
+			p.setPresentCondition(PresentCondition.ALIVE);
+			p.setSex(Sex.UNKNOWN);
+			p.setNickname("TestNick");
+			p.getAddress().setRegion(rdcf.region);
+			p.getAddress().setDistrict(rdcf.district);
+			p.getAddress().setFacility(rdcf.facility);
+			p.getAddress().setCity("Test city");
+
+			p.setPersonContactDetails(
+				Arrays.asList(
+					PersonContactDetailDto.build(
+						p.toReference(),
+						true,
+						PersonContactDetailType.PHONE,
+						PhoneNumberType.MOBILE,
+						null,
+						"12345678",
+						"Test additional info",
+						false,
+						null,
+						null),
+					PersonContactDetailDto.build(
+						p.toReference(),
+						true,
+						PersonContactDetailType.EMAIL,
+						null,
+						null,
+						"test@email.com",
+						"Test additional info",
+						false,
+						null,
+						null)));
+		});
+		creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
+
+		PersonDto contactPerson = creator.createPerson();
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), null, new Date(), new Date(), Disease.EVD, rdcf);
+
+		List<PersonExportDto> casePersonExport = getPersonFacade().getExportList(new PersonCriteria(), 0, 100);
+
+		assertThat(casePersonExport, hasSize(2));
+
+		PersonExportDto exportedCasePerson = casePersonExport.stream().filter(p -> p.getUuid().equals(casePerson.getUuid())).findFirst().get();
+		assertThat(exportedCasePerson.getUuid(), is(casePerson.getUuid()));
+		assertThat(exportedCasePerson.getFirstName(), is(casePerson.getFirstName()));
+		assertThat(exportedCasePerson.getLastName(), is(casePerson.getLastName()));
+		assertThat(exportedCasePerson.getBirthdate().getDateOfBirthYYYY(), is(casePerson.getBirthdateYYYY()));
+		assertThat(exportedCasePerson.getBirthdate().getDateOfBirthMM(), is(casePerson.getBirthdateMM()));
+		assertThat(exportedCasePerson.getBirthdate().getDateOfBirthDD(), is(casePerson.getBirthdateDD()));
+		assertThat(exportedCasePerson.getPresentCondition(), is(casePerson.getPresentCondition()));
+		assertThat(exportedCasePerson.getSex(), is(casePerson.getSex()));
+		assertThat(exportedCasePerson.getNickname(), is(casePerson.getNickname()));
+		assertThat(exportedCasePerson.getRegion(), is(casePerson.getAddress().getRegion().getCaption()));
+		assertThat(exportedCasePerson.getDistrict(), is(casePerson.getAddress().getDistrict().getCaption()));
+		assertThat(exportedCasePerson.getFacility(), is(casePerson.getAddress().getFacility().getCaption()));
+		assertThat(exportedCasePerson.getCity(), is(casePerson.getAddress().getCity()));
+		assertThat(exportedCasePerson.getPhone(), is(casePerson.getPhone()));
+		assertThat(exportedCasePerson.getEmailAddress(), is(casePerson.getEmailAddress()));
+
+		// only contact persons
+		List<PersonExportDto> contactPersonExport =
+			getPersonFacade().getExportList(new PersonCriteria().personAssociation(PersonAssociation.CONTACT), 0, 100);
+		assertThat(contactPersonExport, hasSize(1));
+		assertThat(contactPersonExport.get(0).getUuid(), is(contactPerson.getUuid()));
+
+		// filter by name
+		PersonCriteria nameCriteria = new PersonCriteria();
+		nameCriteria.setNameAddressPhoneEmailLike("Test Fname");
+		List<PersonExportDto> exportByName = getPersonFacade().getExportList(nameCriteria, 0, 100);
+		assertThat(exportByName, hasSize(1));
+		assertThat(exportByName.get(0).getUuid(), is(casePerson.getUuid()));
 	}
 }

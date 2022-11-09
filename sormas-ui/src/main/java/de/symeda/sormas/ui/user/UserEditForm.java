@@ -23,6 +23,11 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.vaadin.ui.Label;
@@ -39,8 +44,11 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
@@ -63,6 +71,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private static final String USER_DATA_HEADING_LOC = "userDataHeadingLoc";
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
+	private String communityUUID;
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -70,16 +79,19 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) +
                     fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE) +
                     fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC) +
+                    fluidRowLocs(UserDto.USER_POSITION, UserDto.USER_ORGANISATION) +
                     fluidRowLocsCss(VSPACE_TOP_3, UserDto.LANGUAGE, "") +
 
                     loc(ADDRESS_HEADING_LOC) +
                     fluidRowLocs(UserDto.ADDRESS) +
-
-					loc(USER_DATA_HEADING_LOC) +
+					
+                    loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
-                    fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
-                    fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
-                    fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
+                    fluidRowLocs(UserDto.USER_NAME, "") +
+                    fluidRowLocs(UserDto.FORM_ACCESS, UserDto.USER_ROLES) +
+                    fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT) +
+                    fluidRowLocs(UserDto.COMMUNITY) +
+                    //fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     //@formatter:off
 
@@ -95,7 +107,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         }
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void addFields() {
 
         Label personDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingPersonData));
@@ -113,15 +126,18 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.FIRST_NAME, TextField.class);
         addField(UserDto.LAST_NAME, TextField.class);
         addField(UserDto.USER_EMAIL, TextField.class);
+        addField(UserDto.USER_POSITION, TextField.class);
+        addField(UserDto.USER_ORGANISATION, TextField.class);
         TextField phone = addField(UserDto.PHONE, TextField.class);
         phone.addValidator(new UserPhoneNumberValidator(I18nProperties.getValidationError(Validations.phoneNumberValidation)));
         if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.WEEKLY_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
             addDiseaseField(UserDto.LIMITED_DISEASE, false);
         }
-
+        
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
         getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
         Label userPhoneDesc = new Label(I18nProperties.getString(Strings.infoUserPhoneNumber));
+        userPhoneDesc.addStyleName("unwrapLabel");
         getContent().addComponent(userPhoneDesc, USER_PHONE_DESC_LOC);
 
         ComboBox cbLanguage = addField(UserDto.LANGUAGE, ComboBox.class);
@@ -132,57 +148,125 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
+        
+        addField(UserDto.FORM_ACCESS, OptionGroup.class);
+        OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
+        formAccess.setMultiSelect(true);
+        
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
-        userRoles.setMultiSelect(true);
-
+        userRoles.setMultiSelect(true); 
+               
+     
+        
+        
+        ComboBox area = addInfrastructureField(UserDto.AREA);
         ComboBox region = addInfrastructureField(UserDto.REGION);
-        ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
-
         ComboBox district = addInfrastructureField(UserDto.DISTRICT);
-        region.addValueChangeListener(e -> {
-            FieldHelper.removeItems(community);
-            RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
+        
+        addField(UserDto.COMMUNITY, OptionGroup.class);
+        
+        OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
+     // Lay the items out horizontally
+        community.addStyleName("horizontal");
+        community.setMultiSelect(true);
+        community.setWidthFull();
+       // community.setValue(UserDto.COMMUNITY);
+        
+        
+      //  UserDto userDtoxx = FacadeProvider.getUserFacade().getByUuid(communityUUID);
+      
+       // community.setValue(userDtoxx.getCommunity());
+        
+        area.addValueChangeListener(e -> {
+        	//community.clear();
+            FieldHelper.removeItems(region);
+            AreaReferenceDto areaDto = (AreaReferenceDto) e.getProperty().getValue();
             FieldHelper
+                    .updateItems(region, areaDto != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(areaDto.getUuid()) : null);
+        });
+        
+        region.addValueChangeListener(e -> {
+        	FieldHelper.removeItems(district);
+            RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
+             FieldHelper
                     .updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
         });
-
+        
+        district.addValueChangeListener(e -> {
+        	  DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+        	  System.out.println(districtDto+" vvvvvvvddddddDISTRICT CHANGES!!ssssssssssefasdfa:"+ e.getProperty().getValue());
+              
+      		
+            community.clear();
+            
+            UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
+          //  FacadeProvider.getUserFacade().getByUuid(userUuid);
+            Set<CommunityReferenceDto> data = Collections.<CommunityReferenceDto>emptySet(); 
+            currentUser.setCommunity(data);
+            FacadeProvider.getUserFacade().saveUser(currentUser);
+        	   
+			if (districtDto != null) {
+				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade()
+						.getAllActiveByDistrict(districtDto.getUuid());
+				for (CommunityReferenceDto item : items) {
+					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
+				}
+				Collections.sort(items, 
+						CommunityReferenceDto.clusternumber); 
+				
+				
+             FieldHelper
+                    .updateItems(community, districtDto != null ? items : null);    
+			}  
+        });
+        
+       community.addValueChangeListener(e -> {
+    	  
+     });
+        		
+        
         // for informant
         ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
-
         ComboBox healthFacility = addInfrastructureField(UserDto.HEALTH_FACILITY);
-        ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY);
-        district.addValueChangeListener(e -> {
-            FieldHelper.removeItems(healthFacility);
-            FieldHelper.removeItems(associatedOfficer);
-            FieldHelper.removeItems(cbPointOfEntry);
-            DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-            FieldHelper.updateItems(
-                    community,
-                    districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-            FieldHelper.updateItems(
-                    healthFacility,
-                    districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
-            FieldHelper.updateItems(
-                    associatedOfficer,
-                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
-            FieldHelper.updateItems(
-                    cbPointOfEntry,
-                    districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
-        });
+        ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY); //white-space: nowrap;
 
-        ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
+
+        ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+         area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
-        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
+        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES, UserDto.FORM_ACCESS);
         addValidators(UserDto.USER_NAME, new UserNameValidator());
 
         addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
         addFieldListeners(UserDto.LAST_NAME, e -> suggestUserName());
         addFieldListeners(UserDto.USER_ROLES, e -> updateFieldsByUserRole());
+       // addFieldListeners(UserDto.DISTRICT, e -> updateCommunityFields());
         updateFieldsByUserRole();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void updateCommunityFields() {
+    	final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
+		final Set<UserRole> userRoles = (Set<UserRole>) userRolesField.getValue();
+    	final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(userRoles);
+    	final boolean hasAssociatedOfficer = UserRole.hasAssociatedOfficer(userRoles);
+    	final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
+		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity;
+		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
+		final boolean useArea = jurisdictionLevel == JurisdictionLevel.AREA || useRegion;
+		
+		final OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
+		community.setVisible(useCommunity);
+		setRequired(useCommunity, UserDto.COMMUNITY);
+		System.out.println("))))))))))))))))))(((((((((((((((( : "+useCommunity);
+		
+		if (useCommunity) {
+			community.clear();
+		}	
+
     }
 
     @SuppressWarnings("unchecked")
@@ -203,19 +287,13 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
 		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
+		final boolean useArea = jurisdictionLevel == JurisdictionLevel.AREA || useRegion;
 
 		final ComboBox associatedOfficer = (ComboBox) getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
 		associatedOfficer.setVisible(hasAssociatedOfficer);
 		setRequired(hasAssociatedOfficer && !isPortHealthUser, UserDto.ASSOCIATED_OFFICER);
 		if (!hasAssociatedOfficer) {
 			associatedOfficer.clear();
-		}
-
-		final ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
-		community.setVisible(useCommunity);
-		setRequired(useCommunity, UserDto.COMMUNITY);
-		if (!useCommunity) {
-			community.clear();
 		}
 
 		final ComboBox healthFacility = (ComboBox) getFieldGroup().getField(UserDto.HEALTH_FACILITY);
@@ -239,19 +317,35 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			pointOfEntry.clear();
 		}
 
-		final ComboBox district = (ComboBox) getFieldGroup().getField(UserDto.DISTRICT);
-		district.setVisible(useDistrict);
-		setRequired(useDistrict, UserDto.DISTRICT);
-		if (!useDistrict) {
-			district.clear();
-		}
-
 		final ComboBox region = (ComboBox) getFieldGroup().getField(UserDto.REGION);
 		region.setVisible(useRegion);
 		setRequired(useRegion, UserDto.REGION);
 		if (!useRegion) {
 			region.clear();
 		}
+		
+		final ComboBox area = (ComboBox) getFieldGroup().getField(UserDto.AREA);
+		area.setVisible(useArea);
+		setRequired(useArea, UserDto.AREA);
+		if (!useArea) {
+			area.clear();
+		}
+		
+		final ComboBox district = (ComboBox) getFieldGroup().getField(UserDto.DISTRICT);
+		district.setVisible(useDistrict);
+		setRequired(useDistrict, UserDto.DISTRICT);
+		if (!useDistrict) {
+			district.clear();
+		}
+		
+	
+		
+		final OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
+		community.setVisible(useCommunity);
+		setRequired(useCommunity, UserDto.COMMUNITY);
+		if (!useCommunity) {
+			community.clear();
+		}	
 	}
 
     private void suggestUserName() {
@@ -282,11 +376,15 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
     @Override
     public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
-
+    	 
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.removeAllItems();
         userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
         
+        OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
+        formAccess.removeAllItems();
+        formAccess.addItems(UserUiHelper.getAssignableForms());
+
         super.setValue(userDto);
     }
 }

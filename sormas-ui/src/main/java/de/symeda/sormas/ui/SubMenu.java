@@ -28,8 +28,8 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Link;
 
 /**
- * A sub navigation menu presenting a list of available views to the user.
- * It emulates the HTML components of a tabsheet to use it's styling.
+ * A sub navigation menu presenting a list of available views to the user. It
+ * emulates the HTML components of a tabsheet to use it's styling.
  */
 @SuppressWarnings("serial")
 public class SubMenu extends CssLayout {
@@ -70,7 +70,7 @@ public class SubMenu extends CssLayout {
 		CssLayout tabItem = new CssLayout();
 		tabItem.setId("tab-" + name.replaceAll("/", "-"));
 		tabItem.setSizeUndefined();
-		tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
+	tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
 		if (isBackNavigation) {
 			tabItem.addStyleName("back");
 		}

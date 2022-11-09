@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +36,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
@@ -351,8 +354,9 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {
 
-		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
-			super(inputFile, hasEntityClassRow, currentUser, event);
+		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event)
+			throws IOException {
+			super(inputFile, hasEntityClassRow, currentUser, event, ValueSeparator.DEFAULT);
 		}
 
 		@Override
@@ -373,6 +377,11 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 					// Do nothing
 				}
 			});
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

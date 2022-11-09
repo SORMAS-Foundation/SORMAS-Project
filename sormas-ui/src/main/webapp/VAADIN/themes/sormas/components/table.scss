@@ -18,6 +18,8 @@ $v-table-border-width: 1px;
       border: none;
     }
 
+	
+
     .v-table-row, .v-table-row-odd {
     
       > td, > th {
@@ -105,7 +107,73 @@ $v-table-border-width: 1px;
     }
   }
 
+
+
   .v-table-table{
     padding-bottom: 15px;
   }
+}
+
+
+.highcharts-data-table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	background: white;
+	min-width: 25%;
+	margin-top: 10%;
+	font-family: sans-serif;
+	font-size: 0.9em;
+	display: none;
+	position: fixed;
+	z-index: 100000000;
+	left: 0;
+	top: 0;
+	overflow: auto;
+	background-color: black;
+	background-color: rgba(0, 0, 0, 0.4);
+	margin-left: 50%;
+}
+
+[id^="highcharts-data-table-"]{
+	background-color: white;
+	width: 100%;
+}
+
+.highcharts-table-caption{
+	background-color: white;
+}
+
+
+.highcharts-data-table td,
+.highcharts-data-table th,
+.highcharts-data-table caption {
+    border: 1px solid silver;
+    padding: 0.5em;
+}
+
+.highcharts-data-table tr:nth-child(even),
+.highcharts-data-table thead tr {
+    background: #f8f8f8;
+}
+
+.highcharts-data-table tr {
+    cursor: pointer;
+}
+
+.highcharts-data-table tr:hover {
+    background: #eff;
+}
+
+.highcharts-data-table caption {
+    border-bottom: none;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.highcharts-sort-ascending::after {
+    content: " ↓";
+}
+
+.highcharts-sort-descending::after {
+    content: " ↑";
 }

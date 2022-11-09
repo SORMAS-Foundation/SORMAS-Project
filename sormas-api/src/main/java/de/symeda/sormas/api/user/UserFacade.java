@@ -22,10 +22,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -33,16 +35,22 @@ public interface UserFacade {
 
 	UserDto getByUuid(String uuid);
 
-	UserDto saveUser(UserDto dto);
+	UserDto saveUser(@Valid UserDto dto);
 
 	boolean isLoginUnique(String uuid, String userName);
 
 	String resetPassword(String uuid);
+	
+	String changePassword(String uuid, String pass);
 
-	List<UserDto> getAllAfter(Date date);
+	List<UserDto> getAllAfter(Date date); 
 
 	UserDto getByUserName(String userName);
 
+	List<UserReferenceDto> getUsersByAreaAndRoles(AreaReferenceDto areaRef, UserRole... assignableRoles);
+
+	List<UserReferenceDto> getUsersByAreasAndRoles(List<AreaReferenceDto> areaRefs, UserRole... assignableRoles);
+	
 	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
 
 	List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles);

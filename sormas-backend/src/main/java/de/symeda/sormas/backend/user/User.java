@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -31,6 +31,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -42,16 +43,19 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.area.Area;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 
 @Entity(name = User.TABLE_NAME)
 @Audited
@@ -61,6 +65,8 @@ public class User extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "users";
 	public static final String TABLE_NAME_USERROLES = "users_userroles";
+	public static final String TABLE_NAME_FORMACCESS = "users_formaccess";
+	public static final String TABLE_NAME_USERTYPES = "users_usertypes";
 
 	public static final String USER_NAME = "userName";
 	public static final String PASSWORD = "password";
@@ -69,12 +75,17 @@ public class User extends AbstractDomainObject {
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String USER_EMAIL = "userEmail";
+	public static final String USER_POSITION = "userPosition";
+	public static final String USER_ORGANISATION = "userOrganisation";
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String USER_ROLES = "userRoles";
+	public static final String USER_FORM_ACCESS = "formAccess";
+	public static final String USER_TYPE = "usertype";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
@@ -91,15 +102,23 @@ public class User extends AbstractDomainObject {
 	private String firstName;
 	private String lastName;
 	private String userEmail;
+	private String userPosition;
+	private String userOrganisation;
 	private String phone;
 	private Location address;
 
 	private Set<UserRole> userRoles;
-
+	
+	private Set<FormAccess> formAccess;
+	//can add a user type property to the user  
+	private UserType usertype;
+	
+	
+	private Area area;
 	private Region region;
 	private District district;
 	// community of community informant
-	private Community community;
+	private Set<Community> community;
 	// facility of hospital informant
 	private Facility healthFacility;
 	// laboratory of lab user
@@ -115,7 +134,7 @@ public class User extends AbstractDomainObject {
 
 	private boolean hasConsentedToGdpr;
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getUserName() {
 		return userName;
 	}
@@ -154,7 +173,7 @@ public class User extends AbstractDomainObject {
 		this.active = active;
 	}
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -163,13 +182,29 @@ public class User extends AbstractDomainObject {
 		this.firstName = firstName;
 	}
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getLastName() {
 		return lastName;
 	}
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	
+	public String getUserPosition() {
+		return userPosition;
+	}
+
+	public void setUserPosition(String userPosition) {
+		this.userPosition = userPosition;
+	}
+
+	public String getUserOrganisation() {
+		return userOrganisation;
+	}
+
+	public void setUserOrganisation(String userOrganisation) {
+		this.userOrganisation = userOrganisation;
 	}
 
 	public String getUserEmail() {
@@ -201,6 +236,15 @@ public class User extends AbstractDomainObject {
 	}
 
 	@ManyToOne(cascade = {})
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
+	}
+	
+	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;
 	}
@@ -224,6 +268,39 @@ public class User extends AbstractDomainObject {
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
 	}
+	
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = TABLE_NAME_FORMACCESS,
+		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"user_id",
+			"formAccess" }))
+	@Column(name = "formAccess", nullable = false)
+	public Set<FormAccess> getFormAccess() {
+		return formAccess;
+	}
+
+	public void setFormAccess(Set<FormAccess> formAccess) {
+		this.formAccess = formAccess;
+	}
+	
+	
+	//@ElementCollection(fetch = FetchType.LAZY)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = TABLE_NAME_USERTYPES,
+	joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
+	uniqueConstraints = @UniqueConstraint(columnNames = {
+		"user_id",
+		"usertype" }))
+	@Column(name = "usertype", nullable = false)
+	public UserType getUsertype() {
+		return usertype;
+	}
+
+	public void setUsertype(UserType usertype) {
+		this.usertype = usertype;
+	}
 
 	@ManyToOne(cascade = {})
 	public User getAssociatedOfficer() {
@@ -236,11 +313,11 @@ public class User extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return UserReferenceDto.buildCaption(getFirstName(), getLastName(), getUserRoles());
+		return UserReferenceDto.buildCaption(getFirstName(), getLastName(), getUserRoles(), getUsertype());
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), getFormAccess(), getUsertype());
 	}
 
 	@Transient
@@ -262,12 +339,12 @@ public class User extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
-	public Community getCommunity() {
+	@ManyToMany(cascade = {})
+	public Set<Community> getCommunity() {
 		return community;
 	}
 
-	public void setCommunity(Community community) {
+	public void setCommunity(Set<Community> community) {
 		this.community = community;
 	}
 
@@ -330,6 +407,13 @@ public class User extends AbstractDomainObject {
 	public boolean hasAnyUserRole(UserRole... userRoles) {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
 	}
+	
+	/**
+	 * Checks if the User possesses any of the specified formAccess
+	 */
+	public boolean hasAnyFormAccess(FormAccess... formAccess) {
+		return Arrays.stream(formAccess).anyMatch(getFormAccess()::contains);
+	}
 
 	@Transient
 	public JurisdictionLevel getJurisdictionLevel() {
@@ -343,7 +427,7 @@ public class User extends AbstractDomainObject {
 
 		String caption = user.getFirstName() + " " + user.getLastName();
 		if (StringUtils.isNotEmpty(user.getUserEmail())) {
-			caption += " (" + user.getUserEmail() + ")";
+			caption += " (" + user.getUserEmail() + ")"; //source
 		}
 		return caption;
 	}

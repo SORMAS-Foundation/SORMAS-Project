@@ -58,13 +58,13 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
 		healthConditions.setOtherConditions("PEBMAC");
 
-		VaccinationDto vaccinationDto = creator.createVaccinationEntity(
+		VaccinationDto vaccinationDto = creator.createVaccination(
 			nationalUser.toReference(),
 			new ImmunizationReferenceDto(immunizationDto.getUuid(), immunizationDto.toString(), immunizationDto.getExternalId()),
 			healthConditions);
 
-		VaccinationEntity actualVaccinationEntity = getVaccinationService().getByUuid(vaccinationDto.getUuid());
-		assertThat(actualVaccinationEntity.getUuid(), equalTo(vaccinationDto.getUuid()));
+		Vaccination actualVaccination = getVaccinationService().getByUuid(vaccinationDto.getUuid());
+		assertThat(actualVaccination.getUuid(), equalTo(vaccinationDto.getUuid()));
 		assertThat(vaccinationDto.getHealthConditions().getOtherConditions(), equalTo("PEBMAC"));
 
 		ImmunizationDto actualImmunization = getImmunizationFacade().getByUuid(immunizationDto.getUuid());

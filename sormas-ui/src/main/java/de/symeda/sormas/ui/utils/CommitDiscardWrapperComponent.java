@@ -70,6 +70,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		void onCommit() throws CannotProceedException;
 	}
+	
+	public static interface CommitandContListener {
+
+		void onCommitandCont() throws CannotProceedException;
+	}
 
 	public static interface DiscardListener {
 
@@ -85,13 +90,41 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		void onDelete();
 	}
+	
+	public static interface CloneListener {
+
+		void onClone();
+	}
+	
+	public static interface CloseOpenCampaignListener {
+
+		void onCloseOpenCampaignListener();
+	}
+	
+	public static interface OpenCloseCampaignListener {
+
+		void onOpenCloseCampaignListener();
+	}
+	
+	public static interface SaveAndContinueListener {
+
+		void onSaveAndContinue();
+	}
+	
+	
 
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
+	private transient List<CommitandContListener> commitandContListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
 	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
+	private transient List<CloneListener> cloneListeners = new ArrayList<>();
+	private transient List<OpenCloseCampaignListener> openCloseCampaignListeners = new ArrayList<>();
+	private transient List<CloseOpenCampaignListener> closeOpenCampaignListeners = new ArrayList<>();
+	private transient List<SaveAndContinueListener> saveAndContinueListeners = new ArrayList<>();
 	// only to check if it's set
 	private transient CommitListener primaryCommitListener;
+	private transient CommitandContListener primaryCommitandContListener;
 
 	private Panel contentPanel;
 
@@ -100,11 +133,23 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	private HorizontalLayout buttonsPanel;
 	private Button commitButton;
+	private Button commitandContButton;
+	
 	private Button discardButton;
 
 	private Button deleteButton;
+	
+	private Button cloneButton;
+	
+	private Button closeOpenCampaignButton;
+	
+	private Button openCloseCampaignButton;
+	
+	private Button saveAndContinueButton;
 
 	private boolean commited = false;
+	private boolean commitedandCont = false;
+	
 	private boolean dirty = false;
 
 	private boolean shortcutsEnabled = false;
@@ -113,7 +158,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected CommitDiscardWrapperComponent() {
 
 	}
-
+	
 	public CommitDiscardWrapperComponent(C component, FieldGroup... fieldGroups) {
 		this(component, null, fieldGroups);
 	}
@@ -159,6 +204,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		buttonsPanel.addComponent(commitButton);
 		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(commitButton, 0);
+	
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
@@ -201,19 +247,19 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						locationEditForm.getField(LocationDto.LATITUDE),
 						locationEditForm.getField(LocationDto.LONGITUDE),
 						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = true;
+						dirty = false;//this
 					} else if (locationEditForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					} else if (personEditForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					}
 				} else if (source instanceof EventDataForm) {
 					final EventDataForm eventDataForm = (EventDataForm) source;
@@ -222,19 +268,19 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						locationEditForm.getField(LocationDto.LATITUDE),
 						locationEditForm.getField(LocationDto.LONGITUDE),
 						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = true;
+						dirty = false;//this
 					} else if (locationEditForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					} else if (eventDataForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					}
 				} else if (source instanceof LocationEditForm) {
 					final LocationEditForm locationEditForm = (LocationEditForm) source;
@@ -242,21 +288,21 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						locationEditForm.getField(LocationDto.LATITUDE),
 						locationEditForm.getField(LocationDto.LONGITUDE),
 						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = true;
+						dirty = false;//this
 					} else if (locationEditForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					}
 				} else if (source instanceof AccessibleTextField) {
 					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
 					if (accessibleTextField.isModified()) {
-						dirty = true;
+						dirty = false;//this
 					}
 				} else {
-					dirty = true;
+					dirty = false;//this
 				}
 			})));
 		}
@@ -315,6 +361,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	protected void registerActions(Notifier notifier) {
 		actions.add(new ClickShortcut(notifier, commitButton, KeyCode.ENTER));
+		actions.add(new ClickShortcut(notifier, commitandContButton, KeyCode.ENTER));
 		actions.add(new ClickShortcut(notifier, discardButton, KeyCode.ESCAPE));
 	}
 
@@ -347,7 +394,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		return commitButton;
 	}
-
+	
+	
 	/**
 	 * Durch das Aufrufen dieser Methode wird ein Button zum Verwerfen erzeugt aber nicht eingefügt.
 	 * Das passiert in setWrappedComponent().
@@ -366,6 +414,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				}
 			});
 			discardButton.setDescription(I18nProperties.getDescription(Descriptions.discardDescription));
+			discardButton.setTabIndex(-1);
 		}
 
 		return discardButton;
@@ -389,10 +438,113 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						});
 				}
 			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
+			deleteButton.setTabIndex(-1);
 		}
 
 		return deleteButton;
 	}
+	//I18nProperties.getCaption(Captions.actionDelete)
+	public Button getCloneButton(String entityName) {
+		if (cloneButton == null) {
+			cloneButton = ButtonHelper.createButton("clone", "Duplicate", new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					onClone();
+				}
+			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+			cloneButton.setTabIndex(-1);
+		}
+
+		return cloneButton;
+	}
+	
+	//I18nProperties.getCaption(Captions.actionDelete)
+			public Button getCloseOpenCampaignButton(String entityName) {
+				if (closeOpenCampaignButton == null) {
+					closeOpenCampaignButton = ButtonHelper.createButton("open", "Open Campaign", new ClickListener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void buttonClick(ClickEvent event) {
+							onCloseOpenCampaignListener();
+						}
+					}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+					closeOpenCampaignButton.setTabIndex(-1);
+				}
+
+				return closeOpenCampaignButton;
+			}
+		
+			
+			public Button getOpenCloseCampaignButton(String entityName) {
+				if (openCloseCampaignButton == null) {
+					openCloseCampaignButton= ButtonHelper.createButton("close", "Close Campaign", new ClickListener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void buttonClick(ClickEvent event) {
+							onOpenCloseCampaignListener();
+						}
+					}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+					openCloseCampaignButton.setTabIndex(-1);
+				}
+
+				return openCloseCampaignButton;
+			}
+		
+		
+			
+	public Button getCommitandContButton(String entityName) {
+		if (commitandContButton == null) {
+			commitandContButton = ButtonHelper.createButton("commitandCont", "Save and Add New", new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					commitAndHandleandCont();
+				}
+			}, ValoTheme.BUTTON_PRIMARY);
+			commitandContButton.setTabIndex(-1);
+		}
+
+		return commitandContButton;
+	}
+
+	
+	
+	
+	//I18nProperties.getCaption(Captions.actionDelete)
+		public Button getSaveAndContinueButton(String entityName) {
+			if (saveAndContinueButton == null) {
+				saveAndContinueButton = ButtonHelper.createButton("sandnew", "Save and New", new ClickListener() {
+
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						/*VaadinUiUtil.showDeleteConfirmationWindow(
+							String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+							new Runnable() {
+
+								public void run() {
+									
+								}
+							});*/
+						
+						onSaveAndContinue();
+					}
+				}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+				saveAndContinueButton.setTabIndex(-1);
+			}
+
+			return saveAndContinueButton;
+		}
 
 	@Override
 	public boolean isModified() {
@@ -410,6 +562,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public boolean isCommited() {
 		return commited;
+	}
+	
+	public boolean isCommitedandCont() {
+		return commitedandCont;
 	}
 
 	@Override
@@ -449,9 +605,53 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		onCommit();
 		commited = true;
+		commitedandCont = true;
 		onDone();
 	}
 
+	
+//	@Override
+	public void commitandCont() throws InvalidValueException, SourceException, CommitRuntimeException {
+
+		if (fieldGroups != null) {
+			if (fieldGroups.length > 1) {
+				// validate all fields first, so commit will likely work for all fieldGroups
+				// this is basically only needed when we have multiple field groups
+				// FIXME this leads to problem #537 for AbstractEditForm with hideValidationUntilNextCommit 
+				// can hopefully be fixed easier with Vaadin 8 architecture change
+				getFieldsStream().forEach(field -> {
+					if (!field.isInvalidCommitted()) {
+						field.validate();
+					}
+				});
+			}
+
+			try {
+				for (FieldGroup fieldGroup : fieldGroups) {
+					fieldGroup.commit();
+				}
+			} catch (CommitException e) {
+				if (e.getCause() instanceof InvalidValueException)
+					throw (InvalidValueException) e.getCause();
+				else if (e.getCause() instanceof SourceException)
+					throw (SourceException) e.getCause();
+				else
+					throw new CommitRuntimeException(e);
+			}
+		} else if (wrappedComponent instanceof Buffered) {
+			((Buffered) wrappedComponent).commit();
+		} else {
+			// NOOP
+		}
+		dirty = false;
+
+		onCommitandCont();
+		commitedandCont = true;
+		
+		onDone();
+	}
+	
+	
 	private String findHtmlMessage(InvalidValueException exception) {
 		if (!(exception.getMessage() == null || exception.getMessage().isEmpty()))
 			return exception.getHtmlMessage();
@@ -525,6 +725,60 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				.show(Page.getCurrent());
 		}
 	}
+	
+	public void commitAndHandleandCont() {
+		try {System.out.println("DEBUGEqqqqqqqqqqqqqqqqqqqqqqqqeRRRR");
+			//commit();
+			commitandCont();
+			System.out.println("DEBUGEwwwwwwwwwwwwwwwwwwwwwwwwwwwwRRRR");
+		} catch (InvalidValueException ex) {
+			System.out.println("DEBUGEjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjRRRR");
+			StringBuilder htmlMsg = new StringBuilder();
+			String message = ex.getMessage();
+			if (message != null && !message.isEmpty()) {
+				htmlMsg.append(ex.getHtmlMessage());
+			} else {
+
+				InvalidValueException[] causes = ex.getCauses();
+				if (causes != null) {
+
+					InvalidValueException firstCause = null;
+					boolean multipleCausesFound = false;
+					for (int i = 0; i < causes.length; i++) {
+						if (!causes[i].isInvisible()) {
+							if (firstCause == null) {
+								firstCause = causes[i];
+							} else {
+								multipleCausesFound = true;
+								break;
+							}
+						}
+					}
+					if (multipleCausesFound) {
+						htmlMsg.append("<ul>");
+						// Alle nochmal
+						for (int i = 0; i < causes.length; i++) {
+							if (!causes[i].isInvisible()) {
+								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
+							}
+						}
+						htmlMsg.append("</ul>");
+					} else if (firstCause != null) {
+						htmlMsg.append(findHtmlMessage(firstCause));
+						String additionalInfo = findHtmlMessageDetails(firstCause);
+						if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
+							htmlMsg.append(" : ");
+							htmlMsg.append(findHtmlMessageDetails(firstCause));
+						}
+					}
+
+				}
+			}
+
+			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true)
+				.show(Page.getCurrent());
+		}
+	}
 
 	@Override
 	public void discard() {
@@ -532,7 +786,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			for (FieldGroup fieldGroup : fieldGroups) {
 				fieldGroup.discard();
 			}
-		} else if (wrappedComponent instanceof Buffered) {
+		} else if (wrappedComponent instanceof Buffered) { 
 			((Buffered) wrappedComponent).discard();
 		} else {
 			// NOOP
@@ -577,7 +831,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (!commitListeners.contains(listener))
 			commitListeners.add(listener);
 	}
-
+	
 	public void setPrimaryCommitListener(CommitListener listener) {
 		if (primaryCommitListener != null)
 			throw new UnsupportedOperationException("primary listener already set");
@@ -586,6 +840,24 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		primaryCommitListener = null;
 	}
 
+	public void removeCommitandContListener(CommitandContListener listener) {
+		commitandContListeners.remove(listener);
+		if (primaryCommitandContListener != null && primaryCommitandContListener.equals(listener))
+			primaryCommitandContListener = null;
+	}
+
+	private void onCommitandCont() {
+
+		for (CommitandContListener listener : commitandContListeners)
+			try {
+				listener.onCommitandCont();
+			} catch (CannotProceedException e) {
+				break;
+			}
+	}
+	
+	
+	
 	public void removeCommitListener(CommitListener listener) {
 		commitListeners.remove(listener);
 		if (primaryCommitListener != null && primaryCommitListener.equals(listener))
@@ -642,7 +914,37 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (!deleteListeners.contains(listener))
 			deleteListeners.add(listener);
 	}
-
+	
+	public void addCloneListener(CloneListener listener, String entityName) {
+		if (cloneListeners.isEmpty())
+			buttonsPanel.addComponent(getCloneButton(entityName), 0);
+		if (!cloneListeners.contains(listener))
+			cloneListeners.add(listener);
+	}
+	
+	public void addCloseOpenListener(CloseOpenCampaignListener listener, String entityName) {
+		if (closeOpenCampaignListeners.isEmpty())
+			buttonsPanel.addComponent(getCloseOpenCampaignButton(entityName), 0);
+		if (!closeOpenCampaignListeners.contains(listener))
+			closeOpenCampaignListeners.add(listener);
+	}
+	
+	public void addOpenCloseListener(OpenCloseCampaignListener listener, String entityName) {
+		if (openCloseCampaignListeners.isEmpty())
+			buttonsPanel.addComponent(getOpenCloseCampaignButton(entityName), 0);
+		if (!openCloseCampaignListeners.contains(listener))
+			openCloseCampaignListeners.add(listener);
+	}
+	
+	
+	public void addCommitandContListener(CommitandContListener listener, String entityName) {
+		if (commitandContListeners.isEmpty())
+			buttonsPanel.addComponent(getCommitandContButton(entityName), 0);
+		if (!commitandContListeners.contains(listener))
+			commitandContListeners.add(listener);
+	}
+	
+	
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
 	}
@@ -651,7 +953,53 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		for (DeleteListener listener : deleteListeners)
 			listener.onDelete();
 	}
+	
+	
+	//imp save and continue
+	public boolean hasSaveAndContinueListener() {
+		return !saveAndContinueListeners.isEmpty();
+	}
 
+	private void onSaveAndContinue() {
+		for (SaveAndContinueListener listener : saveAndContinueListeners)
+			listener.onSaveAndContinue();
+	}
+
+	
+	
+	//impl clone
+	public boolean hasCloneListener() {
+		return !cloneListeners.isEmpty();
+	}
+	
+	
+	private void onClone() {
+		for (CloneListener listener : cloneListeners)
+			listener.onClone();
+	}
+	
+	//impl close and open
+	public boolean hasCloseOpenCampaignListener() {
+		return !closeOpenCampaignListeners.isEmpty();
+	}
+	
+	private void onCloseOpenCampaignListener() {
+		for (CloseOpenCampaignListener listener : closeOpenCampaignListeners)
+			listener.onCloseOpenCampaignListener();
+	}
+	
+	//impl open then close
+		public boolean hasOpenCloseCampaignListener() {
+			return !openCloseCampaignListeners.isEmpty();
+		}
+		
+		private void onOpenCloseCampaignListener() {
+			for (OpenCloseCampaignListener listener : openCloseCampaignListeners)
+				listener.onOpenCloseCampaignListener();
+		}
+		
+	
+	
 	@Override
 	public void setReadOnly(boolean readOnly) {
 		try {
@@ -756,6 +1104,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
+		this.dirty = false;
 	}
 }

@@ -23,14 +23,14 @@ import lombok.Getter;
 public enum CommunityUUIDs {
   VoreingestellteGemeinde("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM");
 
-  private final String option;
+  private final String uuid;
 
-  CommunityUUIDs(String option) {
-    this.option = option;
+  CommunityUUIDs(String uuid) {
+    this.uuid = uuid;
   }
 
   @Override
   public String toString() {
-    return this.option;
+    return this.uuid;
   }
 }

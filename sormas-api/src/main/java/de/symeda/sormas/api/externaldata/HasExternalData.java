@@ -2,7 +2,7 @@ package de.symeda.sormas.api.externaldata;
 
 public interface HasExternalData {
 
-    String getExternalId();
+    String getExternalId(); 
 
     void setExternalId(String externalId);
 

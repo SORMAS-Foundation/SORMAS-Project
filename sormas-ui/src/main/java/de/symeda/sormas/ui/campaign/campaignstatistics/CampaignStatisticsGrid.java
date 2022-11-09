@@ -48,6 +48,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 	public void setDataProvider() {
 		ListDataProvider<CampaignStatisticsDto> dataProvider = DataProvider.fromStream(getGridData().stream());
 		setDataProvider(dataProvider);
+		setStyleName("v-grid-rowx");
 		setSelectionMode(SelectionMode.NONE);
 	}
 

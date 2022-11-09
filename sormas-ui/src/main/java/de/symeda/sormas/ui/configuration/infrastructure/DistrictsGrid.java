@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.stream.Collectors;
@@ -24,15 +24,18 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.DistrictCriteria;
-import de.symeda.sormas.api.region.DistrictIndexDto;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
+import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriteria> {
@@ -56,21 +59,34 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 		}
 
 		setColumns(
-			DistrictIndexDto.NAME,
 			DistrictIndexDto.REGION,
-			DistrictIndexDto.EPID_CODE,
+			DistrictIndexDto.NAME,
+			//DistrictIndexDto.EPID_CODE,
 			DistrictIndexDto.EXTERNAL_ID,
 			DistrictIndexDto.POPULATION,
-			DistrictIndexDto.GROWTH_RATE);
+			DistrictIndexDto.RISK);
 
 		getColumn(DistrictIndexDto.POPULATION).setSortable(false);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid()));
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.NAME, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.REGION, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.POPULATION, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.RISK, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
+			
+		//	addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(DistrictIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(DistrictIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			if(column.getCaption().equalsIgnoreCase("Name")) {
+				column.setCaption("District");
+			}
+			if(column.getCaption().equalsIgnoreCase("External ID")) {
+				column.setCaption("DCode");
+			}
 		}
 	}
 

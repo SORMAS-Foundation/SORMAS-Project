@@ -26,10 +26,16 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+
+
 
 @Remote
 public interface CampaignFormDataFacade {
@@ -41,6 +47,8 @@ public interface CampaignFormDataFacade {
 	CampaignFormDataDto getCampaignFormDataByUuid(String campaignFormDataUuid);
 
 	void deleteCampaignFormData(String campaignFormDataUuid);
+	
+	//void cloneCampaignFormData(String campaignFormDataUuid);
 
 	boolean isArchived(String campaignFormDataUuid);
 
@@ -55,15 +63,30 @@ public interface CampaignFormDataFacade {
 	long count(CampaignFormDataCriteria criteria);
 
 	List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
+	List<CampaignDiagramDataDto> getDiagramDataByGroups(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
 
 	List<CampaignDiagramDataDto> getDiagramDataByAgeGroup(
 		CampaignDiagramSeries diagramSeriesTotal,
 		CampaignDiagramSeries diagramSeries,
 		CampaignDiagramCriteria campaignDiagramCriteria);
+	
+	List<CampaignDiagramDataDto> getDiagramDataByAgeGroupCard(
+			CampaignDiagramSeries diagramSeriesTotal,
+			CampaignDiagramSeries diagramSeries,
+			CampaignDiagramCriteria campaignDiagramCriteria);
 
 	List<String> getAllActiveUuids();
 
 	List<CampaignFormDataDto> getAllActiveAfter(Date date);
+	
+	List<CampaignFormDataDto> getAllActive();
 
 	void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData);
+	
+	List<CampaignFormDataDto> getCampaignFormData(String campaignformuuid, String formuuid);
+	
+	List<MapCampaignDataDto> getCampaignDataforMaps();
+	
+	String getByClusterDropDown(CommunityReferenceDto community, CampaignFormMetaDto campaignForm, CampaignDto campaign);
+	
 }

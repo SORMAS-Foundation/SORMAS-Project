@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants"
+    tools:ignore="contentDescription">
+
+    <data>
+
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.immunization.edit.ImmunizationOverlapsDto" />
+
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+
+        <import type="de.symeda.sormas.api.i18n.Captions" />
+
+        <import type="de.symeda.sormas.api.i18n.Strings" />
+
+        <variable
+            name="dismissCallback"
+            type="de.symeda.sormas.app.util.Callback" />
+
+        <variable
+            name="saveCallback"
+            type="de.symeda.sormas.app.util.Callback" />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="64dp">
+
+            <LinearLayout
+                android:id="@+id/main_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+                android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+                <TextView
+                    android:id="@+id/immunization_infoMessage"
+                    style="@style/SubHeadingStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.format(I18nProperties.getString(Strings.infoSimilarImmunization), data.getDisease().toString())}"
+                    android:textSize="@dimen/defaultControlTextSize" />
+
+                <TextView
+                    android:id="@+id/immunization_infoImmunizationPeriod"
+                    style="@style/SubHeadingDescriptionStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{I18nProperties.getString(Strings.infoImmunizationPeriod)}"
+                    android:textSize="@dimen/defaultControlTextSize" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/immunization_startDate"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@{data.startDate}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/immunization_endDate"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@{data.endDate}" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/immunization_infoExistingImmunizationPeriod"
+                    style="@style/SubHeadingDescriptionStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{I18nProperties.getString(Strings.infoExistingImmunizationPeriod)}"
+                    android:textSize="@dimen/defaultControlTextSize" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/immunization_startDateExisting"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:caption="@string/caption_start_date_existing"
+                        app:value="@{data.startDateExisting}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/immunization_endDateExisting"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:caption="@string/caption_end_date_existing"
+                        app:value="@{data.endDateExisting}" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+                android:paddingRight="@dimen/rowListItemHorizontalMargin"
+                android:layout_marginBottom="24dp">
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/button_adjust"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_toStartOf="@+id/button_save"
+                    android:onClickListener="@{(view) -> dismissCallback.call()}"
+                    android:text="@{I18nProperties.getCaption(Captions.actionAdjustChanges)}"
+                    app:buttonType="@{ControlButtonType.PRIMARY}"
+                    app:iconStart="@drawable/ic_clear_black_24dp"
+                    app:slim="false" />
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/button_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="right"
+                    android:layout_marginStart="@dimen/control_spacing_slim"
+                    android:onClickListener="@{(view) -> saveCallback.call()}"
+                    android:text="@{I18nProperties.getCaption(Captions.actionSaveChanges)}"
+                    app:buttonType="@{ControlButtonType.PRIMARY}"
+                    app:iconStart="@drawable/ic_done_black_24dp"
+                    app:slim="false" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

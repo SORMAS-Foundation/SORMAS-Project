@@ -7,11 +7,18 @@
 		<interceptor>
 			<interceptor-class>de.symeda.sormas.backend.util.PerformanceLoggingInterceptor</interceptor-class>
 		</interceptor>
+		<interceptor>
+			<interceptor-class>de.symeda.sormas.backend.util.ValidationConstraintViolationInterceptor</interceptor-class>
+		</interceptor>
 	</interceptors>
 	<assembly-descriptor>
 		<interceptor-binding>
 			<ejb-name>*</ejb-name>
 			<interceptor-class>de.symeda.sormas.backend.util.PerformanceLoggingInterceptor</interceptor-class>
+		</interceptor-binding>
+		<interceptor-binding>
+			<ejb-name>*</ejb-name>
+			<interceptor-class>de.symeda.sormas.backend.util.ValidationConstraintViolationInterceptor</interceptor-class>
 		</interceptor-binding>
 	</assembly-descriptor>
 </ejb-jar>

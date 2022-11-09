@@ -21,8 +21,8 @@
     <string name="age_with_dob_and_prepend_format"><b>%1$s:</b> %2$s %3$s (%4$s)</string>
     <string name="date_range_format">%1$s - %2$s</string>
     <string name="due_timeago_format">termín %1$s</string>
-    <string name="lbds_response_cases">LBDS Sync Response. Cases transferred: %1$d , ignored: %2$d</string>
-    <string name="lbds_response_persons">LBDS Sync Response. Persons transferred: %1$d , ignored: %2$d</string>
+    <string name="lbds_response_cases">LBDS synchronizační odpověď. Přenesené případy: %1$d , ignorováno: %2$d</string>
+    <string name="lbds_response_persons">Odpověď na synchronizaci LBDS. Přenesené osoby: %1$d , ignorováno: %2$d</string>
     <string name="lbds_cases_transferred">Synchronizace LBDS. Odesílání případů: %1$d</string>
     <string name="lbds_persons_transferred">Synchronizace LBDS. Odesílání osob: %1$d</string>
     <string name="message_unsynchronized_changes_confirmation">Na vašem zařízení jsou nesynchronizované změny.\nPokud budete pokračovat, budou ztraceny a nebudete je moci obnovit. Pro pokračování zadejte slovo %1$s do textového pole níže.</string>

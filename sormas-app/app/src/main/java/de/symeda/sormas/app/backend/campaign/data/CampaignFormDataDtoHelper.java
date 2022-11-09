@@ -23,6 +23,7 @@ import de.symeda.sormas.app.backend.campaign.CampaignDtoHelper;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.region.AreaDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
@@ -64,6 +65,8 @@ public class CampaignFormDataDtoHelper extends AdoDtoHelper<CampaignFormData, Ca
 		target.setFormDate(source.getFormDate());
 		target.setCampaign(DatabaseHelper.getCampaignDao().getByReferenceDto(source.getCampaign()));
 		target.setCampaignFormMeta(DatabaseHelper.getCampaignFormMetaDao().getByReferenceDto(source.getCampaignFormMeta()));
+	//Adding Area Patch
+		target.setArea(DatabaseHelper.getAreaDao().getByReferenceDto(source.getArea()));
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
 		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
@@ -76,6 +79,7 @@ public class CampaignFormDataDtoHelper extends AdoDtoHelper<CampaignFormData, Ca
 		target.setFormDate(source.getFormDate());
 		target.setCampaign(CampaignDtoHelper.toReferenceDto(source.getCampaign()));
 		target.setCampaignFormMeta(CampaignFormMetaDtoHelper.toReferenceDto(source.getCampaignFormMeta()));
+		target.setArea(AreaDtoHelper.toReferenceDto(source.getArea()));
 		target.setRegion(RegionDtoHelper.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictDtoHelper.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityDtoHelper.toReferenceDto(source.getCommunity()));

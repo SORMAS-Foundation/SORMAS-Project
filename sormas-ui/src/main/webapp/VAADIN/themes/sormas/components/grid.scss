@@ -8,7 +8,20 @@ $v-grid-cell-focused-border: none !default;
 
 
 @mixin sormas-grid {
-  
+  .v-grid-row:hover{
+		background-color: rgb(234, 234, 234);
+		cursor: pointer;
+		text-decoration: underline;
+		
+
+	}
+	
+	.v-grid-rowx .v-grid-row:hover{
+		cursor: default !important;
+		background-color: rgb(254, 254, 254);
+		text-decoration: none !important;
+	}
+	
   .v-grid,
   .v-treegrid {
   
@@ -21,6 +34,7 @@ $v-grid-cell-focused-border: none !default;
     .v-treegrid-scroller {
       border-top: none;
     }
+	
     
     .v-grid-row,
     .v-treegrid-row {
@@ -56,6 +70,7 @@ $v-grid-cell-focused-border: none !default;
 
         &.link {
           cursor: pointer;
+		  
         }
       
         &.priority-high {
@@ -164,7 +179,7 @@ $v-grid-cell-focused-border: none !default;
     
       background-color: $v-background-color; 
 
-	  .v-grid-cell,
+	  .v-grid-cell, 
 	  .v-treegrid-cell {
 	    border-left: none;
 	    border-bottom: none;
@@ -174,9 +189,12 @@ $v-grid-cell-focused-border: none !default;
       .v-grid-column-header-content,
       .v-treegrid-column-header-content {
         text-transform: uppercase;
-        font-weight: 600;
+        font-weight: bolder;
 	    border-bottom: $v-border;
 	    min-height: $v-grid-row-height;
+
+
+
       }
     }
   }

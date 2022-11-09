@@ -19,7 +19,7 @@ package de.symeda.sormas.api.geocoding;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoLatLon;
 
 @Remote
 public interface GeocodingFacade {

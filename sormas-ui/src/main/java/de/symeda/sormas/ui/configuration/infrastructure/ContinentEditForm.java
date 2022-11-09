@@ -5,7 +5,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.ContinentDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;

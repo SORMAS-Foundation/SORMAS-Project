@@ -17,6 +17,7 @@ package de.symeda.sormas.api.caze.classification;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -52,7 +53,7 @@ public class ClassificationExposureCriteriaDto extends ClassificationCaseCriteri
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events, Date lastVaccinationDate) {
 
 		for (ExposureDto exposure : caze.getEpiData().getExposures()) {
 			if (exposureType != null && exposure.getExposureType() != exposureType) {

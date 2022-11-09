@@ -324,7 +324,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		return getLatestChangeDateJoinFromQuery(query);
 	}
 
-	private Date getLatestChangeDateJoinFromQuery(String query) {
+	protected Date getLatestChangeDateJoinFromQuery(String query) {
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
 			query,
 			new DataType[] {
@@ -647,7 +647,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					if (embeddedSource != null) {
 						// merge it - will return the merged result
 						AbstractDomainObject embeddedCurrent =
-								DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
+							DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
 
 						if (embeddedCurrent == null) {
 							throw new IllegalArgumentException("No merge result was created for " + embeddedSource);
@@ -656,72 +656,72 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 						property.getWriteMethod().invoke(current, embeddedCurrent);
 					}
 				}
-					// 2. "value" types like String, Date, Enum, ...
-					// -> just copy value from source into target and base
-					// 3. reference domain objects like a reference to a Person or a District
-					// -> just copy reference value from source into target and base
-					else if (DataHelper.isValueType(property.getPropertyType())
-							|| AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
+				// 2. "value" types like String, Date, Enum, ...
+				// -> just copy value from source into target and base
+				// 3. reference domain objects like a reference to a Person or a District
+				// -> just copy reference value from source into target and base
+				else if (DataHelper.isValueType(property.getPropertyType())
+					|| AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
 
-						Object sourceFieldValue = property.getReadMethod().invoke(source);
+					Object sourceFieldValue = property.getReadMethod().invoke(source);
 
-						if (current.isModified() && snapshot != null) {
-							// did the server send changes?
-							Object snapshotFieldValue = property.getReadMethod().invoke(snapshot);
-							if (DataHelper.equal(snapshotFieldValue, sourceFieldValue)) {
-								continue;
-							}
-
-							// did we change anything and is the server data different from ours?
-							// - two persons may have set the exact same data
-							Object currentFieldValue = property.getReadMethod().invoke(current);
-							if (!DataHelper.equal(snapshotFieldValue, currentFieldValue) && !DataHelper.equal(currentFieldValue, sourceFieldValue)) {
-								// we have a conflict
-								Log.i(
-										source.getClass().getName(),
-										"Overriding " + property.getName() + "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) + "'; Yours: '"
-												+ DataHelper.toStringNullable(currentFieldValue) + "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue)
-												+ "'");
-
-								conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
-
-								// don't show the details of conflicts in json raw data to the user
-								if (!property.getReadMethod().isAnnotationPresent(JsonRawValue.class)) {
-									conflictStringBuilder.append("<br/><i>");
-									conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
-									conflictStringBuilder.append("</i>");
-									conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
-									conflictStringBuilder.append("<br/><i>");
-									conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
-									conflictStringBuilder.append("</i>");
-									conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
-									conflictStringBuilder.append("<br/>");
-								}
-							}
-
-							// update snapshot
-							property.getWriteMethod().invoke(snapshot, sourceFieldValue);
+					if (current.isModified() && snapshot != null) {
+						// did the server send changes?
+						Object snapshotFieldValue = property.getReadMethod().invoke(snapshot);
+						if (DataHelper.equal(snapshotFieldValue, sourceFieldValue)) {
+							continue;
 						}
 
-						// update result
-						property.getWriteMethod().invoke(current, sourceFieldValue);
-					}
-					// 4. lists of embedded domain objects
-					else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
+						// did we change anything and is the server data different from ours?
+						// - two persons may have set the exact same data
+						Object currentFieldValue = property.getReadMethod().invoke(current);
+						if (!DataHelper.equal(snapshotFieldValue, currentFieldValue) && !DataHelper.equal(currentFieldValue, sourceFieldValue)) {
+							// we have a conflict
+							Log.i(
+								source.getClass().getName(),
+								"Overriding " + property.getName() + "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) + "'; Yours: '"
+									+ DataHelper.toStringNullable(currentFieldValue) + "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue)
+									+ "'");
 
-						// merging lists is done after entity is saved
-						if (collectionProperties == null) {
-							collectionProperties = new ArrayList<>();
+							conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
+
+							// don't show the details of conflicts in json raw data to the user
+							if (!property.getReadMethod().isAnnotationPresent(JsonRawValue.class)) {
+								conflictStringBuilder.append("<br/><i>");
+								conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
+								conflictStringBuilder.append("</i>");
+								conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
+								conflictStringBuilder.append("<br/><i>");
+								conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
+								conflictStringBuilder.append("</i>");
+								conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
+								conflictStringBuilder.append("<br/>");
+							}
 						}
-						collectionProperties.add(property);
 
-						// TODO: DA WEITER OBEN MUSS SCHON GECHECKT WERDEN, OB ES EINE COLLECTION VON ENUMS IST, WENN JA DANN MACH DAS ANDERE -> ELEMENT TYPE RAUSFINDEN
-
-					} else {
-						// Other objects are not supported
-						throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
+						// update snapshot
+						property.getWriteMethod().invoke(snapshot, sourceFieldValue);
 					}
+
+					// update result
+					property.getWriteMethod().invoke(current, sourceFieldValue);
 				}
+				// 4. lists of embedded domain objects
+				else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
+
+					// merging lists is done after entity is saved
+					if (collectionProperties == null) {
+						collectionProperties = new ArrayList<>();
+					}
+					collectionProperties.add(property);
+
+					// TODO: DA WEITER OBEN MUSS SCHON GECHECKT WERDEN, OB ES EINE COLLECTION VON ENUMS IST, WENN JA DANN MACH DAS ANDERE -> ELEMENT TYPE RAUSFINDEN
+
+				} else {
+					// Other objects are not supported
+					throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
+				}
+			}
 
 			DatabaseHelper.getSyncLogDao().popParentEntityName();
 
@@ -1314,5 +1314,40 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	 */
 	public ConnectionSource getConnectionSource() {
 		return dao.getConnectionSource();
+	}
+
+	// dao utilities
+
+	protected <T extends AbstractDomainObject> void addDateFromCriteria(
+		List<Where<T, Long>> whereStatements,
+		Where<T, Long> where,
+		Date dateFrom,
+		String date)
+		throws SQLException {
+		if (dateFrom != null) {
+			whereStatements.add(where.ge(date, DateHelper.getStartOfDay(dateFrom)));
+		}
+	}
+
+	protected <T extends AbstractDomainObject> void addDateToCriteria(
+		List<Where<T, Long>> whereStatements,
+		Where<T, Long> where,
+		Date dateTo,
+		String date)
+		throws SQLException {
+		if (dateTo != null) {
+			whereStatements.add(where.le(date, DateHelper.getEndOfDay(dateTo)));
+		}
+	}
+
+	protected <T extends AbstractDomainObject> void addEqualsCriteria(
+		List<Where<T, Long>> whereStatements,
+		Where<T, Long> where,
+		Object criteriaValue,
+		String columnName)
+		throws SQLException {
+		if (criteriaValue != null) {
+			whereStatements.add(where.eq(columnName, criteriaValue));
+		}
 	}
 }

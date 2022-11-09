@@ -46,9 +46,9 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 
 		final CampaignDto campaign = creator.createCampaign(user);
 		final ArrayList<CampaignDashboardElement> campaignDashboardElements = new ArrayList<>();
-		campaignDashboardElements.add(new CampaignDashboardElement("diagram1", "tab1", null, 1, 50, 50));
-		campaignDashboardElements.add(new CampaignDashboardElement("diagram2", "tab1", null, 2, 50, 50));
-		campaignDashboardElements.add(new CampaignDashboardElement("diagram3", "tab2", null, 3, 50, 50));
+		campaignDashboardElements.add(new CampaignDashboardElement("diagram1", "tab1", null, 1, 50, 50, "pre-campaign"));
+		campaignDashboardElements.add(new CampaignDashboardElement("diagram2", "tab1", null, 2, 50, 50, "pre-campaign"));
+		campaignDashboardElements.add(new CampaignDashboardElement("diagram3", "tab2", null, 3, 50, 50, "pre-campaign"));
 		campaign.setCampaignDashboardElements(campaignDashboardElements);
 
 		getCampaignDiagramDefinitionFacade().save(creator.createCampaignDiagramDefinition("diagram1", "Diagram one"));

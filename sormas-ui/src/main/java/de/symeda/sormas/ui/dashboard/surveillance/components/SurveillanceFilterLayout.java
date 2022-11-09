@@ -12,17 +12,22 @@ import de.symeda.sormas.ui.utils.components.datetypeselector.DateTypeSelectorCom
 
 public class SurveillanceFilterLayout extends DashboardFilterLayout {
 
+	public static final String DATE_TYPE_SELECTOR_FILTER = "dateTypeSelectorFilter";
+	private final static String[] SURVEILLANCE_FILTERS = new String[] {
+		DATE_TYPE_SELECTOR_FILTER,
+		REGION_FILTER,
+		DISTRICT_FILTER };
 	private DateTypeSelectorComponent dateTypeSelectorComponent;
 
 	public SurveillanceFilterLayout(SurveillanceDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
-		super(dashboardView, dashboardDataProvider);
+		super(dashboardView, dashboardDataProvider, SURVEILLANCE_FILTERS);
 	}
 
+	@Override
 	public void populateLayout() {
-		createDateFilters();
+		super.populateLayout();
 		createDateTypeSelectorFilter();
 		createRegionAndDistrictFilter();
-		createResetAndApplyButtons();
 	}
 
 	public void addDateTypeValueChangeListener(Property.ValueChangeListener listener) {
@@ -34,6 +39,6 @@ public class SurveillanceFilterLayout extends DashboardFilterLayout {
 			new DateTypeSelectorComponent.Builder<>(NewCaseDateType.class).dateTypePrompt(I18nProperties.getString(Strings.promptNewCaseDateType))
 				.build();
 		dateTypeSelectorComponent.setValue(NewCaseDateType.MOST_RELEVANT);
-		addComponent(dateTypeSelectorComponent);
+		addCustomComponent(dateTypeSelectorComponent, DATE_TYPE_SELECTOR_FILTER);
 	}
 }

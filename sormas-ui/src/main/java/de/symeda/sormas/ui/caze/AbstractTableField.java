@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.exception.CloneFailedException;
 import org.slf4j.Logger;

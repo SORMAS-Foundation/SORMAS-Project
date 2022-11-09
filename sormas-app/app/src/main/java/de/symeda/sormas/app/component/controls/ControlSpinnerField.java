@@ -22,6 +22,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -31,10 +32,21 @@ import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.region.Continent;
+import de.symeda.sormas.app.backend.region.Subcontinent;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
@@ -108,6 +120,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 				R.layout.control_spinner_dropdown_item_layout,
 				R.id.text,
 				excludeEmptyItem));
+
 		setFieldValue(selectedValue);
 	}
 
@@ -168,6 +181,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
 	@Override
 	protected void setFieldValue(Object value) {
+
 		if (input == null) {
 			return;
 		}
@@ -226,8 +240,15 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();
+		Map<String, String> str = new  HashMap<String, String>();
+		initInput(str);
+	}
 
+	protected void initInput(Map<String, String> isIntegerFlag) {
 		input = (Spinner) this.findViewById(R.id.spinner_input);
+		if (getImeOptions() == EditorInfo.IME_NULL) {
+			setImeOptions(EditorInfo.IME_ACTION_DONE);
+		}
 
 		spinnerFieldListeners.registerListener(new ValueChangeListener() {
 
@@ -239,6 +260,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 				onValueChanged();
 			}
 		}, this);
+
 		input.setOnItemSelectedListener(spinnerFieldListeners);
 
 		input.setOnTouchListener((view, event) -> {
@@ -249,6 +271,13 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 			}
 			return false;
 		});
+
+	//	String[] items = new String[]{"1", "2", "three"};
+//create an adapter to describe how the items are displayed, adapters are used in several places in android.
+//There are multiple variations of this, but this is the basic variant.
+	//	ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+//set the spinners adapter to the previously created one.
+	//	input.setAdapter(adapter);
 
 		// caused a lot of problems, because the spinner is shown whenever the field is focused
 		// - in contrast to only showing it when the user clicks/touches
@@ -268,7 +297,39 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 //                }
 //            }
 //        });
+
+		List<Item> objectList = convertOtpions(isIntegerFlag);
+
+		setSpinnerData(objectList, null);
+
+
+
 	}
+
+
+	public static List<Item> convertOtpions(Map<String, String> options) {
+		List<Item> items = itemsWithEmpty();
+		if (!options.isEmpty()) {
+			items.addAll(mapToDisplayOptionNames(options));
+		}
+		return items;
+	}
+
+	public static List<Item> itemsWithEmpty() {
+		List<Item> items = new ArrayList<>();
+		items.add(new Item<>("", null));
+
+		return items;
+	}
+
+	private static List<Item<String>> mapToDisplayOptionNames(Map<String, String> subcontinents) {
+		List<String> list = new ArrayList<String>(subcontinents.keySet());
+		return list.stream().map(c -> new Item<>(subcontinents.get(c), c)).sorted(Comparator.comparing(Item::getKey)).collect(Collectors.toList());
+		//do translation here for Options
+				//.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.toString()), c))
+
+	}
+
 
 	@Override
 	protected void requestFocusForContentView(View nextView) {

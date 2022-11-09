@@ -3,7 +3,7 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -27,7 +27,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String CONTACT_COUNT = "contactCount";
-	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	private String uuid;
 	private String personUuid;
@@ -47,7 +47,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	private PathogenTestResultType pathogenTestResult;
 	private Date sampleDateTime;
 
-	private Vaccination vaccination;
+	private VaccinationStatus vaccinationStatus;
 
 	private boolean isInJurisdiction;
 	private boolean isInJurisdictionOrOwned;
@@ -65,7 +65,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		String involvementDescription,
 		PathogenTestResultType pathogenTestResult,
 		Date sampleDateTime,
-		Vaccination vaccination,
+		VaccinationStatus vaccinationStatus,
 		String reportingUserUuid,
 		boolean isInJurisdiction,
 		boolean isInJurisdictionOrOwned) {
@@ -81,7 +81,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.involvementDescription = involvementDescription;
 		this.pathogenTestResult = pathogenTestResult;
 		this.sampleDateTime = sampleDateTime;
-		this.vaccination = vaccination;
+		this.vaccinationStatus = vaccinationStatus;
 		this.isInJurisdiction = isInJurisdiction;
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 	}
@@ -182,12 +182,12 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.sampleDateTime = sampleDateTime;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public boolean getInJurisdiction() {

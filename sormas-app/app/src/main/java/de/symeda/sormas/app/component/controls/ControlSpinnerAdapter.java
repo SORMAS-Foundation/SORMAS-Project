@@ -16,6 +16,7 @@
 package de.symeda.sormas.app.component.controls;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,7 +61,7 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
 		super(context, layoutResourceId, textViewResourceId, objects);
 
 		this.spinner = spinner;
-		this.spinnerData = objects;
+		this.spinnerData = objects;//.stream().filter(e -> e.getValue() != null).collect(Collectors.toList());
 		this.layoutResourceId = layoutResourceId;
 		this.dropdownResourceId = dropdownResourceId;
 		this.textViewResourceId = textViewResourceId;

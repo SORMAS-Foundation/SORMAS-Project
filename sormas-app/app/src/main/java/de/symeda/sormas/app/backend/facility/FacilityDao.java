@@ -26,8 +26,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import android.util.Log;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
@@ -101,10 +101,16 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 			List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
 
 			if (includeOtherFacility) {
-				facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
+				Facility otherFacility = queryUuid(FacilityDto.OTHER_FACILITY_UUID);
+				if (otherFacility != null) {
+					facilities.add(otherFacility);
+				}
 			}
 			if (includeOtherPlace) {
-				facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
+				Facility noneFacility = queryUuid(FacilityDto.NONE_FACILITY_UUID);
+				if (noneFacility != null) {
+					facilities.add(noneFacility);
+				}
 			}
 
 			return facilities;

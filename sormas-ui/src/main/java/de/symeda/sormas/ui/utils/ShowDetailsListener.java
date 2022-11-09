@@ -46,7 +46,7 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 	public ShowDetailsListener(String detailsColumnId, boolean showOnDoubleClick, Consumer<T> itemHandler) {
 
 		this.detailsColumnId = detailsColumnId;
-		this.showOnDoubleClick = showOnDoubleClick;
+		this.showOnDoubleClick = false;
 		this.itemHandler = itemHandler;
 		// make sure the columns are clickable from the beginning
 		this.lastHandlingTimestamp = LocalDateTime.now().minusSeconds(1);
@@ -63,7 +63,7 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 	 * @return {@code true} opens the details when clicking on any column on an item.
 	 */
 	public boolean isShowOnDoubleClick() {
-		return showOnDoubleClick;
+		return false;
 	}
 
 	/**

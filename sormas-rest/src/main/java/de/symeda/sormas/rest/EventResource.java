@@ -102,6 +102,14 @@ public class EventResource extends EntityDtoResource {
 		return FacadeProvider.getEventFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	/**
+	 * 
+	 * @param criteriaWithSorting
+	 *            - The criteria object inside criteriaWithSorting cannot be null. Use an empty criteria instead.
+	 * @param offset
+	 * @param size
+	 * @return
+	 */
 	@POST
 	@Path("/indexList")
 	public Page<EventIndexDto> getIndexList(
@@ -121,4 +129,11 @@ public class EventResource extends EntityDtoResource {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getEventFacade().deleteEvents(uuids);
+	}
+
 }

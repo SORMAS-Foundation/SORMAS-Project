@@ -41,7 +41,7 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE }),
 	TASK_MANAGEMENT(true, true, null),
 	WEEKLY_REPORTING(true, true, null),
-	IMMUNIZATION_MANAGEMENT(true, false, null),
+	IMMUNIZATION_MANAGEMENT(true, true, null),
 	TRAVEL_ENTRIES(true, false, null),
 
 	// FEATURE EXTENSIONS
@@ -106,9 +106,14 @@ public enum FeatureType {
 		false,
 		new FeatureType[] {
 			LAB_MESSAGES }),
-	IMMUNIZATION_STATUS_AUTOMATION(true, false, new FeatureType[]{ IMMUNIZATION_MANAGEMENT}),
+	IMMUNIZATION_STATUS_AUTOMATION(true,
+		true,
+		new FeatureType[] {
+			IMMUNIZATION_MANAGEMENT }),
 
 	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null),
+
+	EDIT_INFRASTRUCTURE_DATA(true, true, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,
@@ -146,7 +151,7 @@ public enum FeatureType {
 
 	// ADDITIONAL FEATURES
 	GDPR_CONSENT_POPUP(true, false, null),
-	INFRASTRUCTURE_TYPE_AREA(true, false, null),
+	INFRASTRUCTURE_TYPE_AREA(true, true, null),
 	OUTBREAKS(true, true, null),
 	PERSON_MANAGEMENT(true,
 		true,

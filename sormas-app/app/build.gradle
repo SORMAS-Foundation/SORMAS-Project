@@ -14,21 +14,21 @@ android {
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        applicationId "de.symeda.sormas.app"
+        applicationId "de.symeda.sormas.app.apmis"
         minSdkVersion 24
         targetSdkVersion 29
         versionCode buildVersionCode()
         versionName "$sormasVersion"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "sormas-$versionName")
+        setProperty("archivesBaseName", "apmis-$versionName")
         multiDexEnabled true
     }
     signingConfigs {
         release {
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
+            //  storeFile file(keystoreProperties['storeFile'])
+            // storePassword keystoreProperties['storePassword']
+            //  keyAlias keystoreProperties['keyAlias']
+            // keyPassword keystoreProperties['keyPassword']
         }
     }
     buildTypes {
@@ -38,7 +38,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
-            signingConfig signingConfigs.release
+            //  signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -56,9 +56,6 @@ android {
     productFlavors {
     }
 
-    lintOptions {
-        abortOnError false
-    }
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
     }
@@ -71,6 +68,9 @@ android {
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -134,6 +134,7 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
     implementation 'io.crowdcode.sormas.lbds:lbds-http-android:1.2.9'
     implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.6'
+    //implementation 'androidx.constraintlayout:constraintlayout:1.1.1'
 }
 
 apply plugin: "jacoco"
@@ -144,24 +145,24 @@ jacoco {
 }
 task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
     def coverageSourceDirs = [
-        "src/main/java"
+            "src/main/java"
     ]
     def fileFilter = [
-        '**/R.class',
-        '**/R$*.class',
-        '**/*$ViewInjector*.*',
-        '**/*$ViewBinder*.*',
-        '**/BuildConfig.*',
-        '**/Manifest*.*'
+            '**/R.class',
+            '**/R$*.class',
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            '**/BuildConfig.*',
+            '**/Manifest*.*'
     ]
     def javaClasses = fileTree(
-        dir: "$buildDir/intermediates/javac/debug/classes/de/symeda/sormas/app",
-        excludes: fileFilter
+            dir: "$buildDir/intermediates/javac/debug/classes/de/symeda/sormas/app",
+            excludes: fileFilter
     )
-    classDirectories = files([ javaClasses ])
-    additionalSourceDirs = files(coverageSourceDirs)
-    sourceDirectories = files(coverageSourceDirs)
-    executionData = fileTree(dir: "$buildDir", includes: [
+    classDirectories.from = files([ javaClasses ])
+    additionalSourceDirs.from = files(coverageSourceDirs)
+    sourceDirectories.from = files(coverageSourceDirs)
+    executionData.from = fileTree(dir: "$buildDir", includes: [
             "jacoco/testDebugUnitTest.exec"
     ])
     reports {
@@ -179,6 +180,6 @@ sonarqube {
         property "sonar.projectName", "sormas-app"
 
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacocoUnitTestReport/jacocoUnitTestReport.xml"
-        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/" 
+        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/"
     }
 }

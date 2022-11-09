@@ -17,10 +17,20 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 
 import java.io.Serializable;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class SormasToSormasPersonPreview implements Serializable {
+public class SormasToSormasPersonPreview extends PseudonymizableDto implements Serializable {
 
 	private static final long serialVersionUID = -5945798718115243796L;
 
@@ -31,12 +41,23 @@ public class SormasToSormasPersonPreview implements Serializable {
 	public static final String SEX = "sex";
 	public static final String ADDRESS = "address";
 
+	@PersonalData
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
+	@PersonalData
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String lastName;
+	@PersonalData
+	@SensitiveData
 	private Integer birthdateDD;
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;
 	private Sex sex;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Valid
 	private LocationDto address;
 
 	public String getFirstName() {

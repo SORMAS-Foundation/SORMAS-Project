@@ -29,20 +29,24 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.format.ImportExportFormat;
 import de.symeda.sormas.api.importexport.format.ImportFormat;
-import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.importexport.ImportErrorException;
-import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb.AreaFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
 @Stateless
@@ -56,6 +60,8 @@ public class ImportParserService {
 	private AreaFacadeEjbLocal areaFacade;
 	@EJB
 	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 
@@ -73,8 +79,9 @@ public class ImportParserService {
 			.withParser(Boolean.class, (v, clazz, path) -> DataHelper.parseBoolean(v))
 			.withParser(boolean.class, (v, clazz, path) -> DataHelper.parseBoolean(v))
 			.withParser(CountryReferenceDto.class, this::parseCountry)
-			.withParser(AreaReferenceDto.class, this::parseArea)
+			.withParser(AreaReferenceDto.class, this::parseArea) 
 			.withParser(RegionReferenceDto.class, this::parseRegion)
+			.withParser(DistrictReferenceDto.class, this::parseDistrict)
 			.withParser(UserReferenceDto.class, this::parseUser)
 			.withParser(String.class, (v, clazz, path) -> v)
 			.build();
@@ -84,7 +91,11 @@ public class ImportParserService {
 	}
 
 	public boolean hasParser(PropertyDescriptor pd) {
+		
+		System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 		ImportFormat parserAnnotation = pd.getWriteMethod().getAnnotation(ImportFormat.class);
+		
+		
 		if (parserAnnotation != null) {
 			// force calling parse method and fail if parsers are not not properly set
 			return true;
@@ -202,7 +213,7 @@ public class ImportParserService {
 	}
 
 	private AreaReferenceDto parseArea(String v, Class<AreaReferenceDto> clazz, String path) throws ImportErrorException {
-		List<AreaReferenceDto> areas = areaFacade.getByName(v, false);
+		List<AreaReferenceDto> areas = areaFacade.getByExternalID(Long.parseLong(v), false);
 		if (areas.isEmpty()) {
 			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, v, path));
 		} else if (areas.size() > 1) {
@@ -213,13 +224,27 @@ public class ImportParserService {
 	}
 
 	private RegionReferenceDto parseRegion(String v, Class<RegionReferenceDto> clazz, String path) throws ImportErrorException {
-		List<Region> regions = regionService.getByName(v, false);
+		System.out.println("_____IN REGION PARSER---");
+		List<Region> regions = regionService.getByExternalId(Long.parseLong(v), false, 0);
 		if (regions.isEmpty()) {
 			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, v, path));
 		} else if (regions.size() > 1) {
 			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importRegionNotUnique, v, path));
 		} else {
 			return RegionFacadeEjb.toReferenceDto(regions.get(0));
+		}
+	}
+	
+	private DistrictReferenceDto parseDistrict(String v, Class<DistrictReferenceDto> clazz, String path) throws ImportErrorException {
+		System.out.println("_____IN District PARSER--- " +v);
+		Region regionV = new Region();
+		List<District> districts = districtService.getByExternalId(Long.parseLong(v), regionV, false, 0);
+		if (districts.isEmpty()) {
+			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, v, path));
+		} else if (districts.size() > 1) {
+			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importRegionNotUnique, v, path));
+		} else {
+			return DistrictFacadeEjb.toReferenceDto(districts.get(0));
 		}
 	}
 

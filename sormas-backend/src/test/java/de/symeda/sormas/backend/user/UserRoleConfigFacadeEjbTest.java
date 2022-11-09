@@ -17,7 +17,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class UserRoleConfigFacadeEjbTest extends AbstractBeanTest {
 
-	@Test
+/*	@Test
 	public void testGetEffectiveUserRights() {
 
 		// 1. no role configured -> use defaults
@@ -46,7 +46,7 @@ public class UserRoleConfigFacadeEjbTest extends AbstractBeanTest {
 		expectedUserRights.addAll(UserRole.NATIONAL_OBSERVER.getDefaultUserRights());
 		assertThat(mixedUserRights, is(expectedUserRights));
 	}
-
+*/
 	// not testable, because history tables don't work with H2
 //	@Test
 //	public void testGetDeletedUuids() {

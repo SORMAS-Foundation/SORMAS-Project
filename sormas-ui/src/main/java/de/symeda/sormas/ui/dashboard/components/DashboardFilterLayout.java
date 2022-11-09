@@ -17,10 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.components;
 
+import static de.symeda.sormas.ui.utils.AbstractFilterForm.FILTER_ITEM_STYLE;
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -28,6 +32,7 @@ import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -42,8 +47,8 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -59,8 +64,14 @@ import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 @SuppressWarnings("serial")
 public abstract class DashboardFilterLayout extends HorizontalLayout {
 
+	public static final String DATE_FILTER = "dateFilter";
+	public static final String REGION_FILTER = "regionFilter";
+	public static final String DISTRICT_FILTER = "districtFilter";
+	private static final String RESET_AND_APPLY_BUTTONS = "resetAndApplyButtons";
+
 	protected AbstractDashboardView dashboardView;
 	protected DashboardDataProvider dashboardDataProvider;
+	private CustomLayout customLayout;
 
 	// Filters
 	private ComboBox regionFilter;
@@ -89,7 +100,7 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 
 	private Runnable dateFilterChangeCallback;
 
-	public DashboardFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
+	public DashboardFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider, String[] templateContent) {
 		this.dashboardView = dashboardView;
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.regionFilter = ComboBoxHelper.createComboBoxV7();
@@ -101,10 +112,22 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 		setSizeUndefined();
 		setMargin(new MarginInfo(true, true, false, true));
 
+		String[] templateLocs = new String[] {
+			DATE_FILTER,
+			RESET_AND_APPLY_BUTTONS };
+		templateLocs = ArrayUtils.insert(1, templateLocs, templateContent);
+
+		customLayout = new CustomLayout();
+		customLayout.setTemplateContents(filterLocs(templateLocs));
+
+		addComponent(customLayout);
 		populateLayout();
 	}
 
-	public abstract void populateLayout();
+	public void populateLayout() {
+		createDateFilters();
+		createResetAndApplyButtons();
+	};
 
 	public void createRegionAndDistrictFilter() {
 		// Region filter
@@ -117,7 +140,7 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 			});
 			// save height
 			// regionFilter.setCaption(I18nProperties.getString(Strings.entityRegion));
-			addComponent(regionFilter);
+			addCustomComponent(regionFilter, REGION_FILTER);
 			dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 		}
 
@@ -132,15 +155,16 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 			});
 			// save height
 			//districtFilter.setCaption(I18nProperties.getString(Strings.entityDistrict));
-			addComponent(districtFilter);
+			addCustomComponent(districtFilter, DISTRICT_FILTER);
 			dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 		}
 	}
 
 	public void createResetAndApplyButtons() {
+		HorizontalLayout buttonLayout = new HorizontalLayout();
 		Button.ClickListener resetListener = e -> dashboardView.navigateTo(null);
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, resetListener, CssStyles.BUTTON_FILTER_LIGHT);
-		addComponent(resetButton);
+		buttonLayout.addComponent(resetButton);
 		Button.ClickListener applyListener = e -> dashboardView.refreshDashboard();
 		applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, applyListener, CssStyles.BUTTON_FILTER_LIGHT);
 		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
@@ -149,14 +173,15 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 				getDateFilterChangeCallback().run();
 			}
 		});
-		addComponent(applyButton);
+		buttonLayout.addComponent(applyButton);
+		addCustomComponent(buttonLayout, RESET_AND_APPLY_BUTTONS);
 	}
 
 	public void createDateFilters() {
 		HorizontalLayout dateFilterLayout = new HorizontalLayout();
 		dateFilterLayout.setSpacing(true);
 		CssStyles.style(dateFilterLayout, CssStyles.VSPACE_3);
-		addComponent(dateFilterLayout);
+		addCustomComponent(dateFilterLayout, DATE_FILTER);
 
 		btnCurrentPeriod = ButtonHelper.createIconPopupButton(
 			"currentPeriod",
@@ -520,5 +545,10 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 
 	public void setDateFilterChangeCallback(Runnable dateFilterChangeCallback) {
 		this.dateFilterChangeCallback = dateFilterChangeCallback;
+	}
+
+	protected void addCustomComponent(Component component, String locator) {
+		customLayout.addComponent(component, locator);
+		component.addStyleName(FILTER_ITEM_STYLE);
 	}
 }

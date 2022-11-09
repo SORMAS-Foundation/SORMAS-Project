@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.symptoms;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -249,7 +249,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.onsetDate = onsetDate;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPatientIllLocation() {
 		return patientIllLocation;
 	}
@@ -626,7 +626,7 @@ public class Symptoms extends AbstractDomainObject {
 		return neckStiffness;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOnsetSymptom() {
 		return onsetSymptom;
 	}
@@ -665,7 +665,7 @@ public class Symptoms extends AbstractDomainObject {
 		return otherHemorrhagicSymptoms;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOtherHemorrhagicSymptomsText() {
 		return otherHemorrhagicSymptomsText;
 	}
@@ -675,7 +675,7 @@ public class Symptoms extends AbstractDomainObject {
 		return otherNonHemorrhagicSymptoms;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOtherNonHemorrhagicSymptomsText() {
 		return otherNonHemorrhagicSymptomsText;
 	}
@@ -1360,7 +1360,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.congenitalHeartDiseaseType = congenitalHeartDiseaseType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCongenitalHeartDiseaseDetails() {
 		return congenitalHeartDiseaseDetails;
 	}
@@ -1585,7 +1585,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.pneumoniaClinicalOrRadiologic = pneumoniaClinicalOrRadiologic;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSymptomsComments() {
 		return symptomsComments;
 	}
@@ -1833,7 +1833,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.otherComplications = otherComplications;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOtherComplicationsText() {
 		return otherComplicationsText;
 	}

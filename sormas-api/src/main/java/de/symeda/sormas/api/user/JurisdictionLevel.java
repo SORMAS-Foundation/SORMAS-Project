@@ -5,7 +5,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum JurisdictionLevel {
 
 	NONE,
+	COUNTRY,
 	NATION,
+	AREA,
 	REGION,
 	DISTRICT,
 	COMMUNITY,

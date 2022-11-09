@@ -21,7 +21,7 @@
     Here there are only strings, which are only useful for the app.
  -->
 <resources>
-    <string name="app_name">SORMAS</string>
+    <string name="app_name">APMIS</string>
     <string name="and">und</string>
     <string name="no">Nein</string>
     <string name="notAnswered">Nicht beantwortet</string>
@@ -38,7 +38,7 @@
     <string name="action_change_settings"><u>Einstellungen ändern</u></string>
     <string name="action_clear">Löschen</string>
     <string name="action_clear_all">Alles löschen</string>
-    <string name="action_close_app">SORMAS schließen</string>
+    <string name="action_close_app">APMISschließen</string>
     <string name="action_confirm">Bestätigen</string>
     <string name="action_create">Erstellen</string>
     <string name="action_create_case_from_contact">In Fall konvertieren</string>
@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Alle als gelesen markieren</string>
     <string name="action_new">Neu</string>
     <string name="action_new_case">Neuer Fall</string>
+    <string name="action_new_immunization">Neue Immunisierung</string>
     <string name="action_new_campaign_form_data">Neue Kampagnen-Formulardaten</string>
     <string name="action_new_contact">Neuer Kontakt</string>
     <string name="action_new_event">Neues Ereignis</string>
@@ -79,6 +80,8 @@
     <string name="action_open_prescription">Öffne Verschreibung</string>
     <string name="action_open_resulting_case">Resultierenden Fall öffnen</string>
     <string name="action_open_source_case">Indexfall öffnen</string>
+    <string name="action_open_linked_case">Verknüpften Fall öffnen</string>
+    <string name="action_link_case">Fall verknüpfen</string>
     <string name="action_open_syncLog">Synchronisierungskonflikte</string>
     <string name="action_options">Optionen</string>
     <string name="action_pick_gps">Aktuelle GPS-Position als Adresse wählen</string>
@@ -116,6 +119,8 @@
     <string name="action_kex_lbds">LBDS Schlüsselaustausch</string>
     <string name="action_sync_person_lbds">LBDS Sync-Personen</string>
     <string name="action_sync_case_lbds">LBDS Sync-Fälle</string>
+    <string name="action_save_vaccination">Impfung speichern</string>
+    <string name="action_edit_vaccination">Impfung bearbeiten</string>
     <string name="caption_address">Adresse</string>
     <string name="caption_age">Alter</string>
     <string name="caption_attended_by">Besucht von</string>
@@ -132,6 +137,7 @@
     <string name="caption_case_samples">Fall-Proben</string>
     <string name="caption_case_tasks">Fall Aufgaben</string>
     <string name="caption_case_events">Fall Ereignisse</string>
+    <string name="caption_case_immunizations">Fall Immunisierungen</string>
     <string name="caption_case_treatments">Behandlungen</string>
     <string name="caption_case_similarity_create">Neuen Fall erstellen</string>
     <string name="caption_changed_data_lost">Geänderte Daten beim erneuten Synchronisieren verloren.</string>
@@ -147,6 +153,7 @@
     <string name="caption_contact_tasks">Kontakt-Aufgaben</string>
     <string name="caption_contact_epidemiological_data">Epidemiologische Info</string>
     <string name="caption_contact_visits">Nachverfolgung Informationen</string>
+    <string name="caption_contact_immunizations">Kontakt Immunisierungen</string>
     <string name="caption_converted_to_case">In Fall konvertiert</string>
     <string name="caption_date_of_birth">Geburtsdatum (Jahr / Monat / Tag)</string>
     <string name="caption_date_of_sampling">Datum der Probenentnahme</string>
@@ -159,6 +166,7 @@
     <string name="caption_event_period">Datum des Ereignisses</string>
     <string name="caption_event_information">Ereignisinformation</string>
     <string name="caption_event_participants">Beteiligte Personen</string>
+    <string name="caption_event_participant_immunizations">Ereignisteilnehmer Immunisierungen</string>
     <string name="caption_event_tasks">Ereignis-Aufgaben</string>
     <string name="caption_executed_by">Ausgeführt von</string>
     <string name="caption_facility_or_home">Aufenthaltsort</string>
@@ -231,6 +239,20 @@
     <string name="caption_year">Jahr</string>
     <string name="caption_latest_submission">Letzte Einreichung: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
+    <string name="caption_immunization_information">Immunisierungsdetails</string>
+    <string name="caption_immunization_vaccinations">Impfungen</string>
+    <string name="caption_vaccination_information">Impfinformationen</string>
+    <string name="caption_new_immunization">Neue Immunisierung</string>
+    <string name="caption_overwrite_immunization_management_status">Immunisierungs-Management-Status überschreiben</string>
+    <string name="caption_searchCase">Fall suchen</string>
+    <string name="caption_aggregate_new_cases">Neue Fälle</string>
+    <string name="caption_aggregate_lab_confirmations">Laborbestätigungen</string>
+    <string name="caption_aggregate_deaths">Todesfälle</string>
+    <string name="caption_aggregate_new_cases_abbr">C</string>
+    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
+    <string name="caption_aggregate_deaths_abbr">D</string>
+    <string name="caption_start_date_existing">Bestehendes Startdatum</string>
+    <string name="caption_end_date_existing">Bestehendes Enddatum</string>
     <string name="confirmation_action">Sind Sie sicher, dass Sie dies tun wollen?</string>
     <string name="confirmation_delete">Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?</string>
     <string name="confirmation_pick_gps">Sind Sie gerade an diesem Ort?</string>
@@ -306,6 +328,7 @@
     <string name="heading_events_list">Ereignisliste</string>
     <string name="heading_existing_persons">Vorhandene Personen</string>
     <string name="heading_existing_cases">Vorhandene Fälle</string>
+    <string name="heading_existing_immunizations">Bestehende Immunisierungen</string>
     <string name="heading_existing_events">Bestehende Ereignisse</string>
     <string name="heading_gathering">Versammlung</string>
     <string name="heading_gps_activation">GPS einschalten</string>
@@ -327,6 +350,7 @@
     <string name="heading_person_contact_detail">Personen-Kontaktdetails</string>
     <string name="heading_pick_or_create_person">Person auswählen oder erstellen</string>
     <string name="heading_pick_or_create_case">Fall auswählen oder erstellen</string>
+    <string name="heading_pick_or_create_immunization">Immunisierung auswählen oder erstellen</string>
     <string name="heading_pick_or_create_event">Ereignis auswählen oder erstellen</string>
     <string name="heading_prescription">Verschreibung</string>
     <string name="heading_prescription_edit">Verschreibung bearbeiten</string>
@@ -341,6 +365,10 @@
     <string name="heading_sample_read">Probe lesen</string>
     <string name="heading_sample_summary">Probe-Zusammenfassung</string>
     <string name="heading_samples_list">Proben-Liste</string>
+    <string name="heading_immunization_edit">Immunisierung bearbeiten</string>
+    <string name="heading_immunization_new">Neue Immunisierung</string>
+    <string name="heading_immunization_read">Immunisierung lesen</string>
+    <string name="heading_immunizations_list">Immunisierungsliste</string>
     <string name="heading_pathogen_test_edit">Erregertest bearbeiten</string>
     <string name="heading_pathogen_test_new">Neuer Erregertest</string>
     <string name="heading_pathogen_test_read">Erregertest lesen</string>
@@ -381,6 +409,10 @@
     <string name="heading_campaign_form_data_summary">Zusammenfassung der Kampagnendaten</string>
     <string name="heading_campaign_form_meta_select">Kampagnenformular auswählen</string>
     <string name="heading_case_place_of_stay">Aufenthaltsort</string>
+    <string name="heading_vaccination">Impfung</string>
+    <string name="heading_vaccination_edit">Impfung bearbeiten</string>
+    <string name="heading_vaccination_new">Neue Impfung</string>
+    <string name="heading_search_for_case">Spezifischen Fall suchen</string>
     <string name="hint_add_to_empty_list">Fügen Sie einen neuen Eintrag hinzu, indem Sie das \"+\" Symbol oben rechts drücken.</string>
     <string name="hint_clear">Löschen</string>
     <string name="hint_create_pin">Bitte wählen Sie eine vierstellige PIN aus, mit der Sie sich bei jedem Öffnen der SORMAS-App authentifizieren werden.</string>
@@ -432,11 +464,11 @@
     <string name="info_no_additional_test">Es wurden noch keine zusätzlichen Tests an dieser Probe durchgeführt</string>
     <string name="info_no_sample_test">Probe wurde noch nicht getestet</string>
     <string name="info_pick_person">Bitte schauen Sie sich die Liste der Personen an.<b>Wenn Sie sich sicher sind</b>, dass die von Ihnen eingebenen persönlichen Daten zu dieser Person gehören, wählen Sie die Person aus und klicken Sie anschließend auf \"Auswählen\".</string>
-    <string name="info_reset_pin">Um Ihre PIN zurücksetzen zu können, benötigen Sie <b>Ihr SORMAS Benutzerpasswort</b></string>
+    <string name="info_reset_pin">Um Ihre PIN zurücksetzen zu können, benötigen Sie <b>Ihr APMISBenutzerpasswort</b></string>
     <string name="info_resync_duration">Eine erneute Synchronisierung wird wahrscheinlich mehrere Minuten dauern.</string>
     <string name="info_select_create_person">Bitte wählen Sie eine Person oder klicken Sie auf \"Erstellen\", um eine neue zu erstellen.</string>
-    <string name="info_sign_in">Melden Sie sich bei SORMAS an, um die Reise der Lebensrettung fortzusetzen.</string>
-    <string name="info_similar_persons_found">SORMAS enthält bereits mindestens eine Person, die den von Ihnen eingegebenen persönlichen Daten sehr ähnlich zu sein scheint.</string>
+    <string name="info_sign_in">Melden Sie sich bei APMISan, um die Reise der Lebensrettung fortzusetzen.</string>
+    <string name="info_similar_persons_found">APMISenthält bereits mindestens eine Person, die den von Ihnen eingegebenen persönlichen Daten sehr ähnlich zu sein scheint.</string>
     <string name="info_symptoms">Bitte wählen Sie eine Antwort für ALLE Symptome aus, um anzugeben, ob sie während dieser Krankheit zwischen Symptombeginn und Fallerkennung aufgetreten sind:</string>
     <string name="info_synchronizing">Synchronisiere mit SORMAS-Server...</string>
     <string name="info_user_report">Bitte beschreiben Sie kurz das aufgetretene Problem. Geben Sie keine persönlichen oder anderweitig sensiblen Daten ein!</string>
@@ -445,12 +477,14 @@
     <string name="info_case_creation_mark_check_box">Dieser Fall ist ein <b>neuer Fall</b> und <b>kein Duplikat</b> eines der obigen Fälle</string>
     <string name="info_event_creation_mark_check_box">Dieses Ereignis ist ein <b>neues Ereignis</b> und <b>kein Duplikat</b> eines der obigen Ereignisse</string>
     <string name="info_pick_campaign_form_meta">Bitte wählen Sie ein Kampagnenformular, für das Sie Daten eingeben wollen!</string>
+    <string name="info_immunization_override_mark_check_box">Bestehende Immunisierung&gt; überschreiben</string>
     <string name="main_menu_cases">Fälle</string>
     <string name="main_menu_contacts">Kontakte</string>
     <string name="main_menu_dashboard">Übersicht</string>
     <string name="main_menu_events">Ereignisse</string>
     <string name="main_menu_reports">Meldungen</string>
     <string name="main_menu_samples">Proben</string>
+    <string name="main_menu_immunizations">Immunisierungen</string>
     <string name="main_menu_settings">Einstellungen</string>
     <string name="main_menu_tasks">Aufgaben</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
@@ -459,25 +493,25 @@
     <string name="message_download_app_failed">Der Download der neuen SORMAS-Version ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie die bestmögliche Internetverbindung haben und versuchen Sie es erneut oder informieren Sie einen Verantwortlichen, wenn Sie diesen Fehler trotz einer guten Internetverbindung immer wieder erhalten.</string>
     <string name="message_empty_password">Bitte geben Sie ein Passwort ein.</string>
     <string name="message_empty_username">Bitte geben Sie einen Benutzernamen ein.</string>
-    <string name="message_encryption">SORMAS setzt voraus, dass die Geräteverschlüsselung auf Ihrem Gerät aktiviert wird, um die Datensicherheit zu gewährleisten.\n\nBitte beachten Sie, dass Sie die Anwendung nicht verwenden können, solange die Geräteverschlüsselung deaktiviert ist.</string>
+    <string name="message_encryption">APMISsetzt voraus, dass die Geräteverschlüsselung auf Ihrem Gerät aktiviert wird, um die Datensicherheit zu gewährleisten.\n\nBitte beachten Sie, dass Sie die Anwendung nicht verwenden können, solange die Geräteverschlüsselung deaktiviert ist.</string>
     <string name="message_enter_person_name">Bitte geben Sie einen Vor- und Nachnamen für die neue Person ein.</string>
     <string name="message_entity_overridden">%1$s aktualisiert. Ungespeicherte Änderungen verworfen.</string>
-    <string name="message_gps_activation">SORMAS benötigt Zugriff auf Ihren GPS-Standort für alle Funktionen, um wie geplant zu funktionieren. Bitte klicken Sie auf \"GPS einschalten\", um die erforderliche Funktion auf Ihrem Gerät zu aktivieren.</string>
-    <string name="message_gps_permission">SORMAS benötigt Zugriff auf Ihren GPS-Standort für alle Funktionen, um wie geplant zu funktionieren. Bitte klicken Sie auf \"GPS Zugriff erlauben\", um SORMAS den Zugriff auf die benötigten Funktionen auf Ihrem Gerät zu ermöglichen.</string>
+    <string name="message_gps_activation">APMISbenötigt Zugriff auf Ihren GPS-Standort für alle Funktionen, um wie geplant zu funktionieren. Bitte klicken Sie auf \"GPS einschalten\", um die erforderliche Funktion auf Ihrem Gerät zu aktivieren.</string>
+    <string name="message_gps_permission">APMISbenötigt Zugriff auf Ihren GPS-Standort für alle Funktionen, um wie geplant zu funktionieren. Bitte klicken Sie auf \"GPS Zugriff erlauben\", um APMISden Zugriff auf die benötigten Funktionen auf Ihrem Gerät zu ermöglichen.</string>
     <string name="message_gps_problem">Es konnten keine GPS-Koordinaten gefunden werden.</string>
     <string name="message_http_401">Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihren Benutzernamen und Ihr Passwort.</string>
     <string name="message_http_403">Sie haben nicht die erforderlichen Berechtigungen. Bitte kontaktieren Sie den Support.</string>
     <string name="message_http_404">Konnte keinen SORMAS-Server auf \'%s \' finden</string>
-    <string name="message_http_404_empty">Kein SORMAS Server in den Einstellungen definiert.</string>
-    <string name="message_http_503">SORMAS Server ist vorübergehend nicht verfügbar.</string>
-    <string name="message_install_app">Eine neue SORMAS Version ist bereit zur Installation. Bitte klicken Sie auf \'Installieren\', um fortzufahren. Sie müssen die App neu starten, nachdem die Aktualisierung abgeschlossen ist.</string>
-    <string name="message_install_app_failed">Beim Installieren der neuen SORMAS Version ist ein Fehler aufgetreten. Vielleicht war die heruntergeladene Datei wegen eines unterbrochenen Downloads unvollständig. Bitte klicken Sie auf \'Erneut downloaden\', um es erneut zu versuchen oder informieren Sie Ihre/n Vorgesetzte/n, wenn dieser Fehler erneut auftritt.</string>
-    <string name="message_install_app_not_possible">Beim Installieren der neuen SORMAS Version ist ein Fehler aufgetreten. Ihr/e Vorgesetzte/r wird automatisch über dieses Problem informiert.</string>
+    <string name="message_http_404_empty">Kein APMISServer in den Einstellungen definiert.</string>
+    <string name="message_http_503">APMISServer ist vorübergehend nicht verfügbar.</string>
+    <string name="message_install_app">Eine neue APMISVersion ist bereit zur Installation. Bitte klicken Sie auf \'Installieren\', um fortzufahren. Sie müssen die App neu starten, nachdem die Aktualisierung abgeschlossen ist.</string>
+    <string name="message_install_app_failed">Beim Installieren der neuen APMISVersion ist ein Fehler aufgetreten. Vielleicht war die heruntergeladene Datei wegen eines unterbrochenen Downloads unvollständig. Bitte klicken Sie auf \'Erneut downloaden\', um es erneut zu versuchen oder informieren Sie Ihre/n Vorgesetzte/n, wenn dieser Fehler erneut auftritt.</string>
+    <string name="message_install_app_not_possible">Beim Installieren der neuen APMISVersion ist ein Fehler aufgetreten. Ihr/e Vorgesetzte/r wird automatisch über dieses Problem informiert.</string>
     <string name="message_no_connection">Keine Internetverbindung</string>
     <string name="message_no_matching_persons">Keine passenden Personen gefunden.</string>
     <string name="message_no_more_entries">Es gibt keine weiteren Einträge zum Anzeigen.</string>
     <string name="message_pin_changed">PIN wurde erfolgreich geändert.</string>
-    <string name="message_pin_correct_loading">PIN korrekt. SORMAS wird gestartet ...</string>
+    <string name="message_pin_correct_loading">PIN korrekt. APMISwird gestartet ...</string>
     <string name="message_pin_no_consecutive">Die PIN darf nicht aus aufeinander folgenden Nummern gebildet werden.</string>
     <string name="message_pin_no_same">PIN darf nicht mehr als 2 gleiche Zahlen haben.</string>
     <string name="message_pin_not_matching">Die eingegebenen PINs stimmen nicht überein. Bitte versuchen Sie es erneut.</string>
@@ -489,7 +523,7 @@
     <string name="message_edit_forbidden">Sie haben keine Berechtigung, die Einträge aus diesem Zuständigkeitsbereich zu bearbeiten.</string>
     <string name="message_save_success">%1$s erfolgreich gespeichert.</string>
     <string name="message_settings_saved">Anwendungseinstellungen wurden geändert.</string>
-    <string name="message_settings_server_url">Willkommen! Bitte geben Sie zuerst die URL Ihres SORMAS Servers ein, danach können Sie sich mit Ihrem Benutzernamen und Passwort anmelden.</string>
+    <string name="message_settings_server_url">Willkommen! Bitte geben Sie zuerst die URL Ihres APMISServers ein, danach können Sie sich mit Ihrem Benutzernamen und Passwort anmelden.</string>
     <string name="message_sync_conflict">Synchronisierungskonflikte erkannt. Bitte überprüfen Sie das Sync-Log um diese zu überprüfen.</string>
     <string name="message_sync_not_synchronized">Einige Einträge konnten nicht synchronisiert werden. Bitte versuchen Sie es später erneut.</string>
     <string name="message_sync_success">Synchronisierung erfolgreich.</string>
@@ -514,6 +548,7 @@
     <string name="tag_row_item_select_or_create_person">Person auswählen oder anlegen</string>
     <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">Person auswählen oder anlegen</string>
+    <string name="tag_row_item_immunization_pick_or_create">rowItemImmunizationPickOrCreatePerson</string>
     <string name="time_future_almost_two_years">innerhalb von fast zwei Jahren</string>
     <string name="time_future_one_day">morgen</string>
     <string name="time_future_one_hour">innerhalb von etwa einer Stunde</string>
@@ -607,4 +642,5 @@
     <string name="scan_field_sample_id">Scanbereich Proben ID</string>
     <string name="caption_facility_type_group">Kategorie der Einrichtung</string>
     <string name="caption_facility_type">Art der Einrichtung</string>
+    <string name="value_vaccine_date_unknown">Impfdatum N/A</string>
 </resources>

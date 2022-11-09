@@ -37,10 +37,14 @@ public enum UserRole
 	implements
 	StatisticsGroupingKey {
 
-	ADMIN(false, false, false, false, JurisdictionLevel.NONE),
+	ADMIN(false, false, false, false, JurisdictionLevel.NATION),
 	NATIONAL_USER(false, false, false, false, JurisdictionLevel.NATION),
-	SURVEILLANCE_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
+	NATIONAL_OBSERVER(false, false, false, false, JurisdictionLevel.NATION),
+	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION),
+	AREA_ADMIN_SUPERVISOR(true, false, false, false, JurisdictionLevel.AREA),
+	AREA_SURVEILLANCE_SUPERVISOR(true, false, false, false, JurisdictionLevel.AREA),
 	ADMIN_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION), // FIXME : remove this when user rights management is doable by users
+	SURVEILLANCE_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
 	SURVEILLANCE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
 	HOSPITAL_INFORMANT(false, false, true, false, JurisdictionLevel.HEALTH_FACILITY),
 	COMMUNITY_OFFICER(false, true, false, false, JurisdictionLevel.COMMUNITY),
@@ -52,18 +56,20 @@ public enum UserRole
 	EVENT_OFFICER(true, false, false, false, JurisdictionLevel.REGION),
 	LAB_USER(false, false, false, false, JurisdictionLevel.LABORATORY),
 	EXTERNAL_LAB_USER(false, false, false, false, JurisdictionLevel.EXTERNAL_LABORATORY),
-	NATIONAL_OBSERVER(false, false, false, false, JurisdictionLevel.NATION),
+	AREA_STATE_OBSERVER(false, false, false, false, JurisdictionLevel.AREA),
 	STATE_OBSERVER(false, false, false, false, JurisdictionLevel.REGION),
 	DISTRICT_OBSERVER(false, false, false, false, JurisdictionLevel.DISTRICT),
 	NATIONAL_CLINICIAN(false, false, false, false, JurisdictionLevel.NATION),
 	POE_INFORMANT(false, false, false, true, JurisdictionLevel.POINT_OF_ENTRY),
 	POE_SUPERVISOR(true, false, false, true, JurisdictionLevel.REGION),
-	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION),
 	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
-	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NATION),
 	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
-	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION),
+	//SORMAS_TO_SORMAS_CLIENT(false, false, false, true, JurisdictionLevel.NATION),
 	BAG_USER(false, false, false, false, JurisdictionLevel.NONE);
+
+	//REST_EXTERNAL_VISITS_USER(false, false, false, true, JurisdictionLevel.NATION),;
+	
+	
 
 	/*
 	 * Hint for SonarQube issues:
@@ -92,10 +98,15 @@ public enum UserRole
 	public static final String _POE_SUPERVISOR = POE_SUPERVISOR.name();
 	public static final String _POE_NATIONAL_USER = POE_NATIONAL_USER.name();
 	public static final String _IMPORT_USER = IMPORT_USER.name();
-	public static final String _REST_EXTERNAL_VISITS_USER = REST_EXTERNAL_VISITS_USER.name();
+	public static final String _REST_EXTERNAL_VISITS_USER = "";
 	public static final String _REST_USER = REST_USER.name();
-	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
+	public static final String _SORMAS_TO_SORMAS_CLIENT = "";
 	public static final String _BAG_USER = "BAG_USER";
+	
+	public static final String _AREA_SURVEILLANCE_SUPERVISOR = AREA_SURVEILLANCE_SUPERVISOR.name();
+	public static final String _AREA_STATE_OBSERVER = AREA_STATE_OBSERVER.name();
+	public static final String _AREA_ADMIN_SUPERVISOR = AREA_ADMIN_SUPERVISOR.name();
+
 
 	private Set<UserRight> defaultUserRights = null;
 
@@ -167,6 +178,7 @@ public enum UserRole
 			break;
 		case NATIONAL_USER:
 			collection.add(SURVEILLANCE_SUPERVISOR);
+			collection.add(AREA_SURVEILLANCE_SUPERVISOR);
 			collection.add(CASE_SUPERVISOR);
 			collection.add(CONTACT_SUPERVISOR);
 			collection.add(CASE_OFFICER);
@@ -175,11 +187,14 @@ public enum UserRole
 			collection.add(LAB_USER);
 			collection.add(NATIONAL_OBSERVER);
 			collection.add(STATE_OBSERVER);
+			
 			collection.add(DISTRICT_OBSERVER);
 			collection.add(NATIONAL_CLINICIAN);
 			collection.add(POE_INFORMANT);
 			collection.add(POE_SUPERVISOR);
 			collection.add(POE_NATIONAL_USER);
+			
+			collection.add(AREA_STATE_OBSERVER);
 			break;
 		case POE_NATIONAL_USER:
 			collection.add(POE_INFORMANT);
@@ -193,6 +208,11 @@ public enum UserRole
 			collection.add(SURVEILLANCE_OFFICER);
 			collection.add(HOSPITAL_INFORMANT);
 			collection.add(COMMUNITY_INFORMANT);
+			break;
+		case AREA_SURVEILLANCE_SUPERVISOR:
+			collection.add(AREA_SURVEILLANCE_SUPERVISOR);
+			collection.add(AREA_STATE_OBSERVER);
+			collection.add(AREA_ADMIN_SUPERVISOR);
 			break;
 		case CASE_SUPERVISOR:
 			collection.add(CASE_OFFICER);
@@ -215,15 +235,15 @@ public enum UserRole
 		case IMPORT_USER:
 			collection.add(IMPORT_USER);
 			break;
-		case REST_EXTERNAL_VISITS_USER:
-			collection.add(REST_EXTERNAL_VISITS_USER);
-			break;
+	//	case REST_EXTERNAL_VISITS_USER:
+		//	collection.add(REST_EXTERNAL_VISITS_USER);
+	//		break;
 		case REST_USER:
 			collection.add(REST_USER);
 			break;
-		case SORMAS_TO_SORMAS_CLIENT:
-			collection.add(SORMAS_TO_SORMAS_CLIENT);
-			break;
+	//	case SORMAS_TO_SORMAS_CLIENT:
+	//		collection.add(SORMAS_TO_SORMAS_CLIENT);
+	//		break;
 		case BAG_USER:
 			collection.add(BAG_USER);
 			break;

@@ -15,10 +15,10 @@
 
 package de.symeda.sormas.app.component.menu;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import android.content.Context;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
@@ -34,6 +34,10 @@ public class PageMenuItem {
 	private boolean active;
 
 	public static List<PageMenuItem> fromEnum(Enum[] values, Context context) {
+		return fromEnum(context, values);
+	}
+
+	public static List<PageMenuItem> fromEnum(Context context, Enum ... values) {
 		List<PageMenuItem> menuItems = new ArrayList<>();
 		int position = 0;
 

@@ -8,12 +8,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
@@ -33,7 +35,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigns";
 
-	public static final String GRID_CONTAINER = "grid-container";
+	public static final String GRID_CONTAINER = "container-fluid";
 
 	protected CampaignDashboardFilterLayout filterLayout;
 	protected CampaignDashboardDataProvider dataProvider;
@@ -51,6 +53,30 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		dataProvider = new CampaignDashboardDataProvider();
 		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider);
+		
+		setSizeFull();
+		setMargin(false);
+		setSpacing(false);
+		//addStyleName("setwith-700px");
+
+		
+		//filterLayout.addStyleName("view-headerxxxx");
+	//	filterLayout.setHeightUndefined();
+		filterLayout.setMargin(new MarginInfo(false, true));
+		filterLayout.setSpacing(true);
+		
+		
+		filterLayout.setHeightUndefined();
+		filterLayout.setWidthFull();
+		filterLayout.setSizeUndefined();
+		//filterLayout.setMargin(new MarginInfo(false, true));
+	//	filterLayout.setSpacing(false);
+		
+		
+		
+		
+		
+		
 		dashboardLayout.addComponent(filterLayout);
 		dashboardLayout.setMargin(false);
 
@@ -93,7 +119,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		tabLayout.setExpandRatio(tabSwitcherLayout, 0);
 
 		final List<String> tabs = new ArrayList<>(dataProvider.getTabIds());
-		tabs.forEach(tabId -> {
+		tabs.forEach(tabIdc -> {
+			String tabId = WordUtils.capitalizeFully(tabIdc);
 			tabSwitcher.addItem(tabId);
 			tabSwitcher.setItemCaption(tabId, tabId);
 		});
@@ -103,7 +130,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		final String lastTabId = lastTabIdForCampaign.get(dataProvider.getCampaign());
 		tabSwitcher.setValue(tabs.isEmpty() ? StringUtils.EMPTY : lastTabId != null ? lastTabId : tabs.get(0));
 
-		CssStyles.style(tabSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		CssStyles.style(tabSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY); //this is the styling of the tab switcher at the top of the dashboard grid
 
 		final VerticalLayout subTabLayout = new VerticalLayout();
 		subTabLayout.setSizeFull();
@@ -114,7 +141,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		tabLayout.setExpandRatio(subTabLayout, 1);
 
 		tabSwitcher.addValueChangeListener(e -> {
-			final String tabId = (String) e.getProperty().getValue();
+			String tabIdx = (String) e.getProperty().getValue();
+			final String tabId = WordUtils.capitalizeFully(tabIdx);
 			subTabLayout.removeComponent(currentDiagramsWrapper);
 			subTabLayout.removeComponent(currentSubTabsWrapper);
 			lastTabIdForCampaign.put(dataProvider.getCampaign(), tabId);

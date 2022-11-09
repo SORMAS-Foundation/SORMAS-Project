@@ -222,6 +222,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		final boolean hasUnsynchronizedCampaignData = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)
 			&& (DatabaseHelper.getCampaignFormDataDao().isAnyModified());
 		return DatabaseHelper.getCaseDao().isAnyModified()
+			|| DatabaseHelper.getImmunizationDao().isAnyModified()
 			|| DatabaseHelper.getContactDao().isAnyModified()
 			|| DatabaseHelper.getPersonDao().isAnyModified()
 			|| DatabaseHelper.getEventDao().isAnyModified()
@@ -241,83 +242,87 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@AddTrace(name = "synchronizeChangedDataTrace")
 	private void synchronizeChangedData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
-		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
-		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
-		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
-		EventDtoHelper eventDtoHelper = new EventDtoHelper();
-		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
-		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
-		PathogenTestDtoHelper pathogenTestDtoHelper = new PathogenTestDtoHelper();
-		AdditionalTestDtoHelper additionalTestDtoHelper = new AdditionalTestDtoHelper();
-		ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
-		VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
-		TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
-		WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
-		AggregateReportDtoHelper aggregateReportDtoHelper = new AggregateReportDtoHelper();
-		PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
-		TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
-		ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
-
-		// order is important, due to dependencies (e.g. case & person)
-
-		new OutbreakDtoHelper().pullEntities(false);
-		new DiseaseConfigurationDtoHelper().pullEntities(false);
-		new CustomizableEnumValueDtoHelper().pullEntities(false);
-
-		boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
-		boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
-		boolean immunizationsNeedPull = immunizationDtoHelper.pullAndPushEntities();
-		boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
-		boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
-		boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities();
-		boolean sampleTestsNeedPull = pathogenTestDtoHelper.pullAndPushEntities();
-		boolean additionalTestsNeedPull = additionalTestDtoHelper.pullAndPushEntities();
-		boolean contactsNeedPull = contactDtoHelper.pullAndPushEntities();
-		boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities();
-		boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities();
-		boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities();
-		boolean aggregateReportsNeedPull = aggregateReportDtoHelper.pullAndPushEntities();
-		boolean prescriptionsNeedPull = prescriptionDtoHelper.pullAndPushEntities();
-		boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities();
-		boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities();
-
-		casesNeedPull |= clinicalVisitsNeedPull;
-
-		if (personsNeedPull)
-			personDtoHelper.pullEntities(true);
-		if (casesNeedPull)
-			caseDtoHelper.pullEntities(true);
-		if (immunizationsNeedPull)
-			immunizationDtoHelper.pullEntities(true);
-		if (eventsNeedPull)
-			eventDtoHelper.pullEntities(true);
-		if (eventParticipantsNeedPull)
-			eventParticipantDtoHelper.pullEntities(true);
-		if (samplesNeedPull)
-			sampleDtoHelper.pullEntities(true);
-		if (sampleTestsNeedPull)
-			pathogenTestDtoHelper.pullEntities(true);
-		if (additionalTestsNeedPull)
-			additionalTestDtoHelper.pullEntities(true);
-		if (contactsNeedPull)
-			contactDtoHelper.pullEntities(true);
-		if (visitsNeedPull)
-			visitDtoHelper.pullEntities(true);
-		if (tasksNeedPull)
-			taskDtoHelper.pullEntities(true);
-		if (weeklyReportsNeedPull)
-			weeklyReportDtoHelper.pullEntities(true);
-		if (aggregateReportsNeedPull)
-			aggregateReportDtoHelper.pullEntities(true);
-		if (prescriptionsNeedPull)
-			prescriptionDtoHelper.pullEntities(true);
-		if (treatmentsNeedPull)
-			treatmentDtoHelper.pullEntities(true);
-		if (clinicalVisitsNeedPull)
-			clinicalVisitDtoHelper.pullEntities(true);
+//		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+//		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+//		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
+//		EventDtoHelper eventDtoHelper = new EventDtoHelper();
+//		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
+//		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
+//		PathogenTestDtoHelper pathogenTestDtoHelper = new PathogenTestDtoHelper();
+//		AdditionalTestDtoHelper additionalTestDtoHelper = new AdditionalTestDtoHelper();
+//		ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
+//		VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
+//		TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
+//		WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
+//		AggregateReportDtoHelper aggregateReportDtoHelper = new AggregateReportDtoHelper();
+//		PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
+//		TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
+//		ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
+//
+//		// order is important, due to dependencies (e.g. case & person)
+//
+//		new OutbreakDtoHelper().pullEntities(false);
+//		new DiseaseConfigurationDtoHelper().pullEntities(false);
+//		new CustomizableEnumValueDtoHelper().pullEntities(false);
+//
+//		boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
+//		boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
+//		boolean immunizationsNeedPull = immunizationDtoHelper.pullAndPushEntities();
+//		boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
+//		boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
+//		boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities();
+//		boolean sampleTestsNeedPull = pathogenTestDtoHelper.pullAndPushEntities();
+//		boolean additionalTestsNeedPull = additionalTestDtoHelper.pullAndPushEntities();
+//		boolean contactsNeedPull = contactDtoHelper.pullAndPushEntities();
+//		boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities();
+//		boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities();
+//		boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities();
+//		boolean aggregateReportsNeedPull = aggregateReportDtoHelper.pullAndPushEntities();
+//		boolean prescriptionsNeedPull = prescriptionDtoHelper.pullAndPushEntities();
+//		boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities();
+//		boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities();
+//
+//		casesNeedPull |= clinicalVisitsNeedPull;
+//
+//		if (personsNeedPull)
+//			personDtoHelper.pullEntities(true);
+//		if (casesNeedPull)
+//			caseDtoHelper.pullEntities(true);
+//		if (immunizationsNeedPull)
+//			immunizationDtoHelper.pullEntities(true);
+//		if (eventsNeedPull)
+//			eventDtoHelper.pullEntities(true);
+//		if (eventParticipantsNeedPull)
+//			eventParticipantDtoHelper.pullEntities(true);
+//		if (samplesNeedPull)
+//			sampleDtoHelper.pullEntities(true);
+//		if (sampleTestsNeedPull)
+//			pathogenTestDtoHelper.pullEntities(true);
+//		if (additionalTestsNeedPull)
+//			additionalTestDtoHelper.pullEntities(true);
+//		if (contactsNeedPull)
+//			contactDtoHelper.pullEntities(true);
+//		if (visitsNeedPull)
+//			visitDtoHelper.pullEntities(true);
+//		if (tasksNeedPull)
+//			taskDtoHelper.pullEntities(true);
+//		if (weeklyReportsNeedPull)
+//			weeklyReportDtoHelper.pullEntities(true);
+//		if (aggregateReportsNeedPull)
+//			aggregateReportDtoHelper.pullEntities(true);
+//		if (prescriptionsNeedPull)
+//			prescriptionDtoHelper.pullEntities(true);
+//		if (treatmentsNeedPull)
+//			treatmentDtoHelper.pullEntities(true);
+//		if (clinicalVisitsNeedPull)
+//			clinicalVisitDtoHelper.pullEntities(true);
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
+			if (campaignFormMetaDtoHelper.pullAndPushEntities())
+				campaignFormMetaDtoHelper.pullEntities(true);
+
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			if (campaignFormDataDtoHelper.pullAndPushEntities())
 				campaignFormDataDtoHelper.pullEntities(true);
@@ -326,52 +331,55 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@AddTrace(name = "repullDataTrace")
 	private void repullData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
-		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
-		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
-		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
-		EventDtoHelper eventDtoHelper = new EventDtoHelper();
-		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
-		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
-		PathogenTestDtoHelper pathogenTestDtoHelper = new PathogenTestDtoHelper();
-		AdditionalTestDtoHelper additionalTestDtoHelper = new AdditionalTestDtoHelper();
-		ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
-		VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
-		TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
-		WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
-		AggregateReportDtoHelper aggregateReportDtoHelper = new AggregateReportDtoHelper();
-		PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
-		TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
-		ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
-
-		// order is important, due to dependencies (e.g. case & person)
-
+		//PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+		//CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+//		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
+//		EventDtoHelper eventDtoHelper = new EventDtoHelper();
+//		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
+//		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
+//		PathogenTestDtoHelper pathogenTestDtoHelper = new PathogenTestDtoHelper();
+//		AdditionalTestDtoHelper additionalTestDtoHelper = new AdditionalTestDtoHelper();
+//		ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
+//		VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
+//		TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
+//		WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
+//		AggregateReportDtoHelper aggregateReportDtoHelper = new AggregateReportDtoHelper();
+//		PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
+//		TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
+//		ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
+//
+//		// order is important, due to dependencies (e.g. case & person)
+//
 		new UserRoleConfigDtoHelper().repullEntities();
-		new DiseaseClassificationDtoHelper().repullEntities();
+//		new DiseaseClassificationDtoHelper().repullEntities();
 		new UserDtoHelper().repullEntities();
-		new OutbreakDtoHelper().repullEntities();
-		new DiseaseConfigurationDtoHelper().repullEntities();
-		new CustomizableEnumValueDtoHelper().repullEntities();
-		new FeatureConfigurationDtoHelper().repullEntities();
-		personDtoHelper.repullEntities();
-		caseDtoHelper.repullEntities();
-		immunizationDtoHelper.repullEntities();
-		eventDtoHelper.repullEntities();
-		eventParticipantDtoHelper.repullEntities();
-		sampleDtoHelper.repullEntities();
-		pathogenTestDtoHelper.repullEntities();
-		additionalTestDtoHelper.repullEntities();
-		contactDtoHelper.repullEntities();
-		visitDtoHelper.repullEntities();
-		taskDtoHelper.repullEntities();
-		weeklyReportDtoHelper.repullEntities();
-		aggregateReportDtoHelper.repullEntities();
-		prescriptionDtoHelper.repullEntities();
-		treatmentDtoHelper.repullEntities();
-		clinicalVisitDtoHelper.repullEntities();
+//		new OutbreakDtoHelper().repullEntities();
+//		new DiseaseConfigurationDtoHelper().repullEntities();
+//		new CustomizableEnumValueDtoHelper().repullEntities();
+//		new FeatureConfigurationDtoHelper().repullEntities();
+//		personDtoHelper.repullEntities();
+//		caseDtoHelper.repullEntities();
+//		immunizationDtoHelper.repullEntities();
+//		eventDtoHelper.repullEntities();
+//		eventParticipantDtoHelper.repullEntities();
+//		sampleDtoHelper.repullEntities();
+//		pathogenTestDtoHelper.repullEntities();
+//		additionalTestDtoHelper.repullEntities();
+//		contactDtoHelper.repullEntities();
+//		visitDtoHelper.repullEntities();
+//		taskDtoHelper.repullEntities();
+//		weeklyReportDtoHelper.repullEntities();
+//		aggregateReportDtoHelper.repullEntities();
+//		prescriptionDtoHelper.repullEntities();
+//		treatmentDtoHelper.repullEntities();
+//		clinicalVisitDtoHelper.repullEntities();
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
+			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
+
+			campaignFormMetaDtoHelper.repullEntities();
 			campaignFormDataDtoHelper.repullEntities();
 		}
 	}
@@ -487,49 +495,46 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	@AddTrace(name = "pullAndRemoveDeletedUuidsSinceTrace")
 	private void pullAndRemoveDeletedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullDeletedUuidsSince");
+if (1 == 3) {
+	// Cases
+	List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	for (String caseUuid : caseUuids) {
+		//	DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+	}
 
-		try {
-			// Cases
-			List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String caseUuid : caseUuids) {
-				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
-			}
+	// Immunization
+	List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//	for (String immunizationUuid : immunizationUuids) {
+	//		DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
+	//	}
 
-			// Immunization
-			List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String immunizationUuid : immunizationUuids) {
-				DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
-			}
+	// Events
+	List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//for (String eventUuid : eventUuids) {
+	//	DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+	//}
 
-			// Events
-			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventUuid : eventUuids) {
-				DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
-			}
+	//Event participants
+	List<String> eventParticipantUuids =
+			executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//	for (String eventParticipantUuid : eventParticipantUuids) {
+	///	DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
+	//}
 
-			//Event participants
-			List<String> eventParticipantUuids =
-				executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventParticipantUuid : eventParticipantUuids) {
-				DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
-			}
+	// Contacts
+	List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//	for (String contactUuid : contactUuids) {
+	//DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+	//}
 
-			// Contacts
-			List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String contactUuid : contactUuids) {
-				DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
-			}
+	// Samples
+	List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//for (String sampleUuid : sampleUuids) {
+	//	DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
+	//}
+}
+	ConfigProvider.setLastDeletedSyncDate(new Date());
 
-			// Samples
-			List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String sampleUuid : sampleUuids) {
-				DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
-			}
-
-			ConfigProvider.setLastDeletedSyncDate(new Date());
-		} catch (SQLException e) {
-			Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveDeletedUuidsSince failed: " + e.getMessage());
-		}
 	}
 
 	@AddTrace(name = "pushNewPullMissingAndDeleteInvalidDataTrace")
@@ -544,94 +549,94 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
 		new PersonDtoHelper().pushEntities(true);
-		new CaseDtoHelper().pushEntities(true);
-		new ImmunizationDtoHelper().pushEntities(true);
-		new EventDtoHelper().pushEntities(true);
-		new EventParticipantDtoHelper().pushEntities(true);
-		new SampleDtoHelper().pushEntities(true);
-		new PathogenTestDtoHelper().pushEntities(true);
-		new AdditionalTestDtoHelper().pushEntities(true);
-		new ContactDtoHelper().pushEntities(true);
-		new VisitDtoHelper().pushEntities(true);
-		new TaskDtoHelper().pushEntities(true);
-		new WeeklyReportDtoHelper().pushEntities(true);
-		new AggregateReportDtoHelper().pushEntities(true);
-		new PrescriptionDtoHelper().pushEntities(true);
-		new TreatmentDtoHelper().pushEntities(true);
-		new ClinicalVisitDtoHelper().pushEntities(true);
-
-		// weekly reports and entries
-		List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
-		DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
-		// aggregate reports
-		List<String> aggregateReportUuids = executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids());
-		DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids);
-		// tasks
-		List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
-		DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
-		// visits
-		List<String> visitUuids = executeUuidCall(RetroProvider.getVisitFacade().pullUuids());
-		DatabaseHelper.getVisitDao().deleteInvalid(visitUuids);
-		// contacts
-		List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullUuids());
-		DatabaseHelper.getContactDao().deleteInvalid(contactUuids);
-		// sample tests
-		List<String> sampleTestUuids = executeUuidCall(RetroProvider.getSampleTestFacade().pullUuids());
-		DatabaseHelper.getSampleTestDao().deleteInvalid(sampleTestUuids);
-		// additional tests
-		List<String> additionalTestUuids = executeUuidCall(RetroProvider.getAdditionalTestFacade().pullUuids());
-		DatabaseHelper.getAdditionalTestDao().deleteInvalid(additionalTestUuids);
-		// samples
-		List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullUuids());
-		DatabaseHelper.getSampleDao().deleteInvalid(sampleUuids);
-		// event participants
-		List<String> eventParticipantUuids = executeUuidCall(RetroProvider.getEventParticipantFacade().pullUuids());
-		DatabaseHelper.getEventParticipantDao().deleteInvalid(eventParticipantUuids);
-		// events
-		List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullUuids());
-		DatabaseHelper.getEventDao().deleteInvalid(eventUuids);
-		// treatments
-		List<String> treatmentUuids = executeUuidCall(RetroProvider.getTreatmentFacade().pullUuids());
-		DatabaseHelper.getTreatmentDao().deleteInvalid(treatmentUuids);
-		// prescriptions
-		List<String> prescriptionUuids = executeUuidCall(RetroProvider.getPrescriptionFacade().pullUuids());
-		DatabaseHelper.getPrescriptionDao().deleteInvalid(prescriptionUuids);
-		// clinical visits
-		List<String> clinicalVisitUuids = executeUuidCall(RetroProvider.getClinicalVisitFacade().pullUuids());
-		DatabaseHelper.getClinicalVisitDao().deleteInvalid(clinicalVisitUuids);
-		// immunizations
-		List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullUuids());
-		DatabaseHelper.getImmunizationDao().deleteInvalid(immunizationUuids);
-		// cases
-		List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
-		DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
-		// persons
-		List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
-		DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
-		// outbreak
-		List<String> outbreakUuids = executeUuidCall(RetroProvider.getOutbreakFacade().pullActiveUuids());
-		DatabaseHelper.getOutbreakDao().deleteInvalid(outbreakUuids);
-
-		// order is important, due to dependencies (e.g. case & person)
-
-		new PersonDtoHelper().pullMissing(personUuids);
-		new CaseDtoHelper().pullMissing(caseUuids);
-		new ImmunizationDtoHelper().pullMissing(caseUuids);
-		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
-		new TreatmentDtoHelper().pullMissing(treatmentUuids);
-		new EventDtoHelper().pullMissing(eventUuids);
-		new EventParticipantDtoHelper().pullMissing(eventParticipantUuids);
-		new SampleDtoHelper().pullMissing(sampleUuids);
-		new AdditionalTestDtoHelper().pullMissing(additionalTestUuids);
-		new PathogenTestDtoHelper().pullMissing(sampleTestUuids);
-		new ContactDtoHelper().pullMissing(contactUuids);
-		new VisitDtoHelper().pullMissing(visitUuids);
-		new TaskDtoHelper().pullMissing(taskUuids);
-		new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
-		new AggregateReportDtoHelper().pullMissing(aggregateReportUuids);
-		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
-		new TreatmentDtoHelper().pullMissing(treatmentUuids);
-		new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
+//		new CaseDtoHelper().pushEntities(true);
+//		new ImmunizationDtoHelper().pushEntities(true);
+//		new EventDtoHelper().pushEntities(true);
+//		new EventParticipantDtoHelper().pushEntities(true);
+//		new SampleDtoHelper().pushEntities(true);
+//		new PathogenTestDtoHelper().pushEntities(true);
+//		new AdditionalTestDtoHelper().pushEntities(true);
+//		new ContactDtoHelper().pushEntities(true);
+//		new VisitDtoHelper().pushEntities(true);
+//		new TaskDtoHelper().pushEntities(true);
+//		new WeeklyReportDtoHelper().pushEntities(true);
+//		new AggregateReportDtoHelper().pushEntities(true);
+//		new PrescriptionDtoHelper().pushEntities(true);
+//		new TreatmentDtoHelper().pushEntities(true);
+//		new ClinicalVisitDtoHelper().pushEntities(true);
+//
+//		// weekly reports and entries
+//		List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
+//		DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
+//		// aggregate reports
+//		List<String> aggregateReportUuids = executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids());
+//		DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids);
+//		// tasks
+//		List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
+//		DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
+//		// visits
+//		List<String> visitUuids = executeUuidCall(RetroProvider.getVisitFacade().pullUuids());
+//		DatabaseHelper.getVisitDao().deleteInvalid(visitUuids);
+//		// contacts
+//		List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullUuids());
+//		DatabaseHelper.getContactDao().deleteInvalid(contactUuids);
+//		// sample tests
+//		List<String> sampleTestUuids = executeUuidCall(RetroProvider.getSampleTestFacade().pullUuids());
+//		DatabaseHelper.getSampleTestDao().deleteInvalid(sampleTestUuids);
+//		// additional tests
+//		List<String> additionalTestUuids = executeUuidCall(RetroProvider.getAdditionalTestFacade().pullUuids());
+//		DatabaseHelper.getAdditionalTestDao().deleteInvalid(additionalTestUuids);
+//		// samples
+//		List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullUuids());
+//		DatabaseHelper.getSampleDao().deleteInvalid(sampleUuids);
+//		// event participants
+//		List<String> eventParticipantUuids = executeUuidCall(RetroProvider.getEventParticipantFacade().pullUuids());
+//		DatabaseHelper.getEventParticipantDao().deleteInvalid(eventParticipantUuids);
+//		// events
+//		List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullUuids());
+//		DatabaseHelper.getEventDao().deleteInvalid(eventUuids);
+//		// treatments
+//		List<String> treatmentUuids = executeUuidCall(RetroProvider.getTreatmentFacade().pullUuids());
+//		DatabaseHelper.getTreatmentDao().deleteInvalid(treatmentUuids);
+//		// prescriptions
+//		List<String> prescriptionUuids = executeUuidCall(RetroProvider.getPrescriptionFacade().pullUuids());
+//		DatabaseHelper.getPrescriptionDao().deleteInvalid(prescriptionUuids);
+//		// clinical visits
+//		List<String> clinicalVisitUuids = executeUuidCall(RetroProvider.getClinicalVisitFacade().pullUuids());
+//		DatabaseHelper.getClinicalVisitDao().deleteInvalid(clinicalVisitUuids);
+//		// immunizations
+//		List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullUuids());
+//		DatabaseHelper.getImmunizationDao().deleteInvalid(immunizationUuids);
+//		// cases
+//		List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
+//		DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
+//		// persons
+//		List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
+//		DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
+//		// outbreak
+//		List<String> outbreakUuids = executeUuidCall(RetroProvider.getOutbreakFacade().pullActiveUuids());
+//		DatabaseHelper.getOutbreakDao().deleteInvalid(outbreakUuids);
+//
+//		// order is important, due to dependencies (e.g. case & person)
+//
+//		new PersonDtoHelper().pullMissing(personUuids);
+//		new CaseDtoHelper().pullMissing(caseUuids);
+//		new ImmunizationDtoHelper().pullMissing(caseUuids);
+//		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
+//		new TreatmentDtoHelper().pullMissing(treatmentUuids);
+//		new EventDtoHelper().pullMissing(eventUuids);
+//		new EventParticipantDtoHelper().pullMissing(eventParticipantUuids);
+//		new SampleDtoHelper().pullMissing(sampleUuids);
+//		new AdditionalTestDtoHelper().pullMissing(additionalTestUuids);
+//		new PathogenTestDtoHelper().pullMissing(sampleTestUuids);
+//		new ContactDtoHelper().pullMissing(contactUuids);
+//		new VisitDtoHelper().pullMissing(visitUuids);
+//		new TaskDtoHelper().pullMissing(taskUuids);
+//		new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
+//		new AggregateReportDtoHelper().pullMissing(aggregateReportUuids);
+//		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
+//		new TreatmentDtoHelper().pullMissing(treatmentUuids);
+//		new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
 
 		// CampaignData
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
@@ -640,6 +645,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			final List<String> campaignFormDataUuids = executeUuidCall(RetroProvider.getCampaignFormDataFacade().pullUuids());
 			DatabaseHelper.getCampaignFormDataDao().deleteInvalid(campaignFormDataUuids);
 			campaignFormDataDtoHelper.pullMissing(campaignFormDataUuids);
+
 		}
 	}
 

@@ -20,9 +20,10 @@ import java.util.Date;
 
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto; 
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class CampaignFormDataCriteria extends BaseCriteria implements Serializable {
@@ -30,25 +31,34 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
 	public static final String REGION = "region";
+	public static final String AREA = "area";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String FORM_DATE = "formDate";
+	public static final String FORM_TYPE = "formType";
+	public static final String FORM_PHASE = "formPhase"; //for filter
+	
 
 	private static final long serialVersionUID = 8124072093160133408L;
 
 	private CampaignReferenceDto campaign;
 	private CampaignFormMetaReferenceDto campaignFormMeta;
+	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private Date formDate;
+	private String formType;
+	private CampaignFormMetaReferenceDto formPhase; // for filter
+
+	
 
 	public CampaignReferenceDto getCampaign() {
 		return campaign;
 	}
 
 	public void setCampaign(CampaignReferenceDto campaign) {
-		this.campaign = campaign;
+		this.campaign = campaign; 
 	}
 
 	public CampaignFormDataCriteria campaign(CampaignReferenceDto campaign) {
@@ -66,6 +76,19 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 
 	public CampaignFormDataCriteria campaignFormMeta(CampaignFormMetaReferenceDto campaignFormMeta) {
 		this.campaignFormMeta = campaignFormMeta;
+		return this;
+	}
+	
+	public AreaReferenceDto getArea() {
+		return area;
+	}
+
+	public void setArea(AreaReferenceDto area) {
+		this.area = area;
+	}
+	
+	public CampaignFormDataCriteria area(AreaReferenceDto area) {
+		this.area = area;
 		return this;
 	}
 
@@ -120,4 +143,30 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 		this.formDate = formDate;
 		return this;
 	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+	
+	
+	//needed for filter purpose
+
+	public CampaignFormMetaReferenceDto getFormPhase() {
+		return formPhase;
+	}
+
+	public void setFormPhase(CampaignFormMetaReferenceDto formPhase) {
+		this.formPhase = formPhase;
+	}
+	
+	public CampaignFormDataCriteria formPhase(CampaignFormMetaReferenceDto formPhase) {
+		this.formPhase = formPhase;
+		return this;
+	}
+	
+	
 }

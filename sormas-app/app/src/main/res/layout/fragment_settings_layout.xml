@@ -133,6 +133,22 @@
                 app:rounded="true" />
 
             <TextView
+                android:id="@+id/apmis_app_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                style="@style/DarkColorStyle"
+                />
+
+            <TextView
+                android:id="@+id/apmis_engine_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                style="@style/DarkColorStyle"
+                />
+
+            <TextView
                 android:id="@+id/sormas_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

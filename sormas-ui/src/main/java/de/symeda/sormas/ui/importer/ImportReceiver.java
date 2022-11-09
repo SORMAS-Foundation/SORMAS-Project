@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -17,19 +18,23 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.v7.ui.Upload.Receiver;
+import com.vaadin.v7.ui.Upload.StartedEvent;
+import com.vaadin.v7.ui.Upload.StartedListener;
 import com.vaadin.v7.ui.Upload.SucceededEvent;
 import com.vaadin.v7.ui.Upload.SucceededListener;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
-public class ImportReceiver implements Receiver, SucceededListener {
+public class ImportReceiver implements Receiver, StartedListener, SucceededListener {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -69,9 +74,13 @@ public class ImportReceiver implements Receiver, SucceededListener {
 
 		final FileOutputStream fos;
 		try {
+			Path tempDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+			if (!tempDirectory.toFile().exists() || !tempDirectory.toFile().canWrite()) {
+				throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
+			}
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + fileNameAddition + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".csv";
-			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
+			file = new File(tempDirectory.resolve(newFileName).toString());
 			fos = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
 			file = null;
@@ -86,6 +95,14 @@ public class ImportReceiver implements Receiver, SucceededListener {
 		}
 
 		return fos;
+	}
+
+	@Override
+	public void uploadStarted(StartedEvent startedEvent) {
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getImportFileSizeLimitMb();
+		if (startedEvent.getContentLength() > fileSizeLimitMb * 1_000_000) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
+		}
 	}
 
 	@Override

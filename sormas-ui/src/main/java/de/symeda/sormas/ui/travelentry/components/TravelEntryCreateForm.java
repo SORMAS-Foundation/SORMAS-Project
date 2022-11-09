@@ -17,9 +17,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.vaadin.v7.data.util.converter.Converter;
-import de.symeda.sormas.api.travelentry.DeaContentEntry;
-import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,13 +38,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -74,9 +72,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(TravelEntryDto.REPORT_DATE, TravelEntryDto.EXTERNAL_ID)
 		+ fluidRow(
 		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
-		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS),
-		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_VARIANT)) +
-		fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
+		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS)) 
+		+ fluidRowLocs(TravelEntryDto.DISEASE_VARIANT, TravelEntryDto.DISEASE_VARIANT_DETAILS)
+		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(TravelEntryDto.RESPONSIBLE_REGION, TravelEntryDto.RESPONSIBLE_DISTRICT, TravelEntryDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
 		+ fluidRowLocs(POINT_OF_ENTRY_HEADING_LOC)
@@ -117,21 +115,23 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false);
+		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false, true);
 		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
 		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);
+		TextField diseaseVariantDetailsField = addField(TravelEntryDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField.setVisible(false);
 
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingResponsibleJurisdiction));
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addField(TravelEntryDto.RESPONSIBLE_REGION);
+		ComboBox responsibleRegion = addInfrastructureField(TravelEntryDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addField(TravelEntryDto.RESPONSIBLE_DISTRICT);
+		ComboBox responsibleDistrictCombo = addInfrastructureField(TravelEntryDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
+		ComboBox responsibleCommunityCombo = addInfrastructureField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
 		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 
@@ -303,6 +303,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
+		diseaseVariantField.addValueChangeListener(
+			e -> diseaseVariantDetailsField
+				.setVisible(((DiseaseVariant) e.getProperty().getValue()).matchPropertyValue(DiseaseVariant.HAS_DETAILS, true)));
 	}
 
 	public PersonDto getPerson() {

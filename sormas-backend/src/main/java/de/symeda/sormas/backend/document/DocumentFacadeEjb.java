@@ -24,6 +24,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
@@ -80,7 +81,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	@Override
-	public DocumentDto saveDocument(DocumentDto dto, byte[] content) throws IOException {
+	public DocumentDto saveDocument(@Valid DocumentDto dto, byte[] content) throws IOException {
 		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());

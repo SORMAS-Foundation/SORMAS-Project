@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.backend.person.Person.PERSON_LOCATIONS_TABLE_NAME;
 
 import javax.persistence.Column;
@@ -31,21 +31,22 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.area.Area;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.continent.Continent;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.Continent;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.Subcontinent;
 
 @Entity
 @Audited
@@ -62,6 +63,7 @@ public class Location extends AbstractDomainObject {
 	public static final String SUB_CONTINENT = "subcontinent";
 	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
+	public static final String AREA = "area";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String LATITUDE = "latitude";
@@ -88,6 +90,7 @@ public class Location extends AbstractDomainObject {
 	private Continent continent;
 	private Subcontinent subcontinent;
 	private Country country;
+	private Area area;
 	private Region region;
 	private District district;
 	private Community community;
@@ -113,7 +116,7 @@ public class Location extends AbstractDomainObject {
 
 	private Person person;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDetails() {
 		return details;
 	}
@@ -122,7 +125,7 @@ public class Location extends AbstractDomainObject {
 		this.details = details;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCity() {
 		return city;
 	}
@@ -175,6 +178,15 @@ public class Location extends AbstractDomainObject {
 	public void setRegion(Region region) {
 		this.region = region;
 	}
+	
+	@ManyToOne()
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
+	}
 
 	@ManyToOne()
 	public District getDistrict() {
@@ -218,7 +230,7 @@ public class Location extends AbstractDomainObject {
 		this.latLonAccuracy = latLonAccuracy;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -227,7 +239,7 @@ public class Location extends AbstractDomainObject {
 		this.postalCode = postalCode;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getStreet() {
 		return street;
 	}
@@ -236,7 +248,7 @@ public class Location extends AbstractDomainObject {
 		this.street = street;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
@@ -245,7 +257,7 @@ public class Location extends AbstractDomainObject {
 		this.houseNumber = houseNumber;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
@@ -263,7 +275,7 @@ public class Location extends AbstractDomainObject {
 		this.addressType = addressType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAddressTypeDetails() {
 		return addressTypeDetails;
 	}
@@ -290,7 +302,7 @@ public class Location extends AbstractDomainObject {
 		this.facility = facility;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getFacilityDetails() {
 		return facilityDetails;
 	}
@@ -362,7 +374,8 @@ public class Location extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return LocationReferenceDto.buildCaption(
-			region != null ? region.getName() : null,
+			area != null ? area.getName() : null,
+					region != null ? region.getName() : null,
 			district != null ? district.getName() : null,
 			community != null ? community.getName() : null,
 			city,

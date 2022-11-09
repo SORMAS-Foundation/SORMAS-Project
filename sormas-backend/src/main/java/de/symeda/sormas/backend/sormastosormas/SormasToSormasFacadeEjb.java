@@ -48,15 +48,15 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
-import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "SormasToSormasFacade")
@@ -143,6 +143,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		String[] requestUuids = encryptionService.decryptAndVerify(encryptedRequestUuids, String[].class);
 		List<SormasToSormasShareRequestDto> shareRequests = shareRequestFacade.getShareRequestsByUuids(Arrays.asList(requestUuids));
 
+		if (shareRequests.stream().anyMatch(r -> r.getStatus() != ShareRequestStatus.PENDING)) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRevokeNotPending);
+		}
+
 		shareRequests.forEach(shareRequest -> {
 			shareRequest.setChangeDate(new Date());
 			shareRequest.setRevoked();
@@ -165,6 +169,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		String requestUuid = encryptionService.decryptAndVerify(encryptedRequestUuid, String.class);
 
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(requestUuid);
+
+		if(shareInfo.getRequestStatus() != ShareRequestStatus.PENDING){
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasAcceptNotPending);
+		}
 
 		shareInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
 		shareInfoService.ensurePersisted(shareInfo);

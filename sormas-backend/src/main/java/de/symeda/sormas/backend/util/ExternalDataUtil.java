@@ -11,6 +11,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import org.apache.commons.lang3.StringUtils;
 
 public class ExternalDataUtil {
 
@@ -30,17 +31,18 @@ public class ExternalDataUtil {
 		List<T> entitiesToUpdate = entityRetrieveFunction.apply(uuids);
 		for (T externalDataEntity : entitiesToUpdate) {
 			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(externalDataEntity.getUuid());
-			if ((externalDataEntity.getExternalId() != null && externalDataUpdate.getExternalId() != null)
-				|| (externalDataEntity.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
-				throw new ExternalDataUpdateException(String.format("Entity with uuid %s already has externalId or externalToken", externalDataEntity.getUuid()));
-			}
-
-			if (externalDataUpdate.getExternalId() != null) {
+			if (StringUtils.isNotBlank(externalDataEntity.getExternalId()) && StringUtils.isNotBlank(externalDataUpdate.getExternalId())) {
+				throw new ExternalDataUpdateException(String.format("Entity with uuid %s already has externalId", externalDataEntity.getUuid()));
+			} else if (StringUtils.isNotBlank(externalDataUpdate.getExternalId())) {
 				externalDataEntity.setExternalId(externalDataUpdate.getExternalId());
 			}
-			if (externalDataUpdate.getExternalToken() != null) {
+
+			if (StringUtils.isNotBlank(externalDataEntity.getExternalToken()) && StringUtils.isNotBlank(externalDataUpdate.getExternalToken())) {
+				throw new ExternalDataUpdateException(String.format("Entity with uuid %s already has externalToken", externalDataEntity.getUuid()));
+			} else if (StringUtils.isNotBlank(externalDataUpdate.getExternalToken())) {
 				externalDataEntity.setExternalToken(externalDataUpdate.getExternalToken());
 			}
+
 			saveEntityConsumer.accept(externalDataEntity);
 		}
 

@@ -24,14 +24,14 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 public class InfrastructureFieldsHelper {
 
@@ -167,6 +167,24 @@ public class InfrastructureFieldsHelper {
 	 *            function called that accepts a boolean.
 	 *            It is called with true if the server country or no country is selected in the country combo
 	 */
+	public static void updateAreaBasedOnCountry(ComboBox countryCombo, ComboBox areaCombo, Consumer<Boolean> extraConfig) {
+		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
+		CountryReferenceDto countryDto = (CountryReferenceDto) countryCombo.getValue();
+		boolean isNoCountryOrServerCountry = serverCountryDto == null
+			? countryDto == null
+			: countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode());
+
+		if (isNoCountryOrServerCountry) {
+			FieldHelper.updateItems(areaCombo, FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		} else {
+			FieldHelper.updateItems(areaCombo, FacadeProvider.getAreaFacade().getAllActiveAsReference()); //(countryDto.getUuid()
+		}
+
+		if (extraConfig != null) {
+			extraConfig.accept(isNoCountryOrServerCountry);
+		}
+	}
+	/*
 	public static void updateRegionBasedOnCountry(ComboBox countryCombo, ComboBox regionCombo, Consumer<Boolean> extraConfig) {
 		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
 		CountryReferenceDto countryDto = (CountryReferenceDto) countryCombo.getValue();
@@ -184,7 +202,7 @@ public class InfrastructureFieldsHelper {
 			extraConfig.accept(isNoCountryOrServerCountry);
 		}
 	}
-
+*/
 	private static boolean isFacilityDetailsRequired(ComboBox facilityCombo) {
 		return facilityCombo.getValue() != null
 			&& ((FacilityReferenceDto) facilityCombo.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);

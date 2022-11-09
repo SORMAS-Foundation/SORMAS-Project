@@ -30,10 +30,12 @@ public final class EntityId {
 
 	private final Class<?> entityClass;
 	private final String entityUuid;
+	
 
 	public EntityId(Class<?> entityClass, String entityUuid) {
 		this.entityClass = entityClass;
 		this.entityUuid = entityUuid;
+	
 	}
 
 	public Class<?> getEntityClass() {

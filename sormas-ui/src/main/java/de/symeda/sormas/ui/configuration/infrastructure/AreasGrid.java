@@ -7,15 +7,18 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.AreaCriteria;
-import de.symeda.sormas.api.region.AreaDto;
+import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
@@ -24,6 +27,8 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 	public AreasGrid(AreaCriteria criteria) {
 		super(AreaDto.class);
 		setSizeFull();
+		
+		
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(AreasView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
@@ -35,15 +40,23 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 			setLazyDataProvider();
 			setCriteria(criteria);
 		}
+		
+		
 
 		setColumns(AreaDto.NAME, AreaDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editArea(e.getUuid()));
+			addItemClickListener(new ShowDetailsListener<>(AreaDto.NAME, e -> ControllerProvider.getInfrastructureController().editArea(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(AreaDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editArea(e.getUuid())));
 		}
 
 		for (Column<?, ?> column : getColumns()) {
+			
 			column.setCaption(I18nProperties.getPrefixCaption(AreaDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			if(column.getCaption().equalsIgnoreCase("Name")) {
+				column.setCaption(I18nProperties.getCaption(Captions.region));
+			}
+			//write an if statement that checks if the column.getcaption = name and set it to region
 		}
 	}
 

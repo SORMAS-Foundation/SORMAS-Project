@@ -26,8 +26,6 @@ public class SormasToSormasConfig implements Serializable {
 	private String oidcClientId;
 	private String oidcClientSecret;
 
-	private String etcdClientName;
-	private String etcdClientPassword;
 	private String keyPrefix;
 
 	public String getId() {
@@ -84,22 +82,6 @@ public class SormasToSormasConfig implements Serializable {
 
 	public void setRetainCaseExternalToken(boolean retainCaseExternalToken) {
 		this.retainCaseExternalToken = retainCaseExternalToken;
-	}
-
-	public String getEtcdClientName() {
-		return etcdClientName;
-	}
-
-	public void setEtcdClientName(String etcdClientName) {
-		this.etcdClientName = etcdClientName;
-	}
-
-	public String getEtcdClientPassword() {
-		return etcdClientPassword;
-	}
-
-	public void setEtcdClientPassword(String etcdClientPassword) {
-		this.etcdClientPassword = etcdClientPassword;
 	}
 
 	@Override

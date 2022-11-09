@@ -18,8 +18,8 @@ package de.symeda.sormas.app.backend.region;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.region.SubcontinentDto;
-import de.symeda.sormas.api.region.SubcontinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -40,12 +40,12 @@ public class SubcontinentDtoHelper extends AdoDtoHelper<Subcontinent, Subcontine
 
 	@Override
 	protected Call<List<SubcontinentDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getSubcontinentFacade().pullAllSince(since);
+		return null;//RetroProvider.getSubcontinentFacade().pullAllSince(since);
 	}
 
 	@Override
 	protected Call<List<SubcontinentDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
-		return RetroProvider.getSubcontinentFacade().pullByUuids(uuids);
+		return null;//RetroProvider.getSubcontinentFacade().pullByUuids(uuids);
 	}
 
 	@Override

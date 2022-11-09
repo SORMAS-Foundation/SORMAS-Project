@@ -64,9 +64,9 @@ public class CreateNewTaskSteps implements En {
         });
 
     When(
-        "^I change all fields and save$",
+        "^I change all Task's fields and save$",
         () -> {
-          task = taskService.buildEditTask();
+          task = taskService.buildEditTask("CASE");
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
@@ -81,7 +81,6 @@ public class CreateNewTaskSteps implements En {
     selectAssignedTo(task.getAssignedTo());
     selectPriority(task.getPriority());
     fillCommentsOnTask(task.getCommentsOnTask());
-    fillCommentsOnExecution(task.getCommentsOnExecution());
     selectTaskStatus(task.getTaskStatus());
   }
 
@@ -139,7 +138,6 @@ public class CreateNewTaskSteps implements En {
         .assignedTo(getAssignedToWithoutNoTasks())
         .priority(getPriority())
         .commentsOnTask(getCommentsOnTask())
-        .commentsOnExecution(getCommentsOnExecution())
         .taskStatus(getStatus())
         .build();
   }

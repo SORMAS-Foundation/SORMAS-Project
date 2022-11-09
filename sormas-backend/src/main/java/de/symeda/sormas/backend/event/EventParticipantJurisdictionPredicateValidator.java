@@ -7,11 +7,11 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
@@ -78,7 +78,7 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 	@Override
 	protected Predicate whenCommunityLevel() {
 		return CriteriaBuilderHelper
-			.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()));
+			.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), null));
 	}
 
 	@Override

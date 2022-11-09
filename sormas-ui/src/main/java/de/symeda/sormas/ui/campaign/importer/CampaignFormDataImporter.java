@@ -38,10 +38,12 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
@@ -67,12 +69,14 @@ public class CampaignFormDataImporter extends DataImporter {
 		boolean hasEntityClassRow,
 		UserDto currentUser,
 		String campaignFormMetaUuid,
-		CampaignReferenceDto campaignReferenceDto) {
-		super(inputFile, hasEntityClassRow, currentUser);
+		CampaignReferenceDto campaignReferenceDto,
+		ValueSeparator csvSeparator)
+		throws IOException {
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.campaignFormMetaUuid = campaignFormMetaUuid;
 		this.campaignReferenceDto = campaignReferenceDto;
 
-		this.userFacade = FacadeProvider.getUserFacade();
+		this.userFacade = FacadeProvider.getUserFacade(); 
 	}
 
 	@Override
@@ -107,10 +111,10 @@ public class CampaignFormDataImporter extends DataImporter {
 				.getExistingData(
 					new CampaignFormDataCriteria().campaign(campaignFormData.getCampaign())
 						.campaignFormMeta(campaignFormData.getCampaignFormMeta())
-						.community(campaignFormData.getCommunity())
+						.community((CommunityReferenceDto) campaignFormData.getCommunity())
 						.formDate(campaignFormData.getFormDate()));
 
-			if (existingData != null) {
+		/*	if (existingData != null) {
 				final CampaignFormDataImportLock lock = new CampaignFormDataImportLock();
 				synchronized (lock) {
 
@@ -134,9 +138,9 @@ public class CampaignFormDataImporter extends DataImporter {
 						FacadeProvider.getCampaignFormDataFacade().overwriteCampaignFormData(existingData, campaignFormData);
 					}
 				}
-			} else {
+			} else {*/
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(campaignFormData);
-			}
+		//	}
 		} catch (ImportErrorException | InvalidColumnException | ValidationRuntimeException e) {
 			writeImportError(values, e.getLocalizedMessage());
 			return ImportLineResult.ERROR;
@@ -148,18 +152,22 @@ public class CampaignFormDataImporter extends DataImporter {
 	private boolean isEntryValid(CampaignFormElement definition, CampaignFormDataEntry entry) {
 		if (definition.getType().equalsIgnoreCase(CampaignFormElementType.NUMBER.toString())) {
 			return NumberUtils.isParsable(entry.getValue().toString());
+		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.DECIMAL.toString()) || definition.getType().equalsIgnoreCase(CampaignFormElementType.RANGE.toString())) {
+			return NumberUtils.isParsable(entry.getValue().toString());
 		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.TEXT.toString())) {
 			return !entry.getValue().toString().matches("[0-9]+");
 		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.YES_NO.toString())) {
 			return Arrays.stream(CampaignFormElementType.YES_NO.getAllowedValues())
-				.map(String::toLowerCase)
-				.anyMatch(v -> v.equals(entry.getValue().toString().toLowerCase()));
-		}
+					.map(String::toLowerCase)
+					.anyMatch(v -> v.equals(entry.getValue().toString().toLowerCase()));
+			}
 		return true;
 	}
 
 	private void insertImportRowIntoData(CampaignFormDataDto campaignFormData, String[] entry, String[] entryHeaderPath)
 		throws InvalidColumnException, ImportErrorException {
+		
+	//	System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
 		CampaignFormMetaDto campaignMetaDto = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormMetaUuid);
 		campaignFormData.setCampaignFormMeta(new CampaignFormMetaReferenceDto(campaignFormMetaUuid, campaignMetaDto.getFormName()));
@@ -185,7 +193,7 @@ public class CampaignFormDataImporter extends DataImporter {
 									I18nProperties.getValidationError(Validations.importEntryDistrictNotInUsersJurisdiction, entry[i], propertyPath));
 							}
 							List<DistrictReferenceDto> district =
-								FacadeProvider.getDistrictFacade().getByName(entry[i], campaignFormData.getRegion(), true);
+								FacadeProvider.getDistrictFacade().getByExternalID(Long.parseLong(entry[i]), campaignFormData.getRegion(), true);
 							if (district.isEmpty()) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry[i], propertyPath));
@@ -196,13 +204,13 @@ public class CampaignFormDataImporter extends DataImporter {
 								propertyDescriptor.getWriteMethod().invoke(campaignFormData, district.get(0));
 							}
 						} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUserDto.getCommunity().getCaption().equals(entry[i])) {
+							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUserDto.getCommunity().stream().map(CommunityReferenceDto::getCaption).collect(Collectors.toList()).contains(entry[i])) {
 								throw new ImportErrorException(
 									I18nProperties
 										.getValidationError(Validations.importEntryCommunityNotInUsersJurisdiction, entry[i], propertyPath));
 							}
 							List<CommunityReferenceDto> community =
-								FacadeProvider.getCommunityFacade().getByName(entry[i], campaignFormData.getDistrict(), true);
+								FacadeProvider.getCommunityFacade().getByExternalID(Long.parseLong(entry[i]), campaignFormData.getDistrict(), true);
 							if (community.isEmpty()) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry[i], propertyPath));
@@ -251,6 +259,14 @@ public class CampaignFormDataImporter extends DataImporter {
 						formEntry.setValue(false);
 					}
 				}
+				if (CampaignFormElementType.RADIO.toString().equals(existingFormElement.get().getType())) {
+					String value = formEntry.getValue().toString();
+					if ("yes".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
+						formEntry.setValue(true);
+					} else if ("no".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+						formEntry.setValue(false);
+					}
+				}
 
 				if (Objects.nonNull(campaignFormData.getFormValues())) {
 					List<CampaignFormDataEntry> currentElementFormValues = campaignFormData.getFormValues();
@@ -262,6 +278,11 @@ public class CampaignFormDataImporter extends DataImporter {
 					campaignFormData.setFormValues(formValues);
 				}
 			}
+		}
+
+		ImportLineResultDto<CampaignFormDataDto> constraintErrors = validateConstraints(campaignFormData);
+		if (constraintErrors.isError()) {
+			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 

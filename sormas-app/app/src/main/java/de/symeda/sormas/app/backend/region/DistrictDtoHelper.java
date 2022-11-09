@@ -18,8 +18,8 @@ package de.symeda.sormas.app.backend.region;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -57,6 +57,7 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
 	public void fillInnerFromDto(District ado, DistrictDto dto) {
 		ado.setName(dto.getName());
 		ado.setEpidCode(dto.getEpidCode());
+		ado.setRisk(dto.getRisk());
 		ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
 		ado.setArchived(dto.isArchived());
 	}

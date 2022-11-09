@@ -10,6 +10,7 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.util.Precision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
@@ -22,6 +23,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
@@ -48,14 +50,17 @@ public class ExpressionProcessor {
 			.stream()
 			.filter(formElement -> formElement.getExpression() != null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
+			.filter(formElement -> !formElement.getType().equals("range"))
+			.filter(formElement -> !formElement.isIgnoredisable())
 			.forEach(formElement -> fields.get(formElement.getId()).setEnabled(false));
+		
 	}
 
 	public void addExpressionListener() {
 		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream()
-			.filter(formElement -> formElement.getExpression() == null)
+			//.filter(formElement -> formElement.getExpression() == null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.forEach(formElement -> {
 				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression());
@@ -92,13 +97,69 @@ public class ExpressionProcessor {
 			try {
 				final Expression expression = expressionParser.parseExpression(e.getExpression());
 				final Class<?> valueType = expression.getValueType(context);
-				final Object value = expression.getValue(context, valueType);
+				final Object value = expression.getValue(context, valueType); 
+				//final Object valx = Precision.round((double) value, 3);
+				//final List <String> opt = null;
+				//System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context));
+				String valuex = value +"";
+			
+				if(!valuex.isBlank() && value != null) {
+				if(e.getType().toString().equals("range")) {
+					
+					if(value.toString().equals("0")) { 
+
+						campaignFormBuilder
+						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+								CampaignFormElementType.fromString(e.getType()),
+								null,
+								null, null);
+						//return;
+					} else {
+
+						campaignFormBuilder
+						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+								CampaignFormElementType.fromString(e.getType()),
+								value.toString().endsWith(".0") ? value.toString().replace(".0", "") : value,
+								null, null);
+						//return;
+					}
+					
+					
+				
+						
+					} else if(valueType.isAssignableFrom(Double.class)) {
+					System.out.println("yes double detected "+Double.isFinite((double) value) +" = "+ value);
 				campaignFormBuilder
-					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), CampaignFormElementType.fromString(e.getType()), value);
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+							CampaignFormElementType.fromString(e.getType()),
+							!Double.isFinite((double) value) ? 0 : value.toString().endsWith(".0") ? value.toString().replace(".0", "") : Precision.round((double) value, 2),
+									null, null);
+			//	return;
+				} else if(valueType.isAssignableFrom(Boolean.class)) {
+					campaignFormBuilder
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+							CampaignFormElementType.fromString(e.getType()), value,
+									null, null);
+				//	return;
+				//	
+				} else {
+					
+					campaignFormBuilder
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+							CampaignFormElementType.fromString(e.getType()), value,
+									null, null);
+					
+				}
+				} else if(e.getType().toString().equals("range") && valuex == null && e.getDefaultvalue() != null) {
+					
+					System.out.println("++++++++++++++++++++++++++++++++++++++++++++++============================");
+					
+				}
 			} catch (SpelEvaluationException evaluationException) {
-				LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
+				//LOG.error("Error evaluating expression: {} / {}", evaluationEx0rception.getMessageCode(), evaluationException.getMessage());
 			}
 		});
 	}
 
 }
+

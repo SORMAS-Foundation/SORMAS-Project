@@ -21,8 +21,8 @@ import com.vaadin.v7.ui.PopupDateField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
@@ -48,8 +48,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
+		
 		this(type, propertyI18nPrefix, fieldVisibilityCheckers, Captions.actionApplyFilters, Captions.actionResetFilters);
-	}
+		}
 
 	protected AbstractFilterForm(
 		Class<T> type,
@@ -159,6 +160,15 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
 				formActionButtonsComponent.toggleMoreFilters(hasExpandedFilter);
 			}
+		});
+	}
+	
+	public void setValuePhase(T phaseValue) throws ReadOnlyException, Converter.ConversionException {
+
+		doWithoutChangeHandler(() -> {
+			super.setValue(phaseValue);
+
+			applyDependenciesOnNewValue(phaseValue);
 		});
 	}
 

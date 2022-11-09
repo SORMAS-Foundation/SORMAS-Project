@@ -32,9 +32,9 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.region.RegionCriteria;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionIndexDto;
+import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**

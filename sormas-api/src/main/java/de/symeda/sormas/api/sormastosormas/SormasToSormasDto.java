@@ -17,12 +17,15 @@ package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
 
+import javax.validation.Valid;
+
 public class SormasToSormasDto<T> implements Serializable {
 
 	private static final long serialVersionUID = -1142043326721172412L;
 
 	private T entity;
 
+	@Valid
 	private SormasToSormasOriginInfoDto originInfo;
 
 	public SormasToSormasDto() {

@@ -22,18 +22,22 @@ package de.symeda.sormas.api.campaign.data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class CampaignFormDataDto extends EntityDto {
+public class CampaignFormDataDto extends EntityDto { 
 
 	private static final long serialVersionUID = -8087195060395038093L;
 
@@ -42,23 +46,34 @@ public class CampaignFormDataDto extends EntityDto {
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
 	public static final String FORM_DATE = "formDate";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String CREATING_USER = "creatingUser";
-
+	public static final String FORM_TYPE = "formType";
+	public static final String LATITUDE = "latitude";
+	public static final String LONGITUDE = "longitude";
+	
+	@Valid
 	private List<CampaignFormDataEntry> formValues;
 	private CampaignReferenceDto campaign;
+	@Valid
 	private CampaignFormMetaReferenceDto campaignFormMeta;
 	private Date formDate;
+	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private UserReferenceDto creatingUser;
+	private String formType;
+	//private Double latitude;
+	//private Double longitude;
 
 	public static CampaignFormDataDto build(
 		CampaignReferenceDto campaign,
 		CampaignFormMetaReferenceDto campaignFormMeta,
+		AreaReferenceDto area,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
@@ -66,10 +81,14 @@ public class CampaignFormDataDto extends EntityDto {
 		campaignFormData.setUuid(DataHelper.createUuid());
 		campaignFormData.setCampaign(campaign);
 		campaignFormData.setCampaignFormMeta(campaignFormMeta);
+		campaignFormData.setArea(area);
 		campaignFormData.setRegion(region);
 		campaignFormData.setDistrict(district);
 		campaignFormData.setCommunity(community);
 		campaignFormData.setFormDate(new Date());
+		campaignFormData.setFormType("");
+		//campaignFormData.setFormLat(formLat);
+		//campaignFormData.
 		return campaignFormData;
 	}
 
@@ -112,6 +131,25 @@ public class CampaignFormDataDto extends EntityDto {
 	public void setFormDate(Date formDate) {
 		this.formDate = formDate;
 	}
+	
+	
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+	
+
+	public AreaReferenceDto getArea() {
+		return area;
+	}
+
+	public void setArea(AreaReferenceDto area) {
+		this.area = area;
+	}
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -144,5 +182,29 @@ public class CampaignFormDataDto extends EntityDto {
 	public void setCreatingUser(UserReferenceDto creatingUser) {
 		this.creatingUser = creatingUser;
 	}
+
+	
+	//This is the implementation of the open street map for form submission
+	/*public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		latitude = Math.round(latitude * 10000000) / 10000000.0;
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		longitude = Math.round(longitude * 10000000) / 10000000.0;
+		this.longitude = longitude;
+	}
+*/
+	
+	
+	
 
 }

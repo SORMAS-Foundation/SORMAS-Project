@@ -19,6 +19,8 @@ package de.symeda.sormas.backend.common.messaging;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.nexmo.client.NexmoClientException;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -40,42 +43,13 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
 /**
- * Service used to send email and SMS messages to SORMAS users.
+ * Service used to send email and SMS messages to SORMAS users & persons.
  * 
  * @author Maté Strysewske
  */
 @Stateless(name = "MessagingService")
 @LocalBean
 public class MessagingService {
-
-	// Message contents (via properties file)
-	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChanged";
-	public static final String CONTENT_CASE_INVESTIGATION_DONE = "notificationCaseInvestigationDone";
-	public static final String CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED = "notificationEventParticipantCaseClassificationConfirmed";
-	public static final String CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS = "notificationEventParticipantRelatedToOtherEvents";
-	public static final String CONTENT_LAB_RESULT_ARRIVED = "notificationLabResultArrived";
-	public static final String CONTENT_LAB_RESULT_ARRIVED_CONTACT = "notificationLabResultArrivedContact";
-	public static final String CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT = "notificationLabResultArrivedEventParticipant";
-	public static final String CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT_NO_DISEASE = "notificationLabResultArrivedEventParticipantNoDisease";
-	public static final String CONTENT_LAB_RESULT_SPECIFIED = "notificationLabResultSpecified";
-	public static final String CONTENT_LAB_RESULT_SPECIFIED_CONTACT = "notificationLabResultSpecifiedContact";
-	public static final String CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT = "notificationLabResultSpecifiedEventParticipant";
-	public static final String CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT_NO_DISEASE = "notificationLabResultSpecifiedEventParticipantNoDisease";
-	public static final String CONTENT_LAB_SAMPLE_SHIPPED = "notificationLabSampleShipped";
-	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT = "notificationLabSampleShippedShort";
-	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT = "notificationLabSampleShippedShortForContact";
-	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT = "notificationLabSampleShippedShortForEventParticipant";
-	public static final String CONTENT_CONTACT_SYMPTOMATIC = "notificationContactSymptomatic";
-	public static final String CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC = "notificationContactWithoutCaseSymptomatic";
-	public static final String CONTENT_TASK_START_GENERAL = "notificationTaskStartGeneral";
-	public static final String CONTENT_TASK_START_SPECIFIC = "notificationTaskStartSpecific";
-	public static final String CONTENT_TASK_DUE_GENERAL = "notificationTaskDueGeneral";
-	public static final String CONTENT_TASK_DUE_SPECIFIC = "notificationTaskDueSpecific";
-	public static final String CONTENT_VISIT_COMPLETED = "notificationVisitCompleted";
-	public static final String CONTENT_DISEASE_CHANGED = "notificationDiseaseChanged";
-	public static final String CONTENT_EVENT_GROUP_CREATED = "notificationEventGroupCreated";
-	public static final String CONTENT_EVENT_ADDED_TO_EVENT_GROUP = "notificationEventAddedToEventGroup";
-	public static final String CONTENT_EVENT_REMOVED_FROM_EVENT_GROUP = "notificationEventRemovedFromEventGroup";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -92,34 +66,36 @@ public class MessagingService {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	/**
-	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
-	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
-	 */
-	public void sendMessage(User recipient, MessageSubject subject, String messageContent, MessageType... messageTypes)
+	public void sendMessages(Supplier<Map<User, String>> userMessagesSupplier, MessageSubject subject, MessageType... messageTypes)
 		throws NotificationDeliveryFailedException {
 
-		// Don't send notifications if the feature is disabled for the current MessageSubject
-		if (!featureConfigurationFacade.isFeatureEnabled(subject.getRelatedFeatureType())) {
-			return;
+		if (relatedFeatureEnabled(subject.getRelatedFeatureType())) {
+			for (Map.Entry<User, String> entry : userMessagesSupplier.get().entrySet()) {
+				final User user = entry.getKey();
+				final String messageContent = entry.getValue();
+				sendMessage(user, I18nProperties.getEnumCaption(subject), messageContent, messageTypes);
+			}
 		}
-
-		sendMessage(recipient, I18nProperties.getEnumCaption(subject), messageContent, messageTypes);
 	}
 
-	/**
-	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
-	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
-	 */
-	public void sendMessage(User recipient, MessageSubject subject, Object[] subjectParameters, String messageContent, MessageType... messageTypes)
+	public void sendMessages(
+		Supplier<Map<User, String>> userMessagesSupplier,
+		MessageSubject subject,
+		Object[] subjectParameters,
+		MessageType... messageTypes)
 		throws NotificationDeliveryFailedException {
 
-		// Don't send notifications if the feature is disabled for the current MessageSubject
-		if (!featureConfigurationFacade.isFeatureEnabled(subject.getRelatedFeatureType())) {
-			return;
+		if (relatedFeatureEnabled(subject.getRelatedFeatureType())) {
+			for (Map.Entry<User, String> entry : userMessagesSupplier.get().entrySet()) {
+				final User user = entry.getKey();
+				final String messageContent = entry.getValue();
+				sendMessage(user, String.format(I18nProperties.getEnumCaption(subject), subjectParameters), messageContent, messageTypes);
+			}
 		}
+	}
 
-		sendMessage(recipient, String.format(I18nProperties.getEnumCaption(subject), subjectParameters), messageContent, messageTypes);
+	private boolean relatedFeatureEnabled(FeatureType relatedFeatureType) {
+		return featureConfigurationFacade.isFeatureEnabled(relatedFeatureType);
 	}
 
 	private void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes)
@@ -164,9 +140,9 @@ public class MessagingService {
 		boolean isSmsServiceSetUp = configFacade.isSmsServiceSetUp();
 		for (MessageType messageType : messageTypes) {
 			if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
-				logger.info(String.format("Tried to send an email to a " + recipientType + " without an email address (UUID: %s).", recipientUuid));
+				logger.info(String.format("Tried to send an email to a %s without an email address (UUID: %s).", recipientType, recipientUuid));
 			} else if (isSmsServiceSetUp && messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
-				logger.info(String.format("Tried to send an SMS to a " + recipientType + " without a phone number (UUID: %s).", recipientUuid));
+				logger.info(String.format("Tried to send an SMS to a %s without a phone number (UUID: %s).", recipientType, recipientUuid));
 			} else {
 				try {
 					if (messageType == MessageType.EMAIL) {
@@ -175,13 +151,20 @@ public class MessagingService {
 						smsService.sendSms(phoneNumber, messageContent);
 					}
 				} catch (MessagingException e) {
+					logError(recipientUuid, recipientType, messageType);
 					throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);
 				} catch (IOException | NexmoClientException e) {
+					logError(recipientUuid, recipientType, messageType);
 					throw new NotificationDeliveryFailedException("SMS could not be sent due to an unexpected error.", MessageType.SMS, e);
 				} catch (InvalidPhoneNumberException e) {
+					logError(recipientUuid, recipientType, messageType);
 					throw new NotificationDeliveryFailedException("SMS could not be sent because of an invalid phone number.", MessageType.SMS, e);
 				}
 			}
 		}
+	}
+
+	private void logError(String recipientUuid, String recipientType, MessageType messageType) {
+		logger.error(String.format("Failed to send %s to %s with UUID %s.", messageType, recipientType, recipientUuid));
 	}
 }

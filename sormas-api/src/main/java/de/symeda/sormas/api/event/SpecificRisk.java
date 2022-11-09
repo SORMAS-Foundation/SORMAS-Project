@@ -31,4 +31,9 @@ public class SpecificRisk extends CustomizableEnum implements Serializable {
 	public void setProperties(Map<String, Object> properties) {
 		// No properties
 	}
+
+	@Override
+	public boolean matchPropertyValue(String property, Object value) {
+		return false;
+	}
 }

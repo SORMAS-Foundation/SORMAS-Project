@@ -1,7 +1,10 @@
 package de.symeda.sormas.backend.campaign;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -40,16 +43,16 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		Predicate filter = null;
 		if (campaignCriteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.DELETED), campaignCriteria.getDeleted()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(from.get(Campaign.DELETED), campaignCriteria.getDeleted()));
 		}
 		if (campaignCriteria.getStartDateAfter() != null || campaignCriteria.getStartDateBefore() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.between(from.get(Campaign.START_DATE), campaignCriteria.getStartDateAfter(), campaignCriteria.getStartDateBefore()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(from.get(Campaign.START_DATE),
+					campaignCriteria.getStartDateAfter(), campaignCriteria.getStartDateBefore()));
 		}
 		if (campaignCriteria.getEndDateAfter() != null || campaignCriteria.getEndDateBefore() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(from.get(Campaign.END_DATE), campaignCriteria.getEndDateAfter(), campaignCriteria.getEndDateAfter()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(from.get(Campaign.END_DATE),
+					campaignCriteria.getEndDateAfter(), campaignCriteria.getEndDateAfter()));
 		}
 		if (campaignCriteria.getFreeText() != null) {
 			String[] textFilters = campaignCriteria.getFreeText().split("\\s+");
@@ -60,13 +63,15 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 				Predicate likeFilters = cb.or(
 						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.NAME), textFilter),
-						CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter));
+						CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter),
+						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.CAMPAIGN_YEAR), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (campaignCriteria.getRelevanceStatus() != null) {
 			if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Campaign.ARCHIVED), false), cb.isNull(from.get(Campaign.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(cb, filter,
+						cb.or(cb.equal(from.get(Campaign.ARCHIVED), false), cb.isNull(from.get(Campaign.ARCHIVED))));
 			} else if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.ARCHIVED), true));
 			}
@@ -83,7 +88,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = CriteriaBuilderHelper.and(cb, createActiveCampaignsFilter(cb, from), userFilter);
+			filter = CriteriaBuilderHelper.and(cb, createActiveCampaignsFilterForMobile(cb, from), userFilter);
 		}
 
 		cq.where(filter);
@@ -108,8 +113,12 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 			}
 		}
 		if (filter != null) {
+			filter = cb.and(filter, createActiveCampaignsFilter(cb, root));
 			cq.where(filter);
+		} else {
+			cq.where(createActiveCampaignsFilter(cb, root));
 		}
+
 		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
@@ -126,7 +135,73 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public String cloneForm(Campaign uuidx, Long userCreatingId) {
+
+		String cdv = "";
+		String cds = "";
+
+		final Long mill = ZonedDateTime.now().toInstant().toEpochMilli();
+		
+		try {
+			cds = cloneFormx1x(uuidx, mill, userCreatingId);
+		} finally {
+			cdv = "insert into campaign_campaignformmeta  (SELECT "+mill+" as id, "
+					+ "cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
+					+ uuidx + "' and deleted = false)";
+
+		}
+		int notused = em.createNativeQuery(cdv).executeUpdate();
+		return cds;
+	}
+
+	public int closeAndOpenForm(String uuidx, boolean close) {
+
+		String cdvv = "";
+		if (close) {
+			cdvv = "update campaigns set openandclose = false where uuid = '" + uuidx + "'";
+		} else {
+			cdvv = "update campaigns set openandclose = true where uuid = '" + uuidx + "'";
+		}
+		System.out.println(cdvv);
+		return em.createNativeQuery(cdvv).executeUpdate();
+	}
+
+	public String cloneFormx1x(Campaign uuidx, Long mill, Long userCreatingId) {
+
+		UUID uuisd = UUID.randomUUID();
+
+		
+
+		String cdc = "insert into campaigns (SELECT "+mill+" as id, '"
+				+ uuisd.toString().toUpperCase()
+				+ "' as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, "
+				+ userCreatingId
+				+ ", deleted, archived, sys_period, dashboardelements, cluster, round, campaignyear FROM campaigns where name='"
+				+ uuidx + "' and archived = false and  deleted = false)";
+		
+		System.out.println(cdc);
+		
+		em.createNativeQuery(cdc).executeUpdate();
+
+		return uuisd.toString().toUpperCase();
+	}
+
+	
+
+	/*
+	 * public int cloneFormx(Campaign uuidx, int unix) { String cdv =
+	 * "insert into campaign_campaignformmeta (SELECT CAST(CONCAT('-1',dc.id,'"
+	 * +unix+"') AS bigint) as id, cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
+	 * +uuidx+"')"; return em.createNativeQuery(cdv).executeUpdate(); }
+	 */
+
 	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
 		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
+	}
+	
+	
+	
+	public Predicate createActiveCampaignsFilterForMobile(CriteriaBuilder cb, Root<Campaign> root) {
+		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isTrue(root.get(Campaign.CLOSEOPEN)), cb.isFalse(root.get(Campaign.DELETED)));
 	}
 }

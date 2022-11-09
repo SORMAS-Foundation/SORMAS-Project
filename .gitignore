@@ -44,4 +44,6 @@ bin
 /sormas-e2e-tests/.DS_Store
 /sormas-e2e-tests/logs
 
+.zip
+
 .DS_Store

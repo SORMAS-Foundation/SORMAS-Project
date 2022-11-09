@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 
@@ -27,6 +28,7 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 
 	private String diagramId;
 	private String diagramCaption;
+	private String formType;
 	private DiagramType diagramType;
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
 	private List<CampaignDiagramSeries> campaignSeriesTotal;
@@ -90,6 +92,8 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 	public void setPercentageDefault(boolean percentageDefault) {
 		this.percentageDefault = percentageDefault;
 	}
+	
+
 
 	@AuditedIgnore
 	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
@@ -100,5 +104,17 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 
 	public void setCampaignDiagramTranslations(List<CampaignDiagramTranslations> campaignDiagramTranslations) {
 		this.campaignDiagramTranslations = campaignDiagramTranslations;
+	}
+	
+	
+	@AuditedIgnore	
+	@Column
+	@NotNull
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
 	}
 }

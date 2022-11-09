@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void saveSystemEvent(SystemEventDto dto) {
+	public void saveSystemEvent(@Valid SystemEventDto dto) {
 		SystemEvent systemEvent = systemEventService.getByUuid(dto.getUuid());
 
 		systemEvent = fromDto(dto, systemEvent, true);

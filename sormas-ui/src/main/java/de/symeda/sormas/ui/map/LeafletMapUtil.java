@@ -3,7 +3,7 @@ package de.symeda.sormas.ui.map;
 import java.util.Arrays;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoLatLon;
 
 public final class LeafletMapUtil {
 

@@ -26,10 +26,17 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public static final String UUID = "uuid";
 	public static final String CAMPAIGN = "campaign";
 	public static final String FORM = "form";
+	public static final String AREA = "area";
+	public static final String RCODE = "rcode";
 	public static final String REGION = "region";
+	public static final String PCODE = "pcode";
 	public static final String DISTRICT = "district";
+	public static final String DCODE = "dcode";
 	public static final String COMMUNITY = "community";
+	public static final String COMMUNITYNUMBER = "clusternumber";
+	public static final String CCODE = "ccode";
 	public static final String FORM_DATE = "formDate";
+	public static final String FORM_TYPE = "formType";
 
 	private static final long serialVersionUID = -6672198324526771162L;
 
@@ -37,29 +44,72 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private String campaign;
 	private String form;
 	private List<CampaignFormDataEntry> formValues;
+	private String area;
+	private Long rcode;
 	private String region;
+	private Long pcode;
 	private String district;
+	private Long dcode;
 	private String community;
+	private Integer clusternumber;
+	private Long ccode;
 	private Date formDate;
+	private String formType;
 
 	public CampaignFormDataIndexDto(
 		String uuid,
 		String campaign,
 		String form,
 		Object formValues,
+		String area,
+		Long rcode,
 		String region,
+		Long pcode,
 		String district,
+		Long dcode,
 		String community,
-		Date formDate) {
+		Integer clusternumber,
+		Long ccode,
+		Date formDate,
+		String formType) {
 		this.uuid = uuid;
 		this.campaign = campaign;
 		this.form = form;
 		this.formValues = (List<CampaignFormDataEntry>) formValues;
+		this.area = area;
+		this.rcode = rcode;
 		this.region = region;
+		this.pcode = pcode;
 		this.district = district;
+		this.dcode = dcode;
 		this.community = community;
+		this.clusternumber = clusternumber;
+		this.ccode = ccode;
 		this.formDate = formDate;
+		this.formType = formType;
 	}
+	
+	public CampaignFormDataIndexDto(
+			String uuid,
+			String campaign,
+			String form,
+			Object formValues,
+			String area,
+			String region,
+			String district,
+			String community,
+			Date formDate
+			) {
+			this.uuid = uuid;
+			this.campaign = campaign;
+			this.form = form;
+			this.formValues = (List<CampaignFormDataEntry>) formValues;
+			this.area = area;
+			this.region = region;
+			this.district = district;
+			this.community = community;
+			this.formDate = formDate;
+		}
 
 	public String getUuid() {
 		return uuid;
@@ -93,6 +143,14 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.formValues = formValues;
 	}
 
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
 	public String getRegion() {
 		return region;
 	}
@@ -116,6 +174,16 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public void setCommunity(String community) {
 		this.community = community;
 	}
+	
+	
+
+	public Integer getClusternumber() {
+		return clusternumber;
+	}
+
+	public void setClusternumber(Integer clusternumber) {
+		this.clusternumber = clusternumber;
+	}
 
 	public Date getFormDate() {
 		return formDate;
@@ -124,4 +192,48 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public void setFormDate(Date formDate) {
 		this.formDate = formDate;
 	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+
+	public Long getRcode() {
+		return rcode;
+	}
+
+	public void setRcode(Long rcode) {
+		this.rcode = rcode;
+	}
+
+	public int getPcode() {
+		return pcode.intValue();
+	}
+
+	public void setPcode(Long pcode) {
+		this.pcode = pcode;
+	}
+
+	public int getDcode() {
+		return dcode.intValue();
+	}
+
+	public void setDcode(Long dcode) {
+		this.dcode = dcode;
+	}
+
+	public Long getCcode() {
+		return ccode;//Integer.parseInt(ccode+"");
+	}
+
+	public void setCcode(Long ccode) {
+		this.ccode = ccode;
+	}
+	
+	
+	
+	
 }

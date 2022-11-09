@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -178,12 +179,15 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
         filterBinding.campaignFilter.addValueChangedListener(e -> {
             Campaign campaign = (Campaign) e.getValue();
             if (campaign != null) {
+                if(campaign.getCampaignFormMetas() != null){
                 List<Item> forms = campaignFormMetasToItems(campaign.getCampaignFormMetas());
+                forms.stream().filter(ee -> ee.getValue() != null).collect(Collectors.toList());
                 filterBinding.campaignFormFilter.initializeSpinner(forms);
                 setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
                 if (getNewMenu() != null) {
                     getNewMenu().setVisible(isEntryCreateAllowed());
                 }
+            }
             }
         });
 
@@ -222,8 +226,11 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
         List<Item> listOut = new ArrayList<>();
         listOut.add(new Item<Integer>("", null));
         for (CampaignFormMeta campaignFormMeta : campaignFormMetas) {
-            listOut.add(new Item<>(campaignFormMeta.getFormName(), campaignFormMeta));
+            if(campaignFormMeta != null) {
+                listOut.add(new Item<>(campaignFormMeta.getFormName(), campaignFormMeta));
+            }
         }
+        listOut.stream().filter(ee -> ee.getValue() != null).collect(Collectors.toList());
         return listOut;
     }
 

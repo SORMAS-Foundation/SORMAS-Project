@@ -19,9 +19,11 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -30,14 +32,17 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.api.region.DistrictCriteria;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -48,6 +53,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
@@ -66,7 +72,9 @@ public class DistrictsView extends AbstractConfigurationView {
 	// Filter
 	private SearchField searchField;
 	private ComboBox countryFilter;
+	private ComboBox areaFilter;
 	private ComboBox regionFilter;
+	private ComboBox riskFilter;
 	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
 
@@ -99,7 +107,9 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+		
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.DISTRICT));
 				window.setCaption(I18nProperties.getString(Strings.headingImportDistricts));
@@ -109,6 +119,12 @@ public class DistrictsView extends AbstractConfigurationView {
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(importButton);
+		} else if (!infrastructureDataEditable) {
+			Label infrastructureDataLocked = new Label();
+			infrastructureDataLocked.setCaption(I18nProperties.getString(Strings.headingInfrastructureLocked));
+			infrastructureDataLocked.setValue(I18nProperties.getString(Strings.messageInfrastructureLocked));
+			infrastructureDataLocked.setIcon(VaadinIcons.WARNING);
+			addHeaderComponent(infrastructureDataLocked);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
@@ -117,12 +133,12 @@ public class DistrictsView extends AbstractConfigurationView {
 			addHeaderComponent(exportButton);
 
 			StreamResource streamResource =
-				GridExportStreamResource.createStreamResource(grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
+				GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
@@ -144,8 +160,8 @@ public class DistrictsView extends AbstractConfigurationView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
 				viewConfiguration.setInEagerMode(true);
+				bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
@@ -153,8 +169,8 @@ public class DistrictsView extends AbstractConfigurationView {
 				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(false);
 				viewConfiguration.setInEagerMode(false);
+				bulkOperationsDropdown.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				searchField.setEnabled(true);
@@ -182,7 +198,22 @@ public class DistrictsView extends AbstractConfigurationView {
 		countryFilter = addCountryFilter(filterLayout, country -> {
 			criteria.country(country);
 			grid.reload();
-		}, regionFilter);
+		}, areaFilter);
+		
+		areaFilter = ComboBoxHelper.createComboBoxV7();
+		areaFilter.setId(RegionDto.AREA);
+		areaFilter.setWidth(140, Unit.PIXELS);
+		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
+		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		areaFilter.addValueChangeListener(e -> {
+			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
+			criteria.area(area);
+			//navigateTo(criteria);
+			FieldHelper
+				.updateItems(regionFilter, area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
+			grid.reload();
+		});
+		filterLayout.addComponent(areaFilter);
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(DistrictDto.REGION);
@@ -191,9 +222,35 @@ public class DistrictsView extends AbstractConfigurationView {
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		regionFilter.addValueChangeListener(e -> {
 			criteria.region((RegionReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
+			//navigateTo(criteria);
+			grid.reload();
 		});
 		filterLayout.addComponent(regionFilter);
+		
+		
+		riskFilter = ComboBoxHelper.createComboBoxV7();
+		riskFilter.setId(DistrictDto.RISK);
+		riskFilter.setWidth(140, Unit.PIXELS);
+		riskFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.RISK));
+		
+		riskFilter.addItem("None Risk District (NRD)");
+		riskFilter.addItem("High Risk District (HRD)");
+		riskFilter.addItem("Very High Risk District (VHRD)");
+		
+	//	riskFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+		riskFilter.addValueChangeListener(e -> {
+			
+			if(e.getProperty().getValue() != null) {
+				criteria.risk(e.getProperty().getValue().toString());
+				//navigateTo(criteria);
+				
+			} else {
+				criteria.risk(null);
+			}
+			grid.reload();
+			
+		});
+		filterLayout.addComponent(riskFilter);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(DistrictsView.class).remove(DistrictCriteria.class);
@@ -253,8 +310,7 @@ public class DistrictsView extends AbstractConfigurationView {
 									});
 						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown
-						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -294,5 +350,13 @@ public class DistrictsView extends AbstractConfigurationView {
 		regionFilter.setValue(criteria.getRegion());
 
 		applyingCriteria = false;
+	}
+
+	private boolean isBulkOperationsDropdownVisible() {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		return viewConfiguration.isInEagerMode()
+				&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }

@@ -24,8 +24,8 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -103,11 +103,11 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		firstRowLayout.addComponent(cbDisease);
 
 		tfSearch = new TextField();
-		tfSearch.setId(ContactCriteria.NAME_UUID_CASE_LIKE);
+		tfSearch.setId(ContactCriteria.CONTACT_OR_CASE_LIKE);
 		tfSearch.setWidth(200, Unit.PIXELS);
 		CssStyles.style(tfSearch, CssStyles.FORCE_CAPTION);
 		tfSearch.setPlaceholder(I18nProperties.getString(Strings.promptContactsSearchField));
-		binder.bind(tfSearch, ContactCriteria.NAME_UUID_CASE_LIKE);
+		binder.bind(tfSearch, ContactCriteria.CONTACT_OR_CASE_LIKE);
 		firstRowLayout.addComponent(tfSearch);
 
 		eventSearch = new TextField();

@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.app.backend.location;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.text.DecimalFormat;
 
@@ -30,8 +30,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
 
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
@@ -58,9 +58,9 @@ public class Location extends PseudonymizableAdo {
 	public static final String COMMUNITY = "community";
 	public static final String PERSON = "person";
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String details;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String city;
 	@Column
 	private AreaType areaType;
@@ -85,23 +85,23 @@ public class Location extends PseudonymizableAdo {
 	@DatabaseField
 	private Float latLonAccuracy;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String postalCode;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String street;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String houseNumber;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String additionalInformation;
 	@Column
 	private PersonAddressType addressType;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String addressTypeDetails;
 	@Column
 	private FacilityType facilityType;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Facility facility;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String facilityDetails;
 
 	@Column(columnDefinition = "text")
@@ -383,7 +383,7 @@ public class Location extends PseudonymizableAdo {
 				contactNameRow.append(getContactPersonFirstName());
 			}
 			if (StringUtils.isNotEmpty(getContactPersonLastName())) {
-				if (contactNameRow.length()>0){
+				if (contactNameRow.length() > 0) {
 					contactNameRow.append(" ");
 				}
 				contactNameRow.append(getContactPersonLastName());
@@ -398,7 +398,7 @@ public class Location extends PseudonymizableAdo {
 				phoneAndEmailRow.append(getContactPersonPhone());
 			}
 			if (StringUtils.isNotEmpty(getContactPersonEmail())) {
-				if (phoneAndEmailRow.length()>0){
+				if (phoneAndEmailRow.length() > 0) {
 					phoneAndEmailRow.append(", ");
 				}
 				phoneAndEmailRow.append(getContactPersonEmail());

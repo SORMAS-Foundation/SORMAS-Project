@@ -37,20 +37,15 @@ public class LocationReferenceDto extends ReferenceDto {
 		this.setCaption(caption);
 	}
 
-	public LocationReferenceDto(
-		String uuid,
-		String regionName,
-		String districtName,
-		String communityName,
-		String city,
-		String street,
-		String houseNumber,
-		String additionalInformation) {
+	public LocationReferenceDto(String uuid, String areaName, String regionName, String districtName,
+			String communityName, String city, String street, String houseNumber, String additionalInformation) {
 		this.setUuid(uuid);
-		this.setCaption(buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation));
+		this.setCaption(buildCaption(areaName, regionName, districtName, communityName, city, street, houseNumber,
+				additionalInformation));
 	}
 
 	public static String buildCaption(
+		String areaName,
 		String regionName,
 		String districtName,
 		String communityName,
@@ -60,8 +55,15 @@ public class LocationReferenceDto extends ReferenceDto {
 		String additionalInformation) {
 
 		StringBuilder stringBuilder = new StringBuilder();
-
-		stringBuilder.append(DataHelper.toStringNullable(regionName));
+		
+		stringBuilder.append(DataHelper.toStringNullable(areaName));
+		
+		if (!DataHelper.isNullOrEmpty(regionName)) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(regionName);
+		}
 		if (!DataHelper.isNullOrEmpty(districtName)) {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");

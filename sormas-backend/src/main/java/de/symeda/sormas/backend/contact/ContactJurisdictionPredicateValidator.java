@@ -25,9 +25,9 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
@@ -92,7 +92,7 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId());
+		return cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), null);
 	}
 
 	@Override

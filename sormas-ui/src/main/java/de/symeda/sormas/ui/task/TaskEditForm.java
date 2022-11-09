@@ -47,11 +47,12 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -191,6 +192,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 				districts = DataHelper.asListNullable(eventDto.getEventLocation().getDistrict());
 				regions = DataHelper.asListNullable(eventDto.getEventLocation().getRegion());
+			} else if (taskDto.getTravelEntry() != null) {
+				TravelEntryDto travelEntryDto = FacadeProvider.getTravelEntryFacade().getByUuid(taskDto.getTravelEntry().getUuid());
+
+				districts = DataHelper.asListNullable(travelEntryDto.getResponsibleDistrict());
+				regions = DataHelper.asListNullable(travelEntryDto.getResponsibleRegion());
 			} else {
 				districts = DataHelper.asListNullable(userDto.getDistrict());
 				regions = DataHelper.asListNullable(userDto.getRegion());

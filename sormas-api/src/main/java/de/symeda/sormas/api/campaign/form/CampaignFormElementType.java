@@ -4,9 +4,22 @@ public enum CampaignFormElementType {
 
 	LABEL,
 	SECTION,
+	DAYWISE,
 	NUMBER,
 	TEXT,
-	YES_NO("yes", "no", "true", "false");
+	YES_NO("yes", "no", "true", "false"),
+	DROPDOWN,
+	CHECKBOX,
+	RADIO,
+	CHECKBOXBASIC,
+	RADIOBASIC,
+	TEXTBOX,
+	COMMENT,
+	DATE,
+	DECIMAL,
+	RANGE,
+	ARRAY;
+	
 
 	private final String[] allowedValues;
 

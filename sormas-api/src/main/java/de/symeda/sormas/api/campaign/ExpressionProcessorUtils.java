@@ -17,7 +17,7 @@ public class ExpressionProcessorUtils {
 
 	public static EvaluationContext refreshEvaluationContext(List<CampaignFormDataEntry> formValues) {
 		EvaluationContext context = new StandardEvaluationContext(transformFormValueListToMap(formValues));
-		context.getPropertyAccessors().add(new MapAccessor());
+		context.getPropertyAccessors().add(new MapAccessor()); 
 		return context;
 	}
 
@@ -32,15 +32,17 @@ public class ExpressionProcessorUtils {
 	}
 
 	private static Object parseValue(Object value) {
-		if (value instanceof String) {
+		if (value instanceof String && !((String) value).isEmpty()) {
 			try {
-				return Integer.parseInt(value.toString());
+				return Double.parseDouble(value.toString());
 			} catch (NumberFormatException e) {
-				try {
-					return Double.parseDouble(value.toString());
-				} catch (NumberFormatException e1) {
+			//	try {
+				//	Integer.parseInt(value.toString())
+				//	return Double.parseDouble(value.toString());
+				//} catch (NumberFormatException e1) {
+			//	System.out.println("Value not parseable as double #####: "+value);
 					return value;
-				}
+				//}
 			}
 		}
 		return value;

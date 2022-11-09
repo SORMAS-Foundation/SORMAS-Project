@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.stream.Collectors;
@@ -24,22 +24,25 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.CommunityCriteria;
-import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteria> {
+public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteriaNew> {
 
 	private static final long serialVersionUID = 3355810665696318673L;
 
-	public CommunitiesGrid(CommunityCriteria criteria) {
+	public CommunitiesGrid(CommunityCriteriaNew criteria) {
 
 		super(CommunityDto.class);
 		setSizeFull();
@@ -55,14 +58,33 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			setCriteria(criteria);
 		}
 
-		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
+		setColumns(CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.NAME, CommunityDto.CLUSTER_NUMBER, CommunityDto.EXTERNAL_ID);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid()));
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			//addEditColumn();
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.NAME, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.CLUSTER_NUMBER, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.REGION, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.DISTRICT, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
 		}
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			if(column.getCaption().equalsIgnoreCase("Name")) {
+				column.setCaption("Cluster");
+			}
+			//this is a bit hacky
+			if(column.getCaption().equalsIgnoreCase("External ID")) { 
+				column.setCaption("CCode");
+			}
+
 		}
 	}
 
@@ -71,7 +93,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<CommunityDto, CommunityCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<CommunityDto, CommunityCriteriaNew> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getCommunityFacade()
 				.getIndexList(
 					query.getFilter().orElse(null),

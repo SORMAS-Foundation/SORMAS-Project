@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
 
@@ -243,7 +243,7 @@ public class AdditionalTest extends AbstractDomainObject {
 		this.prothrombinTime = prothrombinTime;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getOtherTestResults() {
 		return otherTestResults;
 	}

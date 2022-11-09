@@ -23,10 +23,12 @@ import org.openqa.selenium.By;
 public class CreateNewCasePage {
   public static final By DATE_OF_REPORT_INPUT = By.cssSelector(".v-window #reportDate input");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".v-window #disease div");
-  public static final By RESPONSIBLE_REGION_COMBOBOX = By.cssSelector(".v-window #region div");
-  public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
+  public static final By RESPONSIBLE_REGION_COMBOBOX =
+      By.cssSelector(".v-window #responsibleRegion div");
+  public static final By RESPONSIBLE_DISTRICT_COMBOBOX =
+      By.cssSelector(".v-window #responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
-      By.cssSelector(".v-window #community div");
+      By.cssSelector(".v-window #responsibleCommunity div");
   public static final By PLACE_OF_STAY_HOME =
       By.xpath("//div[@location='facilityOrHomeLoc']//label[contains(text(), 'Home')]");
   public static final By FIRST_NAME_INPUT =

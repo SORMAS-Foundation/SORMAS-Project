@@ -38,7 +38,7 @@ public class Area extends InfrastructureAdo {
     @Column
     private String name;
     @Column
-    private String externalId;
+    private Long externalId;
 
     public String getName() {
         return name;
@@ -48,11 +48,11 @@ public class Area extends InfrastructureAdo {
         this.name = name;
     }
 
-    public String getExternalId() {
+    public Long getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(String externalId) {
+    public void setExternalId(Long externalId) {
         this.externalId = externalId;
     }
 

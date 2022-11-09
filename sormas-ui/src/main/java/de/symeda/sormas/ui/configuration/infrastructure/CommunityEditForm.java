@@ -24,20 +24,23 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
 
 public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 
 	private static final long serialVersionUID = 6726008587163831260L;
 
 	private static final String HTML_LAYOUT =
-		loc(CommunityDto.NAME) + fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT) + fluidRowLocs(RegionDto.EXTERNAL_ID);
+			fluidRowLocs(CommunityDto.NAME, CommunityDto.CLUSTER_NUMBER, CommunityDto.EXTERNAL_ID) + fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT);
 
 	private boolean create;
 
@@ -58,11 +61,13 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	protected void addFields() {
 
 		addField(CommunityDto.NAME, TextField.class);
+		addField(CommunityDto.CLUSTER_NUMBER, TextField.class);
+		addField(RegionDto.EXTERNAL_ID, TextField.class).setCaption("CCode");;
 		ComboBox region = addInfrastructureField(CommunityDto.REGION);
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
-		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		
 
-		setRequired(true, CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT);
+		setRequired(true, CommunityDto.NAME, CommunityDto.NAME,CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();

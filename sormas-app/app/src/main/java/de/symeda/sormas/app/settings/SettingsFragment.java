@@ -59,6 +59,7 @@ import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.lbds.LbdsIntentSender;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
+import de.symeda.sormas.app.rest.HoldVersions;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
@@ -97,7 +98,10 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.syncCaseLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasesLbds(getContext()));
 		binding.settingsLbdsDebugUrl.setValue(ConfigProvider.getServerLbdsDebugUrl());
 
-		binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
+		binding.apmisAppVersion.setText("APMIS APK Version: " + HoldVersions.getAppVersionFromUrl());
+		binding.apmisEngineVersion.setText("APMIS REST Engine Version: " + HoldVersions.getServerVersionFromURL());
+
+		binding.sormasVersion.setText("APMIS Server Version: " + InfoProvider.InfoProvider_apmis());//HoldVersions
 		binding.sormasVersion.setOnClickListener(v -> {
 			versionClickedCount++;
 			if (isShowDevOptions()) {
@@ -128,6 +132,7 @@ public class SettingsFragment extends BaseLandingFragment {
 				try {
 					User user = binding.getData();
 					if (user != null) {
+						user.setLanguage(newLanguage);
 						DatabaseHelper.getUserDao().saveAndSnapshot(user);
 					}
 					if (newLanguage != null) {

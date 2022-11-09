@@ -25,10 +25,14 @@ import javax.validation.constraints.NotNull;
 public interface AdoService<ADO extends AbstractDomainObject> {
 
 	List<ADO> getAll();
+	
+	List<ADO> getByRound(String round);
+	
+	List<ADO> getByRoundAndCampaign(String round, String uuid);
 
 	ADO getById(long id);
 
-	ADO getByUuid(@NotNull String uuid);
+	ADO getByUuid(String uuid);
 
 	Boolean exists(@NotNull String uuid);
 

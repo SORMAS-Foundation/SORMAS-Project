@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.backend.exposure;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -505,7 +505,7 @@ public class Exposure extends AbstractDomainObject {
 		this.deceasedPersonIll = deceasedPersonIll;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDeceasedPersonName() {
 		return deceasedPersonName;
 	}
@@ -514,7 +514,7 @@ public class Exposure extends AbstractDomainObject {
 		this.deceasedPersonName = deceasedPersonName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDeceasedPersonRelation() {
 		return deceasedPersonRelation;
 	}
@@ -559,7 +559,7 @@ public class Exposure extends AbstractDomainObject {
 		this.meansOfTransportDetails = meansOfTransportDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getConnectionNumber() {
 		return connectionNumber;
 	}
@@ -568,7 +568,7 @@ public class Exposure extends AbstractDomainObject {
 		this.connectionNumber = connectionNumber;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSeatNumber() {
 		return seatNumber;
 	}

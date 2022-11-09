@@ -12,19 +12,27 @@ public class PersonQueryContext<T> extends QueryContext<T, Person> {
 
 	public static final String PERSON_PHONE_SUBQUERY = "personPhoneSubquery";
 	public static final String PERSON_EMAIL_SUBQUERY = "personEmailSubquery";
+	public static final String PERSON_PHONE_OWNER_SUBQUERY = "personPhoneOwnerSubquery";
+	public static final String PERSON_OTHER_CONTACT_DETAILS_SUBQUERY = "personOtherContactDetailsSubQuery";
 
 	public PersonQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<T, Person> root) {
-		super(cb, query, root, new PersonJoins(root));
+		super(cb, query, root, new PersonJoins<>(root));
 	}
 
 	@Override
 	protected Expression<?> createExpression(String name) {
 
-		if (name.equals(PERSON_PHONE_SUBQUERY)) {
+		switch (name) {
+		case PERSON_PHONE_SUBQUERY:
 			return addSubqueryExpression(PERSON_PHONE_SUBQUERY, getPersonContactDetailSubquery(PersonContactDetailType.PHONE, getRoot()));
-		} else if (name.equals(PERSON_EMAIL_SUBQUERY)) {
+		case PERSON_EMAIL_SUBQUERY:
 			return addSubqueryExpression(PERSON_EMAIL_SUBQUERY, getPersonContactDetailSubquery(PersonContactDetailType.EMAIL, getRoot()));
+		case PERSON_PHONE_OWNER_SUBQUERY:
+			return addSubqueryExpression(PERSON_PHONE_OWNER_SUBQUERY, phoneOwnerSubquery(getRoot()));
+		case PERSON_OTHER_CONTACT_DETAILS_SUBQUERY:
+			return addSubqueryExpression(PERSON_OTHER_CONTACT_DETAILS_SUBQUERY, getPersonOtherContactDetailsSubQuery(getRoot()));
+		default:
+			throw new IllegalArgumentException("No such subquery expression defined!");
 		}
-		throw new IllegalArgumentException("No such subquery expression defined!");
 	}
 }

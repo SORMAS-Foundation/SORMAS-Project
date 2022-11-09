@@ -44,6 +44,17 @@ public abstract class CustomizableEnum implements Serializable {
 	 */
 	public abstract void setProperties(Map<String, Object> properties);
 
+	/**
+	 * Matches the passed value to the value of the passed property of this instance.
+	 * 
+	 * @param property
+	 *            The property of this customizable enum
+	 * @param value
+	 *            The property value of this instance
+	 * @return Whether the property value matches the passed value
+	 */
+	public abstract boolean matchPropertyValue(String property, Object value);
+
 	public String getValue() {
 		return value;
 	}

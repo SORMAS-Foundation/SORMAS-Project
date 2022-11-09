@@ -106,7 +106,7 @@ public class SamplesView extends AbstractView {
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 
 			exportLayout.addComponent(basicExportButton);
-			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems("","",
 				sampleListComponent.getGrid(),
 				() -> viewConfiguration.isInEagerMode()
 					? this.sampleListComponent.getGrid().asMultiSelect().getSelectedItems()

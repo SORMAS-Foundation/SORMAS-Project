@@ -77,7 +77,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		CaseJoins<Case> caseJoins = new CaseJoins<>(caseRoot);
 
 		Join<Case, Person> person = caseJoins.getPerson();
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person); 
 
 		Join<Person, Location> homeAddress = caseJoins.getPersonAddress();
 

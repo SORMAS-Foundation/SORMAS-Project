@@ -35,20 +35,26 @@ public class Campaign extends CoreAdo {
 	public static final String CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME = "campaign_campaignformmeta";
 
 	public static final String NAME = "name";
+	public static final String ROUND = "round";
 	public static final String DESCRIPTION = "description";
+	public static final String CAMPAIGN_YEAR = "campaignYear";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String CREATING_USER = "creatingUser";
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 	public static final String CAMPAIGN_DASHBOARD_ELEMENTS = "dashboardElements";
 	public static final String ARCHIVED = "archived";
+	public static final String CLOSEOPEN = "openandclose";
 
 	private String name;
+	private String round;
 	private String description;
+	private String campaignYear;
 	private Date startDate;
 	private Date endDate;
 	private User creatingUser;
 	private boolean archived;
+	private boolean openandclose;
 	private List<CampaignDashboardElement> dashboardElements;
 	private Set<CampaignFormMeta> campaignFormMetas = new HashSet<>();
 
@@ -59,6 +65,24 @@ public class Campaign extends CoreAdo {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	@Column(length = 100)
+	public String getCampaignYear() {
+		return campaignYear;
+	}
+
+	public void setCampaignYear(String campaignYear) {
+		this.campaignYear = campaignYear;
+	}
+
+	@Column(length = 255)
+	public String getRound() {
+		return round;
+	}
+
+	public void setRound(String round) {
+		this.round = round;
 	}
 
 	@Column(length = 512)
@@ -105,6 +129,15 @@ public class Campaign extends CoreAdo {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	@Column
+	public boolean isOpenandclose() {
+		return openandclose;
+	}
+
+	public void setOpenandclose(boolean openandclose) {
+		this.openandclose = openandclose;
 	}
 
 	@Override

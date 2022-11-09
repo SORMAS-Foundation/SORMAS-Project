@@ -4,6 +4,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,9 +21,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -39,26 +47,32 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.ContinentReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.region.SubcontinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.CharsetHelper;
+import de.symeda.sormas.api.utils.ConstrainValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.person.PersonSelectionField;
@@ -118,19 +132,23 @@ public abstract class DataImporter {
 
 	private final EnumCaptionCache enumCaptionCache;
 
-	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
 		this.enumCaptionCache = new EnumCaptionCache(currentUser.getLanguage());
 
-		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+		Path exportDirectory = getErrorReportFolderPath();
+		if (!exportDirectory.toFile().exists() || !exportDirectory.toFile().canWrite()) {
+			logger.error(exportDirectory + " doesn't exist or cannot be accessed");
+			throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
+		}
 		Path errorReportFilePath = exportDirectory.resolve(
 			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
 
-		this.csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
+		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator);
 	}
 
 	/**
@@ -231,8 +249,10 @@ public abstract class DataImporter {
 			// Build dictionary of entity headers
 			String[] entityClasses;
 			if (hasEntityClassRow) {
+				//System.out.println("has entity class row_");
 				entityClasses = readNextValidLine(csvReader);
 			} else {
+				//System.out.println("has NO entity class row_");
 				entityClasses = null;
 			}
 
@@ -240,6 +260,7 @@ public abstract class DataImporter {
 			String[] entityProperties = readNextValidLine(csvReader);
 			String[][] entityPropertyPaths = new String[entityProperties.length][];
 			for (int i = 0; i < entityProperties.length; i++) {
+				//System.out.println("____-----___"+entityProperties[i]);
 				String[] entityPropertyPath = entityProperties[i].split("\\.");
 				entityPropertyPaths[i] = entityPropertyPath;
 			}
@@ -256,10 +277,10 @@ public abstract class DataImporter {
 			String[] nextLine = readNextValidLine(csvReader);
 			int lineCounter = 0;
 			while (nextLine != null) {
-				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0);
+				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0); 
 				logger.debug("runImport - line {}", lineCounter);
 				if (importedLineCallback != null) {
-					importedLineCallback.accept(lineResult);
+					importedLineCallback.accept(lineResult); 
 				}
 				if (cancelAfterCurrent) {
 					break;
@@ -416,12 +437,20 @@ public abstract class DataImporter {
 			pd.getWriteMethod().invoke(element, Float.parseFloat(entry));
 			return true;
 		}
+		if (propertyType.isAssignableFrom(Long.class)) {
+			//System.out.println("_____IN REGION ISASSIGNMENT________------long-----_________________+========  " +entry);
+			pd.getWriteMethod().invoke(element, Long.parseLong(entry));
+			return true;
+		}
 		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
 			pd.getWriteMethod().invoke(element, DataHelper.parseBoolean(entry));
 			return true;
 		}
+		
 		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
-			List<AreaReferenceDto> areas = FacadeProvider.getAreaFacade().getByName(entry, false);
+			//System.out.println("_____IN REGION ISASSIGNMENT________------area-----_________________+========  " +entry);
+			List<AreaReferenceDto> areas = FacadeProvider.getAreaFacade().getByExternalID(Long.parseLong(entry), false);
+			
 			if (areas.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
@@ -429,10 +458,15 @@ public abstract class DataImporter {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
+				
 				pd.getWriteMethod().invoke(element, areas.get(0));
 				return true;
 			}
 		}
+		
+	
+		
+		/*
 		if (propertyType.isAssignableFrom(SubcontinentReferenceDto.class)) {
 			List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getByDefaultName(entry, false);
 			if (subcontinents.isEmpty()) {
@@ -471,9 +505,11 @@ public abstract class DataImporter {
 				pd.getWriteMethod().invoke(element, continents.get(0));
 				return true;
 			}
-		}
+		}*/
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByName(entry, false);
+			
+			//System.out.println("_____IN REGION ISASSIGNMENT________-----------_________________+========  " +entry);
+			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByExternalId(Long.parseLong(entry), false, 0);
 			if (regions.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
@@ -481,6 +517,10 @@ public abstract class DataImporter {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
+
+				//System.out.println(regions.get(0).getExternalId()+" >>>>>>>>>>>>>>>>>>>>>>>>>>>. "+regions.get(0).getName());
+				
+				
 				RegionDto region = regions.get(0);
 				CountryReferenceDto serverCountry = FacadeProvider.getCountryFacade().getServerCountry();
 
@@ -503,7 +543,9 @@ public abstract class DataImporter {
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
 			}
 		}
+		
 		if (propertyType.isAssignableFrom(String.class)) {
+			//System.out.println("_____IN REGION ISASSIGNMENT________---string--------_________________+========  " +entry);
 			pd.getWriteMethod().invoke(element, entry);
 			return true;
 		}
@@ -660,5 +702,27 @@ public abstract class DataImporter {
 
 	protected String getErrorReportFileName() {
 		return errorReportFileName;
+	}
+
+	protected <T> ImportLineResultDto<T> validateConstraints(T object) {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+
+		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
+		if (constraintViolations.size() > 0) {
+			System.out.print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOOOOOORRRRRR");
+			return ImportLineResultDto.errorResult(
+				ConstrainValidationHelper.getPropertyErrors(constraintViolations)
+					.entrySet()
+					.stream()
+					.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())
+					.collect(Collectors.joining(";")));
+		}
+
+		return ImportLineResultDto.successResult();
+	}
+
+	protected Path getErrorReportFolderPath() {
+		return Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
 	}
 }

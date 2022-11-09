@@ -28,20 +28,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.google.common.collect.Sets;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-
-import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -54,17 +52,17 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -88,6 +86,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private static final String EVENT_WEEK_AND_DATE_FILTER = "eventWeekDateFilter";
 	private static final String EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER = "eventSignalEvolutionWeekDateFilter";
+	private static final String ACTION_CHANGE_WEEK_AND_DATE_FILTER = "actionChangeWeekDateFilter";
 	private static final String ACTION_WEEK_AND_DATE_FILTER = "actionWeekDateFilter";
 	private static final String FACILITY_TYPE_GROUP_FILTER = "facilityTypeGroupFilter";
 
@@ -110,6 +109,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL)
 		+ loc(EVENT_WEEK_AND_DATE_FILTER)
 		+ loc(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER)
+		+ loc(ACTION_CHANGE_WEEK_AND_DATE_FILTER)
 		+ loc(ACTION_WEEK_AND_DATE_FILTER);
 
 	private final boolean hideEventStatusFilter;
@@ -128,6 +128,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private void updateFields() {
 		if (hideActionFilters) {
+			getEpiWeekAndDateComponent(ACTION_CHANGE_WEEK_AND_DATE_FILTER).getParent().setVisible(false);
 			getEpiWeekAndDateComponent(ACTION_WEEK_AND_DATE_FILTER).getParent().setVisible(false);
 		}
 		if (hideEventStatusFilter) {
@@ -224,6 +225,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		moreFiltersContainer.addComponent(
 			buildWeekAndDateFilter(EventCriteria.DateType.EVENT_SIGNAL_EVOLUTION, isExternalShareEnabled),
 			EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
+		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION_CHANGE, isExternalShareEnabled), ACTION_CHANGE_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION, isExternalShareEnabled), ACTION_WEEK_AND_DATE_FILTER);
 
 		ComboBox facilityTypeGroupField = ComboBoxHelper.createComboBoxV7();
@@ -263,7 +265,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			if (facilityType != null) {
 				final UserDto user = UserProvider.getCurrent().getUser();
 				final CommunityReferenceDto community =
-					user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
+					user.getCommunity() != null ? null : (CommunityReferenceDto) communityField.getValue();
 
 				facilityField.setEnabled(true);
 				if (community != null) {
@@ -344,6 +346,14 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEvolutionDateFrom));
 			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEvolutionDateTo));
 			break;
+		case ACTION_CHANGE:
+			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, this);
+
+			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionChangeEpiWeekFrom));
+			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionChangeEpiWeekTo));
+			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionChangeDateFrom));
+			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionChangeDateTo));
+			break;
 		case ACTION:
 			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, this);
 
@@ -387,23 +397,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			criteria.dateBetween(dateType, fromDate, toDate, eventDateType, dateFilterOption);
 		} else {
-			if (dateFilterOption == DateFilterOption.DATE) {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingDateFilter),
-					I18nProperties.getString(Strings.messageMissingDateFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			} else {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			}
+			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
 	}
 
@@ -418,6 +412,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		Set<Component> dateFilterOptionComponents = Sets.newHashSet(
 			getEpiWeekAndDateComponent(EVENT_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter(),
 			getEpiWeekAndDateComponent(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter(),
+			getEpiWeekAndDateComponent(ACTION_CHANGE_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter(),
 			getEpiWeekAndDateComponent(ACTION_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter());
 
 		return super.streamFieldsForEmptyCheck(layout).filter(f -> !dateFilterOptionComponents.contains(f));
@@ -494,10 +489,16 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			criteria.getEventEvolutionDateTo());
 
 		applyDateDependencyOnNewValue(
-			ACTION_WEEK_AND_DATE_FILTER,
+			ACTION_CHANGE_WEEK_AND_DATE_FILTER,
 			criteria.getActionChangeDateFilterOption(),
 			criteria.getActionChangeDateFrom(),
 			criteria.getActionChangeDateTo());
+
+		applyDateDependencyOnNewValue(
+				ACTION_WEEK_AND_DATE_FILTER,
+				criteria.getActionDateFilterOption(),
+				criteria.getActionDateFrom(),
+				criteria.getActionDateTo());
 
 		RegionReferenceDto region = criteria.getRegion();
 		DistrictReferenceDto district = criteria.getDistrict();
@@ -519,7 +520,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			FieldHelper.setEnabled(false, diseaseVariantField);
 		} else {
 			List<DiseaseVariant> diseaseVariants =
-					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
 		}

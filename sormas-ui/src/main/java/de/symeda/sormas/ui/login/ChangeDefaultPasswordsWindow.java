@@ -57,7 +57,7 @@ public class ChangeDefaultPasswordsWindow extends Window {
 		setWidth(40, Unit.PERCENTAGE);
 		final VerticalLayout content = new VerticalLayout();
 		content.setMargin(true);
-		content.setWidthFull();
+		content.setWidthFull(); 
 
 		Label introductionLabel = new Label(I18nProperties.getString(Strings.DefaultPassword_otherUsersIntroduction));
 		introductionLabel.setWidthFull();

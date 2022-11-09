@@ -1,18 +1,33 @@
 package de.symeda.sormas.api.campaign.diagram;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class CampaignDiagramDataDto implements Serializable {
 
 	private static final long serialVersionUID = -8813972727008846360L;
 
 	private String formMetaUuid;
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String formId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fieldId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fieldCaption;
 	private Number valueSum;
 	private Object groupingKey;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String groupingCaption;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String stack;
 	private boolean hasAgeGroupData;
 
@@ -53,7 +68,9 @@ public class CampaignDiagramDataDto implements Serializable {
 		String formId,
 		boolean hasAgeGroupData) {
 		this.fieldCaption = fieldCaption;
+		
 		this.valueSum = valueSum;
+		
 		this.groupingKey = groupingKey;
 		this.groupingCaption = groupingCaption;
 		this.fieldId = fieldId;
@@ -67,7 +84,7 @@ public class CampaignDiagramDataDto implements Serializable {
 		String formId,
 		String fieldId,
 		String fieldCaption,
-		Number valueSum,
+		String valueSum,
 		Object groupingKey,
 		String groupingCaption,
 		String stack) {
@@ -75,12 +92,33 @@ public class CampaignDiagramDataDto implements Serializable {
 		this.formId = formId;
 		this.fieldId = fieldId;
 		this.fieldCaption = fieldCaption;
-		this.valueSum = valueSum;
+		this.valueSum = new BigDecimal(valueSum);
 		this.groupingKey = groupingKey;
 		this.groupingCaption = groupingCaption;
 		this.stack = stack;
 	}
 
+	
+	public CampaignDiagramDataDto(
+			String formMetaUuid,
+			String formId,
+			String fieldId,
+			String fieldCaption,
+			String valueSum,
+			//Object groupingKey,
+			//String groupingCaption,
+			String stack){
+			this.formMetaUuid = formMetaUuid;
+			this.formId = formId;
+			this.fieldId = fieldId;
+			this.fieldCaption = fieldCaption;
+			this.valueSum = new BigDecimal(valueSum);
+		//	this.groupingKey = groupingKey;
+			this.groupingCaption = "working";
+			this.stack = stack;
+		}
+	
+	
 	public String getFormMetaUuid() {
 		return formMetaUuid;
 	}

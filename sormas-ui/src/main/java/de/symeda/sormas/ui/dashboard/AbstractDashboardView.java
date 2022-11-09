@@ -74,7 +74,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 		dashboardLayout.setMargin(false);
 		dashboardLayout.setSpacing(false);
 		dashboardLayout.setSizeFull();
-		dashboardLayout.setStyleName("crud-main-layout");
+		dashboardLayout.setStyleName("crud-main-layoutx");
 
 		addComponent(dashboardLayout);
 		setExpandRatio(dashboardLayout, 1);

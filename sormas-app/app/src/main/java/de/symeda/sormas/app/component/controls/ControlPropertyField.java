@@ -15,6 +15,13 @@
 
 package de.symeda.sormas.app.component.controls;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -29,13 +36,7 @@ import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
@@ -388,6 +389,37 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 	}
 
 	@BindingAdapter(value = {
+		"customizableEnumField",
+		"customizableEnumProperty",
+		"customizableEnumValue" })
+	public static void setCustomizableEnumDependency(
+		ControlPropertyField<?> field,
+		ControlPropertyField customizableEnumField,
+		String customizableEnumProperty,
+		Object customizableEnumValue) {
+
+		if (customizableEnumField != null) {
+			if (customizableEnumField.getValue() != null
+				&& ((CustomizableEnum) customizableEnumField.getValue()).matchPropertyValue(customizableEnumProperty, customizableEnumValue)) {
+				field.setVisibility(VISIBLE);
+			} else {
+				field.hideField(true);
+			}
+
+			customizableEnumField.addValueChangedListener(e -> {
+				if (customizableEnumField.getValue() != null
+					&& ((CustomizableEnum) customizableEnumField.getValue()).matchPropertyValue(customizableEnumProperty, customizableEnumValue)) {
+					field.setVisibility(VISIBLE);
+				} else {
+					field.hideField(true);
+				}
+			});
+		} else {
+			field.hideField(true);
+		}
+	}
+
+	@BindingAdapter(value = {
 		"dependencyParentField",
 		"dependencyParentValue",
 		"dependencyParentValue2",
@@ -465,6 +497,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 					add(dependencyParent2Value);
 				}
 			});
+
 		}
 
 		if (visibilityDependencies.size() == 0)
@@ -602,7 +635,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
 		field.setEnabled(isEnabled);
 
-		if(!isEnabled){
+		if (!isEnabled) {
 			field.setValue(null);
 		}
 	}

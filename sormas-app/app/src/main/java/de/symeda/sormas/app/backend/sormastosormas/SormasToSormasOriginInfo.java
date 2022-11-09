@@ -1,7 +1,7 @@
 package de.symeda.sormas.app.backend.sormastosormas;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,16 +19,16 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	public static final String TABLE_NAME = "sormasToSormasOriginInfo";
 	private static final String I18N_PREFIX = "SormasToSormasOriginInfo";
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String organizationId;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String senderName;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String senderEmail;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String senderPhoneNumber;
 
 	@Column
@@ -43,7 +43,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	@Column
 	private boolean withEventParticipants;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String comment;
 
 	@Override

@@ -23,39 +23,49 @@ import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.CampaignGisView;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.campaign.components.CampaignFormPhaseSelector;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CampaignDashboardFilterLayout extends HorizontalLayout {
-
+	
 	private CampaignDashboardView dashboardView;
 	private CampaignDashboardDataProvider dashboardDataProvider;
+	
+	private CampaignGisView mapview;
 
 	private Label infoLabel;
 
 	private ComboBox campaignFilter;
+	private ComboBox campaignPhaseFilter;
 	private ComboBox areaFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox campaignJurisdictionGroupByFilter;
+	
+	private CampaignFormPhaseSelector campaignFormPhaseSelector;
 
-	private OptionGroup campaignPhaseSelector;
+	//private OptionGroup campaignPhaseSelector;
 
 	public CampaignDashboardFilterLayout(CampaignDashboardView dashboardView, CampaignDashboardDataProvider dashboardDataProvider) {
 
 		this.dashboardView = dashboardView;
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.campaignFilter = ComboBoxHelper.createComboBoxV7();
+		this.campaignPhaseFilter = ComboBoxHelper.createComboBoxV7();
 		this.regionFilter = ComboBoxHelper.createComboBoxV7();
 		this.districtFilter = ComboBoxHelper.createComboBoxV7();
 		this.areaFilter = ComboBoxHelper.createComboBoxV7();
 		this.campaignJurisdictionGroupByFilter = ComboBoxHelper.createComboBoxV7();
+		
+		//setStyleName(CssStyles.FORCE_CAPTION);
 
 		setSpacing(true);
 		setWidthFull();
@@ -69,21 +79,51 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
 		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
 
+		
+		
 		createCampaignFilter();
+		
 		createJurisdictionFilters(campaignJurisdictionLevel);
-
+/*
 		campaignPhaseSelector = new OptionGroup();
 		campaignPhaseSelector.setDescription(I18nProperties.getPrefixDescription(CampaignDto.I18N_PREFIX, "campaignPhase"));
 		CssStyles.style(campaignPhaseSelector, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		campaignPhaseSelector.addItems(CampaignPhase.values());
 		campaignPhaseSelector.setValue(CampaignPhase.INTRA);
-		campaignPhaseSelector.setEnabled(false);
+		campaignPhaseSelector.setEnabled(true);
 		addComponent(campaignPhaseSelector);
 		setExpandRatio(campaignPhaseSelector, 1);
 		setComponentAlignment(campaignPhaseSelector, Alignment.MIDDLE_RIGHT);
+		*/
 	}
+	
+	public CampaignDashboardFilterLayout(CampaignGisView dashboardView, CampaignDashboardDataProvider dashboardDataProvider) {
 
-	private void createCampaignFilter() {
+		this.mapview = dashboardView;
+		this.dashboardDataProvider = dashboardDataProvider;
+		this.campaignFilter = ComboBoxHelper.createComboBoxV7();
+		this.campaignPhaseFilter = ComboBoxHelper.createComboBoxV7();
+		this.regionFilter = ComboBoxHelper.createComboBoxV7();
+		this.districtFilter = ComboBoxHelper.createComboBoxV7();
+		this.areaFilter = ComboBoxHelper.createComboBoxV7();
+		this.campaignJurisdictionGroupByFilter = ComboBoxHelper.createComboBoxV7();
+		
+		//setStyleName(CssStyles.FORCE_CAPTION);
+
+		setSpacing(true);
+		setWidthFull();
+		setMargin(new MarginInfo(true, true, false, true));
+
+		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+
+		final UserDto user = UserProvider.getCurrent().getUser();
+		final CampaignJurisdictionLevel campaignJurisdictionLevel =
+			CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
+		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
+
+		
+		
 		campaignFilter.setRequired(true);
 		campaignFilter.setNullSelectionAllowed(false);
 		campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
@@ -91,16 +131,53 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
 		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference().toArray());
 		campaignFilter.addValueChangeListener(e -> {
+			
+		});
+		addComponent(campaignFilter);
+		//campaignPhaseFilter.addItem(FacadeProvider.getCampaignFacade())
+		
+		//createCampaignPhaseFilter();
+
+		
+		createJurisdictionFilters(campaignJurisdictionLevel);
+
+	}
+
+	private void createCampaignFilter() {
+		campaignFilter.setRequired(true);
+		campaignFilter.setNullSelectionAllowed(false);
+		campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
+		
+		//campaignFilter.setWidth(200, Unit.PIXELS);
+		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
+		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference().toArray());
+		campaignFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignFilter);
+		
+		createCampaignPhaseFilter();
 
 		final CampaignReferenceDto lastStartedCampaign = dashboardDataProvider.getLastStartedCampaign();
 		if (lastStartedCampaign != null) {
+			//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+lastStartedCampaign);
 			campaignFilter.setValue(lastStartedCampaign);
+			campaignPhaseFilter.setValue(CampaignPhase.INTRA.toString());
 		}
 		dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
+	}
+	
+	
+	private void createCampaignPhaseFilter() {
+		campaignFormPhaseSelector = new CampaignFormPhaseSelector(null);
+		campaignFormPhaseSelector.addValueChangeListener(e -> {
+			dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
+			dashboardView.refreshDashboard();
+		});
+		addComponent(campaignFormPhaseSelector);
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+campaignFormPhaseSelector.getValue().toLowerCase());
+		dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -108,12 +185,12 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final AreaReferenceDto userArea =
-			userRegion != null ? FacadeProvider.getRegionFacade().getRegionByUuid(userRegion.getUuid()).getArea() : null;
+			userRegion != null ? FacadeProvider.getRegionFacade().getByUuid(userRegion.getUuid()).getArea() : null;
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 
 		dashboardDataProvider.setArea(userArea);
 		areaFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_area));
-		areaFilter.setWidth(200, Unit.PIXELS);
+		//areaFilter.setWidth(200, Unit.PIXELS);
 		areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllAreas));
 		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 		areaFilter.addValueChangeListener(e -> {
@@ -127,7 +204,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		dashboardDataProvider.setRegion(userRegion);
 		regionFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_region));
-		regionFilter.setWidth(200, Unit.PIXELS);
+		//regionFilter.setWidth(200, Unit.PIXELS);
 		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
 		regionFilter.addValueChangeListener(e -> {
 			final Object value = regionFilter.getValue();
@@ -140,7 +217,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		dashboardDataProvider.setDistrict(userDistrict);
 		districtFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_district));
-		districtFilter.setWidth(200, Unit.PIXELS);
+		//districtFilter.setWidth(200, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 		if (userRegion != null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
@@ -166,7 +243,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		}
 
 		campaignJurisdictionGroupByFilter.setCaption(I18nProperties.getCaption(Captions.campaignDiagramGroupBy));
-		campaignJurisdictionGroupByFilter.setWidth(200, Unit.PIXELS);
+		//campaignJurisdictionGroupByFilter.setWidth(200, Unit.PIXELS);
 
 		switch (campaignJurisdictionLevel) {
 		case AREA:

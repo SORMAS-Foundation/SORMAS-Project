@@ -25,11 +25,11 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
@@ -103,8 +103,8 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	protected Predicate whenCommunityLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()),
-			cb.equal(joins.getRoot().get(Case.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()));
+			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), null),
+			cb.equal(joins.getRoot().get(Case.COMMUNITY).get(Community.ID), null));
 	}
 
 	@Override

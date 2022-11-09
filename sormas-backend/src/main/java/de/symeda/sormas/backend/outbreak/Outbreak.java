@@ -31,7 +31,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.user.User;
 
 @Entity

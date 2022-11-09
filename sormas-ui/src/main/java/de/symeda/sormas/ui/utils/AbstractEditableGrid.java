@@ -48,9 +48,9 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		setWidth(100, Unit.PERCENTAGE);
 		setHeight(100, Unit.PERCENTAGE);
 
-		final Label headingLabel = new Label(I18nProperties.getString(getHeaderString()));
-		headingLabel.addStyleName(H3);
-		addComponent(headingLabel, HEADING_LOC);
+		//final Label headingLabel = new Label(I18nProperties.getString(getHeaderString()));
+		//headingLabel.addStyleName(H3);
+		//addComponent(headingLabel, HEADING_LOC);
 
 		final HorizontalLayout gridLayout = new HorizontalLayout();
 		gridLayout.setMargin(false);
@@ -68,6 +68,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		grid.setItems(new ArrayList<>(savedElements));
 		reorderGrid();
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
+		grid.setId("formidx");
 		setSizeFull();
 
 		final GridRowDragger<T> gridRowDragger = new GridRowDragger<>(grid);

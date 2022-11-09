@@ -18,6 +18,8 @@ package de.symeda.sormas.app;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.sql.SQLException;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,9 +28,10 @@ import org.junit.runner.RunWith;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 
 /**
  * Created by Mate Strysewske on 14.06.2017.
@@ -45,13 +48,26 @@ public class FacilityBackendTest {
 	}
 
 	@Test
-	public void shouldGetHealthFacilitiesByDistrict() {
+	public void shouldGetHealthFacilitiesByDistrict() throws SQLException {
 		District district = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.DISTRICT_UUID);
+		Region region = district.getRegion();
 
-		// There should be exactly one health facility in this district - labs are not included
+		// There should be exactly one health facility and one laboratory in this district
+		assertThat(
+			DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, FacilityType.LABORATORY, false, false).size(),
+			is(1));
+
 		assertThat(
 			DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, FacilityType.HOSPITAL, false, false).size(),
 			is(1));
+
+		assertThat(DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, null, false, false).size(), is(2));
+
+		assertThat(DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, null, false, true).size(), is(3));
+
+		assertThat(DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, null, true, false).size(), is(3));
+
+		assertThat(DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, null, true, true).size(), is(4));
 
 		assertThat(
 			DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, FacilityType.HOSPITAL, true, true).size(),

@@ -21,6 +21,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
@@ -31,6 +32,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.ui.UserProvider.HasUserProvider;
 import de.symeda.sormas.ui.ViewModelProviders.HasViewModelProviders;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
@@ -62,8 +65,11 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 		Responsive.makeResponsive(this);
 
 		VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
+		VaadinSession.getCurrent().getSession().setMaxInactiveInterval ( 
+				( int ) TimeUnit.MINUTES.toSeconds( 30 ) 
+				);
 
-		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
+		getPage().setTitle("APMIS Server");//FacadeProvider.getConfigFacade().getSormasInstanceName());
 
 		initMainScreen();
 	}
@@ -97,5 +103,21 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 
 	public static void refreshView() {
 		get().getNavigator().navigateTo(get().getNavigator().getState());
+	}
+	
+	public static void refreshCampaignView() {
+		get().getNavigator().navigateTo(get().getNavigator().getState());
+		Page.getCurrent().getJavaScript().execute("$(document).ready(function() {"
+				
+				// + "alert();"
+				// + "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").show();"
+				// +
+				// "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').addClass('v-align-right');"
+				+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').show();"
+				+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').show();"
+		// +"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
+				+ "});");
+		
+		
 	}
 }

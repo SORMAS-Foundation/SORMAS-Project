@@ -20,6 +20,8 @@
 
 package de.symeda.sormas.api.campaign;
 
+import java.util.HashMap;
+
 import de.symeda.sormas.api.ReferenceDto;
 
 public class CampaignReferenceDto extends ReferenceDto {

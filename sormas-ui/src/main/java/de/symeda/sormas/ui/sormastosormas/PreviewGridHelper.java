@@ -22,10 +22,13 @@ import java.util.function.Function;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.LocationHelper;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class PreviewGridHelper {
 
@@ -36,9 +39,22 @@ public class PreviewGridHelper {
 	}
 
 	public static <T> List<String> createPersonColumns(Grid<T> grid, Function<T, SormasToSormasPersonPreview> getPerson) {
-		grid.addComponentColumn(
-			previewData -> new Label(getPerson.apply(previewData).getFirstName() + " " + getPerson.apply(previewData).getLastName()))
-			.setId(PERSON_NAME);
+		((Grid.Column<PseudonymizableDto, ?>)grid.addComponentColumn(
+			previewData -> {
+				SormasToSormasPersonPreview person = getPerson.apply(previewData);
+				if(person.isPseudonymized()){
+					return new Label(I18nProperties.getCaption(Captions.inaccessibleValue));
+				}
+				return new Label(person.getFirstName() + " " + person.getLastName());
+			}))
+			.setId(PERSON_NAME)
+		.setStyleGenerator(item -> {
+			if(item.isPseudonymized()) {
+				return CssStyles.INACCESSIBLE_COLUMN;
+			}
+
+			return "";
+		});
 		grid.addComponentColumn(
 			previewData -> new Label(
 				PersonHelper.formatBirthdate(

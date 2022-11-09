@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.app.backend.sample;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -78,10 +78,10 @@ public class Sample extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private EventParticipant associatedEventParticipant;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String labSampleID;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String fieldSampleID;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -103,13 +103,13 @@ public class Sample extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private SampleMaterial sampleMaterial;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String sampleMaterialText;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility lab;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String labDetails;
 
 	@Enumerated(EnumType.STRING)
@@ -118,7 +118,7 @@ public class Sample extends PseudonymizableAdo {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date shipmentDate;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String shipmentDetails;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -127,10 +127,10 @@ public class Sample extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private SpecimenCondition specimenCondition;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String noTestPossibleReason;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String comment;
 
 	@Enumerated(EnumType.STRING)
@@ -154,10 +154,10 @@ public class Sample extends PseudonymizableAdo {
 	@DatabaseField
 	private Boolean additionalTestingRequested;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String requestedPathogenTestsString;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String requestedAdditionalTestsString;
 
 	@Transient
@@ -166,10 +166,10 @@ public class Sample extends PseudonymizableAdo {
 	@Transient
 	private Set<AdditionalTestType> requestedAdditionalTests;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String requestedOtherPathogenTests;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String requestedOtherAdditionalTests;
 
 	@Enumerated(EnumType.STRING)

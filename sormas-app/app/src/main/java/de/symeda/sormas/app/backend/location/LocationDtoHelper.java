@@ -121,17 +121,20 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 			target.setRegion(null);
 		}
 		if (source.getCountry() != null) {
-			target.setCountry(CountryDtoHelper.toReferenceDto(DatabaseHelper.getCountryDao().queryForId(source.getCountry().getId())));
+			target.setCountry(null);
+			//target.setCountry(CountryDtoHelper.toReferenceDto(DatabaseHelper.getCountryDao().queryForId(source.getCountry().getId())));
 		} else {
 			target.setCountry(null);
 		}
 		if (source.getContinent() != null) {
-			target.setContinent(ContinentDtoHelper.toReferenceDto(DatabaseHelper.getContinentDao().queryForId(source.getContinent().getId())));
+			target.setContinent(null);
+			//target.setContinent(ContinentDtoHelper.toReferenceDto(DatabaseHelper.getContinentDao().queryForId(source.getContinent().getId())));
 		} else {
 			target.setContinent(null);
 		}
 		if (source.getSubcontinent() != null) {
-			target.setSubcontinent(SubcontinentDtoHelper.toReferenceDto(DatabaseHelper.getSubcontinentDao().queryForId(source.getSubcontinent().getId())));
+			//target.setSubcontinent(SubcontinentDtoHelper.toReferenceDto(DatabaseHelper.getSubcontinentDao().queryForId(source.getSubcontinent().getId())));
+			target.setSubcontinent(null);
 		} else {
 			target.setSubcontinent(null);
 		}

@@ -31,6 +31,7 @@ import de.symeda.sormas.ui.docgeneration.DocGenerationController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
+import de.symeda.sormas.ui.immunization.ImmunizationController;
 import de.symeda.sormas.ui.labmessage.LabMessageController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
@@ -75,6 +76,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SurveillanceReportController surveillanceReportController;
 	private final DocGenerationController docGenerationController;
 	private final TravelEntryController travelEntryController;
+	private final ImmunizationController immunizationController;
 
 	public ControllerProvider() {
 		super();
@@ -106,6 +108,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		surveillanceReportController = new SurveillanceReportController();
 		docGenerationController = new DocGenerationController();
 		travelEntryController = new TravelEntryController();
+		immunizationController = new ImmunizationController();
 	}
 
 	protected static ControllerProvider get() {
@@ -218,5 +221,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static TravelEntryController getTravelEntryController() {
 		return get().travelEntryController;
+	}
+
+	public static ImmunizationController getImmunizationController() {
+		return get().immunizationController;
 	}
 }

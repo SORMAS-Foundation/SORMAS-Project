@@ -66,13 +66,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/campaignFormData_area"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:required="true"
                     app:value="@={data.area}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/campaignFormData_region"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:required="true"
@@ -84,13 +84,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/campaignFormData_district"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:required="true"
                     app:value="@={data.district}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/campaignFormData_community"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:required="true"
@@ -99,6 +99,51 @@
 
             <LinearLayout
                 android:id="@+id/dynamicLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TabHost    android:id="@+id/tabhostxxx"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    xmlns:android="http://schemas.android.com/apk/res/android">
+
+                    <LinearLayout   android:id="@+id/mainLayout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical"
+                        android:padding="5dp">
+
+                        <TabWidget  android:id="@android:id/tabs"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content">
+                        </TabWidget>
+
+                        <FrameLayout android:id="@android:id/tabcontent"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+
+                            android:padding="5dp">
+
+                            <include layout="@layout/tab1"/>
+                            <include layout="@layout/tab2"/>
+                            <include layout="@layout/tab3"/>
+                            <include layout="@layout/tab4"/>
+                            <include layout="@layout/tab5"/>
+                            <include layout="@layout/tab6"/>
+                            <include layout="@layout/tab7"/>
+                            <include layout="@layout/tab8"/>
+
+
+
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+                </TabHost>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dynamicLayoutxX"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

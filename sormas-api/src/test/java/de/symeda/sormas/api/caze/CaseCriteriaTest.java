@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class CaseCriteriaTest {
@@ -16,7 +16,7 @@ public class CaseCriteriaTest {
 		CaseCriteria criteria = new CaseCriteria();
 		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid(), null, null);
 		criteria.setDistrict(district);
-		criteria.setNameUuidEpidNumberLike("test AHSDBSD-ADS");
+		criteria.setCaseLike("test AHSDBSD-ADS");
 		criteria.setEventLike("test EVENT");
 		criteria.setDisease(Disease.CSM);
 

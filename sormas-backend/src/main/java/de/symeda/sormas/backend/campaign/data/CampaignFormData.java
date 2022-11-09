@@ -39,9 +39,10 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.area.Area;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -55,22 +56,30 @@ public class CampaignFormData extends AbstractDomainObject {
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
 	public static final String FORM_DATE = "formDate";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String ARCHIVED = "archived";
+	public static final String LAT ="lat";
+	public static final String LON = "lon";
+	//public static final String FORMTYPE = "formType";
 
 	private static final long serialVersionUID = -8021065433714419288L;
 
 	private List<CampaignFormDataEntry> formValues;
 	private Campaign campaign;
-	private CampaignFormMeta campaignFormMeta;
+	public CampaignFormMeta campaignFormMeta;
 	private Date formDate;
+	private Area area;
 	private Region region;
 	private District district;
-	private Community community;
+	public Community community;
 	private User creatingUser;
 	private boolean archived;
+	public Double lat;
+	public Double lon;
+	//private CampaignFormMeta formType;
 
 	@AuditedIgnore
 	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
@@ -112,6 +121,15 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.formDate = formDate;
 	}
 
+	@ManyToOne()
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
+	}
+	
 	@ManyToOne()
 	public Region getRegion() {
 		return region;
@@ -157,8 +175,37 @@ public class CampaignFormData extends AbstractDomainObject {
 	public void setArchived(boolean archived) {
 		this.archived = archived;
 	}
+	
+	
+
+	/*public CampaignFormMeta getFormType() {
+		return formType;
+	}
+
+	public void setFormType(CampaignFormMeta formType) {
+		this.formType = formType;
+	}*/
 
 	public CampaignFormDataReferenceDto toReference() {
 		return new CampaignFormDataReferenceDto(getUuid());
 	}
+
+	public Double getLat() {
+		return lat;
+	}
+
+	public void setLat(Double lati) {
+		lat = lati;
+	}
+
+	public Double getLon() {
+		return lon;
+	}
+
+	public void setLon(Double longti) {
+		lon = longti;
+	}
+	
+	
+	
 }

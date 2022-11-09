@@ -172,8 +172,6 @@ public class EditContactsSteps implements En {
               webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
 
           softly
-              // this substring method will return the first 6 characters from the UUID.
-              // those characters are used in UI as the Contact ID.
               .assertThat(apiState.getCreatedContact().getUuid().substring(0, 6))
               .isEqualToIgnoringCase(contactId);
           softly

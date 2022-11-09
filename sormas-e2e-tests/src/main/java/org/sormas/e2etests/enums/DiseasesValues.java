@@ -20,6 +20,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum DiseasesValues {
@@ -45,14 +46,23 @@ public enum DiseasesValues {
   private final String diseaseCaption;
   private static Random random = new Random();
 
-  DiseasesValues(String aDisease, String aDiseaseCaption) {
-    diseaseName = aDisease;
-    diseaseCaption = aDiseaseCaption;
+  DiseasesValues(String diseaseName, String diseaseCaption) {
+    this.diseaseName = diseaseName;
+    this.diseaseCaption = diseaseCaption;
   }
 
   /** Returns values used for UI tests */
   public static String getRandomDiseaseCaption() {
     return String.valueOf(DiseasesValues.values()[random.nextInt(values().length)].diseaseCaption);
+  }
+
+  @SneakyThrows
+  public static String getCaptionFor(String option) {
+    DiseasesValues[] diseasesOptions = DiseasesValues.values();
+    for (DiseasesValues value : diseasesOptions) {
+      if (value.getDiseaseCaption().equalsIgnoreCase(option)) return value.getDiseaseCaption();
+    }
+    throw new Exception("Unable to find " + option + " value in DiseasesValues Enum");
   }
 
   /** Returns values used for API tests */

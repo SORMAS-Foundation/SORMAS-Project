@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -169,7 +169,7 @@ public class HealthConditions extends AbstractDomainObject {
 		this.congenitalSyphilis = congenitalSyphilis;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getOtherConditions() {
 		return otherConditions;
 	}

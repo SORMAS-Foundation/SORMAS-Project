@@ -10,6 +10,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Test;
@@ -18,16 +21,17 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.opencsv.exceptions.CsvValidationException;
 
-import de.symeda.sormas.api.facility.FacilityCriteria;
+import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryCriteria;
-import de.symeda.sormas.api.region.CommunityCriteria;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictCriteria;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionCriteria;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -182,7 +186,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File communityCsvFile = new File(getClass().getClassLoader().getResource("sormas_community_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(communityCsvFile, user, InfrastructureType.COMMUNITY);
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
-		assertEquals(2, getCommunityFacade().count(new CommunityCriteria()));
+		assertEquals(2, getCommunityFacade().count(new CommunityCriteriaNew()));
 
 		// Import facility
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").toURI());
@@ -213,8 +217,8 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	private static class InfrastructureImporterExtension extends InfrastructureImporter {
 
-		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) {
-			super(inputFile, currentUser, infrastructureType);
+		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) throws IOException {
+			super(inputFile, currentUser, infrastructureType, ValueSeparator.COMMA);
 		}
 
 		protected Writer createErrorReportWriter() {
@@ -225,6 +229,11 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 					// Do nothing
 				}
 			});
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

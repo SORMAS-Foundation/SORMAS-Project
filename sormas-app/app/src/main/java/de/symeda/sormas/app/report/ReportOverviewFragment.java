@@ -61,7 +61,7 @@ public class ReportOverviewFragment extends ReportFragment {
 		super.onAfterLayoutBinding(contentBinding);
 
 		List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
-		contentBinding.weeklyReportEntryDisease.initializeSpinner(diseaseList);
+		contentBinding.weeklyReportEntryDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.weeklyReportEntryDisease.setVisibility(VISIBLE);
 		contentBinding.weeklyReportEntryDisease.addValueChangedListener(new ValueChangeListener() {
 
@@ -81,7 +81,7 @@ public class ReportOverviewFragment extends ReportFragment {
 		EpiWeek epiWeek = getEpiWeek();
 		if (epiWeek == null
 			|| DateHelper.isEpiWeekAfter(DateHelper.getEpiWeek(new Date()), epiWeek)
-			|| !ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+			|| !ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_OFFICER)) {
 			setVisibilityForNoData();
 		} else {
 			showWeeklyReportOverview();
@@ -96,7 +96,7 @@ public class ReportOverviewFragment extends ReportFragment {
 			return;
 		}
 
-		if (!ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+		if (!ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_OFFICER)) {
 			return;
 		}
 

@@ -352,6 +352,15 @@ public final class VaadinUiUtil {
 
 	}
 
+	public static HorizontalLayout createErrorComponent(String htmlContent) {
+		return createErrorComponent(htmlContent, 35);
+	}
+
+	public static HorizontalLayout createErrorComponent(String htmlContent, int iconSize) {
+		return createIconComponent(htmlContent, "img/error-icon.png", iconSize);
+
+	}
+
 	public static HorizontalLayout createIconComponent(String htmlContent, String iconName, int iconSize) {
 		HorizontalLayout infoLayout = new HorizontalLayout();
 		infoLayout.setWidth(100, Unit.PERCENTAGE);

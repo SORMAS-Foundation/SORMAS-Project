@@ -1,14 +1,17 @@
 package de.symeda.sormas.api.labmessage;
 
-import de.symeda.sormas.api.Disease;
+import java.util.Date;
+
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
-
-import java.util.Date;
 
 public class TestReportDto extends EntityDto {
 
@@ -25,16 +28,22 @@ public class TestReportDto extends EntityDto {
 
 	@Required
 	private LabMessageReferenceDto labMessage;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabExternalId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabPostalCode;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabCity;
 
 	private PathogenTestType testType;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
 	private Boolean testResultVerified;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testResultText;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typingId;
 
 	private PathogenTestReferenceDto pathogenTest;

@@ -4,7 +4,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.region.AreaDto;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 @SuppressWarnings("serial")
@@ -27,7 +27,7 @@ public class AreaEditForm extends AbstractEditForm<AreaDto> {
 		addField(AreaDto.NAME, TextField.class);
 		addField(AreaDto.EXTERNAL_ID, TextField.class);
 
-		setRequired(true, AreaDto.NAME);
+		setRequired(true, AreaDto.NAME, AreaDto.EXTERNAL_ID);
 	}
 
 	@Override

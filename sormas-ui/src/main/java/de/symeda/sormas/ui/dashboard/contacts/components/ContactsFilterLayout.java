@@ -19,20 +19,22 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ContactsFilterLayout extends DashboardFilterLayout {
 
+	public static final String INFO_LABEL = "infoLabel";
+	public static final String DISEASE_FILTER = "diseaseFilter";
+	private final static String[] CONTACTS_FILTERS = new String[]{INFO_LABEL, REGION_FILTER, DISTRICT_FILTER, DISEASE_FILTER};
 	private ComboBox diseaseFilter;
 
 	public ContactsFilterLayout(ContactsDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
-		super(dashboardView, dashboardDataProvider);
+		super(dashboardView, dashboardDataProvider, CONTACTS_FILTERS);
 	}
 
 	public void populateLayout() {
-		createDateFilters();
+		super.populateLayout();
 		createInfoLabel();
 		createRegionAndDistrictFilter();
 		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
 			createDiseaseFilter();
 		}
-		createResetAndApplyButtons();
 	}
 
 	public boolean hasDiseaseSelected() {
@@ -44,8 +46,8 @@ public class ContactsFilterLayout extends DashboardFilterLayout {
 		infoLabel.setSizeUndefined();
 		infoLabel.setDescription(I18nProperties.getString(Strings.infoContactDashboard));
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
-		addComponent(infoLabel);
-		setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
+
+		addCustomComponent(infoLabel, INFO_LABEL);
 	}
 
 	private void createDiseaseFilter() {
@@ -57,6 +59,6 @@ public class ContactsFilterLayout extends DashboardFilterLayout {
 		diseaseFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
 		});
-		addComponent(diseaseFilter);
+		addCustomComponent(diseaseFilter, DISEASE_FILTER);
 	}
 }

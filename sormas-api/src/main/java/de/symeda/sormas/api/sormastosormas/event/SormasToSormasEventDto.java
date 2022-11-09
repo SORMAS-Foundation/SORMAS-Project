@@ -17,6 +17,8 @@ package de.symeda.sormas.api.sormastosormas.event;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -27,8 +29,10 @@ public class SormasToSormasEventDto extends SormasToSormasDto<EventDto> {
 
 	private static final long serialVersionUID = 5998850723108574369L;
 
+	@Valid
 	private List<EventParticipantDto> eventParticipants;
 
+	@Valid
 	private List<SormasToSormasSampleDto> samples;
 
 	public SormasToSormasEventDto() {

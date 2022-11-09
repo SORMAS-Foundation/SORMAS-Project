@@ -27,6 +27,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -67,6 +68,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		PersonDto personDto1 = PersonDto.build();
 		personDto1.setFirstName("Isidore");
 		personDto1.setLastName("Isou");
+		personDto1.setSex(Sex.UNKNOWN);
 		personDto1.setPhone("+49 681 1234");
 
 		getPersonFacade().savePerson(personDto1);
@@ -79,6 +81,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		PersonDto personDto2 = PersonDto.build();
 		personDto2.setFirstName("Guy");
 		personDto2.setLastName("Debord");
+		personDto2.setSex(Sex.UNKNOWN);
 		personDto2.setPhone("+49 681 4567");
 
 		getPersonFacade().savePerson(personDto2);
@@ -91,6 +94,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		PersonDto personDto3 = PersonDto.build();
 		personDto3.setFirstName("Georges");
 		personDto3.setLastName("Bataille");
+		personDto3.setSex(Sex.UNKNOWN);
 		personDto3.setPhone("+49 681 8901");
 
 		getPersonFacade().savePerson(personDto3);

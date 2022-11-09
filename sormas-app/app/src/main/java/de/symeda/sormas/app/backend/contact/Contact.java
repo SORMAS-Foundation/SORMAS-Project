@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.app.backend.contact;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -30,6 +30,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIdentificationSource;
@@ -65,6 +66,7 @@ public class Contact extends PseudonymizableAdo {
 	public static final String PERSON = "person_id";
 	public static final String CASE_UUID = "caseUuid";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_COLUMN = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
@@ -88,6 +90,7 @@ public class Contact extends PseudonymizableAdo {
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date reportDateTime;
@@ -110,9 +113,9 @@ public class Contact extends PseudonymizableAdo {
 	private Person person;
 	@DatabaseField
 	private String caseUuid;
-	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "caseDisease")
+	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = DISEASE_COLUMN)
 	private Disease disease;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
 	@DatabaseField
 	private boolean multiDayContact;
@@ -136,25 +139,25 @@ public class Contact extends PseudonymizableAdo {
 	private ContactStatus contactStatus;
 	@Enumerated(EnumType.STRING)
 	private FollowUpStatus followUpStatus;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String followUpComment;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date followUpUntil;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User contactOfficer;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String description;
 	@Enumerated(EnumType.STRING)
 	private ContactRelation relationToCase;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String relationDescription;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalID;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalToken;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String internalToken;
 
 	@DatabaseField
@@ -166,14 +169,14 @@ public class Contact extends PseudonymizableAdo {
 	private boolean highPriority;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown careForPeopleOver60;
 
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineTypeDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date quarantineFrom;
@@ -182,18 +185,18 @@ public class Contact extends PseudonymizableAdo {
 
 	@Column
 	private String caseIdExternalSystem;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String caseOrEventInformation;
 
 	@Enumerated(EnumType.STRING)
 	private ContactCategory contactCategory;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String contactProximityDetails;
 
 	@Enumerated(EnumType.STRING)
 	@Deprecated
 	private OrderMeans quarantineOrderMeans;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHelpNeeded;
 	@DatabaseField
 	private boolean quarantineOrderedVerbally;
@@ -209,17 +212,17 @@ public class Contact extends PseudonymizableAdo {
 	private boolean quarantineReduced;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHomePossibleComment;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomeSupplyEnsured;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
 	@DatabaseField
 	private boolean quarantineOfficialOrderSent;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOfficialOrderSentDate;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String additionalDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -237,7 +240,7 @@ public class Contact extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private EndOfQuarantineReason endOfQuarantineReason;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String endOfQuarantineReasonDetails;
 
 	@Enumerated(EnumType.STRING)
@@ -254,9 +257,8 @@ public class Contact extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User followUpStatusChangeUser;
 
-	// TODO [vaccination info] integrate vaccination info
-//	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-//	private VaccinationInfo vaccinationInfo;
+	@Enumerated(EnumType.STRING)
+	private VaccinationStatus vaccinationStatus;
 
 	public Person getPerson() {
 		return person;
@@ -874,12 +876,11 @@ public class Contact extends PseudonymizableAdo {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 
-	// TODO [vaccination info] integrate vaccination info
-//	public VaccinationInfo getVaccinationInfo() {
-//		return vaccinationInfo;
-//	}
-//
-//	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
-//		this.vaccinationInfo = vaccinationInfo;
-//	}
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
+	}
 }

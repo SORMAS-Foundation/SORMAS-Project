@@ -93,7 +93,7 @@ public class User extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private PointOfEntry pointOfEntry;
 
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User associatedOfficer;
 
 	@Enumerated(EnumType.STRING)
@@ -217,7 +217,7 @@ public class User extends AbstractDomainObject {
 	}
 
 	public void setLimitedDisease(Disease limitedDisease) {
-		this.limitedDisease = limitedDisease;
+		this.limitedDisease = limitedDisease; //form method
 	}
 
 	public Language getLanguage() {

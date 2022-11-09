@@ -1,5 +1,6 @@
 package org.sormas.e2etests.steps.web;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
 
 import com.google.common.truth.Truth;
@@ -75,6 +76,7 @@ public class EpidemiologicalDataSteps implements En {
         () -> {
           webDriverHelpers.scrollToElementUntilIsVisible(SAVE_BUTTON_EPIDEMIOLOGICAL_DATA);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EPIDEMIOLOGICAL_DATA);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
     When(
@@ -82,6 +84,7 @@ public class EpidemiologicalDataSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(START_OF_EXPOSURE_INPUT);
           Exposure generatedExposureData =
               epidemiologicalData.getExposures().stream()
                   .findFirst()

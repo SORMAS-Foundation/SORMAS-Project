@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -38,9 +37,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -70,9 +70,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 					fluidRowLocs(4, TravelEntryDto.EXTERNAL_ID)
 			+ fluidRow(
 			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
-			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS),
-			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_VARIANT)) +
-					fluidRowLocs(TravelEntryDto.RECOVERED, TravelEntryDto.VACCINATED, TravelEntryDto.TESTED_NEGATIVE) +
+			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS)) 
+			+ fluidRowLocs(TravelEntryDto.DISEASE_VARIANT, TravelEntryDto.DISEASE_VARIANT_DETAILS)
+			+ fluidRowLocs(TravelEntryDto.RECOVERED, TravelEntryDto.VACCINATED, TravelEntryDto.TESTED_NEGATIVE) +
 			fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 			+ fluidRowLocs(TravelEntryDto.RESPONSIBLE_REGION, TravelEntryDto.RESPONSIBLE_DISTRICT, TravelEntryDto.RESPONSIBLE_COMMUNITY)
 			+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
@@ -144,6 +144,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
 		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);
+		TextField diseaseVariantDetailsField = addField(TravelEntryDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField.setVisible(false);
 
 		addField(TravelEntryDto.RECOVERED).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(TravelEntryDto.VACCINATED).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
@@ -153,11 +155,11 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addField(TravelEntryDto.RESPONSIBLE_REGION);
+		ComboBox responsibleRegion = addInfrastructureField(TravelEntryDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addField(TravelEntryDto.RESPONSIBLE_DISTRICT);
+		ComboBox responsibleDistrictCombo = addInfrastructureField(TravelEntryDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
+		ComboBox responsibleCommunityCombo = addInfrastructureField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
 		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 
@@ -383,6 +385,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
+		diseaseVariantField.addValueChangeListener(
+			e -> diseaseVariantDetailsField
+				.setVisible(((DiseaseVariant) e.getProperty().getValue()).matchPropertyValue(DiseaseVariant.HAS_DETAILS, true)));
 
 	}
 

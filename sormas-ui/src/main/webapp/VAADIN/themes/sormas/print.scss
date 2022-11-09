@@ -118,15 +118,50 @@
         }
       }
     }
+    
+    
+    
     .v-grid-select-all-checkbox,
     .v-grid-selection-checkbox {
       display: none !important;
     }
+    
+    
+    
     :root .sormas .v-select-optiongroup-horizontal .v-radiobutton > input:checked ~ label,
     :root .sormas .v-select-optiongroup-horizontal .v-checkbox > input:checked ~ label {
-	  -webkit-print-color-adjust: exact !important;
-	  color-adjust: exact !important;
+
+	background: green !important;
+	color: white !important;
+    border: 2px solid white !important;
 	}
+	
+	:root .sormas .v-select-optiongroup-horizontal .v-checkbox > input:checked ~ label {
+	//  -webkit-print-color-adjust: exact !important;
+	//  color-adjust: exact !important;
+	background: green !important;
+	color: white !important;
+    border: 2px solid white !important;
+	}
+	
+	
+	
+	
+	
+	
+ .itembox {
+        white-space: normal;
+        vertical-align: top;
+    }
     // TODO: a lot of things…
   }
+   .itembox {
+        white-space: normal;
+        vertical-align: top;
+    }
 }
+
+
+
+
+

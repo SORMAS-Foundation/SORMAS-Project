@@ -33,13 +33,13 @@ import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -67,6 +67,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String DEV_MODE = "devmode";
 
 	public static final String CUSTOM_BRANDING = "custombranding";
+	public static final String CAMPAIGN = "campaign";
 	public static final String CUSTOM_BRANDING_NAME = "custombranding.name";
 	public static final String CUSTOM_BRANDING_LOGO_PATH = "custombranding.logo.path";
 	public static final String CUSTOM_BRANDING_USE_LOGIN_SIDEBAR = "custombranding.useloginsidebar";
@@ -126,6 +127,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String CENTRAL_OIDC_URL = "central.oidc.url";
 	private static final String CENTRAL_ETCD_HOST = "central.etcd.host";
+	private static final String CENTRAL_ETCD_CLIENT_NAME = "central.etcd.clientName";
+	private static final String CENTRAL_ETCD_CLIENT_PASSWORD = "central.etcd.clientPassword";
 	private static final String CENTRAL_ETCD_CA_PATH = "central.etcd.caPath";
 
 	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
@@ -140,8 +143,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_SECRET = "sormas2sormas.oidc.clientSecret";
 
-	private static final String SORMAS2SORMAS_ETCD_CLIENT_NAME = "sormas2sormas.etcd.clientName";
-	private static final String SORMAS2SORMAS_ETCD_CLIENT_PASSWORD = "sormas2sormas.etcd.clientPassword";
 	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
 
 	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
@@ -157,6 +158,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
 	private static final String UI_URL = "ui.url";
+
+	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
+	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
+	public static final String IMPORT_FILE_SIZE_LIMIT_MB = "importFileSizeLimitMb";
+	public static final int DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB = 20;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -199,6 +205,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
 		} catch (Exception e) {
 			logger.error("Could not parse integer value of property '" + name + "': " + e.getMessage());
+			return defaultValue;
+		}
+	}
+
+	protected long getLong(String name, int defaultValue) {
+
+		try {
+			return Long.parseLong(getProperty(name, Long.toString(defaultValue)));
+		} catch (Exception e) {
+			logger.error("Could not parse long value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}
@@ -287,6 +303,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public boolean isCampaign() {
+		return getBoolean(CAMPAIGN, false);
+	}
+	
+	@Override
 	public String getCustomBrandingName() {
 		return getProperty(CUSTOM_BRANDING_NAME, "SORMAS");
 	}
@@ -310,7 +331,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public String getSormasInstanceName() {
 		return isCustomBranding() ? getCustomBrandingName() : "SORMAS";
 	}
-
+	
 	@Override
 	public String getAppUrl() {
 
@@ -503,8 +524,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setRootCaAlias(getProperty(SORMAS2SORMAS_ROOT_CA_ALIAS, null));
 		config.setRetainCaseExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN, true));
 		config.setId(getProperty(SORMAS2SORMAS_ID, null));
-		config.setEtcdClientName(getProperty(SORMAS2SORMAS_ETCD_CLIENT_NAME, null));
-		config.setEtcdClientPassword(getProperty(SORMAS2SORMAS_ETCD_CLIENT_PASSWORD, null));
 		config.setOidcServer(getProperty(CENTRAL_OIDC_URL, null));
 		config.setOidcRealm(getProperty(SORMAS2SORMAS_OIDC_REALM, null));
 		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
@@ -630,6 +649,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(CENTRAL_ETCD_HOST, null);
 	}
 
+	public String getCentralEtcdClientName() {
+		return getProperty(CENTRAL_ETCD_CLIENT_NAME, null);
+	}
+
+	public String getCentralEtcdClientPassword() {
+		return getProperty(CENTRAL_ETCD_CLIENT_PASSWORD, null);
+	}
+
 	public String getCentralEtcdCaPath() {
 		return getProperty(CENTRAL_ETCD_CA_PATH, null);
 	}
@@ -652,6 +679,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getDemisJndiName() {
 		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
+	}
+
+	@Override
+	public long getDocumentUploadSizeLimitMb() {
+		return getLong(DOCUMENT_UPLOAD_SIZE_LIMIT_MB, DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+	}
+
+	@Override
+	public long getImportFileSizeLimitMb() {
+		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
 	}
 
 	@LocalBean

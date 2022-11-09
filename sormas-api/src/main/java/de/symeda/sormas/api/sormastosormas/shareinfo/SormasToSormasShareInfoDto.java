@@ -15,10 +15,14 @@
 
 package de.symeda.sormas.api.sormastosormas.shareinfo;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class SormasToSormasShareInfoDto extends EntityDto {
 
@@ -32,6 +36,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean withEvenParticipants;
 	private boolean pseudonymizedPersonalData;
 	private boolean pseudonymizedSensitiveData;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 	private ShareRequestStatus requestStatus;
 

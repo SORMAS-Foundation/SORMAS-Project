@@ -79,7 +79,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 	@Override
 	protected void fillInnerFromDto(User target, UserDto source) {
 		target.setActive(source.isActive());
-		target.setUserName(source.getUserName());
+		target.setUserName(source.getUserName().toLowerCase());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
 		target.setUserEmail(source.getUserEmail());
@@ -90,7 +90,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
-		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
+		//target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
 		target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
 		target.setPointOfEntry(DatabaseHelper.getPointOfEntryDao().getByReferenceDto(source.getPointOfEntry()));
 

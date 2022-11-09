@@ -20,7 +20,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.travelentry.importer.TravelEntryImportLayout;
@@ -76,8 +75,8 @@ public class TravelEntriesView extends AbstractView {
 
 			long countTravelEntries = FacadeProvider.getTravelEntryFacade().count(new TravelEntryCriteria(), true);
 			if (countTravelEntries > 0) {
-				final ExpandableButton createButton = new ExpandableButton(Captions.travelEntryNewTravelEntry)
-					.expand(e -> ControllerProvider.getTravelEntryController().create(null, SormasUI::refreshView));
+				final ExpandableButton createButton =
+					new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create(null));
 				addHeaderComponent(createButton);
 			}
 		}

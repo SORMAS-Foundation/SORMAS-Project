@@ -67,7 +67,7 @@ public class AssertHelpers {
     FileUtils.copyFile(srcFile, destFileName);
   }
 
-  public void assertWithPoll15Second(ThrowingRunnable throwingRunnable) {
-    assertWithPoll(throwingRunnable, 15);
+  public void assertWithPoll20Second(ThrowingRunnable throwingRunnable) {
+    assertWithPoll(throwingRunnable, 20);
   }
 }

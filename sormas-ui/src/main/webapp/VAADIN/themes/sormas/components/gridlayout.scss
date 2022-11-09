@@ -19,6 +19,8 @@
 @mixin sormas-gridlayout {
 
   .v-gridlayout {
+		width: 100%!important;
+    
     &.v-gridlayout-even {
       /* background-color: #eee; */
     }
@@ -27,11 +29,21 @@
       background-color: #F3F6FB;
     }
 
+	 .v-gridlayout-slot{
+		width: 98%!important;	
+	}
+	
+	//&.v-gridlayout-slot{
+	//	width:100%!important;	
+	//}
+	
+	
     &.v-gridlayout-section {
       .v-gridlayout-slot,
       .v-caption {
         padding-left: 10px;
         padding-right: 10px;
+       
       }
     }
   }

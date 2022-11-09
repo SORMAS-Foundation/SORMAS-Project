@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.BaseFacade;
+import de.symeda.sormas.api.BaseFacade;
 
 @Remote
 public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryCriteria> {

@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.user.UserAccountView;
 import de.symeda.sormas.ui.user.UserSettingsForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -81,16 +82,18 @@ public class Menu extends CssLayout {
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
-		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
-		title.setSizeUndefined();
+		
+		 Label title = new
+		 Label("APMIS");
+		 title.setSizeUndefined();
 
 		Image image;
 		if (FacadeProvider.getConfigFacade().isCustomBranding()
-			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath())) {
+				&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath())) {
 			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath());
 			image = new Image(null, new FileResource(logoPath.toFile()));
 		} else {
-			image = new Image(null, new ThemeResource("img/sormas-logo.png"));
+			image = new Image(null, new ThemeResource("img/apmis-logo.png"));
 		}
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
@@ -112,26 +115,57 @@ public class Menu extends CssLayout {
 		// container for the navigation buttons, which are added by addView()
 		menuItemsLayout = new CssLayout();
 		menuItemsLayout.setPrimaryStyleName(VALO_MENUITEMS);
-		menuPart.addComponent(menuItemsLayout);
+		//menuPart.addComponent(menuItemsLayout);
 
 		// settings menu item
 		MenuBar settingsMenu = new MenuBar();
 		settingsMenu.setId(Captions.actionSettings);
-		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, (Command) selectedItem -> showSettingsPopup());
+		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG,
+				(Command) selectedItem -> showSettingsPopup());
 
-		settingsMenu.addStyleNames("user-menu", "settings-menu");
-		menuPart.addComponent(settingsMenu);
+		settingsMenu.addStyleNames("valo-menu-item", "v-widget");
+	//	menuItemsLayout.addComponent(settingsMenu);
 
+		
+		
+		menuPart.addComponent(menuItemsLayout);
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		// logout menu item
 		MenuBar logoutMenu = new MenuBar();
 		logoutMenu.setId(Captions.actionLogout);
 		logoutMenu.addItem(
-			I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
-			VaadinIcons.SIGN_OUT,
-			(Command) selectedItem -> LoginHelper.logout());
+				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+				VaadinIcons.POWER_OFF, (Command) selectedItem -> LoginHelper.logout());
 
 		logoutMenu.addStyleNames("user-menu", "logout-menu");
-		menuPart.addComponent(logoutMenu);
+		//menuPart.addComponent(logoutMenu);
 
 		addComponent(menuPart);
 	}
@@ -142,8 +176,20 @@ public class Menu extends CssLayout {
 		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
 		window.setModal(true);
 
-		CommitDiscardWrapperComponent<UserSettingsForm> component =
-			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
+		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController()
+				.getUserSettingsComponent(() -> window.close());
+
+		window.setContent(component);
+		UI.getCurrent().addWindow(window);
+	}
+	
+	private void showUserAccountPopup() {
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
+		window.setModal(true);
+
+		CommitDiscardWrapperComponent<UserAccountView> component = ControllerProvider.getUserController()
+				.getUserAccountSettingsComponent(() -> window.close());
 
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);
@@ -155,14 +201,10 @@ public class Menu extends CssLayout {
 	 *
 	 * @see Navigator#addView(String, View)
 	 *
-	 * @param view
-	 *            view instance to register
-	 * @param name
-	 *            view name
-	 * @param caption
-	 *            view caption in the menu
-	 * @param icon
-	 *            view icon in the menu
+	 * @param view    view instance to register
+	 * @param name    view name
+	 * @param caption view caption in the menu
+	 * @param icon    view icon in the menu
 	 */
 	public void addView(View view, final String name, String caption, Resource icon) {
 
@@ -171,29 +213,53 @@ public class Menu extends CssLayout {
 	}
 
 	/**
-	 * Register a view in the navigation menu and in the {@link Navigator} based
-	 * on a view class.
+	 * Register a view in the navigation menu and in the {@link Navigator} based on
+	 * a view class.
 	 *
 	 * @see Navigator#addView(String, Class)
 	 *
-	 * @param viewClass
-	 *            class of the views to create
-	 * @param name
-	 *            view name
-	 * @param caption
-	 *            view caption in the menu
-	 * @param icon
-	 *            view icon in the menu
+	 * @param viewClass class of the views to create
+	 * @param name      view name
+	 * @param caption   view caption in the menu
+	 * @param icon      view icon in the menu
 	 */
 	public void addView(Class<? extends View> viewClass, final String name, String caption, Resource icon) {
 
 		navigator.addView(name, viewClass);
 		createViewButton(name, caption, icon);
 	}
+	
+	public void addViewx(Class<? extends View> viewClass, final String name) {
+
+		navigator.addView(name, viewClass);
+	}
+	
 
 	private void createViewButton(final String name, String caption, Resource icon) {
 
-		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon, event -> navigator.navigateTo(name));
+		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon,
+				event -> navigator.navigateTo(name));
+		button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+
+		menuItemsLayout.addComponent(button);
+		viewButtons.put(name, button);
+	}
+
+	
+	public void createViewButtonx(final String name, String caption, Resource icon) {
+
+		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon,
+				event -> showSettingsPopup());
+		button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+
+		menuItemsLayout.addComponent(button);
+		viewButtons.put(name, button);
+	}
+	
+	public void createAccountViewButton(final String name, String caption, Resource icon) {
+
+		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon,
+				event -> showUserAccountPopup());
 		button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 
 		menuItemsLayout.addComponent(button);
@@ -201,11 +267,10 @@ public class Menu extends CssLayout {
 	}
 
 	/**
-	 * Highlights a view navigation button as the currently active view in the
-	 * menu. This method does not perform the actual navigation.
+	 * Highlights a view navigation button as the currently active view in the menu.
+	 * This method does not perform the actual navigation.
 	 *
-	 * @param viewName
-	 *            the name of the view to show as active
+	 * @param viewName the name of the view to show as active
 	 */
 	public void setActiveView(String viewName) {
 

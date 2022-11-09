@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -29,9 +31,13 @@ public class CaseImportEntities implements Serializable {
 
 	private static final long serialVersionUID = -4565794925738392508L;
 
+	@Valid
 	private final PersonDto person;
+	@Valid
 	private final CaseDataDto caze;
+	@Valid
 	private final List<SampleDto> samples;
+	@Valid
 	private final List<PathogenTestDto> pathogenTests;
 
 	public CaseImportEntities(UserReferenceDto reportingUser) {

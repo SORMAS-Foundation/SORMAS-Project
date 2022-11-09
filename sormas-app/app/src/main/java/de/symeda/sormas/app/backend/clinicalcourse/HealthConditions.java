@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.app.backend.clinicalcourse;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,7 +66,7 @@ public class HealthConditions extends PseudonymizableAdo {
 	private YesNoUnknown downSyndrome;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown congenitalSyphilis;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String otherConditions;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown immunodeficiencyOtherThanHiv;

@@ -89,7 +89,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		}
 		ComboBox testTypeField = addCustomField(PathogenTestDto.TEST_TYPE, PathogenTestType.class, ComboBox.class);
 		ComboBox pcrTestSpecification = addCustomField(PathogenTestDto.PCR_TEST_SPECIFICATION, PCRTestSpecification.class, ComboBox.class);
-		ComboBox testDiseaseField = addCustomField(PathogenTestDto.TESTED_DISEASE, Disease.class, ComboBox.class);
+		ComboBox testedDiseaseField = addCustomField(PathogenTestDto.TESTED_DISEASE, Disease.class, ComboBox.class);
 		ComboBox diseaseVariantField = addCustomField(PathogenTestDto.TESTED_DISEASE_VARIANT, DiseaseVariant.class, ComboBox.class);
 		TextField cqValueField = addCustomField(PathogenTestDto.CQ_VALUE, Float.class, TextField.class);
 		cqValueField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, cqValueField.getCaption()));
@@ -115,7 +115,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		Map<Field, List<Object>> pcrTestSpecificationVisibilityDependencies = new HashMap<Field, List<Object>>() {
 
 			{
-				put(testDiseaseField, Arrays.asList(Disease.CORONAVIRUS));
+				put(testedDiseaseField, Arrays.asList(Disease.CORONAVIRUS));
 				put(testTypeField, Arrays.asList(PathogenTestType.PCR_RT_PCR));
 			}
 		};
@@ -123,7 +123,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 		FieldHelper.setVisibleWhen(
 			includeTestField,
-			Arrays.asList(pathogenTestResultField, testVerifiedField, testTypeField, testDiseaseField, testDateField, testDetailsField),
+			Arrays.asList(pathogenTestResultField, testVerifiedField, testTypeField, testedDiseaseField, testDateField, testDetailsField),
 			Arrays.asList(true),
 			true);
 
@@ -131,7 +131,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 		FieldHelper.setRequiredWhen(
 			pathogenTestResultField,
-			Arrays.asList(testVerifiedField, testTypeField, testDiseaseField),
+			Arrays.asList(testVerifiedField, testTypeField, testedDiseaseField),
 			Arrays.asList(
 				PathogenTestResultType.POSITIVE,
 				PathogenTestResultType.NEGATIVE,
@@ -149,7 +149,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, testDateField.getCaption(), sampleDateField.getCaption())));
 
-		testDiseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
+		testedDiseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
@@ -170,7 +170,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
 			PathogenTestResultType testResult = (PathogenTestResultType) pathogenTestResultField.getValue();
 			showCqValueField(cqValueField, testType, testResult);
-			showPcrTestSpecificationField(pcrTestSpecification, testType, (Disease) testDiseaseField.getValue());
+			showPcrTestSpecificationField(pcrTestSpecification, testType, (Disease) testedDiseaseField.getValue());
 			if (testType == PathogenTestType.PCR_RT_PCR || testType == PathogenTestType.DNA_MICROARRAY || testType == PathogenTestType.SEQUENCING) {
 				typingIdField.setVisible(true);
 			} else {
@@ -185,6 +185,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 			if (includeTest) {
 				pathogenTestResultField.setNullSelectionAllowed(false);
 				pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
+				testedDiseaseField.setValue(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
 			} else {
 				pathogenTestResultField.setNullSelectionAllowed(true);
 				pathogenTestResultField.setValue(null);

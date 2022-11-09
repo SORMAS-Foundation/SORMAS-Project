@@ -26,7 +26,7 @@
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
     </style>-->
 
-    <!-- Base SORMAS application theme. -->
+    <!-- Base APMISapplication theme. -->
     <style name="SormasTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

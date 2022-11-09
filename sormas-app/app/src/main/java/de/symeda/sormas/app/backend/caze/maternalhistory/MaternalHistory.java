@@ -1,6 +1,6 @@
 package de.symeda.sormas.app.backend.caze.maternalhistory;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -64,7 +64,7 @@ public class MaternalHistory extends PseudonymizableAdo {
 	private Date otherComplicationsOnset;
 	@Column
 	private Integer otherComplicationsMonth;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String otherComplicationsDetails;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown rubella;

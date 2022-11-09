@@ -97,6 +97,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 		addItemClickListener(
 			new ShowDetailsListener<>(ContactIndexDto.UUID, e -> ControllerProvider.getContactController().navigateToData(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(ContactIndexDto.PERSON_UUID, e ->
+				ControllerProvider.getContactController().navigateToView(ContactPersonView.VIEW_NAME, e.getUuid(), false)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -165,6 +167,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		if (!FacadeProvider.getConfigFacade().isExternalJournalActive()) {
@@ -182,8 +185,6 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
-
-		getColumn(ContactIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 	}
 
 	protected Stream<String> getColumnList() {
@@ -208,7 +209,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.FOLLOW_UP_STATUS,
 					ContactIndexDto.FOLLOW_UP_UNTIL,
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
-					ContactIndexDto.VACCINATION,
+					ContactIndexDto.VACCINATION_STATUS,
 					NUMBER_OF_VISITS),
 				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled),
 				Stream.of(COLUMN_COMPLETENESS))
@@ -216,7 +217,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	}
 
 	protected Stream<String> getPersonColumns() {
-		return Stream.of(ContactIndexDto.PERSON_FIRST_NAME, ContactIndexDto.PERSON_LAST_NAME);
+		return Stream.of(ContactIndexDto.PERSON_UUID, ContactIndexDto.PERSON_FIRST_NAME, ContactIndexDto.PERSON_LAST_NAME);
 	}
 
 	protected Stream<String> getEventColumns() {

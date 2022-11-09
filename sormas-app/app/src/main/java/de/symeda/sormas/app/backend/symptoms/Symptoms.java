@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.app.backend.symptoms;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -47,13 +47,13 @@ public class Symptoms extends PseudonymizableAdo {
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date onsetDate;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String onsetSymptom;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String symptomsComments;
 	@DatabaseField
 	private Boolean symptomatic;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String patientIllLocation;
 
 	@Deprecated
@@ -318,11 +318,11 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState convulsion;
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherHemorrhagicSymptoms;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String otherHemorrhagicSymptomsText;
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherNonHemorrhagicSymptoms;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String otherNonHemorrhagicSymptomsText;
 
 	// complications
@@ -368,7 +368,7 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState congenitalHeartDisease;
 	@Enumerated(EnumType.STRING)
 	private CongenitalHeartDiseaseType congenitalHeartDiseaseType;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String congenitalHeartDiseaseDetails;
 	@Enumerated(EnumType.STRING)
 	private SymptomState fluidInLungCavityAuscultation;
@@ -396,7 +396,7 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState inDrawingOfChestWall;
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherComplications;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String otherComplicationsText;
 
 	@Enumerated(EnumType.STRING)

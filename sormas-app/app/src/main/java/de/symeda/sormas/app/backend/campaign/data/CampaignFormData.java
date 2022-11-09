@@ -67,7 +67,10 @@ public class CampaignFormData extends PseudonymizableAdo {
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
     private Date formDate;
 
-    @Transient
+  //  @Transient
+ //   private Area area;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Area area;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -113,9 +116,11 @@ public class CampaignFormData extends PseudonymizableAdo {
     }
 
     public void setFormValues(List<CampaignFormDataEntry> formValues) {
+
         this.formValues = formValues;
         Gson gson = new Gson();
         formValuesJson = gson.toJson(formValues);
+
     }
 
     public Campaign getCampaign() {
@@ -156,6 +161,7 @@ public class CampaignFormData extends PseudonymizableAdo {
     }
 
     public void setRegion(Region region) {
+
         this.region = region;
         if (region != null) {
             setArea(region.getArea());

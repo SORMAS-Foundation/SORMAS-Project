@@ -18,12 +18,12 @@ public class PerformanceLoggingInterceptorTest {
 	public void testGetInvokedMethod() {
 
 		assertThat(
-			PerformanceLoggingInterceptor.getInvokedMethod("de.symeda.sormas.backend.region.CommunityService@15301bba", "count"),
+			PerformanceLoggingInterceptor.getInvokedMethod("de.symeda.sormas.backend.infrastructure.community.CommunityService@15301bba", "count"),
 			equalTo("CommunityService.count"));
 
 		assertThat(
 			PerformanceLoggingInterceptor
-				.getInvokedMethod("de.symeda.sormas.backend.facility.FacilityFacadeEjb$FacilityFacadeEjbLocal@630e5556", "count"),
+				.getInvokedMethod("de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb$FacilityFacadeEjbLocal@630e5556", "count"),
 			equalTo("FacilityFacadeEjb.count"));
 	}
 }

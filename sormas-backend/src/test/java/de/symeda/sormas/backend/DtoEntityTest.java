@@ -2,7 +2,7 @@ package de.symeda.sormas.backend;
 
 import org.junit.Test;
 
-import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public class DtoEntityTest extends AbstractBeanTest {
@@ -12,9 +12,9 @@ public class DtoEntityTest extends AbstractBeanTest {
 
 		RegionDto region = RegionDto.build();
 		region.setName("Region1");
-		getRegionFacade().saveRegion(region);
+		getRegionFacade().save(region);
 
 		region.setName("Region2");
-		getRegionFacade().saveRegion(region);
+		getRegionFacade().save(region);
 	}
 }

@@ -63,6 +63,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -99,22 +100,22 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -413,7 +414,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return QueryHelper.getFirstResult(query);
 	}
 
-	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria) {
 
 		if (StringUtils.isEmpty(searchTerm)) {
 			return null;
@@ -423,12 +424,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> root = cq.from(Case.class);
 
-		Predicate filter = cb.or(
-			cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.EXTERNAL_TOKEN)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.INTERNAL_TOKEN)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase()));
+		Predicate filter = null;
+		if (caseCriteria != null) {
+			final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+			filter = createCriteriaFilter(caseCriteria, caseQueryContext);
+			// Userfilter
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria()));
+		}
+
+		filter = cb.and(
+			filter,
+			cb.or(
+				cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EXTERNAL_TOKEN)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.INTERNAL_TOKEN)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase())));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(root.get(Case.REPORT_DATE)));
@@ -583,8 +594,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.SYMPTOM_JOURNAL_STATUS), caseCriteria.getSymptomJournalStatus()));
 		}
-		if (caseCriteria.getVaccination() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.VACCINATION), caseCriteria.getVaccination()));
+		if (caseCriteria.getVaccinationStatus() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.VACCINATION_STATUS), caseCriteria.getVaccinationStatus()));
 		}
 		if (caseCriteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
@@ -699,25 +710,35 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getDeleted() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
 		}
-		if (!DataHelper.isNullOrEmpty(caseCriteria.getNameUuidEpidNumberLike())) {
+		if (!DataHelper.isNullOrEmpty(caseCriteria.getPersonLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
-				caseCriteria.getNameUuidEpidNumberLike(),
+				caseCriteria.getPersonLike(),
 				textFilter -> cb.or(
+					// We should allow short and long versions of the UUID so let's do a LIKE behaving like a "starts with"
+					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
+
+			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+		}
+		if (!DataHelper.isNullOrEmpty(caseCriteria.getCaseLike())) {
+			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
+				cb,
+				caseCriteria.getCaseLike(),
+				textFilter -> cb.or(
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, facility.get(Facility.NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.HEALTH_FACILITY_DETAILS), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.INTERNAL_TOKEN), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
@@ -960,7 +981,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filter = null;
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER)) {//, UserRole.REST_EXTERNAL_VISITS_USER
 			// whoever created the case or is assigned to it is allowed to access it
 			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
 				filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
@@ -997,7 +1018,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 				break;
 			case COMMUNITY:
-				final Community community = currentUser.getCommunity();
+				final Community community = null;
 				if (community != null) {
 					filter = CriteriaBuilderHelper.or(
 						cb,
@@ -1258,6 +1279,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return inJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
 	}
 
+	public boolean inJurisdiction(Case caze, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Case> root = cq.from(Case.class);
+		Predicate inJurisdiction = CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).inJurisdiction();
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction));
+		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		return em.createQuery(cq).getSingleResult();
+	}
+
 	public boolean inJurisdictionOrOwned(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1342,6 +1374,51 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		em.createQuery(cu).executeUpdate();
 	}
 
+	/**
+	 * Sets the vaccination status of all cases of the specified person and disease with validFrom <= case start date
+	 * and validUntil >= case start date to VACCINATED.
+	 * 
+	 * @param personId
+	 *            The ID of the immunization and case person
+	 * @param disease
+	 *            The disease of the immunization and cases
+	 * @param validFrom
+	 *            The date from which on the person is protected by the immunization
+	 * @param validUntil
+	 *            The date until which the person is protected by the immunization
+	 */
+	public void updateVaccinationStatuses(Long personId, Disease disease, Date validFrom, Date validUntil) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+
+		Subquery<Symptoms> symptomsSq = cu.subquery(Symptoms.class);
+		Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
+		symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
+		symptomsSq.where(cb.equal(symptomsSqRoot, root.get(Case.SYMPTOMS)));
+
+		cu.set(Case.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+
+		Predicate validUntilPredicate = validUntil != null
+			? cb.or(
+				cb.and(cb.isNull(symptomsSq.getSelection()), cb.lessThanOrEqualTo(root.get(Case.REPORT_DATE), validUntil)),
+				cb.and(cb.isNotNull(symptomsSq.getSelection()), cb.lessThanOrEqualTo(symptomsSq.getSelection().as(Date.class), validUntil)))
+			: null;
+
+		cu.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(root.get(Case.PERSON), personId),
+				cb.equal(root.get(Case.DISEASE), disease),
+				cb.or(
+					cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(root.get(Case.REPORT_DATE), validFrom)),
+					cb.and(cb.isNotNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(symptomsSq.getSelection().as(Date.class), validFrom))),
+				validUntilPredicate));
+
+		em.createQuery(cu).executeUpdate();
+	}
+
 	private float calculateCompleteness(Case caze) {
 
 		float completeness = 0f;
@@ -1377,4 +1454,5 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return completeness;
 	}
+
 }

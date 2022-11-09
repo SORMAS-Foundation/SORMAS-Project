@@ -23,34 +23,51 @@ import com.google.inject.Provider;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
+import io.restassured.filter.Filter;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.pojo.api.Request;
 import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class RestAssuredClient {
   private final Provider<RequestSpecification> requestSpecification;
   private final String environmentUrl;
   private final ApiState apiState;
+  private final boolean logRestAssuredInfo;
 
   @Inject
   public RestAssuredClient(
       Provider<RequestSpecification> requestSpecification,
       @Named("ENVIRONMENT_URL") String environmentUrl,
+      @Named("LOG_RESTASSURED") boolean logRestAssuredInfo,
       ApiState apiState) {
     this.requestSpecification = requestSpecification;
     this.environmentUrl = environmentUrl;
+    this.logRestAssuredInfo = logRestAssuredInfo;
     this.apiState = apiState;
   }
 
   private RequestSpecification request() {
+    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     RestAssured.baseURI = environmentUrl + "/sormas-rest";
+    Filter filters[];
+    if (logRestAssuredInfo) {
+      filters =
+          new Filter[] {
+            new RequestLoggingFilter(), new ResponseLoggingFilter(), new AllureRestAssured()
+          };
+    } else {
+      filters = new Filter[] {new AllureRestAssured()};
+    }
     return requestSpecification
         .get()
         .config(
@@ -60,7 +77,7 @@ public class RestAssuredClient {
                         .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
         .contentType(ContentType.JSON)
         .accept(ContentType.JSON)
-        .filters(new RequestLoggingFilter(), new ResponseLoggingFilter(), new AllureRestAssured());
+        .filters(Arrays.asList(filters));
   }
 
   @SneakyThrows

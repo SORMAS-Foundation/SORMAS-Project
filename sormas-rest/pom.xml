@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.63.1</version>
+		<version>1.0.15</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -138,6 +138,34 @@
 			<plugin>
 				<groupId>io.openapitools.swagger</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
+				
+				<configuration>
+					<!-- Swagger Generation Config -->
+					<resourcePackages>
+						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
+						<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
+						<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
+					</resourcePackages>
+					<outputDirectory>${basedir}/target/</outputDirectory>
+					<outputFilename>swagger</outputFilename>
+					<outputFormats>JSON,YAML</outputFormats>
+					<prettyPrint>true</prettyPrint>
+
+					<!-- Swagger API documentation metadata -->
+					<swaggerConfig>
+						<info>
+							<title>SORMAS REST API</title>
+							<version>${project.version}</version>
+						</info>
+						<servers>
+							<server>
+								<url>${sormasRest.apiRoot}</url>
+							</server>
+						</servers>
+					</swaggerConfig>
+				</configuration>
+				
+				
 				<executions>
 					<execution>
 						<id>generate-swagger</id>
@@ -169,33 +197,44 @@
 						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<!-- Swagger Generation Config -->
-					<resourcePackages>
-						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
-						<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
-						<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
-					</resourcePackages>
-					<outputDirectory>${basedir}/target/</outputDirectory>
-					<outputFilename>swagger</outputFilename>
-					<outputFormats>JSON,YAML</outputFormats>
-					<prettyPrint>true</prettyPrint>
-
-					<!-- Swagger API documentation metadata -->
-					<swaggerConfig>
-						<info>
-							<title>SORMAS REST API</title>
-							<version>${project.version}</version>
-						</info>
-						<servers>
-							<server>
-								<url>${sormasRest.apiRoot}</url>
-							</server>
-						</servers>
-					</swaggerConfig>
-				</configuration>
+				
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											io.openapitools.swagger
+										</groupId>
+										<artifactId>
+											swagger-maven-plugin
+										</artifactId>
+										<versionRange>
+											[2.1.2,)
+										</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>
