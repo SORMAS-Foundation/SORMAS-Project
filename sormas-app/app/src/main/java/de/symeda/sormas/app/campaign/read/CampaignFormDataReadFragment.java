@@ -200,7 +200,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -258,7 +258,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -318,7 +318,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -376,7 +376,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -434,7 +434,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -492,7 +492,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -550,7 +550,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -608,7 +608,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -663,11 +663,13 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                     ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                     dynamicField.setShowCaption(true);
 
+                        
+
 
                     if (value != null) {
 
                         if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                            ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                            ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                         } else if(type == CampaignFormElementType.DROPDOWN){
                             ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                             //optionsValues.get(value)

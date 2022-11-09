@@ -499,7 +499,7 @@ public class CampaignFormDataFragmentUtils {
                // initialize();
 
 
-                initInput();
+                initInputFirst();
             }
         };
     }

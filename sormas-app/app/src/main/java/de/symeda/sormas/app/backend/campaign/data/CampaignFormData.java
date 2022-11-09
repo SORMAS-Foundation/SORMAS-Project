@@ -64,7 +64,7 @@ public class CampaignFormData extends PseudonymizableAdo {
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private CampaignFormMeta campaignFormMeta;
 
-    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+    @DatabaseField(dataType = DataType.DATE_LONG)//, canBeNull = true)
     private Date formDate;
 
   //  @Transient
