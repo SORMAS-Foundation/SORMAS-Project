@@ -58,7 +58,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.event.Event;
@@ -79,7 +79,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
-public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
+public class UserService extends AdoServiceWithUserFilter<User> {
 
 	@EJB
 	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;

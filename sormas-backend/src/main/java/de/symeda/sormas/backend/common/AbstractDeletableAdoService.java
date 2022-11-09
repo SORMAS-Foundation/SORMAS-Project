@@ -9,7 +9,7 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.common.DeletionDetails;
 
-public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> extends AdoServiceWithUserFilterAndJurisdiction<ADO> {
+public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> extends AdoServiceWithUserFilter<ADO> {
 
 	protected AbstractDeletableAdoService(Class<ADO> elementClass) {
 		super(elementClass);

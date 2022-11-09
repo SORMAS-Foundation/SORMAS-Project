@@ -22,9 +22,10 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.sample.AdditionalTestCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
@@ -32,7 +33,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class AdditionalTestService extends AdoServiceWithUserFilterAndJurisdiction<AdditionalTest> {
+public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTest> implements JurisdictionCheckService<AdditionalTest> {
 
 	@EJB
 	private SampleService sampleService;

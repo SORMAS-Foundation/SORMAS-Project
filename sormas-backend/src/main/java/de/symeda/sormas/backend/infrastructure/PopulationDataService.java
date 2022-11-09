@@ -9,7 +9,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -17,7 +17,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 
 @Stateless
 @LocalBean
-public class PopulationDataService extends AdoServiceWithUserFilterAndJurisdiction<PopulationData> {
+public class PopulationDataService extends AdoServiceWithUserFilter<PopulationData> {
 
 	public PopulationDataService() {
 		super(PopulationData.class);

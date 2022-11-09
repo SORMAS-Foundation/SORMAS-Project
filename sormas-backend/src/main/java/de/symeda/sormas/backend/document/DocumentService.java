@@ -30,12 +30,12 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Document> {
+public class DocumentService extends AdoServiceWithUserFilter<Document> {
 
 	public DocumentService() {
 		super(Document.class);

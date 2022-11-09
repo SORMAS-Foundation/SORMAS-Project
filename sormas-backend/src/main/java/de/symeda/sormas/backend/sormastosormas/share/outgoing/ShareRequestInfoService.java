@@ -32,12 +32,12 @@ import org.springframework.util.CollectionUtils;
 
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class ShareRequestInfoService extends AdoServiceWithUserFilterAndJurisdiction<ShareRequestInfo> {
+public class ShareRequestInfoService extends AdoServiceWithUserFilter<ShareRequestInfo> {
 
 	public ShareRequestInfoService() {
 		super(ShareRequestInfo.class);

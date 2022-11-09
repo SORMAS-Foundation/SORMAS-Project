@@ -15,17 +15,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.backend.user.User;
 
-/**
- * Service that provide the jurisdictions flag for the managed entity class and provides a user filter.
- *
- * @param <ADO>
- *            JPA entity managed by this Service.
- */
-public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
+public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
 
 	public static final int NR_OF_LAST_PHONE_DIGITS_TO_SEARCH = 6;
 
-	protected AdoServiceWithUserFilterAndJurisdiction(Class<ADO> elementClass) {
+	public AdoServiceWithUserFilter(Class<ADO> elementClass) {
 		super(elementClass);
 	}
 
@@ -157,23 +151,5 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 
 	protected Expression<String> removeNonNumbersExpression(CriteriaBuilder cb, Expression<String> path) {
 		return cb.function("REGEXP_REPLACE", String.class, path, cb.literal("[^0-9]"), cb.literal(""), cb.literal("g"));
-	}
-
-	/**
-	 * @param entity
-	 *            The entity to fetch the jurisdictions flags for.
-	 * @return {@code true}, if {@code entity} is within the current users jurisdiction or owned by him.
-	 */
-	protected boolean inJurisdictionOrOwned(ADO entity) {
-		return false;
-	}
-
-	/**
-	 * @param entities
-	 *            The entities to fetch the jurisdictions flags for.
-	 * @return The ids of entities where the jurisdiction flag resulted {@code true}.
-	 */
-	protected List<Long> getInJurisdictionIds(List<ADO> entities) {
-		return Collections.emptyList();
 	}
 }

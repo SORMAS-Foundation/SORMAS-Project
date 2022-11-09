@@ -265,4 +265,10 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	public boolean isEditAllowed(String uuid) {
 		return service.isEditAllowed(service.getByUuid(uuid));
 	}
+
+	@Override
+
+	protected boolean isAdoInJurisdiction(ADO source) {
+		return service.inJurisdictionOrOwned(source);
+	}
 }
