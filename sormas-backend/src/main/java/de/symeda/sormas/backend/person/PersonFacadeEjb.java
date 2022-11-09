@@ -1349,7 +1349,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			person.get(Person.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
 
-		cq.where(person.get(Person.ID).in(indexListIds));
+		Predicate filter = person.get(Person.ID).in(indexListIds);
+		Predicate indexListFilter = createIndexListFilter(criteria, personQueryContext);
+		if (indexListFilter != null) {
+			filter = cb.and(filter, indexListFilter);
+		}
+
+		cq.where(filter);
 		cq.distinct(true);
 
 		if (sortProperties != null && sortProperties.size() > 0) {
