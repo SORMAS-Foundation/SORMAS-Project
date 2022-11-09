@@ -1310,6 +1310,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		long startTime = DateHelper.startTime();
 
 		List<Long> indexListIds = getIndexListIds(criteria, first, max, sortProperties);
+		if (indexListIds.isEmpty()) {
+			return Collections.emptyList();
+		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
