@@ -37,7 +37,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -46,7 +46,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class CampaignFormDataService extends AdoServiceWithUserFilterAndJurisdiction<CampaignFormData> {
+public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFormData> {
 
 	public CampaignFormDataService() {
 		super(CampaignFormData.class);

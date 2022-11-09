@@ -1591,6 +1591,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
+	protected boolean isAdoInJurisdiction(Person source) {
+		return service.inJurisdictionOrOwned(source);
+	}
+
+	@Override
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {
 		boolean targetWasNull = isNull(target);
 

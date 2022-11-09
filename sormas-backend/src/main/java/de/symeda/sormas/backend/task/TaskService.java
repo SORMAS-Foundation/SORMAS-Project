@@ -63,7 +63,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -87,7 +87,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
-public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
+public class TaskService extends AdoServiceWithUserFilter<Task>
 	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext> {
 
 	@EJB

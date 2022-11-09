@@ -39,7 +39,7 @@ import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.event.Event;
@@ -50,7 +50,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Action> {
+public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 	@EJB
 	private EventService eventService;

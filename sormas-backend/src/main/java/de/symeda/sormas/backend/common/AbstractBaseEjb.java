@@ -21,7 +21,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
-public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilterAndJurisdiction<ADO>, CRITERIA extends BaseCriteria>
+public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilter<ADO>, CRITERIA extends BaseCriteria>
 	implements BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -122,7 +122,5 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
-	protected boolean isAdoInJurisdiction(ADO ado){
-		return service.inJurisdictionOrOwned(ado);
-	}
+	protected abstract boolean isAdoInJurisdiction(ADO ado);
 }

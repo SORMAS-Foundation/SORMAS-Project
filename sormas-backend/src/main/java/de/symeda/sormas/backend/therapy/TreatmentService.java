@@ -22,13 +22,14 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class TreatmentService extends AdoServiceWithUserFilterAndJurisdiction<Treatment> {
+public class TreatmentService extends AdoServiceWithUserFilter<Treatment> implements JurisdictionCheckService<Treatment> {
 
 	@EJB
 	private CaseService caseService;

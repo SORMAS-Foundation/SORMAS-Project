@@ -21,7 +21,7 @@ import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -29,7 +29,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJurisdiction<FeatureConfiguration> {
+public class FeatureConfigurationService extends AdoServiceWithUserFilter<FeatureConfiguration> {
 
 	public FeatureConfigurationService() {
 		super(FeatureConfiguration.class);

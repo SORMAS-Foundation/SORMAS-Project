@@ -252,4 +252,10 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer) {
 		// we do not pseudonymize infra data
 	}
+
+	@Override
+	protected boolean isAdoInJurisdiction(ADO ado) {
+		// we do not pseudonymize infra data
+		return false;
+	}
 }
