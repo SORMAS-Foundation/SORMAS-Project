@@ -4,6 +4,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.backend.common.QueryContext;
@@ -15,6 +16,9 @@ public class PersonQueryContext extends QueryContext<Person, PersonJoins> {
 	public static final String PERSON_PHONE_OWNER_SUBQUERY = "personPhoneOwnerSubquery";
 	public static final String PERSON_PRIMARY_OTHER_SUBQUERY = "personPrimaryOtherSubquery";
 	public static final String PERSON_OTHER_CONTACT_DETAILS_SUBQUERY = "personOtherContactDetailsSubQuery";
+
+	private Join<Person, PersonContactDetail> phone;
+	private Join<Person, PersonContactDetail> email;
 
 	protected PersonQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Person> root) {
 		this(cb, query, new PersonJoins(root));
@@ -41,5 +45,29 @@ public class PersonQueryContext extends QueryContext<Person, PersonJoins> {
 		default:
 			throw new IllegalArgumentException("No such subquery expression defined!");
 		}
+	}
+
+	public Join<Person, PersonContactDetail> getPhoneJoin() {
+		CriteriaBuilder cb = getCriteriaBuilder();
+		if (phone == null) {
+			phone = getJoins().getPhone();
+			phone.on(
+				cb.and(
+					cb.isTrue(phone.get(PersonContactDetail.PRIMARY_CONTACT)),
+					cb.equal(phone.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
+		}
+		return phone;
+	}
+
+	public Join<Person, PersonContactDetail> getEmailAddressJoin() {
+		CriteriaBuilder cb = getCriteriaBuilder();
+		if (email == null) {
+			email = getJoins().getEmailAddress();
+			email.on(
+				cb.and(
+					cb.isTrue(email.get(PersonContactDetail.PRIMARY_CONTACT)),
+					cb.equal(email.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
+		}
+		return email;
 	}
 }

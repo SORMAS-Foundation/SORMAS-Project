@@ -43,14 +43,17 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -1305,6 +1308,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		long startTime = DateHelper.startTime();
+
+		List<Long> indexListIds = getIndexListIds(criteria, first, max, sortProperties);
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
 		final Root<Person> person = cq.from(Person.class);
@@ -1316,18 +1322,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		final Join<Person, Location> location = personJoins.getAddress();
 		final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
 
-		final Join<Person, PersonContactDetail> phone = personJoins.getPhone();
-		final Join<Person, PersonContactDetail> email = personJoins.getEmailAddress();
-
-		phone.on(
-			cb.and(
-				cb.isTrue(phone.get(PersonContactDetail.PRIMARY_CONTACT)),
-				cb.equal(phone.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
-
-		email.on(
-			cb.and(
-				cb.isTrue(email.get(PersonContactDetail.PRIMARY_CONTACT)),
-				cb.equal(email.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
+		final Join<Person, PersonContactDetail> phone = personQueryContext.getPhoneJoin();
+		final Join<Person, PersonContactDetail> email = personQueryContext.getEmailAddressJoin();
 
 		// make sure to check the sorting by the multi-select order if you extend the selections here
 		cq.multiselect(
@@ -1350,10 +1346,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			person.get(Person.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
 
-		Predicate filter = createIndexListFilter(criteria, personQueryContext);
-		if (filter != null) {
-			cq.where(filter);
-		}
+		cq.where(person.get(Person.ID).in(indexListIds));
 		cq.distinct(true);
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -1410,6 +1403,84 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			persons.size(),
 			DateHelper.durationMillies(startTime));
 		return persons;
+	}
+
+	private List<Long> getIndexListIds(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		long startTime = DateHelper.startTime();
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<Person> person = cq.from(Person.class);
+
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		final PersonJoins personJoins = personQueryContext.getJoins();
+		personJoins.configure(criteria);
+
+		List<Selection<?>> selects = new ArrayList<>();
+		selects.add(person.get(Person.ID));
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case PersonIndexDto.UUID:
+				case PersonIndexDto.FIRST_NAME:
+				case PersonIndexDto.LAST_NAME:
+				case PersonIndexDto.SEX:
+					expression = person.get(sortProperty.propertyName);
+					break;
+				case PersonIndexDto.PHONE:
+					Join<Person, PersonContactDetail> phone = personQueryContext.getPhoneJoin();
+					expression = phone.get(PersonContactDetail.CONTACT_INFORMATION);
+					break;
+				case PersonIndexDto.EMAIL_ADDRESS:
+					Join<Person, PersonContactDetail> email = personQueryContext.getEmailAddressJoin();
+					expression = email.get(PersonContactDetail.CONTACT_INFORMATION);
+					break;
+				case PersonIndexDto.AGE_AND_BIRTH_DATE:
+					expression = person.get(Person.APPROXIMATE_AGE);
+					break;
+				case PersonIndexDto.DISTRICT:
+					Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
+					expression = district.get(District.NAME);
+					break;
+				case PersonIndexDto.STREET:
+				case PersonIndexDto.HOUSE_NUMBER:
+				case PersonIndexDto.POSTAL_CODE:
+				case PersonIndexDto.CITY:
+					Join<Person, Location> location = personJoins.getAddress();
+					expression = location.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				selects.add(expression);
+			}
+			cq.orderBy(order);
+		} else {
+			Path<Object> changeDate = person.get(Person.CHANGE_DATE);
+			cq.orderBy(cb.desc(changeDate));
+			selects.add(changeDate);
+		}
+
+		cq.multiselect(selects);
+
+		Predicate filter = createIndexListFilter(criteria, personQueryContext);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.distinct(true);
+
+		List<Tuple> persons = QueryHelper.getResultList(em, cq, first, max);
+
+		logger.debug(
+			"getIndexListIds() finished. association={}, count={}, {}ms",
+			Optional.ofNullable(criteria).orElse(new PersonCriteria()).getPersonAssociation().name(),
+			persons.size(),
+			DateHelper.durationMillies(startTime));
+		return persons.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 	}
 
 	@Override
