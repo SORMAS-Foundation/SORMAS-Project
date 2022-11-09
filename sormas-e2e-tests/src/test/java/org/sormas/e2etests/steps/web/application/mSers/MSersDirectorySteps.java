@@ -319,8 +319,7 @@ public class MSersDirectorySteps implements En {
           AggregateReport reader = parseOneDiseaseExport(fileName);
           softly.assertEquals(
               reader.getAgeGroupForMalaria(),
-              CreateNewAggregateReportSteps.report
-              .getAgeGroupForMalaria(),
+              CreateNewAggregateReportSteps.report.getAgeGroupForMalaria(),
               "Age group for Malaria is different!");
           softly.assertAll();
         });
