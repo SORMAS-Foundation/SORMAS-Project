@@ -192,12 +192,12 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 	@Override
 	public List<Long> getInJurisdictionIds(List<ADO> selectedEntities) {
-		return getIdList(selectedEntities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return getIdList(selectedEntities, this::inJurisdictionOrOwned);
 	}
 
 	@Override
 	public boolean inJurisdictionOrOwned(ADO entity) {
-		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
 	/**
