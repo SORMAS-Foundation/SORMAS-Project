@@ -36,7 +36,6 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -95,7 +94,6 @@ public class ContinentFacadeEjb
 
 	@Override
 	@PermitAll
-	@AuditIgnore
 	public List<ContinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
 		return service.getByDefaultName(name, includeArchivedEntities).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}

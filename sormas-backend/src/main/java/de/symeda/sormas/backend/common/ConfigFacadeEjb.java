@@ -602,7 +602,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 		UrlValidator enforceHttpsValidator = new UrlValidator(
 			new String[] {
-				"http" },
+				"https" },
 			UrlValidator.ALLOW_LOCAL_URLS);
 
 		List<String> invalidHttpsUrls =

@@ -82,7 +82,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
-@AuditIgnore
+@AuditIgnore(retainWrites = true)
 @Stateless(name = "FeatureConfigurationFacade")
 public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade {
 
