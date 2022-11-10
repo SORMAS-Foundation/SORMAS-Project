@@ -998,7 +998,7 @@ Feature: Create events
     And I click on Yes option in Confirm deletion on Edit Event Page
     And I am accessing the event tab using the created event via api
     And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
-    And I check if Delete button on Edit Event Page is disabled
+    And I check if Delete button on Edit Event Page is changed to Undo Deletion
 
     @tmsLink=SORDEV-8055 @env_main
     Scenario Outline: Allow users to select the used delimiter when importing files
