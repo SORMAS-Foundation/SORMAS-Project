@@ -31,7 +31,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum UserRight {
 
 	//@formatter:off
-	CASE_VIEW(UserRightGroup.CASE, UserRight._PERSON_VIEW),
+	CASE_VIEW(UserRightGroup.CASE, UserRight._PERSON_VIEW, UserRight._TASK_VIEW),
 	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_VIEW),
 	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT),
 	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW),
