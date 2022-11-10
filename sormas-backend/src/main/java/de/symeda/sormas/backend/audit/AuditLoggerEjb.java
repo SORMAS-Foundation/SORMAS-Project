@@ -290,6 +290,12 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 			return cached;
 		}
 
+		AuditEvent.AuditEventAction inferred = doInferBackendAction(calledMethod);
+		actionBackendMap.put(calledMethod, inferred);
+		return inferred;
+	}
+
+	public static AuditEvent.AuditEventAction doInferBackendAction(String calledMethod) {
 		AuditEvent.AuditEventAction inferred;
 		if (methodsStartsWith(calledMethod, createPrefix)) {
 			inferred = AuditEvent.AuditEventAction.C;
@@ -304,11 +310,10 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		} else {
 			inferred = AuditEvent.AuditEventAction.E;
 		}
-		actionBackendMap.put(calledMethod, inferred);
 		return inferred;
 	}
 
-	private boolean methodsStartsWith(String methodName, Set<String> prefixes) {
+	private static boolean methodsStartsWith(String methodName, Set<String> prefixes) {
 		return prefixes.stream().anyMatch(methodName::startsWith);
 	}
 

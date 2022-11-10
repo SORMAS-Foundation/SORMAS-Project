@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 /**
  * This annotation is used to mark classes and methods in classes which should be excluded
  * from auditing (e.g., b/c of unnecessary noise).
+ *
+ * <code>retainWrites</code> relaxes the exclusion such that writing methods are still audited if set to true.
  */
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -15,4 +17,6 @@ import java.lang.annotation.Target;
 	ElementType.TYPE,
 	ElementType.METHOD })
 public @interface AuditIgnore {
+
+	boolean retainWrites() default false;
 }

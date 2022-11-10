@@ -5,6 +5,7 @@ import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -22,6 +23,8 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
+import org.apache.commons.collections4.SetUtils;
+import org.hl7.fhir.r4.model.AuditEvent;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
@@ -73,10 +76,46 @@ public class AuditLoggerInterceptor {
 
 		adoServiceClasses = new HashSet<>(reflections.get(SubTypes.of(BaseAdoService.class).asClass()));
 
-		ignoreAuditClasses =
-			Collections.unmodifiableSet(new HashSet<>(reflections.get(SubTypes.of(TypesAnnotated.with(AuditIgnore.class)).asClass())));
+		// Get all classes annotated with @AuditIgnore.
+		// These classes should be either ignored completely (if they do not retain write methods) or
+		// all methods EXCEPT FOR WRITING methods should be ignored.
+		final HashSet<Class<?>> auditIgnoreAnnotatedClasses =
+			new HashSet<>(reflections.get(SubTypes.of(TypesAnnotated.with(AuditIgnore.class)).asClass()));
 
-		ignoreAuditMethods = Collections.unmodifiableSet(new HashSet<>(reflections.getMethodsAnnotatedWith(AuditIgnore.class)));
+		// In case we do not retain writes, we can simply ignore the whole annotated class
+		ignoreAuditClasses = Collections.unmodifiableSet(auditIgnoreAnnotatedClasses.stream().filter(c -> {
+			// Java is sometimes ridiculously complicated: A subclass does not know the annotations of its superclass
+			Class<?> clazz = c;
+			while (!clazz.isAssignableFrom(Object.class)) {
+
+				if (clazz.isAnnotationPresent(AuditIgnore.class) && clazz.getAnnotation(AuditIgnore.class).retainWrites()) {
+					// we found a class which is annotated with @AuditIgnore and retains writes, so we cannot ignore the whole class
+					return false;
+				}
+				clazz = clazz.getSuperclass();
+			}
+			// we found no class which is annotated with @AuditIgnore and does not retains writes, so we can ignore the whole class
+			return true;
+
+		}).collect(Collectors.toSet()));
+
+		// In case we retain writes, we need to extract all methods in the class for which inferBackendAction DOES NOT return update (i.e., write).
+		Set<Method> ignoreAuditMethodsNotRetainedByClass = SetUtils.disjunction(auditIgnoreAnnotatedClasses, ignoreAuditClasses)
+			.stream()
+			.map(Class::getMethods)
+			.flatMap(Arrays::stream)
+			.filter(m -> AuditLoggerEjb.doInferBackendAction(m.getName()) != AuditEvent.AuditEventAction.U)
+			.collect(Collectors.toSet());
+
+		// Get all ignored, directly annotated methods
+		HashSet<Method> ignoreAuditMethodsAnnotatedDirectly = new HashSet<>(reflections.getMethodsAnnotatedWith(AuditIgnore.class));
+
+		Set<Method> ignoreAuditMethodsTmp = new HashSet<>();
+
+		ignoreAuditMethodsTmp.addAll(ignoreAuditMethodsNotRetainedByClass);
+		ignoreAuditMethodsTmp.addAll(ignoreAuditMethodsAnnotatedDirectly);
+
+		ignoreAuditMethods = Collections.unmodifiableSet(ignoreAuditMethodsTmp);
 
 		// explicitly add all local methods which should be explicitly audited. Please note that this is a set of
 		// methods, therefore, its cardinality may be smaller than the size of the deletableAdoServiceClasses list as 
@@ -98,6 +137,7 @@ public class AuditLoggerInterceptor {
 		}).collect(Collectors.toSet());
 
 		deletePermanentMethods.addAll(deletePermanentByUuids);
+
 		allowedLocalAuditMethods = Collections.unmodifiableSet(deletePermanentMethods);
 
 		shouldIgnoreBeanCache = new HashMap<>();
