@@ -57,7 +57,7 @@ public class EditTravelEntryPage {
   public static final By GENERATED_DOCUMENT_NAME_DE =
       By.xpath(
           "//div[text()='Dokumente']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
-  public static final By NEW_TASK_DE = By.id("taskNewTask");
+  public static final By NEW_TASK_DE = By.cssSelector("[id='Neue Aufgabe']");
   public static final By EDIT_TASK_DE = By.id("edit-task-0");
   public static final By DELETE_TASK_BUTTON = By.cssSelector(".popupContent #deleteUndelete");
   public static final By DISCARD_TASK_BUTTON = By.cssSelector(".popupContent #discard");
