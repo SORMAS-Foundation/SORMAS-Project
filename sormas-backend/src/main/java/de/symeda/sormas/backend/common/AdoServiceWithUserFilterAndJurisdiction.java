@@ -67,9 +67,11 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 				filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, from, since, lastSynchronizedUuid));
 			}
 
-			Predicate predicate = limitSynchronizationFilter(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, predicate);
+			if (RequestContextHolder.isMobileSync()) {
+				Predicate predicate = limitSynchronizationFilter(cb, from);
+				if (predicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, predicate);
+				}
 			}
 
 			return filter;
@@ -104,9 +106,13 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 
 		if (user != null) {
 			Predicate filter = createUserFilter(cb, cq, from);
-			Predicate predicate = limitSynchronizationFilter(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, predicate);
+
+			if (RequestContextHolder.isMobileSync())
+			{
+				Predicate predicate = limitSynchronizationFilter(cb, from);
+				if (predicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, predicate);
+				}
 			}
 
 			if (filter != null) {

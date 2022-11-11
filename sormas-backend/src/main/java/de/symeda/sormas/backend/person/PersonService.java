@@ -196,7 +196,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Person> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
 			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
-		if (maxChangeDatePeriod != null) {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION) && maxChangeDatePeriod != null) {
 			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
 			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Person.CHANGE_DATE), timestamp));
 		}
@@ -207,7 +207,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Person> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
 			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
-		if (maxChangeDatePeriod != null) {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION) && maxChangeDatePeriod != null) {
 			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
 			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Person.CHANGE_DATE), timestamp));
 		}

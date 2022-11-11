@@ -122,7 +122,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Immunization> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
 			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
-		if (maxChangeDatePeriod != null) {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION) && maxChangeDatePeriod != null) {
 			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
 			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Immunization.CHANGE_DATE), timestamp));
 		}
@@ -133,7 +133,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Immunization> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
 			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
-		if (maxChangeDatePeriod != null) {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION) && maxChangeDatePeriod != null) {
 			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
 			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Immunization.CHANGE_DATE), timestamp));
 		}
