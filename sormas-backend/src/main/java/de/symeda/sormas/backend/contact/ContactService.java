@@ -115,7 +115,7 @@ import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
@@ -167,7 +167,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	@EJB
 	private VisitService visitService;
 	@EJB
-	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1644,7 +1644,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> from) {
 		return inJurisdictionOrOwned(new ContactQueryContext(cb, query, from));
 	}
 

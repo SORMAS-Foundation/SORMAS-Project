@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -168,7 +169,10 @@ public class ContactController {
 						}
 					}
 					if (adoptHomeAddress && ContactRelation.SAME_HOUSEHOLD.equals(newContact.getRelationToCase())) {
-						FacadeProvider.getPersonFacade().copyHomeAddress(FacadeProvider.getCaseFacade().getByUuid(newContact.getCaze().getUuid()).getPerson(), newContact.getPerson());
+						FacadeProvider.getPersonFacade()
+							.copyHomeAddress(
+								FacadeProvider.getCaseFacade().getByUuid(newContact.getCaze().getUuid()).getPerson(),
+								newContact.getPerson());
 					}
 				}, true);
 		}
@@ -472,7 +476,10 @@ public class ContactController {
 									});
 								}
 								if (createForm.adoptAddressLayout.isAdoptAddress()) {
-									FacadeProvider.getPersonFacade().copyHomeAddress(FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(), dto.getPerson());
+									FacadeProvider.getPersonFacade()
+										.copyHomeAddress(
+											FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(),
+											dto.getPerson());
 								}
 							}, true);
 					}
@@ -609,6 +616,7 @@ public class ContactController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
 			editComponent.addDeleteWithReasonOrUndeleteListener(
 				ContactsView.VIEW_NAME,
+				getDeleteConfirmationDetails(Collections.singletonList(contact.getUuid())),
 				I18nProperties.getString(Strings.entityContact),
 				contactUuid,
 				FacadeProvider.getContactFacade());
@@ -831,12 +839,12 @@ public class ContactController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, boolean isEditAllowed) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 		EpiDataDto epiData = contact.getEpiData();
 		EpiDataForm epiDataForm =
-			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null);
+			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null, isEditAllowed);
 		epiDataForm.setValue(epiData);
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(

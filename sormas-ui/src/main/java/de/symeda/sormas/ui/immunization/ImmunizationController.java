@@ -197,6 +197,7 @@ public class ImmunizationController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteWithReasonOrUndeleteListener(
 				ImmunizationsView.VIEW_NAME,
+				null,
 				I18nProperties.getString(Strings.entityImmunization),
 				immunizationDto.getUuid(),
 				FacadeProvider.getImmunizationFacade());

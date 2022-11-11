@@ -178,11 +178,12 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		configs.add(
 			TabConfig.of(
 				Captions.CaseData_hospitalization,
-				() -> ControllerProvider.getCaseController().getHospitalizationComponent(caze.getUuid(), viewMode)));
+				() -> ControllerProvider.getCaseController().getHospitalizationComponent(caze.getUuid(), viewMode, true)));
 		configs.add(
 			TabConfig
 				.of(Captions.CaseData_symptoms, () -> ControllerProvider.getCaseController().getSymptomsEditComponent(caze.getUuid(), viewMode)));
-		configs.add(TabConfig.of(Captions.CaseData_epiData, () -> ControllerProvider.getCaseController().getEpiDataComponent(caze.getUuid(), null)));
+		configs.add(
+			TabConfig.of(Captions.CaseData_epiData, () -> ControllerProvider.getCaseController().getEpiDataComponent(caze.getUuid(), null, true)));
 		configs.add(TabConfig.of(Captions.physiciansReportCaseImmunizations, () -> new PhysiciansReportCaseImmunizationsComponent(caze)));
 
 		return configs;

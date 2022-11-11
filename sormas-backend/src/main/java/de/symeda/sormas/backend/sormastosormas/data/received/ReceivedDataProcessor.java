@@ -31,13 +31,13 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable, SRV extends AdoServiceWithUserFilter<ADO>, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
+public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable, SRV extends AdoServiceWithUserFilterAndJurisdiction<ADO>, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 

@@ -44,7 +44,7 @@ public final class IterableHelper {
 
 	/**
 	 * Splits the {@code entries} into batches and executes a function for each batch until the function returns false.
-	 * 
+	 *
 	 * @param <E>
 	 *            Type of batch entries.
 	 * @param entries

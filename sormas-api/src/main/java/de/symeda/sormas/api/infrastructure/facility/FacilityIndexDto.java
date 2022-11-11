@@ -29,7 +29,11 @@ public class FacilityIndexDto extends AbstractUuidDto {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String POSTAL_CODE = "postalCode";
 	public static final String CITY = "city";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
+	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String TYPE = "type";
@@ -40,7 +44,11 @@ public class FacilityIndexDto extends AbstractUuidDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	private String postalCode;
 	private String city;
+	private String street;
+	private String houseNumber;
+	private String additionalInformation;
 	private Double latitude;
 	private Double longitude;
 	private String externalID;
@@ -55,7 +63,11 @@ public class FacilityIndexDto extends AbstractUuidDto {
 		String districtName,
 		String communityUuid,
 		String communityName,
+		String postalCode,
 		String city,
+		String street,
+		String houseNumber,
+		String additionalInformation,
 		Double latitude,
 		Double longitude,
 		String externalID) {
@@ -72,7 +84,11 @@ public class FacilityIndexDto extends AbstractUuidDto {
 		if (communityUuid != null) {
 			this.community = new CommunityReferenceDto(communityUuid, communityName, null);
 		}
+		this.postalCode = postalCode;
 		this.city = city;
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.additionalInformation = additionalInformation;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.externalID = externalID;
@@ -118,12 +134,44 @@ public class FacilityIndexDto extends AbstractUuidDto {
 		this.community = community;
 	}
 
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
 	public String getCity() {
 		return city;
 	}
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
 	}
 
 	public Double getLatitude() {

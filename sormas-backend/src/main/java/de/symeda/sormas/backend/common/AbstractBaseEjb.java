@@ -21,7 +21,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
-public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilter<ADO>, CRITERIA extends BaseCriteria>
+public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilterAndJurisdiction<ADO>, CRITERIA extends BaseCriteria>
 	implements BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -44,7 +44,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public DTO getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return Optional.of(uuid).map(u -> service.getByUuid(u, true)).map(this::toPseudonymizedDto).orElse(null);
 	}
 
 	@Override
@@ -54,7 +54,8 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public List<DTO> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		return service.getByUuids(uuids).stream().map(source -> toPseudonymizedDto(source, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -100,6 +101,19 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return dto;
 	}
 
+	public List<DTO> toPseudonymizedDtos(List<ADO> adoList) {
+		if (adoList == null) {
+			return Collections.emptyList();
+		}
+
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		List<Long> jurisdictionIds = service.getInJurisdictionIds(adoList);
+
+		return adoList.stream()
+			.map(ado -> toPseudonymizedDto(ado, pseudonymizer, jurisdictionIds.contains(ado.getId())))
+			.collect(Collectors.toList());
+	}
+
 	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity) {
 		restorePseudonymizedDto(dto, existingDto, entity, createPseudonymizer());
 	}
@@ -121,5 +135,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
-	protected abstract boolean isAdoInJurisdiction(ADO ado);
+	protected boolean isAdoInJurisdiction(ADO ado){
+		return service.inJurisdictionOrOwned(ado);
+	}
 }

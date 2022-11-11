@@ -38,11 +38,13 @@ public class SourceContactList extends PaginationList<ContactIndexDto> {
 	private static final long serialVersionUID = -8266250137859127204L;
 
 	private final ContactCriteria criteria = new ContactCriteria();
+	private final boolean isEditAllowed;
 
-	public SourceContactList(CaseReferenceDto caseReference) {
+	public SourceContactList(CaseReferenceDto caseReference, boolean isEditAllowed) {
 
 		super(5);
 		criteria.resultingCase(caseReference);
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -66,11 +68,13 @@ public class SourceContactList extends PaginationList<ContactIndexDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			ContactIndexDto contact = displayedEntries.get(i);
 			SourceContactListEntry listEntry = new SourceContactListEntry(contact);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
-				listEntry.addEditListener(
-					i,
-					(ClickListener) e -> ControllerProvider.getContactController().navigateToData(listEntry.getContact().getUuid()));
-			}
+			boolean isEditEntry = UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT) && isEditAllowed;
+			listEntry.addActionButton(
+				String.valueOf(i),
+				(ClickListener) e -> ControllerProvider.getContactController().navigateToData(listEntry.getContact().getUuid()),
+				isEditEntry);
+			listEntry.setEnabled(isEditEntry);
+
 			listLayout.addComponent(listEntry);
 		}
 	}

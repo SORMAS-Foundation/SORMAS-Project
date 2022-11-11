@@ -91,7 +91,7 @@ public class TasksView extends AbstractView {
 				taskListComponent.getGrid(),
 				() -> viewConfiguration.isInEagerMode() ? taskListComponent.getGrid().asMultiSelect().getSelectedItems() : Collections.emptySet(),
 				ExportEntityName.TASKS,
-				TaskGrid.EDIT_BTN_ID);
+				TaskGrid.ACTION_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 

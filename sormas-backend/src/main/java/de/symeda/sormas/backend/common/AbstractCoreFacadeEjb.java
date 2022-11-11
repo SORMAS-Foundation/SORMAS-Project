@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.DenyAll;
 import javax.ejb.EJB;
@@ -70,17 +69,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@Override
-	public DTO getByUuid(String uuid) {
-		return toPseudonymizedDto(service.getByUuid(uuid, true));
-	}
-
-	@Override
-	public List<DTO> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByUuids(uuids).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<DTO> getAllAfter(Date date) {
 		return getAllAfter(date, null, null);
 	}
@@ -90,13 +78,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		List<ADO> entities = service.getAllAfter(date, batchSize, lastSynchronizedUuid);
 		return toPseudonymizedDtos(entities);
-	}
-
-	protected List<DTO> toPseudonymizedDtos(List<ADO> entities) {
-
-		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return entities.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
 
 	@DenyAll
@@ -275,11 +256,5 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@Override
 	public boolean isEditAllowed(String uuid) {
 		return service.isEditAllowed(service.getByUuid(uuid));
-	}
-
-	@Override
-
-	protected boolean isAdoInJurisdiction(ADO source) {
-		return service.inJurisdictionOrOwned(source);
 	}
 }

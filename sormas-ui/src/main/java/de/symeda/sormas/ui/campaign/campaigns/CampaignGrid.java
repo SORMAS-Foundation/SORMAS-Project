@@ -68,7 +68,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		final boolean canEditCampaigns = UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT);
 		final String navigateToCampaignColumnIcon = canEditCampaigns ? VaadinIcons.EDIT.getHtml() : VaadinIcons.EYE.getHtml();
 		final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon, new HtmlRenderer());
-		final String navigateToCampaignColumnId = canEditCampaigns ? EDIT_BTN_ID : OPEN_BTN_ID;
+		final String navigateToCampaignColumnId = canEditCampaigns ? ACTION_BTN_ID : OPEN_BTN_ID;
 		navigateToCampaignColumn.setId(navigateToCampaignColumnId);
 		navigateToCampaignColumn.setSortable(false);
 		navigateToCampaignColumn.setWidth(20);

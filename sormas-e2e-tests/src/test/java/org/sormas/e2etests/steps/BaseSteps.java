@@ -156,6 +156,7 @@ public class BaseSteps implements StepLifecycleListener {
             });
   }
 
+  @SneakyThrows
   @Attachment(value = "After failed test screenshot", type = imageType)
   private void takeScreenshot() {
     byte[] screenShot = driver.getScreenshotAs(OutputType.BYTES);

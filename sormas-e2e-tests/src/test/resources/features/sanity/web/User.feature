@@ -139,7 +139,7 @@ Feature: Create user
     Given I log in as a Admin User
     And I click on the Users from navbar
     Then I click on the NEW USER button
-    Then I create new Test user for test on DE specific
+    Then I create new Importierender Benutzer user for test on DE specific
     And I click on logout button from navbar
     And I login first time as a new created user from keycloak instance
     And I click on logout button from navbar

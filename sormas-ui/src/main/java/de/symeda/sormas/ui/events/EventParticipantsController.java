@@ -213,8 +213,8 @@ public class EventParticipantsController {
 			eventParticipant.isPseudonymized(),
 			eventParticipant.isInJurisdiction(),
 			eventParticipant.getPerson().isPseudonymized(),
-			false,
-			eventParticipant.isInJurisdiction());
+			eventParticipant.getPerson().isInJurisdiction(),
+			false);
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 
@@ -234,6 +234,7 @@ public class EventParticipantsController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteWithReasonOrUndeleteListener(
 				EventParticipantsView.VIEW_NAME + "/" + eventParticipant.getEvent().getUuid(),
+				null,
 				I18nProperties.getString(Strings.entityEventParticipant),
 				eventParticipant.getUuid(),
 				FacadeProvider.getEventParticipantFacade());

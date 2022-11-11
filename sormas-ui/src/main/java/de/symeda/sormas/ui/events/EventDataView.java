@@ -113,7 +113,8 @@ public class EventDataView extends AbstractEventView {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
-			TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease());
+			TaskListComponent taskList =
+				new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease(), this::showUnsavedChangesPopup, isEditAllowed());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
@@ -125,7 +126,12 @@ public class EventDataView extends AbstractEventView {
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
-			documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
+			documentList = new DocumentListComponent(
+				DocumentRelatedEntityType.EVENT,
+				getEventRef(),
+				UserRight.EVENT_EDIT,
+				event.isPseudonymized(),
+				isEditAllowed());
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -139,7 +145,7 @@ public class EventDataView extends AbstractEventView {
 			superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
 
-			EventListComponent subordinateEventList = new EventListComponent(event.toReference(), this::showUnsavedChangesPopup);
+			EventListComponent subordinateEventList = new EventListComponent(event.toReference(), this::showUnsavedChangesPopup, isEditAllowed());
 			subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 		}
