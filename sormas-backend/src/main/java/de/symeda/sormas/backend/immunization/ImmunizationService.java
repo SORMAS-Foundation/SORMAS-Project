@@ -173,7 +173,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> from) {
 		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, query, from));
 	}
 

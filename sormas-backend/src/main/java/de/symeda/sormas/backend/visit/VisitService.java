@@ -53,10 +53,9 @@ import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -70,7 +69,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
-public class VisitService extends BaseAdoService<Visit> implements JurisdictionCheckService<Visit> {
+public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit> {
 
 	@EJB
 	private ContactService contactService;
@@ -209,6 +208,11 @@ public class VisitService extends BaseAdoService<Visit> implements JurisdictionC
 			}
 			return filter;
 		}, batchSize);
+	}
+
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
+		return null;
 	}
 
 	@SuppressWarnings("rawtypes")

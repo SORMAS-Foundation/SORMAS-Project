@@ -15,7 +15,7 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo, CRITERIA extends BaseCriteria>
-	extends AdoServiceWithUserFilter<ADO> {
+	extends AdoServiceWithUserFilterAndJurisdiction<ADO> {
 
 	protected AbstractInfrastructureAdoService(Class<ADO> elementClass) {
 		super(elementClass);

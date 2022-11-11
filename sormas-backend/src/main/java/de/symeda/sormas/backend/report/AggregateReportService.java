@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.report;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -19,8 +17,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
@@ -34,7 +31,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class AggregateReportService extends AdoServiceWithUserFilter<AggregateReport> {
+public class AggregateReportService extends AdoServiceWithUserFilterAndJurisdiction<AggregateReport> {
 
 	@EJB
 	private UserService userService;
