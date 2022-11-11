@@ -72,8 +72,8 @@ public enum FeatureType {
 	TRAVEL_ENTRIES(true, false, null, null, null),
 
 	DASHBOARD(true, true, null, null, null),
-	EXCLUDE_NO_CASE_CLASSIFIED(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, Boolean.FALSE)),
-	LIMITED_SYNCHRONIZATION(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, 30)),
+	LIMITED_SYNCHRONIZATION(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, Boolean.FALSE)),
+	LIMITED_MOBILE_SYNCHRONIZATION(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, -1)),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,

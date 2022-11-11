@@ -70,7 +70,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 			if (RequestContextHolder.isMobileSync()) {
 				Predicate predicate = limitSynchronizationFilter(cb, from);
 				if (predicate != null) {
-					filter = CriteriaBuilderHelper.and(cb, predicate);
+					filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 				}
 			}
 
@@ -85,9 +85,12 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 		Root<ADO> from = cq.from(getElementClass());
 
 		Predicate filter = createUserFilter(cb, cq, from);
-		Predicate predicate = limitSynchronizationFilter(cb, from);
-		if (predicate != null) {
-			filter = CriteriaBuilderHelper.and(cb, predicate);
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = limitSynchronizationFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
+			}
+
 		}
 
 		if (filter != null) {
@@ -111,7 +114,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 			{
 				Predicate predicate = limitSynchronizationFilter(cb, from);
 				if (predicate != null) {
-					filter = CriteriaBuilderHelper.and(cb, predicate);
+					filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 				}
 			}
 
@@ -154,7 +157,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 		if (RequestContextHolder.isMobileSync()) {
 			Predicate predicate = limitSynchronizationFilterObsoleteEntities(cb, from);
 			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, predicate);
+				filter = CriteriaBuilderHelper.or(cb, filter, predicate);
 			}
 		}
 

@@ -125,8 +125,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	@Override
 	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Task> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION) && maxChangeDatePeriod != null) {
+			.getProperty(FeatureType.LIMITED_MOBILE_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_MOBILE_SYNCHRONIZATION)
+			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
 			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
 			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Task.CHANGE_DATE), timestamp));
 		}
@@ -136,8 +137,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	@Override
 	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Task> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION) && maxChangeDatePeriod != null) {
+			.getProperty(FeatureType.LIMITED_MOBILE_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_MOBILE_SYNCHRONIZATION)
+			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
 			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
 			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Task.CHANGE_DATE), timestamp));
 		}
@@ -161,7 +163,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		if (RequestContextHolder.isMobileSync()) {
 			Predicate predicate = limitSynchronizationFilter(cb, from);
 			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, predicate);
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 			}
 		}
 
@@ -276,7 +278,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 
 		if ((taskCriteria == null || !taskCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
-				.isPropertyValueTrue(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
 			&& RequestContextHolder.isMobileSync()) {
 
 			Predicate limitedCaseSyncPredicate = CriteriaBuilderHelper.and(
@@ -293,9 +295,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	@Override
 	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Task> from) {
 
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED)
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
 			&& featureConfigurationFacade
-				.isPropertyValueTrue(FeatureType.EXCLUDE_NO_CASE_CLASSIFIED, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
 
 			List<Predicate> predicates = new ArrayList<>();
 

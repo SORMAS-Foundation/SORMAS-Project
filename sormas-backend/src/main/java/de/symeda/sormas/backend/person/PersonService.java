@@ -195,8 +195,9 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	@Override
 	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Person> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION) && maxChangeDatePeriod != null) {
+			.getProperty(FeatureType.LIMITED_MOBILE_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_MOBILE_SYNCHRONIZATION)
+			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
 			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
 			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Person.CHANGE_DATE), timestamp));
 		}
@@ -206,8 +207,9 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	@Override
 	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Person> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION) && maxChangeDatePeriod != null) {
+			.getProperty(FeatureType.LIMITED_MOBILE_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, Integer.class);
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_MOBILE_SYNCHRONIZATION)
+			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
 			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
 			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Person.CHANGE_DATE), timestamp));
 		}
@@ -593,7 +595,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		if (RequestContextHolder.isMobileSync()) {
 			Predicate predicate = limitSynchronizationFilter(cb, personJoin);
 			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, predicate);
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 			}
 		}
 		if (filter != null) {

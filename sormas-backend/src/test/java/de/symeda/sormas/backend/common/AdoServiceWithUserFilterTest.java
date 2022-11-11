@@ -34,7 +34,7 @@ public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.EXCLUDE_NO_CASE_CLASSIFIED);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.LIMITED_SYNCHRONIZATION);
 
 		SessionImpl em = (SessionImpl) getEntityManager();
 		QueryImplementor query = em.createQuery("select f from featureconfiguration f");

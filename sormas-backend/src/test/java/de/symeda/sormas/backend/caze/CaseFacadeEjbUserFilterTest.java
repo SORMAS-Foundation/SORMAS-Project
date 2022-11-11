@@ -143,19 +143,32 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesWithLimitedSynchronization() {
+	public void testGetCasesWithExcludeNoCaseClassifiedAndMaxChangedDate() {
 
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.EXCLUDE_NO_CASE_CLASSIFIED);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.LIMITED_SYNCHRONIZATION);
+		FeatureConfigurationIndexDto featureConfigurationMaxChangeDate =
+				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfigurationMaxChangeDate, FeatureType.LIMITED_MOBILE_SYNCHRONIZATION);
 
 		SessionImpl em = (SessionImpl) getEntityManager();
 		QueryImplementor query = em.createQuery("select f from featureconfiguration f");
-		FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
-		HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
-		properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
-		singleResult.setProperties(properties);
-		em.save(singleResult);
+		List<FeatureConfiguration> results = (List<FeatureConfiguration>) query.getResultList();
+		HashMap<FeatureTypeProperty, Object> excludeNoCaseClassifiedProperties = new HashMap<>();
+		excludeNoCaseClassifiedProperties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
+		HashMap<FeatureTypeProperty, Object> maxChangeDateProperties = new HashMap<>();
+		int maxChangeDateOffset = 30;
+		maxChangeDateProperties.put(FeatureTypeProperty.MAX_CHANGEDATE_SYNCHRONIZATION, maxChangeDateOffset);
+
+		results.forEach(fc -> {
+			if (fc.getFeatureType().equals(FeatureType.LIMITED_SYNCHRONIZATION)) {
+				fc.setProperties(excludeNoCaseClassifiedProperties);
+			} else {
+				fc.setProperties(maxChangeDateProperties);
+			}
+			em.save(fc);
+		});
 
 		MockProducer.setMobileSync(true);
 
