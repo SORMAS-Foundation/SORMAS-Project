@@ -1577,13 +1577,11 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected List<ContactDto> toPseudonymizedDtos(List<Contact> entities) {
+	public List<ContactDto> toPseudonymizedDtos(List<Contact> adoList) {
 
-		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(entities);
+		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(adoList);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		List<ContactDto> dtos =
-			entities.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		return adoList.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
 	}
 
 	@Override
