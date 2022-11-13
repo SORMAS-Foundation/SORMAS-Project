@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.user.UserRight;
@@ -66,6 +67,10 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditableGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -112,6 +117,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private Boolean isCreateForm = null;
 	private CampaignDto campaignDto;
 	
+	private Set<AreaReferenceDto> areas;
+	private Set<RegionReferenceDto> region;
+	private Set<DistrictReferenceDto> districts;
+	private Set<CommunityReferenceDto> community;
 	
 	private CampaignFormsGridComponent campaignFormsGridComponent;
 	private CampaignFormsGridComponent campaignFormsGridComponent_1;

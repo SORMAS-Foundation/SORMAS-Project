@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +44,10 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -52,6 +57,18 @@ import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacade
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.area.Area;
+import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.area.AreaService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -77,6 +94,14 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal campaignDiagramDefinitionFacade;
+	@EJB
+	private AreaService areaService;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
+	@EJB
+	private CommunityService communityService;
 	
 	@Override
 	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -192,6 +217,40 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setRound(source.getRound());
 		target.setCampaignYear(source.getCampaignYear());
 		target.setStartDate(source.getStartDate());
+		
+		final Set<AreaReferenceDto> areas = source.getAreas();
+		if (!CollectionUtils.isEmpty(areas)) {
+			target.setAreas(
+					areas.stream()
+					.map(e -> areaService.getByUuid(e.getUuid()))
+					.collect(Collectors.toSet()));
+		}
+		
+		final Set<RegionReferenceDto> region = source.getRegion();
+		if (!CollectionUtils.isEmpty(region)) {
+			target.setRegion(
+					region.stream()
+					.map(e -> regionService.getByUuid(e.getUuid()))
+					.collect(Collectors.toSet()));
+		}
+		
+		final Set<DistrictReferenceDto> district = source.getDistricts();
+		if (!CollectionUtils.isEmpty(district)) {
+			target.setDistricts(
+					district.stream()
+					.map(e -> districtService.getByUuid(e.getUuid()))
+					.collect(Collectors.toSet()));
+		}
+		
+		final Set<CommunityReferenceDto> community = source.getCommunity();
+		if (!CollectionUtils.isEmpty(community)) {
+			target.setCommunity(
+					community.stream()
+					.map(e -> communityService.getByUuid(e.getUuid()))
+					.collect(Collectors.toSet()));
+		}
+
+		
 		final Set<CampaignFormMetaReferenceDto> campaignFormMetas = source.getCampaignFormMetas(); //Campaign data
 		if (!CollectionUtils.isEmpty(campaignFormMetas)) {
 			target.setCampaignFormMetas(
@@ -201,6 +260,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		}
 			target.setDashboardElements(source.getCampaignDashboardElements());// .stream().filter(e -> e.getDiagramId().equals("")));
 		return target;
+		
 	}
 	
 	
@@ -396,7 +456,10 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setStartDate(source.getStartDate());
 		target.setCampaignFormMetas(
 			source.getCampaignFormMetas().stream().map(campaignFormMeta -> campaignFormMeta.toReference()).collect(Collectors.toSet()));
-
+		target.setAreas(AreaFacadeEjb.toReferenceDto(new HashSet<Area>(source.getAreas())));
+		target.setRegion(RegionFacadeEjb.toReferenceDto(new HashSet<Region>(source.getRegion())));
+		target.setDistricts(DistrictFacadeEjb.toReferenceDto(new HashSet<District>(source.getDistricts())));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity())));
 		target.setCampaignDashboardElements(source.getDashboardElements());
 
 		return target;

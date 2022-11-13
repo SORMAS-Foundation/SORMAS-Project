@@ -12,6 +12,10 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -47,6 +51,11 @@ public class CampaignDto extends EntityDto {
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
 	
 	public String creatingusername;
+	
+	private Set<AreaReferenceDto> areas;
+	private Set<RegionReferenceDto> region;
+	private Set<DistrictReferenceDto> districts;
+	private Set<CommunityReferenceDto> community;
 	
 	@Valid
 	private List<CampaignDashboardElement> campaignDashboardElements;
@@ -142,6 +151,38 @@ public class CampaignDto extends EntityDto {
 
 	public void setCampaignFormMetas(Set<CampaignFormMetaReferenceDto> campaignFormMetas) {
 		this.campaignFormMetas = campaignFormMetas;
+	}
+
+	public Set<AreaReferenceDto> getAreas() {
+		return areas;
+	}
+
+	public void setAreas(Set<AreaReferenceDto> areas) {
+		this.areas = areas;
+	}
+
+	public Set<RegionReferenceDto> getRegion() {
+		return region;
+	}
+
+	public void setRegion(Set<RegionReferenceDto> region) {
+		this.region = region;
+	}
+
+	public Set<DistrictReferenceDto> getDistricts() {
+		return districts;
+	}
+
+	public void setDistricts(Set<DistrictReferenceDto> districts) {
+		this.districts = districts;
+	}
+
+	public Set<CommunityReferenceDto> getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Set<CommunityReferenceDto> community) {
+		this.community = community;
 	}
 
 	public List<CampaignDashboardElement> getCampaignDashboardElements() {

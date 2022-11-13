@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -44,6 +46,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -431,4 +434,12 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		}
 	}
 
+	public static Set<RegionReferenceDto> toReferenceDto(HashSet<Region> regions) {
+		Set<RegionReferenceDto> dtos = new HashSet<RegionReferenceDto>();
+		for(Region region : regions) {	
+			RegionReferenceDto regionDto = new RegionReferenceDto(region.getUuid(), region.toString(), region.getExternalId());	
+			dtos.add(regionDto);
+		}	
+		return dtos;
+	}
 }

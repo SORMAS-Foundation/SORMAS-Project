@@ -92,7 +92,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @CssImport("w3c.css")
 public class CampaignDataView extends AbstractCampaignView {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata"; /// dataform
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata"; 
 
 	private final CampaignSelector campaignSelector;
 	private final CampaignFormDataCriteria criteria;
