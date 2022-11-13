@@ -37,7 +37,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Audited
 public class Campaign extends CoreAdo {
 
-	private static final long serialVersionUID = -2744033662114826543L; //toReference
+	private static final long serialVersionUID = -2744033662114826543L; 
 
 	public static final String TABLE_NAME = "campaigns";
 	public static final String CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME = "campaign_campaignformmeta";

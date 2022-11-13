@@ -23,6 +23,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -39,16 +40,21 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.data.Binder;
+import com.vaadin.data.TreeData;
+import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -96,6 +102,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private static final String INTRA_CAMPAIGN = "intra-campaign";
 	private static final String POST_CAMPAIGN = "post-campaign";
 	
+	private static final String ASSOCIATE_CAMPAIGN ="Associate Campaign";
+	
 	private OptionGroup clusterfieldx;
 
 	private static final String HTML_LAYOUT = loc(CAMPAIGN_BASIC_HEADING_LOC)
@@ -129,6 +137,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent;
 	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent_1;
 	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent_2;
+	
+	private Tree<String> tree = new Tree<>();
 
 	public CampaignEditForm(CampaignDto campaignDto) {
 
@@ -393,10 +403,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		tabsheetIntra.addSelectedTabChangeListener(event -> campaignFormsGridComponent.ListnerCampaignFilter(event));
 
 		getContent().addComponent(layoutIntra, ROUND_COMPONETS);
-		
-		
-		
-		
+
 		parentTab2.addComponent(layoutIntra);
 		parentTab2.setCaption("Post-Campaign Phase");
 		if(UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
@@ -404,6 +411,55 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		}
 		
 		
+		VerticalLayout parentTab4 = new VerticalLayout();
+		final HorizontalLayout layout4 = new HorizontalLayout();
+		layout4.setWidthFull();
+		
+		
+		tree.setWidthFull();
+		tree.setHeightFull();
+		tree.setSelectionMode(SelectionMode.MULTI);
+		tree.asMultiSelect();
+		TreeData<String> treeData = new TreeData<>();
+
+		// Items with hierarchy
+		//for all areas, get the caption and add to tree
+		List<AreaReferenceDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReference();
+		for(AreaReferenceDto area : areas) {
+			treeData.addItem(null, area.getCaption());
+			List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid());
+			for(RegionReferenceDto region :regions) {
+				String regionidentifier = region.getCaption() + " Province ";
+				treeData.addItem(area.getCaption(), regionidentifier);
+				List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid());
+				for(DistrictReferenceDto district : districts) {
+					String districtidentifier = district.getCaption() + " | " + String.valueOf(district.getUuid());
+					treeData.addItem(regionidentifier, districtidentifier);
+				}
+			}
+		}
+
+		TreeDataProvider<String> inMemoryDataProvider = new TreeDataProvider<>(treeData);
+		tree.setDataProvider(inMemoryDataProvider);
+		//tree.expand("Earth"); 
+
+		tree.addSelectionListener(event ->
+			
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++ "+ tree.getSelectedItems().size())
+				);
+
+		
+		
+		VerticalLayout layout5 = new VerticalLayout(tree);
+		layout.setMargin(true);
+		layout.setSpacing(true);
+		
+		
+		parentTab4.addComponent(layout5);
+		parentTab4.setCaption(ASSOCIATE_CAMPAIGN);
+		tabsheetParent.addTab(parentTab4);
+		
+
 		
 		//stop
 		
@@ -412,18 +468,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		
 
 		getContent().addComponent(layoutParent, CAMPAIGN_TYPE_LOC);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		
 		
@@ -566,6 +610,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 						.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
 						.collect(Collectors.toList()));*/
 		}
+		
+		
 	}
 
 	@Override
