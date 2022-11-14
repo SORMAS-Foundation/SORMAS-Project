@@ -3790,6 +3790,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
 	}
 
+	@RightsAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
 
 		long startTime = DateHelper.startTime();

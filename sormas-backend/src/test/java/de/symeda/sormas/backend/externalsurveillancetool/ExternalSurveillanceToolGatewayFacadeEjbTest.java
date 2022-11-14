@@ -627,7 +627,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 	@Test
 	public void testShareCase_WithCaseNotAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime) throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		useSurveillanceOfficerLogin(rdcf);
 
@@ -764,7 +763,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		});
 		return creator.createCase(user.toReference(), personDto.toReference(), rdcf);
 	}
-
 
 	private void configureExternalSurvToolUrlForWireMock(WireMockRuntimeInfo wireMockRuntime) {
 		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", wireMockRuntime.getHttpPort()));
