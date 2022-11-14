@@ -2,12 +2,18 @@ package de.symeda.sormas.backend.infrastructure.area;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 
 @Entity(name = "areas")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Area extends InfrastructureAdo {
 
 	private static final long serialVersionUID = 1076938355128939661L;

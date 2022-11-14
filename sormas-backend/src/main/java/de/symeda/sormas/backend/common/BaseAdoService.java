@@ -446,16 +446,25 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
-		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ADO> from = cq.from(getElementClass());
-		if (fetchReferences) {
-			fetchReferences(from);
-		}
+
+		cq.select(from.get(AbstractDomainObject.ID));
+
+//		if (fetchReferences) {
+//			fetchReferences(from);
+//		}
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
 
-		TypedQuery<ADO> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
 
-		return q.getResultList().stream().findFirst().orElse(null);
+		Long id = q.getResultList().stream().findFirst().orElse(null);
+
+		if (id != null) {
+			return em.find(getElementClass(), id);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
