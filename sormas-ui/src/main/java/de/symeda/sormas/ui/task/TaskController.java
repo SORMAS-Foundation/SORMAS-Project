@@ -108,6 +108,11 @@ public class TaskController {
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				TaskDto dto1 = form.getValue();
+				if (!dto1.getAssigneeUser().getUuid().equals(dto.getAssigneeUser().getUuid())) {
+					dto1.setAssignedByUser(UserProvider.getCurrent().getUserReference());
+				} else {
+					dto1.setAssignedByUser(dto.getAssignedByUser());
+				}
 				FacadeProvider.getTaskFacade().saveTask(dto1);
 
 				if (!editedFromTaskGrid && dto1.getCaze() != null) {
@@ -133,6 +138,7 @@ public class TaskController {
 	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {
 		TaskDto task = TaskDto.build(context, entityRef);
 		task.setCreatorUser(UserProvider.getCurrent().getUserReference());
+		task.setAssignedByUser(UserProvider.getCurrent().getUserReference());
 		return task;
 	}
 

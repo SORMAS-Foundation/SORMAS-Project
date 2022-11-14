@@ -31,6 +31,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -40,6 +41,8 @@ import de.symeda.sormas.app.util.DataUtils;
 public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBinding, Task, Task> {
 
 	private Task record;
+	private User initialAssigneeUser;
+	private User initialAssignedByUser;
 
 	private List<Item> taskTypeList;
 	private List<Item> priorityList;
@@ -101,6 +104,8 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 	@Override
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
+		initialAssigneeUser = record.getAssigneeUser();
+		initialAssignedByUser = record.getAssignedByUser();
 
 		taskTypeList = DataUtils.toItems(
 			TaskType.getTaskTypes(record.getTaskContext()),
@@ -126,12 +131,15 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 		contentBinding.taskTaskType.initializeSpinner(taskTypeList);
 		contentBinding.taskPriority.initializeSpinner(priorityList);
 		contentBinding.taskAssigneeUser.initializeSpinner(assigneeList);
+		contentBinding.taskAssignedByUser.initializeSpinner(assigneeList);
+		contentBinding.taskAssignedByUser.setEnabled(false);
 
 		// Initialize ControlDateFields and ControlDateTimeFields
 		contentBinding.taskSuggestedStart.initializeDateTimeField(getFragmentManager());
 		contentBinding.taskDueDate.initializeDateTimeField(getFragmentManager());
 
-		contentBinding.setDone.setEnabled(!(record.getCaze() != null && record.getCaze().getCaseClassification() == CaseClassification.NOT_CLASSIFIED));
+		contentBinding.setDone
+			.setEnabled(!(record.getCaze() != null && record.getCaze().getCaseClassification() == CaseClassification.NOT_CLASSIFIED));
 
 		//creatorComment should be required when task type is OTHER
 		contentBinding.taskTaskType.addValueChangedListener(new ValueChangeListener() {
@@ -165,6 +173,19 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 				contentBinding.taskButtonPanel.setVisibility(GONE);
 			}
 		}
+
+		contentBinding.taskAssigneeUser.addValueChangedListener(v -> {
+			User assigneeUser = (User) v.getValue();
+			if (initialAssigneeUser == null) {
+				contentBinding.taskAssignedByUser.setValue(ConfigProvider.getUser());
+			} else {
+				if (!initialAssigneeUser.equals(assigneeUser)) {
+					contentBinding.taskAssignedByUser.setValue(ConfigProvider.getUser());
+				} else {
+					contentBinding.taskAssignedByUser.setValue(initialAssignedByUser);
+				}
+			}
+		});
 	}
 
 	@Override
