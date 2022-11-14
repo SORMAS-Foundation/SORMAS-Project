@@ -56,7 +56,6 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DEFAULT_COMBOBOX_VALUE;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_BUTTON_DISABLED;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_INPUT;
@@ -128,6 +127,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_I
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TOTAL_ACTIONS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF_PLACE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.UNDO_DELETION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UNLINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.VACCINATION_STATUS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.VERIFICATION_OF_AT_LEAST_TWO_INFECTED_OR_DISEASED_PERSONS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
@@ -1102,8 +1102,8 @@ public class EditEventSteps implements En {
           softly.assertAll();
         });
     When(
-        "I check if Delete button on Edit Event Page is disabled",
-        () -> webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_BUTTON_DISABLED));
+        "I check if Delete button on Edit Event Page is changed to Undo Deletion",
+        () -> webDriverHelpers.waitUntilIdentifiedElementIsPresent(UNDO_DELETION_BUTTON));
 
     When(
         "I set Reason for deletion to {string} on Edit Event Page",

@@ -109,7 +109,8 @@ public class CaseDataView extends AbstractCaseView {
 
 		container.addComponent(layout);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			TaskListComponent taskList =
 				new TaskListComponent(TaskContext.CASE, getCaseRef(), caze.getDisease(), this::showUnsavedChangesPopup, isEditAllowed());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);

@@ -36,7 +36,7 @@ import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -47,7 +47,7 @@ import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
 @LocalBean
-public class SormasToSormasShareRequestService extends AdoServiceWithUserFilter<SormasToSormasShareRequest> {
+public class SormasToSormasShareRequestService extends AdoServiceWithUserFilterAndJurisdiction<SormasToSormasShareRequest> {
 
 	public SormasToSormasShareRequestService() {
 		super(SormasToSormasShareRequest.class);
