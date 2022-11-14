@@ -8642,7 +8642,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (431, 'Adding the Mo
 CREATE TABLE campaign_area(
                                 campaign_id bigint NOT NULL,
                                 area_id bigint NOT NULL,
-                                sys_period tstzrange NOT NULL
 );
 ALTER TABLE campaign_area OWNER TO sormas_user;
 ALTER TABLE ONLY campaign_area ADD CONSTRAINT unq_campaign_area_0 UNIQUE (campaign_id, area_id);
@@ -8654,7 +8653,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (432, 'Adding campai
 CREATE TABLE campaign_region(
                                 campaign_id bigint NOT NULL,
                                 region_id bigint NOT NULL,
-                                sys_period tstzrange NOT NULL
 );
 ALTER TABLE campaign_region OWNER TO sormas_user;
 ALTER TABLE ONLY campaign_region ADD CONSTRAINT unq_campaign_region_0 UNIQUE (campaign_id, region_id);
@@ -8666,7 +8664,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (433, 'Adding campai
 CREATE TABLE campaign_district(
                                 campaign_id bigint NOT NULL,
                                 district_id bigint NOT NULL,
-                                sys_period tstzrange NOT NULL
 );
 ALTER TABLE campaign_district OWNER TO sormas_user;
 ALTER TABLE ONLY campaign_district ADD CONSTRAINT unq_campaign_district_0 UNIQUE (campaign_id, district_id);
@@ -8678,7 +8675,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (434, 'Adding campai
 CREATE TABLE campaign_community(
                                 campaign_id bigint NOT NULL,
                                 community_id bigint NOT NULL,
-                                sys_period tstzrange NOT NULL
 );
 ALTER TABLE campaign_community OWNER TO sormas_user;
 ALTER TABLE ONLY campaign_community ADD CONSTRAINT unq_campaign_community_0 UNIQUE (campaign_id, community_id);

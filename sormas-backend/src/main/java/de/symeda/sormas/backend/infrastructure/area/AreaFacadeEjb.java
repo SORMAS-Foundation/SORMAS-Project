@@ -30,6 +30,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -243,6 +244,11 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 		}
 		
 		return dtos;
+	}
+	
+	@Override
+	public AreaReferenceDto getAreaReferenceByUuid(String uuid) {
+		return toReferenceDto(areaService.getByUuid(uuid));
 	}
 
 }

@@ -36,6 +36,7 @@ public class CampaignDto extends EntityDto {
 	public static final String CREATING_USER_NAME = "creatingusername";
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 	public static final String CAMPAIGN_TYPES = "campaignTypes";
+	public static final String CAMPAIGN_AREAS = "areas";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
