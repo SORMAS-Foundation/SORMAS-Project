@@ -67,20 +67,19 @@ public class RequestResponseLogger implements Filter {
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		// request logging
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		logger.debug("requestUri = {}", httpRequest.getRequestURI());
-
-		Map<String, String[]> params = httpRequest.getParameterMap();
-		for (String s : params.keySet()) {
-			logger.debug("  {} = {}", s, httpRequest.getParameter(s));
-		}
-
-		if (response.getCharacterEncoding() == null) {
-			response.setCharacterEncoding("UTF-8");
-		}
-
 		if (logger.isTraceEnabled()) {
+			// request logging
+			HttpServletRequest httpRequest = (HttpServletRequest) request;
+			logger.trace("requestUri = {}", httpRequest.getRequestURI());
+
+			Map<String, String[]> params = httpRequest.getParameterMap();
+			for (String s : params.keySet()) {
+				logger.trace("  {} = {}", s, httpRequest.getParameter(s));
+			}
+
+			if (response.getCharacterEncoding() == null) {
+				response.setCharacterEncoding("UTF-8");
+			}
 			HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 			LoggingHttpServletResponseWrapper wrapper = new LoggingHttpServletResponseWrapper(httpServletResponse);
 			try {
