@@ -15,7 +15,7 @@ public class DeletionConfigurationFacadeEjb implements DeletionConfigurationFaca
 
 	@Override
 	@Asynchronous
-	public void executeAutomaticDeletion() {
+	public void doAutomaticDeletion() {
 		coreEntityDeletionService.executeAutomaticDeletion();
 	}
 
