@@ -20,10 +20,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -36,7 +34,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
-@RunWith(MockitoJUnitRunner.class)
 public class LabMessageUiHelperUnitTest {
 
 	@Test

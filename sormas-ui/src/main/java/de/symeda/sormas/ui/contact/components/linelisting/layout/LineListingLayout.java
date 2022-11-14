@@ -330,4 +330,8 @@ public class LineListingLayout extends VerticalLayout {
 			this.lineField = lineField;
 		}
 	}
+
+	public SharedInfoField getSharedInfoField() {
+		return sharedInfoField;
+	}
 }

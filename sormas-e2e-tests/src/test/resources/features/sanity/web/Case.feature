@@ -530,7 +530,7 @@ Feature: Case end to end tests
     And I click on first person in person directory
     And I check if Date of dead for specified case is correct
 
-  @tmsLink=SORDEV-6843 @env_main
+  @tmsLink=SORDEV-6843 @env_main @ignore
   Scenario: Refine the update mechanism between case outcome and person other cause date
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -1835,8 +1835,6 @@ Feature: Case end to end tests
     And I check that "chronicKidneyDisease" Pre-existing condition is visible on page
     And I check that "chronicNeurologicCondition" Pre-existing condition is visible on page
     And I check that "cardiovascularDiseaseIncludingHypertension" Pre-existing condition is visible on page
-    Then I click on Clinical Course tab from Edit Case page
-    Then I check that Clinical Assessments heading is visible in DE
 
   @tmsLink=SORDEV-9789 @env_de
   Scenario: Test health conditions document template export

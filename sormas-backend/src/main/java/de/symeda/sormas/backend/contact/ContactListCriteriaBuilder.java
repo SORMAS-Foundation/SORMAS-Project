@@ -16,6 +16,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -26,6 +27,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
@@ -36,6 +38,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonContactDetail;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -192,6 +195,14 @@ public class ContactListCriteriaBuilder {
 	private List<Selection<?>> getContactIndexDetailedSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
 
 		final ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+
+		Join<Person, PersonContactDetail> phone = joins.getPersonJoins().getPhone();
+		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
+		phone.on(
+			cb.and(
+				cb.isTrue(phone.get(PersonContactDetail.PRIMARY_CONTACT)),
+				cb.equal(phone.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
+
 		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, contactQueryContext));
 		List<Selection<?>> selections = Arrays.asList(
 			joins.getPerson().get(Person.SEX),
@@ -202,8 +213,7 @@ public class ContactListCriteriaBuilder {
 			joins.getAddress().get(Location.HOUSE_NUMBER),
 			joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 			joins.getAddress().get(Location.POSTAL_CODE),
-			contactQueryContext.getSubqueryExpression(
-				CaseQueryContext.PERSON_PHONE_SUBQUERY),
+			phone.get(PersonContactDetail.CONTACT_INFORMATION),
 			joins.getReportingUser().get(User.FIRST_NAME),
 			joins.getReportingUser().get(User.LAST_NAME),
 			contact.get(Contact.RELATION_TO_CASE));
@@ -212,18 +222,14 @@ public class ContactListCriteriaBuilder {
 		return indexSelection;
 	}
 
-	private List<Expression<?>> getIndexDetailOrders(
-		SortProperty sortProperty,
-		Root<Contact> contact,
-		ContactJoins joins,
-		CriteriaBuilder cb) {
+	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case ContactIndexDetailedDto.SEX:
 		case ContactIndexDetailedDto.APPROXIMATE_AGE:
 			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case ContactIndexDetailedDto.PHONE:
-			return Collections.singletonList(cb.literal(44));
+			return Collections.singletonList(joins.getPersonJoins().getPhone().get(PersonContactDetail.CONTACT_INFORMATION));
 		case ContactIndexDetailedDto.DISTRICT_NAME:
 			return Collections.singletonList(joins.getDistrict().get(District.NAME));
 		case ContactIndexDetailedDto.CITY:

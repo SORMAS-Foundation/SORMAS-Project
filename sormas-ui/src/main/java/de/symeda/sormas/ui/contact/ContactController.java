@@ -16,11 +16,11 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +40,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -55,6 +54,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -65,6 +65,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -143,6 +144,8 @@ public class ContactController {
 			return;
 		}
 
+		boolean adoptHomeAddress = lineListingForm.getSharedInfoField().getCaseSelector().getAdoptAddressLayout().isAdoptAddress();
+
 		while (!contacts.isEmpty()) {
 			LineDto<ContactDto> contactLineDto = contacts.pop();
 			ContactDto newContact = contactLineDto.getEntity();
@@ -164,6 +167,12 @@ public class ContactController {
 							lineListingForm.closeWindow();
 							ControllerProvider.getContactController().navigateToIndex();
 						}
+					}
+					if (adoptHomeAddress && ContactRelation.SAME_HOUSEHOLD.equals(newContact.getRelationToCase())) {
+						FacadeProvider.getPersonFacade()
+							.copyHomeAddress(
+								FacadeProvider.getCaseFacade().getByUuid(newContact.getCaze().getUuid()).getPerson(),
+								newContact.getPerson());
 					}
 				}, true);
 		}
@@ -404,6 +413,7 @@ public class ContactController {
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
+
 				if (asSourceContact && caze != null) {
 					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getByUuid(caze.getUuid());
 					caseDto.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
@@ -459,13 +469,17 @@ public class ContactController {
 								if (selectedPerson != null) {
 									dto.setPerson(selectedPerson);
 
-									fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()));
-
-									selectOrCreateContact(dto, person, selectedContactUuid -> {
+									selectOrCreateContact(dto, selectedPerson, selectedContactUuid -> {
 										if (selectedContactUuid != null) {
 											editData(selectedContactUuid);
 										}
 									});
+								}
+								if (createForm.adoptAddressLayout.isAdoptAddress()) {
+									FacadeProvider.getPersonFacade()
+										.copyHomeAddress(
+											FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(),
+											dto.getPerson());
 								}
 							}, true);
 					}
@@ -509,8 +523,6 @@ public class ContactController {
 				transferDataToPerson(createForm, personDto);
 				personFacade.save(personDto);
 
-				fillPersonAddressIfEmpty(dto, () -> personDto);
-
 				selectOrCreateContact(dto, personDto, selectedContactUuid -> {
 					if (selectedContactUuid != null) {
 						editData(selectedContactUuid);
@@ -523,9 +535,13 @@ public class ContactController {
 		return createComponent;
 	}
 
-	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
+	private void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
+		selectOrCreateContact(contact, personDto.toReference(), resultConsumer);
+	}
+
+	public void selectOrCreateContact(final ContactDto contact, final PersonReferenceDto personReferenceDto, Consumer<String> resultConsumer) {
 		ContactSelectionField contactSelect =
-			new ContactSelectionField(contact, personDto.toReference(), I18nProperties.getString(Strings.infoSelectOrCreateContact));
+			new ContactSelectionField(contact, personReferenceDto, I18nProperties.getString(Strings.infoSelectOrCreateContact));
 		contactSelect.setWidth(1024, Unit.PIXELS);
 
 		if (contactSelect.hasMatches()) {
@@ -569,7 +585,7 @@ public class ContactController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getContactFacade().getManuallyDeletionInfo(contactUuid);
 
-		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
+		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized, contact.isInJurisdiction());
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
 			editForm,
@@ -590,8 +606,6 @@ public class ContactController {
 			if (!editForm.getFieldGroup().isModified()) {
 				ContactDto dto = editForm.getValue();
 
-				fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getByUuid(dto.getPerson().getUuid()));
-
 				FacadeProvider.getContactFacade().save(dto);
 
 				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
@@ -600,10 +614,12 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
-			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
-				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
-				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityContact));
+			editComponent.addDeleteWithReasonOrUndeleteListener(
+				ContactsView.VIEW_NAME,
+				getDeleteConfirmationDetails(Collections.singletonList(contact.getUuid())),
+				I18nProperties.getString(Strings.entityContact),
+				contactUuid,
+				FacadeProvider.getContactFacade());
 		}
 
 		// Initialize 'Archive' button
@@ -618,6 +634,12 @@ public class ContactController {
 		}
 
 		return editComponent;
+	}
+
+	private String getDeleteConfirmationDetails(List<String> contactUuids) {
+		boolean hasPendingRequest = FacadeProvider.getSormasToSormasContactFacade().hasPendingRequest(contactUuids);
+
+		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
 	public void showBulkContactDataEditComponent(Collection<? extends ContactIndexDto> selectedContacts, String caseUuid) {
@@ -705,7 +727,10 @@ public class ContactController {
 				false).show(Page.getCurrent());
 		} else {
 			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()),
+				String.format(
+					I18nProperties.getString(Strings.confirmationDeleteContacts),
+					selectedRows.size(),
+					getDeleteConfirmationDetails(selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()))),
 				(deleteDetails) -> {
 					for (ContactIndexDto selectedRow : selectedRows) {
 						FacadeProvider.getContactFacade().delete(selectedRow.getUuid(), deleteDetails);
@@ -814,11 +839,13 @@ public class ContactController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, boolean isEditAllowed) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), ContactDto.class, contact.getEpiData().isPseudonymized(), null);
-		epiDataForm.setValue(contact.getEpiData());
+		EpiDataDto epiData = contact.getEpiData();
+		EpiDataForm epiDataForm =
+			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null, isEditAllowed);
+		epiDataForm.setValue(epiData);
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
 			epiDataForm,
@@ -880,20 +907,5 @@ public class ContactController {
 		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
-	}
-
-	private void fillPersonAddressIfEmpty(ContactDto contact, Supplier<PersonDto> personSupplier) {
-		// set the contact person's address to the one of the case when it is currently empty and
-		// the relationship with the case has been set to living in the same household
-		if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contact.getCaze() != null) {
-			PersonDto person = personSupplier.get();
-			if (person.getAddress().checkIsEmptyLocation()) {
-				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
-				person.getAddress().setRegion(CaseLogic.getRegionWithFallback(caze));
-				person.getAddress().setDistrict(CaseLogic.getDistrictWithFallback(caze));
-				person.getAddress().setCommunity(CaseLogic.getCommunityWithFallback(caze));
-			}
-			FacadeProvider.getPersonFacade().save(person);
-		}
 	}
 }

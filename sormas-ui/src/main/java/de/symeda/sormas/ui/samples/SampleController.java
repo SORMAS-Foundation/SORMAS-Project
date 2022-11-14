@@ -173,7 +173,8 @@ public class SampleController {
 		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
 		sampleComponent.addComponent(horizontalRule, sampleComponent.getComponentCount() - 1);
 
-		PathogenTestForm pathogenTestForm = new PathogenTestForm(sampleComponent.getWrappedComponent().getValue(), true, caseSampleCount, false);
+		PathogenTestForm pathogenTestForm =
+			new PathogenTestForm(sampleComponent.getWrappedComponent().getValue(), true, caseSampleCount, false, true);  // Valid because jurisdiction doesn't matter for entities that are about to be created
 		// prefill fields
 		if (pathogenTest != null) {
 			pathogenTestForm.setValue(pathogenTest);
@@ -321,10 +322,11 @@ public class SampleController {
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
 		final String sampleUuid,
 		boolean isPseudonymized,
+		boolean inJurisdiction,
 		Disease disease,
 		boolean showDeleteButton) {
 
-		SampleEditForm form = new SampleEditForm(isPseudonymized, disease);
+		SampleEditForm form = new SampleEditForm(isPseudonymized, inJurisdiction, disease);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);
@@ -353,11 +355,15 @@ public class SampleController {
 		});
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
-			editView.addDeleteWithReasonListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), deleteDetails);
 				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entitySample));
+			}, (deletionDetails) -> {
+				FacadeProvider.getSampleFacade().undelete(dto.toReference());
+				updateAssociationsForSample(dto);
+				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entitySample), FacadeProvider.getSampleFacade().isDeleted(dto.getUuid()));
 		}
 
 		if (dto.getReferredTo() != null || dto.getSamplePurpose() == SamplePurpose.EXTERNAL) {

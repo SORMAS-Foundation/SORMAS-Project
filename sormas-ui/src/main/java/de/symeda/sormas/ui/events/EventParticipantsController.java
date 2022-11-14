@@ -208,8 +208,13 @@ public class EventParticipantsController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getAutomaticDeletionInfo(eventParticipantUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getManuallyDeletionInfo(eventParticipantUuid);
 
-		final EventParticipantEditForm editForm =
-			new EventParticipantEditForm(event, eventParticipant.isPseudonymized(), eventParticipant.getPerson().isPseudonymized(), false);
+		final EventParticipantEditForm editForm = new EventParticipantEditForm(
+			event,
+			eventParticipant.isPseudonymized(),
+			eventParticipant.isInJurisdiction(),
+			eventParticipant.getPerson().isPseudonymized(),
+			eventParticipant.getPerson().isInJurisdiction(),
+			false);
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 
@@ -227,10 +232,12 @@ public class EventParticipantsController {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
-				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid(), deleteDetails);
-				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
-			}, I18nProperties.getString(Strings.entityEventParticipant));
+			editComponent.addDeleteWithReasonOrUndeleteListener(
+				EventParticipantsView.VIEW_NAME + "/" + eventParticipant.getEvent().getUuid(),
+				null,
+				I18nProperties.getString(Strings.entityEventParticipant),
+				eventParticipant.getUuid(),
+				FacadeProvider.getEventParticipantFacade());
 		}
 
 		// Initialize 'Archive' button

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseJurisdictionType;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -75,6 +76,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(
 		CaseCriteria.PRESENT_CONDITION,
+		CaseCriteria.JURISDICTION_TYPE,
 		CaseDataDto.REGION,
 		CaseDataDto.DISTRICT,
 		CaseDataDto.COMMUNITY,
@@ -180,10 +182,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
+		UserDto user = currentUserDto();
+
 		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
-		UserDto user = currentUserDto();
+		ComboBox jurisdictionTypeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.JURISDICTION_TYPE, 140));
+		jurisdictionTypeField.setInputPrompt(I18nProperties.getCaption(Captions.caseJurisdictionType));
+		FieldHelper.updateEnumData(jurisdictionTypeField, Arrays.asList(CaseJurisdictionType.values()));
+
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
 			regionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
@@ -261,7 +268,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		Field<?> quarantineTo = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
 		quarantineTo.removeAllValidators();
 
-		addBirthDateFields(CaseCriteria.BIRTHDATE_YYYY, CaseCriteria.BIRTHDATE_MM, CaseCriteria.BIRTHDATE_DD);
+		addBirthDateFields(moreFiltersContainer, CaseCriteria.BIRTHDATE_YYYY, CaseCriteria.BIRTHDATE_MM, CaseCriteria.BIRTHDATE_DD);
 
 		addField(
 			moreFiltersContainer,

@@ -21,11 +21,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -38,10 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -73,7 +70,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
-@RunWith(MockitoJUnitRunner.class)
 public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
@@ -109,7 +105,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails());
 
 		List<TaskIndexDto> tasks = getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ALL), 0, 100, null);
-		Assert.assertEquals(0, tasks.size());
+		assertEquals(0, tasks.size());
 	}
 
 	@Test

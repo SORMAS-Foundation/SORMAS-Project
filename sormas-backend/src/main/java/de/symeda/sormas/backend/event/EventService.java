@@ -55,6 +55,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -87,6 +88,7 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
@@ -117,6 +119,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private UserService userService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
@@ -567,6 +571,16 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
+	public void undelete(Event event) {
+		// undelete all event participants associated with this event
+		List<EventParticipant> eventParticipants = eventParticipantService.getAllByEventAfter(null, event);
+		for (EventParticipant eventParticipant : eventParticipants) {
+			eventParticipantService.undelete(eventParticipant);
+		}
+		super.undelete(event);
+	}
+
+	@Override
 	public void deletePermanent(Event event) {
 
 		// Delete all tasks associated with this event
@@ -588,6 +602,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
 				sormasToSormasShareInfoService.ensurePersisted(s);
 			} else {
+				try {
+					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s));
+				} catch (SormasToSormasException e) {
+					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
+				}
 				sormasToSormasShareInfoService.deletePermanent(s);
 			}
 		});
@@ -996,7 +1015,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return super.getEditPermissionType(event);
 	}
 
-
 	public boolean inJurisdiction(Event event) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1012,7 +1030,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
 		return inJurisdictionOrOwned(new EventQueryContext(cb, cq, from));
 	}
 

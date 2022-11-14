@@ -756,12 +756,6 @@ Feature: Create events
     And I click on Save Button in Edit Event directory
     And I click on the Event participant tab
     And I back to the Event tab
-    And I set Country combobox to "Germany" from Edit Event Page
-    And I set Country combobox to empty value from Edit Event Page
-    And I clear Region and District fields from Edit Event Directory
-    And I click on Save Button in Edit Event directory
-    Then I click on the Event participant tab
-    And I add a participant to the event
 
   @tmsLink=SORDEV-10254 @env_main
   Scenario: Manual archive Event participants/Events
@@ -1004,7 +998,7 @@ Feature: Create events
     And I click on Yes option in Confirm deletion on Edit Event Page
     And I am accessing the event tab using the created event via api
     And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
-    And I check if Delete button on Edit Event Page is disabled
+    And I check if Delete button on Edit Event Page is changed to Undo Deletion
 
     @tmsLink=SORDEV-8055 @env_main
     Scenario Outline: Allow users to select the used delimiter when importing files

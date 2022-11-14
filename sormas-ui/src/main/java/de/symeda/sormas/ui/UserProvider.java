@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.PseudonymizableDataAccessLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -125,6 +126,21 @@ public class UserProvider {
 	public boolean hasRegion(RegionReferenceDto regionReference) {
 		RegionReferenceDto userRegionReference = getCurrent().getUser().getRegion();
 		return Objects.equals(userRegionReference, regionReference);
+	}
+
+	public PseudonymizableDataAccessLevel getPseudonymizableDataAccessLevel(boolean inJurisdiction) {
+
+		boolean sensitiveData = inJurisdiction
+			? getUserRights().contains(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION)
+			: getUserRights().contains(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION);
+		boolean personalData = inJurisdiction
+			? getUserRights().contains(UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION)
+			: getUserRights().contains(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION);
+		return sensitiveData && personalData
+			? PseudonymizableDataAccessLevel.ALL
+			: personalData
+				? PseudonymizableDataAccessLevel.PERSONAL
+				: sensitiveData ? PseudonymizableDataAccessLevel.SENSITIVE : PseudonymizableDataAccessLevel.NONE;
 	}
 
 	public UserReferenceDto getUserReference() {

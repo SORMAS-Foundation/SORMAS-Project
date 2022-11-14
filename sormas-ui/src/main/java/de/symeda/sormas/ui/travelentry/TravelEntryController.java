@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -131,7 +130,8 @@ public class TravelEntryController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getAutomaticDeletionInfo(travelEntryUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getManuallyDeletionInfo(travelEntryUuid);
 
-		TravelEntryDataForm travelEntryEditForm = new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized());
+		TravelEntryDataForm travelEntryEditForm =
+			new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized(), travelEntry.isInJurisdiction());
 		travelEntryEditForm.setValue(travelEntry);
 
 		CommitDiscardWrapperComponent<TravelEntryDataForm> editComponent = new CommitDiscardWrapperComponent<>(
@@ -163,10 +163,12 @@ public class TravelEntryController {
 
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
-			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
-				FacadeProvider.getTravelEntryFacade().delete(travelEntry.getUuid(), deleteDetails);
-				UI.getCurrent().getNavigator().navigateTo(TravelEntriesView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityTravelEntry));
+			editComponent.addDeleteWithReasonOrUndeleteListener(
+				TravelEntriesView.VIEW_NAME,
+				null,
+				I18nProperties.getString(Strings.entityTravelEntry),
+				travelEntry.getUuid(),
+				FacadeProvider.getTravelEntryFacade());
 		}
 
 		// Initialize 'Archive' button

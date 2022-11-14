@@ -61,19 +61,19 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatypeJdk8")
 	implementation group: "org.assertj", name: "assertj-core", version: assertjCore
 
-	compile group: "com.fasterxml.jackson.core", name: "jackson-core", version: "2.8.8"
-	compile group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "2.8.8"
-	compile group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.8.8"
+	implementation  group: "com.fasterxml.jackson.core", name: "jackson-core", version: "2.8.8"
+	implementation  group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "2.8.8"
+	implementation  group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.8.8"
 
 	implementation group: 'org.jfree', name: 'jfreechart', version: '1.5.0'
 	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 	implementation 'commons-beanutils:commons-beanutils:1.9.4'
-	compile group: 'org.testng', name: 'testng', version: '6.14.3'
-	compile 'com.opencsv:opencsv:5.6'
+	implementation  group: 'org.testng', name: 'testng', version: '6.14.3'
+	implementation  'com.opencsv:opencsv:5.6'
 
 	implementation 'org.apache.poi:poi:4.0.0'
 	implementation 'org.apache.poi:poi-ooxml:4.0.0'
-	compile 'com.detectlanguage:detectlanguage:1.1.0'
+	implementation  'com.detectlanguage:detectlanguage:1.1.0'
 
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
 	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '1.2.4'
@@ -83,6 +83,7 @@ dependencies {
 	implementation group: 'org.apache.tika', name: 'tika-langdetect', version: '2.3.0', ext: 'pom'
 	implementation group: 'org.apache.tika', name: 'tika-core', version: '2.3.0'
 	implementation group: 'org.apache.poi', name: 'poi', version: '3.17'
+	implementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
 
 }
 
@@ -96,6 +97,36 @@ tasks.withType(Test) {
 	maxParallelForks = (int) (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
 	systemProperties = System.getProperties() as Map<String, ?>
 	systemProperties.remove("java.endorsed.dirs") // needs to be removed from Java 9
+}
+
+task deleteLogbackXml(type: Delete) {
+	println "Removing logback XML file"
+	delete 'src/main/resources/logback.xml'
+}
+
+task copyLogbackXml(type: Copy) {
+	dependsOn deleteLogbackXml
+	println "Adding logback XML file"
+	boolean createLogsFile
+	try{
+		createLogsFile = System.getProperty("generateLogs").equalsIgnoreCase("true")
+		println "generateLogs is " + createLogsFile
+	}
+	catch (Exception any){
+		println "Unable to get generateLogs parameter, setting it to default false as Cucumber rerun is enabled"
+		createLogsFile = false
+	}
+
+	if(createLogsFile){
+		println "Enabling logs file generation"
+		from layout.buildDirectory.file("$rootDir/src/main/resources/logbackXMLS/logs/logback.xml")
+		into layout.buildDirectory.dir("$rootDir/src/main/resources")
+	}
+	else{
+		println "Using only console logs"
+		from layout.buildDirectory.file("$rootDir/src/main/resources/logbackXMLS/console/logback.xml")
+		into layout.buildDirectory.dir("$rootDir/src/main/resources")
+	}
 }
 
 task createReportFolderIfNotExist() {
@@ -154,6 +185,8 @@ test {
 }
 
 compileJava.dependsOn format
+startTests.dependsOn deleteLogbackXml
+deleteLogbackXml.finalizedBy copyLogbackXml
 //startTests.dependsOn printConfiguration
 startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test

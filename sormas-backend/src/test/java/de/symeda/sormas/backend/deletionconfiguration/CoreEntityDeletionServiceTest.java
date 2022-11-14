@@ -1,23 +1,24 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -32,7 +33,9 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -67,7 +70,7 @@ import de.symeda.sormas.backend.user.User;
 
 public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
-	@Before
+	@BeforeEach
 	public void setupConfig() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_URL, "url");
 	}
@@ -516,6 +519,26 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		loginWith(user);
 
 		assertEquals(0, getImmunizationService().count());
+	}
+
+	@Test
+	public void testUndelete() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
+
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		assertEquals(0, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());
+
+		getImmunizationFacade().undelete(immunization.getUuid());
+		List<ImmunizationIndexDto> indexList = getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null);
+		assertEquals(1, indexList.size());
+		Immunization undeletedImmunization = getImmunizationService().getByUuid(indexList.get(0).getUuid());
+		assertNull(undeletedImmunization.getDeletionReason());
+		assertNull(undeletedImmunization.getOtherDeletionReason());
 	}
 
 	@Test

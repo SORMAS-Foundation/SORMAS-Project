@@ -134,7 +134,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		RelatedLabMessageHandlerChain chain) {
 
 		CorrectionPanel<PersonDto> personCorrectionPanel = new CorrectionPanel<>(
-			() -> new PersonEditForm(person.isPseudonymized()),
+			() -> new PersonEditForm(person.isPseudonymized(), person.isInJurisdiction()),
 			person,
 			updatedPerson,
 			Strings.headingPreviousPersonInformation,
@@ -156,7 +156,10 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		RelatedLabMessageHandlerChain chain) {
 
 		CorrectionPanel<SampleDto> sampleCorrectionPanel = new CorrectionPanel<>(
-			() -> new SampleEditForm(sample.isPseudonymized(), ControllerProvider.getSampleController().getDiseaseOf(sample)),
+			() -> new SampleEditForm(
+				sample.isPseudonymized(),
+				sample.isInJurisdiction(),
+				ControllerProvider.getSampleController().getDiseaseOf(sample)),
 			sample,
 			updatedSample,
 			Strings.headingPreviousSampleInformation,
@@ -181,7 +184,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
 
 		CorrectionPanel<PathogenTestDto> pathogenTestCorrectionPanel = new CorrectionPanel<>(
-			() -> new PathogenTestForm(sample, false, caseSampleCount, sample.isPseudonymized()),
+			() -> new PathogenTestForm(sample, false, caseSampleCount, sample.isPseudonymized(), sample.isInJurisdiction()),
 			pathogenTest,
 			updatedPathogenTest,
 			Strings.headingPreviousPathogenTestInformation,

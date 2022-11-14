@@ -19,10 +19,10 @@ package de.symeda.sormas.api.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @see PasswordHelper
@@ -46,9 +46,9 @@ public class PasswordHelperTest {
 		for (int i = 0; i < 100; i++) {
 
 			String password = PasswordHelper.createPass(LENGTH);
-			assertEquals("Unerwartete Passwortlänge", LENGTH, password.length());
+			assertEquals(LENGTH, password.length(), "Unerwartete Passwortlänge");
 			for (int j = 0; j < FORBIDDEN.length; j++) {
-				assertFalse("Unerlaubtes Zeichen " + FORBIDDEN[j] + " enthalten: " + password, password.contains(FORBIDDEN[j]));
+				assertFalse(password.contains(FORBIDDEN[j]), "Unerlaubtes Zeichen " + FORBIDDEN[j] + " enthalten: " + password);
 			}
 		}
 	}

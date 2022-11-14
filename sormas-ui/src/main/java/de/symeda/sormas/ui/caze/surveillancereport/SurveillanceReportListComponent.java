@@ -15,53 +15,40 @@
 
 package de.symeda.sormas.ui.caze.surveillancereport;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.function.Consumer;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
-public class SurveillanceReportListComponent extends VerticalLayout {
+public class SurveillanceReportListComponent extends SideComponent {
 
 	private static final long serialVersionUID = -8922146236400907575L;
 
 	private final SurveillanceReportList list;
-	private final Button createButton;
 
-	public SurveillanceReportListComponent(CaseReferenceDto caze) {
+	public SurveillanceReportListComponent(CaseReferenceDto caze, Consumer<Runnable> actionCallback, UserRight editRight, boolean isEditAllowed) {
+		super(I18nProperties.getString(Strings.headingSurveillanceReports), actionCallback);
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
+		if (!UserProvider.getCurrent().hasUserRight(editRight) && !isEditAllowed) {
+			setEnabled(false);
+		}
 
-		HorizontalLayout componentHeader = new HorizontalLayout();
-		componentHeader.setMargin(false);
-		componentHeader.setSpacing(false);
-		componentHeader.setWidth(100, Unit.PERCENTAGE);
-		addComponent(componentHeader);
-
-		list = new SurveillanceReportList(caze);
+		list = new SurveillanceReportList(caze, isEditAllowed);
 		addComponent(list);
 		list.reload();
 
-		Label reportsHeader = new Label(I18nProperties.getString(Strings.headingSurveillanceReports));
-		reportsHeader.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(reportsHeader);
-
-		createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.surveillanceReportNewReport));
-		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-		createButton.addClickListener(e -> ControllerProvider.getSurveillanceReportController().createSurveillanceReport(caze, list::reload));
-		componentHeader.addComponent(createButton);
-		componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+		if (isEditAllowed) {
+			addCreateButton(
+				I18nProperties.getCaption(Captions.surveillanceReportNewReport),
+				() -> ControllerProvider.getSurveillanceReportController().createSurveillanceReport(caze, list::reload));
+		}
 	}
 }

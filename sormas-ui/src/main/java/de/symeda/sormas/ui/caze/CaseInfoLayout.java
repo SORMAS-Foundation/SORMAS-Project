@@ -49,7 +49,11 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 	}
 
 	public CaseInfoLayout(CaseDataDto caseDto, boolean isTravelEntry) {
-		super(CaseDataDto.class, UiFieldAccessCheckers.getDefault(caseDto.isPseudonymized()));
+		super(
+			CaseDataDto.class,
+			UiFieldAccessCheckers.forDataAccessLevel(
+				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(caseDto.isInJurisdiction()),
+				caseDto.isPseudonymized()));
 
 		this.caseDto = caseDto;
 		this.isTravelEntry = isTravelEntry;

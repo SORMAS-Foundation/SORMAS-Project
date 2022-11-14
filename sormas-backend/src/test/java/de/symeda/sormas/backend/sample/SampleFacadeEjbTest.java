@@ -23,12 +23,12 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,8 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -62,6 +61,8 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -83,6 +84,7 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -252,24 +254,24 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(4, sampleList1.size());
 
 		final SampleIndexDto sample11 = sampleList1.get(0);
-		Assert.assertEquals(cazeSample.getUuid(), sample11.getUuid());
-		Assert.assertEquals(caze.getUuid(), sample11.getAssociatedCase().getUuid());
-		Assert.assertTrue(sample11.getAssociatedCase().getCaption().startsWith("Case PERSON1"));
+		assertEquals(cazeSample.getUuid(), sample11.getUuid());
+		assertEquals(caze.getUuid(), sample11.getAssociatedCase().getUuid());
+		assertTrue(sample11.getAssociatedCase().getCaption().startsWith("Case PERSON1"));
 
 		final SampleIndexDto sample12 = sampleList1.get(1);
-		Assert.assertEquals(sample.getUuid(), sample12.getUuid());
-		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
-		Assert.assertTrue(sample12.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
+		assertEquals(sample.getUuid(), sample12.getUuid());
+		assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
+		assertTrue(sample12.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
 
 		final SampleIndexDto sample13 = sampleList1.get(2);
-		Assert.assertEquals(referredSample.getUuid(), sample13.getUuid());
-		Assert.assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
-		Assert.assertTrue(sample13.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
+		assertEquals(referredSample.getUuid(), sample13.getUuid());
+		assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
+		assertTrue(sample13.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
 
 		final SampleIndexDto sample14 = sampleList1.get(3);
-		Assert.assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
-		Assert.assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
-		Assert.assertEquals(rdcf.district.getCaption(), sample14.getDistrict());
+		assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
+		assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
+		assertEquals(rdcf.district.getCaption(), sample14.getDistrict());
 
 		assertEquals(2, getSampleFacade().count(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT)));
 		assertEquals(
@@ -345,14 +347,14 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, samplesOfConvertedCase.size());
 
 		final SampleIndexDto sample11 = samplesOfConvertedCase.get(0);
-		Assert.assertEquals(sample.getUuid(), sample11.getUuid());
-		Assert.assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
-		Assert.assertEquals(contact.getUuid(), sample11.getAssociatedContact().getUuid());
+		assertEquals(sample.getUuid(), sample11.getUuid());
+		assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
+		assertEquals(contact.getUuid(), sample11.getAssociatedContact().getUuid());
 
 		final SampleIndexDto sample12 = samplesOfConvertedCase.get(1);
-		Assert.assertEquals(referredSample.getUuid(), sample12.getUuid());
-		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
-		Assert.assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
+		assertEquals(referredSample.getUuid(), sample12.getUuid());
+		assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
+		assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
 	}
 
 	@Test
@@ -393,13 +395,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		// Database should contain the created sample and sample test
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
-		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(sampleTest.getUuid()));
 
 		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
 		assertEquals(DeletionReason.OTHER_REASON, getSampleFacade().getSampleByUuid(sample.getUuid()).getDeletionReason());
 		assertEquals("test reason", getSampleFacade().getSampleByUuid(sample.getUuid()).getOtherDeletionReason());
 	}
@@ -445,7 +447,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		AdditionalTestDto firstSampleAdditionalTest = creator.createAdditionalTest(firstSample.toReference());
 
 		// Database should contain the created sample and sample test
-		assertNotNull(getSampleTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 
 		getSampleFacade().deleteAllSamples(
@@ -456,7 +458,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
 		assertTrue(sampleUuids.contains(firstSample.getUuid()));
 		assertTrue(sampleUuids.contains(secondSample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(firstSamplePathogenTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(firstSamplePathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 	}
 
@@ -511,8 +513,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		AdditionalTestDto thirdSampleAdditionalTest = creator.createAdditionalTest(forthSample.toReference());
 
 		// Database should contain the created sample, sample test and additional tests
-		assertNotNull(getSampleTestFacade().getByUuid(secondSamplePathogenTest.getUuid()));
-		assertNotNull(getSampleTestFacade().getByUuid(thirdSamplePathogenTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(secondSamplePathogenTest.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(thirdSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 
@@ -524,8 +526,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
 		assertTrue(sampleUuids.contains(thirdSample.getUuid()));
 		assertTrue(sampleUuids.contains(forthSample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(secondSamplePathogenTest.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(thirdSamplePathogenTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(secondSamplePathogenTest.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(thirdSamplePathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 	}
@@ -565,24 +567,24 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
+		assertEquals(1, getPathogenTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getPathogenTestFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
 		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(0, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
-		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
+		assertEquals(0, getPathogenTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(0, getPathogenTestFacade().getAllActiveUuids().size());
 
 		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
+		assertEquals(1, getPathogenTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getPathogenTestFacade().getAllActiveUuids().size());
 	}
 
 	@Test
@@ -1032,12 +1034,49 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().archive(contact.getUuid(), null);
 		getEventParticipantFacade().archive(eventParticipantDto.getUuid(), null);
 
+		FeatureConfigurationIndexDto indexFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(indexFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+		assertFalse(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES));
 		Boolean editable = getSampleFacade().isEditAllowed(sampleCase.getUuid());
 		assertFalse(editable);
 		editable = getSampleFacade().isEditAllowed(sampleContact.getUuid());
 		assertFalse(editable);
 		editable = getSampleFacade().isEditAllowed(sampleEventParticipant.getUuid());
 		assertFalse(editable);
+	}
+
+	@Test
+	public void testIsEditAllowedSampleWithInactiveEntityAndFeaturePropTrue() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto person = creator.createPerson("New", "Person");
+
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), person, user.toReference());
+
+		SampleDto sampleCase = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sampleContact = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
+		SampleDto sampleEventParticipant = creator.createSample(eventParticipantDto.toReference(), user.toReference(), rdcf.facility);
+
+		getCaseFacade().archive(caze.getUuid(), null);
+		getContactFacade().archive(contact.getUuid(), null);
+		getEventParticipantFacade().archive(eventParticipantDto.getUuid(), null);
+
+		FeatureConfigurationIndexDto indexFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(indexFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+		assertTrue(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES));
+		Boolean editable = getSampleFacade().isEditAllowed(sampleCase.getUuid());
+		assertTrue(editable);
+		editable = getSampleFacade().isEditAllowed(sampleContact.getUuid());
+		assertTrue(editable);
+		editable = getSampleFacade().isEditAllowed(sampleEventParticipant.getUuid());
+		assertTrue(editable);
 	}
 
 	@Test

@@ -108,7 +108,7 @@ public class SymptomsTabSteps implements En {
     When(
         "I change Other symptoms to {string} option",
         (String option) -> {
-          selectOtherNonHemorrhagicSymptoms(option);
+          selectOtherClinicalSymptoms(option);
         });
 
     When(
@@ -138,8 +138,8 @@ public class SymptomsTabSteps implements En {
           selectNausea(symptoms.getNausea());
           selectLossOfSmell(symptoms.getLossOfSmell());
           selectLossOfTaste(symptoms.getLossOfTaste());
-          selectOtherNonHemorrhagicSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
-          fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
+          selectOtherClinicalSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
+          fillOtherSymptoms(symptoms.getSymptomsComments());
           fillSymptomsComments(symptoms.getSymptomsComments());
           selectFistSymptom(symptoms.getFirstSymptom());
           selectAbnormalLungXrayFindings(symptoms.getAbnormalLungXrayFindings());
@@ -171,15 +171,15 @@ public class SymptomsTabSteps implements En {
             case "NO":
               symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
               FillSymptomsDataForNoUnknown(symptoms);
-              selectOtherNonHemorrhagicSymptoms(NO.toString());
+              selectOtherClinicalSymptoms(NO.toString());
               fillSymptomsComments(symptoms.getSymptomsComments());
               webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
               break;
             case "NO_AND_OTHER_SYMPTOMS_TO_YES":
               symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
               FillSymptomsDataForNoUnknown(symptoms);
-              selectOtherNonHemorrhagicSymptoms(YES.toString());
-              fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
+              selectOtherClinicalSymptoms(YES.toString());
+              fillOtherSymptoms(symptoms.getSymptomsComments());
               fillSymptomsComments(symptoms.getSymptomsComments());
               selectFistSymptom("Other clinical symptoms");
               fillDateOfSymptom(LocalDate.now().minusDays(2));
@@ -188,14 +188,14 @@ public class SymptomsTabSteps implements En {
             case "UNKNOWN":
               symptoms = symptomService.buildEditGeneratedSymptomsWithUnknownOptions();
               FillSymptomsDataForNoUnknown(symptoms);
-              selectOtherNonHemorrhagicSymptoms(UNKNOWN.toString());
+              selectOtherClinicalSymptoms(UNKNOWN.toString());
               fillSymptomsComments(symptoms.getSymptomsComments());
               webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
               break;
             case "YES":
               symptoms = symptomService.buildEditGeneratedSymptoms();
               FillSymptomsData(symptoms);
-              fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
+              fillOtherSymptoms(symptoms.getSymptomsComments());
               fillSymptomsComments(symptoms.getSymptomsComments());
               selectFistSymptom(symptoms.getFirstSymptom());
               fillDateOfSymptom(symptoms.getDateOfSymptom());
@@ -302,7 +302,7 @@ public class SymptomsTabSteps implements En {
     selectNausea(symptoms.getNausea());
     selectLossOfSmell(symptoms.getLossOfSmell());
     selectLossOfTaste(symptoms.getLossOfTaste());
-    selectOtherNonHemorrhagicSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
+    selectOtherClinicalSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
     selectAbnormalLungXrayFindings(symptoms.getAbnormalLungXrayFindings());
     selectFatigueWeakness(symptoms.getFatigueWeakness());
     selectJointPain(symptoms.getJointPain());
@@ -399,10 +399,9 @@ public class SymptomsTabSteps implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_OPTIONS))
         .otherNonHemorrhagicSymptoms(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                OTHER_NON_HEMORRHAGIC_SYMPTOMS_OPTIONS))
+                OTHER_CLINICAL_SYMPTOMS_OPTIONS))
         .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
-        .symptomsComments(
-            webDriverHelpers.getValueFromWebElement(OTHER_NON_HEMORRHAGIC_SYMPTOMS_INPUT))
+        .symptomsComments(webDriverHelpers.getValueFromWebElement(SPECIFY_OTHER_SYMPTOMS_INPUT))
         .abnormalLungXrayFindings(
             (webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 ABNORMAL_LUNG_XRAY_FINDINGS_OPTIONS)))
@@ -620,14 +619,12 @@ public class SymptomsTabSteps implements En {
     webDriverHelpers.clickWebElementByText(LOSS_OF_TASTE_OPTIONS, lossOfTaste);
   }
 
-  private void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
-    webDriverHelpers.clickWebElementByText(
-        OTHER_NON_HEMORRHAGIC_SYMPTOMS_OPTIONS, otherNonHemorrhagicSymptoms);
+  private void selectOtherClinicalSymptoms(String otherClinicalSymptoms) {
+    webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS_OPTIONS, otherClinicalSymptoms);
   }
 
-  private void fillOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
-    webDriverHelpers.fillInWebElement(
-        OTHER_NON_HEMORRHAGIC_SYMPTOMS_INPUT, otherNonHemorrhagicSymptoms);
+  private void fillOtherSymptoms(String otherSymptoms) {
+    webDriverHelpers.fillInWebElement(SPECIFY_OTHER_SYMPTOMS_INPUT, otherSymptoms);
   }
 
   private void fillSymptomsComments(String symptomsComments) {

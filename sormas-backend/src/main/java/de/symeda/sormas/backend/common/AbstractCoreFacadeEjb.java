@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.DenyAll;
 import javax.ejb.EJB;
@@ -70,18 +69,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@Override
-	public DTO getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(service.getByUuid(uuid, true), pseudonymizer);
-	}
-
-	@Override
-	public List<DTO> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<DTO> getAllAfter(Date date) {
 		return getAllAfter(date, null, null);
 	}
@@ -90,23 +77,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		List<ADO> entities = service.getAllAfter(date, batchSize, lastSynchronizedUuid);
-		List<DTO> dtos = toPseudonymizedDtos(entities);
-
-		return dtos;
-	}
-
-	protected Pseudonymizer createPseudonymizer() {
-
-		return Pseudonymizer.getDefault(userService::hasRight);
-	}
-
-	protected List<DTO> toPseudonymizedDtos(List<ADO> entities) {
-
-		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer pseudonymizer = createPseudonymizer();
-		List<DTO> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		return toPseudonymizedDtos(entities);
 	}
 
 	@DenyAll
@@ -119,7 +90,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		DTO existingDto = toDto(existingAdo);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingAdo, pseudonymizer);
 
 		validate(dto);
@@ -127,7 +98,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		existingAdo = fillOrBuildEntity(dto, existingAdo, true);
 		service.ensurePersisted(existingAdo);
 
-		return convertToDto(existingAdo, pseudonymizer);
+		return toPseudonymizedDto(existingAdo, pseudonymizer);
 	}
 
 	public boolean exists(String uuid) {
@@ -140,25 +111,21 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		service.delete(ado, deletionDetails);
 	}
 
+	@DenyAll
+	public void undelete(String uuid) {
+		ADO ado = service.getByUuid(uuid);
+		if (ado == null) {
+			throw new IllegalArgumentException("Cannot undelete non existing entity: [" + getCoreEntityType() + "] - " + uuid);
+		}
+		service.undelete(ado);
+	}
+
 	public boolean isArchived(String uuid) {
 		return service.isArchived(uuid);
 	}
 
-	public DTO convertToDto(ADO source, Pseudonymizer pseudonymizer) {
-
-		if (source == null) {
-			return null;
-		}
-
-		boolean inJurisdiction = service.inJurisdictionOrOwned(source);
-		return convertToDto(source, pseudonymizer, inJurisdiction);
-	}
-
-	protected DTO convertToDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
-
-		DTO dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
-		return dto;
+	public boolean isDeleted(String uuid) {
+		return service.isDeleted(uuid);
 	}
 
 	public List<String> getUuidsForAutomaticDeletion(DeletionConfiguration entityConfig) {
@@ -235,6 +202,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		case CREATION:
 			return AbstractDomainObject.CREATION_DATE;
 		case END:
+			return CoreAdo.END_OF_PROCESSING_DATE;
 		case MANUAL_DELETION:
 			return AbstractDomainObject.CHANGE_DATE;
 		default:
@@ -260,10 +228,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	protected abstract CoreEntityType getCoreEntityType();
-
-	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction);
-
-	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
 	@DenyAll
 	public void archive(String entityUuid, Date endOfProcessingDate) {

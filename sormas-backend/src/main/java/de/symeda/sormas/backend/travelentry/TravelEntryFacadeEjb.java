@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -105,11 +106,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public boolean isDeleted(String travelEntryUuid) {
-		return service.isDeleted(travelEntryUuid);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
@@ -121,6 +117,12 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
 	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
 	}
 
@@ -129,8 +131,7 @@ public class TravelEntryFacadeEjb
 		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 
 		if (lastTravelEntry != null) {
-			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
-			TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, aDefault);
+			TravelEntryDto travelEntryDto = toPseudonymizedDto(lastTravelEntry);
 			return travelEntryDto.getDeaContent();
 		}
 
@@ -185,6 +186,11 @@ public class TravelEntryFacadeEjb
 		List<TravelEntryIndexDto> travelEntryIndexList = service.getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(travelEntryIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
+	public List<TravelEntryDto> getByPersonUuids(List<String> uuids) {
+		return service.getByPersonUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

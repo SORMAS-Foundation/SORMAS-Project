@@ -99,6 +99,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionProceed = "actionProceed";
 	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
 	String actionReset = "actionReset";
@@ -120,6 +121,7 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
+	String actionUnDelete = "actionUnDelete";
 	String actionYes = "actionYes";
 	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";
@@ -170,6 +172,8 @@ public interface Captions {
 	String AdditionalTest_wbcCount = "AdditionalTest.wbcCount";
 	String additionalTestNewTest = "additionalTestNewTest";
 	String address = "address";
+	String adoptHomeAddressOfCasePerson = "adoptHomeAddressOfCasePerson";
+	String adoptHomeAddressOfCasePersonIfRelationMatches = "adoptHomeAddressOfCasePersonIfRelationMatches";
 	String AggregateReport_deaths = "AggregateReport.deaths";
 	String AggregateReport_disease = "AggregateReport.disease";
 	String AggregateReport_grouping = "AggregateReport.grouping";
@@ -532,6 +536,7 @@ public interface Captions {
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
+	String caseJurisdictionType = "caseJurisdictionType";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
@@ -540,6 +545,7 @@ public interface Captions {
 	String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
 	String caseOpenCasesGuide = "caseOpenCasesGuide";
 	String caseOpenMergeGuide = "caseOpenMergeGuide";
+	String casePersonAddress = "casePersonAddress";
 	String casePickCase = "casePickCase";
 	String casePlaceOfStay = "casePlaceOfStay";
 	String casePlusDays = "casePlusDays";
@@ -2479,6 +2485,7 @@ public interface Captions {
 	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
 	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";
 	String versionIsMissing = "versionIsMissing";
+	String view = "view";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_aggregatereporting = "View.aggregatereports.aggregatereporting";

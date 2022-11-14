@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -167,11 +169,18 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 		Set<UserRight> userRights = source.getUserRights();
 		Set<UserRight> requiredUserRights = UserRight.getRequiredUserRights(userRights);
-		if (!userRights.containsAll(requiredUserRights)) {
+
+		Set<UserRight> missingRights = requiredUserRights.stream().filter(r -> !userRights.contains(r)).collect(Collectors.toSet());
+		Map<UserRight, Set<UserRight>> missingDependencies = new HashMap<>();
+		for (UserRight missingRight : missingRights) {
+			Set<UserRight> requiredRights = UserRight.requiredRightFromUserRights(missingRight, userRights);
+			missingDependencies.put(missingRight, requiredRights);
+		}
+
+		if (missingDependencies.size() > 0) {
 			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.missingRequiredUserRights,
-					requiredUserRights.stream().filter(r -> !userRights.contains(r)).map(UserRight::toString).collect(Collectors.joining(", "))));
+				I18nProperties
+					.getValidationError(Validations.missingRequiredUserRightsBaseText, buildUserRightsDependencyErrorMessage(missingDependencies)));
 		}
 
 		UserRoleDto existingUserRole = getByUuid(source.getUuid());
@@ -195,6 +204,32 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
 			}
 		}
+	}
+
+	private String buildUserRightsDependencyErrorMessage(Map<UserRight, Set<UserRight>> missingDependencies) {
+
+		StringBuilder errorMessageText = new StringBuilder();
+		for (Map.Entry<UserRight, Set<UserRight>> missingDependency : missingDependencies.entrySet()) {
+			Set<UserRight> dependencyList = missingDependency.getValue();
+			if (dependencyList == null || dependencyList.size() == 0) {
+				errorMessageText
+					.append(I18nProperties.getValidationError(Validations.missingRequiredUserRightsNoDependency, missingDependency.getKey()));
+			} else if (dependencyList.size() < 4) {
+				errorMessageText.append(
+					I18nProperties.getValidationError(
+						Validations.missingRequiredUserRightsSmallDependency,
+						missingDependency.getKey(),
+						dependencyList.stream().map(UserRight::toString).collect(Collectors.joining("', '"))));
+			} else {
+				errorMessageText.append(
+					I18nProperties.getValidationError(
+						Validations.missingRequiredUserRightsLargeDependency,
+						missingDependency.getKey(),
+						dependencyList.size(),
+						dependencyList.iterator().next().toString()));
+			}
+		}
+		return errorMessageText.toString();
 	}
 
 	@Override
@@ -273,9 +308,11 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public Set<UserRoleReferenceDto> getAllAsReference() {
+	public List<UserRoleReferenceDto> getAllAsReference() {
 		List<UserRoleDto> all = getAll();
-		return all != null ? all.stream().map(userRole -> userRole.toReference()).collect(Collectors.toSet()) : null;
+		Set<UserRoleReferenceDto> uniqueUserRoles =
+			all != null ? all.stream().map(userRole -> userRole.toReference()).collect(Collectors.toSet()) : null;
+		return new ArrayList<>(uniqueUserRoles);
 	}
 
 	@Override

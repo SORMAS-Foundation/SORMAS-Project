@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.externalmessage.labmessage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -24,7 +26,7 @@ public class SampleReportReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -5497058456244885735L;
 
-	public SampleReportReferenceDto(String uuid) {
+	public SampleReportReferenceDto(@JsonProperty("uuid") String uuid) {
 		setUuid(uuid);
 	}
 }

@@ -2,12 +2,12 @@ package de.symeda.sormas.backend.travelentry.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -44,7 +44,9 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
@@ -55,6 +57,24 @@ public class TravelEntryService extends BaseTravelEntryService {
 	private TaskService taskService;
 	@EJB
 	private DocumentService documentService;
+
+
+	public List<TravelEntry> getByPersonUuids(List<String> personUuids) {
+
+		List<TravelEntry> travelEntries = new LinkedList<>();
+		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<TravelEntry> cq = cb.createQuery(TravelEntry.class);
+			Root<TravelEntry> travelEntryRoot = cq.from(TravelEntry.class);
+			Join<TravelEntry, Person> personJoin = travelEntryRoot.join(TravelEntry.PERSON, JoinType.INNER);
+
+			cq.where(cb.and(createDefaultFilter(cb, travelEntryRoot), personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids)));
+
+			travelEntries.addAll(em.createQuery(cq).getResultList());
+		});
+		return travelEntries;
+	}
 
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -210,17 +230,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 			.forEach(document -> documentService.markAsDeleted(document));
 
 		super.deletePermanent(travelEntry);
-	}
-
-	public boolean isDeleted(String travelEntryUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<TravelEntry> from = cq.from(TravelEntry.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
 	}
 
 	public TravelEntry getLastTravelEntry() {

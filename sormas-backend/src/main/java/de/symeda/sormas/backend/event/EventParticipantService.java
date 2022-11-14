@@ -309,6 +309,14 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
+	public void undelete(EventParticipant eventParticipant) {
+
+		eventParticipant.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
+
+		super.undelete(eventParticipant);
+	}
+
+	@Override
 	public void deletePermanent(EventParticipant eventParticipant) {
 		for (Sample sample : eventParticipant.getSamples()) {
 			if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
@@ -544,7 +552,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, EventParticipant> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, EventParticipant> from) {
 		return inJurisdictionOrOwned(new EventParticipantQueryContext(cb, query, from));
 	}
 

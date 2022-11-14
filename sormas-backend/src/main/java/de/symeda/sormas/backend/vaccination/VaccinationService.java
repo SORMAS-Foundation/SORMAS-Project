@@ -54,9 +54,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
@@ -69,7 +68,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 
 @Stateless
 @LocalBean
-public class VaccinationService extends BaseAdoService<Vaccination> implements JurisdictionCheckService<Vaccination> {
+public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<Vaccination> {
 
 	public static final int REPORT_DATE_RELEVANT_DAYS = 14;
 
@@ -353,13 +352,18 @@ public class VaccinationService extends BaseAdoService<Vaccination> implements J
 	}
 
 	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Vaccination> from) {
+		return null;
+	}
+
+	@Override
 	public boolean inJurisdictionOrOwned(Vaccination entity) {
-		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
 	@Override
 	public List<Long> getInJurisdictionIds(List<Vaccination> entities) {
-		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return getIdList(entities, this::inJurisdictionOrOwned);
 	}
 
 	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Vaccination> from) {

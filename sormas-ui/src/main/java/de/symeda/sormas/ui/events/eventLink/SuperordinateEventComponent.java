@@ -129,7 +129,11 @@ public class SuperordinateEventComponent extends VerticalLayout {
 		private final EventDto superordinateEvent;
 
 		public SuperordinateEventInfoLayout(EventDto superordinateEvent) {
-			super(EventDto.class, UiFieldAccessCheckers.getDefault(superordinateEvent.isPseudonymized()));
+			super(
+				EventDto.class,
+				UiFieldAccessCheckers.forDataAccessLevel(
+					UserProvider.getCurrent().getPseudonymizableDataAccessLevel(superordinateEvent.isInJurisdiction()),
+					superordinateEvent.isPseudonymized()));
 			this.superordinateEvent = superordinateEvent;
 			setSpacing(true);
 			setMargin(false);

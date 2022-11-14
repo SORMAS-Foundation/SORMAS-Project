@@ -39,7 +39,22 @@ public class TravelEntryListComponent extends SideComponent {
 				UserRight.TRAVEL_ENTRY_CREATE);
 		}
 
-		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria);
+		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria, true);
+		addComponent(travelEntryList);
+		travelEntryList.reload();
+	}
+
+	public TravelEntryListComponent(TravelEntryListCriteria travelEntryListCriteria, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
+		super(I18nProperties.getString(Strings.entityTravelEntries), actionCallback);
+
+		if (FacadeProvider.getTravelEntryFacade().count(new TravelEntryCriteria(), true) > 0 && isEditAllowed) {
+			addCreateButton(
+				I18nProperties.getCaption(Captions.travelEntryNewTravelEntry),
+				() -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria),
+				UserRight.TRAVEL_ENTRY_CREATE);
+		}
+
+		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria, isEditAllowed);
 		addComponent(travelEntryList);
 		travelEntryList.reload();
 	}

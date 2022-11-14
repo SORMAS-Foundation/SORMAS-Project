@@ -18,10 +18,10 @@ package de.symeda.sormas.backend.report;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -37,12 +37,20 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
@@ -54,7 +62,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	private UserDto informant1;
 	private UserDto informant2;
 
-	@Before
+	@BeforeEach
 	public void setupData() {
 
 		rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
@@ -116,8 +124,8 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		int aggregatedDiseaseCount = getDiseaseConfigurationFacade().getAllDiseases(true, null, false, true).size();
-		Assert.assertEquals(aggregatedDiseaseCount, indexList.size());
-		Assert.assertEquals(1, indexList.stream().filter(aggregatedCaseCountDto -> aggregatedCaseCountDto.getDeaths() == 3).count());
+		assertEquals(aggregatedDiseaseCount, indexList.size());
+		assertEquals(1, indexList.stream().filter(aggregatedCaseCountDto -> aggregatedCaseCountDto.getDeaths() == 3).count());
 	}
 
 	@Test
@@ -142,7 +150,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 
 		int aggregatedDiseaseCount = getDiseaseConfigurationFacade().getAllDiseases(true, null, false, true).size();
-		Assert.assertEquals(aggregatedDiseaseCount + 8 - 1, indexList.size());
+		assertEquals(aggregatedDiseaseCount + 8 - 1, indexList.size());
 
 		int index = 0;
 		for (AggregateCaseCountDto caseCountDto : indexList) {
@@ -150,14 +158,14 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 				break;
 			index++;
 		}
-		Assert.assertEquals("0D_30D", indexList.get(index++).getAgeGroup());
-		Assert.assertEquals("1M_59M", indexList.get(index++).getAgeGroup());
-		Assert.assertEquals("60M_4Y", indexList.get(index++).getAgeGroup());
-		Assert.assertEquals("5Y_15Y", indexList.get(index++).getAgeGroup());
-		Assert.assertEquals("21Y_30Y", indexList.get(index++).getAgeGroup());
-		Assert.assertEquals("31Y_40Y", indexList.get(index++).getAgeGroup());
-		Assert.assertEquals("41Y_60Y", indexList.get(index++).getAgeGroup());
-		Assert.assertEquals("61Y", indexList.get(index++).getAgeGroup());
+		assertEquals("0D_30D", indexList.get(index++).getAgeGroup());
+		assertEquals("1M_59M", indexList.get(index++).getAgeGroup());
+		assertEquals("60M_4Y", indexList.get(index++).getAgeGroup());
+		assertEquals("5Y_15Y", indexList.get(index++).getAgeGroup());
+		assertEquals("21Y_30Y", indexList.get(index++).getAgeGroup());
+		assertEquals("31Y_40Y", indexList.get(index++).getAgeGroup());
+		assertEquals("41Y_60Y", indexList.get(index++).getAgeGroup());
+		assertEquals("61Y", indexList.get(index++).getAgeGroup());
 	}
 
 	private AggregateReportDto createAggregateReport(EpiWeek epiWeek, String ageGroup) {
@@ -252,15 +260,15 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexList.size());
-		Assert.assertEquals(2, indexList.get(0).getNewCases());
-		Assert.assertEquals(informant1.toReference(), indexList.get(0).getReportingUser());
+		assertEquals(1, indexList.size());
+		assertEquals(2, indexList.get(0).getNewCases());
+		assertEquals(informant1.toReference(), indexList.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
 		List<AggregateCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexListRegionGrouping.size());
-		Assert.assertEquals(2, indexListRegionGrouping.get(0).getNewCases());
-		Assert.assertNull(indexListRegionGrouping.get(0).getReportingUser());
+		assertEquals(1, indexListRegionGrouping.size());
+		assertEquals(2, indexListRegionGrouping.get(0).getNewCases());
+		assertNull(indexListRegionGrouping.get(0).getReportingUser());
 	}
 
 	@Test
@@ -278,9 +286,9 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		criteria.setAggregateReportGroupingLevel(null);
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexList.size());
-		Assert.assertEquals(17, indexList.get(0).getNewCases());
-		Assert.assertNull(indexList.get(0).getReportingUser());
+		assertEquals(1, indexList.size());
+		assertEquals(17, indexList.get(0).getNewCases());
+		assertNull(indexList.get(0).getReportingUser());
 	}
 
 	@Test
@@ -297,46 +305,46 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexList.size());
-		Assert.assertEquals(6, indexList.get(0).getNewCases());
-		Assert.assertEquals(13, indexList.get(0).getDeaths());
-		Assert.assertNull(indexList.get(0).getReportingUser());
+		assertEquals(1, indexList.size());
+		assertEquals(6, indexList.get(0).getNewCases());
+		assertEquals(13, indexList.get(0).getDeaths());
+		assertNull(indexList.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.HEALTH_FACILITY);
 		List<AggregateCaseCountDto> indexListFacilityGrouping = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(2, indexListFacilityGrouping.size());
-		Assert.assertEquals(2, indexListFacilityGrouping.get(0).getNewCases());
-		Assert.assertEquals(2, indexListFacilityGrouping.get(0).getDeaths());
-		Assert.assertEquals(1, indexListFacilityGrouping.get(1).getNewCases());
-		Assert.assertEquals(1, indexListFacilityGrouping.get(1).getDeaths());
+		assertEquals(2, indexListFacilityGrouping.size());
+		assertEquals(2, indexListFacilityGrouping.get(0).getNewCases());
+		assertEquals(2, indexListFacilityGrouping.get(0).getDeaths());
+		assertEquals(1, indexListFacilityGrouping.get(1).getNewCases());
+		assertEquals(1, indexListFacilityGrouping.get(1).getDeaths());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.POINT_OF_ENTRY);
 		List<AggregateCaseCountDto> indexListPoeGrouping = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexListPoeGrouping.size());
-		Assert.assertEquals(3, indexListPoeGrouping.get(0).getNewCases());
-		Assert.assertEquals(10, indexListPoeGrouping.get(0).getDeaths());
+		assertEquals(1, indexListPoeGrouping.size());
+		assertEquals(3, indexListPoeGrouping.get(0).getNewCases());
+		assertEquals(10, indexListPoeGrouping.get(0).getDeaths());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
 		List<AggregateCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexListRegionGrouping.size());
-		Assert.assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
-		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
-		Assert.assertNull(indexListRegionGrouping.get(0).getReportingUser());
+		assertEquals(1, indexListRegionGrouping.size());
+		assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
+		assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
+		assertNull(indexListRegionGrouping.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(null);
 		List<AggregateCaseCountDto> indexListNullGrouping = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexListNullGrouping.size());
-		Assert.assertEquals(6, indexListNullGrouping.get(0).getNewCases());
-		Assert.assertEquals(13, indexListNullGrouping.get(0).getDeaths());
-		Assert.assertNull(indexListNullGrouping.get(0).getReportingUser());
+		assertEquals(1, indexListNullGrouping.size());
+		assertEquals(6, indexListNullGrouping.get(0).getNewCases());
+		assertEquals(13, indexListNullGrouping.get(0).getDeaths());
+		assertNull(indexListNullGrouping.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
 		createAggregateReport(4, 4, 4, rdcf.region, rdcf.district, null, null);
 		List<AggregateCaseCountDto> indexListDistrictGroupingWhenDistrictData = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexListDistrictGroupingWhenDistrictData.size());
-		Assert.assertEquals(4, indexListDistrictGroupingWhenDistrictData.get(0).getNewCases());
-		Assert.assertEquals(4, indexListDistrictGroupingWhenDistrictData.get(0).getDeaths());
-		Assert.assertEquals(informant1.toReference(), indexListDistrictGroupingWhenDistrictData.get(0).getReportingUser());
+		assertEquals(1, indexListDistrictGroupingWhenDistrictData.size());
+		assertEquals(4, indexListDistrictGroupingWhenDistrictData.get(0).getNewCases());
+		assertEquals(4, indexListDistrictGroupingWhenDistrictData.get(0).getDeaths());
+		assertEquals(informant1.toReference(), indexListDistrictGroupingWhenDistrictData.get(0).getReportingUser());
 	}
 
 	@Test
@@ -354,8 +362,8 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexList.size());
-		Assert.assertEquals(1, indexList.get(0).getNewCases());
+		assertEquals(1, indexList.size());
+		assertEquals(1, indexList.get(0).getNewCases());
 	}
 
 	@Test
@@ -369,9 +377,9 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		List<AggregateReportDto> similarAggregateReports = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
 
-		Assert.assertEquals(1, similarAggregateReports.size());
-		Assert.assertEquals(2, similarAggregateReports.get(0).getNewCases().intValue());
-		Assert.assertFalse(similarAggregateReports.get(0).isExpiredAgeGroup());
+		assertEquals(1, similarAggregateReports.size());
+		assertEquals(2, similarAggregateReports.get(0).getNewCases().intValue());
+		assertFalse(similarAggregateReports.get(0).isExpiredAgeGroup());
 
 		creator.updateDiseaseConfiguration(disease, false, false, false, true, Arrays.asList("0D_28D", "1M_12M", "1Y_5Y", "6Y"));
 
@@ -386,10 +394,10 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		createAggregateReport(disease, "6Y", 61, 61, 61);
 
 		List<AggregateReportDto> similarAggregateReports2 = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
-		Assert.assertEquals(5, similarAggregateReports2.size());
-		Assert.assertTrue(similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
-		Assert.assertFalse(similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
-		Assert.assertEquals(41, similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport2)).getNewCases().intValue());
+		assertEquals(5, similarAggregateReports2.size());
+		assertTrue(similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
+		assertFalse(similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
+		assertEquals(41, similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport2)).getNewCases().intValue());
 
 		creator.updateDiseaseConfiguration(disease, false, false, false, true, Arrays.asList("0D_2Y", "3Y_10Y", "11Y"));
 		createAggregateReport(disease, "0D_2Y", 7, 7, 7);
@@ -397,16 +405,84 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		createAggregateReport(disease, "11Y", 9, 9, 9);
 
 		List<AggregateReportDto> similarAggregateReports3 = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
-		Assert.assertEquals(8, similarAggregateReports3.size());
-		Assert.assertTrue(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
-		Assert.assertTrue(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
-		Assert.assertFalse(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport3)).isExpiredAgeGroup());
+		assertEquals(8, similarAggregateReports3.size());
+		assertTrue(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
+		assertTrue(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
+		assertFalse(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport3)).isExpiredAgeGroup());
 
 		creator.updateDiseaseConfiguration(disease, false, false, false, true, null);
 		List<AggregateReportDto> similarAggregateReports4 = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
-		Assert.assertEquals(8, similarAggregateReports3.size());
-		Assert.assertFalse(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
-		Assert.assertTrue(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
-		Assert.assertTrue(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport3)).isExpiredAgeGroup());
+		assertEquals(8, similarAggregateReports3.size());
+		assertFalse(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport)).isExpiredAgeGroup());
+		assertTrue(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
+		assertTrue(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport3)).isExpiredAgeGroup());
+	}
+
+	@Test
+	public void testGetReportsWithPoeUsers() {
+		RDCF rdcf1 = creator.createRDCF("Region1", "District1", "Community1", "Facility1", "PointOfEntry1");
+		RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", "Facility2", "PointOfEntry2");
+
+		UserDto poeNatUser = creator.createUser("", "", "", "POE Nat", "User", creator.getUserRoleReference(DefaultUserRole.POE_NATIONAL_USER));
+		UserDto poeSup =
+			creator.createUser(rdcf1.region.getUuid(), "", "", "POE Sup", "User", creator.getUserRoleReference(DefaultUserRole.POE_SUPERVISOR));
+		UserDto poeInfor =
+			creator.createUser(rdcf1, creator.getUserRoleReference(DefaultUserRole.POE_INFORMANT), user -> user.setPointOfEntry(rdcf1.pointOfEntry));
+
+		UserDto natUser = useNationalUserLogin();
+		loginWith(natUser);
+
+		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
+
+		createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf1.region, rdcf1.district, null, null, 1, 1, 1);
+		createAggregateReportDto(Disease.CHOLERA, epiWeek, "1Y_100Y", rdcf1.region, rdcf1.district, null, rdcf1.pointOfEntry, 1, 1, 1);
+		createAggregateReportDto(Disease.HIV, epiWeek, "1Y_100Y", rdcf2.region, rdcf2.district, null, null, 1, 1, 1);
+		createAggregateReportDto(Disease.POLIO, epiWeek, "1Y_100Y", rdcf2.region, rdcf2.district, null, rdcf2.pointOfEntry, 1, 1, 1);
+
+		AggregateReportCriteria criteria = new AggregateReportCriteria();
+		criteria.setShowZeroRows(false);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		List<AggregateCaseCountDto> reportList = getAggregateReportFacade().getIndexList(criteria);
+		assertEquals(4, reportList.size());
+		List<Disease> reportDiseases = reportList.stream().map(r -> r.getDisease()).collect(Collectors.toList());
+		assertTrue(reportDiseases.containsAll(Arrays.asList(Disease.MALARIA, Disease.CHOLERA, Disease.HIV, Disease.POLIO)));
+
+		loginWith(poeNatUser);
+		reportList = getAggregateReportFacade().getIndexList(criteria);
+		assertEquals(2, reportList.size());
+		reportDiseases = reportList.stream().map(r -> r.getDisease()).collect(Collectors.toList());
+		assertTrue(reportDiseases.containsAll(Arrays.asList(Disease.CHOLERA, Disease.POLIO)));
+
+		loginWith(poeSup);
+		reportList = getAggregateReportFacade().getIndexList(criteria);
+		assertEquals(1, reportList.size());
+		reportDiseases = reportList.stream().map(r -> r.getDisease()).collect(Collectors.toList());
+		assertTrue(reportDiseases.contains(Disease.CHOLERA));
+
+		loginWith(poeInfor);
+		reportList = getAggregateReportFacade().getIndexList(criteria);
+		assertEquals(1, reportList.size());
+		reportDiseases = reportList.stream().map(r -> r.getDisease()).collect(Collectors.toList());
+		assertTrue(reportDiseases.contains(Disease.CHOLERA));
+	}
+
+	@Test
+	public void testCreateReportsWithPoeUsers() {
+		UserDto poeNatUser = creator.createUser("", "", "", "POE Nat", "User", creator.getUserRoleReference(DefaultUserRole.POE_NATIONAL_USER));
+		UserDto poeSup =
+			creator.createUser(rdcf.region.getUuid(), "", "", "POE Sup", "User", creator.getUserRoleReference(DefaultUserRole.POE_SUPERVISOR));
+		UserDto poeInfor =
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.POE_INFORMANT), user -> user.setPointOfEntry(rdcf.pointOfEntry));
+		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
+
+		loginWith(poeNatUser);
+		assertThrows(ValidationRuntimeException.class, () -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
+
+		loginWith(poeSup);
+		assertThrows(ValidationRuntimeException.class, () -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
+
+		loginWith(poeInfor);
+		assertThrows(ValidationRuntimeException.class, () -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
 	}
 }

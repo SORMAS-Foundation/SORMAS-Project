@@ -127,7 +127,10 @@ public interface Validations {
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String jurisdictionChangeUserAssignment = "jurisdictionChangeUserAssignment";
-	String missingRequiredUserRights = "missingRequiredUserRights";
+	String missingRequiredUserRightsBaseText = "missingRequiredUserRightsBaseText";
+	String missingRequiredUserRightsLargeDependency = "missingRequiredUserRightsLargeDependency";
+	String missingRequiredUserRightsNoDependency = "missingRequiredUserRightsNoDependency";
+	String missingRequiredUserRightsSmallDependency = "missingRequiredUserRightsSmallDependency";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
 	String noAddressDistrictInAddressRegion = "noAddressDistrictInAddressRegion";
@@ -232,7 +235,6 @@ public interface Validations {
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validEmailAddress = "validEmailAddress";
-	String validEventInvestigationStatus = "validEventInvestigationStatus";
 	String validEventStatus = "validEventStatus";
 	String validEventTitle = "validEventTitle";
 	String validFacility = "validFacility";

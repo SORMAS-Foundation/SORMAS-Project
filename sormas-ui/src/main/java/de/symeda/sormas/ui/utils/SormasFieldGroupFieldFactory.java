@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
-import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -34,6 +32,8 @@ import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
 import de.symeda.sormas.ui.person.PersonContactDetailsField;
+import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
@@ -45,10 +45,21 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	private static final long serialVersionUID = 471700572643936674L;
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private final UiFieldAccessCheckers fieldAccessCheckers;
+	private final boolean isEditAllowed;
 
 	public SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
+		this.isEditAllowed = true;
+	}
+
+	public SormasFieldGroupFieldFactory(
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		boolean isEditAllowed) {
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@SuppressWarnings({
@@ -120,15 +131,15 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
 		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
-			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (ExposuresField.class.isAssignableFrom(fieldType)) {
-			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (ActivityAsCaseField.class.isAssignableFrom(fieldType)) {
-			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (PersonContactDetailsField.class.isAssignableFrom(fieldType)) {
-			return (T) new PersonContactDetailsField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new PersonContactDetailsField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (VaccinationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new VaccinationsField(fieldAccessCheckers);
 		} else if (JsonForm.class.isAssignableFrom(fieldType)) {
