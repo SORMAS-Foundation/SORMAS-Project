@@ -346,6 +346,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		stubFor(
+			post(urlEqualTo("/delete")).withRequestBody(containing(case1.getUuid()))
+				.withRequestBody(containing("cases"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
 
@@ -353,6 +357,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		assertTrue(shared);
 		shared = getExternalShareInfoFacade().isSharedEntity(case2.getUuid());
 		assertFalse(shared);
+
+		getExternalSurveillanceToolGatewayFacade().deleteCases(Arrays.asList(case1));
+		shared = getExternalShareInfoFacade().isSharedEntity(case1.getUuid());
+		assertFalse(shared);
+
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
+		shared = getExternalShareInfoFacade().isSharedEntity(case1.getUuid());
+		assertTrue(shared);
 	}
 
 	private EventDto createEventDto(

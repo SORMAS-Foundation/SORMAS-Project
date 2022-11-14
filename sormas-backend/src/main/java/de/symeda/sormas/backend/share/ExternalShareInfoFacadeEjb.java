@@ -22,6 +22,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -86,19 +87,24 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 	@Override
 	public boolean isSharedEntity(String uuid) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final CriteriaQuery<ExternalShareStatus> cq = cb.createQuery(ExternalShareStatus.class);
 		final Root<ExternalShareInfo> shareInfo = cq.from(ExternalShareInfo.class);
 
 		Join<ExternalShareInfo, Case> caseJoin = shareInfo.join(ExternalShareInfo.CAZE, JoinType.LEFT);
 		Join<ExternalShareInfo, Event> eventJoin = shareInfo.join(ExternalShareInfo.EVENT, JoinType.LEFT);
 
-		cq.select(cb.count(shareInfo));
-		Predicate predicate = cb.and(
-			cb.equal(shareInfo.get(ExternalShareInfo.STATUS), ExternalShareStatus.SHARED),
-			cb.or(cb.equal(caseJoin.get(Case.UUID), uuid), cb.equal(eventJoin.get(Event.UUID), uuid)));
+		cq.select(shareInfo.get(ExternalShareInfo.STATUS));
+		Predicate predicate = cb.or(cb.equal(caseJoin.get(Case.UUID), uuid), cb.equal(eventJoin.get(Event.UUID), uuid));
 		cq.where(predicate);
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
+		cq.orderBy(cb.desc(shareInfo.get(ExternalShareInfo.CREATION_DATE)));
+
+		ExternalShareStatus externalShareStatus = null;
+		try {
+			externalShareStatus = em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+		}
+
+		return ExternalShareStatus.SHARED.equals(externalShareStatus);
 	}
 
 	private ExternalShareInfoDto convertToDto(ExternalShareInfo source, Pseudonymizer pseudonymizer) {
