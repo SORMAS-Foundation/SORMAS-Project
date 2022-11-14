@@ -1644,7 +1644,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> from) {
 		return inJurisdictionOrOwned(new ContactQueryContext(cb, query, from));
 	}
 

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -102,7 +103,7 @@ public class InfoProviderTest {
 	public void testGetLastCommitShortId() {
 
 		InfoProvider cut = InfoProvider.get();
-		assertThat(cut.getLastCommitShortId(), hasLength(7));
+		assertThat(cut.getLastCommitShortId(), anyOf(hasLength(7), hasLength(8)));
 	}
 
 	@Test
