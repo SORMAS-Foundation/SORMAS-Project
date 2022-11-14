@@ -127,7 +127,7 @@ public class RegionsView extends AbstractConfigurationView {
 			addHeaderComponent(exportButton);
 
 			StreamResource streamResource = GridExportStreamResource
-				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.REGIONS, RegionsGrid.EDIT_BTN_ID);
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.REGIONS, RegionsGrid.ACTION_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}

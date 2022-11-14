@@ -58,6 +58,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -1091,16 +1092,26 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			List<String> sharedCaseUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids);
+			List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
+			if (!uuidsAllowedToBeShared.isEmpty()) {
+				List<String> sharedCaseUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(uuidsAllowedToBeShared);
 
-			if (!sharedCaseUuids.isEmpty()) {
-				try {
-					externalSurveillanceToolGatewayFacade.sendCases(sharedCaseUuids, archived);
-				} catch (ExternalSurveillanceToolException e) {
-					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+				if (!sharedCaseUuids.isEmpty()) {
+					try {
+						externalSurveillanceToolGatewayFacade.sendCases(sharedCaseUuids, archived);
+					} catch (ExternalSurveillanceToolException e) {
+						throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+					}
 				}
 			}
 		}
+	}
+
+	public List<String> getEntityUuidsAllowedToBeShared(List<String> entityUuids) {
+		List<CaseDataDto> casesAllowedToBeShare =
+			caseFacade.getByUuids(entityUuids).stream().filter(c -> !c.isDontShareWithReportingTool()).collect(Collectors.toList());
+
+		return casesAllowedToBeShare.stream().map(CaseDataDto::getUuid).collect(Collectors.toList());
 	}
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
@@ -1134,7 +1145,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	private void deleteCaseInExternalSurveillanceTool(Case caze) {
 		try {
-			caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+			if (!caze.isDontShareWithReportingTool()) {
+				caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+			}
 		} catch (ExternalSurveillanceToolException e) {
 			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 		}
@@ -1627,7 +1640,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
 		return inJurisdictionOrOwned(new CaseQueryContext(cb, query, from));
 	}
 

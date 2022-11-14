@@ -95,7 +95,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		});
 
 		setColumns(
-			EDIT_BTN_ID,
+			ACTION_BTN_ID,
 			TaskIndexDto.CONTEXT_REFERENCE,
 			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_TYPE,

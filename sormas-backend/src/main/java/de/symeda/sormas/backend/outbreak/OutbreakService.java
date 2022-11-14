@@ -38,7 +38,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -48,7 +48,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class OutbreakService extends AdoServiceWithUserFilter<Outbreak> {
+public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Outbreak> {
 
 	@EJB
 	private DiseaseConfigurationService diseaseConfigurationService;

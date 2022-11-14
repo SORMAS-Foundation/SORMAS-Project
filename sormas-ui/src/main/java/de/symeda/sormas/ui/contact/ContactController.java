@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -615,6 +616,7 @@ public class ContactController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
 			editComponent.addDeleteWithReasonOrUndeleteListener(
 				ContactsView.VIEW_NAME,
+				getDeleteConfirmationDetails(Collections.singletonList(contact.getUuid())),
 				I18nProperties.getString(Strings.entityContact),
 				contactUuid,
 				FacadeProvider.getContactFacade());

@@ -112,8 +112,8 @@ public class FacilityCriteria extends BaseCriteria implements Serializable, Clon
 		return nameAddressLike;
 	}
 
-	public FacilityCriteria nameCityLike(String nameCityLike) {
-		this.nameAddressLike = nameCityLike;
+	public FacilityCriteria nameAddressLike(String nameAddressLike) {
+		this.nameAddressLike = nameAddressLike;
 		return this;
 	}
 }

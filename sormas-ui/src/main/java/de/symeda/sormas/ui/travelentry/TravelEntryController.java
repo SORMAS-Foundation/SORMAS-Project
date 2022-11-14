@@ -165,6 +165,7 @@ public class TravelEntryController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteWithReasonOrUndeleteListener(
 				TravelEntriesView.VIEW_NAME,
+				null,
 				I18nProperties.getString(Strings.entityTravelEntry),
 				travelEntry.getUuid(),
 				FacadeProvider.getTravelEntryFacade());
