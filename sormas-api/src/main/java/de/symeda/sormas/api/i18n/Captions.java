@@ -71,6 +71,7 @@ public interface Captions {
 	String actionDismiss = "actionDismiss";
 	String actionEnable = "actionEnable";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
+	String actionExecuteAutomaticDeletion = "actionExecuteAutomaticDeletion";
 	String actionGenerate = "actionGenerate";
 	String actionGenerateNewPassword = "actionGenerateNewPassword";
 	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
