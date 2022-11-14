@@ -49,6 +49,12 @@ Before creating a bug report, please check the following rules:
 2. If you have more than one possible bug - especially when you are tempted to create a list of independent findings in the **Bug Description** - then please document each bug as separate issue.
 3. Bugs are only valid to create if you can point to a released version where the problem is occuring, not on the version currently under development.
 
+The development team defines a **severity** for bugs to distinguish the consequences for affected users:
+
+* **critical:** The system unusable as a whole or on critical functionality, no workaround is available.
+* **major:** A functional requirement is incorrect or incomplete, there might be a workaround.
+* **minor:** Text issues or grammatical mistakes, layouting or cosmetic problems. It does not affect the functionality, no workaround needed.
+
 #### Why are bugs only valid on released versions?
 
 1. If there is a problem newly introduced on the `development` branch, it means that an issue recently worked on is not yet finished (so to be reopened and continued to work on). It's relevant for reviewing (now, soon or far later) to keep changes logically together as good as possible.
