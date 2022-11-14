@@ -179,7 +179,7 @@ public class DevModeView extends AbstractConfigurationView {
 				I18nProperties.getString(Strings.messageAutomaticDeletionStarted),
 				ContentMode.TEXT,
 				640);
-			new Thread(() -> FacadeProvider.getDeletionConfigurationFacade().executeAutomaticDeletion()).start();
+			FacadeProvider.getDeletionConfigurationFacade().executeAutomaticDeletion();
 		});
 		horizontalLayout.addComponent(btnExecuteAutomaticDeletion);
 

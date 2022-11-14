@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -13,6 +14,7 @@ public class DeletionConfigurationFacadeEjb implements DeletionConfigurationFaca
 	private CoreEntityDeletionService coreEntityDeletionService;
 
 	@Override
+	@Asynchronous
 	public void executeAutomaticDeletion() {
 		coreEntityDeletionService.executeAutomaticDeletion();
 	}
