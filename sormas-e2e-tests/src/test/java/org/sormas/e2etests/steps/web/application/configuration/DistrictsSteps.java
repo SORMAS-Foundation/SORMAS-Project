@@ -32,6 +32,7 @@ import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPa
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CREATE_NEW_ENTRY_DISTRICTS_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CREATE_NEW_ENTRY_DISTRICTS_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_NAME_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_TABLE_ROW;
@@ -310,6 +311,58 @@ public class DistrictsSteps implements En {
               webDriverHelpers.isElementPresent(RELEVANCE_STATUS_COMBO_BOX_DISTRICTS_CONFIGURATION),
               "Relevance status Combo box is Not present in Districts Configuration");
           softly.assertAll();
+        });
+
+    Then(
+        "I verify the Search and Reset filter functionality in Districts Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION);
+          Integer defaultDistrictCount =
+              webDriverHelpers.getNumberOfElements(DISTRICTS_NAME_TABLE_ROW);
+          String districtName = webDriverHelpers.getTextFromWebElement(DISTRICTS_NAME_TABLE_ROW);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_DISTRICT_INPUT, districtName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(DISTRICTS_NAME_TABLE_ROW, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(DISTRICTS_NAME_TABLE_ROW, districtName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_DISTRICTS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              DISTRICTS_NAME_TABLE_ROW, defaultDistrictCount);
+        });
+
+    Then(
+        "I verify the Country dropdown functionality in Districts Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION);
+          Integer defaultDistrictCount =
+              webDriverHelpers.getNumberOfElements(DISTRICTS_NAME_TABLE_ROW);
+          String districtName = webDriverHelpers.getTextFromWebElement(DISTRICTS_NAME_TABLE_ROW);
+          webDriverHelpers.selectFromCombobox(COUNTRY_DISTRICT_FILTER_COMBOBOX, "Germany");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_DISTRICT_INPUT, districtName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(DISTRICTS_NAME_TABLE_ROW, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(DISTRICTS_NAME_TABLE_ROW, districtName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_DISTRICTS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              DISTRICTS_NAME_TABLE_ROW, defaultDistrictCount);
+        });
+
+    Then(
+        "I verify the Region dropdown functionality in Districts Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION);
+          webDriverHelpers.selectFromCombobox(REGION_DISTRICT_FILTER_COMBOBOX, "Bayern");
+          webDriverHelpers.waitUntilAListOfElementsHasText(DISTRICTS_NAME_TABLE_ROW, "Bayern");
         });
   }
 

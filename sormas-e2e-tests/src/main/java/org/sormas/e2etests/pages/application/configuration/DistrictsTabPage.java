@@ -27,6 +27,8 @@ public class DistrictsTabPage {
   public static final By EXPORT_BUTTON_DISTRICTS_CONFIGURATION = By.id("export");
   public static final By ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION =
       By.id("actionEnterBulkEditMode");
+  public static final By DISTRICTS_NAME_TABLE_ROW =
+      By.cssSelector("div.v-grid-tablewrapper tbody tr >:nth-child(2)");
   public static final By CREATE_NEW_ENTRY_DISTRICTS_NAME_INPUT =
       By.cssSelector(".popupContent #name");
   public static final By CREATE_NEW_ENTRY_DISTRICTS_REGION_COMBOBOX =
