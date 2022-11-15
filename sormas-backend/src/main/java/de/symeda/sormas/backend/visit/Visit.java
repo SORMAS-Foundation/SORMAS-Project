@@ -164,7 +164,7 @@ public class Visit extends AbstractDomainObject {
 		this.symptoms = symptoms;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public User getVisitUser() {
 		return visitUser;
 	}

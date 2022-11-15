@@ -280,7 +280,7 @@ public class Location extends AbstractDomainObject {
 		this.facilityType = facilityType;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Facility getFacility() {
 		return facility;
 	}

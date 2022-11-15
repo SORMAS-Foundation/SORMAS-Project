@@ -86,7 +86,7 @@ public class Campaign extends CoreAdo {
 		this.endDate = endDate;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public User getCreatingUser() {
 		return creatingUser;

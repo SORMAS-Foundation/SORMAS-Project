@@ -220,7 +220,7 @@ public class User extends AbstractDomainObject {
 		this.address = address;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -264,7 +264,7 @@ public class User extends AbstractDomainObject {
 		jurisdictionLevel = UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public User getAssociatedOfficer() {
 		return associatedOfficer;
 	}
@@ -277,7 +277,7 @@ public class User extends AbstractDomainObject {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}
@@ -286,7 +286,7 @@ public class User extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Community getCommunity() {
 		return community;
 	}
@@ -295,7 +295,7 @@ public class User extends AbstractDomainObject {
 		this.community = community;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
@@ -304,7 +304,7 @@ public class User extends AbstractDomainObject {
 		this.healthFacility = healthFacility;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Facility getLaboratory() {
 		return laboratory;
 	}
@@ -313,7 +313,7 @@ public class User extends AbstractDomainObject {
 		this.laboratory = laboratory;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public PointOfEntry getPointOfEntry() {
 		return pointOfEntry;
 	}

@@ -187,7 +187,7 @@ public class Task extends AbstractDomainObject {
 		this.perceivedStart = perceivedStart;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public User getCreatorUser() {
 		return creatorUser;
 	}
@@ -205,7 +205,7 @@ public class Task extends AbstractDomainObject {
 		this.creatorComment = creatorComment;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public User getAssigneeUser() {
 		return assigneeUser;
 	}

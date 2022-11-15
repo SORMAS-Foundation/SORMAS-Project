@@ -510,7 +510,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.namesOfGuardians = namesOfGuardians;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Region getPlaceOfBirthRegion() {
 		return placeOfBirthRegion;
 	}
@@ -519,7 +519,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.placeOfBirthRegion = placeOfBirthRegion;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public District getPlaceOfBirthDistrict() {
 		return placeOfBirthDistrict;
 	}
@@ -528,7 +528,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.placeOfBirthDistrict = placeOfBirthDistrict;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Community getPlaceOfBirthCommunity() {
 		return placeOfBirthCommunity;
 	}
@@ -537,7 +537,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.placeOfBirthCommunity = placeOfBirthCommunity;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Facility getPlaceOfBirthFacility() {
 		return placeOfBirthFacility;
 	}
