@@ -2141,7 +2141,7 @@ public class ContactFacadeEjb
 		for (VisitDto otherVisit : otherContact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
 			otherVisit.setPerson(leadContactDto.getPerson());
 			otherVisit.setDisease(leadContactDto.getDisease());
-			visitFacade.saveVisit(otherVisit);
+			visitFacade.save(otherVisit);
 		}
 
 		// 4 Documents
