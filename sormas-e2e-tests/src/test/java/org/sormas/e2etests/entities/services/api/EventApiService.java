@@ -22,6 +22,8 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 import org.sormas.e2etests.entities.pojo.api.Community;
@@ -62,6 +64,63 @@ public class EventApiService {
   public Event buildGeneratedEvent() {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Event.builder()
+        .uuid(UUID.randomUUID().toString())
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .diseaseVariant(
+            DiseaseVariant.builder()
+                .value("B.1.617.3")
+                .caption("B.1.617.3")
+                .hasDetails(true)
+                .build())
+        .reportingUser(
+            ReportingUser.builder()
+                .uuid(
+                    runningConfiguration
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
+                .build())
+        .eventStatus("SIGNAL")
+        .srcType(SourceTypeValues.getRandomSourceTypeName())
+        .eventInvestigationStatus("PENDING")
+        .eventTitle(String.valueOf(System.currentTimeMillis()))
+        .eventDesc(faker.chuckNorris().fact())
+        .startDate(new Date())
+        .reportDateTime(new Date())
+        .riskLevel("LOW")
+        .typeOfPlace("HOME")
+        .eventManagementStatus(EventManagementStatusValues.ONGOING.getValue())
+        .eventLocation(
+            EventLocation.builder()
+                .uuid(UUID.randomUUID().toString())
+                .community(
+                    Community.builder()
+                        .uuid(
+                            environmentManager.getCommunityUUID(
+                                CommunityValues.VoreingestellteGemeinde.getName()))
+                        .build())
+                .region(
+                    Region.builder()
+                        .uuid(
+                            environmentManager.getRegionUUID(
+                                RegionsValues.VoreingestellteBundeslander.getName()))
+                        .build())
+                .district(
+                    District.builder()
+                        .uuid(
+                            environmentManager.getDistrictUUID(
+                                DistrictsValues.VoreingestellterLandkreis.getName()))
+                        .build())
+                .build())
+        .build();
+  }
+
+  public Event buildGeneratedEventWithCreationDate(Integer years) {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+    String createTime = LocalDateTime.now().minusYears(years).toString();
+    long millis =
+        LocalDateTime.parse(createTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    return Event.builder()
+        .creationDate(millis)
         .uuid(UUID.randomUUID().toString())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseVariant(

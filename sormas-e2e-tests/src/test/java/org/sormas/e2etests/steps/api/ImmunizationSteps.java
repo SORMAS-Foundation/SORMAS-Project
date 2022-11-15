@@ -73,5 +73,17 @@ public class ImmunizationSteps implements En {
         });
 
     When("API: I receive all immunizations ids", immunizationHelper::getAllImmunizationsUUIDs);
+
+    When(
+        "API: I create a new immunizations for last created person with creation date {int} years ago",
+        (Integer creationDate) -> {
+          String lastCreatedUserUUID = apiState.getLastCreatedPerson().getUuid();
+          Person person = Person.builder().uuid(lastCreatedUserUUID).build();
+          Immunization immunization =
+              immunizationApiService.buildGeneratedImmunizationForPersonWithCreationDate(
+                  person, creationDate);
+          apiState.setCreatedImmunization(immunization);
+          immunizationHelper.createNewImmunization(immunization);
+        });
   }
 }

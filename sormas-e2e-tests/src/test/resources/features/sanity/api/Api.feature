@@ -160,3 +160,36 @@ Feature: Check basic POSTs RestApi endpoints
       | numberOfImmunizations |
       | 1                     |
       | 5                     |
+
+  @env_main @oldfake
+  Scenario: Create new case with creation date 10 years ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with creation date 10 years ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+
+  @env_main @oldfake
+  Scenario: Create a new contact with creation date 5 years ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact with creation date 5 years ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+
+  @env_main @oldfake
+  Scenario: Create a new event with creation date 5 years ago
+    Given API: I create a new event with creation date 5 years ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+
+  @env_main @testIt
+  Scenario: Create Person and attach immunizations with creation date 10 years ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new immunizations for last created person with creation date 10 years ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200

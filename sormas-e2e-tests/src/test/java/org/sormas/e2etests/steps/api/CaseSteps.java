@@ -42,6 +42,16 @@ public class CaseSteps implements En {
         });
 
     When(
+        "API: I create a new case with creation date {int} years ago",
+        (Integer creationTime) -> {
+          Case caze =
+              caseApiService.buildGeneratedCaseWithCreationDate(
+                  apiState.getLastCreatedPerson(), creationTime);
+          caseHelper.createCase(caze);
+          apiState.setCreatedCase(caze);
+        });
+
+    When(
         "API: I create a new case with {string} region and {string} district and {string} facility",
         (String region, String district, String facility) -> {
           Case caze =

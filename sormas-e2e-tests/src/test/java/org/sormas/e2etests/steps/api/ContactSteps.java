@@ -48,6 +48,17 @@ public class ContactSteps implements En {
           contactHelper.push(contact);
           apiState.setCreatedContact(contact);
         });
+
+    When(
+        "API: I create a new contact with creation date {int} years ago",
+        (Integer creationDate) -> {
+          Contact contact =
+              contactApiService.buildGeneratedContactWithCreationDate(
+                  apiState.getLastCreatedPerson(), creationDate);
+          contactHelper.push(contact);
+          apiState.setCreatedContact(contact);
+        });
+
     When(
         "API: I create a new contact with {string} region and {string} district linked to last created case",
         (String region, String district) -> {
