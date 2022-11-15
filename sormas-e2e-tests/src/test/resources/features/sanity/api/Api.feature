@@ -185,7 +185,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_main @testIt
+  @env_main @oldfake
   Scenario: Create Person and attach immunizations with creation date 10 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
