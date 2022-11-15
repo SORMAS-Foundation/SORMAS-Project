@@ -229,17 +229,6 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public List<EventParticipantDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
@@ -352,7 +341,7 @@ public class EventParticipantFacadeEjb
 
 		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
 		// Create newly event participants with the same archiving status as the Event
-		entity.setArchived(existingParticipant == null ? event.isArchived(): existingParticipant.isArchived());
+		entity.setArchived(existingParticipant == null ? event.isArchived() : existingParticipant.isArchived());
 		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
@@ -746,8 +735,7 @@ public class EventParticipantFacadeEjb
 				personAddressesCq.where(
 					personAddressesIdsExpr
 						.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getPersonAddressId).collect(Collectors.toList())));
-				List<Location> personAddressesList =
-					em.createQuery(personAddressesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
+				List<Location> personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
 			}
 
