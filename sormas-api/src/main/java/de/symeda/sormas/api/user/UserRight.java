@@ -421,6 +421,7 @@ public enum UserRight {
 	public static final String _SORMAS_UI = "SORMAS_UI";
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
 	public static final String _EXTERNAL_VISITS = "EXTERNAL_VISITS";
+	public static final String _DEV_MODE = "DEV_MODE";
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();
 
