@@ -94,7 +94,7 @@ public final class ConfigProvider {
 	private static String LBDS_KEYSTORE_ALIAS_SORMAS_PRIVATE_KEY_AES_SECRET = "LBDS_PRIVATE_KEY_AES_SECRET";
 	private static String LBDS_KEYSTORE_ALIAS_AES_SECRET = "LBDS_AES_SECRET";
 
-	private static String APPVERSIONNUMBER = "1.0.15";
+	public static String APPVERSIONNUMBER = "1.0.16";
 
 	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
@@ -659,6 +659,7 @@ public final class ConfigProvider {
 	 * @return Will never be null.
 	 */
 	public static String getServerLocale() {
+
 		if (instance.serverLocale == null)
 			synchronized (ConfigProvider.class) {
 				if (instance.serverLocale == null) {
@@ -731,10 +732,12 @@ public final class ConfigProvider {
 			serverLocale = null;
 		}
 
-		if (serverLocale == instance.serverLocale || (serverLocale != null && serverLocale.equals(instance.serverLocale)))
-			return;
-
-		instance.serverLocale = serverLocale;
+		//if (serverLocale == instance.serverLocale || (serverLocale != null && serverLocale.equals(instance.serverLocale)))
+		//	return;
+		System.out.println(instance.serverLocale+" __________LOCALE______________ " + serverLocale);
+		if(instance.serverLocale == null) {
+			instance.serverLocale = serverLocale;
+		}
 		saveConfigEntry(SERVER_LOCALE, serverLocale);
 	}
 

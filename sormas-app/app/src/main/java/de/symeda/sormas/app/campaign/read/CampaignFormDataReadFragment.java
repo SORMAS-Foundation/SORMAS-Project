@@ -663,7 +663,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                     ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                     dynamicField.setShowCaption(true);
 
-                        
+
 
 
                     if (value != null) {
