@@ -725,6 +725,10 @@ if (1 == 3) {
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			// campaigns
 			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
+			for(String dcs : campaignUuids){
+				System.out.println("  --0-0-0-0-0-0-0  "+dcs);
+			}
+
 			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
 			// campaignFormMetas
 			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());

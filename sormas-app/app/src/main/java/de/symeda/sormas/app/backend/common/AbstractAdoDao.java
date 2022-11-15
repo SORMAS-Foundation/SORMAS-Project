@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -427,14 +428,15 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 				if (snapshot.getId() == null) {
 					// now really create a db entry for the snapshot
-					create(snapshot);
+					update(snapshot);
 				}
 			}
 
 			return snapshot;
 
 		} catch (SQLException e) {
-			throw new DaoException(e);
+			System.out.println(e);
+			throw new DaoException("Sorry, we are unable to add data to this cluster; instead, use the listing view to change the data that is already stored.");
 		} catch (InvocationTargetException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {

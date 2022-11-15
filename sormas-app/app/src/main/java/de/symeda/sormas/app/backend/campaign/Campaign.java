@@ -57,6 +57,7 @@ public class Campaign extends PseudonymizableAdo {
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 	public static final String CAMPAIGN_DASHBOARD_ELEMENTS = "dashboardElements";
 	public static final String ARCHIVED = "archived";
+	public static final String CLOSED = "closed";
 
 	@Column(length = CHARACTER_LIMIT_BIG)
 	private String name;
@@ -75,6 +76,9 @@ public class Campaign extends PseudonymizableAdo {
 
 	@DatabaseField
 	private boolean archived;
+
+	@DatabaseField
+	private boolean closed;
 
 	@Column(name = "campaignFormMetas")
 	private String campaignFormMetasJson;
@@ -126,6 +130,14 @@ public class Campaign extends PseudonymizableAdo {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	public boolean isClosed() {
+		return closed;
+	}
+
+	public void setClosed(boolean closed) {
+		this.closed = closed;
 	}
 
 	public String getCampaignFormMetasJson() {

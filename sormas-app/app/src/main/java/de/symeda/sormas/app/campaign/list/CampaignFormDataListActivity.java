@@ -54,7 +54,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
 
     private CampaignFormDataListViewModel model;
     private FilterCampaignFormDataListLayoutBinding filterBinding;
-
+//this resets active campaign to servers active campaign...
     public static void startActivity(Context context) {
         List<Campaign> activeCampaigns = DatabaseHelper.getCampaignDao().getAllActive();
         int pageMenuPosition = activeCampaigns.size() > 0 ? 1 : 0;

@@ -182,7 +182,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 323;
+	public static final int DATABASE_VERSION = 325;
 
 	private static DatabaseHelper instance = null;
 
@@ -300,7 +300,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	/**
+		/**
 	 * This is called when the database is first created. Usually you should call createTable statements here to build
 	 * the tables that will store your data.
 	 */
@@ -2874,9 +2874,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 323:
 					currentVersion = 323;
-					getDao(CampaignFormData.class).executeRaw("CREATE UNIQUE INDEX campaignFormDataPreventDuplicate ON campaignFormData(campaign, campaignformmeta, community);");
+				getDao(Campaign.class).executeRaw("ALTER TABLE campaigns ADD COLUMN closed SMALLINT DEFAULT 0;");
 
-				// ATTENTION: break should only be done after last version
+				case 324:
+					currentVersion = 324;
+					getDao(CampaignFormData.class).executeRaw(" DELETE FROM campaignFormData \n" +
+							"    WHERE ID NOT IN\n" +
+							"    (\n" +
+							"        SELECT MAX(ID) AS MaxRecordID\n" +
+							"        FROM campaignFormData \n" +
+							"        GROUP BY campaignFormMeta_id, campaign_id, community_id\n" +
+							"    );");
+					getDao(CampaignFormData.class).executeRaw("CREATE UNIQUE INDEX campaignFormDataPreventDuplicate ON campaignFormData(campaign_id, campaignFormMeta_id, community_id);");
+
+					// ATTENTION: break should only be done after last version
 				break;
 
 			default:
