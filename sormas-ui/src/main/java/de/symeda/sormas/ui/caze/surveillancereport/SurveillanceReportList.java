@@ -51,10 +51,12 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 	private final SurveillanceReportCriteria criteria = new SurveillanceReportCriteria();
 	private final boolean isEditAllowed;
+	private final UserRight editRight;
 
-	public SurveillanceReportList(CaseReferenceDto caze, boolean isEditAllowed) {
+	public SurveillanceReportList(CaseReferenceDto caze, UserRight editRight, boolean isEditAllowed) {
 		super(5);
 		criteria.caze(caze);
+		this.editRight = editRight;
 		this.isEditAllowed = isEditAllowed;
 	}
 
@@ -79,15 +81,16 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			SurveillanceReportDto report = displayedEntries.get(i);
 			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(report);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
-				listEntry.addActionButton(
-					report.getUuid(),
-					(Button.ClickListener) event -> ControllerProvider.getSurveillanceReportController()
-						.editSurveillanceReport(listEntry.getReport(), this::reload, isEditAllowed),
-					isEditAllowed);
 
-			}
-			listEntry.setEnabled(isEditAllowed);
+			boolean editState = UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && isEditAllowed;
+
+			listEntry.addActionButton(
+				report.getUuid(),
+				(Button.ClickListener) event -> ControllerProvider.getSurveillanceReportController()
+					.editSurveillanceReport(listEntry.getReport(), this::reload, editState),
+				editState);
+
+			listEntry.setEnabled(editState);
 			listLayout.addComponent(listEntry);
 		}
 	}

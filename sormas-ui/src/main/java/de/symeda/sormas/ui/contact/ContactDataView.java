@@ -285,11 +285,11 @@ public class ContactDataView extends AbstractContactView {
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 
 		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disableVithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		} else if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disableVithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disable();
+			layout.disableVithViewAllow();
 		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
 			layout.disable(true);
 		}
