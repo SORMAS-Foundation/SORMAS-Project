@@ -1380,7 +1380,7 @@ public class DevModeView extends AbstractConfigurationView {
 							visit.setVisitStatus(VisitStatus.COOPERATIVE);
 						}
 						FacadeProvider.getVisitFacade()
-							.saveVisit(
+							.save(
 								visit,
 								VisitLogic.getAllowedStartDate(ContactLogic.getStartDate(contact)),
 								VisitLogic.getAllowedEndDate(ContactLogic.getEndDate(contact)));
