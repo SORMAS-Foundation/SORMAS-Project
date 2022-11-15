@@ -1310,100 +1310,65 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		long startTime = DateHelper.startTime();
 
 		List<Long> indexListIds = getIndexListIds(criteria, first, max, sortProperties);
-		if (indexListIds.isEmpty()) {
-			return Collections.emptyList();
-		}
 
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-		final Root<Person> person = cq.from(Person.class);
+		List<PersonIndexDto> persons = new ArrayList<>();
 
-		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
-		final PersonJoins personJoins = personQueryContext.getJoins();
-		personJoins.configure(criteria);
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			final CriteriaBuilder cb = em.getCriteriaBuilder();
+			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
+			final Root<Person> person = cq.from(Person.class);
 
-		final Join<Person, Location> location = personJoins.getAddress();
-		final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
+			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+			final PersonJoins personJoins = personQueryContext.getJoins();
+			personJoins.configure(criteria);
 
-		final Join<Person, PersonContactDetail> phone = personQueryContext.getPhoneJoin();
-		final Join<Person, PersonContactDetail> email = personQueryContext.getEmailAddressJoin();
+			final Join<Person, Location> location = personJoins.getAddress();
+			final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
 
-		// make sure to check the sorting by the multi-select order if you extend the selections here
-		cq.multiselect(
-			person.get(Person.UUID),
-			person.get(Person.FIRST_NAME),
-			person.get(Person.LAST_NAME),
-			person.get(Person.APPROXIMATE_AGE),
-			person.get(Person.APPROXIMATE_AGE_TYPE),
-			person.get(Person.BIRTHDATE_DD),
-			person.get(Person.BIRTHDATE_MM),
-			person.get(Person.BIRTHDATE_YYYY),
-			person.get(Person.SEX),
-			district.get(District.NAME),
-			location.get(Location.STREET),
-			location.get(Location.HOUSE_NUMBER),
-			location.get(Location.POSTAL_CODE),
-			location.get(Location.CITY),
-			phone.get(PersonContactDetail.CONTACT_INFORMATION),
-			email.get(PersonContactDetail.CONTACT_INFORMATION),
-			person.get(Person.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
+			final Join<Person, PersonContactDetail> phone = personQueryContext.getPhoneJoin();
+			final Join<Person, PersonContactDetail> email = personQueryContext.getEmailAddressJoin();
 
-		Predicate filter = person.get(Person.ID).in(indexListIds);
-		Predicate indexListFilter = createIndexListFilter(criteria, personQueryContext);
-		if (indexListFilter != null) {
-			filter = cb.and(filter, indexListFilter);
-		}
+			// make sure to check the sorting by the multi-select order if you extend the selections here
+			cq.multiselect(
+				person.get(Person.UUID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				person.get(Person.APPROXIMATE_AGE),
+				person.get(Person.APPROXIMATE_AGE_TYPE),
+				person.get(Person.BIRTHDATE_DD),
+				person.get(Person.BIRTHDATE_MM),
+				person.get(Person.BIRTHDATE_YYYY),
+				person.get(Person.SEX),
+				district.get(District.NAME),
+				location.get(Location.STREET),
+				location.get(Location.HOUSE_NUMBER),
+				location.get(Location.POSTAL_CODE),
+				location.get(Location.CITY),
+				phone.get(PersonContactDetail.CONTACT_INFORMATION),
+				email.get(PersonContactDetail.CONTACT_INFORMATION),
+				person.get(Person.CHANGE_DATE),
+				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
 
-		cq.where(filter);
-		cq.distinct(true);
+			Predicate filter = person.get(Person.ID).in(batchedIds);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case PersonIndexDto.UUID:
-				case PersonIndexDto.FIRST_NAME:
-				case PersonIndexDto.LAST_NAME:
-				case PersonIndexDto.SEX:
-					expression = person.get(sortProperty.propertyName);
-					break;
-				case PersonIndexDto.PHONE:
-					expression = phone.get(PersonContactDetail.CONTACT_INFORMATION);
-					break;
-				case PersonIndexDto.EMAIL_ADDRESS:
-					expression = email.get(PersonContactDetail.CONTACT_INFORMATION);
-					break;
-				case PersonIndexDto.AGE_AND_BIRTH_DATE:
-					expression = person.get(Person.APPROXIMATE_AGE);
-					break;
-				case PersonIndexDto.DISTRICT:
-					expression = district.get(District.NAME);
-					break;
-				case PersonIndexDto.STREET:
-				case PersonIndexDto.HOUSE_NUMBER:
-				case PersonIndexDto.POSTAL_CODE:
-				case PersonIndexDto.CITY:
-					expression = location.get(sortProperty.propertyName);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			Predicate indexListFilter = createIndexListFilter(criteria, personQueryContext);
+			if (indexListFilter != null) {
+				filter = cb.and(filter, indexListFilter);
 			}
-			cq.orderBy(order);
-		} else {
-			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
-		}
 
-		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, null, null);
+			cq.where(filter);
+			cq.distinct(true);
+
+			addSortProperties(sortProperties, personQueryContext);
+
+			persons.addAll(em.createQuery(cq).getResultList());
+		});
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			PersonIndexDto.class,
 			persons,
-			p -> p.getInJurisdiction(),
+			PersonIndexDto::getInJurisdiction,
 			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
 
 		logger.debug(
@@ -1425,11 +1390,35 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		final PersonJoins personJoins = personQueryContext.getJoins();
 		personJoins.configure(criteria);
 
-		List<Selection<?>> selects = new ArrayList<>();
-		selects.add(person.get(Person.ID));
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.add(person.get(Person.ID));
+		selections.addAll(addSortProperties(sortProperties, personQueryContext));
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		cq.multiselect(selections);
+
+		Predicate filter = createIndexListFilter(criteria, personQueryContext);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.distinct(true);
+
+		List<Tuple> persons = QueryHelper.getResultList(em, cq, first, max);
+
+		logger.trace(
+			"getIndexListIds() finished. association={}, count={}, {}ms",
+			Optional.ofNullable(criteria).orElse(new PersonCriteria()).getPersonAssociation().name(),
+			persons.size(),
+			DateHelper.durationMillies(startTime));
+		return persons.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	private List<Selection<?>> addSortProperties(List<SortProperty> sortProperties, PersonQueryContext personQueryContext) {
+
+		List<Selection<?>> selections = new ArrayList<>();
+		CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
+		CriteriaQuery<?> cq = personQueryContext.getQuery();
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -1437,7 +1426,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				case PersonIndexDto.FIRST_NAME:
 				case PersonIndexDto.LAST_NAME:
 				case PersonIndexDto.SEX:
-					expression = person.get(sortProperty.propertyName);
+					expression = personQueryContext.getRoot().get(sortProperty.propertyName);
 					break;
 				case PersonIndexDto.PHONE:
 					Join<Person, PersonContactDetail> phone = personQueryContext.getPhoneJoin();
@@ -1448,48 +1437,33 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 					expression = email.get(PersonContactDetail.CONTACT_INFORMATION);
 					break;
 				case PersonIndexDto.AGE_AND_BIRTH_DATE:
-					expression = person.get(Person.APPROXIMATE_AGE);
+					expression = personQueryContext.getRoot().get(Person.APPROXIMATE_AGE);
 					break;
 				case PersonIndexDto.DISTRICT:
-					Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
+					Join<Location, District> district = personQueryContext.getJoins().getAddressJoins().getDistrict();
 					expression = district.get(District.NAME);
 					break;
 				case PersonIndexDto.STREET:
 				case PersonIndexDto.HOUSE_NUMBER:
 				case PersonIndexDto.POSTAL_CODE:
 				case PersonIndexDto.CITY:
-					Join<Person, Location> location = personJoins.getAddress();
+					Join<Person, Location> location = personQueryContext.getJoins().getAddress();
 					expression = location.get(sortProperty.propertyName);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-				selects.add(expression);
+				selections.add(expression);
 			}
 			cq.orderBy(order);
 		} else {
-			Path<Object> changeDate = person.get(Person.CHANGE_DATE);
+			Path<Object> changeDate = personQueryContext.getRoot().get(Person.CHANGE_DATE);
 			cq.orderBy(cb.desc(changeDate));
-			selects.add(changeDate);
+			selections.add(changeDate);
 		}
 
-		cq.multiselect(selects);
-
-		Predicate filter = createIndexListFilter(criteria, personQueryContext);
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.distinct(true);
-
-		List<Tuple> persons = QueryHelper.getResultList(em, cq, first, max);
-
-		logger.debug(
-			"getIndexListIds() finished. association={}, count={}, {}ms",
-			Optional.ofNullable(criteria).orElse(new PersonCriteria()).getPersonAssociation().name(),
-			persons.size(),
-			DateHelper.durationMillies(startTime));
-		return persons.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+		return selections;
 	}
 
 	@Override
