@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
 package de.symeda.sormas.api.event;
 
 import java.util.Collection;
@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Language;
@@ -42,7 +40,6 @@ public interface EventParticipantFacade
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
 
-	EventParticipantDto save(@Valid @NotNull EventParticipantDto dto);
 
 	List<String> getAllActiveUuids();
 

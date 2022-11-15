@@ -106,6 +106,10 @@ public class ClinicalCourseView extends AbstractCaseView {
 							this::reloadClinicalVisitGrid);
 				}, ValoTheme.BUTTON_PRIMARY);
 
+				if (!UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_CREATE)) {
+					newClinicalVisitButton.setEnabled(false);
+				}
+
 				headlineRow.addComponent(newClinicalVisitButton);
 
 				headlineRow.setComponentAlignment(newClinicalVisitButton, Alignment.MIDDLE_RIGHT);
