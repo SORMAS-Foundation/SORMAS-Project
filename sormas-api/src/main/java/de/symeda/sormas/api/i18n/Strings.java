@@ -387,6 +387,7 @@ public interface Strings {
 	String headingArchiveImmunization = "headingArchiveImmunization";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
+	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";
@@ -947,6 +948,7 @@ public interface Strings {
 	String messageAreasArchived = "messageAreasArchived";
 	String messageAreasArchivingNotPossible = "messageAreasArchivingNotPossible";
 	String messageAreasDearchived = "messageAreasDearchived";
+	String messageAutomaticDeletionStarted = "messageAutomaticDeletionStarted";
 	String messageBulkCasesWithDifferentDiseasesSelected = "messageBulkCasesWithDifferentDiseasesSelected";
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";

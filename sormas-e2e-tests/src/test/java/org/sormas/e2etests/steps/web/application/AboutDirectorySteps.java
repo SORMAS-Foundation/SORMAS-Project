@@ -34,6 +34,7 @@ public class AboutDirectorySteps implements En {
   public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
       String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
   public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
+  private static final String RELEASE_PAGE = "https://github.com/hzi-braunschweig/SORMAS-Project/releases";
   private static AssertHelpers assertHelpers;
 
   @Inject
@@ -139,6 +140,15 @@ public class AboutDirectorySteps implements En {
         "^I click on Sormas version in About directory and i get redirected to github$",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_LINK);
+          String hrefValue = "";
+          try {
+            hrefValue = webDriverHelpers.getAttributeFromWebElement(SORMAS_VERSION_LINK, "href");
+          } catch (Exception any) {
+            Assert.fail("Sormas version it doesn't  contain a clickable hyperlink");
+          }
+          Assert.assertTrue(
+              hrefValue.contains("github.com/hzi-braunschweig/SORMAS-Project"),
+              "Sormas version hyperlink value is wrong");
           webDriverHelpers.clickOnWebElementBySelector(SORMAS_VERSION_LINK);
           TimeUnit.SECONDS.sleep(1);
           String link =
@@ -160,7 +170,7 @@ public class AboutDirectorySteps implements En {
           softly.assertTrue(
               webDriverHelpers
                   .returnURL()
-                  .contains("https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag"),
+                  .contains(RELEASE_PAGE),
               "What's new link is not the correct");
           softly.assertAll();
           webDriverHelpers.closeActiveWindow();
@@ -201,7 +211,7 @@ public class AboutDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.switchToOtherWindow();
           softly.assertEquals(
-              "https://github.com/hzi-braunschweig/SORMAS-Project/releases",
+              RELEASE_PAGE,
               webDriverHelpers.returnURL(),
               "Sormas full changelog link is not correct");
           softly.assertAll();
