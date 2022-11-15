@@ -141,7 +141,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		if(index > 0) {
 			return fileName.substring(index);
 		} else {
-			throw new FileExtensionNotAllowedException(String.format("name of file (%s) is not properly formatted", fileName));
+			throw new FileExtensionNotAllowedException(String.format("File name (%s) is not properly formatted", fileName));
 		}
 	}
 
@@ -150,7 +150,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		boolean fileTypeAllowed = asList(allowedFileExtensions).contains(fileExtension);
 
 		if (!fileTypeAllowed) {
-			throw new FileExtensionNotAllowedException(String.format("file with extension %s not allowed", fileExtension));
+			throw new FileExtensionNotAllowedException(String.format("File extension %s not allowed", fileExtension));
 		}
 	}
 
@@ -159,7 +159,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			getMimeTypeFromFileContents(fileName, content).getExtensions().stream()
 					.filter(fileExtension::equals)
 					.findAny()
-					.orElseThrow(() -> new FileContentsDoNotMatchExtensionException("file extension and file contents are not the same"));
+					.orElseThrow(() -> new FileContentsDoNotMatchExtensionException("File extension and file contents are not the same"));
 		} catch (MimeTypeException e) {
 			throw new FileExtensionNotAllowedException("Could not read file extension within file");
 		}
