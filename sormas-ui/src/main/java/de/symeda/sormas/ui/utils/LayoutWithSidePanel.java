@@ -59,6 +59,11 @@ public class LayoutWithSidePanel extends CustomLayout {
 
 	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
 	public void disable(String... excludedButtons) {
+		disableVithViewAllow(excludedButtons);
+		sidePanel.setEnabled(false);
+	}
+
+	public void disableVithViewAllow(String... excludedButtons) {
 		editComponent.setEditable(false, excludedButtons);
 	}
 
