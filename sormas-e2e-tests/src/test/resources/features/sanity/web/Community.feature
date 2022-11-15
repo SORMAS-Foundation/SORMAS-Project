@@ -16,3 +16,10 @@ Feature: Community end to end tests
     When I click on Communities button in Configuration tab
     And I select country Deutschland
     Then I check that Voreingestellte Gemeinde is correctly displayed
+
+  @env_main @#7468
+  Scenario: Validate Communities Configuration section
+    Given I log in as a Admin User
+    And I click on the Configuration button from navbar
+    When I click on Communities button in Configuration tab
+    Then I Verify the page elements are present in Communities Configuration Page
