@@ -2282,6 +2282,7 @@ public interface Captions {
 	String syncUsers = "syncUsers";
 	String system = "system";
 	String Task = "Task";
+	String Task_assignedByUser = "Task.assignedByUser";
 	String Task_assigneeReply = "Task.assigneeReply";
 	String Task_assigneeUser = "Task.assigneeUser";
 	String Task_caze = "Task.caze";

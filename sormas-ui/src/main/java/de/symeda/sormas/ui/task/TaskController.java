@@ -110,8 +110,6 @@ public class TaskController {
 				TaskDto dto1 = form.getValue();
 				if (!dto1.getAssigneeUser().getUuid().equals(dto.getAssigneeUser().getUuid())) {
 					dto1.setAssignedByUser(UserProvider.getCurrent().getUserReference());
-				} else {
-					dto1.setAssignedByUser(dto.getAssignedByUser());
 				}
 				FacadeProvider.getTaskFacade().saveTask(dto1);
 

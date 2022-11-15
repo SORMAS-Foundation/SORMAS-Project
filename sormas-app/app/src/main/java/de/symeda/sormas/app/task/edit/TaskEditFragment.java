@@ -176,14 +176,10 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
 		contentBinding.taskAssigneeUser.addValueChangedListener(v -> {
 			User assigneeUser = (User) v.getValue();
-			if (initialAssigneeUser == null) {
+			if (initialAssigneeUser == null || !initialAssigneeUser.equals(assigneeUser)) {
 				contentBinding.taskAssignedByUser.setValue(ConfigProvider.getUser());
 			} else {
-				if (!initialAssigneeUser.equals(assigneeUser)) {
-					contentBinding.taskAssignedByUser.setValue(ConfigProvider.getUser());
-				} else {
-					contentBinding.taskAssignedByUser.setValue(initialAssignedByUser);
-				}
+				contentBinding.taskAssignedByUser.setValue(initialAssignedByUser);
 			}
 		});
 	}
