@@ -37,15 +37,12 @@ public class SurveillanceReportListComponent extends SideComponent {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
-		if (!UserProvider.getCurrent().hasUserRight(editRight) && !isEditAllowed) {
-			setEnabled(false);
-		}
 
-		list = new SurveillanceReportList(caze, isEditAllowed);
+		list = new SurveillanceReportList(caze, editRight, isEditAllowed);
 		addComponent(list);
 		list.reload();
 
-		if (isEditAllowed) {
+		if (UserProvider.getCurrent().hasUserRight(editRight) && isEditAllowed) {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.surveillanceReportNewReport),
 				() -> ControllerProvider.getSurveillanceReportController().createSurveillanceReport(caze, list::reload));
