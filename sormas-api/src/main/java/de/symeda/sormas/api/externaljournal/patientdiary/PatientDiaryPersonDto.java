@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.externaljournal.patientdiary;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class PatientDiaryPersonDto implements Serializable {
 
 	private static final long serialVersionUID = 1300043011538769976L;
-	@AuditInclude
+	@AuditIncludeProperty
 	private String personUUID;
 	private String firstName;
 	private String lastName;

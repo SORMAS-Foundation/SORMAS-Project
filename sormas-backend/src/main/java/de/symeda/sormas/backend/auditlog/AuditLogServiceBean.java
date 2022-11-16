@@ -28,6 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import de.symeda.auditlog.api.ChangeEvent;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
@@ -36,6 +37,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
  * @author Oliver Milke
  */
 @Stateless
+@AuditIgnore
 public class AuditLogServiceBean {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)

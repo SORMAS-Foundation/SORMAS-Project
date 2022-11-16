@@ -76,6 +76,22 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return service.getObsoleteUuidsSince(since);
 	}
 
+	@Override
+	public List<DTO> getAllAfter(Date date) {
+		return getAllAfter(date, null, null);
+	}
+
+	@Override
+	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		List<ADO> entities = service.getAllAfter(date, batchSize, lastSynchronizedUuid);
+		return toPseudonymizedDtos(entities);
+	}
+
 	public DTO toPseudonymizedDto(ADO source) {
 		return toPseudonymizedDto(source, createPseudonymizer());
 	}
@@ -99,6 +115,19 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		DTO dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
 		return dto;
+	}
+
+	public List<DTO> toPseudonymizedDtos(List<ADO> adoList) {
+		if (adoList == null) {
+			return Collections.emptyList();
+		}
+
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		List<Long> jurisdictionIds = service.getInJurisdictionIds(adoList);
+
+		return adoList.stream()
+			.map(ado -> toPseudonymizedDto(ado, pseudonymizer, jurisdictionIds.contains(ado.getId())))
+			.collect(Collectors.toList());
 	}
 
 	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity) {

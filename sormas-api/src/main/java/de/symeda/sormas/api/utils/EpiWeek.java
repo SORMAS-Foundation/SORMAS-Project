@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -29,9 +29,9 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 @AuditedClass
 public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGroupingKey {
 
-	@AuditInclude
+	@AuditIncludeProperty
 	private final Integer year;
-	@AuditInclude
+	@AuditIncludeProperty
 	private final Integer week;
 
 	public EpiWeek(Integer year, Integer week) {

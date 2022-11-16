@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.common;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
@@ -8,7 +8,7 @@ import java.io.Serializable;
 @AuditedClass
 public class DeletionDetails implements Serializable {
 
-	@AuditInclude
+	@AuditIncludeProperty
 	private DeletionReason deletionReason;
 	private String otherDeleteReason;
 

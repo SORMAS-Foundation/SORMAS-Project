@@ -499,16 +499,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseDataDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
-	}
-
-	@Override
 	protected Pseudonymizer createPseudonymizer() {
 		return getPseudonymizerForDtoWithClinician("");
 	}
@@ -3790,7 +3780,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
 	}
 
-	void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
+	@RightsAllowed(UserRight._SYSTEM)
+	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
 
 		long startTime = DateHelper.startTime();
 

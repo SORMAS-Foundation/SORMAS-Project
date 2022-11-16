@@ -51,6 +51,7 @@ public class TaskDto extends EntityDto {
 
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
+	public static final String ASSIGNED_BY_USER = "assignedByUser";
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
 	public static final String CREATOR_COMMENT = "creatorComment";
@@ -101,6 +102,7 @@ public class TaskDto extends EntityDto {
 	private String creatorComment;
 	@Required
 	private UserReferenceDto assigneeUser;
+	private UserReferenceDto assignedByUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String assigneeReply;
 	private Set<UserReferenceDto> observerUsers;
@@ -243,6 +245,14 @@ public class TaskDto extends EntityDto {
 
 	public void setAssigneeUser(UserReferenceDto assigneeUser) {
 		this.assigneeUser = assigneeUser;
+	}
+
+	public UserReferenceDto getAssignedByUser() {
+		return assignedByUser;
+	}
+
+	public void setAssignedByUser(UserReferenceDto assignedByUser) {
+		this.assignedByUser = assignedByUser;
 	}
 
 	public String getAssigneeReply() {
