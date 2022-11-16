@@ -16,9 +16,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class EventParticipantListEntry extends HorizontalLayout {
 
+	private static final long serialVersionUID = -124120232066365444L;
 	public static final String SEPARATOR = ": ";
 	private final EventParticipantListEntryDto eventParticipantListEntryDto;
 	private Button editButton;
@@ -80,7 +82,31 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		titleLabel.setDescription(eventParticipantListEntryDto.getEventTitle());
 		mainLayout.addComponent(titleLabel);
 
-		mainLayout.addComponent(titleLabel);
+		if (eventParticipantListEntryDto.getEventStartDate() != null) {
+			HorizontalLayout eventDateLayout = new HorizontalLayout();
+
+			boolean multiDayEvent = eventParticipantListEntryDto.getEventEndDate() != null;
+
+			String startDateCaption = multiDayEvent ? Captions.Event_startDate : Captions.singleDayEventDate;
+			Label eventStartDateLabel = new Label(
+				I18nProperties.getCaption(startDateCaption)
+					+ SEPARATOR
+					+ DateFormatHelper.formatDate(eventParticipantListEntryDto.getEventStartDate()));
+			eventDateLayout.addComponent(eventStartDateLabel);
+			eventDateLayout.setComponentAlignment(eventStartDateLabel, Alignment.MIDDLE_LEFT);
+
+			if (multiDayEvent) {
+				Label eventEndDateLabel = new Label(
+					I18nProperties.getCaption(Captions.Event_endDate)
+						+ SEPARATOR
+						+ DateFormatHelper.formatDate(eventParticipantListEntryDto.getEventEndDate()));
+				eventDateLayout.addComponent(eventEndDateLabel);
+				eventDateLayout.setComponentAlignment(eventEndDateLabel, Alignment.MIDDLE_RIGHT);
+			}
+
+			eventDateLayout.setWidthFull();
+			mainLayout.addComponent(eventDateLayout);
+		}
 	}
 
 	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {

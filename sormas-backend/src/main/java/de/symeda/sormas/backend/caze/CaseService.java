@@ -1640,7 +1640,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
 		return inJurisdictionOrOwned(new CaseQueryContext(cb, query, from));
 	}
 
@@ -1760,12 +1760,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final Root<Case> caze = cq.from(Case.class);
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		Join<Case, Symptoms> symptoms = caseQueryContext.getJoins().getSymptoms();
 
 		cq.multiselect(
 			caze.get(Case.UUID),
 			caze.get(Case.REPORT_DATE),
 			caze.get(Case.DISEASE),
 			caze.get(Case.CASE_CLASSIFICATION),
+			symptoms.get(Symptoms.ONSET_DATE),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(caseQueryContext)),
 			caze.get(Case.CHANGE_DATE));
 

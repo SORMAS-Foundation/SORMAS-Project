@@ -406,8 +406,7 @@ public class EventParticipantFacadeEjb
 				});
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
-				String.format(
-					"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventParticipant related to other events."));
+				"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventParticipant related to other events.");
 		}
 	}
 
@@ -460,7 +459,8 @@ public class EventParticipantFacadeEjb
 		List<SortProperty> sortProperties) {
 
 		if ((eventParticipantCriteria == null) || (eventParticipantCriteria.getEvent() == null && eventParticipantCriteria.getPerson() == null)) {
-			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
+			// Retrieving an index list independent of an event is not possible
+			return new ArrayList<>();
 		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -608,6 +608,8 @@ public class EventParticipantFacadeEjb
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.EVENT_TITLE),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
 
 		Predicate filter =
