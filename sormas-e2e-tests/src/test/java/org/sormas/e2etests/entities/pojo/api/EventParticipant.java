@@ -26,13 +26,9 @@ import lombok.*;
 @Builder(toBuilder = true, builderClassName = "builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventParticipant {
-
   Long creationDate;
   String uuid;
   ReportingUser reportingUser;
   Event event;
   Person person;
-  //  String eventUUID;
-  //  String personUUID;
-  //  String personSex;
 }

@@ -36,10 +36,6 @@ public class EventParticipantSteps implements En {
     When(
         "API: I create a new event participant with creation date {int} years ago",
         (Integer creationDate) -> {
-          String personUUID = apiState.getLastCreatedPerson().getUuid();
-          String personSex = apiState.getLastCreatedPerson().getSex();
-          String eventUUID = apiState.getCreatedEvent().getUuid();
-
           EventParticipant evPart =
               eventParticipantApiService.buildGeneratedEventParticipantWithCreationDate(
                   apiState.getCreatedEvent().getUuid(),
