@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
@@ -147,10 +148,20 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 		case R.id.action_edit:
 			goToEditView();
 			return true;
+//newly inserted to fix delete
+			case R.id.action_help:
+				try {
+					goToDeleteRecord();
+				} catch (DaoException e) {
+					e.printStackTrace();
+				}
+				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
+
+//goToDeleteRecord
 	@Override
 	protected int getRootActivityLayout() {
 		return R.layout.activity_root_with_title_layout;
@@ -246,6 +257,9 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 
 	public abstract void goToEditView();
 
+	public abstract void goToDeleteRecord() throws DaoException;
+
+
 	protected abstract BaseReadFragment buildReadFragment(PageMenuItem menuItem, ActivityRootEntity activityRootData);
 
 	@Override
@@ -255,4 +269,5 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 		if (getRootEntityTask != null && !getRootEntityTask.isCancelled())
 			getRootEntityTask.cancel(true);
 	}
+
 }

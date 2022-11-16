@@ -360,12 +360,12 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			// TODO
 			return true;
 
-		case R.id.action_help:
-			StringBuilder helpStringBuilder = new StringBuilder();
-			extendHelpString(helpStringBuilder, (ViewGroup) this.findViewById(R.id.main_content));
-			InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_screen_help_layout, Html.fromHtml(helpStringBuilder.toString()));
-			infoDialog.show();
-			return true;
+//		case R.id.action_help:
+//			StringBuilder helpStringBuilder = new StringBuilder();
+//			extendHelpString(helpStringBuilder, (ViewGroup) this.findViewById(R.id.main_content));
+//			InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_screen_help_layout, Html.fromHtml(helpStringBuilder.toString()));
+//			infoDialog.show();
+//			return true;
 		}
 
 		return super.onOptionsItemSelected(item);
