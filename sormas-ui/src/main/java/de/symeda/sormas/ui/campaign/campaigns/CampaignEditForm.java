@@ -378,6 +378,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		tree.setHeightFull();
 		tree.setSelectionMode(SelectionMode.MULTI);
 		tree.asMultiSelect();
+
 		TreeData<? super InfrastructureDataReferenceDto> treeData = new TreeData<>();
 
 		// Items with hierarchy
@@ -396,6 +397,27 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		}
 		tree.setDataProvider(new TreeDataProvider(treeData));
 
+		if(!campaignDto.getAreas().isEmpty()) {
+			for(int i = 0; i <= campaignDto.getAreas().size() - 1; i++) {
+				tree.select((InfrastructureDataReferenceDto) campaignDto.getAreas().toArray()[i]);
+			}
+		}
+		if(!campaignDto.getRegion().isEmpty()) {
+			for(int i = 0; i <= campaignDto.getRegion().size() - 1; i++) {
+				tree.select((InfrastructureDataReferenceDto) campaignDto.getRegion().toArray()[i]);
+			}
+		}
+		if(!campaignDto.getDistricts().isEmpty()) {
+			for(int i = 0; i <= campaignDto.getDistricts().size() - 1; i++) {
+				tree.select((InfrastructureDataReferenceDto) campaignDto.getDistricts().toArray()[i]);
+			}
+		}
+		if(!campaignDto.getCommunity().isEmpty()) {
+			for(int i = 0; i <= campaignDto.getCommunity().size() - 1; i++) {
+				tree.select((InfrastructureDataReferenceDto) campaignDto.getCommunity().toArray()[i]);
+			}
+		}
+	
 		// check class of selection and cast to the appropriate class
 		tree.addSelectionListener(event -> {
 			for (int i = 0; i <= tree.getSelectedItems().size() - 1; i++) {
