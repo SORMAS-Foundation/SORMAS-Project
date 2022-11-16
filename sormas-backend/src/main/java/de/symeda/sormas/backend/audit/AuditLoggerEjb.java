@@ -69,8 +69,9 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import de.symeda.sormas.api.audit.AuditExclude;
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditExcludeProperty;
+import de.symeda.sormas.api.audit.AuditIgnore;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -78,6 +79,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 
+@AuditIgnore
 @Singleton(name = "AuditLoggerFacade")
 public class AuditLoggerEjb implements AuditLoggerFacade {
 
@@ -151,6 +153,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		FhirContext fhirContext = FhirContext.forR4();
 		fhirJsonParser = fhirContext.newJsonParser();
+
 		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 		configurationBuilder.forPackages("de.symeda.sormas.api")
 			.addScanners(SubTypes, TypesAnnotated, FieldsAnnotated, MethodsAnnotated)
@@ -287,6 +290,12 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 			return cached;
 		}
 
+		AuditEvent.AuditEventAction inferred = doInferBackendAction(calledMethod);
+		actionBackendMap.put(calledMethod, inferred);
+		return inferred;
+	}
+
+	public static AuditEvent.AuditEventAction doInferBackendAction(String calledMethod) {
 		AuditEvent.AuditEventAction inferred;
 		if (methodsStartsWith(calledMethod, createPrefix)) {
 			inferred = AuditEvent.AuditEventAction.C;
@@ -301,11 +310,10 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		} else {
 			inferred = AuditEvent.AuditEventAction.E;
 		}
-		actionBackendMap.put(calledMethod, inferred);
 		return inferred;
 	}
 
-	private boolean methodsStartsWith(String methodName, Set<String> prefixes) {
+	private static boolean methodsStartsWith(String methodName, Set<String> prefixes) {
 		return prefixes.stream().anyMatch(methodName::startsWith);
 	}
 
@@ -608,7 +616,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		}
 
 		if (finalValue.length() == 0) {
-			if (!DataHelper.isValueType(clazz)){
+			if (!DataHelper.isValueType(clazz)) {
 				logger.debug("Audit logging for object of type {} is not implemented. Please file an issue.", clazz);
 			}
 			return object.toString();
@@ -696,9 +704,9 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 			if (includeAllFields) {
 				fieldsFound = reflections
-					.get(Fields.of(type).filter(f -> !f.toString().contains("static final") && !f.isAnnotationPresent(AuditExclude.class)));
+					.get(Fields.of(type).filter(f -> !f.toString().contains("static final") && !f.isAnnotationPresent(AuditExcludeProperty.class)));
 			} else {
-				fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditInclude.class)));
+				fieldsFound = reflections.get(Fields.of(type).filter(withAnnotation(AuditIncludeProperty.class)));
 			}
 
 			final ArrayList<Field> fields = new ArrayList<>(fieldsFound);
@@ -708,7 +716,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 	private List<Method> getMethodsAnnotatedWithAuditInclude(final Class<?> type) {
 		return cachedAnnotatedMethods.computeIfAbsent(type, k -> {
-			Set<Method> methodsFound = reflections.get(Methods.of(type).filter(withAnnotation(AuditInclude.class)));
+			Set<Method> methodsFound = reflections.get(Methods.of(type).filter(withAnnotation(AuditIncludeProperty.class)));
 			final ArrayList<Method> methods = new ArrayList<>(methodsFound);
 			return methods.stream().sorted(Comparator.comparing(Method::getName)).collect(Collectors.toList());
 		});

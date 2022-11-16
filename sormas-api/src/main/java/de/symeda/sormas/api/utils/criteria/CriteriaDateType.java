@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.api.utils.criteria;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 @AuditedClass
 public interface CriteriaDateType {
 
-	@AuditInclude
+	@AuditIncludeProperty
 	String name();
 }

@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
@@ -23,7 +23,7 @@ import java.io.Serializable;
 @AuditedClass
 public class RequestContextTO implements Serializable {
 
-	@AuditInclude
+	@AuditIncludeProperty
 	private boolean isMobileSync;
 
 	public RequestContextTO(boolean isMobileSync) {

@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
@@ -31,10 +31,10 @@ public class TravelEntryImportEntities implements Serializable {
 	private static final long serialVersionUID = -714807989630027827L;
 
 	@Valid
-	@AuditInclude
+	@AuditIncludeProperty
 	private final TravelEntryDto travelEntry;
 	@Valid
-	@AuditInclude
+	@AuditIncludeProperty
 	private final PersonDto person;
 
 	public TravelEntryImportEntities(UserReferenceDto reportingUser) {
