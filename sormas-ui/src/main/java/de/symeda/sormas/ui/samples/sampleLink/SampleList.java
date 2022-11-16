@@ -41,11 +41,13 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 	private final SampleCriteria sampleCriteria;
 	private final Label noSamplesLabel;
+	private final boolean isEditAllowed;
 
-	public SampleList(SampleCriteria sampleCriteria) {
+	public SampleList(SampleCriteria sampleCriteria, boolean isEditAllowed) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.sampleCriteria = sampleCriteria;
 		noSamplesLabel = new Label(buildNoSamplesCaption(sampleCriteria.getSampleAssociationType()));
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -66,12 +68,20 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 	protected void drawDisplayedEntries() {
 		for (SampleListEntryDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
-				String sampleUuid = sample.getUuid();
+
+			String sampleUuid = sample.getUuid();
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT) && isEditAllowed) {
 				listEntry.addEditButton(
 					"edit-sample-" + sampleUuid,
 					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
+			} else {
+				listEntry.addViewButton(
+					"view-sample" + sampleUuid,
+					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
 			}
+
+			listEntry.setEnabled(isEditAllowed);
+
 			if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 				addViewLabMessageButton(listEntry);
 			}

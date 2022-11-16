@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
@@ -28,7 +28,7 @@ import java.io.Serializable;
 public class UserSyncResult implements Serializable {
 
 	private static final long serialVersionUID = 6280244664797129634L;
-	@AuditInclude
+	@AuditIncludeProperty
 	private boolean success;
 
 	private String errorMessage;

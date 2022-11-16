@@ -85,7 +85,7 @@ public class CaseShareDataBuilder
 	@Override
 	protected CaseDataDto getDto(Case caze, Pseudonymizer pseudonymizer) {
 
-		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
+		CaseDataDto cazeDto = caseFacade.toPseudonymizedDto(caze, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		cazeDto.setClassificationUser(null);

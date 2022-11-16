@@ -72,6 +72,8 @@ public class ReceivedCaseProcessor
 
 		CaseDataDto caze = sharedData.getEntity();
 		PersonDto person = sharedData.getPerson();
+		sormasToSormasEntitiesHelper.updateIfNecessaryOccupationType(sharedData.getPerson());
+
 		caze.setPerson(person.toReference());
 		updateReportingUser(caze, existingCase);
 

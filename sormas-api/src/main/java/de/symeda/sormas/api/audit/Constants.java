@@ -67,6 +67,7 @@ public class Constants {
 				"reset",
 				"enable",
 				"disable",
-				"log")));
+				"log",
+				"copy")));
 
 }

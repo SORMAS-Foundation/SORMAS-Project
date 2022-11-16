@@ -590,22 +590,35 @@ public class WebDriverHelpers {
     waitForPageLoaded();
   }
 
-  private WebElement getWebElementByText(By selector, Predicate<WebElement> webElementPredicate) {
-    waitForPageLoaded();
-    assertHelpers.assertWithPoll20Second(
-        () -> {
-          waitUntilIdentifiedElementIsVisibleAndClickable(selector);
-          assertWithMessage("Unable to find element based on: %s ", webElementPredicate)
-              .that(
-                  baseSteps.getDriver().findElements(selector).stream()
-                      .anyMatch(webElementPredicate))
-              .isTrue();
-        });
+  private WebElement getWebElementByText(
+      By selector, Predicate<WebElement> webElementPredicate, String text) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector);
     return baseSteps.getDriver().findElements(selector).stream()
         .filter(webElementPredicate)
         .findFirst()
         .orElseThrow(
-            () -> new NotFoundException("The selector containing text has not been found"));
+            () ->
+                new NotFoundException(
+                    "Cannot select by visible text: ["
+                        + text
+                        + "] from locator -> "
+                        + selector.toString()));
+    // LET THIS CODE COMMENTED until we check a regression and make sure this change doesn't have
+    // any impact over execution
+    //    assertHelpers.assertWithPoll20Second(
+    //        () -> {
+    //          waitUntilIdentifiedElementIsVisibleAndClickable(selector);
+    //          assertWithMessage("Unable to find element based on: %s ", webElementPredicate)
+    //              .that(
+    //                  baseSteps.getDriver().findElements(selector).stream()
+    //                      .anyMatch(webElementPredicate))
+    //              .isTrue();
+    //        });
+    //    return baseSteps.getDriver().findElements(selector).stream()
+    //        .filter(webElementPredicate)
+    //        .findFirst()
+    //        .orElseThrow(
+    //            () -> new NotFoundException("The selector containing text has not been found"));
   }
 
   public void waitUntilAListOfElementsHasText(By selector, String text) {
@@ -656,7 +669,8 @@ public class WebDriverHelpers {
   }
 
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
-    return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
+    return getWebElementByText(
+        selector, webElement -> webElement.getText().contentEquals(text), text);
   }
 
   @SneakyThrows

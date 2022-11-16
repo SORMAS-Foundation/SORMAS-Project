@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
@@ -29,6 +30,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 public class CasePersonView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
+	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent;
 
 	public CasePersonView() {
 		super(VIEW_NAME, true);
@@ -45,9 +47,10 @@ public class CasePersonView extends AbstractCaseView {
 				caseData.getDisease(),
 				caseData.getDiseaseDetails(),
 				UserRight.CASE_EDIT,
-				getViewMode());
+				getViewMode(),
+				isEditAllowed());
 
 		setSubComponent(personEditComponent);
-		setEditPermission(personEditComponent);
+		setEditPermission(personEditComponent, PersonDto.ADDRESSES, PersonDto.PERSON_CONTACT_DETAILS);
 	}
 }

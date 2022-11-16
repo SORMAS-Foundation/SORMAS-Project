@@ -15,10 +15,9 @@
 
 package de.symeda.sormas.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,13 +26,12 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper.CachedReferenceDtoResolver;
 import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -46,7 +44,7 @@ public class EntityDtoAccessHelperTest {
 	private PersonDto personDto;
 	private IReferenceDtoResolver referenceDtoResolver;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		caseDataDto = CaseDataDto.build(null, Disease.DENGUE);
 
@@ -86,7 +84,9 @@ public class EntityDtoAccessHelperTest {
 	public void readEntityDtoPropertyPath() {
 		assertNull(EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "hospitalization.dischargeDate"));
 		caseDataDto.getHospitalization().setDischargeDate(new Date(1600387200000L));
-		assertEquals(caseDataDto.getHospitalization().getDischargeDate(), EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "hospitalization.dischargeDate"));
+		assertEquals(
+			caseDataDto.getHospitalization().getDischargeDate(),
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "hospitalization.dischargeDate"));
 	}
 
 	@Test

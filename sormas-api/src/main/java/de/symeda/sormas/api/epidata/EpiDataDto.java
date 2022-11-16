@@ -149,14 +149,20 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Override
 	public EpiDataDto clone() throws CloneNotSupportedException {
 		EpiDataDto clone = (EpiDataDto) super.clone();
-		clone.getActivitiesAsCase().clear();
+		List<ActivityAsCaseDto> activityAsCaseDtos = new ArrayList<>();
 		for (ActivityAsCaseDto activityAsCase : getActivitiesAsCase()) {
-			clone.getActivitiesAsCase().add(activityAsCase.clone());
+			activityAsCaseDtos.add(activityAsCase.clone());
+		}
+		clone.getActivitiesAsCase().clear();
+		clone.getActivitiesAsCase().addAll(activityAsCaseDtos);
+
+		List<ExposureDto> exposureDtos = new ArrayList<>();
+		for (ExposureDto exposure : getExposures()) {
+			exposureDtos.add(exposure.clone());
 		}
 		clone.getExposures().clear();
-		for (ExposureDto exposure : getExposures()) {
-			clone.getExposures().add(exposure.clone());
-		}
+		clone.getExposures().addAll(exposureDtos);
+
 		return clone;
 	}
 }

@@ -21,18 +21,17 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -67,10 +66,9 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
-	@After
+	@AfterEach
 	public void teardown() {
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
@@ -219,7 +217,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		assertThat(shareInfoList.get(0).getRequestStatus(), is(ShareRequestStatus.PENDING));
 	}
 
-	@Test(expected = SormasToSormasException.class)
+	@Test
 	public void testResendCaseShareRequestWithoutResponodingToFirstOne() throws SormasToSormasException {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		useSurveillanceOfficerLogin(rdcf);
@@ -252,7 +250,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		options.setHandOverOwnership(true);
 		options.setComment("New comment");
 
-		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
+		assertThrows(SormasToSormasException.class, () -> getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options));
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);

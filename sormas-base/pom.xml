@@ -431,7 +431,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-text</artifactId>
-				<version>1.9</version>
+				<version>1.10.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -792,8 +792,21 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.17.1</version>
+				<version>1.17.5</version>
 				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>1.17.5</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -824,9 +837,23 @@
 			</dependency>
 
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.13.2</version>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>5.9.1</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>4.5.1</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>4.5.1</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -872,13 +899,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-inline</artifactId>
-				<version>4.3.1</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
 				<version>${swagger.version}</version>
@@ -900,8 +920,8 @@
 
 			<dependency>
 				<groupId>com.github.tomakehurst</groupId>
-				<artifactId>wiremock-standalone</artifactId>
-				<version>2.27.2</version>
+				<artifactId>wiremock-jre8-standalone</artifactId>
+				<version>2.34.0</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -913,7 +933,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.tngtech.archunit</groupId>
-				<artifactId>archunit-junit4</artifactId>
+				<artifactId>archunit-junit5</artifactId>
 				<version>${archunit.version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -957,8 +977,13 @@
 		</dependency>
 
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
 		</dependency>
 
 		<dependency>

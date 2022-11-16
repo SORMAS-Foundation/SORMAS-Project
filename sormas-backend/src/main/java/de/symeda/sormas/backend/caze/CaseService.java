@@ -58,6 +58,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -88,6 +89,7 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -142,6 +144,7 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
@@ -202,6 +205,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
@@ -651,15 +656,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, caseCriteria.getRegion()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createRegionCriteriaFilter(cb, joins, caseCriteria.getRegion(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createDistrictFilterWithFallback(cb, joins, caseCriteria.getDistrict()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createDistrictCriteriaFilter(cb, joins, caseCriteria.getDistrict(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getCommunity() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createCommunityFilterWithFallback(cb, joins, caseCriteria.getCommunity()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createCommunityCriteriaFilter(cb, joins, caseCriteria.getCommunity(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getFollowUpStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
@@ -1027,6 +1039,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
 				sormasToSormasShareInfoService.ensurePersisted(s);
 			} else {
+				try {
+					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s));
+				} catch (SormasToSormasException e) {
+					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
+				}
 				sormasToSormasShareInfoService.deletePermanent(s);
 			}
 		});
@@ -1075,16 +1092,26 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			List<String> sharedCaseUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids);
+			List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
+			if (!uuidsAllowedToBeShared.isEmpty()) {
+				List<String> sharedCaseUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(uuidsAllowedToBeShared);
 
-			if (!sharedCaseUuids.isEmpty()) {
-				try {
-					externalSurveillanceToolGatewayFacade.sendCases(sharedCaseUuids, archived);
-				} catch (ExternalSurveillanceToolException e) {
-					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+				if (!sharedCaseUuids.isEmpty()) {
+					try {
+						externalSurveillanceToolGatewayFacade.sendCases(sharedCaseUuids, archived);
+					} catch (ExternalSurveillanceToolException e) {
+						throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+					}
 				}
 			}
 		}
+	}
+
+	public List<String> getEntityUuidsAllowedToBeShared(List<String> entityUuids) {
+		List<CaseDataDto> casesAllowedToBeShare =
+			caseFacade.getByUuids(entityUuids).stream().filter(c -> !c.isDontShareWithReportingTool()).collect(Collectors.toList());
+
+		return casesAllowedToBeShare.stream().map(CaseDataDto::getUuid).collect(Collectors.toList());
 	}
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
@@ -1112,15 +1139,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@Override
 	public void undelete(Case caze) {
 		// un-delete all samples that are only associated with this case
-		caze.getSamples()
-				.stream()
-				.forEach(sample -> sampleService.undelete(sample));
+		caze.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
 		super.undelete(caze);
 	}
 
 	private void deleteCaseInExternalSurveillanceTool(Case caze) {
 		try {
-			caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+			if (!caze.isDontShareWithReportingTool()) {
+				caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+			}
 		} catch (ExternalSurveillanceToolException e) {
 			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 		}
@@ -1613,7 +1640,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
 		return inJurisdictionOrOwned(new CaseQueryContext(cb, query, from));
 	}
 
@@ -1840,7 +1867,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate regionFilter = null;
 		RegionReferenceDto criteriaRegion = caseCriteria.getRegion();
 		if (criteriaRegion != null) {
-			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, criteriaRegion));
+			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionCriteriaFilter(cb, joins, criteriaRegion, null));
 		}
 
 		Predicate reportDateFilter = criteria.getReportDate() != null
@@ -2079,6 +2106,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid),
 				cb.equal(root.get(Case.DISEASE), disease),
+				cb.isFalse(root.get(Case.DELETED)),
 				cb.or(
 					cb.lessThan(symptomsJoin.get(Symptoms.ONSET_DATE), startDate),
 					cb.and(cb.isNull(symptomsJoin.get(Symptoms.ONSET_DATE)), cb.lessThan(root.get(Case.REPORT_DATE), startDate)))));

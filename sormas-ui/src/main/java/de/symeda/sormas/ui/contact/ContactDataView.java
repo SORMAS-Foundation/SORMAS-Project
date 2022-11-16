@@ -130,7 +130,7 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		final String uuid = contactDto.getUuid();
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_REASSIGN_CASE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_REASSIGN_CASE) && isEditAllowed()) {
 			HorizontalLayout buttonsLayout = new HorizontalLayout();
 			buttonsLayout.setSpacing(true);
 
@@ -199,7 +199,8 @@ public class ContactDataView extends AbstractContactView {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
-			TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease());
+			TaskListComponent taskList =
+				new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease(), this::showUnsavedChangesPopup, isEditAllowed());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
@@ -207,7 +208,8 @@ public class ContactDataView extends AbstractContactView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
-				this::showUnsavedChangesPopup);
+				this::showUnsavedChangesPopup,
+				isEditAllowed());
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -219,7 +221,7 @@ public class ContactDataView extends AbstractContactView {
 			eventsLayout.setMargin(false);
 			eventsLayout.setSpacing(false);
 
-			EventListComponent eventList = new EventListComponent(getContactRef(), this::showUnsavedChangesPopup);
+			EventListComponent eventList = new EventListComponent(getContactRef(), this::showUnsavedChangesPopup, isEditAllowed());
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventsLayout.addComponent(eventList);
 
@@ -233,7 +235,7 @@ public class ContactDataView extends AbstractContactView {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease()).build();
-				}, this::showUnsavedChangesPopup)), IMMUNIZATION_LOC);
+				}, this::showUnsavedChangesPopup, isEditAllowed())), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
@@ -247,7 +249,7 @@ public class ContactDataView extends AbstractContactView {
 						.contactReference(getContactRef())
 						.region(refreshedContact.getRegion() != null ? refreshedContact.getRegion() : refreshedCase.getResponsibleRegion())
 						.district(refreshedContact.getDistrict() != null ? refreshedContact.getDistrict() : refreshedCase.getResponsibleDistrict());
-				}, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
+				}, this::showUnsavedChangesPopup, isEditAllowed())), VACCINATIONS_LOC);
 			}
 		}
 
@@ -258,7 +260,7 @@ public class ContactDataView extends AbstractContactView {
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
 
-			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto);
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, isEditAllowed());
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
@@ -268,8 +270,12 @@ public class ContactDataView extends AbstractContactView {
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
-			documentList =
-				new DocumentListComponent(DocumentRelatedEntityType.CONTACT, getContactRef(), UserRight.CONTACT_EDIT, contactDto.isPseudonymized());
+			documentList = new DocumentListComponent(
+				DocumentRelatedEntityType.CONTACT,
+				getContactRef(),
+				UserRight.CONTACT_EDIT,
+				contactDto.isPseudonymized(),
+				isEditAllowed());
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -279,11 +285,11 @@ public class ContactDataView extends AbstractContactView {
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 
 		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disableVithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		} else if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disableVithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disable();
+			layout.disableVithViewAllow();
 		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
 			layout.disable(true);
 		}

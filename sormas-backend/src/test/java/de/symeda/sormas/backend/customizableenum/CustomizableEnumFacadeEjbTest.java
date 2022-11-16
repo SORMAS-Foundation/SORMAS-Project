@@ -1,12 +1,13 @@
 package de.symeda.sormas.backend.customizableenum;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
@@ -16,7 +17,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 
-	@Before
+	@BeforeEach
 	public void createCustomEnums() {
 		List<CustomizableEnumValue> enumValues = getCustomizableEnumValueService().getAll();
 		if (enumValues.isEmpty()) {
@@ -49,8 +50,10 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 
 	}
 
-	@Test(expected = CustomEnumNotFoundException.class)
+	@Test
 	public void tetGetUnknownDiseaseVariantWithNullDisease() throws CustomEnumNotFoundException {
-		getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, "any", null);
+		assertThrows(
+			CustomEnumNotFoundException.class,
+			() -> getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, "any", null));
 	}
 }

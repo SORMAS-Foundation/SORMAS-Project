@@ -138,8 +138,11 @@ public class ImmunizationController {
 		ImmunizationDto immunizationDto,
 		Consumer<Runnable> actionCallback) {
 
-		ImmunizationDataForm immunizationDataForm =
-			new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase(), actionCallback);
+		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(
+			immunizationDto.isPseudonymized(),
+			immunizationDto.isInJurisdiction(),
+			immunizationDto.getRelatedCase(),
+			actionCallback);
 		immunizationDataForm.setValue(immunizationDto);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
@@ -194,6 +197,7 @@ public class ImmunizationController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteWithReasonOrUndeleteListener(
 				ImmunizationsView.VIEW_NAME,
+				null,
 				I18nProperties.getString(Strings.entityImmunization),
 				immunizationDto.getUuid(),
 				FacadeProvider.getImmunizationFacade());

@@ -24,9 +24,9 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -61,6 +61,10 @@ public class FacilitiesGrid extends FilteredGrid<FacilityIndexDto, FacilityCrite
 			FacilityIndexDto.REGION,
 			FacilityIndexDto.DISTRICT,
 			FacilityIndexDto.COMMUNITY,
+			FacilityIndexDto.POSTAL_CODE,
+			FacilityIndexDto.STREET,
+			FacilityIndexDto.HOUSE_NUMBER,
+			FacilityIndexDto.ADDITIONAL_INFORMATION,
 			FacilityIndexDto.CITY,
 			FacilityIndexDto.LATITUDE,
 			FacilityIndexDto.LONGITUDE,

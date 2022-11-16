@@ -92,7 +92,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private DateField intensiveCareUnitEnd;
 	//@formatter:on
 
-	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isPseudonymized) {
+	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isPseudonymized, boolean inJurisdiction, boolean isEditAllowed) {
 
 		super(
 			HospitalizationDto.class,
@@ -100,7 +100,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale())
 				.add(new OutbreakFieldVisibilityChecker(viewMode)),
-			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized), isEditAllowed);
 		this.caze = caze;
 		this.viewMode = viewMode;
 		addFields();

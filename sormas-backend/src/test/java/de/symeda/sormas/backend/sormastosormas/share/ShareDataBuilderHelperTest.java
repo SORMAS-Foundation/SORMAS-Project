@@ -22,9 +22,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -53,7 +51,6 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
  * @since 11-Oct-21
  */
 
-@RunWith(MockitoJUnitRunner.class)
 public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 	@Test

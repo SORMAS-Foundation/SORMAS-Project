@@ -400,10 +400,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			pseudonymizer.pseudonymizeDto(VaccinationDto.class, dto, inJurisdiction, c -> {
 
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(
-					source.getReportingUser(),
-					currentUser,
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 			});
 		}
 	}
@@ -444,7 +441,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	}
 
-	@RightsAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._CASE_CREATE })
 	public void updateVaccinationStatuses(Case caze) {
 		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
 
@@ -532,7 +531,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Vaccination::new, checkChangeDate);
 
 		target.setImmunization(immunizationService.getByReferenceDto(source.getImmunization()));
-		target.setHealthConditions(healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
+		target.setHealthConditions(
+			healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setVaccinationDate(source.getVaccinationDate());

@@ -591,7 +591,7 @@ public class EventController {
 			caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
 
-		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		if (caseRef != null) {
 			eventCreateForm.setValue(createNewEvent(caseDataDto.getDisease()));
 			eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
@@ -631,7 +631,7 @@ public class EventController {
 		List<CaseDataDto> caseDataDtos =
 			FacadeProvider.getCaseFacade().getByUuids(caseRefs.stream().map(c -> c.getUuid()).collect(Collectors.toList()));
 
-		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		eventCreateForm.setValue(createNewEvent(caseDataDtos.stream().findFirst().get().getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
@@ -658,7 +658,7 @@ public class EventController {
 		List<ContactDto> contactDtos =
 			FacadeProvider.getContactFacade().getByUuids(contactRefs.stream().map(c -> c.getUuid()).collect(Collectors.toList()));
 
-		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		eventCreateForm.setValue(createNewEvent(contactDtos.stream().findFirst().get().getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
@@ -682,7 +682,7 @@ public class EventController {
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(ContactDto contact) {
 
-		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		eventCreateForm.setValue(createNewEvent(contact.getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 
@@ -712,7 +712,7 @@ public class EventController {
 		boolean createSuperordinateEvent) {
 
 		EventDto superOrSubordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superOrSubordinateEventRef.getUuid(), false);
-		EventDataForm form = new EventDataForm(true, false);
+		EventDataForm form = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(createNewEvent(superOrSubordinateEvent.getDisease()));
 		form.getField(EventDto.DISEASE).setReadOnly(true);
 
@@ -750,7 +750,7 @@ public class EventController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventFacade().getAutomaticDeletionInfo(eventUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventFacade().getManuallyDeletionInfo(eventUuid);
 
-		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
+		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized(), event.isInJurisdiction());
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventEditForm,
@@ -817,7 +817,7 @@ public class EventController {
 						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-			}, (deleteDetails) -> {
+			}, getDeleteConfirmationDetails(Collections.singletonList(eventUuid)), (deleteDetails) -> {
 				FacadeProvider.getEventFacade().undelete(uuid);
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent), uuid, FacadeProvider.getEventFacade());
@@ -826,15 +826,16 @@ public class EventController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(
-					event,
-					FacadeProvider.getEventFacade(),
-					CoreEntityArchiveMessages.EVENT,
-					editView,
-					() -> navigateToData(uuid));
+				.addArchivingButton(event, FacadeProvider.getEventFacade(), CoreEntityArchiveMessages.EVENT, editView, () -> navigateToData(uuid));
 		}
 
 		return editView;
+	}
+
+	private String getDeleteConfirmationDetails(List<String> eventUuids) {
+		boolean hasPendingRequest = FacadeProvider.getSormasToSormasEventFacade().hasPendingRequest(eventUuids);
+
+		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
 	private void saveEvent(Consumer<EventStatus> saveCallback, EventDto eventDto) {
@@ -934,7 +935,10 @@ public class EventController {
 				false).show(Page.getCurrent());
 		} else {
 			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()),
+				String.format(
+					I18nProperties.getString(Strings.confirmationDeleteEvents),
+					selectedRows.size(),
+					getDeleteConfirmationDetails(selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()))),
 				(deleteDetails) -> {
 					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
 					int countNotDeletedEventsWithParticipants = 0;

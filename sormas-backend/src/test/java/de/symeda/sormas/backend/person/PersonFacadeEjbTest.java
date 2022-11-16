@@ -9,11 +9,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -73,6 +73,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
@@ -121,6 +122,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(user);
+
+		// TravelEntry only active for Germany
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 
 		// 1a. Test for all available PersonAssociations
 		for (PersonAssociation pa : PersonAssociation.values()) {
@@ -342,8 +346,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		criteria.setBirthdateDD(1);
 		List<String> relevantNameUuids =
 			getPersonFacade().getSimilarPersonDtos(criteria).stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
-		Assert.assertEquals(1, relevantNameUuids.size());
-		Assert.assertEquals(person1.getUuid(), relevantNameUuids.get(0));
+		assertEquals(1, relevantNameUuids.size());
+		assertEquals(person1.getUuid(), relevantNameUuids.get(0));
 	}
 
 	@Test
@@ -708,6 +712,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
 		// 3a. Found by TravelEntry
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getAllAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
@@ -867,7 +872,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> mergedPersonImmunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
 
-		Assert.assertEquals(mergedPersonImmunizationDtoList.size(), 2);
+		assertEquals(mergedPersonImmunizationDtoList.size(), 2);
 	}
 
 	@Test
@@ -879,8 +884,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> immunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithVaccination.getUuid()));
 
-		Assert.assertEquals(immunizationDtoList.size(), 1);
-		Assert.assertEquals(immunizationDtoList.get(0).getVaccinations().size(), 2);
+		assertEquals(immunizationDtoList.size(), 1);
+		assertEquals(immunizationDtoList.get(0).getVaccinations().size(), 2);
 	}
 
 	@Test
@@ -892,7 +897,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> immunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
 
-		Assert.assertEquals(immunizationDtoList.size(), 1);
+		assertEquals(immunizationDtoList.size(), 1);
 	}
 
 	@Test
@@ -905,7 +910,74 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
 
 		// both persons are without immunization and vaccination so the merged person should not have immunization
-		Assert.assertEquals(immunizationDtoList.size(), 0);
+		assertEquals(immunizationDtoList.size(), 0);
+	}
+
+	@Test
+	public void testMergePersonsAndRemoveDuplication(){
+
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		leadPerson.setPhone("+496211218490");
+		otherPerson.setPhone("+496211218491");
+		leadPerson.setEmailAddress("lead@hotmail.com");
+		otherPerson.setEmailAddress("other@yahoo.com");
+		leadPerson.setAddresses(Collections.singletonList(LocationDto.build()));
+		otherPerson.setAddresses(Collections.singletonList(LocationDto.build()));
+
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
+
+		final PersonReferenceDto leadPersonRef = leadPerson.toReference();
+		final PersonReferenceDto otherPersonRef = otherPerson.toReference();
+		final UserReferenceDto natUserRef = nationalUser.toReference();
+
+		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
+		creator.createContact(natUserRef, leadPersonRef);
+		final EventDto leadEvent = creator.createEvent(natUserRef);
+		creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
+		creator.createVisit(leadPersonRef);
+		creator.createImmunization(Disease.CORONAVIRUS, leadPersonRef, natUserRef, rdcf);
+		creator.createTravelEntry(leadPersonRef, natUserRef, rdcf, te -> te.setResultingCase(leadCase.toReference()));
+
+		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcfEntities);
+		creator.createContact(natUserRef, otherPersonRef);
+		final EventDto otherEvent = creator.createEvent(natUserRef);
+		creator.createEventParticipant(otherEvent.toReference(), otherPerson, natUserRef);
+		creator.createVisit(otherPersonRef);
+		creator.createImmunization(Disease.CORONAVIRUS, otherPersonRef, natUserRef, rdcf);
+		creator.createTravelEntry(otherPersonRef, natUserRef, rdcf, te -> te.setResultingCase(otherCase.toReference()));
+
+		assertEquals(1, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, leadPerson.getAllEmailAddresses().size());
+		assertEquals(1, leadPerson.getAllPhoneNumbers().size());
+		assertEquals(1, leadPerson.getAddresses().size());
+		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
+
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+
+		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
+
+		assertEquals(2, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		final List<String> leadEmailAddresses = leadPerson.getAllEmailAddresses();
+		assertEquals(2, leadEmailAddresses.size());
+		assertEquals(1, leadEmailAddresses.stream().filter(s -> s.equals("lead@hotmail.com")).count());
+		List<String> leadPersonAllPhoneNumbers = leadPerson.getAllPhoneNumbers();
+		assertEquals(2, leadPersonAllPhoneNumbers.size());
+		assertEquals(1, leadPersonAllPhoneNumbers.stream().filter(s -> s.equals("+496211218490")).count());
+		assertEquals(2, leadPerson.getAddresses().size());
+		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
 	}
 
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
@@ -1029,6 +1101,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testUserWithLimitedDiseaseSeeOnlyLimitedTravelEntry() {
+
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
 
@@ -1051,6 +1124,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.region,
 			rdcf.district,
 			rdcf.pointOfEntry);
+
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 
 		//National User with no restrictions can see all the travel entries
 		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);

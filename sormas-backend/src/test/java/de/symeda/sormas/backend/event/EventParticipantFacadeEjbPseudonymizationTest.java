@@ -24,9 +24,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -40,7 +38,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
-@RunWith(MockitoJUnitRunner.class)
 public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
@@ -172,7 +169,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 	}
 
 	private EventParticipantDto createEventParticipant(UserDto user, TestDataCreator.RDCF rdcf) {
-		EventDto event = creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "", "", user.toReference(),null, e -> {
+		EventDto event = creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "", "", user.toReference(), null, e -> {
 			e.getEventLocation().setRegion(rdcf.region);
 			e.getEventLocation().setDistrict(rdcf.district);
 			e.getEventLocation().setCommunity(rdcf.community);

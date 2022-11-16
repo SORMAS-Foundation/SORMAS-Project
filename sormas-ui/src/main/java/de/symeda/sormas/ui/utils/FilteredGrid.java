@@ -24,7 +24,7 @@ import de.symeda.sormas.ui.UserProvider;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
-	public static final String EDIT_BTN_ID = "edit";
+	public static final String ACTION_BTN_ID = "action";
 
 	private static final long serialVersionUID = 8116377533153377424L;
 
@@ -139,12 +139,15 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	 *            ItemClickListener
 	 */
 	protected void addEditColumn(Consumer<T> handler) {
+		addActionColumnConfiguration(handler, true);
+	}
 
+	private void addActionColumnConfiguration(Consumer<T> handler, boolean isEditAction) {
 		List<Column<T, ?>> columnsList = new ArrayList<>(getColumns());
 
-		Column<T, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setCaption(I18nProperties.getCaption(EDIT_BTN_ID));
+		Column<T, String> editColumn = addColumn(entry -> isEditAction ? VaadinIcons.EDIT.getHtml() : VaadinIcons.EYE.getHtml(), new HtmlRenderer());
+		editColumn.setId(ACTION_BTN_ID);
+		editColumn.setCaption(isEditAction? I18nProperties.getCaption(Captions.edit): I18nProperties.getCaption(Captions.view));
 		editColumn.setSortable(false);
 		editColumn.setWidth(20);
 
@@ -152,7 +155,11 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		columnsList.add(0, editColumn);
 		setColumnOrder(columnsList.toArray(new Column[columnsList.size()]));
 
-		addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e -> handler.accept(e)));
+		addItemClickListener(new ShowDetailsListener<>(ACTION_BTN_ID, e -> handler.accept(e)));
+	}
+
+	protected void addViewColumn(Consumer<T> handler) {
+		addActionColumnConfiguration(handler, false);
 	}
 
 	protected void removeColumnIfExists(String columnId) {

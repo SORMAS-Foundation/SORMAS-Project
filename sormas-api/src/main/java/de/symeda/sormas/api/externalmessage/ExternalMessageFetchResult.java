@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.externalmessage;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
@@ -9,9 +9,9 @@ import java.io.Serializable;
 public class ExternalMessageFetchResult implements Serializable {
 
 	private static final long serialVersionUID = -8759739371441385454L;
-	@AuditInclude
+	@AuditIncludeProperty
 	private boolean success;
-	@AuditInclude
+	@AuditIncludeProperty
 	private NewMessagesState newMessagesState;
 	private String error;
 

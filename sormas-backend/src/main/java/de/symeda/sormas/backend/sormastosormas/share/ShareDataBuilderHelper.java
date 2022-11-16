@@ -73,7 +73,7 @@ public class ShareDataBuilderHelper {
 	}
 
 	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, ShareRequestInfo requestInfo) {
-		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
+		PersonDto personDto = personFacade.toPseudonymizedDto(person, pseudonymizer, true);
 
 		pseudonymizePerson(personDto, requestInfo);
 

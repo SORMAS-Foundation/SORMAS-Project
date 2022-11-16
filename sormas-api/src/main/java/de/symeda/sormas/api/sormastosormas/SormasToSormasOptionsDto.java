@@ -22,7 +22,7 @@ import java.io.Serializable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.audit.AuditExclude;
+import de.symeda.sormas.api.audit.AuditExcludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
@@ -49,7 +49,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 	private boolean handOverOwnership;
 
 	private boolean pseudonymizeData;
-	@AuditExclude
+	@AuditExcludeProperty
 	@NotEmpty(message = Validations.requiredField)
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;

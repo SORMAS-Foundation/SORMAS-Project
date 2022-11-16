@@ -1,14 +1,11 @@
 package de.symeda.sormas.backend.importexport;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import de.symeda.sormas.api.importexport.DatabaseTableType;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,26 +13,21 @@ import java.util.Set;
 import javax.persistence.Entity;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.auditlog.AuditLogEntry;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
-import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
-import org.mockito.Mockito;
 
 /**
  * @see DatabaseExportService
@@ -58,14 +50,14 @@ public class DatabaseExportServiceTest {
 	}
 
 	private static final List<Class<?>> NOT_EXPORTED_ENTITIES = Arrays.asList(
-			DirectoryImmunization.class,
-			LastVaccinationDate.class,
-			ManualMessageLog.class,
-			UserReference.class,
-			LastVaccineType.class,
-			SystemEvent.class,
-			FirstVaccinationDate.class,
-			AuditLogEntry.class);
+		DirectoryImmunization.class,
+		LastVaccinationDate.class,
+		ManualMessageLog.class,
+		UserReference.class,
+		LastVaccineType.class,
+		SystemEvent.class,
+		FirstVaccinationDate.class,
+		AuditLogEntry.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {

@@ -348,7 +348,7 @@ public class ImmunizationFacadeEjb
 
 		ImmunizationDto existingDto = toDto(existingImmunization);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingImmunization, pseudonymizer);
 
 		validate(dto);
@@ -375,7 +375,7 @@ public class ImmunizationFacadeEjb
 
 		onImmunizationChanged(immunization, internal);
 
-		return convertToDto(immunization, pseudonymizer);
+		return toPseudonymizedDto(immunization, pseudonymizer);
 	}
 
 	@Override

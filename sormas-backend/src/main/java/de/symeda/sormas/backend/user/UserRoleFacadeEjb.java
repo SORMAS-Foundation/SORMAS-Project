@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.user;
 
 import java.io.IOException;
@@ -26,8 +24,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -63,6 +63,7 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -101,17 +102,17 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	@Override
 	@PermitAll
 	public List<UserRoleDto> getAllAfter(Date since) {
-		return userRoleService.getAllAfter(since).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userRoleService.getAllAfter(since).stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserRoleDto> getAll() {
-		return userRoleService.getAll().stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userRoleService.getAll().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserRoleDto> getAllActive() {
-		return userRoleService.getAllActive().stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userRoleService.getAllActive().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -167,11 +168,18 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 		Set<UserRight> userRights = source.getUserRights();
 		Set<UserRight> requiredUserRights = UserRight.getRequiredUserRights(userRights);
-		if (!userRights.containsAll(requiredUserRights)) {
+
+		Set<UserRight> missingRights = requiredUserRights.stream().filter(r -> !userRights.contains(r)).collect(Collectors.toSet());
+		Map<UserRight, Set<UserRight>> missingDependencies = new HashMap<>();
+		for (UserRight missingRight : missingRights) {
+			Set<UserRight> requiredRights = UserRight.requiredRightFromUserRights(missingRight, userRights);
+			missingDependencies.put(missingRight, requiredRights);
+		}
+
+		if (missingDependencies.size() > 0) {
 			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.missingRequiredUserRights,
-					requiredUserRights.stream().filter(r -> !userRights.contains(r)).map(UserRight::toString).collect(Collectors.joining(", "))));
+				I18nProperties
+					.getValidationError(Validations.missingRequiredUserRightsBaseText, buildUserRightsDependencyErrorMessage(missingDependencies)));
 		}
 
 		UserRoleDto existingUserRole = getByUuid(source.getUuid());
@@ -195,6 +203,32 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
 			}
 		}
+	}
+
+	private String buildUserRightsDependencyErrorMessage(Map<UserRight, Set<UserRight>> missingDependencies) {
+
+		StringBuilder errorMessageText = new StringBuilder();
+		for (Map.Entry<UserRight, Set<UserRight>> missingDependency : missingDependencies.entrySet()) {
+			Set<UserRight> dependencyList = missingDependency.getValue();
+			if (dependencyList == null || dependencyList.size() == 0) {
+				errorMessageText
+					.append(I18nProperties.getValidationError(Validations.missingRequiredUserRightsNoDependency, missingDependency.getKey()));
+			} else if (dependencyList.size() < 4) {
+				errorMessageText.append(
+					I18nProperties.getValidationError(
+						Validations.missingRequiredUserRightsSmallDependency,
+						missingDependency.getKey(),
+						dependencyList.stream().map(UserRight::toString).collect(Collectors.joining("', '"))));
+			} else {
+				errorMessageText.append(
+					I18nProperties.getValidationError(
+						Validations.missingRequiredUserRightsLargeDependency,
+						missingDependency.getKey(),
+						dependencyList.size(),
+						dependencyList.iterator().next().toString()));
+			}
+		}
+		return errorMessageText.toString();
 	}
 
 	@Override
@@ -281,6 +315,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
+	@AuditIgnore
 	public List<UserRoleReferenceDto> getAllActiveAsReference() {
 		return userRoleService.getAllActive().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}

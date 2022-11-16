@@ -37,8 +37,6 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	boolean exists(String uuid);
 
-	List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
 	DeletionInfoDto getAutomaticDeletionInfo(String uuid);
 
 	DeletionInfoDto getManuallyDeletionInfo(String uuid);

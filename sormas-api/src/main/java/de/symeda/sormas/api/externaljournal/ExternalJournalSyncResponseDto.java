@@ -5,14 +5,14 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 @AuditedClass
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExternalJournalSyncResponseDto implements Serializable {
 
-	@AuditInclude
+	@AuditIncludeProperty
 	private boolean success;
 	private String message;
 	private Map<String, String> errors;

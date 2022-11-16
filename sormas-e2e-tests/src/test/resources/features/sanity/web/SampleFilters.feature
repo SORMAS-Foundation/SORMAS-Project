@@ -13,7 +13,7 @@ Feature: Sample filter functionality
     When I search for samples created with the API
     Then I check the displayed specimen condition filter dropdown
     When I search for samples created with the API
-    Then I check the displayed Laboratory filter dropdown
+    Then I validate that number of displayed samples is correct for applied Voreingestelltes Labor filter
 
   @tmsLink=SORDEV-5981 @env_main
   Scenario: Check all filters are work properly in Samples directory

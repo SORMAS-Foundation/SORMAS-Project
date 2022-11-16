@@ -20,9 +20,9 @@ package de.symeda.sormas.backend.infrastructure.facility;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -34,6 +34,7 @@ public class FacilityServiceTest extends AbstractBeanTest {
 
 	@Override
 	public void init() {
+		super.init();
 		getFacilityService().createConstantFacilities();
 	}
 

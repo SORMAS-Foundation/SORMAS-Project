@@ -17,11 +17,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
+@AuditIgnore
 public class CurrentUserService {
 
 	@Resource

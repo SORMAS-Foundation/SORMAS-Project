@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @see HtmlHelper

@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -82,6 +83,7 @@ public class SormasToSormasRestClient {
 		mapper = new ObjectMapper();
 		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	public <T> T post(String receiverId, String endpoint, Object body, Class<T> responseType) throws SormasToSormasException {
@@ -109,7 +111,7 @@ public class SormasToSormasRestClient {
 				Collections.singletonList(scope));
 		} catch (Exception e) {
 			LOGGER.info("Could not requested access token for {}: {}", targetId, e);
-			throw  SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestToken);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestToken);
 		}
 		LOGGER.info(String.format("Successfully requested access token for %s", targetId));
 		return String.format("Bearer %s", authToken);

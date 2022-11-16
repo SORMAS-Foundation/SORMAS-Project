@@ -21,11 +21,18 @@ public abstract class PseudonymizableDto extends EntityDto implements Pseudonymi
 	private static final long serialVersionUID = 4181307802683421947L;
 
 	public static final String PSEUDONYMIZED = "pseudonymized";
+	public static final String IN_JURISDICTION = "inJurisdiction";
 
 	/**
-	 * Flag that marks the object that is has pseudonymized personal and sensitive data
+	 * Whether sensitive and/or personal data of this DTO is pseudonymized.
 	 */
 	private boolean pseudonymized;
+
+	/**
+	 * Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered
+	 * to decide whether sensitive and/or personal data is supposed to be shown.
+	 */
+	private boolean inJurisdiction;
 
 	public boolean isPseudonymized() {
 		return pseudonymized;
@@ -33,5 +40,13 @@ public abstract class PseudonymizableDto extends EntityDto implements Pseudonymi
 
 	public void setPseudonymized(boolean pseudonymized) {
 		this.pseudonymized = pseudonymized;
+	}
+
+	public boolean isInJurisdiction() {
+		return inJurisdiction;
+	}
+
+	public void setInJurisdiction(boolean inJurisdiction) {
+		this.inJurisdiction = inJurisdiction;
 	}
 }

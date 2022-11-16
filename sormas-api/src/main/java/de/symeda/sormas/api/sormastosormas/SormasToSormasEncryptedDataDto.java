@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 
@@ -29,7 +29,7 @@ import de.symeda.sormas.api.i18n.Validations;
 public class SormasToSormasEncryptedDataDto implements Serializable {
 
 	private static final long serialVersionUID = 8658507076136806951L;
-	@AuditInclude
+	@AuditIncludeProperty
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String senderId;
 

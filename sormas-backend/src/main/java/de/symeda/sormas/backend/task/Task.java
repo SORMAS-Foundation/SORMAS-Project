@@ -57,6 +57,7 @@ public class Task extends AbstractDomainObject {
 
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
+	public static final String ASSIGNED_BY_USER = "assignedByUser";
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
 	public static final String CREATOR_COMMENT = "creatorComment";
@@ -97,6 +98,7 @@ public class Task extends AbstractDomainObject {
 	private User creatorUser;
 	private String creatorComment;
 	private User assigneeUser;
+	private User assignedByUser;
 	private String assigneeReply;
 	private List<User> observerUsers;
 
@@ -212,6 +214,15 @@ public class Task extends AbstractDomainObject {
 
 	public void setAssigneeUser(User assigneeUser) {
 		this.assigneeUser = assigneeUser;
+	}
+
+	@ManyToOne(cascade = {})
+	public User getAssignedByUser() {
+		return assignedByUser;
+	}
+
+	public void setAssignedByUser(User assignedByUser) {
+		this.assignedByUser = assignedByUser;
 	}
 
 	@AuditedIgnore

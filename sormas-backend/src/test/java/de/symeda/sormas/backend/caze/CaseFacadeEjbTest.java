@@ -15,12 +15,7 @@
 
 package de.symeda.sormas.backend.caze;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -28,13 +23,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -58,18 +53,10 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -90,6 +77,7 @@ import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -114,7 +102,6 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -177,10 +164,9 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
@@ -188,34 +174,15 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 public class CaseFacadeEjbTest extends AbstractBeanTest {
 
-	private static final int WIREMOCK_TESTING_PORT = 8888;
-	private ExternalSurveillanceToolFacade subjectUnderTest;
-
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
-
-	@Rule
-	public final ExpectedException exception = ExpectedException.none();
-
-	@Before
-	public void setup() {
-		configureExternalSurvToolUrlForWireMock();
-		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
-	}
-
-	@After
-	public void teardown() {
-		clearExternalSurvToolUrlForWireMock();
-	}
-
-	@Test(expected = ValidationRuntimeException.class)
+	@Test
 	public void testValidateWithNullReportingUser() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
-		CaseDataDto caze = creator
-			.createCase(null, cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
-		CaseFacadeEjbLocal caseFacadeEjb = getBean(CaseFacadeEjbLocal.class);
-		caseFacadeEjb.validate(caze);
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> creator
+				.createCase(null, cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf));
 	}
 
 	@Test
@@ -268,30 +235,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		final CaseCriteria caseCriteria = new CaseCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(1, getCaseFacade().getIndexList(caseCriteria, 0, 100, null).size());
+		assertEquals(1, getCaseFacade().getIndexList(caseCriteria, 0, 100, null).size());
 
-		Assert.assertEquals(3, getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null).size());
+		assertEquals(3, getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null).size());
 
 		final SampleCriteria sampleCriteria = new SampleCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(2, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
+		assertEquals(2, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
 
-		Assert.assertEquals(1, getTaskFacade().getIndexList(new TaskCriteria(), 0, 100, null).size());
+		assertEquals(1, getTaskFacade().getIndexList(new TaskCriteria(), 0, 100, null).size());
 
 		final TaskCriteria taskCriteria = new TaskCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(1, getTaskFacade().getIndexList(taskCriteria, 0, 100, null).size());
+		assertEquals(1, getTaskFacade().getIndexList(taskCriteria, 0, 100, null).size());
 
-		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria(), 0, 100, null).size());
+		assertEquals(2, getContactFacade().getIndexList(new ContactCriteria(), 0, 100, null).size());
 
 		final ContactCriteria contactCriteriaRdcf2 = new ContactCriteria().region(new RegionReferenceDto(rdcf2.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null))
 			.community(new CommunityReferenceDto(rdcf2.community.getUuid(), null, null));
-		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
+		assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
 
 		final ContactCriteria contactCriteriaRdcf1 = new ContactCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf1, 0, 100, null).size());
+		assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf1, 0, 100, null).size());
 	}
 
 	@Test
@@ -341,8 +308,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true);
 		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo =
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), true);
-		Assert.assertEquals(1, casesForDuplicateMergingToday.size());
-		Assert.assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
+		assertEquals(1, casesForDuplicateMergingToday.size());
+		assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
 	}
 
 	@Test
@@ -378,9 +345,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		Assert.assertEquals(
-			0,
-			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+		assertEquals(0, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
 	}
 
 	@Test
@@ -416,9 +381,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		Assert.assertEquals(
-			0,
-			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+		assertEquals(0, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
 	}
 
 	@Test
@@ -454,9 +417,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		Assert.assertEquals(
-			1,
-			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+		assertEquals(1, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
 	}
 
 	@Test
@@ -514,12 +475,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
+		assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 
 		cazePerson.setPhone("40742140797");
 		getPersonFacade().save(cazePerson);
 
-		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
+		assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 	}
 
 	@Test
@@ -536,12 +497,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
 
 		UserDto user = creator.createUser(
-				rdcf.region.getUuid(),
-				rdcf.district.getUuid(),
-				rdcf.facility.getUuid(),
-				"Surv",
-				"Off",
-				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Off",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		loginWith(user);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -771,12 +732,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		Assert.assertEquals(3, getCaseFacade().getIndexList(null, 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("Munich"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("Last Name3"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("20095"), 0, 100, null).size());
-		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().personLike("+49-31-901-820"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("4930901822"), 0, 100, null).size());
+		assertEquals(3, getCaseFacade().getIndexList(null, 0, 100, null).size());
+		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("Munich"), 0, 100, null).size());
+		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("Last Name3"), 0, 100, null).size());
+		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("20095"), 0, 100, null).size());
+		assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().personLike("+49-31-901-820"), 0, 100, null).size());
+		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("4930901822"), 0, 100, null).size());
 	}
 
 	@Test
@@ -828,10 +789,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		event1Participant1.setResultingCase(case1.toReference());
 		getEventParticipantFacade().save(event1Participant1);
 
-		Assert.assertEquals(2, getCaseFacade().getIndexList(null, 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike(event1.getUuid()), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal description"), 0, 100, null).size());
+		assertEquals(2, getCaseFacade().getIndexList(null, 0, 100, null).size());
+		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal"), 0, 100, null).size());
+		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike(event1.getUuid()), 0, 100, null).size());
+		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal description"), 0, 100, null).size());
 	}
 
 	@Test
@@ -1521,59 +1482,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getPersonFacade().save(cazePerson);
 
 		// this should throw an exception
-		exception.expect(OutdatedEntityException.class);
-		getCaseFacade().save(firstCase);
-	}
-
-	@Test
-	public void testArchiveAndDearchiveCase() {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-		Date testStartDate = new Date();
-
-		// getAllActiveCases and getAllUuids should return length 1
-		assertEquals(1, getCaseFacade().getAllAfter(null).size());
-		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
-
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-				.withRequestBody(containing("caseUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
-		Case case1 = getCaseService().getByUuid(caze.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
-		getCaseFacade().archive(caze.getUuid(), null);
-
-		// getAllActiveCases and getAllUuids should return length 0
-		assertEquals(0, getCaseFacade().getAllAfter(null).size());
-		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
-
-		// getArchivedUuidsSince should return length 1
-		assertEquals(1, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
-
-		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
-
-		// getAllActiveCases and getAllUuids should return length 1
-		assertEquals(1, getCaseFacade().getAllAfter(null).size());
-		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
-
-		// getArchivedUuidsSince should return length 0
-		assertEquals(0, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
+		assertThrows(OutdatedEntityException.class, () -> getCaseFacade().save(firstCase));
 	}
 
 	@Test
@@ -2188,56 +2097,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(updatedCase.getSymptoms().getSymptomatic());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testDoesEpidNumberExistLargeNumbers() {
 
 		/*
 		 * Running into Integer overflow is accepted since epid number follow a certain pattern
 		 * and are not supposed to be bigger than Integer maxvalue.
 		 */
-		getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER);
-	}
-
-	@Test
-	public void testArchiveAllArchivableCases() {
-
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserReferenceDto user = creator.createUser(rdcf).toReference();
-		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
-
-		// One archived case
-		CaseDataDto case1 = creator.createCase(user, person, rdcf);
-		Case caze1 = getCaseService().getByUuid(case1.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(caze1, ExternalShareStatus.SHARED);
-
-		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
-				.withRequestBody(containing("caseUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-		cut.archive(case1.getUuid(), null);
-		assertTrue(cut.isArchived(case1.getUuid()));
-
-		// One other case
-		CaseDataDto case2 = creator.createCase(user, person, rdcf);
-		Case caze2 = getCaseService().getByUuid(case2.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(caze2, ExternalShareStatus.SHARED);
-		assertFalse(cut.isArchived(case2.getUuid()));
-
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(case2.getUuid()))
-				.withRequestBody(containing("caseUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
-		// Case of "today" shouldn't be archived
-		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
-		assertTrue(cut.isArchived(case1.getUuid()));
-		assertFalse(cut.isArchived(case2.getUuid()));
-
-		// Case of "yesterday" should be archived
-		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
-		assertTrue(cut.isArchived(case1.getUuid()));
-		assertTrue(cut.isArchived(case2.getUuid()));
+		assertThrows(IllegalArgumentException.class, () -> getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER));
 	}
 
 	@Test
@@ -2540,7 +2407,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		facilityTypeFilter.setFacilityType(FacilityType.HOTEL);
 		final List<CaseIndexDto> indexListByFacilityTYpe = getCaseFacade().getIndexList(facilityTypeFilter, 0, 100, null);
 		MatcherAssert.assertThat(indexListByFacilityTYpe, hasSize(1));
-		Assert.assertEquals(indexListByFacilityTYpe.get(0).getUuid(), savedCaze3.getUuid());
+		assertEquals(indexListByFacilityTYpe.get(0).getUuid(), savedCaze3.getUuid());
 
 		final CaseCriteria facilityTypeAndGroupNonMatchingFilter = new CaseCriteria();
 		facilityTypeAndGroupNonMatchingFilter.setFacilityTypeGroup(FacilityTypeGroup.MEDICAL_FACILITY);
@@ -2968,6 +2835,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetMostRecentPreviousCaseWhenPreviousCaseIsDeleted() {
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person1 = creator.createPerson();
+		Date now = new Date();
+
+		CaseDataDto newCase = creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> c.setDisease(Disease.EVD));
+		CaseDataDto previousCase1 = creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+			c.setReportDate(DateHelper.subtractDays(now, 1));
+			c.getSymptoms().setOnsetDate(DateHelper.subtractDays(now, 7));
+		});
+
+		PreviousCaseDto mostRecentPreviousCase =
+			getCaseFacade().getMostRecentPreviousCase(person1.toReference(), Disease.EVD, newCase.getReportDate());
+		assertEquals(previousCase1.getUuid(), mostRecentPreviousCase.getUuid());
+
+		getCaseFacade().delete(previousCase1.getUuid(), new DeletionDetails());
+		mostRecentPreviousCase = getCaseFacade().getMostRecentPreviousCase(person1.toReference(), Disease.EVD, newCase.getReportDate());
+		assertNull(mostRecentPreviousCase);
+	}
+
+	@Test
 	public void testDeleteWithContacts() {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
@@ -3120,6 +3011,79 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, caseIndexDetailedDtos.size());
 	}
 
+	@Test
+	public void testArchiveAllArchivableCases() {
+
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		// One archived case
+		CaseDataDto case1 = creator.createCase(user, person, rdcf);
+
+		CaseFacadeEjb.CaseFacadeEjbLocal cut = getBean(CaseFacadeEjb.CaseFacadeEjbLocal.class);
+		cut.archive(case1.getUuid(), null);
+		assertTrue(cut.isArchived(case1.getUuid()));
+
+		// One other case
+		CaseDataDto case2 = creator.createCase(user, person, rdcf);
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		// Case of "today" shouldn't be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		// Case of "yesterday" should be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertTrue(cut.isArchived(case2.getUuid()));
+	}
+
+	@Test
+	public void testArchiveAndDearchiveCase() {
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		Date testStartDate = new Date();
+
+		// getAllActiveCases and getAllUuids should return length 1
+		assertEquals(1, getCaseFacade().getAllAfter(null).size());
+		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
+
+		getCaseFacade().archive(caze.getUuid(), null);
+
+		// getAllActiveCases and getAllUuids should return length 0
+		assertEquals(0, getCaseFacade().getAllAfter(null).size());
+		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
+
+		// getArchivedUuidsSince should return length 1
+		assertEquals(1, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
+
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
+
+		// getAllActiveCases and getAllUuids should return length 1
+		assertEquals(1, getCaseFacade().getAllAfter(null).size());
+		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
+
+		// getArchivedUuidsSince should return length 0
+		assertEquals(0, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
+	}
+
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
 	private static final SecureRandom rnd = new SecureRandom();
 
@@ -3149,13 +3113,5 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcfEntities);
-	}
-
-	private void configureExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
-	}
-
-	private void clearExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", "");
 	}
 }

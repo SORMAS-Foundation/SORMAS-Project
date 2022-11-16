@@ -34,6 +34,7 @@ import static org.sormas.e2etests.pages.application.dashboard.Surveillance.Conta
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_CHOLERA_COUNTER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_CONGENITAL_RUBELLA_COUNTER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_COVID19_COUNTER;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_COVID19_COUNTER_WITHOUT_DETAILS;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_EBOLA_VIRUS_DISEASE_COUNTER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_HUMAN_RABIES_COUNTER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_INFLUENZA_NEW_SUBTYPE_COUNTER;
@@ -121,21 +122,24 @@ public class ContactsDashboardSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              CONTACTS_COVID19_COUNTER, 40);
+              CONTACTS_COVID19_COUNTER_WITHOUT_DETAILS, 40);
           covid19ContactsCounterBefore =
-              Integer.parseInt(webDriverHelpers.getTextFromWebElement(CONTACTS_COVID19_COUNTER));
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(CONTACTS_COVID19_COUNTER_WITHOUT_DETAILS));
         });
 
     Then(
         "^I check that previous saved Contacts Dashboard contact counter for COVID-19 has been incremented$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACTS_COVID19_COUNTER);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              CONTACTS_COVID19_COUNTER_WITHOUT_DETAILS);
           // TODO check if this sleep helps for Jenkins execution, otherwise remove it and create
           // proper handle
           TimeUnit.SECONDS.sleep(5);
           covid19ContactsCounterAfter =
-              Integer.parseInt(webDriverHelpers.getTextFromWebElement(CONTACTS_COVID19_COUNTER));
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(CONTACTS_COVID19_COUNTER_WITHOUT_DETAILS));
           Assert.assertTrue(
               covid19ContactsCounterBefore < covid19ContactsCounterAfter,
               "COVID-19 contacts counter in Contacts dashboard hasn't  been incremented");

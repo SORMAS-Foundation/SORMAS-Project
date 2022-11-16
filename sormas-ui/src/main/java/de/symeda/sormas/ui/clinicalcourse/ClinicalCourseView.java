@@ -79,32 +79,41 @@ public class ClinicalCourseView extends AbstractCaseView {
 			headlineRow.addComponent(clinicalVisitsLabel);
 			headlineRow.setExpandRatio(clinicalVisitsLabel, 1);
 
-			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getClinicalCourseController()
-							.deleteAllSelectedClinicalVisits(clinicalVisitGrid.getSelectedRows(), new Runnable() {
+			if (isEditAllowed()) {
+				// Bulk operations
+				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+					MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
+						Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+							ControllerProvider.getClinicalCourseController()
+								.deleteAllSelectedClinicalVisits(clinicalVisitGrid.getSelectedRows(), new Runnable() {
 
-								public void run() {
-									clinicalVisitGrid.reload();
-								}
-							});
-					}));
+									public void run() {
+										clinicalVisitGrid.reload();
+									}
+								});
+						}));
 
-				headlineRow.addComponent(bulkOperationsDropdown);
-				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
+					headlineRow.addComponent(bulkOperationsDropdown);
+					headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
+				}
+
+				Button newClinicalVisitButton = ButtonHelper.createButton(Captions.clinicalVisitNewClinicalVisit, e -> {
+					ControllerProvider.getClinicalCourseController()
+						.openClinicalVisitCreateForm(
+							clinicalVisitCriteria.getClinicalCourse(),
+							getCaseRef().getUuid(),
+							this::reloadClinicalVisitGrid);
+				}, ValoTheme.BUTTON_PRIMARY);
+
+				if (!UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_CREATE)) {
+					newClinicalVisitButton.setEnabled(false);
+				}
+
+				headlineRow.addComponent(newClinicalVisitButton);
+
+				headlineRow.setComponentAlignment(newClinicalVisitButton, Alignment.MIDDLE_RIGHT);
 			}
-
-			Button newClinicalVisitButton = ButtonHelper.createButton(Captions.clinicalVisitNewClinicalVisit, e -> {
-				ControllerProvider.getClinicalCourseController()
-					.openClinicalVisitCreateForm(clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
-			}, ValoTheme.BUTTON_PRIMARY);
-
-			headlineRow.addComponent(newClinicalVisitButton);
-
-			headlineRow.setComponentAlignment(newClinicalVisitButton, Alignment.MIDDLE_RIGHT);
 		}
 		clinicalVisitsHeader.addComponent(headlineRow);
 
@@ -140,7 +149,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 		container.addComponent(createClinicalVisitsHeader());
 
-		clinicalVisitGrid = new ClinicalVisitGrid(getCaseRef(), caze.isPseudonymized());
+		clinicalVisitGrid = new ClinicalVisitGrid(getCaseRef(), caze.isPseudonymized(), isEditAllowed());
 		clinicalVisitGrid.setCriteria(clinicalVisitCriteria);
 		clinicalVisitGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
@@ -154,6 +163,5 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 		update();
 		reloadClinicalVisitGrid();
-		setEditPermission(container);
 	}
 }

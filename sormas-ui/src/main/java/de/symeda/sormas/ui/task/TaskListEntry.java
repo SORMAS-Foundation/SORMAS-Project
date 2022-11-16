@@ -34,9 +34,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
 @SuppressWarnings("serial")
-public class TaskListEntry extends HorizontalLayout {
+public class TaskListEntry extends SideComponentField {
 
 	private final TaskIndexDto task;
 	private Button editButton;
@@ -45,17 +46,11 @@ public class TaskListEntry extends HorizontalLayout {
 
 		this.task = task;
 
-		setMargin(false);
-		setSpacing(true);
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setMargin(false);
 		topLayout.setSpacing(false);
 		topLayout.setWidth(100, Unit.PERCENTAGE);
-		addComponent(topLayout);
-		setExpandRatio(topLayout, 1);
+		addComponentToField(topLayout);
 
 		// TOP LEFT
 		VerticalLayout topLeftLayout = new VerticalLayout();
@@ -94,6 +89,7 @@ public class TaskListEntry extends HorizontalLayout {
 
 		// TOP RIGHT
 		VerticalLayout topRightLayout = new VerticalLayout();
+		topLayout.setComponentAlignment(topLeftLayout, Alignment.TOP_LEFT);
 
 		topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
 		/*
