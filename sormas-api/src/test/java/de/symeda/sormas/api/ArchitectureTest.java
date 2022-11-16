@@ -29,7 +29,7 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.uuid.HasUuid;
 
@@ -109,7 +109,7 @@ public class ArchitectureTest {
 		.and()
 		.haveName("uuid")
 		.should()
-		.beAnnotatedWith(AuditInclude.class);
+		.beAnnotatedWith(AuditIncludeProperty.class);
 
 	@ArchTest
 	public static final ArchRule testTypesInFacadeAreAuditable = methods().that()

@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to opt-out fields which should not be included in the audit log although
- * {@link AuditInclude}.includeAllFields is set.
+ * {@link AuditIncludeProperty}.includeAllFields is set.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({
 	ElementType.FIELD,
 	ElementType.METHOD })
-public @interface AuditExclude {
+public @interface AuditExcludeProperty {
 
 }

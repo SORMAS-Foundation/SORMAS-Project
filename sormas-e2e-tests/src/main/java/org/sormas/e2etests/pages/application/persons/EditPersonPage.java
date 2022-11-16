@@ -171,6 +171,6 @@ public class EditPersonPage {
   }
 
   public static By getByTravelEntryPersonUuid(String personUuid) {
-    return By.id(String.format("edit-travelEntry-%s", personUuid));
+    return By.id(String.format("edit%s", personUuid));
   }
 }
