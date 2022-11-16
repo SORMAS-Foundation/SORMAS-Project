@@ -519,6 +519,22 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			}
 		}
 
+		if (taskCriteria.getAssignedByUserLike() != null) {
+			String[] textFilters = taskCriteria.getAssignedByUserLike().split("\\s+");
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
+				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.USER_NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			}
+		}
+
 		if (getCurrentUser() != null) {
 			Predicate taskContextFilter = buildTaskContextFilter(taskQueryContext);
 			taskContextFilter = CriteriaBuilderHelper

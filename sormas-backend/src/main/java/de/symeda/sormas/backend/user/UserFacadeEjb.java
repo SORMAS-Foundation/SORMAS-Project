@@ -53,6 +53,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -736,7 +737,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, userService::createUser, checkChangeDate);
 
-		if(targetWasNull) {
+		if (targetWasNull) {
 			target.getAddress().setUuid(source.getAddress().getUuid());
 		}
 
@@ -800,6 +801,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@PermitAll
+	@AuditIgnore
 	public UserDto getCurrentUser() {
 		return toDto(userService.getCurrentUser());
 	}
@@ -812,14 +814,14 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@PermitAll
+	@AuditIgnore
 	public Set<UserRight> getValidLoginRights(String userName, String password) {
 
 		User user = userService.getByUserName(userName);
-		if (user != null && user.isActive()) {
-			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return new HashSet<>(UserRole.getUserRights(user.getUserRoles()));
-			}
+		if (user != null && user.isActive() && DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
+			return new HashSet<>(UserRole.getUserRights(user.getUserRoles()));
 		}
+
 		return null;
 	}
 

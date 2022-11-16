@@ -282,18 +282,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public List<PersonDto> getAllAfter(Date date) {
-		return getAllAfter(date, null, null);
-	}
-
-	@Override
 	protected void selectDtoFields(CriteriaQuery<PersonDto> cq, Root<Person> root) {
 		// There is no shared multiselect in this class
-	}
-
-	@Override
-	public List<PersonDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		return toPseudonymizedDtos(service.getAllAfter(date, batchSize, lastSynchronizedUuid));
 	}
 
 	@Override
