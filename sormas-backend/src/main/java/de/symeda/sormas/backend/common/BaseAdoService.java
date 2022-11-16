@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -35,6 +37,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -361,7 +364,17 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	 * Override this method to eagerly fetch entity references in {@link #getByIds(List)}.
 	 */
 	protected void fetchReferences(From<?, ADO> from) {
-		// NOOP by default
+		referencesToBeFetched().forEach( s -> from.fetch(s));
+	}
+	
+	protected List<String> referencesToBeFetched() {
+		return Collections.EMPTY_LIST;
+	}
+
+	protected EntityGraph<ADO> getEntityFetchGraph() {
+		final EntityGraph<ADO> entityGraph = em.createEntityGraph(getElementClass());
+		referencesToBeFetched().forEach(s -> entityGraph.addAttributeNodes(s));
+		return entityGraph;
 	}
 
 	public List<ADO> getByUuids(List<String> uuids) {
@@ -444,24 +457,27 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			return null;
 		}
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<ADO> from = cq.from(getElementClass());
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<ADO> from = cq.from(getElementClass());
 
 		cq.select(from.get(AbstractDomainObject.ID));
 
-//		if (fetchReferences) {
-//			fetchReferences(from);
-//		}
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
 
-		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+		final TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+		final Optional<Long> idOptional = q.getResultList().stream().findFirst();
 
-		Long id = q.getResultList().stream().findFirst().orElse(null);
-
-		if (id != null) {
-			return em.find(getElementClass(), id);
+		if (idOptional.isPresent()) {
+			if (fetchReferences) {
+				final Map<String, Object> hints = new HashMap();
+				final EntityGraph<ADO> entityGraph = getEntityFetchGraph();
+				hints.put("javax.persistence.fetchgraph", entityGraph);
+				return em.find(getElementClass(), idOptional.get(), hints);
+			} else {
+				return em.find(getElementClass(), idOptional.get());
+			}
 		} else {
 			return null;
 		}
