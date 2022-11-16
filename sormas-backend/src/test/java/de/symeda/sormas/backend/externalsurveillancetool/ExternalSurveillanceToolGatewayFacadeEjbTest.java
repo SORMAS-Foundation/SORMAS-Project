@@ -10,55 +10,98 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.spi.QueryImplementor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
+import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 
 @WireMockTest(httpPort = 8888)
-public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTest {
-
+public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormasTest {
 
 	@BeforeEach
 	public void setup(WireMockRuntimeInfo wireMockRuntime) {
@@ -205,25 +248,44 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		assertThat(shareInfoList.get(0).getStatus(), is(ExternalShareStatus.DELETED));
 	}
 
-
 	@Test
-	public void testSetArchiveInExternalSurveillanceToolForCase_WithProperEntity(WireMockRuntimeInfo wireMockRuntime) {
+	public void testSetArchiveInExternalSurveillanceToolForCase_WithProperEntity_WithCaseAllowedToShare(WireMockRuntimeInfo wireMockRuntime) {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		CaseDataDto caze = creator.createCase(user, person, rdcf, c -> c.setDontShareWithReportingTool(false));
 		Case case1 = getCaseService().getByUuid(caze.getUuid());
 		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
 
 		stubFor(
-				post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-						.withRequestBody(containing("caseUuids"))
-						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
 
 		wireMockRuntime.getWireMock().verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
+	}
+
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForCase_WithProperEntity_WithoutCaseAllowedToShare(WireMockRuntimeInfo wireMockRuntime) {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		CaseDataDto caze = creator.createCase(user, person, rdcf, c -> c.setDontShareWithReportingTool(true));
+		Case case1 = getCaseService().getByUuid(caze.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+
+		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
 
 	@Test
@@ -235,9 +297,9 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		CaseDataDto caze = creator.createCase(user, person, rdcf);
 
 		stubFor(
-				post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-						.withRequestBody(containing("caseUuids"))
-						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		//the case does not have an externalId set and after the filtering the sendCases will not be called
 		getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
@@ -255,15 +317,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		getExternalShareInfoService().createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
 
 		stubFor(
-				post(urlEqualTo("/export")).withRequestBody(containing(caseDataDto.getUuid()))
-						.withRequestBody(containing("caseUuids"))
-						.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+			post(urlEqualTo("/export")).withRequestBody(containing(caseDataDto.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
 		assertThrows(
-				ExternalSurveillanceToolRuntimeException.class,
-				() -> getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true));
+			ExternalSurveillanceToolRuntimeException.class,
+			() -> getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true));
 	}
-
 
 	@Test
 	public void testSetArchiveInExternalSurveillanceToolForEvent_WithProperEntity(WireMockRuntimeInfo wireMockRuntime) {
@@ -271,29 +332,29 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 
 		EventDto eventDto = creator.createEvent(
-				EventStatus.SIGNAL,
-				EventInvestigationStatus.PENDING,
-				"",
-				"",
-				"",
-				"",
-				"",
-				TypeOfPlace.FACILITY,
-				new Date(),
-				new Date(),
-				user,
-				user,
-				Disease.DENGUE,
-				rdcf);
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"",
+			"",
+			"",
+			"",
+			"",
+			TypeOfPlace.FACILITY,
+			new Date(),
+			new Date(),
+			user,
+			user,
+			Disease.DENGUE,
+			rdcf);
 
 		Event event = getEventService().getByUuid(eventDto.getUuid());
 		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
 		EventService eventService = getBean(EventService.class);
 
 		stubFor(
-				post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
-						.withRequestBody(containing("eventUuids"))
-						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+			post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
+				.withRequestBody(containing("eventUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		eventService.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), false);
 		wireMockRuntime.getWireMock().verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
@@ -305,20 +366,20 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 
 		EventDto eventDto = creator.createEvent(
-				EventStatus.SIGNAL,
-				EventInvestigationStatus.PENDING,
-				"",
-				"",
-				"",
-				"",
-				"",
-				TypeOfPlace.FACILITY,
-				new Date(),
-				new Date(),
-				user,
-				user,
-				Disease.DENGUE,
-				rdcf);
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"",
+			"",
+			"",
+			"",
+			"",
+			TypeOfPlace.FACILITY,
+			new Date(),
+			new Date(),
+			user,
+			user,
+			Disease.DENGUE,
+			rdcf);
 
 		Event event = getEventService().getByUuid(eventDto.getUuid());
 		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
@@ -326,13 +387,13 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		EventService eventService = getBean(EventService.class);
 
 		stubFor(
-				post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
-						.withRequestBody(containing("eventUuids"))
-						.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+			post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
+				.withRequestBody(containing("eventUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
 		assertThrows(
-				ExternalSurveillanceToolRuntimeException.class,
-				() -> eventService.setArchiveInExternalSurveillanceToolForEntity(eventDto.getUuid(), true));
+			ExternalSurveillanceToolRuntimeException.class,
+			() -> eventService.setArchiveInExternalSurveillanceToolForEntity(eventDto.getUuid(), true));
 	}
 
 	@Test
@@ -343,13 +404,13 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		CaseDataDto case2 = creator.createCase(user, rdcf, null);
 
 		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
-				.withRequestBody(containing("caseUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+				post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
+						.withRequestBody(containing("caseUuids"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		stubFor(
-			post(urlEqualTo("/delete")).withRequestBody(containing(case1.getUuid()))
-				.withRequestBody(containing("cases"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+				post(urlEqualTo("/delete")).withRequestBody(containing(case1.getUuid()))
+						.withRequestBody(containing("cases"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
 
@@ -365,6 +426,298 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
 		shared = getExternalShareInfoFacade().isSharedEntity(case1.getUuid());
 		assertTrue(shared);
+	}
+
+	@Test
+	public void testArchiveAllArchivableCases_WithNotAllowedCaseToShareWithReportingTool(WireMockRuntimeInfo wireMockRuntime) {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		CaseFacadeEjb.CaseFacadeEjbLocal cut = getBean(CaseFacadeEjb.CaseFacadeEjbLocal.class);
+		CaseDataDto case2 = creator.createCase(user, person, rdcf, c -> c.setDontShareWithReportingTool(true));
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case2.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		// Case of "yesterday" should be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
+		assertTrue(cut.isArchived(case2.getUuid()));
+		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
+
+	}
+
+	@Test
+	public void testCaseDeletionAndUndeletion_WithoutCaseAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime)
+		throws ExternalSurveillanceToolRuntimeException {
+		Date since = new Date();
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto admin = getUserFacade().getByUserName("AdMin");
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			c -> c.setDontShareWithReportingTool(true));
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+		TaskDto task = creator.createTask(
+			TaskContext.CASE,
+			TaskType.CASE_INVESTIGATION,
+			TaskStatus.PENDING,
+			caze.toReference(),
+			null,
+			null,
+			new Date(),
+			user.toReference());
+		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto sampleAssociatedToContactAndCase =
+			creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		ContactDto contact2 =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+		sampleAssociatedToContactAndCase.setAssociatedContact(new ContactReferenceDto(contact2.getUuid()));
+		getSampleFacade().saveSample(sampleAssociatedToContactAndCase);
+
+		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), caze);
+		AdditionalTestDto additionalTest = creator.createAdditionalTest(sample.toReference());
+
+		// Database should contain the created case, contact, task and sample
+		assertNotNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
+		assertNotNull(getContactFacade().getByUuid(contact.getUuid()));
+		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		assertNotNull(getPathogenTestFacade().getByUuid(pathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
+
+		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
+		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
+		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
+		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
+		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
+		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
+
+		getCaseFacade().undelete(caze.getUuid());
+
+		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
+		assertFalse(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
+		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
+		assertFalse(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
+		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
+	}
+
+	@Test
+	public void testCaseAutomaticDeletion_WithoutCaseAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime) throws IOException {
+
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDontShareWithReportingTool(true));
+
+		creator.createClinicalVisit(caze);
+		creator.createTreatment(caze);
+		creator.createPrescription(caze);
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		creator.createSurveillanceReport(user.toReference(), caze.toReference());
+		creator.createDocument(
+			user.toReference(),
+			"document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CASE,
+			caze.getUuid(),
+			"content".getBytes(StandardCharsets.UTF_8));
+
+		CaseDataDto duplicateCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		getCaseFacade().deleteCaseAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
+
+		final ContactDto resultingContact = creator.createContact(user.toReference(), person.toReference(), caze);
+		assertNull(resultingContact.getRegion());
+		ContactDto sourceContact = creator.createContact(
+			user.toReference(),
+			person.toReference(),
+			caze.getDisease(),
+			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		ContactDto deletedSourceContact = creator.createContact(
+			user.toReference(),
+			person.toReference(),
+			caze.getDisease(),
+			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		getContactFacade().delete(deletedSourceContact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
+		EventParticipantDto eventParticipant = creator.createEventParticipant(
+			event.toReference(),
+			person,
+			"Description",
+			user.toReference(),
+			eventParticipantDto -> eventParticipantDto.setResultingCase(caze.toReference()),
+			rdcf);
+		SampleDto multiSample = creator.createSample(
+			caze.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(resultingContact.toReference()));
+		TravelEntryDto travelEntry =
+			creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> te.setResultingCase(caze.toReference()));
+		creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> {
+			te.setResultingCase(caze.toReference());
+			te.setDeleted(true);
+		});
+		ImmunizationDto immunization = creator.createImmunization(
+			caze.getDisease(),
+			person.toReference(),
+			user.toReference(),
+			rdcf,
+			immunizationDto -> immunizationDto.setRelatedCase(caze.toReference()));
+
+		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate());
+		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query.setParameter("uuid", caze.getUuid());
+		Case singleResult = (Case) query.getSingleResult();
+		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(singleResult);
+
+		assertEquals(2, getCaseService().count());
+
+		useSystemUser();
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
+		loginWith(user);
+
+		ContactDto resultingContactUpdated = getContactFacade().getByUuid(resultingContact.getUuid());
+
+		assertEquals(1, getCaseService().count());
+		assertEquals(duplicateCase.getUuid(), getCaseService().getAll().get(0).getUuid());
+		assertEquals(0, getClinicalVisitService().count());
+		assertEquals(0, getTreatmentService().count());
+		assertEquals(0, getPrescriptionService().count());
+		assertEquals(1, getSampleService().count());
+		assertEquals(1, getVisitService().count());
+		assertNull(getSampleFacade().getSampleByUuid(multiSample.getUuid()).getAssociatedCase());
+		assertEquals(0, getSurveillanceReportService().count());
+		assertTrue(getDocumentService().getAll().get(0).isDeleted());
+		assertNull(resultingContactUpdated.getCaze());
+		assertEquals(rdcf.region, resultingContactUpdated.getRegion());
+		assertEquals(rdcf.district, resultingContactUpdated.getDistrict());
+		assertEquals(rdcf.community, resultingContactUpdated.getCommunity());
+		assertNull(getContactFacade().getByUuid(sourceContact.getUuid()).getResultingCase());
+		assertNull(getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getResultingCase());
+		assertNull(getTravelEntryFacade().getByUuid(travelEntry.getUuid()).getResultingCase());
+		assertNull(getImmunizationFacade().getByUuid(immunization.getUuid()).getRelatedCase());
+	}
+
+	@Test
+	public void testShareCase_WithCaseNotAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime) throws SormasToSormasException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
+			dto.setPerson(person.toReference());
+			dto.setSurveillanceOfficer(officer);
+			dto.setClassificationUser(officer);
+			dto.setDontShareWithReportingTool(true);
+		});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setComment("Test comment");
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> {
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
+				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/cases"));
+
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+				assertThat(postBody.getCases().size(), is(1));
+				SormasToSormasCaseDto sharedCase = postBody.getCases().get(0);
+
+				assertThat(sharedCase.getPerson().getFirstName(), is(person.getFirstName()));
+				assertThat(sharedCase.getPerson().getLastName(), is(person.getLastName()));
+
+				assertThat(sharedCase.getEntity().getUuid(), is(caze.getUuid()));
+				// users should be cleaned up
+				assertThat(sharedCase.getEntity().getReportingUser(), is(officer));
+				assertThat(sharedCase.getEntity().getSurveillanceOfficer(), is(nullValue()));
+				assertThat(sharedCase.getEntity().getClassificationUser(), is(nullValue()));
+
+				// share information
+				assertThat(postBody.getOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
+				assertThat(postBody.getOriginInfo().getSenderName(), is("Surv Off"));
+				assertThat(postBody.getOriginInfo().getComment(), is("Test comment"));
+
+				return encryptShareData(new ShareRequestAcceptData(null, null));
+			});
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
+		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
+
+		List<SormasToSormasShareInfoDto> shareInfoList =
+			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);
+
+		assertThat(shareInfoList.size(), is(1));
+		assertThat(shareInfoList.get(0).getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
+		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF"));
+		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
 
 	private EventDto createEventDto(
