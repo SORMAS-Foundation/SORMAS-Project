@@ -41,9 +41,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -135,8 +132,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
-	@EJB
-	protected FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public EventService() {
 		super(Event.class);
@@ -167,30 +162,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		from.fetch(Event.EVENT_LOCATION);
 	}
 
-	@Override
-	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Event> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Event.CHANGE_DATE), timestamp));
-		}
-		return null;
-	}
-
-	@Override
-	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Event> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Event.CHANGE_DATE), timestamp));
-		}
-		return null;
-	}
-
 	public List<String> getAllActiveUuids() {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -212,7 +183,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = limitSynchronizationFilter(cb, from);
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
 			if (predicate != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 			}

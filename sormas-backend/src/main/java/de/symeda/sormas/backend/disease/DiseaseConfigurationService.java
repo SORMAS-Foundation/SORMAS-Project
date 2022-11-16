@@ -56,4 +56,14 @@ public class DiseaseConfigurationService extends AdoServiceWithUserFilterAndJuri
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, DiseaseConfiguration> from) {
 		return null;
 	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, DiseaseConfiguration> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, DiseaseConfiguration> from) {
+		return null;
+	}
 }

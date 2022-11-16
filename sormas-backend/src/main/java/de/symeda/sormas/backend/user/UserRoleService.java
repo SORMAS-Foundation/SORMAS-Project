@@ -66,6 +66,16 @@ public class UserRoleService extends AdoServiceWithUserFilterAndJurisdiction<Use
 		return null;
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, UserRole> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, UserRole> from) {
+		return null;
+	}
+
 	public UserRole getByCaption(String caption) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

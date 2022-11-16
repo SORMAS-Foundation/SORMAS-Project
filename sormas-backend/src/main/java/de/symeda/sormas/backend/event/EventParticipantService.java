@@ -44,8 +44,6 @@ import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -54,7 +52,6 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
@@ -80,8 +77,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
-	@EJB
-	protected FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -108,26 +103,12 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, EventParticipant> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(EventParticipant.CHANGE_DATE), timestamp));
-		}
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, EventParticipant> from) {
 		return null;
 	}
 
 	@Override
-	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, EventParticipant> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(EventParticipant.CHANGE_DATE), timestamp));
-		}
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, EventParticipant> from) {
 		return null;
 	}
 
@@ -150,7 +131,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		}
 
 		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = limitSynchronizationFilter(cb, from);
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
 			if (predicate != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 			}

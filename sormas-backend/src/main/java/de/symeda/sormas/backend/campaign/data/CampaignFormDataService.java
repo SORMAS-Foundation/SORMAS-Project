@@ -130,6 +130,16 @@ public class CampaignFormDataService extends AdoServiceWithUserFilterAndJurisdic
 		return filter;
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, CampaignFormData> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, CampaignFormData> from) {
+		return null;
+	}
+
 	public List<String> getAllActiveUuids() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);

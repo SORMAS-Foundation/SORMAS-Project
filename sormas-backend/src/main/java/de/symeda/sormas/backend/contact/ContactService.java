@@ -202,30 +202,6 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	}
 
 	@Override
-	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Contact> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Contact.CHANGE_DATE), timestamp));
-		}
-		return null;
-	}
-
-	@Override
-	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Contact> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Contact.CHANGE_DATE), timestamp));
-		}
-		return null;
-	}
-
-	@Override
 	@SuppressWarnings("rawtypes")
 	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> from) {
 
@@ -293,7 +269,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		}
 
 		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = limitSynchronizationFilter(cb, from);
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
 			if (predicate != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 			}

@@ -100,6 +100,16 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		super(User.class);
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, User> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, User> from) {
+		return null;
+	}
+
 	public User createUser() {
 
 		User user = new User();

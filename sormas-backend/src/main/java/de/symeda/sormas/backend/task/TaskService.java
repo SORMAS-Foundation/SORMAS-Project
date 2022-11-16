@@ -42,7 +42,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -122,30 +121,6 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		return filter;
 	}
 
-	@Override
-	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Task> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Task.CHANGE_DATE), timestamp));
-		}
-		return null;
-	}
-
-	@Override
-	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Task> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Task.CHANGE_DATE), timestamp));
-		}
-		return null;
-	}
-
 	public List<String> getAllActiveUuids(User user) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -161,7 +136,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		}
 
 		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = limitSynchronizationFilter(cb, from);
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
 			if (predicate != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 			}

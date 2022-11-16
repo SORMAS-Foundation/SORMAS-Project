@@ -66,6 +66,16 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilterAndJurisdi
 		return null;
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ExternalShareInfo> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, ExternalShareInfo> from) {
+		return null;
+	}
+
 	public Predicate buildCriteriaFilter(ExternalShareInfoCriteria criteria, CriteriaBuilder cb, Root<ExternalShareInfo> shareInfo) {
 		Predicate filter = null;
 

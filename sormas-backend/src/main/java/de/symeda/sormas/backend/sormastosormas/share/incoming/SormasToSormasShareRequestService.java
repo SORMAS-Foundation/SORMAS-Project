@@ -58,6 +58,16 @@ public class SormasToSormasShareRequestService extends AdoServiceWithUserFilterA
 		return null;
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, SormasToSormasShareRequest> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, SormasToSormasShareRequest> from) {
+		return null;
+	}
+
 	public Predicate buildCriteriaFilter(ShareRequestCriteria criteria, CriteriaBuilder cb, Root<SormasToSormasShareRequest> root) {
 		Predicate filter = null;
 		if (criteria.getStatus() != null) {

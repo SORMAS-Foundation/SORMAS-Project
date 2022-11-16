@@ -79,6 +79,16 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 		super(Vaccination.class);
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Vaccination> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Vaccination> from) {
+		return null;
+	}
+
 	public Map<String, String> getLastVaccinationType() {
 		Map<String, String> result = new HashMap<>();
 		String queryString =

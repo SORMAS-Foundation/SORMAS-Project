@@ -29,6 +29,16 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilterAndJurisdic
 		return null;
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, CampaignFormMeta> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, CampaignFormMeta> from) {
+		return null;
+	}
+
 	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

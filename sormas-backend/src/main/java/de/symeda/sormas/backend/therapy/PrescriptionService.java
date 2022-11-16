@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.therapy;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -16,10 +14,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -38,8 +32,6 @@ public class PrescriptionService extends AdoServiceWithUserFilterAndJurisdiction
 
 	@EJB
 	private CaseService caseService;
-	@EJB
-	protected FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public PrescriptionService() {
 		super(Prescription.class);
@@ -79,27 +71,14 @@ public class PrescriptionService extends AdoServiceWithUserFilterAndJurisdiction
 	}
 
 	@Override
-	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, Prescription> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(Prescription.CHANGE_DATE), timestamp));
-		}
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Prescription> from) {
 		return null;
 	}
 
 	@Override
-	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, Prescription> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-			.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-			&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Timestamp timestamp = Timestamp.from(DateHelper.subtractDays(new Date(), maxChangeDatePeriod).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(Prescription.CHANGE_DATE), timestamp));
-		}
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Prescription> from) {
 		return null;
+
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -118,7 +97,7 @@ public class PrescriptionService extends AdoServiceWithUserFilterAndJurisdiction
 		}
 
 		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = limitSynchronizationFilter(cb, from);
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
 			if (predicate != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 			}

@@ -1,9 +1,11 @@
 package de.symeda.sormas.backend.common;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -12,6 +14,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.backend.user.User;
@@ -25,6 +31,8 @@ import de.symeda.sormas.backend.user.User;
 public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
 
 	public static final int NR_OF_LAST_PHONE_DIGITS_TO_SEARCH = 6;
+	@EJB
+	protected FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	protected AdoServiceWithUserFilterAndJurisdiction(Class<ADO> elementClass) {
 		super(elementClass);
@@ -36,11 +44,27 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
-	protected Predicate limitSynchronizationFilter(CriteriaBuilder cb, From<?, ADO> from) {
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+				.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+				&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
+			Date maxChangeDate = DateHelper.subtractDays(new Date(), maxChangeDatePeriod);
+			Timestamp timestamp = Timestamp.from(DateHelper.getStartOfDay(maxChangeDate).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(ADO.CHANGE_DATE), timestamp));
+		}
 		return null;
 	}
 
-	protected Predicate limitSynchronizationFilterObsoleteEntities(CriteriaBuilder cb, From<?, ADO> from) {
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, ADO> from) {
+		final Integer maxChangeDatePeriod = featureConfigurationFacade
+				.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+				&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
+			Date maxChangeDate = DateHelper.subtractDays(new Date(), maxChangeDatePeriod);
+			Timestamp timestamp = Timestamp.from(DateHelper.getStartOfDay(maxChangeDate).toInstant());
+			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(ADO.CHANGE_DATE), timestamp));
+		}
 		return null;
 	}
 
@@ -68,7 +92,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 			}
 
 			if (RequestContextHolder.isMobileSync()) {
-				Predicate predicate = limitSynchronizationFilter(cb, from);
+				Predicate predicate = createLimitedChangeDateFilter(cb, from);
 				if (predicate != null) {
 					filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 				}
@@ -86,7 +110,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 
 		Predicate filter = createUserFilter(cb, cq, from);
 		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = limitSynchronizationFilter(cb, from);
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
 			if (predicate != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 			}
@@ -112,7 +136,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 
 			if (RequestContextHolder.isMobileSync())
 			{
-				Predicate predicate = limitSynchronizationFilter(cb, from);
+				Predicate predicate = createLimitedChangeDateFilter(cb, from);
 				if (predicate != null) {
 					filter = CriteriaBuilderHelper.and(cb, filter, predicate);
 				}
@@ -155,7 +179,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 		filter = CriteriaBuilderHelper.and(cb, filter, contentFilter);
 
 		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = limitSynchronizationFilterObsoleteEntities(cb, from);
+			Predicate predicate = createLimitedChangeDateFilterForObsoleteEntities(cb, from);
 			if (predicate != null) {
 				filter = CriteriaBuilderHelper.or(cb, filter, predicate);
 			}

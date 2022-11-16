@@ -148,27 +148,15 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.LIMITED_SYNCHRONIZATION);
-		FeatureConfigurationIndexDto featureConfigurationMaxChangeDate =
-				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfigurationMaxChangeDate, FeatureType.LIMITED_SYNCHRONIZATION);
 
 		SessionImpl em = (SessionImpl) getEntityManager();
 		QueryImplementor query = em.createQuery("select f from featureconfiguration f");
-		List<FeatureConfiguration> results = (List<FeatureConfiguration>) query.getResultList();
-		HashMap<FeatureTypeProperty, Object> excludeNoCaseClassifiedProperties = new HashMap<>();
-		excludeNoCaseClassifiedProperties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
-		HashMap<FeatureTypeProperty, Object> maxChangeDateProperties = new HashMap<>();
-		int maxChangeDateOffset = 30;
-		maxChangeDateProperties.put(FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, maxChangeDateOffset);
-
-		results.forEach(fc -> {
-			if (fc.getFeatureType().equals(FeatureType.LIMITED_SYNCHRONIZATION)) {
-				fc.setProperties(excludeNoCaseClassifiedProperties);
-			} else {
-				fc.setProperties(maxChangeDateProperties);
-			}
-			em.save(fc);
-		});
+		FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+		HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
+		properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
+		properties.put(FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, 30);
+		singleResult.setProperties(properties);
+		em.save(singleResult);
 
 		MockProducer.setMobileSync(true);
 

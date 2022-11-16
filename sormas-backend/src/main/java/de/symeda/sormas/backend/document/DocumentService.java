@@ -47,6 +47,16 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		return null;
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Document> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Document> from) {
+		return null;
+	}
+
 	public void markAsDeleted(Document deleteme) {
 		deleteme.setDeleted(true);
 		em.persist(deleteme);

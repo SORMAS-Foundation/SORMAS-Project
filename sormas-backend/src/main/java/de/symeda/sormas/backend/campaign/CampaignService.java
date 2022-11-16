@@ -31,6 +31,16 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return createUserFilter(new CampaignQueryContext(cb, cq, from));
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Campaign> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Campaign> from) {
+		return null;
+	}
+
 	public Predicate createUserFilter(CampaignQueryContext queryContext) {
 		// A user who has access to CampaignView can read all campaigns
 		return null;

@@ -30,6 +30,16 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 		return inJurisdictionOrOwned(new TravelEntryQueryContext(cb, query, from));
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, TravelEntry> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, TravelEntry> from) {
+		return null;
+	}
+
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc) {
 		return inJurisdictionOrOwned(qc, userService.getCurrentUser());
 	}

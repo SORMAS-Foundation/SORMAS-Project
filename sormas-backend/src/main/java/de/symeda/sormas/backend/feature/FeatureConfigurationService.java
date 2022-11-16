@@ -123,6 +123,16 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJuri
 		return filter;
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, FeatureConfiguration> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, FeatureConfiguration> from) {
+		return null;
+	}
+
 	public void createMissingFeatureConfigurations() {
 
 		Map<FeatureType, FeatureConfiguration> configs = getServerFeatureConfigurations();

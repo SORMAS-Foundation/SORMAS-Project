@@ -58,7 +58,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 	@EJB
 	private DocumentService documentService;
 
-
 	public List<TravelEntry> getByPersonUuids(List<String> personUuids) {
 
 		List<TravelEntry> travelEntries = new LinkedList<>();

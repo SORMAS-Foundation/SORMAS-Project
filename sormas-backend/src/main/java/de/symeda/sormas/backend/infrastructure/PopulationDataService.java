@@ -59,4 +59,14 @@ public class PopulationDataService extends AdoServiceWithUserFilterAndJurisdicti
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PopulationData> from) {
 		return null;
 	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, PopulationData> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, PopulationData> from) {
+		return null;
+	}
 }

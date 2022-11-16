@@ -74,6 +74,16 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 		return filter;
 	}
 
+	@Override
+	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Action> from) {
+		return null;
+	}
+
+	@Override
+	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Action> from) {
+		return null;
+	}
+
 	public List<String> getAllActiveUuids() {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
