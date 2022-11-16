@@ -193,3 +193,15 @@ Feature: Check basic POSTs RestApi endpoints
     When API: I create a new immunizations for last created person with creation date 10 years ago
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
+
+  @env_main @oldfake
+  Scenario: Create Event participant with creation date 5 years ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event participant with creation date 5 years ago
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200

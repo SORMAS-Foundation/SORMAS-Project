@@ -34,6 +34,7 @@ public interface Endpoints {
   String FACILITIES_PATH = "facilities/";
   String CONTACTS_PATH = "contacts/";
   String EVENTS_PATH = "events/";
+  String EVENT_PARTICIPANTS_PATH = "eventparticipants/";
   String SAMPLES_PATH = "samples/";
   String TASKS_PATH = "tasks/";
 
