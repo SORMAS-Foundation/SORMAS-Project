@@ -1359,7 +1359,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			cq.where(filter);
 			cq.distinct(true);
 
-			addSortProperties(sortProperties, personQueryContext);
+			sortBy(sortProperties, personQueryContext);
 
 			persons.addAll(em.createQuery(cq).getResultList());
 		});
@@ -1392,7 +1392,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		List<Selection<?>> selections = new ArrayList<>();
 		selections.add(person.get(Person.ID));
-		selections.addAll(addSortProperties(sortProperties, personQueryContext));
+		selections.addAll(sortBy(sortProperties, personQueryContext));
 
 		cq.multiselect(selections);
 
@@ -1412,7 +1412,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		return persons.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 	}
 
-	private List<Selection<?>> addSortProperties(List<SortProperty> sortProperties, PersonQueryContext personQueryContext) {
+	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, PersonQueryContext personQueryContext) {
 
 		List<Selection<?>> selections = new ArrayList<>();
 		CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
