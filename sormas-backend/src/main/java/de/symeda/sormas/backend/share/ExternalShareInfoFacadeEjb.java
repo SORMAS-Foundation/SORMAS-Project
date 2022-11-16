@@ -39,7 +39,6 @@ import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -85,17 +84,14 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 	}
 
 	@Override
-	public boolean isSharedEntity(String uuid) {
+	public boolean isSharedCase(String caseUuid) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<ExternalShareStatus> cq = cb.createQuery(ExternalShareStatus.class);
 		final Root<ExternalShareInfo> shareInfo = cq.from(ExternalShareInfo.class);
-
 		Join<ExternalShareInfo, Case> caseJoin = shareInfo.join(ExternalShareInfo.CAZE, JoinType.LEFT);
-		Join<ExternalShareInfo, Event> eventJoin = shareInfo.join(ExternalShareInfo.EVENT, JoinType.LEFT);
 
 		cq.select(shareInfo.get(ExternalShareInfo.STATUS));
-		Predicate predicate = cb.or(cb.equal(caseJoin.get(Case.UUID), uuid), cb.equal(eventJoin.get(Event.UUID), uuid));
-		cq.where(predicate);
+		cq.where(cb.equal(caseJoin.get(Case.UUID), caseUuid));
 		cq.orderBy(cb.desc(shareInfo.get(ExternalShareInfo.CREATION_DATE)));
 
 		ExternalShareStatus externalShareStatus = null;

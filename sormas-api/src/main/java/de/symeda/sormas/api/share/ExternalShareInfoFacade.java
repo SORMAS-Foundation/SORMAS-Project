@@ -24,5 +24,5 @@ public interface ExternalShareInfoFacade {
 
 	List<ExternalShareInfoDto> getIndexList(ExternalShareInfoCriteria criteria, Integer first, Integer max);
 
-	boolean isSharedEntity(String uuid);
+	boolean isSharedCase(String caseUuid);
 }
