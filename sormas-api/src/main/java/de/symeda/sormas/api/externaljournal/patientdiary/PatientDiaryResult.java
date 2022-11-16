@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.externaljournal.patientdiary;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
@@ -8,7 +8,7 @@ import java.io.Serializable;
 @AuditedClass
 public class PatientDiaryResult implements Serializable {
 
-	@AuditInclude
+	@AuditIncludeProperty
 	private boolean success;
 	private String message;
 

@@ -22,7 +22,7 @@ import java.util.List;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
@@ -66,10 +66,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String REPORT_ID = "reportId";
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
-	@AuditInclude
+	@AuditIncludeProperty
 	private ExternalMessageType type;
 	private Disease disease;
-	@AuditInclude
+	@AuditIncludeProperty
 	private Date messageDateTime;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -102,16 +102,16 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personEmail;
-	@AuditInclude
+	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
-	@AuditInclude
+	@AuditIncludeProperty
 	private CaseReferenceDto caze;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
-	@AuditInclude
+	@AuditIncludeProperty
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 
 	private UserReferenceDto assignee;

@@ -2,13 +2,13 @@ package de.symeda.sormas.api.externaljournal;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 @AuditedClass
 public class ExternalJournalValidation implements Serializable {
 
-	@AuditInclude
+	@AuditIncludeProperty
 	private boolean valid;
 	private String message;
 
