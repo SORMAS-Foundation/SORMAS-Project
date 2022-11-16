@@ -123,4 +123,6 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
             }
         }
     }
+    @Override
+    public void goToDeleteRecord() {}
 }

@@ -56,6 +56,9 @@ public class PrescriptionReadActivity extends BaseReadActivity<Prescription> {
 	}
 
 	@Override
+	public void goToDeleteRecord() {}
+
+	@Override
 	protected int getActivityTitle() {
 		return R.string.heading_prescription;
 	}

@@ -128,4 +128,6 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 			}
 		}
 	}
+	@Override
+	public void goToDeleteRecord() {}
 }

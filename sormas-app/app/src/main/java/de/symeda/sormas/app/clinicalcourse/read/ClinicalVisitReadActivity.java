@@ -102,4 +102,6 @@ public class ClinicalVisitReadActivity extends BaseReadActivity<ClinicalVisit> {
 		ClinicalVisitSection section = ClinicalVisitSection.fromOrdinal(getActivePage().getPosition());
 		ClinicalVisitEditActivity.startActivity(getContext(), getRootUuid(), caseUuid, section);
 	}
+	@Override
+	public void goToDeleteRecord() {}
 }

@@ -20,14 +20,21 @@ package de.symeda.sormas.app.campaign.read;
 
 import android.content.Context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.campaign.edit.CampaignFormDataEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 public class CampaignFormDataReadActivity extends BaseReadActivity<CampaignFormData> {
 
@@ -43,6 +50,22 @@ public class CampaignFormDataReadActivity extends BaseReadActivity<CampaignFormD
     @Override
     public void goToEditView() {
         CampaignFormDataEditActivity.startActivity(getContext(), getRootUuid());
+    }
+
+    @Override
+    public void goToDeleteRecord() throws DaoException {
+
+        List<String> uuidx = new ArrayList<>();
+        uuidx.add(getRootUuid());
+        DatabaseHelper.getCampaignFormDataDao().delete(uuidx);
+        NavigationHelper.navigateUpFrom(this);
+        NotificationHelper.showNotification(this, NotificationType.INFO, "Record Deleted");
+
+
+
+
+     //   DatabaseHelper.deleteCampaignRecord(getRootUuid());
+     //   CampaignFormDataEditActivity.startActivity(getContext(), getRootUuid());
     }
 
     @Override

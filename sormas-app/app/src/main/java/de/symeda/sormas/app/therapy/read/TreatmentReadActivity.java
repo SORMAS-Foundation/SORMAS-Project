@@ -55,4 +55,6 @@ public class TreatmentReadActivity extends BaseReadActivity<Treatment> {
 	protected int getActivityTitle() {
 		return R.string.heading_treatment;
 	}
+	@Override
+	public void goToDeleteRecord() {}
 }

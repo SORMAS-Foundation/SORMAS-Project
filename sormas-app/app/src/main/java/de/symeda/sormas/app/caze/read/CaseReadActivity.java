@@ -36,6 +36,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.campaign.edit.CampaignFormDataEditActivity;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -219,4 +220,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 
 		CaseEditActivity.startActivity(CaseReadActivity.this, getRootUuid(), section);
 	}
+	@Override
+	public void goToDeleteRecord() {}
+
 }

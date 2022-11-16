@@ -125,4 +125,6 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 		EventSection section = EventSection.fromOrdinal(getActivePage().getPosition());
 		EventEditActivity.startActivity(this, getRootUuid(), section);
 	}
+	@Override
+	public void goToDeleteRecord() {}
 }

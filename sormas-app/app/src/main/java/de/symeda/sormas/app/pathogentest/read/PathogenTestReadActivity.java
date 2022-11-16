@@ -70,4 +70,6 @@ public class PathogenTestReadActivity extends BaseReadActivity<PathogenTest> {
 	public void goToEditView() {
 		PathogenTestEditActivity.startActivity(getContext(), getRootUuid());
 	}
+	@Override
+	public void goToDeleteRecord() {}
 }
