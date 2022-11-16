@@ -22,7 +22,7 @@ import java.io.Serializable;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -30,12 +30,12 @@ import de.symeda.sormas.api.uuid.HasUuid;
 @AuditedClass
 public class ExternalDataDto implements Serializable, HasExternalData, HasUuid {
 
-	@AuditInclude
+	@AuditIncludeProperty
 	private String uuid;
-	@AuditInclude
+	@AuditIncludeProperty
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
-	@AuditInclude
+	@AuditIncludeProperty
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
 

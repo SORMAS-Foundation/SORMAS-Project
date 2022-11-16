@@ -68,18 +68,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		super(adoClass, dtoClass, service, userService);
 	}
 
-	@Override
-	public List<DTO> getAllAfter(Date date) {
-		return getAllAfter(date, null, null);
-	}
-
-	@Override
-	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		List<ADO> entities = service.getAllAfter(date, batchSize, lastSynchronizedUuid);
-		return toPseudonymizedDtos(entities);
-	}
-
 	@DenyAll
 	public DTO doSave(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
