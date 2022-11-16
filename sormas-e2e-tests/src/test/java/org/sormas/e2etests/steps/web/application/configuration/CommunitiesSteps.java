@@ -45,6 +45,9 @@ import static org.sormas.e2etests.pages.application.configuration.CommunitiesTab
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_ROW;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_NAME_TABLE_COLUMN;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.REGION_NAME_TABLE_COLUMN;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.DISTRICT_NAME_TABLE_COLUMN;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_COMMUNITY_TEXT;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_YES_BUTTON;
@@ -305,6 +308,99 @@ public class CommunitiesSteps implements En {
               webDriverHelpers.isElementPresent(COMMUNITY_FILTER_COMBOBOX),
               "Relevance status Combo box is Not present in Communities Configuration");
           softly.assertAll();
+        });
+
+    Then(
+        "I verify the Search and Reset filter functionality in Communities Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION);
+          Integer defaultRecordsCount =
+              webDriverHelpers.getNumberOfElements(COMMUNITY_NAME_TABLE_COLUMN);
+          String communityName =
+              webDriverHelpers.getTextFromWebElement(COMMUNITY_NAME_TABLE_COLUMN);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COMMUNITY_INPUT, communityName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COMMUNITY_NAME_TABLE_COLUMN, communityName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_COMMUNITIES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COMMUNITY_NAME_TABLE_COLUMN, defaultRecordsCount);
+        });
+
+    Then(
+        "I verify the Country dropdown functionality in Communities Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION);
+          Integer defaultRecordsCount =
+              webDriverHelpers.getNumberOfElements(COMMUNITY_NAME_TABLE_COLUMN);
+          String communityName =
+              webDriverHelpers.getTextFromWebElement(COMMUNITY_NAME_TABLE_COLUMN);
+          webDriverHelpers.selectFromCombobox(COUNTRY_COMMUNITY_FILTER_COMBOBOX, "Germany");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COMMUNITY_INPUT, communityName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COMMUNITY_NAME_TABLE_COLUMN, communityName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_COMMUNITIES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COMMUNITY_NAME_TABLE_COLUMN, defaultRecordsCount);
+        });
+
+    Then(
+        "I verify the Region dropdown functionality in Communities Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION);
+          Integer defaultRecordsCount =
+              webDriverHelpers.getNumberOfElements(COMMUNITY_NAME_TABLE_COLUMN);
+          String communityName =
+              webDriverHelpers.getTextFromWebElement(COMMUNITY_NAME_TABLE_COLUMN);
+          webDriverHelpers.selectFromCombobox(REGION_COMMUNITY_FILTER_COMBOBOX, "Bayern");
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(REGION_NAME_TABLE_COLUMN, "Bayern");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COMMUNITY_INPUT, communityName);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COMMUNITY_NAME_TABLE_COLUMN, communityName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_COMMUNITIES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COMMUNITY_NAME_TABLE_COLUMN, defaultRecordsCount);
+        });
+
+    Then(
+        "I verify the District dropdown functionality in Communities Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION);
+          Integer defaultRecordsCount =
+              webDriverHelpers.getNumberOfElements(COMMUNITY_NAME_TABLE_COLUMN);
+          String communityName =
+              webDriverHelpers.getTextFromWebElement(COMMUNITY_NAME_TABLE_COLUMN);
+          webDriverHelpers.selectFromCombobox(REGION_COMMUNITY_FILTER_COMBOBOX, "Bayern");
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(REGION_NAME_TABLE_COLUMN, "Bayern");
+          webDriverHelpers.selectFromCombobox(DISTRICT_COMMUNITY_FILTER_COMBOBOX, "LK Freising");
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              DISTRICT_NAME_TABLE_COLUMN, "LK Freising");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COMMUNITY_INPUT, communityName);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COMMUNITY_NAME_TABLE_COLUMN, communityName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_COMMUNITIES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COMMUNITY_NAME_TABLE_COLUMN, defaultRecordsCount);
         });
   }
 
