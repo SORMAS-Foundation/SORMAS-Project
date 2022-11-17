@@ -66,6 +66,8 @@ import de.symeda.sormas.ui.externalmessage.ExternalMessageForm;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageUiHelper;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.samples.AbstractSampleForm;
+import de.symeda.sormas.ui.samples.CollapsiblePathogenTestForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
@@ -225,7 +227,8 @@ public class ExternalMessageProcessingUIHelper {
 
 		List<PathogenTestDto> existingTests = FacadeProvider.getPathogenTestFacade().getAllBySample(sample.toReference());
 		for (PathogenTestDto existingTest : existingTests) {
-			PathogenTestForm pathogenTestForm = sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount, false);
+			CollapsiblePathogenTestForm pathogenTestForm =
+				sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount, false, false);
 			// when the user removes the pathogen test from the sampleEditComponent, mark the pathogen test as to be removed on commit
 			pathogenTestForm.addDetachListener(
 				(ClientConnector.DetachEvent detachEvent) -> sampleEditComponent.getWrappedComponent()
@@ -255,19 +258,12 @@ public class ExternalMessageProcessingUIHelper {
 		List<PathogenTestDto> newTestsToAdd =
 			newPathogenTests.stream().filter(p -> !existingTestExternalIds.contains(p.getExternalId())).collect(Collectors.toList());
 
-		for (PathogenTestDto test : newTestsToAdd) {
-			PathogenTestForm form = sampleController.addPathogenTestComponent(sampleEditComponent, test, caseSampleCount, true);
-			sampleController.setViaLimsFieldChecked(form);
-		}
-
 		// always add at least one PathogenTest
 		if (existingTests.isEmpty() && newTestsToAdd.isEmpty()) {
-			sampleController.addPathogenTestComponent(
-				sampleEditComponent,
-				LabMessageProcessingHelper.buildPathogenTest(null, externalMessageDto, sample, UserProvider.getCurrent().getUser()),
-				caseSampleCount,
-				true);
+			newTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, externalMessageDto, sample, UserProvider.getCurrent().getUser()));
 		}
+
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(newTestsToAdd, sampleEditComponent);
 
 		// button configuration
 		Consumer<Disease> createReferral = disease -> {
@@ -379,7 +375,10 @@ public class ExternalMessageProcessingUIHelper {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
 			sampleController.getSampleReferralCreateComponent(existingSample, disease);
-		addAllTestReports(newPathogenTests, sampleCreateComponent);
+
+		newPathogenTests.forEach(t -> t.setSample(existingSample.toReference()));
+		addNewPathogenTests(newPathogenTests, sampleCreateComponent);
+
 		// add option to create additional pathogen tests
 		sampleController.addPathogenTestButton(sampleCreateComponent, true);
 
@@ -401,19 +400,16 @@ public class ExternalMessageProcessingUIHelper {
 		showFormWithLabMessage(externalMessageDto, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample), false);
 	}
 
-	private static void addAllTestReports(
+	public static void addNewPathogenTests(
 		List<PathogenTestDto> pathogenTests,
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleForm) {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
-		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
+		SampleDto sample = sampleForm.getWrappedComponent().getValue();
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);
 
 		for (PathogenTestDto pathogenTest : pathogenTests) {
-			pathogenTest.setSample(sample.toReference());
-			PathogenTestForm pathogenTestCreateComponent =
-				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
-			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
+			sampleController.addPathogenTestComponent(sampleForm, pathogenTest, caseSampleCount, true, true);
 		}
 	}
 
