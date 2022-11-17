@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -72,17 +71,21 @@ public class ShareRequestInfoService extends AdoServiceWithUserFilter<ShareReque
 		cq.select(from.get(ShareRequestInfo.UUID));
 		cq.groupBy(from.get(ShareRequestInfo.ID));
 
+		return em.createQuery(cq.having(cb.equal(cb.count(shareRequestJoin.get(SormasToSormasShareInfo.ID)), 0))).getResultList();
+	}
+
+	public List<String> getAllRevokedShareRequestInfo() {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<ShareRequestInfo> from = cq.from(getElementClass());
+
+		Join<ShareRequestInfo, SormasToSormasShareInfo> shareRequestJoin = from.join(ShareRequestInfo.SHARES, JoinType.LEFT);
+		cq.select(from.get(ShareRequestInfo.UUID));
+		cq.groupBy(from.get(ShareRequestInfo.ID));
+
 		//All the ShareRequestInfos in REVOKED status which still have joins but should be considered as non referenced
-		Predicate revokedStatus = cb.equal(from.get(ShareRequestInfo.REQUEST_STATUS), ShareRequestStatus.REVOKED);
-		List<String> revokedRequests = em.createQuery(cq.where(revokedStatus)).getResultList();
-		//All the ShareRequestInfos which do not have joins
-		List<String> requestsWithoutJoins = em.createQuery(cq.having(cb.equal(cb.count(shareRequestJoin), 0))).getResultList();
-
-		List<String> allNonReferencedShareRequestInfo = new ArrayList<>();
-		allNonReferencedShareRequestInfo.addAll(revokedRequests);
-		allNonReferencedShareRequestInfo.addAll(requestsWithoutJoins);
-
-		return allNonReferencedShareRequestInfo;
+		return em.createQuery(cq.where(cb.equal(from.get(ShareRequestInfo.REQUEST_STATUS), ShareRequestStatus.REVOKED))).getResultList();
 	}
 
 	public void executePermanentDeletion() {
