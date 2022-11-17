@@ -30,6 +30,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Case {
+  Long creationDate;
   String caseClassification;
   String uuid;
   String followUpStatus;

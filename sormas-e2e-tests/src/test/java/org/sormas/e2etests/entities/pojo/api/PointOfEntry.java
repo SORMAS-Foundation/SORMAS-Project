@@ -15,34 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.sormas.e2etests.entities.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Immunization {
-  Long creationDate;
+public class PointOfEntry {
   String uuid;
-  Boolean pseudonymized;
-  String disease;
-  Person person;
-  Long reportDate;
-  Long positiveTestResultDate;
-  Long recoveryDate;
-  Long startDate;
-  Long endDate;
-  String externalId;
-  String reportingUser;
-  Boolean archived;
-  String immunizationStatus;
-  String meansOfImmunization;
-  String immunizationManagementStatus;
-  String responsibleRegion;
-  String responsibleDistrict;
-  String responsibleCommunity;
+  String pointOfEntryType;
 }
