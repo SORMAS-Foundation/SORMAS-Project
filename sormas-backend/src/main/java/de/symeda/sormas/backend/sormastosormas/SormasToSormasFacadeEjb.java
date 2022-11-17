@@ -374,7 +374,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		UserRight._CONTACT_DELETE,
 		UserRight._EVENT_DELETE,
 		UserRight._SYSTEM })
-	public void revokePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares) throws SormasToSormasException {
+	public void revokeAndDeletePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares) throws SormasToSormasException {
 		List<ShareRequestInfo> pendingRequests = sormasToSormasShares.stream()
 			.map(SormasToSormasShareInfo::getRequests)
 			.flatMap(Collection::stream)
@@ -383,6 +383,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		for (ShareRequestInfo r : pendingRequests) {
 			revokeShareRequest(r.getUuid());
+			shareRequestInfoService.deletePermanent(r);
 		}
 	}
 
