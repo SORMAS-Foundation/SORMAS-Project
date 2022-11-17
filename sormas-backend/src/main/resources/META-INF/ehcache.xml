@@ -15,7 +15,10 @@
   -->
 
 <ehcache>
-    <cache name="de.symeda.sormas.backend.infrastructure.community.Community" maxEntriesLocalHeap="5000"></cache>
-    <cache name="de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry" maxEntriesLocalHeap="5000"></cache>
-    <cache name="de.symeda.sormas.backend.infrastructure.facility.Facility" maxEntriesLocalHeap="5000"></cache>
+    <cache name="de.symeda.sormas.backend.infrastructure.community.Community" maxElementsInMemory="5000"
+           maxEntriesLocalHeap="5000"></cache>
+    <cache name="de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry" maxElementsInMemory="5000"
+           maxEntriesLocalHeap="5000"></cache>
+    <cache name="de.symeda.sormas.backend.infrastructure.facility.Facility" maxElementsInMemory="5000"
+           maxEntriesLocalHeap="5000"></cache>
 </ehcache>

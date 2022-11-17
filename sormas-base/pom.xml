@@ -525,6 +525,12 @@
 				<!-- Dependency of hibernate-core -->
 			</dependency>
 			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-ehcache</artifactId>
+				<version>5.6.5.Final</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
 				<groupId>com.vladmihalcea</groupId>
 				<artifactId>hibernate-types-55</artifactId>
 				<version>2.14.0</version>
@@ -536,13 +542,6 @@
 						<artifactId>jackson-module-jaxb-annotations</artifactId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-ehcache</artifactId>
-				<version>5.6.5.Final</version>
-				<scope>provided</scope>
 			</dependency>
 
 			<dependency>

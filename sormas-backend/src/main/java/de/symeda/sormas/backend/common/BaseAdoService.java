@@ -27,7 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -467,16 +466,16 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
 
 		final TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
-		final Optional<Long> idOptional = q.getResultList().stream().findFirst();
+		final Long id = QueryHelper.getSingleResult(q);
 
-		if (idOptional.isPresent()) {
+		if (id != null) {
 			if (fetchReferences) {
 				final Map<String, Object> hints = new HashMap();
 				final EntityGraph<ADO> entityGraph = getEntityFetchGraph();
 				hints.put("javax.persistence.fetchgraph", entityGraph);
-				return em.find(getElementClass(), idOptional.get(), hints);
+				return em.find(getElementClass(), id, hints);
 			} else {
-				return em.find(getElementClass(), idOptional.get());
+				return em.find(getElementClass(), id);
 			}
 		} else {
 			return null;
