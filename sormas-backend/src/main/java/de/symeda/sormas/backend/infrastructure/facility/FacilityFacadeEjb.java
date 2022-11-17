@@ -201,9 +201,9 @@ public class FacilityFacadeEjb
 			.collect(Collectors.toList());
 	}
 
-	@Override
-	protected void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
-
+	@Deprecated
+	private void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
+		// todo with #10927 this will move to the service
 		Join<Facility, Community> community = root.join(Facility.COMMUNITY, JoinType.LEFT);
 		Join<Facility, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<Facility, Region> region = root.join(Facility.REGION, JoinType.LEFT);

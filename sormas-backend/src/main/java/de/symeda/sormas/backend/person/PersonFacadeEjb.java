@@ -285,11 +285,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<PersonDto> cq, Root<Person> root) {
-		// There is no shared multiselect in this class
-	}
-
-	@Override
 	public List<PersonDto> getByExternalIds(List<String> externalIds) {
 		return toPseudonymizedDtos(service.getByExternalIds(externalIds));
 	}

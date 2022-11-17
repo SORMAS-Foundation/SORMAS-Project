@@ -49,7 +49,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -122,27 +121,6 @@ public class RegionFacadeEjb
 	@PermitAll
 	public List<RegionReferenceDto> getAllActiveAsReference() {
 		return toRefDtos(service.getAllActive(Region.NAME, true).stream());
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
-
-		Join<Region, Country> country = root.join(Region.COUNTRY, JoinType.LEFT);
-		Join<Region, Area> area = root.join(Region.AREA, JoinType.LEFT);
-		// Needs to be in the same order as in the constructor
-		cq.multiselect(
-			root.get(AbstractDomainObject.CREATION_DATE),
-			root.get(AbstractDomainObject.CHANGE_DATE),
-			root.get(AbstractDomainObject.UUID),
-			root.get(InfrastructureAdo.ARCHIVED),
-			root.get(Region.NAME),
-			root.get(Region.EPID_CODE),
-			root.get(Region.GROWTH_RATE),
-			root.get(Region.EXTERNAL_ID),
-			country.get(AbstractDomainObject.UUID),
-			country.get(Country.DEFAULT_NAME),
-			country.get(Country.ISO_CODE),
-			area.get(AbstractDomainObject.UUID));
 	}
 
 	@Override

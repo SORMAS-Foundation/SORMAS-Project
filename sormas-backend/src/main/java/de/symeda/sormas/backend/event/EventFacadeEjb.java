@@ -690,11 +690,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<EventDto> cq, Root<Event> root) {
-
-	}
-
-	@Override
 	public Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<EventIndexDto> eventIndexList = getIndexList(eventCriteria, offset, size, sortProperties);
 		long totalElementCount = count(eventCriteria);

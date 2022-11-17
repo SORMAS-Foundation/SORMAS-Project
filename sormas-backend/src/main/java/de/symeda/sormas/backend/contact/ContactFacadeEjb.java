@@ -294,11 +294,6 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<ContactDto> cq, Root<Contact> root) {
-
-	}
-
-	@Override
 	public List<String> getAllActiveUuids() {
 
 		User user = userService.getCurrentUser();
