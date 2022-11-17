@@ -87,13 +87,14 @@ public class ImmunizationApiService {
   }
 
   public Immunization buildGeneratedImmunizationForPersonWithCreationDate(
-      Person person, Integer years) {
+      Person person, Integer days) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
-    String createTime = LocalDateTime.now().minusYears(years).toString();
-    long millis =
-        LocalDateTime.parse(createTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     return Immunization.builder()
-        .creationDate(millis)
+        .creationDate(
+            LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli())
         .uuid(UUID.randomUUID().toString())
         .pseudonymized(false)
         .person(person)

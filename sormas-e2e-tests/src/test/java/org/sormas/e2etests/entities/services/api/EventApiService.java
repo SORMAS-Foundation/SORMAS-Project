@@ -114,13 +114,14 @@ public class EventApiService {
         .build();
   }
 
-  public Event buildGeneratedEventWithCreationDate(Integer years) {
+  public Event buildGeneratedEventWithCreationDate(Integer days) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
-    String createTime = LocalDateTime.now().minusYears(years).toString();
-    long millis =
-        LocalDateTime.parse(createTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     return Event.builder()
-        .creationDate(millis)
+        .creationDate(
+            LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli())
         .uuid(UUID.randomUUID().toString())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseVariant(

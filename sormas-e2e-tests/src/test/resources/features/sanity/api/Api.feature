@@ -161,12 +161,12 @@ Feature: Check basic POSTs RestApi endpoints
       | 1                     |
       | 5                     |
 
-  @env_main @oldfake
+  @env_main @oldfake @testIt
   Scenario: Create new case with creation date 10 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then API: I create a new case with creation date 10 years ago
+    Then API: I create a new case with creation date 3653 days ago
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
@@ -175,13 +175,13 @@ Feature: Check basic POSTs RestApi endpoints
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then API: I create a new contact with creation date 5 years ago
+    Then API: I create a new contact with creation date 1827 days ago
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
   @env_main @oldfake
   Scenario: Create a new event with creation date 5 years ago
-    Given API: I create a new event with creation date 5 years ago
+    Given API: I create a new event with creation date 1827 days ago
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
@@ -190,7 +190,7 @@ Feature: Check basic POSTs RestApi endpoints
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When API: I create a new immunizations for last created person with creation date 10 years ago
+    When API: I create a new immunizations for last created person with creation date 3653 days ago
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
@@ -202,6 +202,16 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I create a new event
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then API: I create a new event participant with creation date 5 years ago
+    Then API: I create a new event participant with creation date 1827 days ago
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
+
+  @env_de @oldfake
+  Scenario: Create Travel entry with creation date 14 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new travel entry with creation date 16 days ago
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+

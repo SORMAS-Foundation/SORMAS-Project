@@ -35,7 +35,6 @@ import org.sormas.e2etests.helpers.RestAssuredClient;
 
 public class EventParticipantApiService {
 
-  private final Faker faker;
   private static RunningConfiguration runningConfiguration;
   private RestAssuredClient restAssuredClient;
 
@@ -44,17 +43,17 @@ public class EventParticipantApiService {
       Faker faker, RunningConfiguration runningConfiguration, RestAssuredClient restAssuredClient) {
 
     this.restAssuredClient = restAssuredClient;
-    this.faker = faker;
     this.runningConfiguration = runningConfiguration;
   }
 
   public EventParticipant buildGeneratedEventParticipantWithCreationDate(
-      String eventUUID, String personUUID, String personSex, Integer years) {
-    String createTime = LocalDateTime.now().minusYears(years).toString();
-    long millis =
-        LocalDateTime.parse(createTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+      String eventUUID, String personUUID, String personSex, Integer days) {
     return EventParticipant.builder()
-        .creationDate(millis)
+        .creationDate(
+            LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli())
         .uuid(UUID.randomUUID().toString())
         .reportingUser(
             ReportingUser.builder()

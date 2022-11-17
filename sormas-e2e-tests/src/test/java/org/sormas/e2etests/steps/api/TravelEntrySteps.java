@@ -15,34 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.sormas.e2etests.steps.api;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.sormas.e2etests.entities.pojo.api.Event;
-import org.sormas.e2etests.entities.services.api.EventApiService;
-import org.sormas.e2etests.helpers.api.sormasrest.EventHelper;
+import org.sormas.e2etests.entities.pojo.api.TravelEntry;
+import org.sormas.e2etests.entities.services.api.TravelEntryApiService;
+import org.sormas.e2etests.helpers.api.sormasrest.TravelEntryHelper;
 import org.sormas.e2etests.state.ApiState;
 
-public class EventSteps implements En {
+public class TravelEntrySteps implements En {
 
   @Inject
-  public EventSteps(EventHelper eventHelper, EventApiService eventApiService, ApiState apiState) {
+  public TravelEntrySteps(
+      TravelEntryHelper travelEntryHelper,
+      ApiState apiState,
+      TravelEntryApiService travelEntryStepsApiService) {
 
     When(
-        "API: I create a new event",
-        () -> {
-          Event eve = eventApiService.buildGeneratedEvent();
-          eventHelper.createEvent(eve);
-          apiState.setCreatedEvent(eve);
-        });
-
-    When(
-        "API: I create a new event with creation date {int} days ago",
+        "API: I create a new travel entry with creation date {int} days ago",
         (Integer creationDate) -> {
-          Event eve = eventApiService.buildGeneratedEventWithCreationDate(creationDate);
-          eventHelper.createEvent(eve);
-          apiState.setCreatedEvent(eve);
+          System.out.println("Hello world");
+          TravelEntry trEntry =
+              travelEntryStepsApiService.buildGeneratedTravelEntryWithCreationDate(
+                  apiState.getLastCreatedPerson().getUuid(),
+                  apiState.getLastCreatedPerson().getFirstName(),
+                  apiState.getLastCreatedPerson().getLastName(),
+                  creationDate);
+          travelEntryHelper.createTravelEntry(trEntry);
+          apiState.setCreatedTravelEntry(trEntry);
         });
   }
 }

@@ -165,13 +165,14 @@ public class CaseApiService {
         .build();
   }
 
-  public Case buildGeneratedCaseWithCreationDate(Person person, Integer years) {
+  public Case buildGeneratedCaseWithCreationDate(Person person, Integer days) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
-    String createTime = LocalDateTime.now().minusYears(years).toString();
-    long millis =
-        LocalDateTime.parse(createTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     return Case.builder()
-        .creationDate(millis)
+        .creationDate(
+            LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)

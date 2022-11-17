@@ -42,7 +42,7 @@ public class CaseSteps implements En {
         });
 
     When(
-        "API: I create a new case with creation date {int} years ago",
+        "API: I create a new case with creation date {int} days ago",
         (Integer creationTime) -> {
           Case caze =
               caseApiService.buildGeneratedCaseWithCreationDate(

@@ -100,13 +100,14 @@ public class ContactApiService {
         .build();
   }
 
-  public Contact buildGeneratedContactWithCreationDate(Person person, Integer years) {
+  public Contact buildGeneratedContactWithCreationDate(Person person, Integer days) {
     environmentManager = new EnvironmentManager(restAssuredClient);
-    String createTime = LocalDateTime.now().minusYears(years).toString();
-    long millis =
-        LocalDateTime.parse(createTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     return Contact.builder()
-        .creationDate(millis)
+        .creationDate(
+            LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .uuid(UUID.randomUUID().toString())
         .reportDateTime(new Date())

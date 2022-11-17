@@ -50,7 +50,7 @@ public class ContactSteps implements En {
         });
 
     When(
-        "API: I create a new contact with creation date {int} years ago",
+        "API: I create a new contact with creation date {int} days ago",
         (Integer creationDate) -> {
           Contact contact =
               contactApiService.buildGeneratedContactWithCreationDate(

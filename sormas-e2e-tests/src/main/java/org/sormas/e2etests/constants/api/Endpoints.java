@@ -45,4 +45,5 @@ public interface Endpoints {
 
   String DELETE_PATH = "deleted/";
   String UUIDS_PATH = "uuids";
+  String TRAVEL_ENTRIES = "travelentries/";
 }

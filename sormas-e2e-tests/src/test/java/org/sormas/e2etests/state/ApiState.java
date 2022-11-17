@@ -30,6 +30,7 @@ import org.sormas.e2etests.entities.pojo.api.Immunization;
 import org.sormas.e2etests.entities.pojo.api.Person;
 import org.sormas.e2etests.entities.pojo.api.Sample;
 import org.sormas.e2etests.entities.pojo.api.Task;
+import org.sormas.e2etests.entities.pojo.api.TravelEntry;
 import org.sormas.e2etests.entities.pojo.web.Action;
 
 @ScenarioScoped
@@ -52,4 +53,5 @@ public class ApiState {
   Task createdTask;
   Sample createdSample;
   Action createdAction;
+  TravelEntry createdTravelEntry;
 }

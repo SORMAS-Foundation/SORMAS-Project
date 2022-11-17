@@ -34,7 +34,7 @@ public class EventParticipantSteps implements En {
       ApiState apiState) {
 
     When(
-        "API: I create a new event participant with creation date {int} years ago",
+        "API: I create a new event participant with creation date {int} days ago",
         (Integer creationDate) -> {
           EventParticipant evPart =
               eventParticipantApiService.buildGeneratedEventParticipantWithCreationDate(
