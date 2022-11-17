@@ -1118,8 +1118,10 @@ public interface Strings {
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
 	String messageImportError = "messageImportError";
+	String messageImportExtensionDoesNotMatchContent = "messageImportExtensionDoesNotMatchContent";
 	String messageImportFailed = "messageImportFailed";
 	String messageImportFailedFull = "messageImportFailedFull";
+	String messageImportFileTypeNotAllowed = "messageImportFileTypeNotAllowed";
 	String messageImportInvalidColumn = "messageImportInvalidColumn";
 	String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	String messageImportSuccessful = "messageImportSuccessful";
