@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.ui.externalmessage;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;

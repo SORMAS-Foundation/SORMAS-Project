@@ -15,10 +15,10 @@
 
 package de.symeda.sormas.ui.externalmessage;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -35,11 +35,11 @@ public class ExternalMessageControllerUnitTest {
 
 		message.setType(ExternalMessageType.LAB_MESSAGE);
 		externalMessageController.setSurvReportingType(report, message);
-		Assert.assertEquals(ReportingType.LABORATORY, report.getReportingType());
+		assertEquals(ReportingType.LABORATORY, report.getReportingType());
 
 		message.setType(ExternalMessageType.PHYSICIANS_REPORT);
 		externalMessageController.setSurvReportingType(report, message);
-		Assert.assertEquals(ReportingType.DOCTOR, report.getReportingType());
+		assertEquals(ReportingType.DOCTOR, report.getReportingType());
 
 		message.setType(null);
 		assertThrows(UnsupportedOperationException.class, () -> externalMessageController.setSurvReportingType(report, message));
