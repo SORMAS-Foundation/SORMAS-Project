@@ -1036,7 +1036,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				} catch (SormasToSormasException e) {
 					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
 				}
-				sormasToSormasShareInfoService.deletePermanent(s);
 			}
 		});
 
