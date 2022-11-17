@@ -599,6 +599,7 @@ public interface Strings {
 	String headingMaternalHistory = "headingMaternalHistory";
 	String headingMedicalInformation = "headingMedicalInformation";
 	String headingMergeGuide = "headingMergeGuide";
+	String headingMergePersonError = "headingMergePersonError";
 	String headingMissingDateFilter = "headingMissingDateFilter";
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
@@ -853,6 +854,7 @@ public interface Strings {
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
 	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
 	String infoPersonMergeDescription = "infoPersonMergeDescription";
+	String infoPersonMergeErrorWhenShared = "infoPersonMergeErrorWhenShared";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
