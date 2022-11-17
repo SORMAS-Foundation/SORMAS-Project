@@ -161,7 +161,7 @@ Feature: Check basic POSTs RestApi endpoints
       | 1                     |
       | 5                     |
 
-  @env_main @oldfake
+  @env_de @oldfake
   Scenario: Create new case with creation date 10 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -170,7 +170,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_main @oldfake
+  @env_de @oldfake
   Scenario: Create a new contact with creation date 5 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -179,13 +179,13 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_main @oldfake
+  @env_de @oldfake
   Scenario: Create a new event with creation date 5 years ago
     Given API: I create a new event with creation date 1827 days ago
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_main @oldfake
+  @env_de @oldfake
   Scenario: Create Person and attach immunizations with creation date 10 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -194,7 +194,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_main @oldfake
+  @env_de @oldfake
   Scenario: Create Event participant with creation date 5 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

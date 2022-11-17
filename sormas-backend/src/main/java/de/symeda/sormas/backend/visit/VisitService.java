@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityGraph;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
@@ -208,10 +209,18 @@ public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit>
 
 	@Override
 	protected void fetchReferences(From<?, Visit> from) {
-
 		from.fetch(Visit.SYMPTOMS);
 		Fetch<Visit, Person> personFetch = from.fetch(Visit.PERSON);
 		personFetch.fetch(Person.ADDRESS);
+	}
+
+	@Override
+	protected EntityGraph<Visit> getEntityFetchGraph() {
+		final EntityGraph<Visit> entityFetchGraph = super.getEntityFetchGraph();
+		entityFetchGraph.addAttributeNodes(Visit.SYMPTOMS);
+		entityFetchGraph.addAttributeNodes(Visit.PERSON);
+		entityFetchGraph.addSubgraph(Visit.PERSON).addAttributeNodes(Person.ADDRESS);
+		return entityFetchGraph;
 	}
 
 	// Used only for testing; directly retrieve the visits from the contact instead

@@ -839,7 +839,7 @@ Feature: Contacts end to end tests
     Given I log in as a National User
     Then I click on the Contacts button from navbar
     And I open the first contact from contacts list
-    And I click on the NEW TASK button
+    And I click on the NEW TASK button from Edit Contact page
     And I check if New task form is displayed correctly
     And I check that required fields are marked as mandatory
     And I clear Due Date field in the New task form
