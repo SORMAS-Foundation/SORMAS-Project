@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -190,7 +189,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	public List<TravelEntryDto> getByPersonUuids(List<String> uuids) {
-		return service.getByPersonUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(uuids).stream());
 	}
 
 	@Override

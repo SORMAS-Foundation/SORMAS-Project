@@ -1541,7 +1541,7 @@ public class ContactFacadeEjb
 
 	@Override
 	public List<ContactDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(personUuids).stream());
 	}
 
 	@Override
@@ -1557,7 +1557,6 @@ public class ContactFacadeEjb
 	@RightsAllowed({
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
-
 		return service.getNewContactCountPerClassification(contactCriteria);
 	}
 
@@ -1565,7 +1564,6 @@ public class ContactFacadeEjb
 	@RightsAllowed({
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
-
 		return service.getNewContactCountPerFollowUpStatus(contactCriteria);
 	}
 
@@ -1577,7 +1575,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public List<ContactDto> toPseudonymizedDtos(List<Contact> adoList) {
+	protected List<ContactDto> toPseudonymizedDtos(List<Contact> adoList) {
 
 		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(adoList);
 		Pseudonymizer pseudonymizer = createPseudonymizer();

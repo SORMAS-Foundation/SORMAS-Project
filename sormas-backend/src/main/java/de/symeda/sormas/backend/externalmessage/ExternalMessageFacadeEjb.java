@@ -274,11 +274,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public List<ExternalMessageDto> getForSample(SampleReferenceDto sample) {
-
-		List<ExternalMessage> externalMessages = externalMessageService.getForSample(sample);
-
-		return externalMessages.stream().map(this::toDto).collect(Collectors.toList());
-
+		return externalMessageService.getForSample(sample).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

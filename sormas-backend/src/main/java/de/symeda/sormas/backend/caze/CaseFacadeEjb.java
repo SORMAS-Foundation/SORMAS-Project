@@ -1394,7 +1394,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		cq.select(caze);
 
 		List<Case> cases = em.createQuery(cq).getResultList();
-		return cases.stream().filter(c -> vaccinationService.isVaccinationRelevant(c, vaccination)).map(this::toDto).collect(Collectors.toList());
+		return toDtos(cases.stream().filter(c -> vaccinationService.isVaccinationRelevant(c, vaccination)));
 	}
 
 	@Override
@@ -3466,32 +3466,24 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
 		if (caseMeasure == CaseMeasure.CASE_COUNT) {
-			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream()
-				.map(e -> new Pair<DistrictDto, BigDecimal>(districtFacade.toDto((District) e[0]), new BigDecimal((Long) e[1])))
+			return results.stream()
+				.map(e -> new Pair<>(districtFacade.toDto((District) e[0]), new BigDecimal((Long) e[1])))
 				.collect(Collectors.toList());
-			return resultList;
 		} else {
-			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream().map(e -> {
+			return results.stream().map(e -> {
 				District district = (District) e[0];
 				Integer population = populationDataFacade.getProjectedDistrictPopulation(district.getUuid());
 				Long caseCount = (Long) e[1];
 
 				if (population == null || population <= 0) {
-					// No or negative population - these entries will be cut off in the UI
-					return new Pair<DistrictDto, BigDecimal>(districtFacade.toDto(district), new BigDecimal(0));
+					// No, or negative population - these entries will be cut off in the UI
+					return new Pair<>(districtFacade.toDto(district), new BigDecimal(0));
 				} else {
-					return new Pair<DistrictDto, BigDecimal>(
+					return new Pair<>(
 						districtFacade.toDto(district),
 						InfrastructureHelper.getCaseIncidence(caseCount.intValue(), population, InfrastructureHelper.CASE_INCIDENCE_DIVISOR));
 				}
-			}).sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {
-
-				@Override
-				public int compare(Pair<DistrictDto, BigDecimal> o1, Pair<DistrictDto, BigDecimal> o2) {
-					return o1.getElement1().compareTo(o2.getElement1());
-				}
-			}).collect(Collectors.toList());
-			return resultList;
+			}).sorted(Comparator.comparing(Pair::getElement1)).collect(Collectors.toList());
 		}
 	}
 
@@ -4178,12 +4170,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(this::toDto).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(personUuids).stream());
 	}
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
-
+		// todo
 		Pseudonymizer pseudonymizer = createPseudonymizer();
 		return service.getByExternalId(externalId).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
 	}

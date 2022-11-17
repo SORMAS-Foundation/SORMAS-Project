@@ -239,11 +239,7 @@ public class DistrictFacadeEjb
 
 	@PermitAll
 	public List<DistrictDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
-
-		return service.getByExternalId(externalId, includeArchivedEntities)
-				.stream()
-				.map(this::toDto)
-				.collect(Collectors.toList());
+		return toDtos(service.getByExternalId(externalId, includeArchivedEntities).stream());
 	}
 
 	@Override
@@ -352,7 +348,7 @@ public class DistrictFacadeEjb
 		District district = service.getByUuid(districtUuid);
 
 		return (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "") + "-"
-				+ (district.getEpidCode() != null ? district.getEpidCode() : "");
+			+ (district.getEpidCode() != null ? district.getEpidCode() : "");
 
 	}
 

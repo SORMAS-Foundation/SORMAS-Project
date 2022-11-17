@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -117,7 +118,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return dto;
 	}
 
-	public List<DTO> toPseudonymizedDtos(List<ADO> adoList) {
+	protected List<DTO> toPseudonymizedDtos(List<ADO> adoList) {
 		if (adoList == null) {
 			return Collections.emptyList();
 		}
@@ -143,15 +144,23 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);
 
-	public abstract DTO toDto(ADO ado);
+	protected abstract DTO toDto(ADO ado);
+
+	public List<DTO> toDtos(Stream<ADO> adoStream) {
+		return adoStream.map(this::toDto).collect(Collectors.toList());
+	}
 
 	protected abstract REF_DTO toRefDto(ADO ado);
+
+	protected List<REF_DTO> toRefDtos(Stream<ADO> adoStream) {
+		return adoStream.map(this::toRefDto).collect(Collectors.toList());
+	}
 
 	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction);
 
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
-	protected boolean isAdoInJurisdiction(ADO ado){
+	protected boolean isAdoInJurisdiction(ADO ado) {
 		return service.inJurisdictionOrOwned(ado);
 	}
 }
