@@ -45,6 +45,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -67,9 +68,23 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	private final PersonDto person;
 	private SymptomsForm symptomsForm;
 
-	public VisitEditForm(Disease disease, ContactDto contact, CaseDataDto caze, PersonDto person, boolean create, boolean isPseudonymized) {
+	public VisitEditForm(
+		Disease disease,
+		ContactDto contact,
+		CaseDataDto caze,
+		PersonDto person,
+		boolean create,
+		boolean isPseudonymized,
+		boolean inJurisdiction) {
 
-		super(VisitDto.class, VisitDto.I18N_PREFIX, false, null, UiFieldAccessCheckers.forSensitiveData(create ? false : isPseudonymized));
+		super(
+			VisitDto.class,
+			VisitDto.I18N_PREFIX,
+			false,
+			null,
+			UiFieldAccessCheckers.forDataAccessLevel(
+				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(create || inJurisdiction),
+				!create && isPseudonymized));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -88,12 +103,12 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	}
 
-	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, boolean isInJurisdiction) {
-		this(disease, contact, null, person, create, contact.isPseudonymized());
+	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
+		this(disease, contact, null, person, create, contact.isPseudonymized(), contact.isInJurisdiction());
 	}
 
-	public VisitEditForm(Disease disease, CaseDataDto caze, PersonDto person, boolean create, boolean isInJurisdiction) {
-		this(disease, null, caze, person, create, caze.isPseudonymized());
+	public VisitEditForm(Disease disease, CaseDataDto caze, PersonDto person, boolean create) {
+		this(disease, null, caze, person, create, caze.isPseudonymized(), caze.isInJurisdiction());
 	}
 
 	@Override

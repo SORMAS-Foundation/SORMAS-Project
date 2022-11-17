@@ -118,13 +118,13 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	private ComboBox responsibleCommunity;
 	private boolean ignoreDifferentPointOfEntryJurisdiction = false;
 
-	public TravelEntryDataForm(String travelEntryUuid, boolean isPseudonymized) {
+	public TravelEntryDataForm(String travelEntryUuid, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			TravelEntryDto.class,
 			TravelEntryDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			createFieldAccessCheckers(isPseudonymized, true));
+			createFieldAccessCheckers(isPseudonymized, inJurisdiction, true));
 		this.travelEntryUuid = travelEntryUuid;
 		addFields();
 	}
@@ -429,9 +429,13 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 	}
 
-	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
+	private static UiFieldAccessCheckers createFieldAccessCheckers(
+		boolean isPseudonymized,
+		boolean inJurisdiction,
+		boolean withPersonalAndSensitive) {
 		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers.getDefault(isPseudonymized);
+			return UiFieldAccessCheckers
+				.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
 		}
 
 		return UiFieldAccessCheckers.getNoop();

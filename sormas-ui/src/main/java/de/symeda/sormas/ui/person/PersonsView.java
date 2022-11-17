@@ -2,11 +2,11 @@ package de.symeda.sormas.ui.person;
 
 import static java.util.Objects.nonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -15,24 +15,26 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -44,10 +46,14 @@ import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.PersonDownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 public class PersonsView extends AbstractView {
+
+	private static final long serialVersionUID = -6292580716619536538L;
 
 	public static final String VIEW_NAME = "persons";
 
@@ -57,8 +63,9 @@ public class PersonsView extends AbstractView {
 	private LinkedHashMap<Button, PersonAssociation> associationButtons;
 	private Button activeAssociationButton;
 	private PersonFilterForm filterForm;
-	private final Map<PersonAssociation, Boolean> associationAllowedValues = new EnumMap<>(PersonAssociation.class);
-	private final Map<PersonAssociation, Boolean> associationActiveValues = new EnumMap<>(PersonAssociation.class);
+
+	// Bulk operations
+	private MenuBar bulkOperationsDropdown;
 
 	public PersonsView() {
 		super(VIEW_NAME);
@@ -139,6 +146,40 @@ public class PersonsView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
+
+		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_MERGE)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(true);
+			moreButton.addMenuEntry(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+					ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(false);
+			moreButton.addMenuEntry(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				((PersonGrid) grid).reload();
+				((PersonGrid) grid).setBulkEditMode(true);
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+				((PersonGrid) grid).setBulkEditMode(false);
+			});
+		}
+
+		if (moreButton.hasMenuEntries()) {
+			addHeaderComponent(moreButton);
+		}
 	}
 
 	private void showMissingCoordinatesPopUp() {
@@ -187,7 +228,7 @@ public class PersonsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		if (criteria.getPersonAssociation() != null && !isPersonAssociationAllowed(criteria.getPersonAssociation())) {
+		if (criteria.getPersonAssociation() != null && !associationButtons.values().contains(criteria.getPersonAssociation())) {
 			PersonAssociation firstAllowedAssociation = getFirstAllowedPersonAssociation();
 			// The following line is needed because we want to correct the value in PersonCriteria in order to have a consistent state; setting the default association is 
 			// necessary because calling PersonCriteria.setPersonAssociation with null throws an exception.
@@ -244,18 +285,15 @@ public class PersonsView extends AbstractView {
 	}
 
 	public HorizontalLayout createAssociationFilterBar() {
+
 		HorizontalLayout associationFilterLayout = new HorizontalLayout();
 		associationFilterLayout.setSpacing(true);
-		associationFilterLayout.setMargin(false);
+		associationFilterLayout.setMargin(new MarginInfo(true, false, false, false));
 		associationFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		associationFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		associationButtons = new LinkedHashMap<>();
-
-		for (PersonAssociation association : PersonAssociation.values()) {
-			if (!isPersonAssociationAllowed(association)) {
-				continue;
-			}
+		for (PersonAssociation association : FacadeProvider.getPersonFacade().getPermittedAssociations()) {
 
 			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
 				if ((nonNull(UserProvider.getCurrent()) && !UserProvider.getCurrent().hasNationJurisdictionLevel())
@@ -291,6 +329,56 @@ public class PersonsView extends AbstractView {
 		associationFilterLayout.setComponentAlignment(emptyLabel, Alignment.MIDDLE_RIGHT);
 		associationFilterLayout.setExpandRatio(emptyLabel, 1);
 
+		// Bulk operation dropdown
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_MERGE)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
+			bulkActions.add(
+				new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.actionMerge),
+					VaadinIcons.COMPRESS_SQUARE,
+					mi -> grid.bulkActionHandler(items -> {
+						if (items.size() != 2) {
+							VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageCannotMergeMoreThanTwoPersons));
+						} else {
+
+							Iterator selectionsIterator = items.iterator();
+							final PersonIndexDto person1 = (PersonIndexDto) selectionsIterator.next();
+							final PersonIndexDto person2 = (PersonIndexDto) selectionsIterator.next();
+
+							final PersonDto leadPersonDto = FacadeProvider.getPersonFacade().getByUuid(person1.getUuid());
+							final PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(leadPersonDto.getSex())
+								.nationalHealthId(leadPersonDto.getNationalHealthId())
+								.passportNumber(leadPersonDto.getPassportNumber())
+								.birthdateDD(leadPersonDto.getBirthdateDD())
+								.birthdateMM(leadPersonDto.getBirthdateMM())
+								.birthdateYYYY(leadPersonDto.getBirthdateYYYY());
+							criteria.setName(leadPersonDto);
+
+							if (!FacadeProvider.getPersonFacade().isPersonSimilar(criteria, person2.getUuid())) {
+								VaadinUiUtil.showConfirmationPopup(
+									I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
+									new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmationForNonSimilarPersons)),
+									I18nProperties.getCaption(Captions.actionProceed),
+									I18nProperties.getCaption(Captions.actionCancel),
+									confirmAgain -> {
+										if (Boolean.TRUE.equals(confirmAgain)) {
+											ControllerProvider.getPersonController().mergePersons(person1, person2);
+										}
+									});
+							} else {
+								ControllerProvider.getPersonController().mergePersons(person1, person2);
+							}
+
+							grid.deselectAll();
+						}
+					}, true)));
+
+			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
+			bulkOperationsDropdown.setVisible(false);
+			associationFilterLayout.addComponent(bulkOperationsDropdown);
+		}
+
 		return associationFilterLayout;
 	}
 
@@ -303,44 +391,4 @@ public class PersonsView extends AbstractView {
 		}
 		return defaultAssociation;
 	}
-
-	private boolean isPersonAssociationAllowed(PersonAssociation personAssociation) {
-
-		if (associationAllowedValues.isEmpty()) {
-			associationAllowedValues.put(PersonAssociation.IMMUNIZATION, UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW));
-			associationActiveValues.put(
-				PersonAssociation.IMMUNIZATION,
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-					&& !FacadeProvider.getFeatureConfigurationFacade()
-						.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
-			associationAllowedValues.put(PersonAssociation.TRAVEL_ENTRY, UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW));
-			associationActiveValues.put(
-				PersonAssociation.TRAVEL_ENTRY,
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
-					&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY));
-			associationAllowedValues.put(PersonAssociation.CONTACT, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW));
-			associationActiveValues
-				.put(PersonAssociation.CONTACT, FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING));
-			associationAllowedValues.put(PersonAssociation.CASE, UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW));
-			associationActiveValues
-				.put(PersonAssociation.CASE, FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE));
-			associationAllowedValues
-				.put(PersonAssociation.EVENT_PARTICIPANT, UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW));
-			associationActiveValues.put(
-				PersonAssociation.EVENT_PARTICIPANT,
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE));
-		}
-
-		if (personAssociation == PersonAssociation.ALL) {
-			return (associationAllowedValues.get(PersonAssociation.IMMUNIZATION) || !associationActiveValues.get(PersonAssociation.IMMUNIZATION))
-				&& (associationAllowedValues.get(PersonAssociation.TRAVEL_ENTRY) || !associationActiveValues.get(PersonAssociation.TRAVEL_ENTRY))
-				&& (associationAllowedValues.get(PersonAssociation.CONTACT) || !associationActiveValues.get(PersonAssociation.CONTACT))
-				&& (associationAllowedValues.get(PersonAssociation.CASE) || !associationActiveValues.get(PersonAssociation.CASE))
-				&& (associationAllowedValues.get(PersonAssociation.EVENT_PARTICIPANT)
-					|| !associationActiveValues.get(PersonAssociation.EVENT_PARTICIPANT));
-		} else {
-			return (associationAllowedValues.get(personAssociation) && associationActiveValues.get(personAssociation));
-		}
-	}
-
 }

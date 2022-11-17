@@ -109,12 +109,16 @@ public class CaseDetailedTableViewSteps implements En {
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.HEALTH_FACILITY.toString()),
               "Standard Einrichtung - Details",
               "Health facility is not correct");
+
+          String formDate =
+              getDateOfReportDateTime(
+                  apiState.getCreatedCase().getReportDate().toString().replace("/0", "/"));
+          String[] dateOfRep = formDate.split("\\s+");
+
           softly.assertTrue(
               detailedCaseDTableRow
                   .get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString())
-                  .contains(
-                      getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())
-                          .replace("/0", "/")),
+                  .contains(dateOfRep[0].replace("/0", "/")),
               "Date of report is not correct. Found: "
                   + detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()

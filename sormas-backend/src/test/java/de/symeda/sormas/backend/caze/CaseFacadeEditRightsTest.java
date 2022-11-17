@@ -20,9 +20,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
@@ -34,7 +32,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;

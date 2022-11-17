@@ -42,7 +42,7 @@ public class EditCasePage {
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
   public static final By CASE_TAB = By.cssSelector("div#tab-cases-data");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
-  public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
+  public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
@@ -300,8 +300,7 @@ public class EditCasePage {
       By.xpath(
           "//div[@location='immunizations']//div[@class='v-slot v-slot-link v-slot-compact v-align-right']");
   public static final By BUTTONS_IN_VACCINATIONS_LOCATION =
-      By.xpath(
-          "//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit-vaccination\")]");
+      By.xpath("//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit\")]");
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
   public static final By VACCINATION_STATUS_COMBOBOX =
       By.xpath("//div[@id='vaccinationStatus']/div");
@@ -315,7 +314,7 @@ public class EditCasePage {
   }
 
   public static By getByImmunizationUuid(String immunizationUuid) {
-    return By.id("edit-immunization-" + immunizationUuid);
+    return By.id("edit" + immunizationUuid);
   }
 
   public static final By IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL =

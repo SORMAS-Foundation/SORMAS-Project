@@ -112,6 +112,9 @@ public class ContactsDashboardPage {
   public static final By CONTACTS_COVID19_COUNTER =
       By.cssSelector(
           "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(2)>div>div:nth-child(1)>:nth-child(5)>div");
+  public static final By CONTACTS_COVID19_COUNTER_WITHOUT_DETAILS =
+      By.cssSelector(
+          "[location='firstLoc']>div>div>:nth-child(2)>div>:nth-child(2)>div>div:nth-child(1)>:nth-child(5)>div");
   public static final By CONTACTS_CHOLERA_COUNTER =
       By.cssSelector(
           "[location='firstLoc']>div>:nth-child(2)>div>:nth-child(3)>div>:nth-child(1)>:nth-child(5)");

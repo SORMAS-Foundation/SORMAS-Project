@@ -270,18 +270,17 @@ public class CasesView extends AbstractView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			VerticalLayout importLayout = new VerticalLayout();
-			{
-				importLayout.setSpacing(true);
-				importLayout.setMargin(true);
-				importLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-				importLayout.setWidth(250, Unit.PIXELS);
+			importLayout.setSpacing(true);
+			importLayout.setMargin(true);
+			importLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			importLayout.setWidth(250, Unit.PIXELS);
 
-				PopupButton importButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.UPLOAD, importLayout);
+			PopupButton importButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.UPLOAD, importLayout);
 
-				addHeaderComponent(importButton);
-			}
-			addImportButton(importLayout, Captions.importLineListing, Strings.headingLineListingImport, LineListingImportLayout::new);
-			addImportButton(importLayout, Captions.importDetailed, Strings.headingImportCases, CaseImportLayout::new);
+			addHeaderComponent(importButton);
+			addImportButton(importButton, importLayout, Captions.importLineListing, Strings.headingLineListingImport, LineListingImportLayout::new);
+			addImportButton(importButton, importLayout, Captions.importDetailed, Strings.headingImportCases, CaseImportLayout::new);
+
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
@@ -490,12 +489,18 @@ public class CasesView extends AbstractView {
 		SormasUI.get().getNavigator().navigateTo(CasesView.VIEW_NAME);
 	}
 
-	private void addImportButton(VerticalLayout importLayout, String captionKey, String windowHeadingKey, Supplier<Component> windowContentSupplier) {
+	private void addImportButton(
+		PopupButton importPopupButton,
+		VerticalLayout importLayout,
+		String captionKey,
+		String windowHeadingKey,
+		Supplier<Component> windowContentSupplier) {
 		Button lineListingImportButton = ButtonHelper.createIconButton(captionKey, VaadinIcons.UPLOAD, e -> {
 			Window popupWindow = VaadinUiUtil.showPopupWindow(windowContentSupplier.get());
 			popupWindow.setCaption(I18nProperties.getString(windowHeadingKey));
 			AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 			popupWindow.addCloseListener(c -> caseGrid.reload());
+			importPopupButton.setPopupVisible(false);
 		}, ValoTheme.BUTTON_PRIMARY);
 		lineListingImportButton.setWidth(100, Unit.PERCENTAGE);
 		importLayout.addComponent(lineListingImportButton);

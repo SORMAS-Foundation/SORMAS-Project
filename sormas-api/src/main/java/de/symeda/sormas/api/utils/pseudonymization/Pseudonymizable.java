@@ -31,4 +31,8 @@ public interface Pseudonymizable {
 	 * @param pseudonymized
 	 */
 	void setPseudonymized(boolean pseudonymized);
+
+	boolean isInJurisdiction();
+
+	void setInJurisdiction(boolean inJurisdiction);
 }

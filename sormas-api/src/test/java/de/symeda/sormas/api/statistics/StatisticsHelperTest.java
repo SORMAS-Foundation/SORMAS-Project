@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.statistics;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;

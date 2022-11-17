@@ -56,8 +56,12 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	private Label laboratorySampleHeadingLabel;
 
-	public SampleEditForm(boolean isPseudonymized, Disease disease) {
-		super(SampleDto.class, SampleDto.I18N_PREFIX, disease, UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
+	public SampleEditForm(boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
+		super(
+			SampleDto.class,
+			SampleDto.I18N_PREFIX,
+			disease,
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 		testsToBeRemovedOnCommit = new ArrayList();
 	}
 

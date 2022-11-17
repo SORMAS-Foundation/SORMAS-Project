@@ -39,6 +39,7 @@ import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.utils.VersionHelper;
 /**
  * Provides the application configuration settings
  */
+@AuditIgnore
 @Stateless(name = "ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 

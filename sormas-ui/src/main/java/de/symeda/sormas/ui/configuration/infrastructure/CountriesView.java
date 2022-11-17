@@ -137,7 +137,7 @@ public class CountriesView extends AbstractConfigurationView {
 				grid,
 				this::getSelectedRows,
 				ExportEntityName.COUNTRIES,
-				Collections.singletonList(CountriesGrid.EDIT_BTN_ID),
+				Collections.singletonList(CountriesGrid.ACTION_BTN_ID),
 				Collections.singletonList(CountryIndexDto.DEFAULT_NAME));
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);

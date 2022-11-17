@@ -34,15 +34,18 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class VaccinationListComponent extends SideComponent {
 
-	public VaccinationListComponent(Supplier<VaccinationListCriteria> criteriaSupplier, Consumer<Runnable> actionCallback) {
-		this(criteriaSupplier, actionCallback, true);
+	public VaccinationListComponent(Supplier<VaccinationListCriteria> criteriaSupplier, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
+		this(criteriaSupplier, actionCallback, true, isEditAllowed);
 	}
 
-	public VaccinationListComponent(Supplier<VaccinationListCriteria> criteriaSupplier, Consumer<Runnable> actionCallback, boolean allowNewVaccine) {
-
+	public VaccinationListComponent(
+		Supplier<VaccinationListCriteria> criteriaSupplier,
+		Consumer<Runnable> actionCallback,
+		boolean allowNewVaccine,
+		boolean isEditAllowed) {
 		super(I18nProperties.getString(Strings.entityVaccinations), actionCallback);
 
-		if (allowNewVaccine) {
+		if (allowNewVaccine && isEditAllowed) {
 			addCreateButton(I18nProperties.getCaption(Captions.vaccinationNewVaccination), () -> {
 				VaccinationListCriteria criteria = criteriaSupplier.get();
 				ControllerProvider.getVaccinationController()
@@ -81,7 +84,7 @@ public class VaccinationListComponent extends SideComponent {
 			entriesListSupplier = maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries, null);
 		}
 
-		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier, actionCallback);
+		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier, actionCallback, isEditAllowed);
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.utils.fieldaccess;
 
+import de.symeda.sormas.api.user.PseudonymizableDataAccessLevel;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PseudonymizedFieldAccessChecker;
 
 public class UiFieldAccessCheckers {
@@ -56,11 +57,34 @@ public class UiFieldAccessCheckers {
 		return fieldAccessCheckers;
 	}
 
+	public static UiFieldAccessCheckers forPersonalData(boolean isPseudonymized) {
+		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers();
+
+		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized));
+
+		return fieldAccessCheckers;
+	}
+
 	public static UiFieldAccessCheckers forSensitiveData(boolean isPseudonymized) {
 		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers();
 
 		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized));
 
 		return fieldAccessCheckers;
+	}
+
+	public static UiFieldAccessCheckers forDataAccessLevel(PseudonymizableDataAccessLevel accessLevel, boolean isPseudonymized) {
+
+		switch (accessLevel) {
+		case ALL:
+		case NONE:
+			return getDefault(isPseudonymized);
+		case PERSONAL:
+			return forSensitiveData(isPseudonymized);
+		case SENSITIVE:
+			return forPersonalData(isPseudonymized);
+		default:
+			throw new IllegalArgumentException(accessLevel.name());
+		}
 	}
 }

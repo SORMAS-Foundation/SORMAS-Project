@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -19,16 +20,15 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit> implements JurisdictionCheckService<ClinicalVisit> {
+public class ClinicalVisitService extends AdoServiceWithUserFilterAndJurisdiction<ClinicalVisit> {
 
 	@EJB
 	private CaseService caseService;
@@ -70,9 +70,8 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 	}
 
 	@Override
-	protected void fetchReferences(From<?, ClinicalVisit> from) {
-
-		from.fetch(ClinicalVisit.SYMPTOMS);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(ClinicalVisit.SYMPTOMS);
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -132,12 +131,12 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 
 	@Override
 	public boolean inJurisdictionOrOwned(ClinicalVisit entity) {
-		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
 	@Override
 	public List<Long> getInJurisdictionIds(List<ClinicalVisit> entities) {
-		return getIdList(entities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return getIdList(entities, this::inJurisdictionOrOwned);
 	}
 
 	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ClinicalVisit> from) {

@@ -1835,8 +1835,6 @@ Feature: Case end to end tests
     And I check that "chronicKidneyDisease" Pre-existing condition is visible on page
     And I check that "chronicNeurologicCondition" Pre-existing condition is visible on page
     And I check that "cardiovascularDiseaseIncludingHypertension" Pre-existing condition is visible on page
-    Then I click on Clinical Course tab from Edit Case page
-    Then I check that Clinical Assessments heading is visible in DE
 
   @tmsLink=SORDEV-9789 @env_de
   Scenario: Test health conditions document template export
@@ -2031,3 +2029,25 @@ Feature: Case end to end tests
     Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
+
+  @tmsLink=SORQA-658 @env_de
+    Scenario: Check automatic deletion of cases created 10 years ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with creation date 3653 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 60 seconds for system reaction
+    Then I click on the Cases button from navbar
+    And I check if created case is available in API
+    Then API: I check that POST call body is "No Content"
+    And API: I check that POST call status code is 204
+    Then I filter with first Case ID
+    And I check that number of displayed cases results is 0

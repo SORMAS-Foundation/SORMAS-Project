@@ -130,7 +130,8 @@ public class TravelEntryController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getAutomaticDeletionInfo(travelEntryUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getManuallyDeletionInfo(travelEntryUuid);
 
-		TravelEntryDataForm travelEntryEditForm = new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized());
+		TravelEntryDataForm travelEntryEditForm =
+			new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized(), travelEntry.isInJurisdiction());
 		travelEntryEditForm.setValue(travelEntry);
 
 		CommitDiscardWrapperComponent<TravelEntryDataForm> editComponent = new CommitDiscardWrapperComponent<>(
@@ -163,10 +164,11 @@ public class TravelEntryController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteWithReasonOrUndeleteListener(
-					TravelEntriesView.VIEW_NAME,
-					I18nProperties.getString(Strings.entityTravelEntry),
-					travelEntry.getUuid(),
-					FacadeProvider.getTravelEntryFacade());
+				TravelEntriesView.VIEW_NAME,
+				null,
+				I18nProperties.getString(Strings.entityTravelEntry),
+				travelEntry.getUuid(),
+				FacadeProvider.getTravelEntryFacade());
 		}
 
 		// Initialize 'Archive' button

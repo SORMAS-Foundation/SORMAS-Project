@@ -213,8 +213,12 @@ public class ExternalMessageProcessingUIHelper {
 		Runnable cancelHandler,
 		Runnable closeOnNavigateToRefer) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
-			sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), sampleController.getDiseaseOf(sample), false);
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = sampleController.getSampleEditComponent(
+			sample.getUuid(),
+			sample.isPseudonymized(),
+			sample.isInJurisdiction(),
+			sampleController.getDiseaseOf(sample),
+			false);
 
 		// add existing tests to edit component
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);

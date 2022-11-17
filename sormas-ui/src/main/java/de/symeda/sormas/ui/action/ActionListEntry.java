@@ -184,7 +184,7 @@ public class ActionListEntry extends HorizontalLayout {
 			documentLayout.setMargin(new MarginInfo(true, true, false, false));
 
 			DocumentListComponent documentList =
-				new DocumentListComponent(DocumentRelatedEntityType.ACTION, action.toReference(), UserRight.EVENT_EDIT, false);
+				new DocumentListComponent(DocumentRelatedEntityType.ACTION, action.toReference(), UserRight.EVENT_EDIT, false, true);
 			documentLayout.addComponent(new SideComponentLayout(documentList));
 		}
 	}

@@ -18,7 +18,7 @@ package travelentry.importer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,9 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.output.StringBuilderWriter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
 
@@ -50,7 +48,6 @@ import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.travelentry.importer.TravelEntryImporter;
 
-@RunWith(MockitoJUnitRunner.class)
 public class TravelEntryImporterTest extends AbstractBeanTest {
 
 	@Test

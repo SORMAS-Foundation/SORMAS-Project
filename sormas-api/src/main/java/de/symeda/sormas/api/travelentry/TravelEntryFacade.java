@@ -20,4 +20,6 @@ public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntr
 	Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived);
+
+	List<TravelEntryDto> getByPersonUuids(List<String> uuids);
 }

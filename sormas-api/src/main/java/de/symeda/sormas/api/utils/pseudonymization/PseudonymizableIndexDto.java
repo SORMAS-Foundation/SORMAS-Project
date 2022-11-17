@@ -15,19 +15,33 @@
 
 package de.symeda.sormas.api.utils.pseudonymization;
 
-import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
 public class PseudonymizableIndexDto extends AbstractUuidDto implements Pseudonymizable {
 
 	private boolean pseudonymized;
+	private boolean inJurisdiction;
 
+	@Override
 	public boolean isPseudonymized() {
 		return pseudonymized;
 	}
 
+	@Override
 	public void setPseudonymized(boolean pseudonymized) {
 		this.pseudonymized = pseudonymized;
+	}
+
+	@Override
+	public boolean isInJurisdiction() {
+		return inJurisdiction;
+	}
+
+	@Override
+	public void setInJurisdiction(boolean inJurisdiction) {
+		this.inJurisdiction = inJurisdiction;
 	}
 
 	public PseudonymizableIndexDto(String uuid) {

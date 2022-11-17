@@ -55,10 +55,11 @@ public class EditEventPage {
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
   public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");
-  public static final By NEW_TASK_BUTTON = By.id("taskNewTask");
+  public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
   public static final By EDIT_FIRST_TASK = By.cssSelector("#edit-task-0");
   public static final By DELETE_BUTTON_DISABLED =
       By.xpath("//div[@id='delete' and @aria-disabled='true']");
+  public static final By UNDO_DELETION_BUTTON = By.id("deleteUndelete");
   public static final By LINK_EVENT_GROUP_BUTTON = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");

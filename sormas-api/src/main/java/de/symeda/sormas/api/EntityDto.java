@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -57,7 +57,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	@Outbreaks
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
-	@AuditInclude
+	@AuditIncludeProperty
 	private String uuid;
 
 	protected EntityDto() {

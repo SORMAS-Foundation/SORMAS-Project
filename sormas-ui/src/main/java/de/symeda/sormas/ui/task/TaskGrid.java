@@ -95,7 +95,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		});
 
 		setColumns(
-			EDIT_BTN_ID,
+			ACTION_BTN_ID,
 			TaskIndexDto.CONTEXT_REFERENCE,
 			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_TYPE,
@@ -106,6 +106,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			TaskIndexDto.DUE_DATE,
 			TaskIndexDto.ASSIGNEE_USER,
 			TaskIndexDto.ASSIGNEE_REPLY,
+			TaskIndexDto.ASSIGNED_BY_USER,
 			TaskIndexDto.CREATOR_USER,
 			TaskIndexDto.CREATOR_COMMENT,
 			TaskIndexDto.TASK_STATUS);

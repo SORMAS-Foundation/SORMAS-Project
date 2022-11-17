@@ -126,6 +126,7 @@ public interface Strings {
 	String confirmationDeleteCases = "confirmationDeleteCases";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
+	String confirmationDeleteEntityWithDetails = "confirmationDeleteEntityWithDetails";
 	String confirmationDeleteEventParticipants = "confirmationDeleteEventParticipants";
 	String confirmationDeleteEvents = "confirmationDeleteEvents";
 	String confirmationDeleteExternalMessages = "confirmationDeleteExternalMessages";
@@ -386,6 +387,7 @@ public interface Strings {
 	String headingArchiveImmunization = "headingArchiveImmunization";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
+	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";
@@ -641,6 +643,8 @@ public interface Strings {
 	String headingPickOrCreatePathogenTest = "headingPickOrCreatePathogenTest";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
+	String headingPickOrMergePerson = "headingPickOrMergePerson";
+	String headingPickOrMergePersonConfirmation = "headingPickOrMergePersonConfirmation";
 	String headingPlaceOfStayInHospital = "headingPlaceOfStayInHospital";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
@@ -714,7 +718,11 @@ public interface Strings {
 	String headingUsersEnabled = "headingUsersEnabled";
 	String headingUserSettings = "headingUserSettings";
 	String headingVaccination = "headingVaccination";
+	String headingViewAdditionalTest = "headingViewAdditionalTest";
 	String headingViewNotFound = "headingViewNotFound";
+	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
+	String headingViewSurveillanceReport = "headingViewSurveillanceReport";
+	String headingViewVisit = "headingViewVisit";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";
 	String headingVisualization = "headingVisualization";
@@ -842,6 +850,9 @@ public interface Strings {
 	String infoNoSuperordinateEvent = "infoNoSuperordinateEvent";
 	String infoObserverMissingEmail = "infoObserverMissingEmail";
 	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
+	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
+	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
+	String infoPersonMergeDescription = "infoPersonMergeDescription";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
@@ -937,6 +948,7 @@ public interface Strings {
 	String messageAreasArchived = "messageAreasArchived";
 	String messageAreasArchivingNotPossible = "messageAreasArchivingNotPossible";
 	String messageAreasDearchived = "messageAreasDearchived";
+	String messageAutomaticDeletionStarted = "messageAutomaticDeletionStarted";
 	String messageBulkCasesWithDifferentDiseasesSelected = "messageBulkCasesWithDifferentDiseasesSelected";
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
@@ -947,6 +959,7 @@ public interface Strings {
 	String messageCampaignDeleted = "messageCampaignDeleted";
 	String messageCampaignFormSaved = "messageCampaignFormSaved";
 	String messageCampaignSaved = "messageCampaignSaved";
+	String messageCannotMergeMoreThanTwoPersons = "messageCannotMergeMoreThanTwoPersons";
 	String messageCaseArchived = "messageCaseArchived";
 	String messageCaseCreated = "messageCaseCreated";
 	String messageCaseDearchived = "messageCaseDearchived";

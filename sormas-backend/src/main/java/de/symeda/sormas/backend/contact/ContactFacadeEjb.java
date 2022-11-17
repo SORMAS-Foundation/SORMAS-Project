@@ -371,7 +371,7 @@ public class ContactFacadeEjb
 
 		final ContactDto existingContactDto = toDto(existingContact);
 
-		restorePseudonymizedDto(dto, existingContactDto, existingContact, Pseudonymizer.getDefault(userService::hasRight));
+		restorePseudonymizedDto(dto, existingContactDto, existingContact);
 
 		validateUserRights(dto, existingContactDto);
 		validate(dto);
@@ -1461,7 +1461,8 @@ public class ContactFacadeEjb
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(epiDataFacade.fillOrBuildEntity(source.getEpiData(), target.getEpiData(), checkChangeDate));
-		target.setHealthConditions(healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
+		target.setHealthConditions(
+			healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
 		target.setReturningTraveler(source.getReturningTraveler());
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
@@ -1576,13 +1577,11 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected List<ContactDto> toPseudonymizedDtos(List<Contact> entities) {
+	public List<ContactDto> toPseudonymizedDtos(List<Contact> adoList) {
 
-		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(entities);
+		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(adoList);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		List<ContactDto> dtos =
-			entities.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		return adoList.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
 	}
 
 	@Override
@@ -1965,8 +1964,8 @@ public class ContactFacadeEjb
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		pseudonymizer.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, SimilarContactDto::getInJurisdiction, (c, isInJurisdiction) -> {
 			CaseReferenceDto contactCase = c.getCaze();
 			if (contactCase != null) {
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, contactCase, c.getCaseInJurisdiction(), null);

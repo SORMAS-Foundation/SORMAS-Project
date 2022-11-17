@@ -14,28 +14,28 @@
  */
 package de.symeda.sormas.backend.document;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeNotNull;
-import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.persistence.EntityExistsException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -76,7 +76,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		assertNull(getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), "Some other name.docx"));
 	}
 
-	@Test(expected = EntityExistsException.class)
+	@Test
 	public void testDuplicate() throws IOException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf);
@@ -85,7 +85,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		DocumentDto document = creator
 			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), contentAsBytes);
 
-		getDocumentFacade().saveDocument(document, "duplicate".getBytes(StandardCharsets.UTF_8));
+		assertThrows(EntityExistsException.class, () -> getDocumentFacade().saveDocument(document, "duplicate".getBytes(StandardCharsets.UTF_8)));
 	}
 
 	@Test
@@ -97,9 +97,9 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		DocumentDto document = creator
 			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), contentAsBytes);
 
-		assumeNotNull(getDocumentFacade().getDocumentByUuid(document.getUuid()));
-		assumeThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()), hasSize(1));
-		assumeThat(
+		assertNotNull(getDocumentFacade().getDocumentByUuid(document.getUuid()));
+		assertThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()), hasSize(1));
+		assertThat(
 			getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), document.getName()),
 			equalTo(document.getUuid()));
 
@@ -118,10 +118,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf);
 		EventDto event = creator.createEvent(user.toReference());
-
-		DocumentDto document =
-			creator.createDocument(user.toReference(), "Mail.msg", null, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
-
-		assertNull("application/octet-stream", getDocumentFacade().getDocumentByUuid(document.getUuid()));
+		assertThrows(FileExtensionNotAllowedException.class, () ->
+				creator.createDocument(user.toReference(), "test.json", null, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8)));
 	}
 }

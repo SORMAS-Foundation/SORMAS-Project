@@ -71,6 +71,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BU
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
 
@@ -1324,6 +1325,12 @@ public class EditContactSteps implements En {
               "Follow-up status comment is incorrect!");
           softly.assertAll();
         });
+
+    And(
+        "^I click on the NEW TASK button from Edit Contact page$",
+        () ->
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                EditContactPage.NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX));
   }
 
   private void selectContactClassification(String classification) {

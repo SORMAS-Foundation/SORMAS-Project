@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -116,7 +116,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		getPointOfEntryService().createConstantPointsOfEntry();
 	}
 
-	@After
+	@AfterEach
 	public void teardown() {
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);

@@ -263,6 +263,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
 			setEnabled(false, LocationDto.COUNTRY, LocationDto.REGION, LocationDto.DISTRICT);
 		}
+		if (!isEditableAllowed(LocationDto.FACILITY)) {
+			setEnabled(false, LocationDto.FACILITY_TYPE, LocationDto.FACILITY_DETAILS);
+			facilityTypeGroup.setEnabled(false);
+
+		}
 
 		ValueChangeListener continentValueListener = e -> {
 			if (continent.isVisible()) {
