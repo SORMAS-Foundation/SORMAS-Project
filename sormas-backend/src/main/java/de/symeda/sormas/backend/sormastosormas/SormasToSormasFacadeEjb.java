@@ -369,12 +369,21 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return isShareEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES);
 	}
 
+	/**
+	 * 
+	 * @param sormasToSormasShares
+	 *            - tha shares to be checked
+	 * @param doDelete
+	 *            - whether to delete the revoked request or not - for automatic deletion it will be deleted separately
+	 * @throws SormasToSormasException
+	 *             when something goes wring during reject on the target system
+	 */
 	@RightsAllowed({
 		UserRight._CASE_DELETE,
 		UserRight._CONTACT_DELETE,
 		UserRight._EVENT_DELETE,
 		UserRight._SYSTEM })
-	public void revokeAndDeletePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares) throws SormasToSormasException {
+	public void revokePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares, boolean doDelete) throws SormasToSormasException {
 		List<ShareRequestInfo> pendingRequests = sormasToSormasShares.stream()
 			.map(SormasToSormasShareInfo::getRequests)
 			.flatMap(Collection::stream)
@@ -383,7 +392,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		for (ShareRequestInfo r : pendingRequests) {
 			revokeShareRequest(r.getUuid());
-			shareRequestInfoService.deletePermanent(r);
+			if (doDelete) {
+				shareRequestInfoService.deletePermanent(r);
+			}
 		}
 	}
 

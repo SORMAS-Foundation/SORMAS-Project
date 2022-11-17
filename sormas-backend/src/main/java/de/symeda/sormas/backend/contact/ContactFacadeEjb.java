@@ -553,7 +553,7 @@ public class ContactFacadeEjb
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		try {
-			sormasToSormasFacade.revokeAndDeletePendingShareRequests(contact.getSormasToSormasShares());
+			sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares(), true);
 		} catch (SormasToSormasException e) {
 			throw new SormasToSormasRuntimeException(e);
 		}

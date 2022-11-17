@@ -306,7 +306,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Event event = service.getByUuid(eventUuid);
 
 		try {
-			sormasToSormasFacade.revokeAndDeletePendingShareRequests(event.getSormasToSormasShares());
+			sormasToSormasFacade.revokePendingShareRequests(event.getSormasToSormasShares(), true);
 		} catch (SormasToSormasException e) {
 			throw new SormasToSormasRuntimeException(e);
 		}
