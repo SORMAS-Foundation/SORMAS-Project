@@ -14,9 +14,7 @@
  */
 package de.symeda.sormas.backend.infrastructure.community;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,19 +24,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
-
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
@@ -48,19 +35,15 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "CommunityFacade")
@@ -90,56 +73,7 @@ public class CommunityFacadeEjb
 
 	@Override
 	public List<CommunityDto> getIndexList(CommunityCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Community> cq = cb.createQuery(Community.class);
-		Root<Community> community = cq.from(Community.class);
-		Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
-		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
-
-		Predicate filter = null;
-		if (criteria != null) {
-			filter = service.buildCriteriaFilter(criteria, cb, community);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		if (CollectionUtils.isNotEmpty(sortProperties)) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case Community.NAME:
-				case Community.GROWTH_RATE:
-				case Community.EXTERNAL_ID:
-					expression = community.get(sortProperty.propertyName);
-					break;
-				case District.REGION:
-					expression = region.get(Region.NAME);
-					break;
-				case Community.DISTRICT:
-					expression = district.get(District.NAME);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-			cq.orderBy(order);
-		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
-		}
-
-		cq.select(community);
-
-		//		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
-		//				community.get(Community.UUID), community.get(Community.NAME),
-		//				region.get(Region.UUID), region.get(Region.NAME),
-		//				district.get(District.UUID), district.get(District.NAME));
-
-		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
+		return toDtos(service.getIndexList(criteria, first, max, sortProperties).stream());
 	}
 
 	public Page<CommunityDto> getIndexPage(CommunityCriteria communityCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -157,21 +91,7 @@ public class CommunityFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._STATISTICS_ACCESS)
 	public Map<String, String> getDistrictUuidsForCommunities(List<CommunityReferenceDto> communities) {
-
-		if (communities.isEmpty()) {
-			return new HashMap<>();
-		}
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Community> root = cq.from(Community.class);
-		Join<Community, District> districtJoin = root.join(Community.DISTRICT, JoinType.LEFT);
-
-		Predicate filter = root.get(AbstractDomainObject.UUID).in(communities.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
-		cq.where(filter);
-		cq.multiselect(root.get(AbstractDomainObject.UUID), districtJoin.get(AbstractDomainObject.UUID));
-
-		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(e -> (String) e[0], e -> (String) e[1]));
+		return service.getDistrictUuidsForCommunities(communities);
 	}
 
 	@Override
@@ -184,21 +104,13 @@ public class CommunityFacadeEjb
 	@Override
 	@PermitAll
 	public List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities) {
-
-		return service.getByName(name, districtService.getByReferenceDto(districtRef), includeArchivedEntities)
-			.stream()
-			.map(CommunityFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return toRefDtos(service.getByName(name, districtService.getByReferenceDto(districtRef), includeArchivedEntities).stream());
 	}
 
 	@Override
 	@PermitAll
 	public List<CommunityReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
-
-		return service.getByExternalId(externalId, includeArchivedEntities)
-			.stream()
-			.map(CommunityFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return toRefDtos(service.getByExternalId(externalId, includeArchivedEntities).stream());
 	}
 
 	@Override
@@ -214,29 +126,7 @@ public class CommunityFacadeEjb
 
 	@Override
 	public boolean hasArchivedParentInfrastructure(Collection<String> communityUuids) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Community> root = cq.from(Community.class);
-		Join<Community, District> districtJoin = root.join(Community.DISTRICT);
-		Join<District, Region> regionJoin = districtJoin.join(District.REGION);
-
-		cq.where(
-			cb.and(
-				cb.or(cb.isTrue(districtJoin.get(InfrastructureAdo.ARCHIVED)), cb.isTrue(regionJoin.get(InfrastructureAdo.ARCHIVED))),
-				root.get(AbstractDomainObject.UUID).in(communityUuids)));
-
-		cq.select(root.get(AbstractDomainObject.ID));
-
-		return QueryHelper.getFirstResult(em, cq) != null;
-	}
-
-	public static CommunityReferenceDto toReferenceDto(Community entity) {
-
-		if (entity == null) {
-			return null;
-		}
-		return new CommunityReferenceDto(entity.getUuid(), entity.getName(), entity.getExternalID());
+		return service.hasArchivedParentInfrastructure(communityUuids);
 	}
 
 	@Override
@@ -262,6 +152,14 @@ public class CommunityFacadeEjb
 	@Override
 	protected CommunityReferenceDto toRefDto(Community community) {
 		return toReferenceDto(community);
+	}
+
+	public static CommunityReferenceDto toReferenceDto(Community entity) {
+
+		if (entity == null) {
+			return null;
+		}
+		return new CommunityReferenceDto(entity.getUuid(), entity.getName(), entity.getExternalID());
 	}
 
 	@Override
