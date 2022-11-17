@@ -161,7 +161,7 @@ Feature: Check basic POSTs RestApi endpoints
       | 1                     |
       | 5                     |
 
-  @env_main @oldfake @testIt
+  @env_main @oldfake
   Scenario: Create new case with creation date 10 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
