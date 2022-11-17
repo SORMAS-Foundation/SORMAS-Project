@@ -1,6 +1,9 @@
 package de.symeda.sormas.backend.common;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assume.assumeNoException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -44,7 +47,7 @@ public class HistoryTablesTest extends AbstractBeanTest {
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
 
 		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer();
-		container.start();
+		start(container);
 
 		Map<String, String> properties = new HashMap<>();
 		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
@@ -71,6 +74,16 @@ public class HistoryTablesTest extends AbstractBeanTest {
 			Arrays.stream(objects).forEach(o -> result.append((o != null ? o.toString() : "") + " "));
 		});
 		assertTrue(CollectionUtils.isEmpty(results), result.toString());
+	}
+
+	private void start(SormasPostgresSQLContainer container) {
+
+		try {
+			container.start();
+		} catch (IllegalStateException e) {
+			assertThat(e.getMessage(), equalTo("Could not find a valid Docker environment. Please see logs and check configuration"));
+			assumeNoException("Could not find a valid Docker environment, skipping test", e);
+		}
 	}
 
 	public static class SormasPostgresSQLContainer extends JdbcDatabaseContainer<SormasPostgresSQLContainer> {
