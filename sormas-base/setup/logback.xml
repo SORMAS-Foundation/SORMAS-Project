@@ -95,6 +95,7 @@
     <!-- Prevent unnecessary debug messages about code loading-->
     <logger name="ca.uhn.fhir.context.ModelScanner" level="INFO" />
 
+    <logger name="net.sf.ehcache" level="WARN" />
 
     <root level="debug">
             <appender-ref ref="FILE_DEBUG" />

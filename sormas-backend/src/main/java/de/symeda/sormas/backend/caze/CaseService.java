@@ -271,16 +271,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected void fetchReferences(From<?, Case> from) {
-
-		from.fetch(Case.SYMPTOMS);
-		from.fetch(Case.THERAPY);
-		from.fetch(Case.CLINICAL_COURSE);
-		from.fetch(Case.HEALTH_CONDITIONS);
-		from.fetch(Case.HOSPITALIZATION);
-		from.fetch(Case.EPI_DATA);
-		from.fetch(Case.PORT_HEALTH_INFO);
-		from.fetch(Case.MATERNAL_HISTORY);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(
+			Case.SYMPTOMS,
+			Case.THERAPY,
+			Case.CLINICAL_COURSE,
+			Case.HEALTH_CONDITIONS,
+			Case.HOSPITALIZATION,
+			Case.EPI_DATA,
+			Case.PORT_HEALTH_INFO,
+			Case.MATERNAL_HISTORY);
 	}
 
 	public List<String> getAllActiveUuids() {

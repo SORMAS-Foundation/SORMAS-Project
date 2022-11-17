@@ -66,7 +66,7 @@ public class ExternalShareInfo extends AbstractDomainObject {
 		this.event = event;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getSender() {
 		return sender;
