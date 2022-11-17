@@ -25,24 +25,10 @@ import lombok.*;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Immunization {
+public class EventParticipant {
   Long creationDate;
   String uuid;
-  Boolean pseudonymized;
-  String disease;
+  ReportingUser reportingUser;
+  Event event;
   Person person;
-  Long reportDate;
-  Long positiveTestResultDate;
-  Long recoveryDate;
-  Long startDate;
-  Long endDate;
-  String externalId;
-  String reportingUser;
-  Boolean archived;
-  String immunizationStatus;
-  String meansOfImmunization;
-  String immunizationManagementStatus;
-  String responsibleRegion;
-  String responsibleDistrict;
-  String responsibleCommunity;
 }

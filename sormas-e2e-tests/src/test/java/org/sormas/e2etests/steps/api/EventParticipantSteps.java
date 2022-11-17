@@ -15,34 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.sormas.e2etests.steps.api;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.sormas.e2etests.entities.pojo.api.Event;
-import org.sormas.e2etests.entities.services.api.EventApiService;
-import org.sormas.e2etests.helpers.api.sormasrest.EventHelper;
+import org.sormas.e2etests.entities.pojo.api.EventParticipant;
+import org.sormas.e2etests.entities.services.api.EventParticipantApiService;
+import org.sormas.e2etests.helpers.api.sormasrest.EventParticipantHelper;
 import org.sormas.e2etests.state.ApiState;
 
-public class EventSteps implements En {
+public class EventParticipantSteps implements En {
 
   @Inject
-  public EventSteps(EventHelper eventHelper, EventApiService eventApiService, ApiState apiState) {
+  public EventParticipantSteps(
+      EventParticipantHelper eventParticipantHelper,
+      EventParticipantApiService eventParticipantApiService,
+      ApiState apiState) {
 
     When(
-        "API: I create a new event",
-        () -> {
-          Event eve = eventApiService.buildGeneratedEvent();
-          eventHelper.createEvent(eve);
-          apiState.setCreatedEvent(eve);
-        });
-
-    When(
-        "API: I create a new event with creation date {int} days ago",
+        "API: I create a new event participant with creation date {int} days ago",
         (Integer creationDate) -> {
-          Event eve = eventApiService.buildGeneratedEventWithCreationDate(creationDate);
-          eventHelper.createEvent(eve);
-          apiState.setCreatedEvent(eve);
+          EventParticipant evPart =
+              eventParticipantApiService.buildGeneratedEventParticipantWithCreationDate(
+                  apiState.getCreatedEvent().getUuid(),
+                  apiState.getLastCreatedPerson().getUuid(),
+                  apiState.getLastCreatedPerson().getSex(),
+                  creationDate);
+          eventParticipantHelper.createEventParticipant(evPart);
+          apiState.setCreatedEventParticipant(evPart);
         });
   }
 }
