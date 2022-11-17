@@ -2551,7 +2551,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 
 		try {
-			sormasToSormasFacade.revokePendingShareRequests(caze.getSormasToSormasShares());
+			sormasToSormasFacade.revokeAndDeletePendingShareRequests(caze.getSormasToSormasShares());
 		} catch (SormasToSormasException e) {
 			throw new SormasToSormasRuntimeException(e);
 		}
