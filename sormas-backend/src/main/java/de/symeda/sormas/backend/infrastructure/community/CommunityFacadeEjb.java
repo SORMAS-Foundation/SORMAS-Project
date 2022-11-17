@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.infrastructure.community;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -66,9 +65,7 @@ public class CommunityFacadeEjb
 	@Override
 	@PermitAll
 	public List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid) {
-
-		District district = districtService.getByUuid(districtUuid);
-		return district.getCommunities().stream().filter(c -> !c.isArchived()).map(CommunityFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return toRefDtos(districtService.getByUuid(districtUuid).getCommunities().stream().filter(c -> !c.isArchived()));
 	}
 
 	@Override
