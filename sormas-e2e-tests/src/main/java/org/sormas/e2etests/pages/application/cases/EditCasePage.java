@@ -314,7 +314,7 @@ public class EditCasePage {
   }
 
   public static By getByImmunizationUuid(String immunizationUuid) {
-    return By.id("edit-immunization-" + immunizationUuid);
+    return By.id("edit" + immunizationUuid);
   }
 
   public static final By IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL =
