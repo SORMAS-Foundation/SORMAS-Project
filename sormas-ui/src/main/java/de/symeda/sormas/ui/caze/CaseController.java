@@ -1764,23 +1764,33 @@ public class CaseController {
 			notShareableListComponent.setWidthFull();
 			notShareableListComponent.setEnabled(false);
 			Label notSharableLabel = new Label(
-				String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable), notSharableUuids.size()),
+				String.format(
+					I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable),
+					notSharableUuids.size(),
+					selectedUuids.size()),
 				ContentMode.HTML);
 			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-				new VerticalLayout(notSharableLabel, notShareableListComponent),
-				String.format(
-					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
-					uuidsWithoutNotSharable.size(),
-					selectedUuids.size()),
-				I18nProperties.getCaption(Captions.actionCancel),
-				800,
-				(confirmed) -> {
-					if (confirmed) {
-						ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotSharable, reloadCallback, false);
-					}
-				});
+
+			if (selectedUuids.size() == notSharableUuids.size()) {
+				VaadinUiUtil.showPopupWindow(
+					new VerticalLayout(notSharableLabel, notShareableListComponent),
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send));
+			} else {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
+					new VerticalLayout(notSharableLabel, notShareableListComponent),
+					String.format(
+						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
+						uuidsWithoutNotSharable.size(),
+						selectedUuids.size()),
+					I18nProperties.getCaption(Captions.actionCancel),
+					800,
+					(confirmed) -> {
+						if (confirmed) {
+							ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotSharable, reloadCallback, false);
+						}
+					});
+			}
 
 		} else {
 			ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback, true);
