@@ -229,6 +229,7 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@ManyToMany(cascade = {}, fetch = FetchType.LAZY)
 	@JoinTable(name = TABLE_NAME_USERS_USERROLES, joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "userrole_id"))
 	public Set<UserRole> getUserRoles() {

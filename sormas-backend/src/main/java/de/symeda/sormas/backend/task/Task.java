@@ -216,7 +216,7 @@ public class Task extends AbstractDomainObject {
 		this.assigneeUser = assigneeUser;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public User getAssignedByUser() {
 		return assignedByUser;
 	}

@@ -50,7 +50,7 @@ public class Subcontinent extends InfrastructureAdo {
 		this.externalId = externalId;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public Continent getContinent() {
 		return continent;
@@ -60,6 +60,7 @@ public class Subcontinent extends InfrastructureAdo {
 		this.continent = continent;
 	}
 
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@OneToMany(mappedBy = Country.SUBCONTINENT, cascade = {}, fetch = FetchType.LAZY)
 	@OrderBy(Country.SUBCONTINENT)
 	public List<Country> getCountries() {

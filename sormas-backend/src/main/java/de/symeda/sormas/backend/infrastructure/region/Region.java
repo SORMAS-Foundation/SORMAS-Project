@@ -78,6 +78,7 @@ public class Region extends InfrastructureAdo {
 		this.epidCode = epidCode;
 	}
 
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@OneToMany(mappedBy = District.REGION, cascade = {}, fetch = FetchType.LAZY)
 	@OrderBy(District.NAME)
 	public List<District> getDistricts() {
@@ -105,7 +106,7 @@ public class Region extends InfrastructureAdo {
 		this.externalID = externalID;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Area getArea() {
 		return area;
 	}
@@ -114,7 +115,7 @@ public class Region extends InfrastructureAdo {
 		this.area = area;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Country getCountry() {
 		return country;
 	}

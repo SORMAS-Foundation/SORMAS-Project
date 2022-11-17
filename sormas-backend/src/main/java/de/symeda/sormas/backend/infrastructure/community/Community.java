@@ -23,6 +23,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -59,7 +60,7 @@ public class Community extends InfrastructureAdo {
 		this.name = name;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public District getDistrict() {
 		return district;

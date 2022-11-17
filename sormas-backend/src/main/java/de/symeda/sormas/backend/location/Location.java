@@ -139,7 +139,7 @@ public class Location extends AbstractDomainObject {
 		this.areaType = areaType;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Country getCountry() {
 		return country;
 	}
@@ -148,7 +148,7 @@ public class Location extends AbstractDomainObject {
 		this.country = country;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Continent getContinent() {
 		return continent;
 	}
@@ -157,7 +157,7 @@ public class Location extends AbstractDomainObject {
 		this.continent = continent;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Subcontinent getSubcontinent() {
 		return subcontinent;
 	}
@@ -166,7 +166,7 @@ public class Location extends AbstractDomainObject {
 		this.subcontinent = subcontinent;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -175,7 +175,7 @@ public class Location extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}
@@ -184,7 +184,7 @@ public class Location extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Community getCommunity() {
 		return community;
 	}

@@ -1009,7 +1009,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getReportingDistrict() {
 		return reportingDistrict;
 	}

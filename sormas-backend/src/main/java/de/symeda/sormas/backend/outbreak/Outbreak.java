@@ -57,7 +57,7 @@ public class Outbreak extends AbstractDomainObject {
 	private User reportingUser;
 	private Date reportDate;
 
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public District getDistrict() {
 		return district;

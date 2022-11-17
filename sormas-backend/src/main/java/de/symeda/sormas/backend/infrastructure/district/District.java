@@ -73,7 +73,7 @@ public class District extends InfrastructureAdo {
 		this.name = name;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public Region getRegion() {
 		return region;
@@ -91,6 +91,7 @@ public class District extends InfrastructureAdo {
 		this.epidCode = epidCode;
 	}
 
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@OneToMany(mappedBy = Community.DISTRICT, cascade = {}, fetch = FetchType.LAZY)
 	@OrderBy(District.NAME)
 	public List<Community> getCommunities() {

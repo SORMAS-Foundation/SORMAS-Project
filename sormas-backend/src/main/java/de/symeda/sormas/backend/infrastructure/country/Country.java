@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.infrastructure.country;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Cache;
@@ -64,7 +65,7 @@ public class Country extends InfrastructureAdo {
 		this.unoCode = unoCode;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	public Subcontinent getSubcontinent() {
 		return subcontinent;
 	}

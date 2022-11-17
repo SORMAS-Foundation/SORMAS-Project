@@ -579,7 +579,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public User getResponsibleUser() {
 		return responsibleUser;
 	}

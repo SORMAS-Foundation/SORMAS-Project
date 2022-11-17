@@ -686,7 +686,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.internalToken = internalToken;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Country getBirthCountry() {
 		return birthCountry;
 	}
@@ -695,7 +695,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.birthCountry = placeOfBirthCountry;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Country getCitizenship() {
 		return citizenship;
 	}
