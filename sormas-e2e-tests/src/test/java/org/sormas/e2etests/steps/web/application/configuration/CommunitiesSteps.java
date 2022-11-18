@@ -45,10 +45,8 @@ import static org.sormas.e2etests.pages.application.configuration.CommunitiesTab
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_NAME_TABLE_COLUMN;
-import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.REGION_NAME_TABLE_COLUMN;
-import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.DISTRICT_NAME_TABLE_COLUMN;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_NAME_TABLE_COLUMN;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_COMMUNITY_TEXT;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_DEARCHIVING_COMMUNITY_TEXT;
@@ -58,11 +56,13 @@ import static org.sormas.e2etests.pages.application.configuration.CommunitiesTab
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CREATE_NEW_ENTRY_COMMUNITIES_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.DEARCHIVE_COMMUNITY_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.DISTRICT_COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.DISTRICT_NAME_TABLE_COLUMN;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.EDIT_COMMUNITY_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.EXPORT_BUTTON_COMMUNITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.IMPORT_BUTTON_COMMUNITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.REGION_COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.REGION_NAME_TABLE_COLUMN;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.RESET_FILTERS_COMMUNITIES_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.SAVE_NEW_ENTRY_COMMUNITIES;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.SEARCH_COMMUNITY_INPUT;
