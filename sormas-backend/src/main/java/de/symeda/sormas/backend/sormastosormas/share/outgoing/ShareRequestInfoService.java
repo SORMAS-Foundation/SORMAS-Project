@@ -30,7 +30,6 @@ import javax.persistence.criteria.Root;
 import org.springframework.util.CollectionUtils;
 
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
-import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
@@ -72,23 +71,5 @@ public class ShareRequestInfoService extends AdoServiceWithUserFilter<ShareReque
 		cq.groupBy(from.get(ShareRequestInfo.ID));
 
 		return em.createQuery(cq.having(cb.equal(cb.count(shareRequestJoin.get(SormasToSormasShareInfo.ID)), 0))).getResultList();
-	}
-
-	public List<String> getAllRevokedShareRequestInfo() {
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<String> cq = cb.createQuery(String.class);
-		final Root<ShareRequestInfo> from = cq.from(getElementClass());
-
-		Join<ShareRequestInfo, SormasToSormasShareInfo> shareRequestJoin = from.join(ShareRequestInfo.SHARES, JoinType.LEFT);
-		cq.select(from.get(ShareRequestInfo.UUID));
-		cq.groupBy(from.get(ShareRequestInfo.ID));
-
-		//All the ShareRequestInfos in REVOKED status which still have joins but should be considered as non referenced
-		return em.createQuery(cq.where(cb.equal(from.get(ShareRequestInfo.REQUEST_STATUS), ShareRequestStatus.REVOKED))).getResultList();
-	}
-
-	public void executePermanentDeletion() {
-
 	}
 }
