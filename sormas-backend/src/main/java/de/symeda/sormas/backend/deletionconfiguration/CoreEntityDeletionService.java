@@ -117,12 +117,10 @@ public class CoreEntityDeletionService {
 			DELETE_BATCH_SIZE,
 			batchedUuids -> sormasToSormasShareRequestService.deletePermanentByUuids(batchedUuids));
 
-		List<String> orphanShareRequestInfoUuids = new ArrayList<>();
-		orphanShareRequestInfoUuids.addAll(shareRequestInfoService.getAllNonReferencedShareRequestInfo());
-		orphanShareRequestInfoUuids.addAll(shareRequestInfoService.getAllRevokedShareRequestInfo());
-		logger.debug("executeAutomaticDeletion(): Detected orphan ShareRequestInfo: n={}", orphanShareRequestInfoUuids.size());
+		List<String> nonReferencedShareRequestInfoUuids = shareRequestInfoService.getAllNonReferencedShareRequestInfo();
+		logger.debug("executeAutomaticDeletion(): Detected orphan ShareRequestInfo: n={}", nonReferencedShareRequestInfoUuids.size());
 		IterableHelper.executeBatched(
-			orphanShareRequestInfoUuids,
+			nonReferencedShareRequestInfoUuids,
 			DELETE_BATCH_SIZE,
 			batchedUuids -> shareRequestInfoService.deletePermanentByUuids(batchedUuids));
 	}
