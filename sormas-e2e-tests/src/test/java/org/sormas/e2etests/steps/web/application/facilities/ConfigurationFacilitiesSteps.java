@@ -18,10 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.facilities;
 
-import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_DEVELOPER_TAB;
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_FACILITIES_TAB;
-import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.EXECUTE_AUTOMATIC_DELETION;
-import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.UPLOAD_SUCCESS_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_DETAILED_EXPORT_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_FACILITIES_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_POPUP_FACILITIES_BUTTON;
@@ -180,22 +177,6 @@ public class ConfigurationFacilitiesSteps implements En {
           softly.assertEquals(cityName, aCity, "Cities are not equal");
           softly.assertAll();
         });
-
-    When(
-        "I navigate to Developer tab in Configuration",
-        () -> webDriverHelpers.clickOnWebElementBySelector(CONFIGURATION_DEVELOPER_TAB));
-
-    When(
-        "I click on Execute Automatic Deletion button",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EXECUTE_AUTOMATIC_DELETION);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UPLOAD_SUCCESS_POPUP);
-          webDriverHelpers.clickOnWebElementBySelector(UPLOAD_SUCCESS_POPUP);
-        });
-
-    When(
-        "I wait {int} seconds for system reaction",
-        (Integer seconds) -> TimeUnit.SECONDS.sleep(seconds));
   }
 
   public FacilityCSV parseCSVintoPOJOFacilityTab(String fileName) {
