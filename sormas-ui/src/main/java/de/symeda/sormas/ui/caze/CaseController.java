@@ -1757,7 +1757,7 @@ public class CaseController {
 		List<String> notSharableUuids = FacadeProvider.getCaseFacade().getUuidsNotShareableWithExternalReportingTools(selectedUuids);
 		if (CollectionUtils.isNotEmpty(notSharableUuids)) {
 
-			List<String> uuidsWithoutNotSharable =
+			List<String> uuidsWithoutNotShareable =
 				selectedUuids.stream().filter(uuid -> !notSharableUuids.contains(uuid)).collect(Collectors.toList());
 
 			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(notSharableUuids).toString());
@@ -1771,7 +1771,7 @@ public class CaseController {
 				ContentMode.HTML);
 			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 
-			if (selectedUuids.size() == notSharableUuids.size()) {
+			if (existShareableCases(selectedUuids.size(), notSharableUuids.size())) {
 				VaadinUiUtil.showPopupWindow(
 					new VerticalLayout(notSharableLabel, notShareableListComponent),
 					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send));
@@ -1781,20 +1781,23 @@ public class CaseController {
 					new VerticalLayout(notSharableLabel, notShareableListComponent),
 					String.format(
 						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
-						uuidsWithoutNotSharable.size(),
+						uuidsWithoutNotShareable.size(),
 						selectedUuids.size()),
 					I18nProperties.getCaption(Captions.actionCancel),
 					800,
 					(confirmed) -> {
 						if (confirmed) {
-							ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotSharable, reloadCallback, false);
+							ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotShareable, reloadCallback, false);
 						}
 					});
 			}
-
 		} else {
 			ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback, true);
 		}
+	}
+
+	public boolean existShareableCases(int selectedCasesSize, int notShareableCasesSize) {
+		return selectedCasesSize == notShareableCasesSize;
 	}
 
 	private static class JurisdictionValues {
