@@ -3046,7 +3046,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 343:
 				currentVersion = 343;
-				getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN assignedbyuser_id BIGINT REFERENCES users(id);");
+				getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN assignedByUser_id BIGINT REFERENCES users(id);");
 				// ATTENTION: break should only be done after last version
 				break;
 
