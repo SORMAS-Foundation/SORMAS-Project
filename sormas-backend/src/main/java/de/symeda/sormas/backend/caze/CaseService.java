@@ -1250,10 +1250,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
 			symptomsSq.where(cb.equal(symptomsSqRoot, casePath.get(Case.SYMPTOMS)));
 
-			Join<Person, Immunization> immunizationJoin = casePath.join(Case.PERSON, JoinType.LEFT).join(Person.IMMUNIZATIONS, JoinType.LEFT);
+			Join<Case, Person> personJoin = casePath.join(Case.PERSON, JoinType.LEFT);
+			Join<Person, Immunization> immunizationJoin = personJoin.join(Person.IMMUNIZATIONS, JoinType.LEFT);
 			Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(casePath, cq, cb, vaccinationsJoin)));
 			// also consider the immunization of relevant vaccinations
 			builder.add(vaccinationsJoin, Vaccination.IMMUNIZATION);
 
