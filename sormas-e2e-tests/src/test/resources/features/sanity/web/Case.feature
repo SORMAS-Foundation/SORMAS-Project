@@ -2030,7 +2030,7 @@ Feature: Case end to end tests
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
 
-  @tmsLink=SORQA-658 @env_de
+  @tmsLink=SORQA-658 @env_de @oldfake
     Scenario: Check automatic deletion of cases created 10 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -2051,3 +2051,15 @@ Feature: Case end to end tests
     And API: I check that POST call status code is 204
     Then I filter with first Case ID
     And I check that number of displayed cases results is 0
+
+    @tmsLink=SORQA-663 @env_de @oldfake @precon
+      Scenario: Check if 'Löschung geplant für' is available in Case Edit
+      Given API: I create a new person
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then API: I create a new case
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then I log in as a Admin User
+      Then I navigate to the last created case via the url
+      And I check if element with text "Löschung geplant für" is present in Case Edit
