@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.web.application.users;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
+import static org.sormas.e2etests.pages.application.users.EditUserPage.SAVE_BUTTON_EDIT_USER;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.*;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
 
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.users.UserManagementPage;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -217,6 +219,30 @@ public class UserManagementSteps implements En {
         (String userRole) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_ROLES_COMBOBOX);
           webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, userRole);
+        });
+
+    And(
+        "^I check if there is any user with the \"([^\"]*)\" role and change his role$",
+        (String userRole) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_USER_INPUT);
+
+          if (webDriverHelpers.checkIfElementExistsInCombobox(USER_ROLES_COMBOBOX, userRole)) {
+            if (webDriverHelpers.isElementPresent(UserManagementPage.RESULT_IN_GRID)) {
+              webDriverHelpers.selectFromCombobox(USER_ROLE_COMBOBOX, userRole);
+              while (webDriverHelpers.getNumberOfElements(UserManagementPage.RESULT_IN_GRID) > 0) {
+                webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+                    UserManagementPage.getEditButtonByIndex(1));
+                webDriverHelpers.doubleClickOnWebElementBySelector(
+                    UserManagementPage.getEditButtonByIndex(1));
+                webDriverHelpers.scrollToElement(USER_ROLE_CHECKBOX);
+                webDriverHelpers.clickWebElementByText(USER_ROLE_CHECKBOX, userRole);
+                webDriverHelpers.clickWebElementByText(USER_ROLE_CHECKBOX, "National User");
+                webDriverHelpers.scrollToElementUntilIsVisible(SAVE_BUTTON_EDIT_USER);
+                webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EDIT_USER);
+                TimeUnit.SECONDS.sleep(2);
+              }
+            }
+          }
         });
   }
 
