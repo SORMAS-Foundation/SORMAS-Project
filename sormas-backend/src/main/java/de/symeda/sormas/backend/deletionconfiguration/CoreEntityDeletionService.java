@@ -118,7 +118,7 @@ public class CoreEntityDeletionService {
 			batchedUuids -> sormasToSormasShareRequestService.deletePermanentByUuids(batchedUuids));
 
 		List<String> nonReferencedShareRequestInfoUuids = shareRequestInfoService.getAllNonReferencedShareRequestInfo();
-		logger.debug("executeAutomaticDeletion(): Detected non referenced ShareRequestInfo: n={}", nonReferencedShareRequestInfoUuids.size());
+		logger.debug("executeAutomaticDeletion(): Detected orphan ShareRequestInfo: n={}", nonReferencedShareRequestInfoUuids.size());
 		IterableHelper.executeBatched(
 			nonReferencedShareRequestInfoUuids,
 			DELETE_BATCH_SIZE,
