@@ -50,6 +50,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.PersonDownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 public class PersonsView extends AbstractView {
@@ -65,12 +66,15 @@ public class PersonsView extends AbstractView {
 	private Button activeAssociationButton;
 	private PersonFilterForm filterForm;
 
+	private ViewConfiguration viewConfiguration;
+
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
 
 	public PersonsView() {
 		super(VIEW_NAME);
 
+		viewConfiguration = ViewModelProviders.of(PersonsView.class).get(ViewConfiguration.class);
 		// Avoid calling ALL associations at view start because the query tends to take long time
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -154,16 +158,17 @@ public class PersonsView extends AbstractView {
 				&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
-			btnEnterBulkEditMode.setVisible(true);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			moreButton.addMenuEntry(btnEnterBulkEditMode);
 
 			Button btnLeaveBulkEditMode =
 					ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
-			btnLeaveBulkEditMode.setVisible(false);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 			moreButton.addMenuEntry(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(PersonsView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				((PersonGrid) grid).reload();
@@ -171,6 +176,7 @@ public class PersonsView extends AbstractView {
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(PersonsView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				navigateTo(criteria);
@@ -220,6 +226,10 @@ public class PersonsView extends AbstractView {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
+		}
+
+		if (viewConfiguration.isInEagerMode()) {
+			((PersonGrid) grid).setBulkEditMode(true);
 		}
 
 		updateFilterComponents();
@@ -386,7 +396,7 @@ public class PersonsView extends AbstractView {
 					}, true)));
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
-			bulkOperationsDropdown.setVisible(false);
+			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 			associationFilterLayout.addComponent(bulkOperationsDropdown);
 		}
 
