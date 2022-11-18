@@ -36,6 +36,8 @@
     <!-- Don't log KeycloakService warnings and info as it doesn't provide much information for tests -->
     <logger name="de.symeda.sormas.backend.user.KeycloakService" level="ERROR" />
 
+    <logger name="net.sf.ehcache" level="WARN" />
+
     <root level="error">
         <appender-ref ref="STDOUT" />
     </root>
