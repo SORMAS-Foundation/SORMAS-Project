@@ -76,6 +76,8 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	boolean isSharedWithoutOwnership(String uuid);
 
+	boolean isShared(String uuid);
+
 	List<PersonDto> getByExternalIds(List<String> externalIds);
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;

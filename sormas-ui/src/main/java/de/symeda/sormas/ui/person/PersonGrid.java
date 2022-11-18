@@ -28,7 +28,7 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 
 	private boolean bulkEditMode;
 
-	public PersonGrid(){
+	public PersonGrid() {
 		super(PersonIndexDto.class);
 		initColumns();
 	}
@@ -39,6 +39,9 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 		setLazyDataProvider();
 		setCriteria(criteria);
 		initColumns();
+
+		setBulkEditMode(isInEagerMode());
+
 		addItemClickListener(
 			new ShowDetailsListener<>(PersonIndexDto.UUID, e -> ControllerProvider.getPersonController().navigateToPerson(e.getUuid())));
 	}
@@ -103,11 +106,9 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 			setSelectionMode(SelectionMode.NONE);
 		}
 	}
-	
+
 	public void setFixDataProvider(List<PersonIndexDto> list) {
-		DataProvider<PersonIndexDto, PersonCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> list.stream(),
-			query -> list.size());
+		DataProvider<PersonIndexDto, PersonCriteria> dataProvider = DataProvider.fromFilteringCallbacks(query -> list.stream(), query -> list.size());
 		setDataProvider(dataProvider);
 	}
 
@@ -121,6 +122,11 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 	}
 
 	public void reload() {
+
+		if (getSelectionModel().isUserSelectionAllowed()) {
+			deselectAll();
+		}
+
 		getDataProvider().refreshAll();
 	}
 }

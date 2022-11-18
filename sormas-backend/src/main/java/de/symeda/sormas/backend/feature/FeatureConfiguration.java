@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -76,7 +77,7 @@ public class FeatureConfiguration extends AbstractDomainObject {
 		this.entityType = coreEntityType;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -85,7 +86,7 @@ public class FeatureConfiguration extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}

@@ -173,12 +173,9 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		super(Contact.class);
 	}
 
-
 	@Override
-	protected void fetchReferences(From<?, Contact> from) {
-
-		from.fetch(Contact.HEALTH_CONDITIONS);
-		from.fetch(Contact.EPI_DATA);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(Contact.HEALTH_CONDITIONS, Contact.EPI_DATA);
 	}
 
 	public List<Contact> findBy(ContactCriteria contactCriteria, User user) {
@@ -1548,7 +1545,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 				sormasToSormasShareInfoService.ensurePersisted(s);
 			} else {
 				try {
-					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s));
+					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s), false);
 				} catch (SormasToSormasException e) {
 					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
 				}

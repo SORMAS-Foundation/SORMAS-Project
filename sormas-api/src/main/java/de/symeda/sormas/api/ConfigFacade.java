@@ -153,4 +153,6 @@ public interface ConfigFacade {
 	void setRequestContext(RequestContextTO requestContext);
 
 	void resetRequestContext();
+
+	String[] getAllowedFileExtensions();
 }
