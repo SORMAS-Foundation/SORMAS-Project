@@ -430,7 +430,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (deleteButton == null) {
 			deleteButton = buildDeleteButton(
 				() -> DeletableUtils.showDeleteWithReasonPopup(
-					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName, details != null ? details : ""),
+					String.format(I18nProperties.getString(Strings.confirmationDeleteEntityWithDetails), entityName, details != null ? details : ""),
 					this::onDeleteWithReason));
 		}
 
