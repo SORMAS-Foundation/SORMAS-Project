@@ -15,8 +15,6 @@
 	<!-- Don't log ArchUnit internal debug logs -->
  	<logger name="com.tngtech.archunit" level="WARN" />
 
-    <logger name="net.sf.ehcache" level="WARN" />
-
     <root level="warn">
         <appender-ref ref="STDOUT" />
     </root>
