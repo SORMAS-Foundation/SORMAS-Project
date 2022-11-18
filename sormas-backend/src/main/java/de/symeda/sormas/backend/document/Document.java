@@ -20,6 +20,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -78,7 +79,7 @@ public class Document extends AbstractDomainObject {
 		this.deleted = deleted;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn(name = "uploadinguser_id", nullable = false)
 	public User getUploadingUser() {
 		return uploadingUser;

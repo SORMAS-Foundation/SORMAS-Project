@@ -96,6 +96,10 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
@@ -275,6 +279,14 @@
 			<artifactId>reflections</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers-standard-package</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

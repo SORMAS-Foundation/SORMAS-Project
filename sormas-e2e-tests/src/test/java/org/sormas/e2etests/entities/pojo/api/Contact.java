@@ -29,6 +29,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Contact {
+  Long creationDate;
   Boolean highPriority;
   Boolean multiDayContact;
   Boolean overwriteFollowUpUntil;

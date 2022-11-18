@@ -307,7 +307,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.reportId = reportId;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getAssignee() {
 		return assignee;
