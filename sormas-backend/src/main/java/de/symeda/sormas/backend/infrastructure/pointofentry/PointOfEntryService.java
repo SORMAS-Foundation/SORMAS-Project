@@ -89,7 +89,17 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 	}
 
 	@Override
-	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> pointOfEntry) {
+	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> root) {
+
+		Predicate excludeConstantPoe = cb.and(
+				cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_AIRPORT_UUID),
+				cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_SEAPORT_UUID),
+				cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_GROUND_CROSSING_UUID),
+				cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
+
+		if (criteria==null){
+			return excludeConstantPoe;
+		}
 
 		Predicate filter = null;
 
@@ -97,7 +107,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		if (country != null) {
 			CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 
-			Path<Object> countryUuid = pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+			Path<Object> countryUuid = root.join(PointOfEntry.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
 			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
 
 			if (country.equals(serverCountry)) {
@@ -109,19 +119,19 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+				.and(cb, filter, cb.equal(root.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(pointOfEntry.join(PointOfEntry.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+				cb.equal(root.join(PointOfEntry.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getType() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.POINT_OF_ENTRY_TYPE), criteria.getType()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(PointOfEntry.POINT_OF_ENTRY_TYPE), criteria.getType()));
 		}
 		if (criteria.getActive() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ACTIVE), criteria.getActive()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(PointOfEntry.ACTIVE), criteria.getActive()));
 		}
 		if (criteria.getNameLike() != null) {
 			String[] textFilters = criteria.getNameLike().split("\\s+");
@@ -130,7 +140,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 					continue;
 				}
 
-				Predicate likeFilters = CriteriaBuilderHelper.unaccentedIlike(cb, pointOfEntry.get(PointOfEntry.NAME), textFilter);
+				Predicate likeFilters = CriteriaBuilderHelper.unaccentedIlike(cb, root.get(PointOfEntry.NAME), textFilter);
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -139,13 +149,13 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 				filter = CriteriaBuilderHelper.and(
 					cb,
 					filter,
-					cb.or(cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), false), cb.isNull(pointOfEntry.get(PointOfEntry.ARCHIVED))));
+					cb.or(cb.equal(root.get(PointOfEntry.ARCHIVED), false), cb.isNull(root.get(PointOfEntry.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(PointOfEntry.ARCHIVED), true));
 			}
 		}
 
-		return filter;
+		return CriteriaBuilderHelper.and(cb, filter, excludeConstantPoe);
 	}
 
 	@SuppressWarnings("rawtypes")
