@@ -1342,7 +1342,10 @@ public class EditCaseSteps implements En {
 
     When(
         "I click on edit Sample",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_SAMPLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON);
+        });
 
     When(
         "I click on the Create button from Case Document Templates",
