@@ -91,6 +91,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 	@Override
 	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> root) {
 
+		// ignore Poe created at startup through createConstantPointsOfEntry
 		Predicate excludeConstantPoe = cb.and(
 				cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_AIRPORT_UUID),
 				cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_SEAPORT_UUID),
