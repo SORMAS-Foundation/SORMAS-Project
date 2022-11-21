@@ -2611,6 +2611,12 @@ public class EditCaseSteps implements En {
           softly.assertFalse(elementVisible, "Vaccination ID is visible!");
           softly.assertAll();
         });
+
+    When(
+        "I check if element with text {string} is present in Case Edit",
+        (String text) -> {
+          Assert.assertTrue(webDriverHelpers.isElementPresent(checkIfTextExists(text)));
+        });
   }
 
   private Vaccination collectVaccinationData() {

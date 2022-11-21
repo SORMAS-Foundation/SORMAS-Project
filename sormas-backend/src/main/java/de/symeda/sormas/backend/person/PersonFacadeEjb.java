@@ -1090,6 +1090,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		return originInfo != null && !originInfo.isOwnershipHandedOver();
 	}
 
+	@Override
+	public boolean isShared(String uuid) {
+		return sormasToSormasOriginInfoService.getByPerson(uuid) != null;
+	}
+
 	/**
 	 * Makes sure that there is no invalid data associated with this person. For example, when the present condition
 	 * is set to "Alive", all fields depending on the status being "Dead" or "Buried" are cleared.
