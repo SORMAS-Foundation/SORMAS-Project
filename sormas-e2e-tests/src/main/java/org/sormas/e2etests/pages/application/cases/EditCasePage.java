@@ -394,4 +394,8 @@ public class EditCasePage {
       By.cssSelector(".popupContent textarea");
   public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
       By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
+
+  public static By checkIfTextExists(String text) {
+    return By.xpath(String.format("//div[contains(text(),'%s')]", text));
+  }
 }
