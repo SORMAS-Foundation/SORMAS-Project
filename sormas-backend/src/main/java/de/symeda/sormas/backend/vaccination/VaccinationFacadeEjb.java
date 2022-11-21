@@ -59,7 +59,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -259,7 +259,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@Override
 	public List<VaccinationDto> getVaccinationsByCriteria(
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
@@ -270,7 +270,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@Override
 	public List<VaccinationListEntryDto> getEntriesList(
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
@@ -315,7 +315,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@Override
 	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		CaseReferenceDto caseReferenceDto,
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max) {
 		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max, null);
@@ -336,7 +336,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@Override
 	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		ContactReferenceDto contactReferenceDto,
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max) {
 		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max, null);
@@ -357,7 +357,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@Override
 	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		EventParticipantReferenceDto eventParticipantReferenceDto,
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max) {
 		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max, null);
@@ -670,7 +670,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 		return vaccinationService
-			.getVaccinationsByCriteria(new VaccinationListCriteria.Builder(persons).withDisease(disease).build(), null, null, null)
+			.getVaccinationsByCriteria(new VaccinationCriteria.Builder(persons).withDisease(disease).build(), null, null, null)
 			.stream()
 			.collect(Collectors.toMap(v -> v.getImmunization().getPerson().getUuid(), v -> convertToDto(v, pseudonymizer), (v1, v2) -> {
 				Date v1Date = v1.getVaccinationDate() != null ? v1.getVaccinationDate() : v1.getReportDate();

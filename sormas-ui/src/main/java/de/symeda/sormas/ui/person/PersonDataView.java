@@ -14,7 +14,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -148,7 +148,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 				layout.addComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(
-							() -> new VaccinationListCriteria.Builder(getReference()).build(),
+							() -> new VaccinationCriteria.Builder(getReference()).build(),
 							this::showUnsavedChangesPopup,
 							false,
 							true)),
