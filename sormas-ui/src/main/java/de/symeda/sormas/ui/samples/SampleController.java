@@ -81,6 +81,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -132,10 +133,13 @@ public class SampleController {
 	 * @param sampleComponent
 	 *            to add the pathogen test create component to.
 	 */
-	public void addPathogenTestComponent(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent, boolean viaLims) {
+	public void addPathogenTestComponent(
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
+		boolean viaLims,
+		boolean deleteOnCancel) {
 
 		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
-		addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true, viaLims);
+		addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true, viaLims, deleteOnCancel);
 	}
 
 	public CollapsiblePathogenTestForm addPathogenTestComponent(
@@ -144,7 +148,7 @@ public class SampleController {
 		int caseSampleCount,
 		boolean isNew,
 		boolean viaLims) {
-		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew, viaLims);
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew, viaLims, false);
 	}
 
 	/**
@@ -169,7 +173,8 @@ public class SampleController {
 		int caseSampleCount,
 		Runnable callback,
 		boolean isNew,
-		boolean viaLims) {
+		boolean viaLims,
+		boolean deleteOnCancel) {
 		// add horizontal rule to clearly distinguish the component
 		Label separator = new Label("<br/><hr/><br/>", ContentMode.HTML);
 		separator.setWidth(100f, Unit.PERCENTAGE);
@@ -226,7 +231,8 @@ public class SampleController {
 			setViaLimsFieldChecked(pathogenTestForm);
 		}
 
-		CollapsiblePathogenTestForm collapsibleForm = new CollapsiblePathogenTestForm(pathogenTestForm, isNew || isNull(pathogenTest));
+		CollapsiblePathogenTestForm collapsibleForm =
+			new CollapsiblePathogenTestForm(pathogenTestForm, isNew || isNull(pathogenTest), deleteOnCancel);
 
 		// save pathogen test after saving sample
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
@@ -250,6 +256,8 @@ public class SampleController {
 
 		// add the pathogenTestForm above the overall discard and commit buttons
 		sampleComponent.addComponent(collapsibleForm, sampleComponent.getComponentCount() - 1);
+		// add space above the buttons bar
+		sampleComponent.getButtonsPanel().addStyleName(CssStyles.VSPACE_TOP_3);
 
 		return collapsibleForm;
 	}
@@ -290,7 +298,7 @@ public class SampleController {
 
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
 		addPathogenTestButton.addClickListener((e) -> {
-			addPathogenTestComponent(editView, viaLims);
+			addPathogenTestComponent(editView, viaLims, true);
 		});
 		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
 	}
