@@ -229,8 +229,13 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 	@Override
 	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> root) {
 
+		// these two facilities are constant and created on startup by createConstantFacilities()
+		Predicate excludeConstantFacilities = cb.and(
+				cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+				cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
+
 		if (facilityCriteria == null) {
-			return null;
+			return excludeConstantFacilities;
 		}
 
 		Predicate filter = null;
@@ -293,7 +298,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(Facility.ARCHIVED), true));
 			}
 		}
-		return filter;
+		return CriteriaBuilderHelper.and(cb, filter, excludeConstantFacilities);
 	}
 
 	public void createConstantFacilities() {
