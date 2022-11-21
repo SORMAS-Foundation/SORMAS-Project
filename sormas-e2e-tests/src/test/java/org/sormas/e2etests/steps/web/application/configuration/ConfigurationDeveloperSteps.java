@@ -37,7 +37,7 @@ public class ConfigurationDeveloperSteps implements En {
         (Integer seconds) -> TimeUnit.SECONDS.sleep(seconds));
 
     When(
-        "I check if Execute Automatic Deletion button",
+        "I check if Execute Automatic Deletion button is available",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EXECUTE_AUTOMATIC_DELETION);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UPLOAD_SUCCESS_POPUP);
