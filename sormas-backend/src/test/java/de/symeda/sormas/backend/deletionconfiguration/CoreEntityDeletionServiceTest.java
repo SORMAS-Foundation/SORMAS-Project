@@ -897,17 +897,27 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+		ShareRequestInfo pendingRequestInfo = createShareRequestInfo(
 			ShareRequestDataType.CASE,
 			officerUser,
 			DEFAULT_SERVER_ID,
 			true,
 			i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
-		getShareRequestInfoService().persist(shareRequestInfo);
+		pendingRequestInfo.setRequestStatus(ShareRequestStatus.PENDING);
+		getShareRequestInfoService().persist(pendingRequestInfo);
+
+		ShareRequestInfo acceptedRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			officerUser,
+			SECOND_SERVER_ID,
+			true,
+			i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
+		acceptedRequestInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
+		getShareRequestInfoService().persist(acceptedRequestInfo);
 
 		assertEquals(1, getCaseService().count());
-		assertEquals(1, getShareRequestInfoService().count());
-		assertEquals(1, getSormasToSormasShareInfoService().count());
+		assertEquals(2, getShareRequestInfoService().count());
+		assertEquals(2, getSormasToSormasShareInfoService().count());
 
 		final Date tenYearsPlusAgoForCase = DateUtils.addDays(new Date(), (-1) * caseDeletionConfiguration.deletionPeriod - 1);
 		SessionImpl em1 = (SessionImpl) getEntityManager();
