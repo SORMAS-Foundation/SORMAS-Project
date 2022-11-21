@@ -292,7 +292,7 @@ Feature: mSERS functionalities
     And I set District combobox to "LK Alb-Donau-Kreis" in Create New Aggregate Report popup
     And I fill a new aggregate report with specific data for one disease
     And I click to save aggregated report
-    And I check if there number of results in grid in mSers directory is 0
+    And I check if there number of results in grid in mSers directory is 1
     Then I click Show 0-rows for grouping checkbox
     And I click on the APPLY FILTERS button
     And I check that number of results in grid in mSers directory greater than 1

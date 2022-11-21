@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.constants.api.Endpoints.CASES_PATH;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_PRESENT_CONDITION_COMBOBOX;
@@ -117,6 +118,7 @@ import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SH
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import io.restassured.http.Method;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -131,11 +133,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
@@ -156,6 +161,7 @@ public class CreateNewCaseSteps implements En {
   public static List<String> casesUUID = new ArrayList<>();
   private static String currentUrl;
   private static String phoneNumber;
+  private final RestAssuredClient restAssuredClient;
 
   @Inject
   public CreateNewCaseSteps(
@@ -164,11 +170,13 @@ public class CreateNewCaseSteps implements En {
       ApiState apiState,
       Faker faker,
       SoftAssert softly,
-      BaseSteps baseSteps) {
+      BaseSteps baseSteps,
+      RestAssuredClient restAssuredClient) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
     this.softly = softly;
     this.baseSteps = baseSteps;
+    this.restAssuredClient = restAssuredClient;
     Random r = new Random();
     char c = (char) (r.nextInt(26) + 'a');
     String firstName = faker.name().firstName() + c;
@@ -361,6 +369,12 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
+        });
+
+    When(
+        "I check if created case is available in API",
+        () -> {
+          getCaseByUUID(casesUUID.get(0));
         });
 
     When(
@@ -1591,5 +1605,11 @@ public class CreateNewCaseSteps implements En {
           tableObjects.add(objects);
         });
     return tableObjects;
+  }
+
+  @SneakyThrows
+  public void getCaseByUUID(String caseUUID) {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(CASES_PATH + "/" + caseUUID).build());
   }
 }

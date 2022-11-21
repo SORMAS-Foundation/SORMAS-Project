@@ -26,6 +26,7 @@ import lombok.*;
 @Builder(toBuilder = true, builderClassName = "builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Immunization {
+  Long creationDate;
   String uuid;
   Boolean pseudonymized;
   String disease;

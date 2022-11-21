@@ -68,7 +68,7 @@ public class TherapyController {
 
 		final CommitDiscardWrapperComponent<PrescriptionForm> view = new CommitDiscardWrapperComponent<>(
 			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_EDIT) && readOnly,
+			UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_EDIT) && !readOnly,
 			form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil
 			.showModalPopupWindow(view, I18nProperties.getString(readOnly ? Strings.entityPrescription : Strings.headingEditPrescription));

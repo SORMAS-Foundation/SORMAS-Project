@@ -126,6 +126,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
 	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
 
+	public static final String ALLOWED_FILE_EXTENSIONS = "allowed.file.extensions";
+
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
 	public static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
@@ -759,6 +761,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getDemisJndiName() {
 		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
+	}
+
+	@Override
+	public String[] getAllowedFileExtensions() {
+		return getProperty(ALLOWED_FILE_EXTENSIONS, "").split(",");
 	}
 
 	@Override

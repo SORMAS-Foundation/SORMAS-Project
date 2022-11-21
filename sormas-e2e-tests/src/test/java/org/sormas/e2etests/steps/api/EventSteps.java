@@ -36,5 +36,13 @@ public class EventSteps implements En {
           eventHelper.createEvent(eve);
           apiState.setCreatedEvent(eve);
         });
+
+    When(
+        "API: I create a new event with creation date {int} days ago",
+        (Integer creationDate) -> {
+          Event eve = eventApiService.buildGeneratedEventWithCreationDate(creationDate);
+          eventHelper.createEvent(eve);
+          apiState.setCreatedEvent(eve);
+        });
   }
 }
