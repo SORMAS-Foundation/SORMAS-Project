@@ -6,4 +6,4 @@ Feature: Configuration tab tests
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
     Then I navigate to Developer tab in Configuration
-    And I click on Execute Automatic Deletion button
+    And I check if Execute Automatic Deletion button is available
