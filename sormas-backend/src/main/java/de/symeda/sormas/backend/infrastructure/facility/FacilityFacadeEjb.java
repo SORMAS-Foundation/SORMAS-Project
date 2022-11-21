@@ -424,15 +424,7 @@ public class FacilityFacadeEjb
 		Join<Facility, District> district = facility.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<Facility, Community> community = facility.join(Facility.COMMUNITY, JoinType.LEFT);
 
-		Predicate filter = service.buildCriteriaFilter(facilityCriteria, cb, facility);
-		Predicate excludeFilter = cb.and(
-			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-			cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
-		if (filter != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
-		} else {
-			filter = excludeFilter;
-		}
+		Predicate filter = buildCriteriaFilterExcludingConstFacilities(facilityCriteria, cb, facility);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -531,14 +523,7 @@ public class FacilityFacadeEjb
 			facility.get(Facility.LONGITUDE),
 			facility.get(Facility.EXTERNAL_ID));
 
-		Predicate filter = cb.and(
-			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-			cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
-
-		if (facilityCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(facilityCriteria, cb, facility);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
+		Predicate filter = buildCriteriaFilterExcludingConstFacilities(facilityCriteria, cb, facility);
 
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, facility.get(Facility.UUID));
 
@@ -562,15 +547,7 @@ public class FacilityFacadeEjb
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Facility> root = cq.from(Facility.class);
 
-		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
-		Predicate excludeFilter = cb.and(
-			cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-			cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
-		if (filter != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
-		} else {
-			filter = excludeFilter;
-		}
+		Predicate filter = buildCriteriaFilterExcludingConstFacilities(criteria, cb, root);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -578,6 +555,22 @@ public class FacilityFacadeEjb
 
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	private Predicate buildCriteriaFilterExcludingConstFacilities(FacilityCriteria criteria, CriteriaBuilder cb, Root<Facility> root) {
+
+		// these two facilities are constant and created on startup by FacilityService.createConstantFacilities()
+		Predicate excludeConstantFacilities = cb.and(
+				cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+				cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
+
+		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
+
+		if (filter == null) {
+			return excludeConstantFacilities;
+		} else {
+			return CriteriaBuilderHelper.and(cb, filter, excludeConstantFacilities);
+		}
 	}
 
 	@Override
