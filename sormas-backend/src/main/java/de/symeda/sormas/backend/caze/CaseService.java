@@ -1653,7 +1653,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return CaseJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
-	public Collection<Case> getByPersonUuids(List<String> personUuids) {
+	public List<Case> getByPersonUuids(List<String> personUuids) {
 
 		List<Case> cases = new ArrayList<>();
 		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> cases.addAll(getCasesByPersonUuids(batchedUuids)));

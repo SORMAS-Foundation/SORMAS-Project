@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -71,7 +70,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "RegionFacade")
 @RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
-public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, RegionDto, RegionIndexDto, RegionReferenceDto, RegionService, RegionCriteria>
+public class RegionFacadeEjb
+	extends AbstractInfrastructureFacadeEjb<Region, RegionDto, RegionIndexDto, RegionReferenceDto, RegionService, RegionCriteria>
 	implements RegionFacade {
 
 	@EJB
@@ -121,7 +121,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, Reg
 	@Override
 	@PermitAll
 	public List<RegionReferenceDto> getAllActiveAsReference() {
-		return service.getAllActive(Region.NAME, true).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return toRefDtos(service.getAllActive(Region.NAME, true).stream());
 	}
 
 	@Override
@@ -283,21 +283,18 @@ public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, Reg
 	@Override
 	@PermitAll
 	public List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities) {
-		return service.getByName(name, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return toRefDtos(service.getByName(name, includeArchivedEntities).stream());
 	}
 
 	@PermitAll
 	public List<RegionDto> getByName(String name, boolean includeArchivedEntities) {
-		return service.getByName(name, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
+		return toDtos(service.getByName(name, includeArchivedEntities).stream());
 	}
 
 	@Override
 	@PermitAll
 	public List<RegionReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
-		return service.getByExternalId(externalId, includeArchivedEntities)
-			.stream()
-			.map(RegionFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return toRefDtos(service.getByExternalId(externalId, includeArchivedEntities).stream());
 	}
 
 	private List<RegionReferenceDto> getAllActiveByPredicate(BiFunction<CriteriaBuilder, Root<Region>, Predicate> buildPredicate) {
@@ -310,7 +307,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, Reg
 
 		cq.orderBy(cb.asc(root.get(Region.NAME)));
 
-		return em.createQuery(cq).getResultList().stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return toRefDtos(em.createQuery(cq).getResultList().stream());
 	}
 
 	@Override
