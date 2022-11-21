@@ -39,7 +39,8 @@ public class ConfigurationDeveloperSteps implements En {
     When(
         "I check if Execute Automatic Deletion button is available",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UPLOAD_SUCCESS_POPUP);
+          webDriverHelpers.scrollToElement(EXECUTE_AUTOMATIC_DELETION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXECUTE_AUTOMATIC_DELETION);
         });
   }
 }
