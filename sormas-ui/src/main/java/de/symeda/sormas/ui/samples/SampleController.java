@@ -209,13 +209,6 @@ public class SampleController {
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 
-		// Country specific configuration
-		// TODO should not be needed
-//		boolean germanInstance = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
-//		pathogenTestForm.getField(PathogenTestDto.REPORT_DATE).setVisible(germanInstance);
-//		pathogenTestForm.getField(PathogenTestDto.EXTERNAL_ID).setVisible(germanInstance);
-//		pathogenTestForm.getField(PathogenTestDto.EXTERNAL_ORDER_ID).setVisible(germanInstance);
-//		pathogenTestForm.getField(PathogenTestDto.VIA_LIMS).setVisible(germanInstance);
 		// Sample creation specific configuration
 		final DateTimeField sampleDateField = sampleComponent.getWrappedComponent().getField(SampleDto.SAMPLE_DATE_TIME);
 		final DateTimeField testDateField = pathogenTestForm.getField(PathogenTestDto.TEST_DATE_TIME);
