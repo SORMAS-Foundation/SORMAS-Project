@@ -539,26 +539,6 @@ public class FacilityFacadeEjb
 
 	@Override
 	@RightsAllowed({
-		UserRight._INFRASTRUCTURE_VIEW,
-		UserRight._SYSTEM })
-	public long count(FacilityCriteria criteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Facility> root = cq.from(Facility.class);
-
-		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
-	@RightsAllowed({
 		UserRight._INFRASTRUCTURE_CREATE,
 		UserRight._INFRASTRUCTURE_EDIT })
 	public FacilityDto save(FacilityDto dto, boolean allowMerge) {
