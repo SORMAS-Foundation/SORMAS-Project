@@ -144,7 +144,8 @@ public class ContactController {
 			return;
 		}
 
-		boolean adoptHomeAddress = lineListingForm.getSharedInfoField().getCaseSelector().getAdoptAddressLayout().isAdoptAddress();
+		AdoptAddressLayout adoptAddressLayout = lineListingForm.getSharedInfoField().getCaseSelector().getAdoptAddressLayout();
+		boolean adoptHomeAddress = adoptAddressLayout != null ? adoptAddressLayout.isAdoptAddress() : false;
 
 		while (!contacts.isEmpty()) {
 			LineDto<ContactDto> contactLineDto = contacts.pop();
