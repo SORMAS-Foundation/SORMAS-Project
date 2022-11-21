@@ -122,10 +122,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
-	}
-
-	@Override
 	public List<DeaContentEntry> getDeaContentOfLastTravelEntry() {
 		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 
@@ -153,10 +149,7 @@ public class TravelEntryFacadeEjb
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(
-					source.getReportingUser(),
-					currentUser,
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 			});
 		}
 	}

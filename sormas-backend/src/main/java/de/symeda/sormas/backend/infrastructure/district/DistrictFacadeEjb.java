@@ -110,24 +110,6 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<DistrictDto> cq, Root<District> root) {
-		Join<District, Region> region = root.join(District.REGION, JoinType.LEFT);
-		// Need to be in the same order as in the constructor
-		cq.multiselect(
-			root.get(AbstractDomainObject.CREATION_DATE),
-			root.get(AbstractDomainObject.CHANGE_DATE),
-			root.get(AbstractDomainObject.UUID),
-			root.get(InfrastructureAdo.ARCHIVED),
-			root.get(District.NAME),
-			root.get(District.EPID_CODE),
-			root.get(District.GROWTH_RATE),
-			region.get(AbstractDomainObject.UUID),
-			region.get(Region.NAME),
-			region.get(Region.EXTERNAL_ID),
-			root.get(District.EXTERNAL_ID));
-	}
-
-	@Override
 	public List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

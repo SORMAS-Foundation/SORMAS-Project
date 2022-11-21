@@ -250,10 +250,6 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<ImmunizationDto> cq, Root<Immunization> root) {
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		if (userService.getCurrentUser() == null) {

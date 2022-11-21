@@ -513,11 +513,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return pseudonymizer;
 	}
 
-	@Override
-	protected void selectDtoFields(CriteriaQuery<CaseDataDto> cq, Root<Case> root) {
-
-	}
-
 	public Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<CaseIndexDto> caseIndexList = getIndexList(caseCriteria, offset, size, sortProperties);
 		long totalElementCount = count(caseCriteria);

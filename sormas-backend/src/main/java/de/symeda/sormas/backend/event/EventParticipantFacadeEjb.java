@@ -275,13 +275,7 @@ public class EventParticipantFacadeEjb
 			return Collections.emptyList();
 		}
 
-		List<String> deletedEventParticipants = service.getDeletedUuidsSince(since, user);
-		return deletedEventParticipants;
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<EventParticipantDto> cq, Root<EventParticipant> root) {
-
+		return service.getDeletedUuidsSince(since, user);
 	}
 
 	@Override

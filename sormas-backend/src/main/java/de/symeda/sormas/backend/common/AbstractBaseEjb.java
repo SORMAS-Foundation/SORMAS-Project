@@ -10,8 +10,6 @@ import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.BaseFacade;
@@ -138,9 +136,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	protected Pseudonymizer createPseudonymizer() {
 		return Pseudonymizer.getDefault(userService::hasRight);
 	}
-
-	// todo find a better name, it is not clear what it does
-	protected abstract void selectDtoFields(CriteriaQuery<DTO> cq, Root<ADO> root);
 
 	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);
 
