@@ -17,7 +17,6 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Optional;
 
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
@@ -39,18 +38,26 @@ public class CollapsiblePathogenTestForm extends VerticalLayout {
 
 	private Runnable deleteHandler;
 
-	public CollapsiblePathogenTestForm(PathogenTestForm pathogenTestForm, boolean initialExpanded) {
+	private boolean deleteOnCancel;
+
+	public CollapsiblePathogenTestForm(PathogenTestForm pathogenTestForm, boolean initialExpanded, boolean deleteOnCancel) {
+		this.deleteOnCancel = deleteOnCancel;
+
 		setSpacing(false);
 		setMargin(false);
 
 		commitDiscardForm = new CommitDiscardWrapperComponent<>(pathogenTestForm, pathogenTestForm.getFieldGroup());
+		commitDiscardForm.setMargin(false);
+		commitDiscardForm.setSpacing(false);
+
 		commitDiscardForm.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
+		commitDiscardForm.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 		commitDiscardForm.getButtonsPanel().setComponentAlignment(commitDiscardForm.getDiscardButton(), Alignment.BOTTOM_LEFT);
 		commitDiscardForm.addDoneListener(this::collapse);
 
 		expandedLayout = new VerticalLayout(commitDiscardForm);
 		expandedLayout.setSpacing(false);
-		expandedLayout.setMargin(new MarginInfo(true, false));
+		expandedLayout.setMargin(false);
 
 		collapsedLayout = new VerticalLayout();
 		collapsedLayout.setSpacing(false);
@@ -114,6 +121,17 @@ public class CollapsiblePathogenTestForm extends VerticalLayout {
 
 	public void setDeleteHandler(Runnable deleteHandler) {
 		this.deleteHandler = deleteHandler;
+
 		resetCollapsedLayout();
+
+		commitDiscardForm.addDiscardListener(() -> {
+			if (deleteOnCancel) {
+				deleteHandler.run();
+			}
+		});
+
+		commitDiscardForm.addCommitListener(() -> {
+			deleteOnCancel = false;
+		});
 	}
 }
