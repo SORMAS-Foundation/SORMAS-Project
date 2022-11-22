@@ -48,8 +48,10 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -180,7 +182,9 @@ public final class DataHelper {
 			|| type == Boolean.class
 			|| type == String.class
 			|| type == Date.class
-			|| type.isAssignableFrom(DiseaseVariant.class);
+			|| type.isAssignableFrom(DiseaseVariant.class)
+			|| type.isAssignableFrom(OccupationType.class)
+			|| type.isAssignableFrom(SpecificRisk.class);
 	}
 
 	public static byte[] longToBytes(long x, long y) {
