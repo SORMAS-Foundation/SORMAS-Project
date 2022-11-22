@@ -11,6 +11,8 @@ import de.symeda.sormas.api.caze.CaseListEntryDto;
 
 public class CaseListEntryDtoResultTransformer implements ResultTransformer {
 
+	private static final long serialVersionUID = -1076376082289833418L;
+
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {
 		return new CaseListEntryDto(
@@ -18,7 +20,8 @@ public class CaseListEntryDtoResultTransformer implements ResultTransformer {
 			(Date) objects[1],
 			(Disease) objects[2],
 			(CaseClassification) objects[3],
-			(boolean) objects[4]);
+			(Date) objects[4],
+			(boolean) objects[5]);
 	}
 
 	@Override
