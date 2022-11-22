@@ -1325,3 +1325,29 @@ Feature: Create events
     Then I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
+
+    @tmsLink=SORQA-667 @env_de @oldfake
+    Scenario: Check automatic deletion of EVENT_PARTICIPANT created 1825 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event participant with creation date 1825 days ago
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I check if participant created via API appears in the event participants list
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 60 seconds for system reaction
+    Then I check if created event participant is available in API
+    Then API: I check that POST call body is "No Content"
+    And API: I check that POST call status code is 204
+    Then I open the last created event via api
+    And I navigate to EVENT PARTICIPANT from edit event page
+    Then I check if event participant created via API still appears in the event participant list
