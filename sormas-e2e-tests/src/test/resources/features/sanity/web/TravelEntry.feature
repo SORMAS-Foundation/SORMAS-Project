@@ -465,3 +465,24 @@ Feature: Create travel entries
     And I navigate to person tab in Edit travel entry page
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
+
+    @tmsLink=SORQA-669 @env_de @oldfake
+    Scenario: Check automatic deletion of TRAVEL_ENTRY origin 14 days ago
+      Given API: I create a new person
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then API: I create a new travel entry with creation date 14 days ago
+      And API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then I log in as a Admin User
+      And I open the last created travel entry via api
+      And I click on the Configuration button from navbar
+      Then I navigate to Developer tab in Configuration
+      Then I click on Execute Automatic Deletion button
+      And I wait 60 seconds for system reaction
+      Then I check if created travel entry is available in API
+      Then API: I check that POST call body is "No Content"
+      And API: I check that POST call status code is 204
+      Then I click on the Entries button from navbar
+      And I filter by last created travel entry via API
+      And I check that number of displayed Travel Entry results is 0
