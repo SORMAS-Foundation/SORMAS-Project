@@ -110,6 +110,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
 		ComboBox cbCommunity = addInfrastructureField(CampaignFormDataDto.COMMUNITY);
 
+		
+//		CampaignDto campaign1 = FacadeProvider.getCampaignFacade()
+//				.getByUuid(super.getValue().toString());
+//		
+//		cbArea.addItems(super.getValue().toString());
 		// addField(CampaignFormDataDto.FORM_TYPE);
 
 		/*
@@ -125,10 +130,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 		setRequired(true, CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE, CampaignFormDataDto.REGION,
 				CampaignFormDataDto.AREA, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY);
-		// CampaignFormDataDto.FORM_TYPE);
 
 		addInfrastructureListenerx(cbArea, cbRegion, cbDistrict, cbCommunity);
-		cbArea.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		
 
 		final UserDto currentUser = UserProvider.getCurrent().getUser();
 		final AreaReferenceDto currentUserArea = currentUser.getArea();
@@ -270,7 +274,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 					CampaignDto campaign = FacadeProvider.getCampaignFacade()
 							.getByUuid(super.getValue().getCampaign().getUuid());
-
+					
 					CommunityReferenceDto community = (CommunityReferenceDto) cbCommunity.getValue();
 
 //					System.out.println(community.getCaption() + "??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "
@@ -279,7 +283,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 							campaignForm, campaign);
 
 					if (!formuuid.equals("nul")) {
-						// Page.getCurrent().get
+						//Page.getCurrent().get
 						ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
 					} else {
 //						System.out.println(
@@ -296,6 +300,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 					}
 				}
 			});
+			
+		//	cbArea.addItems(campaign.);
 
 		}
 

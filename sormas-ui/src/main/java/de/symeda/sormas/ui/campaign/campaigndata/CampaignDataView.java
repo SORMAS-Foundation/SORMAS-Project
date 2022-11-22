@@ -107,24 +107,6 @@ public class CampaignDataView extends AbstractCampaignView {
 	public CampaignDataView() {
 		super(VIEW_NAME);
 
-		/*
-		 * Wanted to implement this to make sure when the Campaigns menu icon is
-		 * clicked, the criteria remains. But, this won't work because the lastcriteria
-		 * session attribute used to manipulate the url is saved in the session as a
-		 * String and cannot be parsed to the Criteria class to be used on page initial
-		 * constructor. A more elegant approach to making the criteria stick should be
-		 * looked into.
-		 * 
-		 * An approach can be to manipulate the lastcriteria string to retrieve the
-		 * values of each filter element and then set/parse into criteria field. This
-		 * might be a crude approach but should work
-		 * 
-		 * if(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") !=
-		 * null){ criteria = (CampaignFormDataCriteria)
-		 * UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"); }else
-		 * {
-		 */
-
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
 		campaignSelector = new CampaignSelector();
@@ -583,84 +565,6 @@ public class CampaignDataView extends AbstractCampaignView {
 				}
 			}
 		}
-
-//		if (params.startsWith("?")) {
-//			params = params.substring(1);
-//			criteria.fromUrlParams(params);
-//			campaignSelector.setValue(criteria.getCampaign());
-//
-//			String district = "";
-//			String campaignFormMeta = "";
-//			String community = "";
-//			String string = params;
-//			String[] parts = string.split("=");
-//			int ll = parts.length;
-//			String formType = ll > 1 ? parts[1] : ""; // 004
-//			String area = ll > 2 ? parts[2] : ""; // 004
-//			String region = ll > 3 ? parts[3] : ""; // 004
-//			String campaign = ll > 4 ? parts[4] : ""; // 004
-//			if (string.contains("campaignFormMeta")) {
-//				community = ll > 5 ? parts[5] : ""; // 004
-//			} else {
-//				community = ll > 5 ? parts[5] : "";
-//			}
-//			if (string.contains("campaignFormMeta")) {
-//				campaignFormMeta = ll > 6 ? parts[6] : "";
-//				district = ll > 7 ? parts[7] : ""; // 004
-//			} else if (!string.contains("community")) {
-//				district = ll > 5 ? parts[5] : "";
-//			} else {
-//				district = ll > 6 ? parts[6] : "";
-//			}
-//
-//			System.out.println(ll + "------------------------------------" + params);
-////			System.out.println(parts[6]);
-////			System.out.println(campaignFormMeta);
-//
-////			System.out.println("------------------------------------" + formType.replace("&area", "")
-////					+ "------------------------------------" + area.replace("&region", "")
-////					+ "------------------------------------" + region.replace("&campaign", "")
-////					+ "------------------------------------" + campaign.replace("&community", "")
-////					+ "------------------------------------" + community.replace("&campaignFormMeta", "")
-////					+ "------------------------------------" + campaignFormMeta.replace("&district", "")
-////					+ "------------------------------------" + district);
-//
-//			if (!area.isEmpty() && params.contains("&area")) {
-//				AreaDto uu = FacadeProvider.getAreaFacade().getByUuid(area.replace("&region", ""));
-//				// uu.setUuid(area.replace("&region", ""));
-//				AreaReferenceDto areas = uu.toReference();
-//				criteria.setArea(areas);
-//			}
-//			if (!region.isEmpty() && params.contains("&region")) {
-//				RegionReferenceDto regions = FacadeProvider.getRegionFacade()
-//						.getRegionReferenceByUuid(region.replace("&campaign", ""));
-//				criteria.setRegion(regions);
-//			}
-//			if (!district.isEmpty() && params.contains("&district")) {
-//				DistrictReferenceDto districts = FacadeProvider.getDistrictFacade()
-//						.getDistrictReferenceByUuid(district);
-//				criteria.setDistrict(districts);
-//			}
-//			if (!community.isEmpty() && params.contains("&community") && params.contains("&campaignFormMeta")) {
-//				CommunityReferenceDto communitys = FacadeProvider.getCommunityFacade()
-//						.getCommunityReferenceByUuid(community.replace("&campaignFormMeta", ""));
-//				criteria.setCommunity(communitys);
-//			} else {
-//				CommunityReferenceDto communitys = FacadeProvider.getCommunityFacade()
-//						.getCommunityReferenceByUuid(community.replace("&district", ""));
-//				criteria.setCommunity(communitys);
-//			}
-//			if (!formType.isEmpty() && params.contains("&formType")) {
-//				criteria.setFormType(formType.replace("&area", ""));
-//
-//			}
-//			if (!campaignFormMeta.isEmpty() && params.contains("&campaignFormMeta")) {
-//				CampaignFormMetaReferenceDto campaignsmeta = FacadeProvider.getCampaignFormMetaFacade()
-//						.getCampaignFormMetaReferenceByUuid(campaignFormMeta.replaceAll("&district", ""));
-//				criteria.setCampaignFormMeta(campaignsmeta);
-//				System.out.println(campaignFormMeta.replaceAll("&district", ""));
-//			}
-//		}
 
 		applyingCriteria = true;
 		filterForm.setValue(criteria);
