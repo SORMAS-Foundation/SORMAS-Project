@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -250,9 +250,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@Override
 	public List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease) {
-
-		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, false);
-		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(v -> toDto(v)).collect(Collectors.toList());
+		return immunizationService.getByPersonAndDisease(personUuid, disease, false)
+			.stream()
+			.flatMap(i -> i.getVaccinations().stream())
+			.map(this::toDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -273,9 +275,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		Integer max,
 		List<SortProperty> sortProperties) {
 		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max, sortProperties);
-		List<VaccinationListEntryDto> entriesList =
-			vaccinationsList.stream().map((v) -> toVaccinationListEntryDto(v, true, "")).collect(Collectors.toList());
-		return entriesList;
+		return vaccinationsList.stream().map(v -> toVaccinationListEntryDto(v, true, "")).collect(Collectors.toList());
 	}
 
 	private VaccinationListEntryDto toVaccinationListEntryDto(Vaccination vaccination, boolean relevant, String message) {
@@ -309,9 +309,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		List<Long> inJurisdictionIds = vaccinationService.getInJurisdictionIds(entities);
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		List<VaccinationDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		return entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
 
 	@Override
@@ -400,10 +398,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			pseudonymizer.pseudonymizeDto(VaccinationDto.class, dto, inJurisdiction, c -> {
 
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(
-					source.getReportingUser(),
-					currentUser,
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 			});
 		}
 	}
@@ -444,7 +439,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	}
 
-	@RightsAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._CASE_CREATE })
 	public void updateVaccinationStatuses(Case caze) {
 		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
 
@@ -532,7 +529,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Vaccination::new, checkChangeDate);
 
 		target.setImmunization(immunizationService.getByReferenceDto(source.getImmunization()));
-		target.setHealthConditions(healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
+		target.setHealthConditions(
+			healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setVaccinationDate(source.getVaccinationDate());

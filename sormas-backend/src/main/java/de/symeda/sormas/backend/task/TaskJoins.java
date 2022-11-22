@@ -46,6 +46,7 @@ public class TaskJoins extends QueryJoins<Task> {
 	private Join<Task, Contact> contact;
 	private Join<Task, User> creator;
 	private Join<Task, User> assignee;
+	private Join<Task, User> assignedBy;
 	private Join<Task, TravelEntry> travelEntry;
 	private Join<Task, User> taskObservers;
 
@@ -176,6 +177,14 @@ public class TaskJoins extends QueryJoins<Task> {
 
 	private void setAssignee(Join<Task, User> assignee) {
 		this.assignee = assignee;
+	}
+
+	public Join<Task, User> getAssignedBy() {
+		return getOrCreate(assignedBy, Task.ASSIGNED_BY_USER, JoinType.LEFT, this::setAssignedBy);
+	}
+
+	public void setAssignedBy(Join<Task, User> assignedBy) {
+		this.assignedBy = assignedBy;
 	}
 
 	public Join<Case, Region> getCaseResponsibleRegion() {

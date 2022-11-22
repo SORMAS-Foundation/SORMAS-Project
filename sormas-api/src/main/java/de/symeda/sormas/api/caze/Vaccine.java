@@ -28,16 +28,34 @@ public enum Vaccine {
 	COMIRNATY(VaccineManufacturer.BIONTECH_PFIZER),
 	@Diseases(value = {
 		Disease.CORONAVIRUS })
+	MRNA_BIVALENT_BA_1_BIONTECH_PFIZER(VaccineManufacturer.BIONTECH_PFIZER),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
+	MRNA_BIVALENT_BA_4_5_BIONTECH_PFIZER(VaccineManufacturer.BIONTECH_PFIZER),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	MRNA_1273(VaccineManufacturer.MODERNA),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
+	MRNA_BIVALENT_BA_1_MODERNA(VaccineManufacturer.MODERNA),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
+	MRNA_BIVALENT_BA_4_5_MODERNA(VaccineManufacturer.MODERNA),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
+	VALNEVA(VaccineManufacturer.VALNEVA),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
+	NVX_COV_2373(VaccineManufacturer.NOVAVAX),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
+	NUVAXOVID(VaccineManufacturer.NOVAVAX),
 	@Diseases(value = {
 		Disease.CORONAVIRUS })
 	OXFORD_ASTRA_ZENECA(VaccineManufacturer.ASTRA_ZENECA),
 	@Diseases(value = {
 		Disease.CORONAVIRUS })
 	AD26_COV2_S(VaccineManufacturer.JOHNSON_JOHNSON),
-	@Diseases(value = {
-		Disease.CORONAVIRUS })
-	NVX_COV_2373(VaccineManufacturer.NOVAVAX),
 	@Diseases(value = {
 		Disease.CORONAVIRUS })
 	SANOFI_GSK(VaccineManufacturer.SANOFI_GSK),

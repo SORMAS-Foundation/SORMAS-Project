@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.travelentry.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -30,6 +31,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -42,7 +44,9 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
@@ -53,6 +57,24 @@ public class TravelEntryService extends BaseTravelEntryService {
 	private TaskService taskService;
 	@EJB
 	private DocumentService documentService;
+
+
+	public List<TravelEntry> getByPersonUuids(List<String> personUuids) {
+
+		List<TravelEntry> travelEntries = new LinkedList<>();
+		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<TravelEntry> cq = cb.createQuery(TravelEntry.class);
+			Root<TravelEntry> travelEntryRoot = cq.from(TravelEntry.class);
+			Join<TravelEntry, Person> personJoin = travelEntryRoot.join(TravelEntry.PERSON, JoinType.INNER);
+
+			cq.where(cb.and(createDefaultFilter(cb, travelEntryRoot), personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids)));
+
+			travelEntries.addAll(em.createQuery(cq).getResultList());
+		});
+		return travelEntries;
+	}
 
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();

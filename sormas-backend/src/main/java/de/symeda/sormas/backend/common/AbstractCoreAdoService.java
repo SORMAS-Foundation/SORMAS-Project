@@ -40,7 +40,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
 
-public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> implements JurisdictionCheckService<ADO> {
+public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -192,19 +192,19 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 	@Override
 	public List<Long> getInJurisdictionIds(List<ADO> selectedEntities) {
-		return getIdList(selectedEntities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return getIdList(selectedEntities, this::inJurisdictionOrOwned);
 	}
 
 	@Override
 	public boolean inJurisdictionOrOwned(ADO entity) {
-		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
 	/**
-	 * Used to fetch {@link #getInJurisdictionIds(List)}/{@link #inJurisdictionOrOwned(CoreAdo)}
+	 * Used to fetch {@link AdoServiceWithUserFilterAndJurisdiction#getInJurisdictionIds(List)}/{@link AdoServiceWithUserFilterAndJurisdiction#inJurisdictionOrOwned(AbstractDomainObject)}
 	 * (without {@link QueryContext} because there are no other conditions etc.).
 	 * 
 	 * @return A filter on entities within the users jurisdiction or owned by him.
 	 */
-	protected abstract Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> from);
+	public abstract Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> from);
 }

@@ -22,11 +22,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 
 @Stateless
 @LocalBean
-public class CustomizableEnumValueService extends AdoServiceWithUserFilter<CustomizableEnumValue> {
+public class CustomizableEnumValueService extends AdoServiceWithUserFilterAndJurisdiction<CustomizableEnumValue> {
 
 	public CustomizableEnumValueService() {
 		super(CustomizableEnumValue.class);

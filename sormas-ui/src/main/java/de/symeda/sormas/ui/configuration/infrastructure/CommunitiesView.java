@@ -129,7 +129,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 			addHeaderComponent(exportButton);
 
 			StreamResource streamResource = GridExportStreamResource
-				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.COMMUNITIES, CommunitiesGrid.EDIT_BTN_ID);
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.COMMUNITIES, CommunitiesGrid.ACTION_BTN_ID);
 			IgnoreCancelDownloader fileDownloader = new IgnoreCancelDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}

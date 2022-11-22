@@ -294,11 +294,6 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<ContactDto> cq, Root<Contact> root) {
-
-	}
-
-	@Override
 	public List<String> getAllActiveUuids() {
 
 		User user = userService.getCurrentUser();
@@ -560,7 +555,7 @@ public class ContactFacadeEjb
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		try {
-			sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares());
+			sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares(), true);
 		} catch (SormasToSormasException e) {
 			throw new SormasToSormasRuntimeException(e);
 		}
@@ -827,7 +822,7 @@ public class ContactFacadeEjb
 					exportContact.setNumberOfVisits(visits.size());
 
 					if (lastCooperativeVisit != null) {
-						SymptomsDto symptoms = SymptomsFacadeEjb.toDto(lastCooperativeVisit.getSymptoms());
+						SymptomsDto symptoms = SymptomsFacadeEjb.toSymptomsDto(lastCooperativeVisit.getSymptoms());
 						pseudonymizer.pseudonymizeDto(SymptomsDto.class, symptoms, inJurisdiction, null);
 
 						exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
@@ -1011,7 +1006,7 @@ public class ContactFacadeEjb
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			visitSummaryDetails.forEach(v -> {
-				SymptomsDto symptoms = SymptomsFacadeEjb.toDto(v.getSymptoms());
+				SymptomsDto symptoms = SymptomsFacadeEjb.toSymptomsDto(v.getSymptoms());
 				pseudonymizer.pseudonymizeDto(SymptomsDto.class, symptoms, v.getInJurisdiction(), null);
 
 				visitSummaryMap.get(v.getContactId())
@@ -1461,7 +1456,8 @@ public class ContactFacadeEjb
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(epiDataFacade.fillOrBuildEntity(source.getEpiData(), target.getEpiData(), checkChangeDate));
-		target.setHealthConditions(healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
+		target.setHealthConditions(
+			healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
 		target.setReturningTraveler(source.getReturningTraveler());
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
@@ -1540,7 +1536,7 @@ public class ContactFacadeEjb
 
 	@Override
 	public List<ContactDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(personUuids).stream());
 	}
 
 	@Override
@@ -1556,7 +1552,6 @@ public class ContactFacadeEjb
 	@RightsAllowed({
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
-
 		return service.getNewContactCountPerClassification(contactCriteria);
 	}
 
@@ -1564,7 +1559,6 @@ public class ContactFacadeEjb
 	@RightsAllowed({
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
-
 		return service.getNewContactCountPerFollowUpStatus(contactCriteria);
 	}
 
@@ -1576,13 +1570,11 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected List<ContactDto> toPseudonymizedDtos(List<Contact> entities) {
+	protected List<ContactDto> toPseudonymizedDtos(List<Contact> adoList) {
 
-		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(entities);
+		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(adoList);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		List<ContactDto> dtos =
-			entities.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		return adoList.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
 	}
 
 	@Override

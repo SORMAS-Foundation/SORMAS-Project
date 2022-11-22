@@ -198,7 +198,7 @@ public final class VaadinUiUtil {
 		});
 	}
 
-	public static void setupEditColumn(Grid.Column column) {
+	public static void setupActionColumn(Grid.Column column) {
 		column.setRenderer(new HtmlRenderer());
 		column.setWidth(20);
 		column.setSortable(false);
@@ -434,6 +434,19 @@ public final class VaadinUiUtil {
 		Integer width,
 		Consumer<PopupOption> resultConsumer) {
 
+		return showThreeOptionsPopup(caption, content, null, optionACaption, optionBCaption, optionCCaption, width, resultConsumer);
+	}
+	
+	public static Window showThreeOptionsPopup(
+		String caption,
+		Component content,
+		String description,
+		String optionACaption,
+		String optionBCaption,
+		String optionCCaption,
+		Integer width,
+		Consumer<PopupOption> resultConsumer) {
+
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 		if (width != null) {
 			popupWindow.setWidth(width, Unit.PIXELS);
@@ -445,6 +458,11 @@ public final class VaadinUiUtil {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 		content.setWidth(100, Unit.PERCENTAGE);
+
+		if (description != null) {
+			layout.addComponent(VaadinUiUtil.createInfoComponent(description));
+		}
+		
 		layout.addComponent(content);
 
 		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {

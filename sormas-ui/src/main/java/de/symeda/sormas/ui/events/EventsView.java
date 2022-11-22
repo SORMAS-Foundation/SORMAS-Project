@@ -319,11 +319,10 @@ public class EventsView extends AbstractView {
 		}
 
 		if (isDefaultViewType()) {
-			Button searchSpecificEventButton = ButtonHelper.createIconButton(
-				Captions.eventSearchSpecificEvent,
-				VaadinIcons.SEARCH,
-				e -> buildAndOpenSearchSpecificEventWindow(),
-				ValoTheme.BUTTON_PRIMARY);
+			Button searchSpecificEventButton = ButtonHelper.createIconButton(Captions.eventSearchSpecificEvent, VaadinIcons.SEARCH, e -> {
+				buildAndOpenSearchSpecificEventWindow();
+				moreButton.setPopupVisible(false);
+			}, ValoTheme.BUTTON_PRIMARY);
 			searchSpecificEventButton.setWidth(100, Unit.PERCENTAGE);
 			moreButton.addMenuEntry(searchSpecificEventButton);
 		}
@@ -555,7 +554,8 @@ public class EventsView extends AbstractView {
 							I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria, true)),
+								items -> ControllerProvider.getEventController()
+									.archiveAllSelectedItems(items, () -> navigateTo(eventCriteria, true)),
 								true),
 							EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())));
 					bulkActions.add(
@@ -564,7 +564,7 @@ public class EventsView extends AbstractView {
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getEventController()
-									.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () ->  navigateTo(eventCriteria, true)),
+									.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria, true)),
 								true),
 							EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())));
 				}

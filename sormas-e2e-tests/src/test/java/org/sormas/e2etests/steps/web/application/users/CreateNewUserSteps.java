@@ -377,7 +377,7 @@ public class CreateNewUserSteps implements En {
         });
 
     When(
-        "I create new ([^\"]*) user for test on DE specific",
+        "^I create new ([^\"]*) user for test on DE specific$",
         (String role) -> {
           user = userService.buildGeneratedUserWithRole(role);
           fillFirstName(user.getFirstName());

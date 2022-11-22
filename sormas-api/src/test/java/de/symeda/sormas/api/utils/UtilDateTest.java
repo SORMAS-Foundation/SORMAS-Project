@@ -72,9 +72,6 @@ public class UtilDateTest {
 		result = UtilDate.from(LocalDate.of(1893, Month.DECEMBER, 31));
 		expected = new GregorianCalendar(1893, Calendar.DECEMBER, 31).getTime();
 		assertDatesEquals(expected, result);
-		result = UtilDate.of(1894, Month.JANUARY, 1);
-		expected = new GregorianCalendar(1894, Calendar.JANUARY, 1).getTime();
-		assertDatesEquals(expected, result);
 
 		// 4-digit year in the past
 		result = UtilDate.from(LocalDate.of(1900, Month.DECEMBER, 6));

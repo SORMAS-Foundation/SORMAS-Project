@@ -3,7 +3,7 @@ package de.symeda.sormas.api.externalmessage;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -20,7 +20,7 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	public static final String BIRTH_DATE_TO = "birthDateTo";
 	public static final String ASSIGNEE = "assignee";
 	public static final String TYPE = "type";
-	@AuditInclude
+	@AuditIncludeProperty
 	private String uuid;
 	private ExternalMessageType type;
 	private ExternalMessageStatus externalMessageStatus;

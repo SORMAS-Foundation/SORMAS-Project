@@ -201,9 +201,9 @@ public class FacilityFacadeEjb
 			.collect(Collectors.toList());
 	}
 
-	@Override
-	protected void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
-
+	@Deprecated
+	private void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
+		// todo with #10927 this will move to the service
 		Join<Facility, Community> community = root.join(Facility.COMMUNITY, JoinType.LEFT);
 		Join<Facility, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<Facility, Region> region = root.join(Facility.REGION, JoinType.LEFT);
@@ -444,7 +444,11 @@ public class FacilityFacadeEjb
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case Facility.NAME:
+				case Facility.POSTAL_CODE:
 				case Facility.CITY:
+				case Facility.STREET:
+				case Facility.HOUSE_NUMBER:
+				case Facility.ADDITIONAL_INFORMATION:
 				case Facility.LATITUDE:
 				case Facility.LONGITUDE:
 				case Facility.EXTERNAL_ID:
@@ -484,7 +488,11 @@ public class FacilityFacadeEjb
 			district.get(District.NAME),
 			community.get(Community.UUID),
 			community.get(Community.NAME),
+			facility.get(Facility.POSTAL_CODE),
 			facility.get(Facility.CITY),
+			facility.get(Facility.STREET),
+			facility.get(Facility.HOUSE_NUMBER),
+			facility.get(Facility.ADDITIONAL_INFORMATION),
 			facility.get(Facility.LATITUDE),
 			facility.get(Facility.LONGITUDE),
 			facility.get(Facility.EXTERNAL_ID));

@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.docgeneneration;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 
 import java.io.Serializable;
@@ -37,7 +37,7 @@ public class DocumentTemplateEntities implements Serializable {
 		return entities.get(rootEntityType);
 	}
 
-	@AuditInclude
+	@AuditIncludeProperty
 	public Map<RootEntityType, Object> getEntities() {
 		return entities;
 	}

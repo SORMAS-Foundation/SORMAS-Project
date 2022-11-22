@@ -507,8 +507,6 @@ public class EventController {
 				new Notification(I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
 			notification.setDelayMsec(10000);
 			notification.show(Page.getCurrent());
-			NotificationHelper
-				.showNotification(I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant), Type.HUMANIZED_MESSAGE, 10000);
 			return true;
 		}
 
@@ -817,7 +815,7 @@ public class EventController {
 						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-			}, (deleteDetails) -> {
+			}, getDeleteConfirmationDetails(Collections.singletonList(eventUuid)), (deleteDetails) -> {
 				FacadeProvider.getEventFacade().undelete(uuid);
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent), uuid, FacadeProvider.getEventFacade());

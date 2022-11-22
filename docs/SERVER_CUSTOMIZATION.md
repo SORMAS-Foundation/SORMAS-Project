@@ -88,15 +88,16 @@ For *Countries*, *Subcontinents* and *Continents*, SORMAS provides a default imp
 
 A **user** is the user account for employees who have access to SORMAS. Similarly, there are technical users that allow external systems to access data.
 Users have one or sometimes more **user roles**. The roles of a user can be chosen by an admin when creating a new user or editing an existing one.
-Each user role is defined by a set of **user rights** and a **jurisdiction** that represents the area of responsibility. For example, the jurisdiction of a surveillance officer is the district, which is defined on the user. User roles that have different areas of responsibility are therefore not combinable.
+Each user role is defined by a set of **user rights**, a **jurisdiction** that represents the area of responsibility and a set of **notifications**. For example, the jurisdiction of a surveillance officer is the district, which is defined on the user. User roles that have different areas of responsibility are therefore not combinable.
 
 ![grafik](https://user-images.githubusercontent.com/23217632/173802276-edeafa20-3f8c-4b21-bc0e-21b7b54f46b4.png)
 
 SORMAS comes with an extensive list of user rights that are used to check which data and functionality can be access by the user in the backend and the user interface.
 To cover the typical use cases, SORMAS defines a set of default user roles that are automatically created when setting up a SORMAS instance.
-
 Most user rights define an action related to an entity type, e.g. the user right *CASE_EDIT* allows users to edit case data.
-The following automatically generated documents list and describe **all user rights and the default user roles**:
+Notifications define when the user with the given role should get an *SMS* and/or *Email* notification.
+
+The following automatically generated documents list and describe **all user rights, notifications and the default user roles**:
 * [https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_User_Roles.xlsx](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_User_Roles.xlsx)
 
 User roles are fully configurable, allowing admins to create new user roles and edit existing ones, to customize the instance to the given needs and to make sure data protection requirements are fulfilled.

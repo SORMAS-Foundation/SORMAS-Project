@@ -84,14 +84,21 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				DocumentRelatedEntityType.TRAVEL_ENTRY,
 				getReference(),
 				UserRight.TRAVEL_ENTRY_EDIT,
-				travelEntryDto.isPseudonymized());
+				travelEntryDto.isPseudonymized(),
+				isEditAllowed());
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getTravelEntryRef(), documentList);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
-			TaskListComponent taskList = new TaskListComponent(TaskContext.TRAVEL_ENTRY, getTravelEntryRef(), travelEntryDto.getDisease());
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+			TaskListComponent taskList = new TaskListComponent(
+				TaskContext.TRAVEL_ENTRY,
+				getTravelEntryRef(),
+				travelEntryDto.getDisease(),
+				this::showUnsavedChangesPopup,
+				isEditAllowed());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}

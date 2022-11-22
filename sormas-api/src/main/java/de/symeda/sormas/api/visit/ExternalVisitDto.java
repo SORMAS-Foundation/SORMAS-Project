@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -36,12 +36,12 @@ public class ExternalVisitDto implements Serializable, Cloneable {
 	@Required
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
 	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
-	@AuditInclude
+	@AuditIncludeProperty
 	private String personUuid;
 	@Required
 	private Disease disease;
 	@Required
-	@AuditInclude
+	@AuditIncludeProperty
 	private Date visitDateTime;
 	@Required
 	private VisitStatus visitStatus;

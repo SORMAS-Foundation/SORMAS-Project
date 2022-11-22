@@ -49,6 +49,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
+	public static final String ASSIGNED_BY_USER = "assignedByUser";
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
 	public static final String EVENT = "event";
@@ -102,6 +103,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 	private UserReferenceDto creatorUser;
 	private String creatorComment;
 	private UserReferenceDto assigneeUser;
+	private UserReferenceDto assignedByUser;
 	private String assigneeReply;
 
 	private TaskJurisdictionFlagsDto taskJurisdictionFlagsDto;
@@ -113,7 +115,8 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 			String travelEntryUuid, String travelEntryExternalId, String travelEntryFirstName, String travelEntryLastName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus, Disease disease,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
-			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply, 
+			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
+			String assignedByUserUuid, String assignedByUserFirstName, String assignedByUsedLastName,
 			String regionUuid, String regionName, String districtUuid, String districtName, String communityUuid, String communityName,
 			String facilityUuid, String facilityName, String pointOfEntryUuid, String pointOfEntryName,
 			boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventInJurisdiction, boolean isTravelEntryInJurisdiction) {
@@ -151,6 +154,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName);
 		this.creatorComment = creatorComment;
 		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName);
+		this.assignedByUser = new UserReferenceDto(assignedByUserUuid, assignedByUserFirstName, assignedByUsedLastName);
 		this.assigneeReply = assigneeReply;
 
 		if (regionUuid != null) {
@@ -176,6 +180,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 			isContactCaseInJurisdiction,
 			isEventInJurisdiction,
 			isTravelEntryInJurisdiction);
+
 	}
 
 	public TaskContext getTaskContext() {
@@ -280,6 +285,14 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 
 	public void setAssigneeReply(String assigneeReply) {
 		this.assigneeReply = assigneeReply;
+	}
+
+	public UserReferenceDto getAssignedByUser() {
+		return assignedByUser;
+	}
+
+	public void setAssignedByUser(UserReferenceDto assignedByUser) {
+		this.assignedByUser = assignedByUser;
 	}
 
 	public TaskPriority getPriority() {

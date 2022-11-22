@@ -37,7 +37,7 @@ public class AdoptAddressLayout extends HorizontalLayout {
         this.caseReference = caseReference;
         adoptAddress = new CheckBox(I18nProperties.getCaption(Captions.adoptHomeAddressOfCasePersonIfRelationMatches));
         showAddressButton = ButtonHelper.createIconButton(VaadinIcons.EYE);
-        showAddressButton.addClickListener(e -> showAddressOfCasePerson(caseReference));
+        showAddressButton.addClickListener(e -> showAddressOfCasePerson(this.caseReference));
         addComponents(adoptAddress, showAddressButton);
         setComponentAlignment(adoptAddress, Alignment.MIDDLE_CENTER);
     }
@@ -45,6 +45,7 @@ public class AdoptAddressLayout extends HorizontalLayout {
     private void showAddressOfCasePerson(CaseReferenceDto caseReference) {
         LocationEditForm locationForm = new LocationEditForm(FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()), UiFieldAccessCheckers.getNoop());
         locationForm.setValue(FacadeProvider.getPersonFacade().getByUuid(FacadeProvider.getCaseFacade().getByUuid(caseReference.getUuid()).getPerson().getUuid()).getAddress());
+        locationForm.setEnabled(false);
         HorizontalLayout layout = new HorizontalLayout(locationForm);
         layout.setMargin(true);
         Window window = VaadinUiUtil.showPopupWindow(layout);

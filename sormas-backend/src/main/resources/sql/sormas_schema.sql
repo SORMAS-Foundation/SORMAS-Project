@@ -12200,4 +12200,17 @@ UPDATE travelentry SET endofprocessingdate = changedate WHERE endofprocessingdat
 
 INSERT INTO schema_version (version_number, comment) VALUES (498, 'Automatic deletion based on end of process date #8996');
 
+-- 2022-10-25 [Merging] Merge persons via bulk actions [5] #5606
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_USER';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN_SUPERVISOR';
+
+INSERT INTO schema_version (version_number, comment) VALUES (499, '[Merging] Merge persons via bulk actions [5] #5606');
+
+-- 2022-11-7 Add the user who assigned the task to task entity #4621
+ALTER  TABLE task ADD COLUMN assignedbyuser_id bigint;
+ALTER  TABLE task_history ADD COLUMN assignedbyuser_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (500, 'Add the user who assigned the task to task entity #4621');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

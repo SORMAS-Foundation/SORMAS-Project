@@ -38,7 +38,7 @@ import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInf
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
@@ -52,7 +52,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
-public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<SormasToSormasShareInfo> {
+public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJurisdiction<SormasToSormasShareInfo> {
 
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
@@ -273,12 +273,12 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
 			List<Case> sharedCases = cases.stream().filter(c -> !c.getExternalShares().isEmpty()).collect(Collectors.toList());
 			if (sharedCases.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteCases(sharedCases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
+				externalSurveillanceToolGatewayFacade.deleteCases(caseFacade.toDtos(sharedCases.stream()));
 			}
 
 			List<Event> sharedEvents = events.stream().filter(e -> !e.getExternalShares().isEmpty()).collect(Collectors.toList());
 			if (sharedEvents.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteEvents(sharedEvents.stream().map(eventFacade::toDto).collect(Collectors.toList()));
+				externalSurveillanceToolGatewayFacade.deleteEvents(eventFacade.toDtos(sharedEvents.stream()));
 			}
 		}
 	}

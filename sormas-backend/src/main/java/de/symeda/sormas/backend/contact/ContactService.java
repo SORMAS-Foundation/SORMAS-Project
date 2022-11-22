@@ -115,7 +115,7 @@ import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
@@ -167,18 +167,15 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	@EJB
 	private VisitService visitService;
 	@EJB
-	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 
 	public ContactService() {
 		super(Contact.class);
 	}
 
-
 	@Override
-	protected void fetchReferences(From<?, Contact> from) {
-
-		from.fetch(Contact.HEALTH_CONDITIONS);
-		from.fetch(Contact.EPI_DATA);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(Contact.HEALTH_CONDITIONS, Contact.EPI_DATA);
 	}
 
 	public List<Contact> findBy(ContactCriteria contactCriteria, User user) {
@@ -690,9 +687,8 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
 		Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-		visitsCq.where(
-			CriteriaBuilderHelper
-				.and(cb, contact.get(Contact.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+		visitsCq
+			.where(CriteriaBuilderHelper.and(cb, contact.get(Contact.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
 		visitsCq.multiselect(
 			visitsCqRoot.get(Visit.ID),
 			visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
@@ -1548,7 +1544,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 				sormasToSormasShareInfoService.ensurePersisted(s);
 			} else {
 				try {
-					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s));
+					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s), false);
 				} catch (SormasToSormasException e) {
 					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
 				}
@@ -1644,7 +1640,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> from) {
 		return inJurisdictionOrOwned(new ContactQueryContext(cb, query, from));
 	}
 
@@ -1772,6 +1768,8 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 			contact.get(Contact.DISEASE),
 			contact.get(Contact.CONTACT_CLASSIFICATION),
 			contact.get(Contact.CONTACT_CATEGORY),
+			contact.get(Contact.REPORT_DATE_TIME),
+			contact.get(Contact.LAST_CONTACT_DATE),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(contactQueryContext)),
 			contact.get(Contact.CHANGE_DATE));
 

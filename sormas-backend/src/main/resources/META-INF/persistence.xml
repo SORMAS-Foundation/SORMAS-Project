@@ -87,23 +87,25 @@
 		<class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
 
 
-
-
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
-		
-		 <properties>
-         	<property name="hibernate.dialect" value="de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect"/>
-			<property name="hibernate.criteria.literal_handling_mode" value="bind" />
-         	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-			<property name="hibernate.show_sql" value="false" />
-			<property name="hibernate.format_sql" value="false" />
-         	<!-- don't validate on release, otherwise the automatic db update won't work
-         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
-         	 -->
-      	</properties>
+
+		<properties>
+			<property name="hibernate.dialect" value="de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect"/>
+			<property name="hibernate.criteria.literal_handling_mode" value="bind"/>
+			<property name="hibernate.transaction.jta.platform"
+					  value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+			<property name="hibernate.show_sql" value="false"/>
+			<property name="hibernate.format_sql" value="false"/>
+
+			<property name="hibernate.cache.use_second_level_cache" value="true"/>
+			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.internal.SingletonEhcacheRegionFactory"/>
+			<!-- don't validate on release, otherwise the automatic db update won't work
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+             -->
+		</properties>
 
 	</persistence-unit>
 	

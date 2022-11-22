@@ -71,6 +71,7 @@ public interface Captions {
 	String actionDismiss = "actionDismiss";
 	String actionEnable = "actionEnable";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
+	String actionExecuteAutomaticDeletion = "actionExecuteAutomaticDeletion";
 	String actionGenerate = "actionGenerate";
 	String actionGenerateNewPassword = "actionGenerateNewPassword";
 	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
@@ -99,6 +100,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionProceed = "actionProceed";
 	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
 	String actionReset = "actionReset";
@@ -535,6 +537,7 @@ public interface Captions {
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
+	String caseJurisdictionType = "caseJurisdictionType";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
@@ -1604,6 +1607,10 @@ public interface Captions {
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
+	String notificationType = "notificationType";
+	String notificationType_caption = "notificationType.caption";
+	String notificationType_description = "notificationType.description";
+	String notificationType_group = "notificationType.group";
 	String notSpecified = "notSpecified";
 	String notTestedYet = "notTestedYet";
 	String numberOfCharacters = "numberOfCharacters";
@@ -2280,6 +2287,7 @@ public interface Captions {
 	String syncUsers = "syncUsers";
 	String system = "system";
 	String Task = "Task";
+	String Task_assignedByUser = "Task.assignedByUser";
 	String Task_assigneeReply = "Task.assigneeReply";
 	String Task_assigneeUser = "Task.assigneeUser";
 	String Task_caze = "Task.caze";
@@ -2483,6 +2491,7 @@ public interface Captions {
 	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
 	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";
 	String versionIsMissing = "versionIsMissing";
+	String view = "view";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_aggregatereporting = "View.aggregatereports.aggregatereporting";

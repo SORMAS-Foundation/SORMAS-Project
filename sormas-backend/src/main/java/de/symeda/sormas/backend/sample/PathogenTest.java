@@ -193,7 +193,7 @@ public class PathogenTest extends DeletableAdo {
 		this.testDateTime = testDateTime;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public Facility getLab() {
 		return lab;
@@ -212,7 +212,7 @@ public class PathogenTest extends DeletableAdo {
 		this.labDetails = labDetails;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getLabUser() {
 		return labUser;

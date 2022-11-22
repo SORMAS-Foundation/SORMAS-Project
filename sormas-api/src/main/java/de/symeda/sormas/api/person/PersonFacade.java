@@ -46,8 +46,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 
-	List<PersonDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
 	 * This only includes persons that are associated with an active case, contact or event participant.
@@ -78,11 +76,17 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	boolean isSharedWithoutOwnership(String uuid);
 
+	boolean isShared(String uuid);
+
 	List<PersonDto> getByExternalIds(List<String> externalIds);
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
+
+	void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties);
+
+	boolean isPersonSimilar(PersonSimilarityCriteria criteria, String personUuid);
 
 	PersonDto getByContext(PersonContext context, String contextUuid);
 
