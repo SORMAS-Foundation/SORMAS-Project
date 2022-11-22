@@ -35,10 +35,17 @@ import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class DocumentFacadeEjbTest extends AbstractBeanTest {
+
+	private byte[] contentAsBytes =  new String("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
+			"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
+			"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
+			"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
+			"0 R>>\nstartxref\n149\n%EOF").getBytes();
 
 	@Test
 	public void testDocumentCreation() throws IOException {
@@ -47,7 +54,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = creator.createEvent(user.toReference());
 
 		DocumentDto document = creator
-			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
+			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), contentAsBytes);
 
 		assertNotNull(getDocumentFacade().getDocumentByUuid(document.getUuid()));
 
@@ -61,7 +68,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = creator.createEvent(user.toReference());
 
 		DocumentDto document = creator
-			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
+			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), contentAsBytes);
 
 		assertEquals(
 			document.getUuid(),
@@ -76,7 +83,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = creator.createEvent(user.toReference());
 
 		DocumentDto document = creator
-			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
+			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), contentAsBytes);
 
 		assertThrows(EntityExistsException.class, () -> getDocumentFacade().saveDocument(document, "duplicate".getBytes(StandardCharsets.UTF_8)));
 	}
@@ -88,7 +95,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = creator.createEvent(user.toReference());
 
 		DocumentDto document = creator
-			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
+			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), contentAsBytes);
 
 		assertNotNull(getDocumentFacade().getDocumentByUuid(document.getUuid()));
 		assertThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()), hasSize(1));
@@ -111,10 +118,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf);
 		EventDto event = creator.createEvent(user.toReference());
-
-		DocumentDto document =
-			creator.createDocument(user.toReference(), "Mail.msg", null, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
-
-		assertEquals("application/octet-stream", getDocumentFacade().getDocumentByUuid(document.getUuid()).getMimeType());
+		assertThrows(FileExtensionNotAllowedException.class, () ->
+				creator.createDocument(user.toReference(), "test.json", null, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8)));
 	}
 }

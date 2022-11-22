@@ -1160,7 +1160,7 @@ public class CaseController {
 	private String getDeleteConfirmationDetails(List<String> caseUuids) {
 		boolean hasPendingRequest = FacadeProvider.getSormasToSormasCaseFacade().hasPendingRequest(caseUuids);
 
-		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : null;
+		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
 	private void deleteCase(CaseDataDto caze, boolean withContacts, DeletionDetails deletionDetails) {
@@ -1762,34 +1762,47 @@ public class CaseController {
 		List<String> notSharableUuids = FacadeProvider.getCaseFacade().getUuidsNotShareableWithExternalReportingTools(selectedUuids);
 		if (CollectionUtils.isNotEmpty(notSharableUuids)) {
 
-			List<String> uuidsWithoutNotSharable =
+			List<String> uuidsWithoutNotShareable =
 				selectedUuids.stream().filter(uuid -> !notSharableUuids.contains(uuid)).collect(Collectors.toList());
 
 			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(notSharableUuids).toString());
 			notShareableListComponent.setWidthFull();
 			notShareableListComponent.setEnabled(false);
 			Label notSharableLabel = new Label(
-				String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable), notSharableUuids.size()),
+				String.format(
+					I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable),
+					notSharableUuids.size(),
+					selectedUuids.size()),
 				ContentMode.HTML);
 			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-				new VerticalLayout(notSharableLabel, notShareableListComponent),
-				String.format(
-					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
-					uuidsWithoutNotSharable.size(),
-					selectedUuids.size()),
-				I18nProperties.getCaption(Captions.actionCancel),
-				800,
-				(confirmed) -> {
-					if (confirmed) {
-						ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotSharable, reloadCallback, false);
-					}
-				});
 
+			if (existShareableCases(selectedUuids.size(), notSharableUuids.size())) {
+				VaadinUiUtil.showPopupWindow(
+					new VerticalLayout(notSharableLabel, notShareableListComponent),
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send));
+			} else {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
+					new VerticalLayout(notSharableLabel, notShareableListComponent),
+					String.format(
+						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
+						uuidsWithoutNotShareable.size(),
+						selectedUuids.size()),
+					I18nProperties.getCaption(Captions.actionCancel),
+					800,
+					(confirmed) -> {
+						if (confirmed) {
+							ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotShareable, reloadCallback, false);
+						}
+					});
+			}
 		} else {
 			ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback, true);
 		}
+	}
+
+	public boolean existShareableCases(int selectedCasesSize, int notShareableCasesSize) {
+		return selectedCasesSize == notShareableCasesSize;
 	}
 
 	private static class JurisdictionValues {

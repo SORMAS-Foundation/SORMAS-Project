@@ -271,16 +271,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected void fetchReferences(From<?, Case> from) {
-
-		from.fetch(Case.SYMPTOMS);
-		from.fetch(Case.THERAPY);
-		from.fetch(Case.CLINICAL_COURSE);
-		from.fetch(Case.HEALTH_CONDITIONS);
-		from.fetch(Case.HOSPITALIZATION);
-		from.fetch(Case.EPI_DATA);
-		from.fetch(Case.PORT_HEALTH_INFO);
-		from.fetch(Case.MATERNAL_HISTORY);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(
+			Case.SYMPTOMS,
+			Case.THERAPY,
+			Case.CLINICAL_COURSE,
+			Case.HEALTH_CONDITIONS,
+			Case.HOSPITALIZATION,
+			Case.EPI_DATA,
+			Case.PORT_HEALTH_INFO,
+			Case.MATERNAL_HISTORY);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -1040,10 +1040,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				sormasToSormasShareInfoService.ensurePersisted(s);
 			} else {
 				try {
-					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s));
+					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s), false);
 				} catch (SormasToSormasException e) {
 					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
 				}
+
 				sormasToSormasShareInfoService.deletePermanent(s);
 			}
 		});
@@ -1652,7 +1653,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return CaseJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
-	public Collection<Case> getByPersonUuids(List<String> personUuids) {
+	public List<Case> getByPersonUuids(List<String> personUuids) {
 
 		List<Case> cases = new ArrayList<>();
 		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> cases.addAll(getCasesByPersonUuids(batchedUuids)));
@@ -1720,7 +1721,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
 		Predicate filter =
-			CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
+			CriteriaBuilderHelper.and(cb, createActiveCasesFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
 
 		if (caseCriteria != null) {
 			if (caseCriteria.getDisease() != null) {

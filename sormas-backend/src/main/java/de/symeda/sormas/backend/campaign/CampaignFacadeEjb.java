@@ -96,8 +96,8 @@ public class CampaignFacadeEjb
 
 		cq.where(filter);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -375,11 +375,6 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<CampaignDto> cq, Root<Campaign> root) {
-
-	}
-
-	@Override
 	public List<String> getAllActiveUuids() {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
@@ -392,8 +387,7 @@ public class CampaignFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.getName());
-		return dto;
+		return new CampaignReferenceDto(entity.getUuid(), entity.getName());
 	}
 
 	@Override

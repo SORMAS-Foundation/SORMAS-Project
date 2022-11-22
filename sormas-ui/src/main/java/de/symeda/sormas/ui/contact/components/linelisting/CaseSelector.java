@@ -67,6 +67,8 @@ public class CaseSelector extends CustomField<CaseReferenceDto> {
 					if (adoptAddressLayout == null) {
 						adoptAddressLayout = new AdoptAddressLayout(selectedCase.toReference());
 						mainLayout.addComponent(adoptAddressLayout);
+					} else {
+						adoptAddressLayout.setCaseReference(selectedCase.toReference());
 					}
 					adoptAddressLayout.setVisible(true);
 					adoptAddressLayout.setAdoptAddress(true);

@@ -206,11 +206,6 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<SubcontinentDto> cq, Root<Subcontinent> root) {
-		// we do not select DTO fields in getAllAfter query
-	}
-
-	@Override
 	protected List<Subcontinent> findDuplicates(SubcontinentDto dto, boolean includeArchived) {
 		return service.getByDefaultName(dto.getDefaultName(), includeArchived);
 	}

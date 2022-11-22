@@ -2,16 +2,22 @@ package de.symeda.sormas.backend.infrastructure.continent;
 
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Continent extends InfrastructureAdo {
 
 	public static final String TABLE_NAME = "continent";

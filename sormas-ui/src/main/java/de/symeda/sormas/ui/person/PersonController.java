@@ -162,6 +162,7 @@ public class PersonController {
 			new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmation)),
 			I18nProperties.getCaption(Captions.actionConfirm),
 			I18nProperties.getCaption(Captions.actionDiscard),
+			480,
 			confirm -> {
 				if (Boolean.TRUE.equals(confirm)) {
 					final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();

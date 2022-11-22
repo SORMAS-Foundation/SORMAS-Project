@@ -14,7 +14,11 @@
  */
 package de.symeda.sormas.backend.document;
 
+import static java.util.Arrays.asList;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,14 +31,23 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
+
 import de.symeda.sormas.api.document.DocumentCriteria;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.FileContentsDoNotMatchExtensionException;
+import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -80,6 +93,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	private ContactService contactService;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -98,8 +113,11 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			dto.setMimeType(MIME_TYPE_DEFAULT);
 		}
 
-		Document document = fillOrBuildEntity(dto, existingDocument,true);
+		String fileExtension = getFileExtension(dto.getName());
+		checkFileExtension(fileExtension);
+		checkFileContents(dto.getName(), content, fileExtension);
 
+		Document document = fillOrBuildEntity(dto, existingDocument,true);
 		String storageReference = documentStorageService.save(document, content);
 		try {
 			document.setStorageReference(storageReference);
@@ -116,6 +134,45 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			}
 			throw t;
 		}
+	}
+
+	private String getFileExtension(String fileName) {
+		int index = fileName.lastIndexOf('.');
+		if(index > 0) {
+			return fileName.substring(index);
+		} else {
+			throw new FileExtensionNotAllowedException(String.format("File name (%s) is not properly formatted", fileName));
+		}
+	}
+
+	private void checkFileExtension(String fileExtension) {
+		String[] allowedFileExtensions = configFacade.getAllowedFileExtensions();
+		boolean fileTypeAllowed = asList(allowedFileExtensions).contains(fileExtension);
+
+		if (!fileTypeAllowed) {
+			throw new FileExtensionNotAllowedException(String.format("File extension %s not allowed", fileExtension));
+		}
+	}
+
+	private void checkFileContents(String fileName, byte[] content, String fileExtension) throws IOException {
+		try {
+			getMimeTypeFromFileContents(fileName, content).getExtensions().stream()
+					.filter(fileExtension::equals)
+					.findAny()
+					.orElseThrow(() -> new FileContentsDoNotMatchExtensionException("File extension and file contents are not the same"));
+		} catch (MimeTypeException e) {
+			throw new FileExtensionNotAllowedException("Could not read file extension within file");
+		}
+	}
+
+	private static MimeType getMimeTypeFromFileContents(String fileName, byte[] content) throws IOException, MimeTypeException {
+		InputStream stream = new ByteArrayInputStream(content);
+		TikaConfig tikaConfig = TikaConfig.getDefaultConfig();
+		Metadata metaData = new Metadata();
+		metaData.set("resourceName", fileName);
+		MediaType detect = tikaConfig.getDetector().detect(stream, metaData);
+
+		return tikaConfig.getMimeRepository().forName(detect.toString());
 	}
 
 	@Override

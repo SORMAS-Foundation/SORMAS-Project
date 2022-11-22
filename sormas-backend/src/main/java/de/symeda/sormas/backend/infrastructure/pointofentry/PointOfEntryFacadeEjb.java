@@ -56,7 +56,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class PointOfEntryFacadeEjb
 	extends
-        AbstractInfrastructureFacadeEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
+	AbstractInfrastructureFacadeEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
 	implements PointOfEntryFacade {
 
 	@EJB
@@ -96,31 +96,6 @@ public class PointOfEntryFacadeEjb
 			.filter(p -> !p.isArchived())
 			.map(PointOfEntryFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<PointOfEntryDto> cq, Root<PointOfEntry> root) {
-
-		Join<PointOfEntry, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
-		Join<PointOfEntry, Region> region = root.join(Facility.REGION, JoinType.LEFT);
-		// Needs to be in the same order as in the constructor
-		cq.multiselect(
-			root.get(PointOfEntry.CREATION_DATE),
-			root.get(PointOfEntry.CHANGE_DATE),
-			root.get(PointOfEntry.UUID),
-			root.get(PointOfEntry.ARCHIVED),
-			root.get(PointOfEntry.POINT_OF_ENTRY_TYPE),
-			root.get(PointOfEntry.NAME),
-			region.get(Region.UUID),
-			region.get(Region.NAME),
-			region.get(Region.EXTERNAL_ID),
-			district.get(District.UUID),
-			district.get(District.NAME),
-			district.get(District.EXTERNAL_ID),
-			root.get(PointOfEntry.LATITUDE),
-			root.get(PointOfEntry.LONGITUDE),
-			root.get(PointOfEntry.ACTIVE),
-			root.get(PointOfEntry.EXTERNAL_ID));
 	}
 
 	@Override

@@ -285,11 +285,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<PersonDto> cq, Root<Person> root) {
-		// There is no shared multiselect in this class
-	}
-
-	@Override
 	public List<PersonDto> getByExternalIds(List<String> externalIds) {
 		return toPseudonymizedDtos(service.getByExternalIds(externalIds));
 	}
@@ -1088,6 +1083,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	public boolean isSharedWithoutOwnership(String uuid) {
 		SormasToSormasOriginInfo originInfo = sormasToSormasOriginInfoService.getByPerson(uuid);
 		return originInfo != null && !originInfo.isOwnershipHandedOver();
+	}
+
+	@Override
+	public boolean isShared(String uuid) {
+		return sormasToSormasOriginInfoService.getByPerson(uuid) != null;
 	}
 
 	/**

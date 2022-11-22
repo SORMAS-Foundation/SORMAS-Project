@@ -527,6 +527,12 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		creator.createPrescription(caze);
 		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		creator.createSurveillanceReport(user.toReference(), caze.toReference());
+
+		byte[] contentAsBytes =  ("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
+				"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
+				"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
+				"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
+				"0 R>>\nstartxref\n149\n%EOF").getBytes();
 		creator.createDocument(
 			user.toReference(),
 			"document.pdf",
@@ -534,7 +540,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 			42L,
 			DocumentRelatedEntityType.CASE,
 			caze.getUuid(),
-			"content".getBytes(StandardCharsets.UTF_8));
+			contentAsBytes);
 
 		CaseDataDto duplicateCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		getCaseFacade().deleteCaseAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
