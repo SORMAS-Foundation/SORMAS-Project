@@ -73,8 +73,11 @@ public class CaseEpiDataView extends AbstractCaseView {
 		Consumer<Boolean> sourceContactsToggleCallback =
 			(visible) -> sourceContactsLayout.setVisible(visible != null && sourceContactsVisible ? visible : false);
 
-		epiDataComponent =
-			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), sourceContactsToggleCallback, isEditAllowed());
+		epiDataComponent = ControllerProvider.getCaseController()
+			.getEpiDataComponent(
+				getCaseRef().getUuid(),
+				sourceContactsToggleCallback,
+				isEditAllowed() && currentUser.hasUserRight(UserRight.CASE_EDIT));
 
 		LayoutWithSidePanel layout = new LayoutWithSidePanel(epiDataComponent, LOC_SOURCE_CONTACTS, TRAVEL_ENTRIES_LOC);
 		container.addComponent(layout);
@@ -83,7 +86,8 @@ public class CaseEpiDataView extends AbstractCaseView {
 			sourceContactsLayout.setMargin(false);
 			sourceContactsLayout.setSpacing(false);
 
-			final SourceContactListComponent sourceContactList = new SourceContactListComponent(getCaseRef(), this, isEditAllowed());
+			final SourceContactListComponent sourceContactList =
+				new SourceContactListComponent(getCaseRef(), this, isEditAllowed() && currentUser.hasUserRight(UserRight.CASE_EDIT));
 			sourceContactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sourceContactsLayout.addComponent(sourceContactList);
 
@@ -95,8 +99,6 @@ public class CaseEpiDataView extends AbstractCaseView {
 				contactCreationDisclaimer.addStyleName(CssStyles.VSPACE_TOP_4);
 
 				sourceContactsLayout.addComponent(contactCreationDisclaimer);
-			} else {
-				sourceContactsLayout.setEnabled(false);
 			}
 
 			epiDataComponent.getWrappedComponent().setGetSourceContactsCallback(sourceContactList::getEntries);
@@ -109,10 +111,14 @@ public class CaseEpiDataView extends AbstractCaseView {
 			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
 			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withCase(getCaseRef()).build();
 			layout.addSidePanelComponent(
-				new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria, this::showUnsavedChangesPopup, isEditAllowed())),
+				new SideComponentLayout(
+					new TravelEntryListComponent(
+						travelEntryListCriteria,
+						this::showUnsavedChangesPopup,
+						isEditAllowed() && currentUser.hasUserRight(UserRight.CASE_EDIT))),
 				TRAVEL_ENTRIES_LOC);
 		}
 
-		setEditPermission(epiDataComponent, EpiDataDto.EXPOSURES, EpiDataDto.ACTIVITIES_AS_CASE);
+		setEditPermission(epiDataComponent, currentUser.hasUserRight(UserRight.CASE_EDIT), EpiDataDto.EXPOSURES, EpiDataDto.ACTIVITIES_AS_CASE);
 	}
 }

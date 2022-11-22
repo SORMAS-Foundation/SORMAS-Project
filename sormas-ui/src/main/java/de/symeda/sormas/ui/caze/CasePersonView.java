@@ -23,6 +23,7 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
@@ -51,6 +52,10 @@ public class CasePersonView extends AbstractCaseView {
 				isEditAllowed());
 
 		setSubComponent(personEditComponent);
-		setEditPermission(personEditComponent, PersonDto.ADDRESSES, PersonDto.PERSON_CONTACT_DETAILS);
+		setEditPermission(
+			personEditComponent,
+			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			PersonDto.ADDRESSES,
+			PersonDto.PERSON_CONTACT_DETAILS);
 	}
 }

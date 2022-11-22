@@ -722,6 +722,7 @@ public interface Strings {
 	String headingViewNotFound = "headingViewNotFound";
 	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
 	String headingViewSurveillanceReport = "headingViewSurveillanceReport";
+	String headingViewTask = "headingViewTask";
 	String headingViewVisit = "headingViewVisit";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";

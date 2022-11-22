@@ -314,11 +314,10 @@ public class PersonController {
 			viewMode,
 			personDto.isPseudonymized(),
 			personDto.isInJurisdiction(),
-			isEditAllowed);
+			isEditAllowed && UserProvider.getCurrent().hasUserRight(editUserRight));
 		editForm.setValue(personDto);
 
-		final CommitDiscardWrapperComponent<PersonEditForm> editView =
-			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {

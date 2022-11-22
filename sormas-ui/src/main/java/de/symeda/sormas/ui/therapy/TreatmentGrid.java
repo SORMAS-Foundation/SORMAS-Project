@@ -33,12 +33,10 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 	public TreatmentGrid(boolean isPseudonymized, boolean isEditAllowed) {
 		setSizeFull();
 
-		if (isEditAllowed) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				setSelectionMode(SelectionMode.MULTI);
-			} else {
-				setSelectionMode(SelectionMode.NONE);
-			}
+		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setSelectionMode(SelectionMode.MULTI);
+		} else {
+			setSelectionMode(SelectionMode.NONE);
 		}
 
 		BeanItemContainer<TreatmentIndexDto> container = new BeanItemContainer<>(TreatmentIndexDto.class);
