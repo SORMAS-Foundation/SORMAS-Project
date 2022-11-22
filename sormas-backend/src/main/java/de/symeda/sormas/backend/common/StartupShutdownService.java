@@ -55,6 +55,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +124,7 @@ public class StartupShutdownService {
 
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
+	static final String VERSIONING_FUNCTION = "sql/versioning_function.sql";
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 	//@formatter:off
     private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
@@ -213,6 +215,8 @@ public class StartupShutdownService {
 
 		logger.info("Initiating automatic database update of main database...");
 		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.SORMAS, em, SORMAS_SCHEMA);
+
+		createVersioningFunction(UpdateQueryTransactionWrapper.TargetDb.SORMAS);
 
 		logger.info("Initiating automatic database update of audit database...");
 		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.AUDIT, emAudit, AUDIT_SCHEMA);
@@ -660,7 +664,7 @@ public class StartupShutdownService {
 		}
 
 		// Check that required extensions are installed
-		Stream.of("temporal_tables", "pg_trgm").filter(t -> {
+		Stream.of("pg_trgm").filter(t -> {
 			String q = "select count(*) from pg_extension where extname = '" + t + "'";
 			int count = ((Number) entityManager.createNativeQuery(q).getSingleResult()).intValue();
 			return count == 0;
@@ -689,7 +693,7 @@ public class StartupShutdownService {
 		logger.info("Starting automatic database update...");
 
 		boolean hasSchemaVersion =
-			!entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
+				!entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
 		Integer databaseVersion;
 		if (hasSchemaVersion) {
 			databaseVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();
@@ -698,7 +702,7 @@ public class StartupShutdownService {
 		}
 
 		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName);
-			Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
+			 Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
 			StringBuilder nextUpdateBuilder = new StringBuilder();
 			boolean currentVersionReached = databaseVersion == null;
 
@@ -736,6 +740,22 @@ public class StartupShutdownService {
 			throw new UncheckedIOException(e);
 		} finally {
 			logger.info("Database update completed.");
+		}
+	}
+
+	private void createVersioningFunction(UpdateQueryTransactionWrapper.TargetDb db) {
+
+		logger.info("Starting create versioning function...");
+
+		final InputStream versioningFunctionStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(VERSIONING_FUNCTION);
+		try {
+			final String versioningFunction = IOUtils.toString(versioningFunctionStream, StandardCharsets.UTF_8);
+			updateQueryTransactionWrapper.executeUpdate(db, versioningFunction);
+		}  catch (IOException e) {
+			logger.error("Could not load {} file. Create versioning function not performed.", VERSIONING_FUNCTION);
+			throw new UncheckedIOException(e);
+		} finally {
+			logger.info("Creating versioning function completed.");
 		}
 	}
 
