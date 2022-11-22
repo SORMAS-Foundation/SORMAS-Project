@@ -65,7 +65,7 @@
     <string name="action_login_default_user">Sign in as demo user</string>
     <string name="action_logout">Logout</string>
     <string name="action_logout_anyway">Logout anyway</string>
-    <string name="action_markAllAsRead">Mark all as read</string>
+    <string name="action_markAllAsRead">Sync &amp; Reload Settings</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
     <string name="action_new_immunization">New Immunization</string>

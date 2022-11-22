@@ -41,6 +41,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.jakewharton.processphoenix.ProcessPhoenix;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -358,6 +359,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 		case R.id.action_readAll:
 			// TODO
+			restartAndUpdateApplication();
 			return true;
 
 //		case R.id.action_help:
@@ -736,6 +738,13 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 	public void goToNewView() {
 		throw new NotImplementedException("goToNewView");
 	}
+
+	public void restartAndUpdateApplication() {
+		ProcessPhoenix.triggerRebirth(getApplicationContext());
+		ProcessPhoenix.triggerRebirth(getActiveActivity());
+	}
+
+
 
 	@Override
 	public View getRootView() {

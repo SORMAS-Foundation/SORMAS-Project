@@ -182,7 +182,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 325;
+	public static final int DATABASE_VERSION = 326;
 
 	private static DatabaseHelper instance = null;
 
@@ -223,7 +223,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		try {
 			ConnectionSource connectionSource = getCaseDao().getConnectionSource();
-		/*	TableUtils.clearTable(connectionSource, Case.class);
+			TableUtils.clearTable(connectionSource, Case.class);
 			TableUtils.clearTable(connectionSource, Immunization.class);
 			TableUtils.clearTable(connectionSource, Vaccination.class);
 			TableUtils.clearTable(connectionSource, Treatment.class);
@@ -258,7 +258,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
 			TableUtils.clearTable(connectionSource, CampaignFormData.class);
-			TableUtils.clearTable(connectionSource, LbdsSync.class);*/
+			TableUtils.clearTable(connectionSource, CampaignFormMeta.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -298,6 +298,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			Log.e(DatabaseHelper.class.getName(), "Can't clear config table", e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static void dropDatabase() {
+		clearTables(true);
 	}
 
 	/**
@@ -2887,6 +2891,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"    );");
 					getDao(CampaignFormData.class).executeRaw("CREATE UNIQUE INDEX campaignFormDataPreventDuplicate ON campaignFormData(campaign_id, campaignFormMeta_id, community_id);");
 
+
+				case 325:
+					currentVersion = 325;
+
+					getDao(CampaignFormData.class).executeRaw("DROP INDEX IF EXISTS campaignFormDataPreventDuplicate;");
+
 					// ATTENTION: break should only be done after last version
 					break;
 
@@ -3860,8 +3870,5 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return instance.context.getResources().getString(stringResourceId);
 	}
 
-	public void deleteCampaignRecord(final String Uuidc) throws SQLException {
-		getDao(CampaignFormData.class).executeRaw("DELETE FROM campaignFormData WHERE uuid = " + Uuidc + ";");
-	}
 }
 

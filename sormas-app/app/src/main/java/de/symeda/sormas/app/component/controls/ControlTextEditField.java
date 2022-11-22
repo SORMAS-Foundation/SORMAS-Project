@@ -485,6 +485,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         view.setFieldValue(text);
     }
 
+
     @BindingAdapter("value")
     public static void setValue(ControlTextEditField view, Integer integerValue) {
         if (integerValue != null) {

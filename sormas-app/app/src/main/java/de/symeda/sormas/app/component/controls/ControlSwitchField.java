@@ -16,7 +16,11 @@
 package de.symeda.sormas.app.component.controls;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -284,6 +288,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 			setEnumClass(YesNo.class);
 		}
 
+
 		input.setOnCheckedChangeListener((radioGroup, i) -> {
 
 			setEnumClass(YesNo.class);
@@ -430,7 +435,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 		}
 
 		if (value != null) {
-			value = value.equals("YES") ? 0 : 1;
+			value = value.equals("YES") || value.equals("Yes") ? 0 : 1;
 		} else{
 			value = defaultValue;
 		}
@@ -445,4 +450,6 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 	public void setUseAbbreviations(boolean useAbbreviations) {
 		this.useAbbreviations = useAbbreviations;
 	}
+
+
 }

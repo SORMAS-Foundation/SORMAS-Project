@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.component.controls;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -93,7 +95,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 			try {
 				hint = a.getString(R.styleable.ControlPropertyEditField_hint);
 				required = a.getBoolean(R.styleable.ControlPropertyEditField_required, false);
-				softRequired = a.getBoolean(R.styleable.ControlPropertyEditField_softRequired, false);
+				softRequired = a.getBoolean(R.styleable.ControlPropertyEditField_softRequired, false);//ControlPropertyEditField_softRequired, false);
 			} finally {
 				a.recycle();
 			}
@@ -105,6 +107,14 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 		this.errorMessage = errorMessage;
 
 		changeErrorState();
+	}
+
+	public String enableErrorStatex(String errorMessage) {
+		this.hasError = true;
+		this.errorMessage = errorMessage;
+
+		changeErrorState();
+		return "";
 	}
 
 	public void enableErrorState(int messageResourceId) {
@@ -188,6 +198,18 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 			}
 		}
 	}
+
+	protected void showErrorNotificationx() {
+		//if (hasError && notificationContext != null && errorMessage != null) {
+			if (notificationContext instanceof AbstractDialog) {
+				NotificationHelper.showDialogNotification(notificationContext, NotificationType.ERROR, errorMessage);
+			} else {
+				NotificationHelper.showNotification(notificationContext, NotificationType.ERROR, errorMessage);
+			}
+		//}
+	}
+
+
 
 	protected void showWarningNotification() {
 		if (hasWarning && notificationContext != null && warningMessage != null) {
@@ -327,12 +349,16 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 		setSoftRequired(softRequired);
 		setWarning(hasWarning);
 
+	//	System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ what is the error message "+errorMessage);
+
 		if (labelRequired != null) {
 			labelRequired.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
+					System.out.println("Checking if notification context is attached");
 					if (notificationContext != null && errorMessage != null) {
+						System.out.println("YEs its attached!!!!!!!!!!!!!!!!!!!!!!!!!!");
 						showErrorNotification();
 					}
 				}
@@ -346,7 +372,87 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 				@Override
 				public void onClick(View v) {
 					if (notificationContext != null && errorMessage != null) {
+						showErrorNotificationx();
+					}
+				}
+			});
+		}
+
+		if (labelWarning != null) {
+			labelWarning.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					if (notificationContext != null && warningMessage != null) {
+						showWarningNotification();
+					}
+				}
+			});
+		}
+
+		// Validation
+		addValueChangedListener(new ValueChangeListener() {
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+				((ControlPropertyEditField) field).disableErrorState();
+				if (!liveValidationDisabled) {
+					((ControlPropertyEditField) field).setErrorIfEmpty();
+					((ControlPropertyEditField) field).setErrorIfEmptyRange();
+
+					if (validationCallback != null) {
+						validationCallback.call();
+					}
+				}
+			}
+		});
+	}
+
+	protected void initLabelAndValidationListenersErrorMsg(String ErrorMsg) {
+		errorMessage = ErrorMsg != null && !ErrorMsg.equals("") ? ErrorMsg : errorMessage;
+		labelRequired = this.findViewById(R.id.required_indicator);
+		labelSoftRequired = this.findViewById(R.id.soft_required_indicator);
+		labelError = this.findViewById(R.id.error_indicator);
+		labelWarning = this.findViewById(R.id.warning_indicator);
+		setRequired(required);
+		setSoftRequired(softRequired);
+		setWarning(hasWarning);
+
+
+		if (labelRequired != null) {
+			labelRequired.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+
+					if (notificationContext != null && errorMessage != null) {
 						showErrorNotification();
+					}
+				}
+			});
+		}
+
+
+
+		if (labelError != null) {
+			System.out.println("setting onclick for Error");
+		//	labelError.setVisibility(GONE);
+			labelError.setOnClickListener(new OnClickListener() {
+
+
+				@Override
+				public void onClick(View v) {
+					errorMessage = ErrorMsg != null && !ErrorMsg.equals("") ? ErrorMsg : errorMessage;
+					if(!errorMessage.isEmpty() || !errorMessage.equals("") ) {
+						labelError.setText(errorMessage);
+					}
+					if (errorMessage != null) {
+						NotificationHelper.showNotification(v.getRootView(), ERROR, errorMessage);
+
+//						hasError = true;
+//						changeErrorState();
+//						System.out.println("Yes!!!!!!!!!!!!!1");
+//						showErrorNotification();
 					}
 				}
 			});

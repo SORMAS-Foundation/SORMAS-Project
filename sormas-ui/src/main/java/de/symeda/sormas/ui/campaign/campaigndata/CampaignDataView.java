@@ -573,6 +573,9 @@ public class CampaignDataView extends AbstractCampaignView {
 					CampaignReferenceDto campaign = FacadeProvider.getCampaignFacade()
 							.getReferenceByUuid(innerSplit[1]);
 					criteria.setCampaign(campaign);
+					
+				//	campaignSelector.setValue(criteria.getCampaign());
+					
 				}
 				if (queryParameter.contains("campaignFormMeta")) { 
 					CampaignFormMetaReferenceDto campaignsmeta = FacadeProvider.getCampaignFormMetaFacade()

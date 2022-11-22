@@ -8640,6 +8640,12 @@ ALTER TABLE campaignformmeta ADD COLUMN expiry_day_capaign character varying(50)
 
 INSERT INTO schema_version (version_number, comment) VALUES (431, 'Adding the Modality category to the forms #279');
 
+--Refactoring User Formaccess Enum #301
+UPDATE users_formaccess u  SET user_id = u.user_id, formaccess = 'FLW' FROM users_formaccess WHERE  u.formaccess = 'PRE';
+UPDATE campaignformmeta SET formcategory = 'FLW' WHERE  formcategory = 'PRE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (432, 'Change PRE formacess to FLW #301');
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 

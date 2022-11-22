@@ -574,6 +574,11 @@ public class CampaignFormBuilder {
 
 		switch (type) {
 		case YES_NO:
+			if(value != null) {
+				System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO "+value);
+			value = value.toString().equalsIgnoreCase("YES") ? true : value.toString().equalsIgnoreCase("NO") ? false : value;
+			
+			}
 			((NullableOptionGroup) field).setValue(Sets.newHashSet(value));
 			break;
 		case TEXT:
@@ -838,7 +843,10 @@ public class CampaignFormBuilder {
 		return fields.keySet().stream().map(id -> {
 			Field<?> field = fields.get(id);
 			if (field instanceof NullableOptionGroup) {
-				return new CampaignFormDataEntry(id, ((NullableOptionGroup) field).getNullableValue());
+				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " +field.getValue());
+				return new CampaignFormDataEntry(id, field.getValue() != null ? field.getValue().toString().equals("[true]") ? "Yes"  : "No" : field.getValue());
+				
+			//	return new CampaignFormDataEntry(id, ((NullableOptionGroup) field).getNullableValue());
 			} /*
 				 * else if (field instanceof DateField) {
 				 * 
@@ -850,7 +858,7 @@ public class CampaignFormBuilder {
 				 * field).getDateFormat().format(field.getValue()+"", null))); return new
 				 * CampaignFormDataEntry(id, ((DateField)
 				 * field).getDateFormat().format(field.getValue()+"", null)); }
-				 */else {
+				 */ else {
 				return new CampaignFormDataEntry(id, field.getValue());
 			}
 		}).collect(Collectors.toList());

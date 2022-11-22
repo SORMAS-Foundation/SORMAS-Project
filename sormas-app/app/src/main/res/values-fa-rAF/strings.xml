@@ -65,11 +65,11 @@
     <string name="action_login_default_user">Sign in as demo user</string>
     <string name="action_logout">Logout</string>
     <string name="action_logout_anyway">Logout anyway</string>
-    <string name="action_markAllAsRead">Mark all as read</string>
+    <string name="action_markAllAsRead">Sync &amp; Reload Settings</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
     <string name="action_new_immunization">New Immunization</string>
-    <string name="action_new_campaign_form_data">New Campaign Form Data</string>
+    <string name="action_new_campaign_form_data">داده های فرم کمپین جدید</string>
     <string name="action_new_contact">New Contact</string>
     <string name="action_new_event">New Event</string>
     <string name="action_new_sample">New Sample</string>
@@ -108,7 +108,7 @@
     <string name="action_set_cleared_to_unknown">Set Cleared to Unknown</string>
     <string name="action_show_classification_rules">View classification rules</string>
     <string name="action_submit_report">Submit Weekly Report</string>
-    <string name="action_sync">Submit Data</string>
+    <string name="action_sync">ارسال داده ها</string>
     <string name="action_transfer_case">Transfer case</string>
     <string name="action_try_again">Try again</string>
     <string name="action_turn_on_gps">Turn On GPS</string>

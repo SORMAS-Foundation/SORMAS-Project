@@ -109,6 +109,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			Trace syncModeTrace = null;
 			switch (syncMode) {
 			case Changes:
+				System.out.println("----------------------- changes");
 				syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeChangesTrace");
 				syncModeTrace.start();
 
@@ -129,6 +130,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				syncModeTrace.stop();
 				break;
 			case Complete:
+				System.out.println("----------------------- complete");
 				syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeCompleteTrace");
 				syncModeTrace.start();
 
@@ -140,6 +142,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				syncModeTrace.stop();
 				break;
 			case CompleteAndRepull:
+
+				System.out.println("----------------------- CompleteAndRepull");
 				syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeCompleteAndRepullTrace");
 				syncModeTrace.start();
 
@@ -326,6 +330,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			if (campaignFormDataDtoHelper.pullAndPushEntities())
 				campaignFormDataDtoHelper.pullEntities(true);
+
+			repullData();
 		}
 	}
 
