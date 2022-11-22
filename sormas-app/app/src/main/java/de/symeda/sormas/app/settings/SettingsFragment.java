@@ -291,6 +291,7 @@ public class SettingsFragment extends BaseLandingFragment {
 
 	public void logout() {
 		checkAndShowUnsynchronizedChangesDialog(() -> {
+			DatabaseHelper.dropDatabase();
 			ConfigProvider.clearUserLogin();
 			ConfigProvider.clearPin();
 			Intent intent = new Intent(getActivity(), LoginActivity.class);
