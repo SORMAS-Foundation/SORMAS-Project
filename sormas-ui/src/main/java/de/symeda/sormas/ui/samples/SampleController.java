@@ -133,13 +133,14 @@ public class SampleController {
 	 * @param sampleComponent
 	 *            to add the pathogen test create component to.
 	 */
-	public void addPathogenTestComponent(
+	public CollapsiblePathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		boolean viaLims,
-		boolean deleteOnCancel) {
+		boolean deleteOnCancel,
+		boolean addSeparator) {
 
 		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
-		addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true, viaLims, deleteOnCancel);
+		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true, viaLims, deleteOnCancel, addSeparator);
 	}
 
 	public CollapsiblePathogenTestForm addPathogenTestComponent(
@@ -147,8 +148,9 @@ public class SampleController {
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
 		boolean isNew,
-		boolean viaLims) {
-		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew, viaLims, false);
+		boolean viaLims,
+		boolean addSeparator) {
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew, viaLims, false, addSeparator);
 	}
 
 	/**
@@ -174,10 +176,12 @@ public class SampleController {
 		Runnable callback,
 		boolean isNew,
 		boolean viaLims,
-		boolean deleteOnCancel) {
+		boolean deleteOnCancel,
+		boolean addSeparator) {
 		// add horizontal rule to clearly distinguish the component
 		Label separator = new Label("<br/><hr/><br/>", ContentMode.HTML);
 		separator.setWidth(100f, Unit.PERCENTAGE);
+		separator.setVisible(addSeparator);
 		sampleComponent.addComponent(separator, sampleComponent.getComponentCount() - 1);
 
 		PathogenTestForm pathogenTestForm =
@@ -283,7 +287,11 @@ public class SampleController {
 		return editView;
 	}
 
-	public void addPathogenTestButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView, boolean viaLims) {
+	public void addPathogenTestButton(
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView,
+		boolean viaLims,
+		Runnable addCallback,
+		Runnable deleteCallback) {
 
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			return;
@@ -291,7 +299,10 @@ public class SampleController {
 
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
 		addPathogenTestButton.addClickListener((e) -> {
-			addPathogenTestComponent(editView, viaLims, true);
+			addCallback.run();
+			CollapsiblePathogenTestForm pathogenTestForm = addPathogenTestComponent(editView, viaLims, true, true);
+
+			pathogenTestForm.addDetachListener((de) -> deleteCallback.run());
 		});
 		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
 	}

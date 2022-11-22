@@ -545,6 +545,10 @@ public interface Strings {
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
+	String headingExternalMessageExistingPathogenTests = "headingExternalMessageExistingPathogenTests";
+	String headingExternalMessageNewPathogenTests = "headingExternalMessageNewPathogenTests";
+	String headingExternalMessageProcessSample = "headingExternalMessageProcessSample";
+	String headingExternalMessageSampleInformation = "headingExternalMessageSampleInformation";
 	String headingExternalMessagesDeleted = "headingExternalMessagesDeleted";
 	String headingExternalMessagesDeleteProcessed = "headingExternalMessagesDeleteProcessed";
 	String headingFatalities = "headingFatalities";

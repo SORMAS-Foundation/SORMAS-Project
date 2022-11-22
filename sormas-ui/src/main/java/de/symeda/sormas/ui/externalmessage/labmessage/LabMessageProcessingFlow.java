@@ -415,6 +415,6 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, user));
 		}
 
-		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent);
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, null);
 	}
 }
