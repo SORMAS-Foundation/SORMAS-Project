@@ -198,6 +198,7 @@ public class ContactsView extends AbstractView {
 					AbstractContactGrid<?> grid = (AbstractContactGrid<?>) this.grid;
 					grid.reload();
 				});
+				moreButton.setPopupVisible(false);
 			}, ValoTheme.BUTTON_PRIMARY);
 			importButton.setWidth(100, Unit.PERCENTAGE);
 

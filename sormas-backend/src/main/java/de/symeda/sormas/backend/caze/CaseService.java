@@ -1653,7 +1653,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return CaseJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
-	public Collection<Case> getByPersonUuids(List<String> personUuids) {
+	public List<Case> getByPersonUuids(List<String> personUuids) {
 
 		List<Case> cases = new ArrayList<>();
 		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> cases.addAll(getCasesByPersonUuids(batchedUuids)));
@@ -1721,7 +1721,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
 		Predicate filter =
-			CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
+			CriteriaBuilderHelper.and(cb, createActiveCasesFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
 
 		if (caseCriteria != null) {
 			if (caseCriteria.getDisease() != null) {

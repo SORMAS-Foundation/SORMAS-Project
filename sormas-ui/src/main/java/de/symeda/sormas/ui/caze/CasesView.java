@@ -263,8 +263,10 @@ public class CasesView extends AbstractView {
 	private void addCommonCasesOverviewToolbar() {
 		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
 
-		Button openGuideButton = ButtonHelper
-			.createIconButton(Captions.caseOpenCasesGuide, VaadinIcons.QUESTION, e -> buildAndOpenCasesInstructions(), ValoTheme.BUTTON_PRIMARY);
+		Button openGuideButton = ButtonHelper.createIconButton(Captions.caseOpenCasesGuide, VaadinIcons.QUESTION, e -> {
+			buildAndOpenCasesInstructions();
+			moreButton.setPopupVisible(false);
+		}, ValoTheme.BUTTON_PRIMARY);
 		openGuideButton.setWidth(100, Unit.PERCENTAGE);
 		moreButton.addMenuEntry(openGuideButton);
 
@@ -432,6 +434,7 @@ public class CasesView extends AbstractView {
 				} else {
 					enterBulkEditMode();
 				}
+				moreButton.setPopupVisible(false);
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
@@ -461,11 +464,10 @@ public class CasesView extends AbstractView {
 			moreButton.addMenuEntry(mergeDuplicatesButton);
 		}
 
-		Button searchSpecificCaseButton = ButtonHelper.createIconButton(
-			Captions.caseSearchSpecificCase,
-			VaadinIcons.SEARCH,
-			e -> buildAndOpenSearchSpecificCaseWindow(),
-			ValoTheme.BUTTON_PRIMARY);
+		Button searchSpecificCaseButton = ButtonHelper.createIconButton(Captions.caseSearchSpecificCase, VaadinIcons.SEARCH, e -> {
+			buildAndOpenSearchSpecificCaseWindow();
+			moreButton.setPopupVisible(false);
+		}, ValoTheme.BUTTON_PRIMARY);
 		searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
 		moreButton.addMenuEntry(searchSpecificCaseButton);
 

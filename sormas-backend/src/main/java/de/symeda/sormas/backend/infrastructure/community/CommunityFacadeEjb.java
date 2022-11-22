@@ -89,28 +89,6 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<CommunityDto> cq, Root<Community> root) {
-
-		Join<Community, District> district = root.join(Community.DISTRICT, JoinType.LEFT);
-		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
-		// Need to be in the same order as in the constructor
-		cq.multiselect(
-			root.get(AbstractDomainObject.CREATION_DATE),
-			root.get(AbstractDomainObject.CHANGE_DATE),
-			root.get(AbstractDomainObject.UUID),
-			root.get(InfrastructureAdo.ARCHIVED),
-			root.get(Community.NAME),
-			root.get(Community.GROWTH_RATE),
-			region.get(AbstractDomainObject.UUID),
-			region.get(Region.NAME),
-			region.get(Region.EXTERNAL_ID),
-			district.get(AbstractDomainObject.UUID),
-			district.get(District.NAME),
-			district.get(District.EXTERNAL_ID),
-			root.get(Community.EXTERNAL_ID));
-	}
-
-	@Override
 	public List<CommunityDto> getIndexList(CommunityCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

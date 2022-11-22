@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -75,6 +74,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
@@ -3088,6 +3088,32 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// getArchivedUuidsSince should return length 0
 		assertEquals(0, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
+	}
+
+	@Test
+	public void testGetCaseSelectionListWithArchivedCases() {
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonDto personDto = creator.createPerson("John", "Doe");
+
+		CaseDataDto case1 = creator.createCase(user, personDto.toReference(), rdcf);
+		CaseDataDto case2 = creator.createCase(user, personDto.toReference(), rdcf);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setSourceCaseInfoLike("John");
+
+		List<CaseSelectionDto> caseSelectionDtos = getCaseFacade().getCaseSelectionList(caseCriteria);
+		assertEquals(2, caseSelectionDtos.size());
+		List<String> caseUuids = caseSelectionDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(caseUuids.contains(case1.getUuid()));
+		assertTrue(caseUuids.contains(case2.getUuid()));
+
+		getCaseFacade().archive(case1.getUuid(), null);
+		caseSelectionDtos = getCaseFacade().getCaseSelectionList(caseCriteria);
+		assertEquals(1, caseSelectionDtos.size());
+		caseUuids = caseSelectionDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertFalse(caseUuids.contains(case1.getUuid()));
+		assertTrue(caseUuids.contains(case2.getUuid()));
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

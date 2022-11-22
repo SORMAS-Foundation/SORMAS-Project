@@ -350,7 +350,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		for (ClinicalVisitExportDto exportDto : resultList) {
-			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
+			exportDto.setSymptoms(SymptomsFacadeEjb.toSymptomsDto(symptomsService.getById(exportDto.getSymptomsId())));
 
 			Boolean inJurisdiction = exportDto.getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(ClinicalVisitExportDto.class, exportDto, inJurisdiction, (v) -> {
@@ -421,7 +421,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setClinicalCourse(ClinicalCourseFacadeEjb.toReferenceDto(source.getClinicalCourse()));
-		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
+		target.setSymptoms(SymptomsFacadeEjb.toSymptomsDto(source.getSymptoms()));
 		target.setDisease(source.getDisease());
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
