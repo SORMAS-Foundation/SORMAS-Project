@@ -8,15 +8,16 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class EventParticipantListEntry extends HorizontalLayout {
 
@@ -83,29 +84,18 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		mainLayout.addComponent(titleLabel);
 
 		if (eventParticipantListEntryDto.getEventStartDate() != null) {
-			HorizontalLayout eventDateLayout = new HorizontalLayout();
-
-			boolean multiDayEvent = eventParticipantListEntryDto.getEventEndDate() != null;
-
-			String startDateCaption = multiDayEvent ? Captions.Event_startDate : Captions.singleDayEventDate;
-			Label eventStartDateLabel = new Label(
-				I18nProperties.getCaption(startDateCaption)
-					+ SEPARATOR
-					+ DateFormatHelper.formatDate(eventParticipantListEntryDto.getEventStartDate()));
-			eventDateLayout.addComponent(eventStartDateLabel);
-			eventDateLayout.setComponentAlignment(eventStartDateLabel, Alignment.MIDDLE_LEFT);
-
-			if (multiDayEvent) {
-				Label eventEndDateLabel = new Label(
-					I18nProperties.getCaption(Captions.Event_endDate)
-						+ SEPARATOR
-						+ DateFormatHelper.formatDate(eventParticipantListEntryDto.getEventEndDate()));
-				eventDateLayout.addComponent(eventEndDateLabel);
-				eventDateLayout.setComponentAlignment(eventEndDateLabel, Alignment.MIDDLE_RIGHT);
+			Language userLanguage = I18nProperties.getUserLanguage();
+			String eventDate;
+			if (eventParticipantListEntryDto.getEventEndDate() == null) {
+				eventDate = DateHelper.formatLocalDate(eventParticipantListEntryDto.getEventStartDate(), userLanguage);
+			} else {
+				eventDate = String.format(
+					"%s - %s",
+					DateHelper.formatLocalDate(eventParticipantListEntryDto.getEventStartDate(), userLanguage),
+					DateHelper.formatLocalDate(eventParticipantListEntryDto.getEventEndDate(), userLanguage));
 			}
-
-			eventDateLayout.setWidthFull();
-			mainLayout.addComponent(eventDateLayout);
+			Label eventDateLabel = new Label(I18nProperties.getCaption(Captions.singleDayEventDate) + ": " + eventDate);
+			mainLayout.addComponent(eventDateLabel);
 		}
 	}
 
