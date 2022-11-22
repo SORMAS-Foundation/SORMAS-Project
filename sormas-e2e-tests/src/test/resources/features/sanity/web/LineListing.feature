@@ -20,3 +20,10 @@ Feature: Cases using Line Listing feature
     And I save the new contact using line listing feature
     Then I click on the Contacts button from navbar
     And I check that contact created from Line Listing is saved and displayed in results grid
+
+  @env_main @#7468
+  Scenario: Validate Line listing Configuration section
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    When I click on Line Listing button in Configuration tab
+    Then I Verify the page elements are present in Line Listing Configuration Page
