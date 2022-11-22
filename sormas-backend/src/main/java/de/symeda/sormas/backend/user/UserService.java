@@ -521,6 +521,20 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter,
 					cb.notEqual(from.get(User.USER_TYPE), UserType.EOC_USER));
 		}
+		
+		if(this.getCurrentUser().hasAnyUserRole(UserRole.ADMIN_SUPERVISOR)) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(from.get(User.REGION), this.getCurrentUser().getRegion()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isMember(UserRole.REST_USER, from.get(User.USER_ROLES)));
+		}
+		if(this.getCurrentUser().hasAnyUserRole(UserRole.AREA_ADMIN_SUPERVISOR)) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(from.get(User.AREA), this.getCurrentUser().getArea()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isMember(UserRole.REST_USER, from.get(User.USER_ROLES)));
+
+		}		
 		return filter;
 	}
 

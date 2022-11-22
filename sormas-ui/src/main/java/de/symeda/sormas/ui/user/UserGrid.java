@@ -29,6 +29,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -61,75 +62,88 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			setLazyDataProvider();
 			setCriteria(getCriteria());
 		}
-		//addEditColumn(e -> ControllerProvider.getUserController().edit(e));
-		
-		//addItemClickListener(new ShowDetailsListener<>(UserDto.UUID, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.ACTIVE, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_ROLES, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_NAME, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.NAME, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_EMAIL, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_ORGANISATION, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_POSITION, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.AREA, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.REGION, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.DISTRICT, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_POSITION, e -> ControllerProvider.getUserController().edit(e)));
-		
-		
-		//addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e -> handler.accept(e)));   //addEditColumn
-		
+		// addEditColumn(e -> ControllerProvider.getUserController().edit(e));
+
+		// addItemClickListener(new ShowDetailsListener<>(UserDto.UUID, e ->
+		// ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.ACTIVE, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.USER_ROLES, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.USER_NAME, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.NAME, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.USER_EMAIL, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_ORGANISATION,
+				e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.USER_POSITION, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.AREA, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.REGION, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.DISTRICT, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(
+				new ShowDetailsListener<>(UserDto.USER_POSITION, e -> ControllerProvider.getUserController().edit(e)));
+
+		// addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e ->
+		// handler.accept(e))); //addEditColumn 
 
 		setColumns(
-		//	EDIT_BTN_ID,
-		//	UserDto.UUID,
-			UserDto.ACTIVE,
-			UserDto.USER_ROLES,
-			UserDto.USER_NAME,
-			UserDto.NAME,
-			UserDto.USER_EMAIL,
-			UserDto.USER_ORGANISATION,
-			UserDto.USER_POSITION,
-			UserDto.AREA,
-			UserDto.REGION,
-			UserDto.DISTRICT
-			);
+				// EDIT_BTN_ID,
+				// UserDto.UUID,
+				UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL,
+				UserDto.USER_ORGANISATION, UserDto.USER_POSITION, UserDto.AREA, UserDto.REGION, UserDto.DISTRICT);
 
-	//	((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
+		// ((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new
+		// UuidRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES))
-			.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
+				.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setSortable(false);
-		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value), new ActiveRenderer());
+		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value),
+				new ActiveRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, column.getId().toString(),
+					column.getCaption()));
 		}
 	}
 
 	public void setLazyDataProvider() {
+		
 		System.out.println("sdafasdfasddfgsdfhsdfg");
-		DataProvider<UserDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getUserFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
+		DataProvider<UserDto, UserCriteria> dataProvider = DataProvider
+				.fromFilteringCallbacks(query -> FacadeProvider.getUserFacade()
+						.getIndexList(query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
+								query.getSortOrders().stream()
+										.map(sortOrder -> new SortProperty(sortOrder.getSorted(),
+												sortOrder.getDirection() == SortDirection.ASCENDING))
+										.collect(Collectors.toList()))
 						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> {
-				return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
-			});
-		System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg "+dataProvider);
+						, query -> {
+							return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
+						});
+		System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg " + dataProvider);
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<UserDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream());
+		ListDataProvider<UserDto> dataProvider = null;
+
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN_SUPERVISOR)) {
+			dataProvider = DataProvider.fromStream(
+					FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
+		} else if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN_SUPERVISOR)) {
+			dataProvider = DataProvider.fromStream(
+					FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream().filter(null));
+		} else {
+			dataProvider = DataProvider.fromStream(
+					FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
+		}
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
@@ -139,7 +153,6 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
-
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class);
 		if (viewConfiguration.isInEagerMode()) {

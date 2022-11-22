@@ -8683,7 +8683,7 @@ ALTER TABLE ONLY campaign_community ADD CONSTRAINT fk_campaign_community_communi
 
 INSERT INTO schema_version (version_number, comment) VALUES (435, 'Adding campaign_community schema #164');
 
-UPDATE users_formaccess u  SET user_id = u.user_id, formaccess = 'FLW' FROM users_formaccess WHERE  u.formaccess = 'PRE'
+UPDATE users_formaccess u  SET user_id = u.user_id, formaccess = 'FLW' FROM users_formaccess WHERE  u.formaccess = 'PRE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (436, 'Change PRE formacess to FLW #301');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

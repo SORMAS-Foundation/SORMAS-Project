@@ -207,6 +207,7 @@ public class UsersView extends AbstractView {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public HorizontalLayout createFilterBar() {
 
 		HorizontalLayout filterLayout = new HorizontalLayout();
