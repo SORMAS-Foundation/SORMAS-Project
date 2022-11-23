@@ -138,6 +138,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.getGrou
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
@@ -260,6 +261,7 @@ public class EditEventSteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   private static String currentUrl;
   private static String eventParticipantUUID;
+  private static String eventUUID;
   LocalDate dateOfBirth;
   List<Person> eventParticipantList = new ArrayList<>();
 
@@ -1929,6 +1931,19 @@ public class EditEventSteps implements En {
               webDriverHelpers.checkIfElementExistsInCombobox(
                   EVENT_PARTICIPANT_STATUS, "Archived event participants"),
               "There is no 'Archived event participants' option in drop list.");
+        });
+
+    When(
+        "I copy uuid of current event",
+        () -> {
+          webDriverHelpers.scrollToElement(EditEventPage.UUID_INPUT);
+          eventUUID = webDriverHelpers.getValueFromWebElement(EditEventPage.UUID_INPUT);
+        });
+
+    When(
+        "I filter by last created event via api",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUUID);
         });
   }
 
