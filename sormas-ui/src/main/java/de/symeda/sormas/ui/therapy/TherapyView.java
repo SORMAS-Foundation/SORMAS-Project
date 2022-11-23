@@ -93,7 +93,9 @@ public class TherapyView extends AbstractCaseView {
 			headlineRow.setExpandRatio(prescriptionsLabel, 1);
 
 			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isEditAllowed()) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
+				&& isEditAllowed()
+				&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -109,7 +111,7 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			if (isEditAllowed()) {
+			if (isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
 				Button newPrescriptionButton = ButtonHelper.createButton(Captions.prescriptionNewPrescription, e -> {
 					ControllerProvider.getTherapyController()
 						.openPrescriptionCreateForm(prescriptionCriteria.getTherapy(), this::reloadPrescriptionGrid);
@@ -170,7 +172,9 @@ public class TherapyView extends AbstractCaseView {
 			headlineRow.setExpandRatio(treatmentsLabel, 1);
 
 			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isEditAllowed()) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
+				&& isEditAllowed()
+				&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -186,7 +190,7 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			if (isEditAllowed()) {
+			if (isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
 				Button newTreatmentButton = ButtonHelper.createButton(Captions.treatmentNewTreatment, e -> {
 					ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
 				});
@@ -270,7 +274,10 @@ public class TherapyView extends AbstractCaseView {
 
 		container.addComponent(createPrescriptionsHeader());
 
-		prescriptionGrid = new PrescriptionGrid(this, caze.isPseudonymized(), isEditAllowed());
+		prescriptionGrid = new PrescriptionGrid(
+			this,
+			caze.isPseudonymized(),
+			isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT));
 		prescriptionGrid.setCriteria(prescriptionCriteria);
 		prescriptionGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
@@ -278,7 +285,9 @@ public class TherapyView extends AbstractCaseView {
 
 		container.addComponent(createTreatmentsHeader());
 
-		treatmentGrid = new TreatmentGrid(caze.isPseudonymized(), isEditAllowed());
+		treatmentGrid = new TreatmentGrid(
+			caze.isPseudonymized(),
+			isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_EDIT, UserRight.TREATMENT_EDIT));
 		treatmentGrid.setCriteria(treatmentCriteria);
 		container.addComponent(treatmentGrid);
 		container.setExpandRatio(treatmentGrid, 1);

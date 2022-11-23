@@ -77,7 +77,7 @@ public class CaseVisitsView extends AbstractCaseView {
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		if (isEditAllowed()) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT, UserRight.VISIT_EDIT)) {
 				topLayout.setWidth(100, Unit.PERCENTAGE);
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
@@ -131,7 +131,7 @@ public class CaseVisitsView extends AbstractCaseView {
 				new FileDownloader(exportStreamResource).extend(exportButton);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.VISIT_CREATE, UserRight.CASE_EDIT)) {
 				newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
 					ControllerProvider.getVisitController().createVisit(this.getCaseRef(), r -> navigateTo(criteria));
 				}, ValoTheme.BUTTON_PRIMARY);
@@ -150,7 +150,7 @@ public class CaseVisitsView extends AbstractCaseView {
 		criteria.caze(getCaseRef());
 
 		if (grid == null) {
-			grid = new VisitGrid(criteria, isEditAllowed());
+			grid = new VisitGrid(criteria, isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_EDIT, UserRight.VISIT_EDIT));
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();
 			gridLayout.setMargin(true);
