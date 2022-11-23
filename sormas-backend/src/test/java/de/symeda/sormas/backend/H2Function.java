@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 /**
  * When extending this class make sure to also extend {@link AbstractBeanTest#initH2Functions()} and {@link ExtendedH2Dialect}.
@@ -46,7 +47,7 @@ public class H2Function {
 	}
 
 	public static Date timestamp_subtract_14_days(Date timestamp) {
-		return DateHelper.subtractDays(timestamp, 14);
+		return DateHelper.subtractDays(timestamp, VaccinationService.REPORT_DATE_RELEVANT_DAYS);
 	}
 
 	public static Date at_end_of_day(Date timestamp) {
