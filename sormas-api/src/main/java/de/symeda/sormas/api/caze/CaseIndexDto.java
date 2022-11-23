@@ -21,9 +21,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.MergeableIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -34,8 +36,6 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-import de.symeda.sormas.api.vaccination.VaccinationDto;
-import org.apache.commons.lang3.StringUtils;
 
 public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
 
@@ -527,5 +527,25 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 
 	public void setResponsibleDistrictName(String responsibleDistrictName) {
 		this.responsibleDistrictName = responsibleDistrictName;
+	}
+
+	public Integer getNumberOfVisits()
+	{
+		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease)) {
+			return this.getVisitCount();
+		}
+		return null;
+	}
+
+	public Integer getNumberOfMissedVisits()
+	{
+		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease)) {
+			int numberOfMissedVisits = FollowUpLogic.getNumberOfRequiredVisitsSoFar(getReportDate(), getFollowUpUntil()) - getVisitCount();
+			if (numberOfMissedVisits < 0) {
+				numberOfMissedVisits = 0;
+			}
+			return numberOfMissedVisits;
+		}
+		return null;
 	}
 }

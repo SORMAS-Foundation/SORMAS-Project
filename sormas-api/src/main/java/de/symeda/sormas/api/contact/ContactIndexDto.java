@@ -21,9 +21,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -379,5 +381,25 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public Integer getNumberOfVisits()
+	{
+		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease)) {
+			return this.getVisitCount();
+		}
+		return null;
+	}
+
+	public Integer getNumberOfMissedVisits()
+	{
+		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease)) {
+			int numberOfMissedVisits = FollowUpLogic.getNumberOfRequiredVisitsSoFar(getReportDateTime(), getFollowUpUntil()) - getVisitCount();
+			if (numberOfMissedVisits < 0) {
+				numberOfMissedVisits = 0;
+			}
+			return numberOfMissedVisits;
+		}
+		return null;
 	}
 }

@@ -110,14 +110,9 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		diseaseShortColumn.setSortProperty(CaseIndexDto.DISEASE);
 
 		Column<IndexDto, String> visitsColumn = addColumn(entry -> {
-			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getDisease())) {
-				int numberOfVisits = entry.getVisitCount();
-				int numberOfRequiredVisits = FollowUpLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDate(), entry.getFollowUpUntil());
-				int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;
-				// Set number of missed visits to 0 when more visits than expected have been done
-				if (numberOfMissedVisits < 0) {
-					numberOfMissedVisits = 0;
-				}
+			Integer numberOfVisits = entry.getNumberOfVisits();
+			Integer numberOfMissedVisits = entry.getNumberOfMissedVisits();
+			if (numberOfVisits != null && numberOfMissedVisits != null ) {
 				return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat), numberOfVisits, numberOfMissedVisits);
 			} else {
 				return "-";
