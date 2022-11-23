@@ -1812,7 +1812,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		final Person leadPerson = service.getByUuid(leadPersonUuid);
 		final Person otherPerson = service.getByUuid(otherPersonUuid);
 
-		final List<Immunization> immunizations = immunizationService.getByPersonUuids(Collections.singletonList(otherPersonUuid));
+		final List<Immunization> immunizations = immunizationService.getByPersonUuids(Collections.singletonList(otherPersonUuid), false);
 		immunizations.forEach(o -> {
 			o.setPerson(leadPerson);
 			immunizationService.ensurePersisted(o);
