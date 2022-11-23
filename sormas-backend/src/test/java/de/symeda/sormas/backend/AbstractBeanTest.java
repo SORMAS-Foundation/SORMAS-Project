@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -204,6 +203,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImm
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SormasToSormasSampleDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
@@ -287,7 +287,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
 		nativeQuery.executeUpdate();
 		nativeQuery =
-			em.createNativeQuery("CREATE ALIAS timestamp_subtract_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_days\"");
+			em.createNativeQuery("CREATE ALIAS timestamp_subtract_14_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_14_days\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
 		nativeQuery.executeUpdate();

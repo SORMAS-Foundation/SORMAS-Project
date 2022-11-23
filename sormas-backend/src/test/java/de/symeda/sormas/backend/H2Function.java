@@ -45,8 +45,8 @@ public class H2Function {
 		return DateHelper.getStartOfDay(timestamp);
 	}
 
-	public static Date timestamp_subtract_days(Date timestamp, int days) {
-		return DateHelper.subtractDays(timestamp, days);
+	public static Date timestamp_subtract_14_days(Date timestamp) {
+		return DateHelper.subtractDays(timestamp, 14);
 	}
 
 	public static Date at_end_of_day(Date timestamp) {

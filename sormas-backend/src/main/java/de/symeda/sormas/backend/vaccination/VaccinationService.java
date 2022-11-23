@@ -16,7 +16,7 @@
 package de.symeda.sormas.backend.vaccination;
 
 import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.AT_END_OF_DAY;
-import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.TIMESTAMP_SUBTRACT_DAYS;
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.TIMESTAMP_SUBTRACT_14_DAYS;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -291,7 +291,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> implements J
 		Expression<Date> vaccinationDateExpr = cb.<Date> selectCase()
 			.when(
 				cb.isNull(vaccinationDate),
-				cb.function(TIMESTAMP_SUBTRACT_DAYS, Date.class, vaccinationPath.get(Vaccination.REPORT_DATE), cb.literal(REPORT_DATE_RELEVANT_DAYS)))
+				cb.function(TIMESTAMP_SUBTRACT_14_DAYS, Date.class, vaccinationPath.get(Vaccination.REPORT_DATE)))
 			.otherwise(vaccinationDate);
 
 		return getRelevantVaccinationPredicate(cb, vaccinationDateExpr, primaryDatePath, fallbackDatePath);
