@@ -30,6 +30,8 @@ import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 @Slf4j
@@ -39,7 +41,8 @@ public class RemoteDriverFactory implements DriverFactory {
   private final DesiredCapabilities desiredCapabilities;
   private final DriverMetaData driverMetaData;
   private final String userDirectory = System.getProperty("user.dir");
-  private final String remoteDriverPath = "/usr/lib64/chromium-browser/chromedriver";
+//  private final String remoteDriverPath = "/usr/lib64/chromium-browser/chromedriver";
+  private final String remoteDriverPath = "/usr/lib64/geckodriver/geckodriver";
 
   @Inject
   public RemoteDriverFactory(
@@ -53,12 +56,12 @@ public class RemoteDriverFactory implements DriverFactory {
 
   @SneakyThrows
   @Override
-  public ChromeDriver getRemoteWebDriver() {
+  public FirefoxDriver getRemoteWebDriver() {
     checkIfDriverExists();
-    System.setProperty("webdriver.chrome.driver", remoteDriverPath);
-    final ChromeOptions options = new ChromeOptions();
-    final HashMap<String, Object> chromePreferences = new HashMap<>();
-    chromePreferences.put("download.default_directory", userDirectory + "/downloads");
+    System.setProperty("webdriver.gecko.driver", remoteDriverPath);
+    final FirefoxOptions options = new FirefoxOptions();
+    final HashMap<String, Object> firefoxPreferences = new HashMap<>();
+    firefoxPreferences.put("download.default_directory", userDirectory + "/downloads");
     options.merge(desiredCapabilities);
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
     options.addArguments("disable-infobars");
@@ -76,12 +79,42 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("--ignore-certificate-errors");
     options.addArguments("--ignore-ssl-errors");
     options.setCapability("javascript.enabled", true);
-    options.setExperimentalOption("prefs", chromePreferences);
     options.addArguments("--window-size=1920,1080");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-    options.setCapability(SUPPORTS_ALERTS, false);
-    return new ChromeDriver(options);
+    return new FirefoxDriver(options);
   }
+
+//  @SneakyThrows
+//  @Override
+//  public ChromeDriver getRemoteWebDriver() {
+//    checkIfDriverExists();
+//    System.setProperty("webdriver.chrome.driver", remoteDriverPath);
+//    final ChromeOptions options = new ChromeOptions();
+//    final HashMap<String, Object> chromePreferences = new HashMap<>();
+//    chromePreferences.put("download.default_directory", userDirectory + "/downloads");
+//    options.merge(desiredCapabilities);
+//    options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
+//    options.addArguments("disable-infobars");
+//    options.addArguments("--headless");
+//    options.addArguments("--no-sandbox");
+//    options.addArguments("--disable-browser-side-navigation");
+//    options.addArguments("--disable-gpu-sandbox");
+//    options.addArguments("--disable-gpu");
+//    options.addArguments("--disable-gpu-watchdog");
+//    options.addArguments("--disable-new-content-rendering-timeout");
+//    options.addArguments("--disable-browser-side-navigation");
+//    options.addArguments("--disable-dev-shm-usage");
+//    options.addArguments("--allow-running-insecure-content");
+//    options.addArguments("enable-automation");
+//    options.addArguments("--ignore-certificate-errors");
+//    options.addArguments("--ignore-ssl-errors");
+//    options.setCapability("javascript.enabled", true);
+//    options.setExperimentalOption("prefs", chromePreferences);
+//    options.addArguments("--window-size=1920,1080");
+//    options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
+//    options.setCapability(SUPPORTS_ALERTS, false);
+//    return new ChromeDriver(options);
+//  }
 
   @SneakyThrows
   private void checkIfDriverExists() {
