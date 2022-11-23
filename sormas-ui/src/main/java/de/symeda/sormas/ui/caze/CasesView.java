@@ -743,9 +743,14 @@ public class CasesView extends AbstractView {
 							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 							VaadinIcons.SHARE,
 							mi -> {
-								grid.bulkActionHandler(
-									items -> ControllerProvider.getCaseController()
-										.sendCasesToExternalSurveillanceTool(items, () -> navigateTo(criteria)));
+								grid.bulkActionHandler(items -> {
+									if (getSelectedCases(caseGrid).isEmpty()) {
+										showNoCasesSelectedWarning(caseGrid);
+										return;
+									}
+									ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, () -> navigateTo(criteria));
+
+								});
 							},
 							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
@@ -780,15 +785,9 @@ public class CasesView extends AbstractView {
 								I18nProperties.getCaption(Captions.bulkLinkToEvent),
 								VaadinIcons.PHONE,
 								mi -> grid.bulkActionHandler(items -> {
-									List<CaseIndexDto> selectedCases =
-										caseGrid.asMultiSelect().getSelectedItems().stream().collect(Collectors.toList());
-
+									List<CaseIndexDto> selectedCases = getSelectedCases(caseGrid);
 									if (selectedCases.isEmpty()) {
-										new Notification(
-											I18nProperties.getString(Strings.headingNoCasesSelected),
-											I18nProperties.getString(Strings.messageNoCasesSelected),
-											Notification.Type.WARNING_MESSAGE,
-											false).show(Page.getCurrent());
+										showNoCasesSelectedWarning(caseGrid);
 										return;
 									}
 
@@ -834,6 +833,18 @@ public class CasesView extends AbstractView {
 		}
 
 		updateFilterComponents();
+	}
+
+	public List<CaseIndexDto> getSelectedCases(AbstractCaseGrid<?> caseGrid) {
+		return caseGrid.asMultiSelect().getSelectedItems().stream().collect(Collectors.toList());
+	}
+
+	public void showNoCasesSelectedWarning(AbstractCaseGrid<?> caseGrid) {
+		new Notification(
+			I18nProperties.getString(Strings.headingNoCasesSelected),
+			I18nProperties.getString(Strings.messageNoCasesSelected),
+			Notification.Type.WARNING_MESSAGE,
+			false).show(Page.getCurrent());
 	}
 
 	public void updateFilterComponents() {
