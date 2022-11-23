@@ -74,7 +74,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @Stateless
 @LocalBean
-public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
+public class ImmunizationService extends AbstractCoreAdoService<Immunization, ImmunizationJoins> {
 
 	@EJB
 	private PersonService personService;

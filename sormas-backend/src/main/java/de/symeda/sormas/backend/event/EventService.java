@@ -105,7 +105,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class EventService extends AbstractCoreAdoService<Event> {
+public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	@EJB
 	private EventParticipantService eventParticipantService;

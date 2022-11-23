@@ -19,7 +19,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class CampaignService extends AbstractCoreAdoService<Campaign> {
+public class CampaignService extends AbstractCoreAdoService<Campaign, CampaignJoins> {
 
 	public CampaignService() {
 		super(Campaign.class);

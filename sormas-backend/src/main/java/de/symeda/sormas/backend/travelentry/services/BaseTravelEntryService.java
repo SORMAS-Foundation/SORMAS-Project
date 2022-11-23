@@ -11,12 +11,13 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> {
+public abstract class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry, TravelEntryJoins> {
 
 	@EJB
 	protected UserService userService;

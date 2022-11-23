@@ -173,7 +173,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
-public class CaseService extends AbstractCoreAdoService<Case> {
+public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 
