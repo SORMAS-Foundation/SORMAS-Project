@@ -16,8 +16,14 @@
 package org.sormas.e2etests.steps.web.application.configuration;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_LINE_LISTING_TAB;
+import static org.sormas.e2etests.pages.application.configuration.LineListingTabPage.CONFIRM_DISABLE_LINE_LISTING_MODAL;
+import static org.sormas.e2etests.pages.application.configuration.LineListingTabPage.DISABLE_ALL_LINE_LISTING;
+import static org.sormas.e2etests.pages.application.configuration.LineListingTabPage.DISEASE_BUTTONS_LINE_LISTING;
 import static org.sormas.e2etests.pages.application.configuration.LineListingTabPage.DISEASE_COMBO_BOX_LINE_LISTING_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.LineListingTabPage.DISEASE_LABEL_LINE_LISTING;
+import static org.sormas.e2etests.pages.application.configuration.LineListingTabPage.EDIT_LINE_LISTING_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.LineListingTabPage.ENABLE_LINE_LISTING_FOR_DISEASE_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.LineListingTabPage.NOTIFICATION_LINE_LISTING_CONFIGURATION;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
@@ -47,6 +53,69 @@ public class LineListingSteps implements En {
           softly.assertTrue(
               webDriverHelpers.isElementPresent(DISEASE_COMBO_BOX_LINE_LISTING_CONFIGURATION),
               "Disease combo-box is not present in the Line Listing Configuration Page");
+          softly.assertAll();
+        });
+
+    When(
+        "I Select the disease ([^\"]*) from the combo box in Line Listing Configuration Page",
+        (String disease) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENABLE_LINE_LISTING_FOR_DISEASE_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              DISEASE_COMBO_BOX_LINE_LISTING_CONFIGURATION, disease);
+        });
+
+    When(
+        "I click on the Enable Line Listing for Disease button in Line Listing Configuration Page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENABLE_LINE_LISTING_FOR_DISEASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ENABLE_LINE_LISTING_FOR_DISEASE_BUTTON);
+        });
+
+    When(
+        "I validate disease ([^\"]*) configuration is enabled and displayed in Line Listing Configuration Page",
+        (String disease) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              DISEASE_LABEL_LINE_LISTING);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DISEASE_LABEL_LINE_LISTING),
+              "Disease name is not present in the Line Listing Configuration Page");
+          webDriverHelpers.checkWebElementContainsText(DISEASE_LABEL_LINE_LISTING, disease);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(EDIT_LINE_LISTING_BUTTON),
+              "Edit Line Listing Button is not present in the Line Listing Configuration Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DISABLE_ALL_LINE_LISTING),
+              "Edit Line Listing Button is not present in the Line Listing Configuration Page");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DISEASE_BUTTONS_LINE_LISTING),
+              "Disease Buttons are not present in the Line Listing Configuration Page");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on Disable All Line Listing button in Line Listing Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              DISABLE_ALL_LINE_LISTING);
+          webDriverHelpers.clickOnWebElementBySelector(DISABLE_ALL_LINE_LISTING);
+        });
+
+    Then(
+        "I validate the presence of the notification description confirming Line Listing is disabled in Line Listing Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CONFIRM_DISABLE_LINE_LISTING_MODAL);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DISABLE_LINE_LISTING_MODAL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NOTIFICATION_LINE_LISTING_CONFIGURATION);
+          String notificationText =
+              webDriverHelpers.getTextFromWebElement(NOTIFICATION_LINE_LISTING_CONFIGURATION);
+          System.out.println(notificationText);
+          softly.assertEquals(notificationText, "Line listing has been disabled");
           softly.assertAll();
         });
   }

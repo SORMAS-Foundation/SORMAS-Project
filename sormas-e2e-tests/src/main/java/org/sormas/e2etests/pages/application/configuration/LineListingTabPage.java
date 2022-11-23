@@ -22,4 +22,13 @@ public class LineListingTabPage {
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
   public static final By ENABLE_LINE_LISTING_FOR_DISEASE_BUTTON =
       By.id("lineListingEnableForDisease");
+  public static final By DISEASE_LABEL_LINE_LISTING =
+      By.cssSelector("[class*='v-label v-widget rounded-corners v-label-rounded-corners']");
+  public static final By DISEASE_BUTTONS_LINE_LISTING =
+      By.cssSelector("[class*='v-widget borderless v-button-borderless']");
+  public static final By EDIT_LINE_LISTING_BUTTON = By.id("lineListingEdit");
+  public static final By DISABLE_ALL_LINE_LISTING = By.id("lineListingDisableAll");
+  public static final By CONFIRM_DISABLE_LINE_LISTING_MODAL = By.id("actionConfirm");
+  public static final By NOTIFICATION_LINE_LISTING_CONFIGURATION =
+      By.cssSelector(".v-Notification-description");
 }
