@@ -298,7 +298,7 @@ public class ExternalMessageProcessingUIHelper {
 		sampleEditComponent.addComponent(newTestsLabel, sampleEditComponent.getComponentCount() - 1);
 
 		MutableLong newPathogenTestCount = new MutableLong(newTestsToAdd.size());
-		ExternalMessageProcessingUIHelper.addNewPathogenTests(newTestsToAdd, sampleEditComponent, () -> {
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(newTestsToAdd, sampleEditComponent, false, () -> {
 			long newTestCount = newPathogenTestCount.decrementAndGet();
 			if (newTestCount == 0) {
 				newTestsLabel.setVisible(false);
@@ -306,7 +306,15 @@ public class ExternalMessageProcessingUIHelper {
 		});
 
 		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleEditComponent, true);
+		sampleController.addPathogenTestButton(sampleEditComponent, true, () -> {
+			newPathogenTestCount.increment();
+			newTestsLabel.setVisible(true);
+		}, () -> {
+			long newTestCount = newPathogenTestCount.decrementAndGet();
+			if (newTestCount == 0) {
+				newTestsLabel.setVisible(false);
+			}
+		});
 
 		// button configuration
 		Consumer<Disease> createReferral = disease -> {
@@ -420,10 +428,10 @@ public class ExternalMessageProcessingUIHelper {
 			sampleController.getSampleReferralCreateComponent(existingSample, disease);
 
 		newPathogenTests.forEach(t -> t.setSample(existingSample.toReference()));
-		addNewPathogenTests(newPathogenTests, sampleCreateComponent, null);
+		addNewPathogenTests(newPathogenTests, sampleCreateComponent, true, null);
 
 		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null);
 
 		sampleCreateComponent.addCommitListener(() -> {
 			List<PathogenTestDto> createdPathogenTests = new ArrayList<>();
@@ -446,6 +454,7 @@ public class ExternalMessageProcessingUIHelper {
 	public static void addNewPathogenTests(
 		List<PathogenTestDto> pathogenTests,
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleForm,
+		boolean forceSeparator,
 		Runnable deleteHandler) {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
@@ -455,9 +464,11 @@ public class ExternalMessageProcessingUIHelper {
 		for (int i = 0; i < pathogenTests.size(); i++) {
 			PathogenTestDto pathogenTest = pathogenTests.get(i);
 			CollapsiblePathogenTestForm pathogenTestComponent =
-				sampleController.addPathogenTestComponent(sampleForm, pathogenTest, caseSampleCount, true, true, i > 0);
+				sampleController.addPathogenTestComponent(sampleForm, pathogenTest, caseSampleCount, true, true, forceSeparator || i > 0);
 			pathogenTestComponent.addDetachListener((e) -> {
-				deleteHandler.run();
+				if (deleteHandler != null) {
+					deleteHandler.run();
+				}
 			});
 		}
 	}

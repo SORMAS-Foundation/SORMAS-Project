@@ -120,7 +120,7 @@ public class SampleController {
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
 		// add option to create additional pathogen tests
-		addPathogenTestButton(editView, false);
+		addPathogenTestButton(editView, false, null, null);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
@@ -299,10 +299,14 @@ public class SampleController {
 
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
 		addPathogenTestButton.addClickListener((e) -> {
-			addCallback.run();
+			if (addCallback != null) {
+				addCallback.run();
+			}
 			CollapsiblePathogenTestForm pathogenTestForm = addPathogenTestComponent(editView, viaLims, true, true);
 
-			pathogenTestForm.addDetachListener((de) -> deleteCallback.run());
+			if (deleteCallback != null) {
+				pathogenTestForm.addDetachListener((de) -> deleteCallback.run());
+			}
 		});
 		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
 	}

@@ -396,7 +396,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		// add pathogen test create components
 		addPathogenTests(pathogenTests, externalMessageDto, sampleCreateComponent);
 		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null);
 
 		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
 
@@ -415,6 +415,6 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, user));
 		}
 
-		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, null);
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, null);
 	}
 }
