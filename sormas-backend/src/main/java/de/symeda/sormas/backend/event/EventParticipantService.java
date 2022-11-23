@@ -43,6 +43,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -217,12 +218,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.and(
-						cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED))),
-						cb.or(cb.equal(from.get(EventParticipant.ARCHIVED), false), cb.isNull(from.get(EventParticipant.ARCHIVED)))));
+				Predicate activePredicate =
+					cb.or(cb.equal(from.get(EventParticipant.ARCHIVED), false), cb.isNull(from.get(EventParticipant.ARCHIVED)));
+				if (featureConfigurationFacade.isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
+					activePredicate =
+						cb.and(activePredicate, cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED))));
+				}
+				filter = CriteriaBuilderHelper.and(cb, filter, activePredicate);
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper
 					.and(cb, filter, cb.or(cb.equal(event.get(Event.ARCHIVED), true), cb.equal(from.get(EventParticipant.ARCHIVED), true)));

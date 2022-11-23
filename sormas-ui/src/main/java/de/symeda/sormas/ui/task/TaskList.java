@@ -90,12 +90,12 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			TaskIndexDto task = displayedEntries.get(i);
 			TaskListEntry listEntry = new TaskListEntry(task);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT)) {
-				listEntry.addEditListener(
-					i,
-					(ClickListener) event -> ControllerProvider.getTaskController()
-						.edit(listEntry.getTask(), TaskList.this::reload, false, listEntry.getTask().getDisease()));
-			}
+
+			listEntry.addActionButton(
+				String.valueOf(i),
+				(ClickListener) event -> ControllerProvider.getTaskController()
+					.edit(listEntry.getTask(), TaskList.this::reload, false, listEntry.getTask().getDisease()),
+				UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT));
 
 			listEntry.setEnabled(isEditAllowed);
 			listLayout.addComponent(listEntry);

@@ -12,8 +12,10 @@ public class EventDocumentsComponent extends AbstractDocumentGenerationComponent
 
 	public EventDocumentsComponent(EventReferenceDto eventReferenceDto, DocumentListComponent documentListComponent) {
 		super();
-		addDocumentBar(
-			() -> ControllerProvider.getDocGenerationController().showEventDocumentDialog(eventReferenceDto, documentListComponent),
-			I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout_create));
+		if (DocGenerationHelper.isDocGenerationAllowed()) {
+			addDocumentBar(
+				() -> ControllerProvider.getDocGenerationController().showEventDocumentDialog(eventReferenceDto, documentListComponent),
+				I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout_create));
+		}
 	}
 }

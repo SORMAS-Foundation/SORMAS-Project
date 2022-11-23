@@ -17,17 +17,31 @@
  */
 package org.sormas.e2etests.steps.api;
 
+import static org.sormas.e2etests.constants.api.Endpoints.EVENTS_PATH;
+
 import cucumber.api.java8.En;
+import io.restassured.http.Method;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Event;
+import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.entities.services.api.EventApiService;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.api.sormasrest.EventHelper;
 import org.sormas.e2etests.state.ApiState;
 
 public class EventSteps implements En {
 
+  private final RestAssuredClient restAssuredClient;
+
   @Inject
-  public EventSteps(EventHelper eventHelper, EventApiService eventApiService, ApiState apiState) {
+  public EventSteps(
+      EventHelper eventHelper,
+      EventApiService eventApiService,
+      ApiState apiState,
+      RestAssuredClient restAssuredClient) {
+
+    this.restAssuredClient = restAssuredClient;
 
     When(
         "API: I create a new event",
@@ -44,5 +58,17 @@ public class EventSteps implements En {
           eventHelper.createEvent(eve);
           apiState.setCreatedEvent(eve);
         });
+
+    When(
+        "I check if created event is available in API",
+        () -> {
+          getEventByUUID(apiState.getCreatedEvent().getUuid());
+        });
+  }
+
+  @SneakyThrows
+  public void getEventByUUID(String eventUUID) {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(EVENTS_PATH + "/" + eventUUID).build());
   }
 }
