@@ -29,7 +29,6 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
