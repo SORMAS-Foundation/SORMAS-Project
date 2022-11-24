@@ -1344,7 +1344,7 @@ Feature: Create events
     And I click on the Configuration button from navbar
     Then I navigate to Developer tab in Configuration
     Then I click on Execute Automatic Deletion button
-    And I wait 60 seconds for system reaction
+    And I wait 30 seconds for system reaction
     Then I check if created event participant is available in API
     And API: I check that GET call status code is 204
     Then I open the last created event via api
@@ -1362,7 +1362,7 @@ Feature: Create events
     And I click on the Configuration button from navbar
     Then I navigate to Developer tab in Configuration
     Then I click on Execute Automatic Deletion button
-    And I wait 15 seconds for system reaction
+    And I wait 30 seconds for system reaction
     Then I check if created event is available in API
     And API: I check that GET call status code is 204
     Then I click on the Events button from navbar
@@ -1387,7 +1387,7 @@ Feature: Create events
     And I click on the Configuration button from navbar
     Then I navigate to Developer tab in Configuration
     Then I click on Execute Automatic Deletion button
-    And I wait 60 seconds for system reaction
+    And I wait 30 seconds for system reaction
     Then I check if created event participant is available in API
     And API: I check that GET call status code is 200
     Then I open the last created event via api

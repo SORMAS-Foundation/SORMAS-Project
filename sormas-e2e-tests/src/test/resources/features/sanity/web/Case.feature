@@ -2044,7 +2044,7 @@ Feature: Case end to end tests
     And I click on the Configuration button from navbar
     Then I navigate to Developer tab in Configuration
     Then I click on Execute Automatic Deletion button
-    And I wait 60 seconds for system reaction
+    And I wait 30 seconds for system reaction
     Then I click on the Cases button from navbar
     And I check if created case is available in API
     And API: I check that POST call status code is 204

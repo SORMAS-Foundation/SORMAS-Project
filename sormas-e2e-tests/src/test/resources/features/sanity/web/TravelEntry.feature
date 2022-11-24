@@ -479,7 +479,7 @@ Feature: Create travel entries
       And I click on the Configuration button from navbar
       Then I navigate to Developer tab in Configuration
       Then I click on Execute Automatic Deletion button
-      And I wait 5 seconds for system reaction
+      And I wait 30 seconds for system reaction
       Then I check if created travel entry is available in API
       And API: I check that GET call status code is 204
       Then I click on the Entries button from navbar
@@ -499,7 +499,7 @@ Feature: Create travel entries
     And I click on the Configuration button from navbar
     Then I navigate to Developer tab in Configuration
     Then I click on Execute Automatic Deletion button
-    And I wait 60 seconds for system reaction
+    And I wait 30 seconds for system reaction
     Then I check if created travel entry is available in API
     And API: I check that GET call status code is 200
     Then I click on the Entries button from navbar
