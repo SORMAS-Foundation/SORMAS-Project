@@ -1346,7 +1346,7 @@ Feature: Create events
     Then I click on Execute Automatic Deletion button
     And I wait 60 seconds for system reaction
     Then I check if created event participant is available in API
-    And API: I check that GET call status code is 500
+    And API: I check that GET call status code is 204
     Then I open the last created event via api
     And I navigate to EVENT PARTICIPANT from edit event page
     Then I check if event participant created via API not appears in the event participant list
