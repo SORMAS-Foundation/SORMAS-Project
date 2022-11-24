@@ -5,13 +5,18 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.contact.ContactCategory;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactListEntryDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
 public class ContactListEntry extends SideComponentField {
 
+	private static final long serialVersionUID = -122890470232134412L;
+	public static final String SEPARATOR = ": ";
 	private final ContactListEntryDto contactListEntryDto;
 
 	public ContactListEntry(ContactListEntryDto contactListEntryDto) {
@@ -53,6 +58,36 @@ public class ContactListEntry extends SideComponentField {
 		diseaseClassificationLayout.setComponentAlignment(diseaseLabel, Alignment.MIDDLE_LEFT);
 		diseaseClassificationLayout.setComponentAlignment(classificationLabel, Alignment.MIDDLE_RIGHT);
 		addComponentToField(diseaseClassificationLayout);
+
+		if (contactListEntryDto.getLastContactDate() != null) {
+			HorizontalLayout lastContactDateLayout = new HorizontalLayout();
+			lastContactDateLayout.setMargin(false);
+			lastContactDateLayout.setSpacing(true);
+
+			Label lastContactDateLabel = new Label(
+				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE)
+					+ SEPARATOR
+					+ DateFormatHelper.formatDate(contactListEntryDto.getLastContactDate()));
+			lastContactDateLayout.addComponent(lastContactDateLabel);
+
+			lastContactDateLayout.setWidthFull();
+			lastContactDateLayout.setComponentAlignment(lastContactDateLabel, Alignment.MIDDLE_LEFT);
+			addComponentToField(lastContactDateLayout);
+		}
+
+		HorizontalLayout reportDateLayout = new HorizontalLayout();
+		reportDateLayout.setMargin(false);
+		reportDateLayout.setSpacing(true);
+
+		Label reportDateLabel = new Label(
+			I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)
+				+ SEPARATOR
+				+ DateFormatHelper.formatDate(contactListEntryDto.getReportDate()));
+		reportDateLayout.addComponent(reportDateLabel);
+
+		reportDateLayout.setWidthFull();
+		reportDateLayout.setComponentAlignment(reportDateLabel, Alignment.MIDDLE_LEFT);
+		addComponentToField(reportDateLayout);
 
 		final ContactCategory contactCategory = contactListEntryDto.getContactCategory();
 		if (contactCategory != null) {

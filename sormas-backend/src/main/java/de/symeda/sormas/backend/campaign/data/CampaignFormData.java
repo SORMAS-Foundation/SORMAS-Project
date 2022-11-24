@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -112,7 +113,7 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.formDate = formDate;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -121,7 +122,7 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}
@@ -130,7 +131,7 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Community getCommunity() {
 		return community;
 	}
@@ -139,7 +140,7 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.community = community;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getCreatingUser() {
 		return creatingUser;

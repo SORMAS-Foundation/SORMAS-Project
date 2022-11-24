@@ -48,7 +48,7 @@ public class EventParticipantsPage {
   public static final By SEARCH_FOR_PERSON_BUTTON_IN_ADD_PARTICIPANT_POPUP_WINDOW =
       By.id("personSearchLoc");
   public static final By SELECT_PERSON_ID_INPUT_AT_ADD_PARTICIPANT =
-      By.cssSelector("input#uuidExternalIdExternalTokenLike");
+      By.cssSelector("input#nameUuidExternalIdExternalTokenLike");
   public static final By SELECT_PERSON_SEARCH_BUTTON_AT_ADD_PARTICIPANT = By.id("actionSearch");
   public static final By SELECT_FIRST_PERSON_IN_SEARCHED_LIST_FROM_ADD_PARTICIPANT =
       By.cssSelector("[scroll] [aria-live] .v-grid-body tr:nth-of-type(1)");
@@ -82,7 +82,7 @@ public class EventParticipantsPage {
   public static final By PASSPORT_NUMBER_INPUT = By.id("passportNumber");
   public static final By INVOLVEMENT_DESCRIPTION_INPUT = By.id("involvementDescription");
 
-  public static final By getEventsByCaseUuid(String uuid) {
-    return By.cssSelector(String.format("[title = '%s']", uuid));
+  public static final By getEventParticipantByPersonUuid(String uuid) {
+    return By.xpath(String.format("//a[@title='%s']//parent::td//parent::tr//td[1]/a", uuid));
   }
 }

@@ -599,6 +599,7 @@ public interface Strings {
 	String headingMaternalHistory = "headingMaternalHistory";
 	String headingMedicalInformation = "headingMedicalInformation";
 	String headingMergeGuide = "headingMergeGuide";
+	String headingMergePersonError = "headingMergePersonError";
 	String headingMissingDateFilter = "headingMissingDateFilter";
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
@@ -722,6 +723,7 @@ public interface Strings {
 	String headingViewNotFound = "headingViewNotFound";
 	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
 	String headingViewSurveillanceReport = "headingViewSurveillanceReport";
+	String headingViewTask = "headingViewTask";
 	String headingViewVisit = "headingViewVisit";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";
@@ -854,6 +856,7 @@ public interface Strings {
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
 	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
 	String infoPersonMergeDescription = "infoPersonMergeDescription";
+	String infoPersonMergeErrorWhenShared = "infoPersonMergeErrorWhenShared";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
@@ -1119,8 +1122,10 @@ public interface Strings {
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
 	String messageImportError = "messageImportError";
+	String messageImportExtensionDoesNotMatchContent = "messageImportExtensionDoesNotMatchContent";
 	String messageImportFailed = "messageImportFailed";
 	String messageImportFailedFull = "messageImportFailedFull";
+	String messageImportFileTypeNotAllowed = "messageImportFileTypeNotAllowed";
 	String messageImportInvalidColumn = "messageImportInvalidColumn";
 	String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	String messageImportSuccessful = "messageImportSuccessful";

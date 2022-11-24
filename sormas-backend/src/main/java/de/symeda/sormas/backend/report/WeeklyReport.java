@@ -24,6 +24,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -67,7 +68,7 @@ public class WeeklyReport extends AbstractDomainObject {
 	private Date changeDateOfEmbeddedLists;
 	private List<WeeklyReportEntry> reportEntries = new ArrayList<>();
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
@@ -76,7 +77,7 @@ public class WeeklyReport extends AbstractDomainObject {
 		this.healthFacility = healthFacility;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
@@ -146,7 +147,7 @@ public class WeeklyReport extends AbstractDomainObject {
 		this.epiWeek = epiWeek;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn
 	public District getDistrict() {
 		return district;
@@ -156,7 +157,7 @@ public class WeeklyReport extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn
 	public Community getCommunity() {
 		return community;
@@ -166,7 +167,7 @@ public class WeeklyReport extends AbstractDomainObject {
 		this.community = community;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getAssignedOfficer() {
 		return assignedOfficer;

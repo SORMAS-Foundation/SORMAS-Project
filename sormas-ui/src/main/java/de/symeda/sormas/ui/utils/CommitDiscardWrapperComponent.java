@@ -619,10 +619,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						}
 						htmlMsg.append("</ul>");
 					} else if (firstCause != null) {
-						htmlMsg.append(findHtmlMessage(firstCause));
+						String info = findHtmlMessage(firstCause);
+						boolean validInfo = nonNull(info) && !info.isEmpty() && !info.equalsIgnoreCase("null");
+						if (validInfo) {
+							htmlMsg.append(info);
+						}
 						String additionalInfo = findHtmlMessageDetails(firstCause);
 						if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
-							htmlMsg.append(" : ");
+							if (validInfo) {
+								htmlMsg.append(" : ");
+							}
 							htmlMsg.append(findHtmlMessageDetails(firstCause));
 						}
 					}

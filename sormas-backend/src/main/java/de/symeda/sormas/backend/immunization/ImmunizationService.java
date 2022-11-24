@@ -467,7 +467,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	public List<Immunization> getByPersonUuids(List<String> personUuids) {
+	public List<Immunization> getByPersonUuids(List<String> personUuids, boolean useDefaultFilter) {
 
 		List<Immunization> immunizations = new LinkedList<>();
 		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
@@ -477,7 +477,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			Root<Immunization> immunizationRoot = cq.from(Immunization.class);
 			Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
 
-			cq.where(cb.and(createDefaultFilter(cb, immunizationRoot), personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids)));
+			cq.where(
+					cb.and(
+							useDefaultFilter ? createDefaultFilter(cb, immunizationRoot) : cb.conjunction(),
+							personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids)));
 
 			immunizations.addAll(em.createQuery(cq).getResultList());
 		});
