@@ -1431,11 +1431,11 @@ Feature: Contacts end to end tests
     Then I check that Share option is not visible in Bulk Actions dropdown in Contact Directory for DE specific
 
     @tmsLink=SORQA-665 @env_de @oldfake
-    Scenario: Check automatic deletion of CONTACT created 1825 days ago
+    Scenario: Check automatic deletion of CONTACT created 3651 days ago
       Given API: I create a new person
       Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
-      Then API: I create a new contact with creation date 1825 days ago
+      Then API: I create a new contact with creation date 3651 days ago
       Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
       Then I log in as a Admin User
@@ -1447,7 +1447,6 @@ Feature: Contacts end to end tests
       Then I click on Execute Automatic Deletion button
       And I wait 60 seconds for system reaction
       Then I check if created contact is available in API
-      Then API: I check that POST call body is "No Content"
       And API: I check that POST call status code is 204
       And I click on the Contacts button from navbar
       And I filter with last created contact using contact UUID

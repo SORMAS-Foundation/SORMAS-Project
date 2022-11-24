@@ -2031,11 +2031,11 @@ Feature: Case end to end tests
     Then I accept first case in Shares Page
 
   @tmsLink=SORQA-658 @env_de @oldfake
-    Scenario: Check automatic deletion of cases created 10 years ago
+    Scenario: Check automatic deletion of cases created 3651 days ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then API: I create a new case with creation date 3653 days ago
+    Then API: I create a new case with creation date 3651 days ago
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
@@ -2047,7 +2047,6 @@ Feature: Case end to end tests
     And I wait 60 seconds for system reaction
     Then I click on the Cases button from navbar
     And I check if created case is available in API
-    Then API: I check that POST call body is "No Content"
     And API: I check that POST call status code is 204
     Then I filter with first Case ID
     And I check that number of displayed cases results is 0

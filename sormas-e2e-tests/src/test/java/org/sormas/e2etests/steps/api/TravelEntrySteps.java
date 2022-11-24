@@ -55,7 +55,6 @@ public class TravelEntrySteps implements En {
     When(
         "API: I create a new travel entry with creation date {int} days ago",
         (Integer creationDate) -> {
-          System.out.println("Hello world");
           TravelEntry trEntry =
               travelEntryStepsApiService.buildGeneratedTravelEntryWithCreationDate(
                   apiState.getLastCreatedPerson().getUuid(),
