@@ -1364,7 +1364,7 @@ Feature: Create events
     Then I click on Execute Automatic Deletion button
     And I wait 30 seconds for system reaction
     Then I check if created event is available in API
-    And API: I check that GET call status code is 204
+    And API: I check that GET call status code is 500
     Then I click on the Events button from navbar
     And I filter by last created event via api
     And I check the number of displayed Event results from All button is 0
