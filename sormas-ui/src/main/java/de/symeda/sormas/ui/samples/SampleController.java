@@ -178,7 +178,7 @@ public class SampleController {
 		boolean viaLims,
 		boolean deleteOnCancel,
 		boolean addSeparator) {
-		// add horizontal rule to clearly distinguish the component
+
 		Label separator = new Label("<br/><hr/><br/>", ContentMode.HTML);
 		separator.setWidth(100f, Unit.PERCENTAGE);
 		separator.setVisible(addSeparator);

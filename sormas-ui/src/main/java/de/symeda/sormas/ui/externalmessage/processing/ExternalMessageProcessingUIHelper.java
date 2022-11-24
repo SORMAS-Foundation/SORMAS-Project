@@ -241,9 +241,7 @@ public class ExternalMessageProcessingUIHelper {
 		existingTestsSeparator.setVisible(!existingTests.isEmpty());
 		sampleEditComponent.addComponent(existingTestsSeparator, sampleEditComponent.getComponentCount() - 1);
 
-		Label existingTestsLabel = new Label(I18nProperties.getString(Strings.headingExternalMessageExistingPathogenTests));
-		existingTestsLabel.addStyleName(H3);
-		existingTestsLabel.setVisible(!existingTests.isEmpty());
+		Label existingTestsLabel = createPathogenTestGroupLabel(Strings.headingExternalMessageExistingPathogenTests, existingTests);
 		sampleEditComponent.addComponent(existingTestsLabel, sampleEditComponent.getComponentCount() - 1);
 
 		for (int i = 0; i < existingTests.size(); i++) {
@@ -292,9 +290,7 @@ public class ExternalMessageProcessingUIHelper {
 		newTestSeparator.setVisible(!newTestsToAdd.isEmpty());
 		sampleEditComponent.addComponent(newTestSeparator, sampleEditComponent.getComponentCount() - 1);
 
-		Label newTestsLabel = new Label(I18nProperties.getString(Strings.headingExternalMessageNewPathogenTests));
-		newTestsLabel.addStyleName(H3);
-		newTestsLabel.setVisible(!newTestsToAdd.isEmpty());
+		Label newTestsLabel = createPathogenTestGroupLabel(Strings.headingExternalMessageNewPathogenTests, newTestsToAdd);
 		sampleEditComponent.addComponent(newTestsLabel, sampleEditComponent.getComponentCount() - 1);
 
 		MutableLong newPathogenTestCount = new MutableLong(newTestsToAdd.size());
@@ -351,6 +347,13 @@ public class ExternalMessageProcessingUIHelper {
 		LabMessageUiHelper.establishCommitButtons(sampleEditComponent, lastSample);
 
 		return sampleEditComponent;
+	}
+
+	private static Label createPathogenTestGroupLabel(String captionStringProperty, List<PathogenTestDto> testsInGroup) {
+		Label existingTestsLabel = new Label(I18nProperties.getString(captionStringProperty));
+		existingTestsLabel.addStyleName(H3);
+		existingTestsLabel.setVisible(!testsInGroup.isEmpty());
+		return existingTestsLabel;
 	}
 
 	public static void showFormWithLabMessage(
