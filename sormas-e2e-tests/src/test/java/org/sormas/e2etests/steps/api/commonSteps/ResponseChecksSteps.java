@@ -44,6 +44,21 @@ public class ResponseChecksSteps implements En {
         });
 
     Then(
+        "API: I check that GET call body is {string}",
+        (String expectedBody) -> {
+          String responseBody = apiState.getResponse().getBody().asString();
+          if (responseBody.isEmpty()) {
+            Assert.fail("Response body call is empty!");
+          }
+          if (responseBody.equalsIgnoreCase("TRANSACTIONROLLEDBACKEXCEPTION")) {
+            Assert.fail("API call failed due to wrong data used in sent json!");
+          }
+          String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
+          Assert.assertEquals(
+              regexUpdatedResponseBody, expectedBody, "Request response body is not correct");
+        });
+
+    Then(
         "API: I check that POST call body for bulk request is {string}",
         (String expectedBody) -> {
           try {
@@ -68,6 +83,14 @@ public class ResponseChecksSteps implements En {
 
     Then(
         "API: I check that POST call status code is {int}",
+        (Integer expectedStatus) -> {
+          int responseStatusCode = apiState.getResponse().getStatusCode();
+          Assert.assertEquals(
+              responseStatusCode, expectedStatus.intValue(), "Request status code is not correct");
+        });
+
+    Then(
+        "API: I check that GET call status code is {int}",
         (Integer expectedStatus) -> {
           int responseStatusCode = apiState.getResponse().getStatusCode();
           Assert.assertEquals(
