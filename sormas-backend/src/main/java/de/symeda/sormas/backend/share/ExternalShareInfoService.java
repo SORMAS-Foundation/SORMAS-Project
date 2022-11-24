@@ -261,7 +261,7 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilterAndJurisdi
 		String associatedObjectName,
 		Function<Expression<Date>, Predicate> shareDatePredicateBuilder) {
 
-		Subquery<Timestamp> survToolShareSubQuery = cq.subquery(Timestamp.class);
+		Subquery<Object> survToolShareSubQuery = cq.subquery(Object.class);
 		Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
 		Join<ExternalShareInfo, ?> associatedObject = survToolShareRoot.join(associatedObjectName, JoinType.LEFT);
 		@SuppressWarnings({
@@ -271,7 +271,7 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilterAndJurisdi
 			// double conversion because hibernate doesn't know the `max` function for timestamps
 			(Expression<Date>) ((Expression) cb.max(survToolShareRoot.get(ExternalShareInfo.CREATION_DATE)));
 
-		Path<Timestamp> associatedObjectId = associatedObject.get(AbstractDomainObject.ID);
+		Path<Object> associatedObjectId = associatedObject.get(AbstractDomainObject.ID);
 
 		survToolShareSubQuery.select(associatedObjectId);
 		survToolShareSubQuery.where(cb.equal(associatedObject, from.get(AbstractDomainObject.ID)));
