@@ -956,7 +956,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				from,
 				ExternalShareInfo.CAZE,
-				(latestShareDate) -> createChangeDateFilter(cq, cb, from, latestShareDate, true, true)));
+				(latestShareDate) -> createChangeDateFilter(cq, cb, from, joins, latestShareDate, true, true)));
 
 		return filter;
 	}
@@ -1224,6 +1224,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		From<?, Case> casePath,
+		CaseJoins joins,
 		Expression<? extends Date> dateExpression,
 		boolean includeExtendedChangeDateFilters,
 		boolean includeRelevantVaccinations) {
@@ -1231,12 +1232,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		ChangeDateFilterBuilder builder = addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters);
 
 		if (includeRelevantVaccinations) {
-			Subquery<Symptoms> symptomsSq = cq.subquery(Symptoms.class);
-			Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
-			symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
-			symptomsSq.where(cb.equal(symptomsSqRoot, casePath.get(Case.SYMPTOMS)));
-
-			Join<Person, Immunization> immunizationJoin = casePath.join(Case.PERSON, JoinType.LEFT).join(Person.IMMUNIZATIONS, JoinType.LEFT);
+			Join<Person, Immunization> immunizationJoin = joins.getPersonJoins().getImmunization();
 			Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
 			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(casePath, cq, cb, vaccinationsJoin)));
