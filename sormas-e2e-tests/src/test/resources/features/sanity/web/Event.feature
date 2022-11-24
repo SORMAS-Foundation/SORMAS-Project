@@ -1393,3 +1393,21 @@ Feature: Create events
     Then I open the last created event via api
     And I navigate to EVENT PARTICIPANT from edit event page
     Then I check if event participant created via API still appears in the event participant list
+
+  @tmsLink=SORQA-680 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of EVENT created 1820 days ago
+    Given API: I create a new event with creation date 1820 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    And I copy uuid of current event
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 60 seconds for system reaction
+    Then I check if created event is available in API
+    And API: I check that GET call status code is 200
+    Then I click on the Events button from navbar
+    And I filter by last created event via api
+    And I check the number of displayed Event results from All button is 1
