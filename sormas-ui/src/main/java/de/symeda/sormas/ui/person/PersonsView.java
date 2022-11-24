@@ -380,7 +380,7 @@ public class PersonsView extends AbstractView {
 										new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmationForNonSimilarPersons)),
 										I18nProperties.getCaption(Captions.actionProceed),
 										I18nProperties.getCaption(Captions.actionCancel),
-										480,
+										800,
 										confirmAgain -> {
 											if (Boolean.TRUE.equals(confirmAgain)) {
 												ControllerProvider.getPersonController().mergePersons(person1, person2);
