@@ -64,6 +64,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1230,6 +1231,16 @@ public class ContactFacadeEjb
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
 			}
 		});
+		dtos.forEach(contact -> {
+			if (diseaseConfigurationFacade.hasFollowUp(contact.getDisease())) {
+				int numberOfMissedVisits =
+						FollowUpLogic.getNumberOfRequiredVisitsSoFar(contact.getReportDateTime(), contact.getFollowUpUntil()) - contact.getVisitCount();
+				if (numberOfMissedVisits < 0) {
+					numberOfMissedVisits = 0;
+				}
+				contact.setMissedVisitsCount(numberOfMissedVisits);
+			}
+		});
 
 		return dtos;
 	}
@@ -1280,6 +1291,17 @@ public class ContactFacadeEjb
 			pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c::setReportingUser);
 			if (c.getCaze() != null) {
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
+			}
+		});
+
+		dtos.forEach(contact -> {
+			if (diseaseConfigurationFacade.hasFollowUp(contact.getDisease())) {
+				int numberOfMissedVisits =
+						FollowUpLogic.getNumberOfRequiredVisitsSoFar(contact.getReportDateTime(), contact.getFollowUpUntil()) - contact.getVisitCount();
+				if (numberOfMissedVisits < 0) {
+					numberOfMissedVisits = 0;
+				}
+				contact.setMissedVisitsCount(numberOfMissedVisits);
 			}
 		});
 
