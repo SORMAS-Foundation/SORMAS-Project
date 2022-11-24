@@ -5,27 +5,33 @@ This step-by-step guide explains how to set up your development environment, usi
 
 **Please note that these instructions are optimized for Windows and Linux systems.** If you're developing on a Mac and, we would be glad to get your feedback about how this guide can be extended with OS-specific instructions in our developer chat on [Gitter](https://gitter.im/SORMAS-Project).
 
-## Step 1: Install a Local SORMAS Server
-Please follow the [Server Setup Instructions](SERVER_SETUP.md) to set up a local SORMAS instance that you will use to test your code. Alternatively, you can also use [Maven Cargo](../sormas-cargoserver/README.md), or a [Docker installation](SERVER_DEV_SETUP.md) (not recommended at this time).
-
-## Step 2: Check Out the SORMAS Repository
+## Step 1: Check Out the SORMAS Repository
 - [Download and install the latest Git version](https://git-scm.com/downloads) for your operating system
 - *Optional:* Install a Git client such as [TortoiseGit](https://tortoisegit.org/) or [GitHub Desktop](https://desktop.github.com/) if you don't want to handle version control from the command line or within your IDE
 - *Optional:* Clone the SORMAS-Project repository with `git clone https://github.com/hzi-braunschweig/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
-## Step 3: Install Java
+## Step 2: Install Java
 Download and install the **Java 11 JDK** (not JRE) for your operating system.
 We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
 If you plan to work on the Android App as well, you will also need the **Java 8 JDK** to use with Android Studio.
 
-## Step 4: Install and Configure Your IDE
+## Step 3: Install Maven & Ant
+Download and install Maven for your operating system, see [binaries](https://dlcdn.apache.org/maven/maven-3/3.6.3/binaries/)
+*IMPORTANT*: M2_HOME environment variable needs to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME, please refer to the [official documentation](https://maven.apache.org/install.html)
+
+Download and install Ant, it can be done from [Ant site](https://ant.apache.org/bindownload.cgi) or with packages from your Linux distribution.
+
+## Step 4: Install a Local SORMAS Server
+Please follow the [Server Installation Instructions](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/SERVER_SETUP.md#sormas-installation) to set up a local SORMAS instance that you will use to test your code. Alternatively, you can also use [Maven Cargo](../sormas-cargoserver/README.md), or a [Docker installation](SERVER_DOCKER_SETUP.md) (not recommended at this time).
+
+## Step 5: Install and Configure Your IDE
 
 ### IntelliJ
 - Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/); (newer than version of 2020-04-15 to enable debugging, see <https://youtrack.jetbrains.com/issue/IDEA-216528>)
 - Set the project SDK to the installed JDK
 - *Optional:* Clone the SORMAS-Project repository if you haven't done so already
-- Open the project in IntelliJ. Make sure the project is recognized by IntelliJ as a `maven project`; if not, right-click the `pom.xml` file in sormas-base and select `Add as maven project`.
+- Open the project in IntelliJ. Make sure the project is recognized by IntelliJ as a `maven project`; if not, right-click the `pom.xml` file in `sormas-base` and select `Add as maven project`.
 - Make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish & Ant integrations are enabled
 - Install the [Vaadin 6-8 plugin](https://plugins.jetbrains.com/plugin/13199-vaadin-6-8); the commercial Vaadin Designer is not needed
@@ -45,6 +51,7 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
 - Open the Ant window, click on the `+` icon and select the `sormas-base/build.xml` file
 - Execute the `install` and `deploy-serverlibs` Ant scripts
 - Set the default working directory for run configurations by navigating to `Run -> Edit Configurations -> Templates -> Application` and setting `Working directory` to `$MODULE_WORKING_DIR$`
+- *Optional:* Setup database access from Intellij: Open View -> Tool View -> Database, click on + icon and select DataSource -> PostgreSQL and configure the database (set user and password and download the missing driver files if needed)
 
 #### Known issues
 - The first time you build the project in IntelliJ, you have to switch the java compiler to "Eclipse" to workarround a dependency resolution problem in sormas-api.
@@ -80,7 +87,7 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
 
 **Important:** Whenever you do or pull changes in the `sormas-api` project that you want to use in the mobile app or that are referenced there already, you need to execute the `install` Ant script to notify the `sormas-app` project of the changes.
 
-## Step 5: Configure Code Formatting and Import Settings
+## Step 6: Configure Code Formatting and Import Settings
 In order to ensure a consistent code style and prevent so-called edit wars, we have set up custom configuration files for automatic code formatting and import ordering. Please make sure to adhere to the following steps for your IDE(s) before you start developing.
 
 ### IntelliJ and Android Studio Settings
@@ -126,6 +133,8 @@ Optional, but strongly recommended:
 6. M2_HOME need to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME
 
 7. For eclipse formatted plugin, there is an issue for Idea: <https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter> - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
+
+If something is still not working, try to clean up (delete all from domains/sormas/autodeploy, domains/sormas/applications, domains/sormas/generated, and domains/sormas/osgi-cache) try to build again by executing `mvn clean install -DskipTests` on the `sormas-base` module
 
 ## Avoid redeployment problems
 

@@ -65,7 +65,7 @@ You can check your Java version from the shell/command line using: ``java -versi
 * Install the "temporal tables" extension for Postgres (<https://github.com/arkhipov/temporal_tables>)
   * **Windows**: Download the latest version for your Postgres version: <https://github.com/arkhipov/temporal_tables/releases/latest>, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
   * **Linux** (see <https://github.com/arkhipov/temporal_tables#installation)>
-
+* Add the PostgreSQL path (/etc/PostgreSQL/10/bin) to Environment Variables
 ```bash
 sudo apt-get install libpq-dev
 sudo apt-get install postgresql-server-dev-all
@@ -106,7 +106,7 @@ chmod +x $(date +%F)/server-setup.sh
 ### Auditing
 You can configure the audit logger of SORMAS by providing a Logback [configuration file](https://logback.qos.ch/manual/configuration.html) and setting the `audit.logger.config` property accordingly. An example is provided in `sormas-base/setup/audit-logback.xml`.  Not specifying a value for the property will effectively disable the audit log.
 
-### Post-Installation Configuration
+### Sormas installation
 
 * Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The pre-defined name is used in the statements executed in the database.
 * Set up the database and a Payara domain for SORMAS by executing the setup script: ``sudo -s ./server-setup.sh`` Press enter whenever asked for it
