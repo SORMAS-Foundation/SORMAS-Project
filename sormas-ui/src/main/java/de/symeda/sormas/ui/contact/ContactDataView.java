@@ -267,6 +267,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
+		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
@@ -275,13 +276,13 @@ public class ContactDataView extends AbstractContactView {
 				getContactRef(),
 				UserRight.CONTACT_EDIT,
 				contactDto.isPseudonymized(),
-				isEditAllowed());
+				isEditAllowed(),
+				EditPermissionType.DOCUMENTS_ONLY.equals(contactEditAllowed));
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
-		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 
 		if (deleted) {
@@ -291,7 +292,7 @@ public class ContactDataView extends AbstractContactView {
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
 		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
-			layout.disable(true);
+			layout.disableWithViewAllow();
 		}
 	}
 
