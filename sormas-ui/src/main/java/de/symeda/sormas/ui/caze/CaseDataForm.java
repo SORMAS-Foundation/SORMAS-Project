@@ -625,7 +625,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.PREVIOUS_INFECTION_DATE);
 			ComboBox tfReinfectionStatus = addField(CaseDataDto.REINFECTION_STATUS, ComboBox.class);
 			tfReinfectionStatus.setReadOnly(true);
-			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.PREVIOUS_INFECTION_DATE, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.PREVIOUS_INFECTION_DATE, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, false);
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.REINFECTION_STATUS, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, false);
 
 			final Label reinfectionInfoLabel = new Label(VaadinIcons.EYE.getHtml(), ContentMode.HTML);
@@ -701,11 +701,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				} else {
 					reinfectionInfoLabel.setDescription(null);
 					reinfectionInfoLabel.setVisible(false);
-
-					for (CaseReinfectionCheckBoxTree reinfectionTree : reinfectionTrees.values()) {
-						reinfectionTree.clearCheckBoxTree();
-					}
-
 					reinfectionDetailsLeftLayout.setVisible(false);
 					reinfectionDetailsRightLayout.setVisible(false);
 				}
