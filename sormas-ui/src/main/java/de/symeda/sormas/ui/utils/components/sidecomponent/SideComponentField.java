@@ -69,6 +69,18 @@ public class SideComponentField extends HorizontalLayout {
 		addComponent(actionButton);
 		setComponentAlignment(actionButton, Alignment.TOP_RIGHT);
 		setExpandRatio(actionButton, 0);
+	}
 
+	public void addDeleteButton(String id, Button.ClickListener actionClickListener) {
+		Button actionButton = ButtonHelper.createIconButtonWithCaption(
+			"delete" + id,
+			null,
+			VaadinIcons.TRASH,
+			actionClickListener,
+			ValoTheme.BUTTON_LINK,
+			CssStyles.BUTTON_COMPACT);
+		addComponent(actionButton);
+		setComponentAlignment(actionButton, Alignment.TOP_RIGHT);
+		setExpandRatio(actionButton, 0);
 	}
 }

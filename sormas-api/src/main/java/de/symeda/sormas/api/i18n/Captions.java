@@ -69,6 +69,7 @@ public interface Captions {
 	String actionDiscardAndContinue = "actionDiscardAndContinue";
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
+	String actionDone = "actionDone";
 	String actionEnable = "actionEnable";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	String actionExecuteAutomaticDeletion = "actionExecuteAutomaticDeletion";
