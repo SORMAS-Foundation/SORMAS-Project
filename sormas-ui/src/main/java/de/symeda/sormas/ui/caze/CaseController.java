@@ -1224,10 +1224,8 @@ public class CaseController {
 			new HospitalizationForm(caze, viewMode, caze.isPseudonymized(), caze.isInJurisdiction(), isEditAllowed);
 		hospitalizationForm.setValue(caze.getHospitalization());
 
-		final CommitDiscardWrapperComponent<HospitalizationForm> editView = new CommitDiscardWrapperComponent<HospitalizationForm>(
-			hospitalizationForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
-			hospitalizationForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<HospitalizationForm> editView =
+			new CommitDiscardWrapperComponent<HospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup());
 
 		final JurisdictionValues jurisdictionValues = new JurisdictionValues();
 
@@ -1364,6 +1362,15 @@ public class CaseController {
 		return editView;
 	}
 
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, Consumer<Boolean> sourceContactsToggleCallback) {
+
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		CommitDiscardWrapperComponent<EpiDataForm> epiDataComponent =
+			getEpiDataComponent(caseUuid, sourceContactsToggleCallback, currentUserProvider.hasUserRight(UserRight.CASE_EDIT));
+		epiDataComponent.setEnabled(currentUserProvider.hasUserRight(UserRight.CASE_EDIT));
+		return epiDataComponent;
+	}
+
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(
 		final String caseUuid,
 		Consumer<Boolean> sourceContactsToggleCallback,
@@ -1380,10 +1387,8 @@ public class CaseController {
 		epiDataForm.setValue(caze.getEpiData());
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
-			epiDataForm,
-			currentUserProvider.hasUserRight(UserRight.CASE_EDIT),
-			epiDataForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataForm> editView =
+			new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);

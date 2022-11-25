@@ -35,12 +35,10 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 
 		setSizeFull();
 
-		if (isEditAllowed) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				setSelectionMode(SelectionMode.MULTI);
-			} else {
-				setSelectionMode(SelectionMode.NONE);
-			}
+		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setSelectionMode(SelectionMode.MULTI);
+		} else {
+			setSelectionMode(SelectionMode.NONE);
 		}
 
 		BeanItemContainer<ClinicalVisitIndexDto> container = new BeanItemContainer<>(ClinicalVisitIndexDto.class);

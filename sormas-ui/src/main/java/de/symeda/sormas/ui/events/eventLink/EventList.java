@@ -61,7 +61,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT) && isEditAllowed) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_EDIT, UserRight.CASE_EDIT) && isEditAllowed) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingUnlinkCaseFromEvent),
@@ -154,12 +154,12 @@ public class EventList extends PaginationList<EventIndexDto> {
 				if (addUnlinkEventListener != null) {
 					addUnlinkEventListener.accept(i, listEntry);
 				}
-				listEntry.addActionButton(
-					String.valueOf(i),
-					(ClickListener) clickEvent -> actionCallback
-						.accept(() -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid())),
-					isEditAllowed);
 			}
+			listEntry.addActionButton(
+				String.valueOf(i),
+				(ClickListener) clickEvent -> actionCallback
+					.accept(() -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid())),
+				isEditAllowed && user.hasUserRight(UserRight.EVENT_EDIT));
 			listEntry.setEnabled(isEditAllowed);
 			listLayout.addComponent(listEntry);
 		}
