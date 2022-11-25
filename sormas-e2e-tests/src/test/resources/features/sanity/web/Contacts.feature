@@ -1451,3 +1451,25 @@ Feature: Contacts end to end tests
       And I click on the Contacts button from navbar
       And I filter with last created contact using contact UUID
       And I check that number of displayed contact results is 0
+
+      @tmsLink=SORQA-681 @env_de @oldfake
+        Scenario: Check automatic deletion NOT of CONTACT created 1820 days ago
+        Given API: I create a new person
+        Then API: I check that POST call body is "OK"
+        And API: I check that POST call status code is 200
+        Then API: I create a new contact with creation date 1820 days ago
+        Then API: I check that POST call body is "OK"
+        And API: I check that POST call status code is 200
+        Then I log in as a Admin User
+        When I click on the Contacts button from navbar
+        Then I search after last created contact via API by name and uuid then open
+        Then I copy uuid of current contact
+        And I click on the Configuration button from navbar
+        Then I navigate to Developer tab in Configuration
+        Then I click on Execute Automatic Deletion button
+        And I wait 30 seconds for system reaction
+        Then I check if created contact is available in API
+        And API: I check that POST call status code is 200
+        And I click on the Contacts button from navbar
+        And I filter with last created contact using contact UUID
+        And I check that number of displayed contact results is 1
