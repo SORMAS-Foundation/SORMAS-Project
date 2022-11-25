@@ -211,11 +211,11 @@ public class CaseDataView extends AbstractCaseView {
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 
 		if (deleted) {
-			layout.disableVithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		} else if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disableVithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disableWithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disableVithViewAllow();
+			layout.disableWithViewAllow();
 		} else if (caseEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
 			layout.disable(true);
 		}

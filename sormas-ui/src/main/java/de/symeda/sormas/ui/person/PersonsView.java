@@ -13,6 +13,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
@@ -49,6 +50,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.PersonDownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 public class PersonsView extends AbstractView {
@@ -64,12 +66,15 @@ public class PersonsView extends AbstractView {
 	private Button activeAssociationButton;
 	private PersonFilterForm filterForm;
 
+	private ViewConfiguration viewConfiguration;
+
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
 
 	public PersonsView() {
 		super(VIEW_NAME);
 
+		viewConfiguration = ViewModelProviders.of(PersonsView.class).get(ViewConfiguration.class);
 		// Avoid calling ALL associations at view start because the query tends to take long time
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -153,16 +158,17 @@ public class PersonsView extends AbstractView {
 				&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
-			btnEnterBulkEditMode.setVisible(true);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			moreButton.addMenuEntry(btnEnterBulkEditMode);
 
 			Button btnLeaveBulkEditMode =
 					ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
-			btnLeaveBulkEditMode.setVisible(false);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 			moreButton.addMenuEntry(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(PersonsView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				((PersonGrid) grid).reload();
@@ -170,6 +176,7 @@ public class PersonsView extends AbstractView {
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(PersonsView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				navigateTo(criteria);
@@ -219,6 +226,10 @@ public class PersonsView extends AbstractView {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
+		}
+
+		if (viewConfiguration.isInEagerMode()) {
+			((PersonGrid) grid).setBulkEditMode(true);
 		}
 
 		updateFilterComponents();
@@ -355,19 +366,29 @@ public class PersonsView extends AbstractView {
 								.birthdateYYYY(leadPersonDto.getBirthdateYYYY());
 							criteria.setName(leadPersonDto);
 
-							if (!FacadeProvider.getPersonFacade().isPersonSimilar(criteria, person2.getUuid())) {
-								VaadinUiUtil.showConfirmationPopup(
-									I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
-									new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmationForNonSimilarPersons)),
-									I18nProperties.getCaption(Captions.actionProceed),
-									I18nProperties.getCaption(Captions.actionCancel),
-									confirmAgain -> {
-										if (Boolean.TRUE.equals(confirmAgain)) {
-											ControllerProvider.getPersonController().mergePersons(person1, person2);
-										}
-									});
+							if (FacadeProvider.getPersonFacade().isShared(person1.getUuid())
+								|| FacadeProvider.getPersonFacade().isShared(person2.getUuid())) {
+								new Notification(
+									I18nProperties.getString(Strings.headingMergePersonError),
+									I18nProperties.getString(Strings.infoPersonMergeErrorWhenShared),
+									Notification.Type.ERROR_MESSAGE,
+									false).show(Page.getCurrent());
 							} else {
-								ControllerProvider.getPersonController().mergePersons(person1, person2);
+								if (!FacadeProvider.getPersonFacade().isPersonSimilar(criteria, person2.getUuid())) {
+									VaadinUiUtil.showConfirmationPopup(
+										I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
+										new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmationForNonSimilarPersons)),
+										I18nProperties.getCaption(Captions.actionProceed),
+										I18nProperties.getCaption(Captions.actionCancel),
+										800,
+										confirmAgain -> {
+											if (Boolean.TRUE.equals(confirmAgain)) {
+												ControllerProvider.getPersonController().mergePersons(person1, person2);
+											}
+										});
+								} else {
+									ControllerProvider.getPersonController().mergePersons(person1, person2);
+								}
 							}
 
 							grid.deselectAll();
@@ -375,7 +396,7 @@ public class PersonsView extends AbstractView {
 					}, true)));
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
-			bulkOperationsDropdown.setVisible(false);
+			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 			associationFilterLayout.addComponent(bulkOperationsDropdown);
 		}
 

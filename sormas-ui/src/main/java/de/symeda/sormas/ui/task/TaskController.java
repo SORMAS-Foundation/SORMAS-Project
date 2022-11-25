@@ -102,8 +102,13 @@ public class TaskController {
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<TaskEditForm> editView =
 			new CommitDiscardWrapperComponent<TaskEditForm>(form, UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT), form.getFieldGroup());
+		editView.getButtonsPanel().setVisible(UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT));
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditTask));
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
+			editView,
+			UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT)
+				? I18nProperties.getString(Strings.headingEditTask)
+				: I18nProperties.getString(Strings.headingViewTask));
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {

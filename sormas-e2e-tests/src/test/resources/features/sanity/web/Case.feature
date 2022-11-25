@@ -2029,3 +2029,57 @@ Feature: Case end to end tests
     Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
+
+  @tmsLink=SORQA-658 @env_de @oldfake
+    Scenario: Check automatic deletion of cases created 3651 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with creation date 3651 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I click on the Cases button from navbar
+    And I check if created case is available in API
+    And API: I check that POST call status code is 204
+    Then I filter with first Case ID
+    And I check that number of displayed cases results is 0
+
+    @tmsLink=SORQA-663 @env_de @oldfake @precon
+      Scenario: Check if 'Löschung geplant für' is available in Case Edit
+      Given API: I create a new person
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then API: I create a new case
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then I log in as a Admin User
+      Then I navigate to the last created case via the url
+      And I check if element with text "Löschung geplant für" is present in Case Edit
+
+  @tmsLink=SORQA-682 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of cases created 3645 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with creation date 3645 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I click on the Cases button from navbar
+    And I check if created case is available in API
+    And API: I check that POST call status code is 200
+    Then I filter with first Case ID
+    And I check that number of displayed cases results is 1

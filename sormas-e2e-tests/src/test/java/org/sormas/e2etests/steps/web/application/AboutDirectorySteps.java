@@ -34,7 +34,8 @@ public class AboutDirectorySteps implements En {
   public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
       String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
   public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
-  private static final String RELEASE_PAGE = "https://github.com/hzi-braunschweig/SORMAS-Project/releases";
+  private static final String RELEASE_PAGE =
+      "https://github.com/hzi-braunschweig/SORMAS-Project/releases";
   private static AssertHelpers assertHelpers;
 
   @Inject
@@ -168,9 +169,7 @@ public class AboutDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.switchToOtherWindow();
           softly.assertTrue(
-              webDriverHelpers
-                  .returnURL()
-                  .contains(RELEASE_PAGE),
+              webDriverHelpers.returnURL().contains(RELEASE_PAGE),
               "What's new link is not the correct");
           softly.assertAll();
           webDriverHelpers.closeActiveWindow();

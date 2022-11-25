@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -80,9 +81,8 @@ public class ClinicalVisitService extends AdoServiceWithUserFilterAndJurisdictio
 	}
 
 	@Override
-	protected void fetchReferences(From<?, ClinicalVisit> from) {
-
-		from.fetch(ClinicalVisit.SYMPTOMS);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(ClinicalVisit.SYMPTOMS);
 	}
 
 	public List<String> getAllActiveUuids(User user) {

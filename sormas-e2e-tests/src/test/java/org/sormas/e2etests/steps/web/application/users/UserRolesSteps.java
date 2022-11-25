@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_SA
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_MANAGEMENT_TAB;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_COMBOBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_DISABLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_ENABLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_LIST;
@@ -204,6 +205,22 @@ public class UserRolesSteps implements En {
         (String userRight) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_RIGHTS_COMBOBOX);
           webDriverHelpers.selectFromCombobox(USER_RIGHTS_COMBOBOX, userRight);
+        });
+
+    And(
+        "^I check if the \"([^\"]*)\" user role exist and delete it$",
+        (String userRole) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(USER_RIGHTS_INPUT);
+          webDriverHelpers.scrollInTable(12);
+
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              getUserRoleCaptionByText("TestNatUser"), 5)) {
+            webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText(userRole));
+            webDriverHelpers.scrollToElement(DELETE_USER_ROLE_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(DELETE_USER_ROLE_BUTTON);
+            webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(DELETE_CONFIRMATION_BUTTON);
+          }
         });
   }
 }

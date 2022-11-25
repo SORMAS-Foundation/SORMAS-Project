@@ -275,13 +275,7 @@ public class EventParticipantFacadeEjb
 			return Collections.emptyList();
 		}
 
-		List<String> deletedEventParticipants = service.getDeletedUuidsSince(since, user);
-		return deletedEventParticipants;
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<EventParticipantDto> cq, Root<EventParticipant> root) {
-
+		return service.getDeletedUuidsSince(since, user);
 	}
 
 	@Override
@@ -406,8 +400,7 @@ public class EventParticipantFacadeEjb
 				});
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
-				String.format(
-					"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventParticipant related to other events."));
+				"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventParticipant related to other events.");
 		}
 	}
 
@@ -460,7 +453,8 @@ public class EventParticipantFacadeEjb
 		List<SortProperty> sortProperties) {
 
 		if ((eventParticipantCriteria == null) || (eventParticipantCriteria.getEvent() == null && eventParticipantCriteria.getPerson() == null)) {
-			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
+			// Retrieving an index list independent of an event is not possible
+			return new ArrayList<>();
 		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -608,6 +602,8 @@ public class EventParticipantFacadeEjb
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.EVENT_TITLE),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
 
 		Predicate filter =
@@ -1030,22 +1026,17 @@ public class EventParticipantFacadeEjb
 	@Override
 	public List<EventParticipantDto> getAllActiveEventParticipantsByEvent(String eventUuid) {
 
-		User user = userService.getCurrentUser();
 		Event event = eventService.getByUuid(eventUuid);
 
-		if (user == null) {
+		if (userService.getCurrentUser() == null || event == null) {
 			return Collections.emptyList();
 		}
-
-		if (event == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllActiveByEvent(event).stream().map(this::toDto).collect(Collectors.toList());
+		return toDtos(service.getAllActiveByEvent(event).stream());
 	}
 
 	@Override
 	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
+		//todo
 		Pseudonymizer pseudonymizer = createPseudonymizer();
 		return service.getByEventUuids(eventUuids).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
@@ -1109,7 +1100,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public List<EventParticipantDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(ep -> toDto(ep)).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(personUuids).stream());
 	}
 
 	@Override
@@ -1122,8 +1113,7 @@ public class EventParticipantFacadeEjb
 
 		cq.where(cb.and(cb.equal(eventJoin.get(Event.UUID), eventUuid), cb.in(personJoin.get(EventParticipant.UUID)).value(personUuids)));
 
-		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
-		return resultList.stream().map(ep -> toDto(ep)).collect(Collectors.toList());
+		return toDtos(em.createQuery(cq).getResultList().stream());
 	}
 
 	@Override

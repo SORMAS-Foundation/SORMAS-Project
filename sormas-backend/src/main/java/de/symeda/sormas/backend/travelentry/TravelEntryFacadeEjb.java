@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -123,10 +122,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
-	}
-
-	@Override
 	public List<DeaContentEntry> getDeaContentOfLastTravelEntry() {
 		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 
@@ -154,10 +149,7 @@ public class TravelEntryFacadeEjb
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(
-					source.getReportingUser(),
-					currentUser,
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 			});
 		}
 	}
@@ -190,7 +182,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	public List<TravelEntryDto> getByPersonUuids(List<String> uuids) {
-		return service.getByPersonUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(uuids).stream());
 	}
 
 	@Override

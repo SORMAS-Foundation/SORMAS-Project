@@ -340,7 +340,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.reportDateTime = reportDateTime;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
@@ -431,7 +431,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.description = description;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getContactOfficer() {
 		return contactOfficer;
@@ -576,7 +576,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = true)
 	public User getResultingCaseUser() {
 		return resultingCaseUser;
@@ -633,7 +633,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.internalToken = internalToken;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -642,7 +642,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}
@@ -651,7 +651,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Community getCommunity() {
 		return community;
 	}
@@ -1009,7 +1009,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getReportingDistrict() {
 		return reportingDistrict;
 	}
@@ -1036,7 +1036,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.followUpStatusChangeDate = followUpStatusChangeDate;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public User getFollowUpStatusChangeUser() {
 		return followUpStatusChangeUser;
 	}

@@ -271,16 +271,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected void fetchReferences(From<?, Case> from) {
-
-		from.fetch(Case.SYMPTOMS);
-		from.fetch(Case.THERAPY);
-		from.fetch(Case.CLINICAL_COURSE);
-		from.fetch(Case.HEALTH_CONDITIONS);
-		from.fetch(Case.HOSPITALIZATION);
-		from.fetch(Case.EPI_DATA);
-		from.fetch(Case.PORT_HEALTH_INFO);
-		from.fetch(Case.MATERNAL_HISTORY);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(
+			Case.SYMPTOMS,
+			Case.THERAPY,
+			Case.CLINICAL_COURSE,
+			Case.HEALTH_CONDITIONS,
+			Case.HOSPITALIZATION,
+			Case.EPI_DATA,
+			Case.PORT_HEALTH_INFO,
+			Case.MATERNAL_HISTORY);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -971,7 +971,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				from,
 				ExternalShareInfo.CAZE,
-				(latestShareDate) -> createChangeDateFilter(cq, cb, from, latestShareDate, true, true)));
+				(latestShareDate) -> createChangeDateFilter(cq, cb, from, joins, latestShareDate, true, true)));
 
 		return filter;
 	}
@@ -1047,10 +1047,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				sormasToSormasShareInfoService.ensurePersisted(s);
 			} else {
 				try {
-					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s));
+					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s), false);
 				} catch (SormasToSormasException e) {
 					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
 				}
+
 				sormasToSormasShareInfoService.deletePermanent(s);
 			}
 		});
@@ -1245,6 +1246,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		From<?, Case> casePath,
+		CaseJoins joins,
 		Expression<? extends Date> dateExpression,
 		boolean includeExtendedChangeDateFilters,
 		boolean includeRelevantVaccinations) {
@@ -1252,12 +1254,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		ChangeDateFilterBuilder builder = addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters);
 
 		if (includeRelevantVaccinations) {
-			Subquery<Symptoms> symptomsSq = cq.subquery(Symptoms.class);
-			Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
-			symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
-			symptomsSq.where(cb.equal(symptomsSqRoot, casePath.get(Case.SYMPTOMS)));
-
-			Join<Person, Immunization> immunizationJoin = casePath.join(Case.PERSON, JoinType.LEFT).join(Person.IMMUNIZATIONS, JoinType.LEFT);
+			Join<Person, Immunization> immunizationJoin = joins.getPersonJoins().getImmunization();
 			Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
 			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(casePath, cq, cb, vaccinationsJoin)));
@@ -1647,7 +1644,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
 		return inJurisdictionOrOwned(new CaseQueryContext(cb, query, from));
 	}
 
@@ -1659,7 +1656,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return CaseJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
-	public Collection<Case> getByPersonUuids(List<String> personUuids) {
+	public List<Case> getByPersonUuids(List<String> personUuids) {
 
 		List<Case> cases = new ArrayList<>();
 		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> cases.addAll(getCasesByPersonUuids(batchedUuids)));
@@ -1727,7 +1724,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
 		Predicate filter =
-			CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
+			CriteriaBuilderHelper.and(cb, createActiveCasesFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
 
 		if (caseCriteria != null) {
 			if (caseCriteria.getDisease() != null) {
@@ -1767,12 +1764,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final Root<Case> caze = cq.from(Case.class);
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		Join<Case, Symptoms> symptoms = caseQueryContext.getJoins().getSymptoms();
 
 		cq.multiselect(
 			caze.get(Case.UUID),
 			caze.get(Case.REPORT_DATE),
 			caze.get(Case.DISEASE),
 			caze.get(Case.CASE_CLASSIFICATION),
+			symptoms.get(Symptoms.ONSET_DATE),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(caseQueryContext)),
 			caze.get(Case.CHANGE_DATE));
 

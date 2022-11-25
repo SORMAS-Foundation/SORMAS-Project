@@ -20,8 +20,17 @@ package org.sormas.e2etests.steps.web.application.continents;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_CONTINENTS_TAB;
 import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_DROPDOWN_CONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_NAME_CONTINENTS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.CONTINENTS_TABLE_ROW;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.ENTER_BULK_EDIT_MODE_CONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.EXPORT_BUTTON_CONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.IMPORT_BUTTON_CONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.IMPORT_DEFAULT_CONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.NEW_ENTRY_BUTTON_CONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.RESET_FILTERS_BUTTON_CONTINENTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.ContinentsTabPage.SEARCH_FILTER_INPUT_CONTINENTS_CONFIGURATION;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -129,6 +138,103 @@ public class ConfigurationContinentsSteps implements En {
                     String.format("%s is not correctly displayed!", temp));
               });
           softly.assertAll();
+        });
+
+    Then(
+        "^I Verify the Presence of the element ([^\"]*) in Continents Configuration page$",
+        (String element) -> {
+          switch (element) {
+            case "Import Button":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  IMPORT_BUTTON_CONTINENTS_CONFIGURATION);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(IMPORT_BUTTON_CONTINENTS_CONFIGURATION),
+                  "The Import Button is not present in Continents Configuration page");
+              softly.assertAll();
+              break;
+            case "Import Default Button":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  IMPORT_DEFAULT_CONTINENTS_CONFIGURATION);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(IMPORT_DEFAULT_CONTINENTS_CONFIGURATION),
+                  "The Import Default Button is not present in Continents Configuration page");
+              softly.assertAll();
+              break;
+            case "Export Button":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  EXPORT_BUTTON_CONTINENTS_CONFIGURATION);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(EXPORT_BUTTON_CONTINENTS_CONFIGURATION),
+                  "The Export Button is not present in Continents Configuration page");
+              softly.assertAll();
+              break;
+            case "New Entry Button":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  NEW_ENTRY_BUTTON_CONTINENTS_CONFIGURATION);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(NEW_ENTRY_BUTTON_CONTINENTS_CONFIGURATION),
+                  "The New Entry Button is not present in Continents Configuration page");
+              softly.assertAll();
+              break;
+            case "Enter Bulk Edit Mode button":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  ENTER_BULK_EDIT_MODE_CONTINENTS_CONFIGURATION);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(ENTER_BULK_EDIT_MODE_CONTINENTS_CONFIGURATION),
+                  "The Enter Bulk Edit Mode button is not present in Continents Configuration page");
+              softly.assertAll();
+              break;
+            case "Search Input":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  SEARCH_FILTER_INPUT_CONTINENTS_CONFIGURATION);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(SEARCH_FILTER_INPUT_CONTINENTS_CONFIGURATION),
+                  "The Search Input is not present in Continents Configuration page");
+              softly.assertAll();
+              break;
+            case "Reset Filters":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  RESET_FILTERS_BUTTON_CONTINENTS_CONFIGURATION);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(RESET_FILTERS_BUTTON_CONTINENTS_CONFIGURATION),
+                  "The Reset Filter button is not present in Continents Configuration page");
+              softly.assertAll();
+              break;
+            case "Continents dropdown":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                  CONTINENTS_DROPDOWN_CONTINENTS_CONFIGURATION);
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(CONTINENTS_DROPDOWN_CONTINENTS_CONFIGURATION),
+                  "The Continents dropdown is not present in Continents Configuration page");
+              softly.assertAll();
+              break;
+            default:
+              throw new IllegalArgumentException("No valid options were provided");
+          }
+        });
+    When(
+        "I verify the Search and Reset filter functionality in Continents Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
+          Integer defaultContinentCount =
+              webDriverHelpers.getNumberOfElements(CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
+          String continent =
+              webDriverHelpers.getTextFromWebElement(CONTINENTS_NAME_CONTINENTS_CONFIGURATION);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_FILTER_INPUT_CONTINENTS_CONFIGURATION, continent);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, continent);
+          webDriverHelpers.clickOnWebElementBySelector(
+              RESET_FILTERS_BUTTON_CONTINENTS_CONFIGURATION);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              CONTINENTS_NAME_CONTINENTS_CONFIGURATION, defaultContinentCount);
         });
   }
 

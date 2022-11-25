@@ -573,7 +573,7 @@ Feature: Create events
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555 @ignore
+  @env_main @#8555
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -614,7 +614,7 @@ Feature: Create events
     Then I check if Archive button changed name to De-Archive
 
   @tmsLink=SORDEV-10265 @env_main
-  Scenario: Manual archiving for event participats
+  Scenario: Manual archiving for event participants
     Given I log in as a Admin User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
@@ -634,7 +634,7 @@ Feature: Create events
     Then I check if participant appears in the event participants list
 
   @tmsLink=SORDEV-10265 @env_main
-  Scenario: Manual archiving for bulk event participats
+  Scenario: Manual archiving for bulk event participants
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -861,7 +861,7 @@ Feature: Create events
     Then I click on edit button for the last searched facility
     And I archive facility
 
-    @env_main @#8556 @ignore
+  @env_main @#8556
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1325,3 +1325,89 @@ Feature: Create events
     Then I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
+
+    @tmsLink=SORQA-667 @env_de @oldfake
+    Scenario: Check automatic deletion of EVENT_PARTICIPANT created 1826 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event participant with creation date 1826 days ago
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I check if participant created via API appears in the event participants list
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created event participant is available in API
+    And API: I check that GET call status code is 204
+    Then I open the last created event via api
+    And I navigate to EVENT PARTICIPANT from edit event page
+    Then I check if event participant created via API not appears in the event participant list
+
+  @tmsLink=SORQA-666 @env_de @oldfake
+    Scenario: Check automatic deletion of EVENT created 1826 days ago
+    Given API: I create a new event with creation date 1826 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    And I copy uuid of current event
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created event is available in API
+    And API: I check that GET call status code is 500
+    Then I click on the Events button from navbar
+    And I filter by last created event via api
+    And I check the number of displayed Event results from All button is 0
+
+  @tmsLink=SORQA-679 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of EVENT_PARTICIPANT created 1820 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event participant with creation date 1820 days ago
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I check if participant created via API appears in the event participants list
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created event participant is available in API
+    And API: I check that GET call status code is 200
+    Then I open the last created event via api
+    And I navigate to EVENT PARTICIPANT from edit event page
+    Then I check if event participant created via API still appears in the event participant list
+
+  @tmsLink=SORQA-680 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of EVENT created 1820 days ago
+    Given API: I create a new event with creation date 1820 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    And I copy uuid of current event
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 60 seconds for system reaction
+    Then I check if created event is available in API
+    And API: I check that GET call status code is 200
+    Then I click on the Events button from navbar
+    And I filter by last created event via api
+    And I check the number of displayed Event results from All button is 1

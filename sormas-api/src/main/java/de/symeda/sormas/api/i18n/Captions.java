@@ -69,6 +69,7 @@ public interface Captions {
 	String actionDiscardAndContinue = "actionDiscardAndContinue";
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
+	String actionDone = "actionDone";
 	String actionEnable = "actionEnable";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	String actionExecuteAutomaticDeletion = "actionExecuteAutomaticDeletion";
@@ -1607,6 +1608,10 @@ public interface Captions {
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
+	String notificationType = "notificationType";
+	String notificationType_caption = "notificationType.caption";
+	String notificationType_description = "notificationType.description";
+	String notificationType_group = "notificationType.group";
 	String notSpecified = "notSpecified";
 	String notTestedYet = "notTestedYet";
 	String numberOfCharacters = "numberOfCharacters";

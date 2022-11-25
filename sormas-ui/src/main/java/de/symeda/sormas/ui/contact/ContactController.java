@@ -144,7 +144,8 @@ public class ContactController {
 			return;
 		}
 
-		boolean adoptHomeAddress = lineListingForm.getSharedInfoField().getCaseSelector().getAdoptAddressLayout().isAdoptAddress();
+		AdoptAddressLayout adoptAddressLayout = lineListingForm.getSharedInfoField().getCaseSelector().getAdoptAddressLayout();
+		boolean adoptHomeAddress = adoptAddressLayout != null ? adoptAddressLayout.isAdoptAddress() : false;
 
 		while (!contacts.isEmpty()) {
 			LineDto<ContactDto> contactLineDto = contacts.pop();
@@ -847,10 +848,8 @@ public class ContactController {
 			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null, isEditAllowed);
 		epiDataForm.setValue(epiData);
 
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
-			epiDataForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
-			epiDataForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataForm> editView =
+			new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contactUuid);

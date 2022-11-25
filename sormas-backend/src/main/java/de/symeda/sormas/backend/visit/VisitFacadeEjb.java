@@ -496,7 +496,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 					if (symptoms != null) {
 						Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
-							.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
+							.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toSymptomsDto(symptom)));
 					}
 				}
 			}
@@ -593,7 +593,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		target.setDisease(source.getDisease());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
-		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
+		target.setSymptoms(SymptomsFacadeEjb.toSymptomsDto(source.getSymptoms()));
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());

@@ -744,7 +744,7 @@ Feature: Contacts end to end tests
     Then I check that National Health ID is not visible in Person search popup
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
-    
+
   @tmsLink=SORDEV-9946 @env_de
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
     Given I log in as a Admin User
@@ -839,7 +839,7 @@ Feature: Contacts end to end tests
     Given I log in as a National User
     Then I click on the Contacts button from navbar
     And I open the first contact from contacts list
-    And I click on the NEW TASK button
+    And I click on the NEW TASK button from Edit Contact page
     And I check if New task form is displayed correctly
     And I check that required fields are marked as mandatory
     And I clear Due Date field in the New task form
@@ -1429,3 +1429,47 @@ Feature: Contacts end to end tests
     And I click Enter Bulk Edit Mode on Contact directory page
     And I click on Bulk Actions combobox on Contact Directory Page
     Then I check that Share option is not visible in Bulk Actions dropdown in Contact Directory for DE specific
+
+    @tmsLink=SORQA-665 @env_de @oldfake
+    Scenario: Check automatic deletion of CONTACT created 1826 days ago
+      Given API: I create a new person
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then API: I create a new contact with creation date 1826 days ago
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then I log in as a Admin User
+      When I click on the Contacts button from navbar
+      Then I search after last created contact via API by name and uuid then open
+      Then I copy uuid of current contact
+      And I click on the Configuration button from navbar
+      Then I navigate to Developer tab in Configuration
+      Then I click on Execute Automatic Deletion button
+      And I wait 30 seconds for system reaction
+      Then I check if created contact is available in API
+      And API: I check that POST call status code is 204
+      And I click on the Contacts button from navbar
+      And I filter with last created contact using contact UUID
+      And I check that number of displayed contact results is 0
+
+      @tmsLink=SORQA-681 @env_de @oldfake
+        Scenario: Check automatic deletion NOT of CONTACT created 1820 days ago
+        Given API: I create a new person
+        Then API: I check that POST call body is "OK"
+        And API: I check that POST call status code is 200
+        Then API: I create a new contact with creation date 1820 days ago
+        Then API: I check that POST call body is "OK"
+        And API: I check that POST call status code is 200
+        Then I log in as a Admin User
+        When I click on the Contacts button from navbar
+        Then I search after last created contact via API by name and uuid then open
+        Then I copy uuid of current contact
+        And I click on the Configuration button from navbar
+        Then I navigate to Developer tab in Configuration
+        Then I click on Execute Automatic Deletion button
+        And I wait 30 seconds for system reaction
+        Then I check if created contact is available in API
+        And API: I check that POST call status code is 200
+        And I click on the Contacts button from navbar
+        And I filter with last created contact using contact UUID
+        And I check that number of displayed contact results is 1

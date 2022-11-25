@@ -1342,7 +1342,10 @@ public class EditCaseSteps implements En {
 
     When(
         "I click on edit Sample",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_SAMPLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON);
+        });
 
     When(
         "I click on the Create button from Case Document Templates",
@@ -2610,6 +2613,12 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(EDIT_VACCINATION_BUTTON, 5);
           softly.assertFalse(elementVisible, "Vaccination ID is visible!");
           softly.assertAll();
+        });
+
+    When(
+        "I check if element with text {string} is present in Case Edit",
+        (String text) -> {
+          Assert.assertTrue(webDriverHelpers.isElementPresent(checkIfTextExists(text)));
         });
   }
 

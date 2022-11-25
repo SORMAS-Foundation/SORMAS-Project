@@ -493,7 +493,24 @@ public class WebDriverHelpers {
     Boolean isPresent = baseSteps.getDriver().findElements(elementLocator).size() > 0;
     return isPresent;
   }
-  ;
+
+  public void verifyListContainsText(final By selector, String value) {
+    assertHelpers.assertWithPoll(
+        () -> {
+          List<String> webElementsTexts =
+              baseSteps.getDriver().findElements(selector).stream()
+                  .map(
+                      webElement -> {
+                        scrollToElement(webElement);
+                        return webElement.getText();
+                      })
+                  .collect(Collectors.toList());
+          Assert.assertTrue(
+              webElementsTexts.contains(value),
+              String.format("The element: %s did not contain text: %s", selector, value));
+        },
+        FLUENT_WAIT_TIMEOUT_SECONDS);
+  }
 
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {

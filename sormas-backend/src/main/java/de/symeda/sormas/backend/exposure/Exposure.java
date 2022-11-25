@@ -139,7 +139,7 @@ public class Exposure extends AbstractDomainObject {
 		this.epiData = epiData;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getReportingUser() {
 		return reportingUser;
