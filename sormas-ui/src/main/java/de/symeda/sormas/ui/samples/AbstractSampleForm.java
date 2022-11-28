@@ -260,13 +260,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 			labDetails.setVisible(true);
 			labDetails.setRequired(!isPseudonymized);
-			/*
-			 * if (isPseudonymized) {
-			 * labDetails.setRequired(false);
-			 * } else {
-			 * labDetails.setRequired(true);
-			 * }
-			 */
 		} else {
 			labDetails.setVisible(false);
 			labDetails.setRequired(false);
