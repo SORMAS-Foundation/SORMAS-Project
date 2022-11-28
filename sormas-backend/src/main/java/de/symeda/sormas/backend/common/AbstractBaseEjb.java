@@ -53,8 +53,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public List<DTO> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return service.getByUuids(uuids).stream().map(source -> toPseudonymizedDto(source, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getByUuids(uuids));
 	}
 
 	@Override
