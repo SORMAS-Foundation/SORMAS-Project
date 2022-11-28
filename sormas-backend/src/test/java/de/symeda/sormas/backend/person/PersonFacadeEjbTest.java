@@ -1149,13 +1149,13 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPersonAssociatedWithNullId() {
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(null);
+		boolean isAssociated = getPersonFacade().isEditAllowed(null);
 		assertFalse(isAssociated);
 	}
 
 	@Test
 	public void testPersonAssociatedWithUnexistingId() {
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(DataHelper.createUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(DataHelper.createUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1172,11 +1172,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getCaseFacade().delete(caseDataDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1186,11 +1186,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		ContactDto contactDto = creator.createContact(rdcf, userDto.toReference(), personDto.toReference());
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getContactFacade().delete(contactDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1200,11 +1200,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		TravelEntryDto travelEntryDto = creator.createTravelEntry(personDto.toReference(), userDto.toReference(), rdcf, null);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getTravelEntryFacade().delete(travelEntryDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1215,11 +1215,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto eventDto = creator.createEvent(userDto.toReference());
 		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, userDto.toReference());
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getEventParticipantFacade().delete(eventParticipantDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1229,11 +1229,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		ImmunizationDto immunizationDto = creator.createImmunization(Disease.CORONAVIRUS, personDto.toReference(), userDto.toReference(), rdcf);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getImmunizationFacade().delete(immunizationDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1558,6 +1558,62 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testIsEditAllowedLinkedToImmunization() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of immunization not yet shared
+		PersonDto person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming immunization without ownership
+		person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		});
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming immunization with ownership
+		person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		});
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of immunization shared without ownership
+		person = creator.createPerson();
+		ImmunizationDto sharedImmuniztion = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setImmunization(getImmunizationService().getByReferenceDto(sharedImmuniztion.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of immunization shared with ownership
+		person = creator.createPerson();
+		ImmunizationDto handedOverImmunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);;
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setImmunization(getImmunizationService().getByReferenceDto(handedOverImmunization.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
 	public void testIseEditAllowedLinkedToTravelEntry() {
 		RDCF rdcf = creator.createRDCF();
 		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
@@ -1643,5 +1699,75 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToSharedAndDeletedObject() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
+
+		// person linked to a single shared without ownership then deleted case should not be editable
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
+
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails());
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// with deleted case but active contact should be editable
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails());
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToNotOwnedCaseAndDeletedAssociatedObject() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		EventParticipantDto eventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		getEventParticipantFacade().delete(eventParticipant.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		ImmunizationDto immunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 	}
 }

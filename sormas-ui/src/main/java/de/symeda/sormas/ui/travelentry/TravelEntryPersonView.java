@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.travelentry;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -12,6 +13,8 @@ public class TravelEntryPersonView extends AbstractTravelEntryView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
 
+	private PersonDto person;
+
 	public TravelEntryPersonView() {
 		super(VIEW_NAME);
 	}
@@ -19,19 +22,25 @@ public class TravelEntryPersonView extends AbstractTravelEntryView {
 	@Override
 	protected void initView(String params) {
 
-		TravelEntryDto dto = FacadeProvider.getTravelEntryFacade().getByUuid(getReference().getUuid());
+		TravelEntryDto travelEntry = FacadeProvider.getTravelEntryFacade().getByUuid(getReference().getUuid());
+		person = FacadeProvider.getPersonFacade().getByUuid(travelEntry.getPerson().getUuid());
 
 		CommitDiscardWrapperComponent<PersonEditForm> travelEntryPersonComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
 				PersonContext.TRAVEL_ENTRY,
-				dto.getPerson().getUuid(),
-				dto.getDisease(),
-				dto.getDiseaseDetails(),
-				UserRight.TRAVEL_ENTRY_EDIT,
+				person,
+				travelEntry.getDisease(),
+				travelEntry.getDiseaseDetails(),
+				UserRight.PERSON_EDIT,
 				null);
 		setSubComponent(travelEntryPersonComponent);
 
 		setEditPermission(travelEntryPersonComponent);
+	}
+
+	@Override
+	protected boolean isEditAllowed() {
+		return FacadeProvider.getPersonFacade().isEditAllowed(person.getUuid());
 	}
 
 }

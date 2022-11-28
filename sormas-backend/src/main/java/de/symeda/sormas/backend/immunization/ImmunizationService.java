@@ -35,6 +35,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -60,6 +62,8 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
@@ -147,7 +151,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> from) {
 		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, query, from));
 	}
 
@@ -478,9 +482,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
 
 			cq.where(
-					cb.and(
-							useDefaultFilter ? createDefaultFilter(cb, immunizationRoot) : cb.conjunction(),
-							personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids)));
+				cb.and(
+					useDefaultFilter ? createDefaultFilter(cb, immunizationRoot) : cb.conjunction(),
+					personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids)));
 
 			immunizations.addAll(em.createQuery(cq).getResultList());
 		});
@@ -574,5 +578,44 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		}
 
 		return super.getEditPermissionType(immunization);
+	}
+
+	public Predicate createOwnershipPredicate(boolean withOwnership, From<?, ?> from, CriteriaBuilder cb, CriteriaQuery<?> cq) {
+		Subquery<Boolean> sharesQuery = cq.subquery(Boolean.class);
+		Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
+		sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
+
+		Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
+		Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+		latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+		latestRequestDateQuery.where(
+			cb.equal(
+				shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+				shareInfoFrom.get(SormasToSormasShareInfo.ID)));
+
+		Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
+		sharesQuery.where(
+			cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.IMMUNIZATION), from.get(Immunization.ID)),
+			cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
+			cb.equal(
+				requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
+					.get(ShareRequestInfo.REQUEST_STATUS),
+				ShareRequestStatus.ACCEPTED));
+
+		if (withOwnership) {
+			return cb.and(
+				cb.or(
+					cb.isNull(from.get(Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+					cb.equal(
+						from.join(Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+						true)),
+				cb.not(cb.exists(sharesQuery)));
+		} else {
+			return cb.or(
+				cb.equal(
+					from.join(Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+					false),
+				cb.exists(sharesQuery));
+		}
 	}
 }

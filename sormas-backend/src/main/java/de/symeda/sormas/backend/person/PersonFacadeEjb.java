@@ -1854,11 +1854,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public boolean isPersonAssociatedWithNotDeletedEntities(String uuid) {
-		return service.isPersonAssociatedWithNotDeletedEntities(uuid);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
 	public void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target) {
 		LocationDto sourceAddress = getByUuid(source.getUuid()).getAddress();

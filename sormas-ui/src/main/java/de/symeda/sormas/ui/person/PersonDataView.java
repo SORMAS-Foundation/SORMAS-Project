@@ -180,7 +180,9 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	@Override
 	protected void setSubComponent(DirtyStateComponent newComponent) {
 		super.setSubComponent(newComponent);
-		if (getReference() != null && !FacadeProvider.getPersonFacade().isPersonAssociatedWithNotDeletedEntities(getReference().getUuid())) {
+		if (getReference() == null
+			|| !UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT)
+			|| !FacadeProvider.getPersonFacade().isEditAllowed(getReference().getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}
