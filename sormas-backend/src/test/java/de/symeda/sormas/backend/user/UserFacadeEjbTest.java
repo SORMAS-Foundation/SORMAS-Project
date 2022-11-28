@@ -215,6 +215,36 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testIsActiveLoginUser() {
+		AuthProvider authProvider = mock(AuthProvider.class);
+
+		MockedStatic<AuthProvider> mockAuthProvider = mockStatic(AuthProvider.class);
+		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(SURVEILLANCE_SUPERVISOR));
+		String password = getUserFacade().resetPassword(user.getUuid());
+
+		Boolean loggedUserIsActive = getUserFacade().isActiveLoginUser(user.getUserName(), password);
+		assertTrue(loggedUserIsActive);
+
+		user.setActive(false);
+		getUserFacade().saveUser(user, false);
+
+		loggedUserIsActive = getUserFacade().isActiveLoginUser(user.getUserName(), password);
+		assertFalse(loggedUserIsActive);
+
+		loggedUserIsActive = getUserFacade().isActiveLoginUser(user.getUserName(), "someInvalidPassword");
+		assertNull(loggedUserIsActive);
+
+		loggedUserIsActive = getUserFacade().isActiveLoginUser("invalidUserName", password);
+		assertNull(loggedUserIsActive);
+
+		//Important: release static mock.
+		mockAuthProvider.closeOnDemand();
+	}
+
+	@Test
 	public void testGetExistentDefaultUsers() {
 		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(true, creator);
 		Set<User> randomUsers = UserTestHelper.generateRandomUsers(3, creator);

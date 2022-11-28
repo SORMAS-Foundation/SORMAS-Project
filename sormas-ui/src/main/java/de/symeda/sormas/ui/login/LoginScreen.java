@@ -356,11 +356,15 @@ public class LoginScreen extends CssLayout {
 			}
 
 		} else {
-			showNotification(
-				new Notification(
-					I18nProperties.getString(Strings.headingLoginFailed),
-					I18nProperties.getString(Strings.messageLoginFailed),
-					Notification.Type.WARNING_MESSAGE));
+			Boolean loggedUserIsActive = FacadeProvider.getUserFacade().isActiveLoginUser(username, password);
+			String errorMessage = null;
+			if (Boolean.FALSE.equals(loggedUserIsActive)) {
+				errorMessage = I18nProperties.getString(Strings.messageLoginInactive);
+			} else {
+				errorMessage = I18nProperties.getString(Strings.messageLoginFailed);
+			}
+			showNotification(new Notification(I18nProperties.getString(Strings.headingLoginFailed), errorMessage, Notification.Type.WARNING_MESSAGE));
+
 		}
 	}
 

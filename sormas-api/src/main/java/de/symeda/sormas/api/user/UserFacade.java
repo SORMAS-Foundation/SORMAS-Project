@@ -124,6 +124,8 @@ public interface UserFacade {
 
 	Set<UserRight> getValidLoginRights(String userName, String password);
 
+	Boolean isActiveLoginUser (String userName, String password);
+
 	void removeUserAsSurveillanceAndContactOfficer(String userUuid);
 
 	UserSyncResult syncUser(String userUuid);
