@@ -62,7 +62,6 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	private static final long serialVersionUID = -2323128076462668517L;
-	private boolean isPseudonymized;
 
 	protected static final String PATHOGEN_TESTING_INFO_LOC = "pathogenTestingInfoLoc";
 	protected static final String ADDITIONAL_TESTING_INFO_LOC = "additionalTestingInfoLoc";
@@ -111,19 +110,13 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
     //@formatter:on
 
-	protected AbstractSampleForm(
-		boolean isPseudonymized,
-		Class<SampleDto> type,
-		String propertyI18nPrefix,
-		Disease disease,
-		UiFieldAccessCheckers fieldAccessCheckers) {
+	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, Disease disease, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			type,
 			propertyI18nPrefix,
 			true,
 			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			fieldAccessCheckers);
-		this.isPseudonymized = isPseudonymized;
 	}
 
 	protected void addCommonFields() {
@@ -146,7 +139,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		final TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
 		labDetails.setVisible(false);
-		lab.addValueChangeListener(event -> updateLabDetailsVisibility(labDetails, event, isPseudonymized));
+		lab.addValueChangeListener(event -> updateLabDetailsVisibility(labDetails, event));
 
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
@@ -255,11 +248,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	}
 
-	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event, boolean isPseudonymized) {
+	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event) {
 		if (event.getProperty().getValue() != null
 			&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 			labDetails.setVisible(true);
-			labDetails.setRequired(!isPseudonymized);
+			labDetails.setRequired(isEditableAllowed(labDetails));
 		} else {
 			labDetails.setVisible(false);
 			labDetails.setRequired(false);

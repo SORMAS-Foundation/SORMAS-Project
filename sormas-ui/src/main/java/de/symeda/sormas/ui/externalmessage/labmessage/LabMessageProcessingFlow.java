@@ -391,7 +391,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageDto externalMessageDto,
 		Disease disease) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, sample.isPseudonymized(), null);
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, null);
 
 		// add pathogen test create components
 		addPathogenTests(pathogenTests, externalMessageDto, sampleCreateComponent);
