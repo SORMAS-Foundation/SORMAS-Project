@@ -40,6 +40,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -530,6 +532,71 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		Mockito.verify(MockProducer.getSormasToSormasClient(), Mockito.times(1))
 			.post(eq(SECOND_SERVER_ID), ArgumentMatchers.contains("/contacts/sync"), ArgumentMatchers.any(), ArgumentMatchers.any());
 
+	}
+
+	@Test
+	public void testSaveSyncedContact() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		final PersonDto person = creator.createPerson();
+
+		ContactDto contact =
+			creator.createContact(officer, officer, person.toReference(), null, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
+				c.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+				c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false, null));
+			});
+
+		contact.setFollowUpStatus(FollowUpStatus.LOST);
+		person.setBirthName("Test birth name");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(person, contact)));
+
+		SormasToSormasEncryptedDataDto encryptedData =
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(contact.getUuid(), null, false)));
+
+		getSormasToSormasContactFacade().saveSyncedEntity(encryptedData);
+
+		ContactDto syncedContact = getContactFacade().getByUuid(contact.getUuid());
+		assertThat(syncedContact.getFollowUpStatus(), is(FollowUpStatus.LOST));
+		assertThat(syncedContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
+
+		PersonDto syncedPerson = getPersonFacade().getByUuid(person.getUuid());
+		assertThat(syncedPerson.getBirthName(), is("Test birth name"));
+	}
+
+	@Test
+	public void testSyncNotUpdateOwnedPerson() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		final PersonDto person = creator.createPerson();
+		ContactDto contact =
+			creator.createContact(officer, officer, person.toReference(), null, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
+				c.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+				c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false, null));
+			});
+
+		// owned case with same person should make person not be synced
+		creator.createCase(officer, person.toReference(), rdcf);
+
+		contact.setFollowUpStatus(FollowUpStatus.LOST);
+		person.setBirthName("Test birth name");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(person, contact)));
+
+		SormasToSormasEncryptedDataDto encryptedData =
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(contact.getUuid(), null, false)));
+
+		getSormasToSormasContactFacade().saveSyncedEntity(encryptedData);
+
+		ContactDto syncedContact = getContactFacade().getByUuid(contact.getUuid());
+		assertThat(syncedContact.getFollowUpStatus(), is(FollowUpStatus.LOST));
+
+		PersonDto syncedPerson = getPersonFacade().getByUuid(person.getUuid());
+		assertThat(syncedPerson.getBirthName(), is(nullValue()));
 	}
 
 	@Test

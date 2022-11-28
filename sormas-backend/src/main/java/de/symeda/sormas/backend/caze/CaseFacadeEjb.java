@@ -4172,8 +4172,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
-		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return service.getByExternalId(externalId).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getByExternalId(externalId));
 	}
 
 	@Override
