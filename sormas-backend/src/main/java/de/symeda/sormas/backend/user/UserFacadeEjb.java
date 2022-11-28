@@ -825,6 +825,9 @@ public class UserFacadeEjb implements UserFacade {
 		return null;
 	}
 
+	@Override
+	@PermitAll
+	@AuditIgnore
 	public Boolean isActiveLoginUser(String userName, String password) {
 		User user = userService.getByUserName(userName);
 		if (user == null || !DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
