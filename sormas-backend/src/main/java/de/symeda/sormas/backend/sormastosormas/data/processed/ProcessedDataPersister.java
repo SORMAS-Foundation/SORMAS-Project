@@ -50,14 +50,14 @@ public abstract class ProcessedDataPersister<T extends SormasToSormasShareableDt
 			});
 		}
 
-		persistSharedData(processedData, existingEntity);
+		persistSharedData(processedData, existingEntity, false);
 	}
 
 	public DuplicateResult checkForSimilarEntities(S processedData) {
 		return DuplicateResult.NONE;
 	}
 
-	protected abstract void persistSharedData(S processedData, E existingEntity) throws SormasToSormasValidationException;
+	protected abstract void persistSharedData(S processedData, E existingEntity, boolean isSync) throws SormasToSormasValidationException;
 
 	@Transactional(rollbackOn = {
 		Exception.class })
@@ -76,7 +76,7 @@ public abstract class ProcessedDataPersister<T extends SormasToSormasShareableDt
 			}
 		}
 
-		persistSharedData(processedData, existingEntity);
+		persistSharedData(processedData, existingEntity, true);
 	}
 
 	protected abstract SormasToSormasShareInfo getShareInfoByEntityAndOrganization(T entity, String organizationId);

@@ -26,4 +26,6 @@ public class ImmunizationsDirectoryPage {
       By.cssSelector("#immunizationNewImmunization");
   public static final By FIRST_IMMUNIZATION_ID_BUTTON =
       By.cssSelector(".v-grid-row-has-data a[title]");
+
+  public static final By IMMUNIZATIONS_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
 }

@@ -1903,6 +1903,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		return toPseudonymizedDto(person);
 	}
 
+	@Override
+	public boolean isEditAllowed(String uuid) {
+		return service.isEditAllowed(uuid);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {

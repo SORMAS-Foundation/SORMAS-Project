@@ -908,51 +908,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_DEFINITION), CaseReferenceDefinition.FULFILLED));
 		}
 		if (caseCriteria.getWithOwnership() != null) {
-			Subquery<Boolean> sharesQuery = cq.subquery(Boolean.class);
-			Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
-			sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
-
-			Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
-			Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
-			latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
-			latestRequestDateQuery.where(
-				cb.equal(
-					shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
-					shareInfoFrom.get(SormasToSormasShareInfo.ID)));
-
-			Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
-			sharesQuery.where(
-				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.CAZE), from.get(Case.ID)),
-				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
-				cb.equal(
-					requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
-						.get(ShareRequestInfo.REQUEST_STATUS),
-					ShareRequestStatus.ACCEPTED));
-
-			if (Boolean.TRUE.equals(caseCriteria.getWithOwnership())) {
-				filter =
-					CriteriaBuilderHelper
-						.and(
-							cb,
-							filter,
-							cb.and(
-								cb.or(
-									cb.isNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-									cb.equal(
-										from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
-											.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
-										true)),
-								cb.not(cb.exists(sharesQuery))));
-			} else {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(
-						cb.equal(
-							from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
-							false),
-						cb.exists(sharesQuery)));
-			}
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, createOwnershipPredicate(Boolean.TRUE.equals(caseCriteria.getWithOwnership()), from, cb, cq));
 		}
 
 		filter = CriteriaBuilderHelper.and(
@@ -967,6 +924,41 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				(latestShareDate) -> createChangeDateFilter(cq, cb, from, joins, latestShareDate, true, true)));
 
 		return filter;
+	}
+
+	public Predicate createOwnershipPredicate(boolean withOwnership, From<?, Case> from, CriteriaBuilder cb, CriteriaQuery<?> cq) {
+		Subquery<Boolean> sharesQuery = cq.subquery(Boolean.class);
+		Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
+		sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
+
+		Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
+		Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+		latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+		latestRequestDateQuery.where(
+			cb.equal(
+				shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+				shareInfoFrom.get(SormasToSormasShareInfo.ID)));
+
+		Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
+		sharesQuery.where(
+			cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.CAZE), from.get(Case.ID)),
+			cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
+			cb.equal(
+				requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
+					.get(ShareRequestInfo.REQUEST_STATUS),
+				ShareRequestStatus.ACCEPTED));
+
+		if (withOwnership) {
+			return cb.and(
+				cb.or(
+					cb.isNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+					cb.equal(from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER), true)),
+				cb.not(cb.exists(sharesQuery)));
+		} else {
+			return cb.or(
+				cb.equal(from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER), false),
+				cb.exists(sharesQuery));
+		}
 	}
 
 	/**
