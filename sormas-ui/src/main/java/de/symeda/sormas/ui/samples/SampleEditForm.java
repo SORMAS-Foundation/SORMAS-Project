@@ -58,6 +58,7 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	public SampleEditForm(boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
 		super(
+			isPseudonymized,
 			SampleDto.class,
 			SampleDto.I18N_PREFIX,
 			disease,

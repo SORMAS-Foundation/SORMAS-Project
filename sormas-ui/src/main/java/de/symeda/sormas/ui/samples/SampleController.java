@@ -118,7 +118,8 @@ public class SampleController {
 	}
 
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView =
+			getSampleCreateComponent(sampleDto, disease, sampleDto.isPseudonymized(), callback);
 		// add option to create additional pathogen tests
 		addPathogenTestButton(editView, false, null, null);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
@@ -259,18 +260,23 @@ public class SampleController {
 		return collapsibleForm;
 	}
 
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Disease disease, Runnable callback) {
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
+		SampleDto sampleDto,
+		Disease disease,
+		boolean isPseudonymized,
+		Runnable callback) {
 
-		return getSampleCreateComponent(sampleDto, disease, UserRight.SAMPLE_CREATE, callback);
+		return getSampleCreateComponent(sampleDto, disease, UserRight.SAMPLE_CREATE, isPseudonymized, callback);
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sampleDto,
 		Disease disease,
 		UserRight userRight,
+		boolean isPseudonymized,
 		Runnable callback) {
 
-		final SampleCreateForm createForm = new SampleCreateForm(disease);
+		final SampleCreateForm createForm = new SampleCreateForm(isPseudonymized, disease);
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView =
 			new CommitDiscardWrapperComponent<>(createForm, UserProvider.getCurrent().hasUserRight(userRight), createForm.getFieldGroup());
@@ -328,7 +334,7 @@ public class SampleController {
 		final SampleDto referralSample = SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample);
 
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView =
-			getSampleCreateComponent(referralSample, disease, UserRight.SAMPLE_TRANSFER, null);
+			getSampleCreateComponent(referralSample, disease, UserRight.SAMPLE_TRANSFER, existingSample.isPseudonymized(), null);
 
 		createView.addCommitListener(() -> {
 			if (!createView.getWrappedComponent().getFieldGroup().isModified()) {

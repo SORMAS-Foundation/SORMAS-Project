@@ -46,7 +46,7 @@ public class LabMessageUiHelperUnitTest {
 		SampleDto sample = SampleDto.build(user, caze);
 
 		// Test for last sample
-		SampleCreateForm createForm = new SampleCreateForm(Disease.CORONAVIRUS);
+		SampleCreateForm createForm = new SampleCreateForm(sample.isPseudonymized(), Disease.CORONAVIRUS);
 		when(createForm.getFieldGroup()).thenReturn(new BeanFieldGroup(SampleDto.class));
 
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleComponent =
@@ -67,7 +67,7 @@ public class LabMessageUiHelperUnitTest {
 			equalTo(sampleComponent.getCommitButton().getListeners(Button.ClickEvent.class).size()));
 
 		// Test for non-last sample
-		createForm = new SampleCreateForm(Disease.CORONAVIRUS);
+		createForm = new SampleCreateForm(sample.isPseudonymized(), Disease.CORONAVIRUS);
 		when(createForm.getFieldGroup()).thenReturn(new BeanFieldGroup(SampleDto.class));
 
 		sampleComponent = new CommitDiscardWrapperComponent<>(createForm, true, createForm.getFieldGroup());
