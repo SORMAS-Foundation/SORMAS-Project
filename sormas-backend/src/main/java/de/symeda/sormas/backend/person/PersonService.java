@@ -43,6 +43,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -1067,5 +1068,33 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 
 		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
 		return q.getSingleResult() > 0;
+	}
+
+	public boolean isEditAllowed(String personUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Person> from = cq.from(Person.class);
+
+		cq.select(from.get(Person.ID));
+
+		PersonJoins joins = new PersonJoins(from);
+
+		Subquery<Long> travelEntrySubQuery = cq.subquery(Long.class);
+		Root<TravelEntry> travelEntryFrom = travelEntrySubQuery.from(TravelEntry.class);
+		travelEntrySubQuery.select(travelEntryFrom.get(TravelEntry.PERSON))
+			.where(cb.equal(travelEntryFrom.join(TravelEntry.PERSON, JoinType.LEFT).get(Person.ID), from.get(Person.ID)));
+
+		cq.where(
+			cb.equal(from.get(Person.UUID), personUuid),
+			cb.or(
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.createOwnershipPredicate(true, joins.getCaze(), cb, cq)),
+				cb.and(cb.isNotNull(joins.getContact()), contactService.createOwnershipPredicate(true, joins.getContact(), cb, cq)),
+				cb.and(
+					cb.isNotNull(joins.getEventParticipant()),
+					eventParticipantService.createOwnershipPredicate(true, joins.getEventParticipant(), cb, cq)),
+				cb.exists(travelEntrySubQuery)));
+
+		return !em.createQuery(cq).getResultList().isEmpty();
 	}
 }
