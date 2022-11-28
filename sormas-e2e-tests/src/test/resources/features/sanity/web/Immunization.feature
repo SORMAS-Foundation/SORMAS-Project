@@ -381,3 +381,23 @@ Feature: Immunization end to end tests
     Then I click on the Immunizations button from navbar
     And I filter by last created immunization via API
     Then I check that number of displayed Immunizations results is 0
+
+  @tmsLink=SORQA-677 @env_main @oldfake
+  Scenario: Check automatic deletion of IMMUNIZATION created 3651 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new immunizations for last created person with creation date 3645 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I navigate to last created immunization by API via URL
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created immunization is available in API
+    And API: I check that GET call status code is 200
+    Then I click on the Immunizations button from navbar
+    And I filter by last created immunization via API
+    Then I check that number of displayed Immunizations results is 1
