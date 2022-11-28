@@ -50,10 +50,11 @@ public class DocumentListComponent extends SideComponent {
 		ReferenceDto entityRef,
 		UserRight editRight,
 		boolean pseudonymized,
-		boolean isEditAllowed) {
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
 		super(I18nProperties.getString(Strings.entityDocuments));
 
-		documentList = new DocumentList(relatedEntityType, entityRef, editRight, pseudonymized, isEditAllowed);
+		documentList = new DocumentList(relatedEntityType, entityRef, editRight, pseudonymized, isEditAllowed, isDeleteAllowed);
 		addComponent(documentList);
 		documentList.reload();
 
