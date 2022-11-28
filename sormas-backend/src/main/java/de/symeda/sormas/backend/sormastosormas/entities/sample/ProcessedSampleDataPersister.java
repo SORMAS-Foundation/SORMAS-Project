@@ -69,7 +69,8 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 		return originInfoFacade;
 	}
 
-	public void persistSharedData(SormasToSormasSampleDto processedData, Sample existingSample) throws SormasToSormasValidationException {
+	public void persistSharedData(SormasToSormasSampleDto processedData, Sample existingSample, boolean isSync)
+		throws SormasToSormasValidationException {
 		SampleDto sample = processedData.getEntity();
 
 		handleValidationError(

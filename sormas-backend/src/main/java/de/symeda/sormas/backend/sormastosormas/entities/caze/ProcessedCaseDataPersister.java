@@ -82,8 +82,9 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 	}
 
 	@Override
-	protected void persistSharedData(SormasToSormasCaseDto processedData, Case existingEntity) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, existingEntity == null);
+	protected void persistSharedData(SormasToSormasCaseDto processedData, Case existingEntity, boolean isSync)
+		throws SormasToSormasValidationException {
+		persistProcessedData(processedData, existingEntity == null, isSync);
 	}
 
 	@Override
@@ -124,7 +125,7 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 		return foundSimilarContacts ? DuplicateResult.CONTACT_TO_CASE : DuplicateResult.PERSON_ONLY;
 	}
 
-	private void persistProcessedData(SormasToSormasCaseDto caseData, boolean isCreate) throws SormasToSormasValidationException {
+	private void persistProcessedData(SormasToSormasCaseDto caseData, boolean isCreate, boolean isSync) throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getEntity();
 
 		final PersonDto person = caseData.getPerson();
@@ -145,7 +146,15 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 				Captions.CaseData,
 				buildCaseValidationGroupName(caze),
 				caze);
-			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, buildCaseValidationGroupName(caze), person);
+
+			// #10544 only persons not owned should be updated
+			if (!isSync || !personFacade.isEditAllowed(person.getUuid())) {
+				handleValidationError(
+					() -> personFacade.save(person, false, false, false),
+					Captions.Person,
+					buildCaseValidationGroupName(caze),
+					person);
+			}
 		}
 	}
 }

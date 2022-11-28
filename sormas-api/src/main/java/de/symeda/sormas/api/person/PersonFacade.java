@@ -95,4 +95,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	boolean isPersonAssociatedWithNotDeletedEntities(String uuid);
 
 	void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target);
+
+	boolean isEditAllowed(String uuid);
 }
