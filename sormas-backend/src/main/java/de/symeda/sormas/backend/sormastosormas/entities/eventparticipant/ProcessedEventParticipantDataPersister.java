@@ -70,7 +70,7 @@ public class ProcessedEventParticipantDataPersister
 		PersonDto person = eventParticipant.getPerson();
 
 		// #10544 only persons not owned should be updated
-		if (!isSync || !personFacade.isEditAllowed(person.getUuid())) {
+		if (!(isSync && personFacade.isEditAllowed(person.getUuid()))) {
 			handleValidationError(
 				() -> personFacade.save(person, false, false, false),
 				Captions.EventParticipant,

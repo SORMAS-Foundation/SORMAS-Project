@@ -143,7 +143,7 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName, contact);
 
 			// #10544 only persons not owned should be updated
-			if (!isSync || !personFacade.isEditAllowed(person.getUuid())) {
+			if (!(isSync && personFacade.isEditAllowed(person.getUuid()))) {
 				handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
 			}
 		}

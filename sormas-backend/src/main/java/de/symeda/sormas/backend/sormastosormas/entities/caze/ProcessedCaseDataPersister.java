@@ -148,7 +148,7 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 				caze);
 
 			// #10544 only persons not owned should be updated
-			if (!isSync || !personFacade.isEditAllowed(person.getUuid())) {
+			if (!(isSync && personFacade.isEditAllowed(person.getUuid()))) {
 				handleValidationError(
 					() -> personFacade.save(person, false, false, false),
 					Captions.Person,
