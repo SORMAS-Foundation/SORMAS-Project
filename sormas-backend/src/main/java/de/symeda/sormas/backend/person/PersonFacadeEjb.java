@@ -1834,6 +1834,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		});
 		final List<EventParticipant> eventParticipants =
 			new ArrayList<>(eventParticipantService.getByPersonUuids(Collections.singletonList(otherPersonUuid)));
+		eventParticipants.removeIf(
+			eventParticipant -> leadPerson.getEventParticipants()
+				.stream()
+				.anyMatch(
+					leadPersonEventParticipants -> leadPersonEventParticipants.getEvent().getUuid().equals(eventParticipant.getEvent().getUuid())));
 		eventParticipants.forEach(o -> {
 			o.setPerson(leadPerson);
 			eventParticipantService.ensurePersisted(o);
