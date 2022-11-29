@@ -168,7 +168,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
@@ -1077,12 +1076,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			batchResults.add(service.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
 		});
 		return batchResults.stream().reduce(0L, Long::sum);
-	}
-
-	@Override
-	public boolean isSharedWithoutOwnership(String uuid) {
-		SormasToSormasOriginInfo originInfo = sormasToSormasOriginInfoService.getByPerson(uuid);
-		return originInfo != null && !originInfo.isOwnershipHandedOver();
 	}
 
 	@Override
