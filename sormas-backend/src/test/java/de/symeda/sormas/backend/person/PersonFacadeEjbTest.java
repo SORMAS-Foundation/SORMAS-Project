@@ -1710,7 +1710,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
 
-		// person linked to a single shared without ownership then deleted case should not be editable
+		// share case with ownership
+		// then delete it
+		// ==> the person should not be editable
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
 			user,
@@ -1751,22 +1753,28 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
+		// shared case but owned contact should allow person edit
 		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
+		// shared case and deleted contact should not allow person edit
 		getContactFacade().delete(contact.getUuid(), new DeletionDetails());
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
+		// shared case but owned event participant should allow person edit
 		EventParticipantDto eventParticipant =
 			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
+		// shared case and deleted event participant should not allow person edit
 		getEventParticipantFacade().delete(eventParticipant.getUuid(), new DeletionDetails());
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
+		// shared case but owned immunization should allow person edit
 		ImmunizationDto immunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
+		// shared case and deleted immunization should not allow person edit
 		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails());
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 	}
