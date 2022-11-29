@@ -1778,4 +1778,128 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails());
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 	}
+
+	@Test
+	public void testIsSharedOrReceived() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto sharedCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
+
+		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared case
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(sharedCase.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// received case
+		person = creator.createPerson();
+		creator.createCase(
+			userDto.toReference(),
+			person.toReference(),
+			rdcf,
+			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared contact
+		person = creator.createPerson();
+		ContactDto sharedContact = creator.createContact(rdcf, user.toReference(), person.toReference());
+
+		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setContact(getContactService().getByReferenceDto(sharedContact.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// received contact
+		person = creator.createPerson();
+		creator.createContact(
+			user.toReference(),
+			person.toReference(),
+			Disease.CORONAVIRUS,
+			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared event participant
+		person = creator.createPerson();
+		EventParticipantDto sharedEventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
+
+		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setEventParticipant(getEventParticipantService().getByReferenceDto(sharedEventParticipant.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// received event participant
+		person = creator.createPerson();
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), e -> {
+			e.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		}, rdcf);
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared immunization
+		person = creator.createPerson();
+		ImmunizationDto sharedImmunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);
+
+		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setImmunization(getImmunizationService().getByReferenceDto(sharedImmunization.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// received immunization
+		person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		});
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared immunization and not shared contact
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared immunization and shared contact
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setContact(getContactService().getByReferenceDto(sharedContact.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+	}
 }

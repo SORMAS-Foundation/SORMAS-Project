@@ -1079,8 +1079,26 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public boolean isShared(String uuid) {
-		return sormasToSormasOriginInfoService.getByPerson(uuid) != null;
+	public boolean isSharedOrReceived(String uuid) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Person> from = cq.from(Person.class);
+		PersonJoins joins = new PersonJoins(from);
+
+		cq.select(from.get(Person.ID));
+		cq.where(
+			cb.equal(from.get(Person.UUID), uuid),
+			cb.or(
+				cb.isNotNull(joins.getCaseJoins().getSormasToSormasShareInfo()),
+				cb.isNotNull(joins.getCaze().get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isNotNull(joins.getContactJoins().getSormasToSormasShareInfo()),
+				cb.isNotNull(joins.getContact().get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isNotNull(joins.getEventParticipantJoins().getSormasToSormasShareInfo()),
+				cb.isNotNull(joins.getEventParticipant().get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isNotNull(joins.getImmunizationJoins().getSormasToSormasShareInfo()),
+				cb.isNotNull(joins.getImmunization().get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+
+		return !em.createQuery(cq).getResultList().isEmpty();
 	}
 
 	/**
