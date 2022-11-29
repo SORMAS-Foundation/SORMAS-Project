@@ -285,6 +285,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
+		if (!isEditableAllowed(ImmunizationDto.HEALTH_FACILITY)) {
+			setEnabled(false, ImmunizationDto.FACILITY_TYPE, ImmunizationDto.HEALTH_FACILITY_DETAILS);
+			facilityTypeGroup.setEnabled(false);
+		}
+
 		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
 
 		FieldHelper.setVisibleWhen(
