@@ -70,16 +70,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
-//	public static final String HTML_LAYOUT = LayoutUtil.fluidRow(
-//		LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
-
-	private CommitDiscardWrapperComponent<?> editComponent;
+	private CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent;
 
 	public EventParticipantDataView() {
 		super(VIEW_NAME);
@@ -222,6 +213,10 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (eventParticipantEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
+		}
+
+		if (!FacadeProvider.getPersonFacade().isEditAllowed(eventParticipant.getPerson().getUuid())) {
+			editComponent.getWrappedComponent().enablePersonFields(false);
 		}
 	}
 
