@@ -16,7 +16,6 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +65,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -141,6 +142,11 @@ public class ExternalMessageController {
 				if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
 					showCorrectionsSavedPopup();
 				} else if (status == ProcessingResultStatus.DONE) {
+
+					CaseReferenceDto caseReference = result.getData().getRelatedSampleReportsWithSamples().values().stream().findFirst().get().getAssociatedCase();
+					if (caseReference != null) {
+						createSurveillanceReport(labMessage, caseReference);
+					}
 					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples());
 					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 				}
@@ -168,7 +174,9 @@ public class ExternalMessageController {
 			ProcessingResultStatus status = result.getStatus();
 
 			if (status == ProcessingResultStatus.DONE) {
-				markExternalMessageAsProcessed(labMessage, result.getData().toReference());
+				CaseReferenceDto caseReferenceDto = result.getData().toReference();
+				createSurveillanceReport(labMessage, caseReferenceDto);
+				markExternalMessageAsProcessed(labMessage, caseReferenceDto);
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}
 
@@ -196,7 +204,7 @@ public class ExternalMessageController {
 		setSurvReportFacility(surveillanceReport, externalMessage, caze);
 		surveillanceReport.setReportDate(externalMessage.getMessageDateTime());
 		setSurvReportingType(surveillanceReport, externalMessage);
-
+		FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
 	}
 
 	private void setSurvReportFacility(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseReferenceDto caze) {
@@ -211,7 +219,12 @@ public class ExternalMessageController {
 		} else {
 			reporter = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID);
 			surveillanceReport.setFacility(reporter.toReference());
-			surveillanceReport.setFacilityDetails(externalMessage.getReporterName());
+			String reporterName = externalMessage.getReporterName();
+			if (StringUtils.isNotBlank(reporterName)) {
+				surveillanceReport.setFacilityDetails(reporterName);
+			} else {
+				surveillanceReport.setFacilityDetails(I18nProperties.getCaption(Captions.unknown));
+			}
 			DataHelper.Pair<RegionReferenceDto, DistrictReferenceDto> regionAndDistrict =
 				FacadeProvider.getCaseFacade().getRegionAndDistrictRefsOf(caze);
 			surveillanceReport.setFacilityRegion(regionAndDistrict.getElement0());
