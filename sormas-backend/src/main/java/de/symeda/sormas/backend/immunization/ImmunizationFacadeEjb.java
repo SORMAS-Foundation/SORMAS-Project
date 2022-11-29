@@ -250,10 +250,6 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<ImmunizationDto> cq, Root<Immunization> root) {
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		if (userService.getCurrentUser() == null) {
@@ -600,7 +596,7 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
-		return service.getByPersonUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(uuids, true).stream());
 	}
 
 	@RightsAllowed({

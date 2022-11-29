@@ -530,6 +530,12 @@ public class CaseController {
 
 	protected CaseDataDto saveCase(CaseDataDto cazeDto) {
 
+		if (cazeDto.getReInfection() == YesNoUnknown.NO || cazeDto.getReInfection() == YesNoUnknown.UNKNOWN) {
+			cazeDto.setPreviousInfectionDate(null);
+			cazeDto.setReinfectionDetails(Collections.emptyMap());
+			cazeDto.setReinfectionStatus(null);
+		}
+
 		// Compare old and new case
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
 		CaseDataDto resultDto = FacadeProvider.getCaseFacade().save(cazeDto);
@@ -1160,7 +1166,7 @@ public class CaseController {
 	private String getDeleteConfirmationDetails(List<String> caseUuids) {
 		boolean hasPendingRequest = FacadeProvider.getSormasToSormasCaseFacade().hasPendingRequest(caseUuids);
 
-		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : null;
+		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
 	private void deleteCase(CaseDataDto caze, boolean withContacts, DeletionDetails deletionDetails) {
@@ -1224,10 +1230,8 @@ public class CaseController {
 			new HospitalizationForm(caze, viewMode, caze.isPseudonymized(), caze.isInJurisdiction(), isEditAllowed);
 		hospitalizationForm.setValue(caze.getHospitalization());
 
-		final CommitDiscardWrapperComponent<HospitalizationForm> editView = new CommitDiscardWrapperComponent<HospitalizationForm>(
-			hospitalizationForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
-			hospitalizationForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<HospitalizationForm> editView =
+			new CommitDiscardWrapperComponent<HospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup());
 
 		final JurisdictionValues jurisdictionValues = new JurisdictionValues();
 
@@ -1364,6 +1368,15 @@ public class CaseController {
 		return editView;
 	}
 
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, Consumer<Boolean> sourceContactsToggleCallback) {
+
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		CommitDiscardWrapperComponent<EpiDataForm> epiDataComponent =
+			getEpiDataComponent(caseUuid, sourceContactsToggleCallback, currentUserProvider.hasUserRight(UserRight.CASE_EDIT));
+		epiDataComponent.setEnabled(currentUserProvider.hasUserRight(UserRight.CASE_EDIT));
+		return epiDataComponent;
+	}
+
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(
 		final String caseUuid,
 		Consumer<Boolean> sourceContactsToggleCallback,
@@ -1380,10 +1393,8 @@ public class CaseController {
 		epiDataForm.setValue(caze.getEpiData());
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
-			epiDataForm,
-			currentUserProvider.hasUserRight(UserRight.CASE_EDIT),
-			epiDataForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataForm> editView =
+			new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
@@ -1757,34 +1768,47 @@ public class CaseController {
 		List<String> notSharableUuids = FacadeProvider.getCaseFacade().getUuidsNotShareableWithExternalReportingTools(selectedUuids);
 		if (CollectionUtils.isNotEmpty(notSharableUuids)) {
 
-			List<String> uuidsWithoutNotSharable =
+			List<String> uuidsWithoutNotShareable =
 				selectedUuids.stream().filter(uuid -> !notSharableUuids.contains(uuid)).collect(Collectors.toList());
 
 			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(notSharableUuids).toString());
 			notShareableListComponent.setWidthFull();
 			notShareableListComponent.setEnabled(false);
 			Label notSharableLabel = new Label(
-				String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable), notSharableUuids.size()),
+				String.format(
+					I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable),
+					notSharableUuids.size(),
+					selectedUuids.size()),
 				ContentMode.HTML);
 			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-				new VerticalLayout(notSharableLabel, notShareableListComponent),
-				String.format(
-					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
-					uuidsWithoutNotSharable.size(),
-					selectedUuids.size()),
-				I18nProperties.getCaption(Captions.actionCancel),
-				800,
-				(confirmed) -> {
-					if (confirmed) {
-						ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotSharable, reloadCallback, false);
-					}
-				});
 
+			if (existShareableCases(selectedUuids.size(), notSharableUuids.size())) {
+				VaadinUiUtil.showPopupWindow(
+					new VerticalLayout(notSharableLabel, notShareableListComponent),
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send));
+			} else {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
+					new VerticalLayout(notSharableLabel, notShareableListComponent),
+					String.format(
+						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
+						uuidsWithoutNotShareable.size(),
+						selectedUuids.size()),
+					I18nProperties.getCaption(Captions.actionCancel),
+					800,
+					(confirmed) -> {
+						if (confirmed) {
+							ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotShareable, reloadCallback, false);
+						}
+					});
+			}
 		} else {
 			ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback, true);
 		}
+	}
+
+	public boolean existShareableCases(int selectedCasesSize, int notShareableCasesSize) {
+		return selectedCasesSize == notShareableCasesSize;
 	}
 
 	private static class JurisdictionValues {

@@ -162,6 +162,7 @@ public class PersonController {
 			new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmation)),
 			I18nProperties.getCaption(Captions.actionConfirm),
 			I18nProperties.getCaption(Captions.actionDiscard),
+			800,
 			confirm -> {
 				if (Boolean.TRUE.equals(confirm)) {
 					final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
@@ -314,11 +315,10 @@ public class PersonController {
 			viewMode,
 			personDto.isPseudonymized(),
 			personDto.isInJurisdiction(),
-			isEditAllowed);
+			isEditAllowed && UserProvider.getCurrent().hasUserRight(editUserRight));
 		editForm.setValue(personDto);
 
-		final CommitDiscardWrapperComponent<PersonEditForm> editView =
-			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {

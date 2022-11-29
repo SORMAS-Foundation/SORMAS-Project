@@ -156,9 +156,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	protected void fetchReferences(From<?, Event> from) {
-
-		from.fetch(Event.EVENT_LOCATION);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(Event.EVENT_LOCATION);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -603,7 +602,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				sormasToSormasShareInfoService.ensurePersisted(s);
 			} else {
 				try {
-					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s));
+					sormasToSormasFacade.revokePendingShareRequests(Collections.singletonList(s), false);
 				} catch (SormasToSormasException e) {
 					logger.warn("Could not revoke share requests of share info {}", s.getUuid(), e);
 				}
@@ -1030,7 +1029,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
 		return inJurisdictionOrOwned(new EventQueryContext(cb, cq, from));
 	}
 

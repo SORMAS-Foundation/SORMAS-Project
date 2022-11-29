@@ -43,6 +43,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -80,14 +81,13 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoAttributes;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.ChangeDateUuidComparator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.FilterProvider;
-import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
@@ -119,7 +119,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
-public class PersonService extends AdoServiceWithUserFilter<Person> implements JurisdictionCheckService<Person> {
+public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Person> {
 
 	@EJB
 	private UserService userService;
@@ -606,7 +606,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 			.inJurisdictionOrOwned();
 	}
 
-	public boolean isPersonSimilar(PersonSimilarityCriteria criteria, String personUuid){
+	public boolean isPersonSimilar(PersonSimilarityCriteria criteria, String personUuid) {
 		if (personUuid == null) {
 			return false;
 		}
@@ -624,11 +624,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 		cq.select(cb.count(from.get(AbstractDomainObject.ID)));
 
 		Predicate predicate = cb.or(
-				cb.isFalse(joins.getCaze().get(Case.DELETED)),
-				cb.isFalse(joins.getContact().get(Contact.DELETED)),
-				cb.isFalse(joins.getTravelEntry().get(TravelEntry.DELETED)),
-				cb.isFalse(joins.getImmunization().get(Immunization.DELETED)),
-				cb.isFalse(joins.getEventParticipant().get(EventParticipant.DELETED)));
+			cb.isFalse(joins.getCaze().get(Case.DELETED)),
+			cb.isFalse(joins.getContact().get(Contact.DELETED)),
+			cb.isFalse(joins.getTravelEntry().get(TravelEntry.DELETED)),
+			cb.isFalse(joins.getImmunization().get(Immunization.DELETED)),
+			cb.isFalse(joins.getEventParticipant().get(EventParticipant.DELETED)));
 		predicate = cb.and(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam), predicate, personSimilarityFilter);
 
 		cq.where(predicate);
@@ -1068,5 +1068,33 @@ public class PersonService extends AdoServiceWithUserFilter<Person> implements J
 
 		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
 		return q.getSingleResult() > 0;
+	}
+
+	public boolean isEditAllowed(String personUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Person> from = cq.from(Person.class);
+
+		cq.select(from.get(Person.ID));
+
+		PersonJoins joins = new PersonJoins(from);
+
+		Subquery<Long> travelEntrySubQuery = cq.subquery(Long.class);
+		Root<TravelEntry> travelEntryFrom = travelEntrySubQuery.from(TravelEntry.class);
+		travelEntrySubQuery.select(travelEntryFrom.get(TravelEntry.PERSON))
+			.where(cb.equal(travelEntryFrom.join(TravelEntry.PERSON, JoinType.LEFT).get(Person.ID), from.get(Person.ID)));
+
+		cq.where(
+			cb.equal(from.get(Person.UUID), personUuid),
+			cb.or(
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.createOwnershipPredicate(true, joins.getCaze(), cb, cq)),
+				cb.and(cb.isNotNull(joins.getContact()), contactService.createOwnershipPredicate(true, joins.getContact(), cb, cq)),
+				cb.and(
+					cb.isNotNull(joins.getEventParticipant()),
+					eventParticipantService.createOwnershipPredicate(true, joins.getEventParticipant(), cb, cq)),
+				cb.exists(travelEntrySubQuery)));
+
+		return !em.createQuery(cq).getResultList().isEmpty();
 	}
 }

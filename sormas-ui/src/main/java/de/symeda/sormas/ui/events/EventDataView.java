@@ -123,6 +123,8 @@ public class EventDataView extends AbstractEventView {
 		actionList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addSidePanelComponent(actionList, ACTIONS_LOC);
 
+		final String uuid = event.getUuid();
+		final EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
@@ -131,7 +133,8 @@ public class EventDataView extends AbstractEventView {
 				getEventRef(),
 				UserRight.EVENT_EDIT,
 				event.isPseudonymized(),
-				isEditAllowed());
+				isEditAllowed(),
+				EditPermissionType.DOCUMENTS_ONLY.equals(eventEditAllowed));
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -215,8 +218,6 @@ public class EventDataView extends AbstractEventView {
 			layout.setEnabled(false);
 		}
 
-		final String uuid = event.getUuid();
-		final EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getEventFacade().isDeleted(uuid);
 
 		if (deleted) {

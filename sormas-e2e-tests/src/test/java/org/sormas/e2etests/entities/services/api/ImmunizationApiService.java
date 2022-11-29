@@ -22,6 +22,8 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.UUID;
 import org.sormas.e2etests.entities.pojo.api.Immunization;
@@ -58,6 +60,41 @@ public class ImmunizationApiService {
   public Immunization buildGeneratedImmunizationForPerson(Person person) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Immunization.builder()
+        .uuid(UUID.randomUUID().toString())
+        .pseudonymized(false)
+        .person(person)
+        .reportDate(Calendar.getInstance().getTimeInMillis())
+        .positiveTestResultDate(Calendar.getInstance().getTimeInMillis())
+        .recoveryDate(Calendar.getInstance().getTimeInMillis())
+        .startDate(Calendar.getInstance().getTimeInMillis())
+        .endDate(Calendar.getInstance().getTimeInMillis())
+        .externalId(faker.number().digits(9))
+        .reportingUser(
+            runningConfiguration.getUserByRole(locale, UserRoles.NationalUser.getRole()).getUuid())
+        .archived(false)
+        .disease(DiseasesValues.getRandomDiseaseName())
+        .immunizationStatus(StatusValues.getRandomImmunizationStatus())
+        .meansOfImmunization(MeansOfImmunizationValues.getRandomMeansOfImmunization())
+        .immunizationManagementStatus(
+            ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
+        .responsibleRegion(
+            environmentManager.getRegionUUID(RegionsValues.VoreingestellteBundeslander.getName()))
+        .responsibleDistrict(
+            environmentManager.getDistrictUUID(DistrictsValues.VoreingestellterLandkreis.getName()))
+        .responsibleCommunity(
+            environmentManager.getCommunityUUID(CommunityValues.VoreingestellteGemeinde.getName()))
+        .build();
+  }
+
+  public Immunization buildGeneratedImmunizationForPersonWithCreationDate(
+      Person person, Integer days) {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+    return Immunization.builder()
+        .creationDate(
+            LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli())
         .uuid(UUID.randomUUID().toString())
         .pseudonymized(false)
         .person(person)

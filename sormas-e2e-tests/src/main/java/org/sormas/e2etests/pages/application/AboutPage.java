@@ -4,11 +4,12 @@ import org.openqa.selenium.By;
 
 public class AboutPage {
   public static final By DATA_DICTIONARY_BUTTON = By.id("aboutDataDictionary");
-  public static final By DATA_PROTECTION_DICTIONARY_BUTTON = By.id("aboutDataProtectionDictionary");
+  public static final By DATA_PROTECTION_DICTIONARY_BUTTON = By.id("aboutDataDictionary");
   public static final By CASE_CLASSIFICATION_RULES_HYPERLINK =
       By.id("aboutCaseClassificationRules");
   public static final By SORMAS_VERSION_LINK =
-      By.cssSelector("[class='v-link v-widget vspace-3 v-link-vspace-3'] span");
+      By.xpath(
+          "(//*[@class='v-label v-widget vspace-3 v-label-vspace-3 v-label-undef-w' or starts-with(@href, 'https://github.com/hzi-braunschweig/SORMAS-Project/commits/')])[1]");
   public static final By SORMAS_VERSION_HYPERLINK_TARGET =
       By.cssSelector("[class='v-link v-widget vspace-3 v-link-vspace-3'] a");
   public static final By WHATS_NEW_HYPERLINK =

@@ -42,12 +42,10 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 		setSizeFull();
 
-		if (isEditAllowed) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				setSelectionMode(SelectionMode.MULTI);
-			} else {
-				setSelectionMode(SelectionMode.NONE);
-			}
+		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setSelectionMode(SelectionMode.MULTI);
+		} else {
+			setSelectionMode(SelectionMode.NONE);
 		}
 
 		BeanItemContainer<PrescriptionIndexDto> container = new BeanItemContainer<>(PrescriptionIndexDto.class);
@@ -88,7 +86,8 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		}
 
-		getColumn(DOCUMENT_TREATMENT_BTN_ID).setHidden(isPseudonymized || !isEditAllowed);
+		getColumn(DOCUMENT_TREATMENT_BTN_ID)
+			.setHidden(isPseudonymized || !isEditAllowed || !UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE));
 
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_PERIOD).setConverter(new PeriodDtoConverter());

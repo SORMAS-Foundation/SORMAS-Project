@@ -37,6 +37,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.deletionconfiguration.DeletionConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
@@ -482,6 +483,10 @@ public class FacadeProvider {
 
 	public static AuditLoggerFacade getAuditLoggerFacade() {
 		return get().lookupEjbRemote(AuditLoggerFacade.class);
+	}
+
+	public static DeletionConfigurationFacade getDeletionConfigurationFacade() {
+		return get().lookupEjbRemote(DeletionConfigurationFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

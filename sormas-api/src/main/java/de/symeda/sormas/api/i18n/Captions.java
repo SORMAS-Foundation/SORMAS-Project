@@ -69,8 +69,10 @@ public interface Captions {
 	String actionDiscardAndContinue = "actionDiscardAndContinue";
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
+	String actionDone = "actionDone";
 	String actionEnable = "actionEnable";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
+	String actionExecuteAutomaticDeletion = "actionExecuteAutomaticDeletion";
 	String actionGenerate = "actionGenerate";
 	String actionGenerateNewPassword = "actionGenerateNewPassword";
 	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
@@ -1606,6 +1608,10 @@ public interface Captions {
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
+	String notificationType = "notificationType";
+	String notificationType_caption = "notificationType.caption";
+	String notificationType_description = "notificationType.description";
+	String notificationType_group = "notificationType.group";
 	String notSpecified = "notSpecified";
 	String notTestedYet = "notTestedYet";
 	String numberOfCharacters = "numberOfCharacters";
@@ -2282,6 +2288,7 @@ public interface Captions {
 	String syncUsers = "syncUsers";
 	String system = "system";
 	String Task = "Task";
+	String Task_assignedByUser = "Task.assignedByUser";
 	String Task_assigneeReply = "Task.assigneeReply";
 	String Task_assigneeUser = "Task.assigneeUser";
 	String Task_caze = "Task.caze";

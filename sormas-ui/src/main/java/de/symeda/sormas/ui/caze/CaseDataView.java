@@ -109,7 +109,8 @@ public class CaseDataView extends AbstractCaseView {
 
 		container.addComponent(layout);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			TaskListComponent taskList =
 				new TaskListComponent(TaskContext.CASE, getCaseRef(), caze.getDisease(), this::showUnsavedChangesPopup, isEditAllowed());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
@@ -195,28 +196,35 @@ public class CaseDataView extends AbstractCaseView {
 
 			layout.addSidePanelComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
+		final String uuid = caze.getUuid();
+		final EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
-			documentList =
-				new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized(), isEditAllowed());
+
+			boolean isDocumentDeleteAllowed = EditPermissionType.DOCUMENTS_ONLY.equals(caseEditAllowed);
+			documentList = new DocumentListComponent(
+				DocumentRelatedEntityType.CASE,
+				getCaseRef(),
+				UserRight.CASE_EDIT,
+				caze.isPseudonymized(),
+				isEditAllowed(),
+				isDocumentDeleteAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
-		final String uuid = caze.getUuid();
-		final EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 
 		if (deleted) {
 			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		} else if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disableWithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disable();
+			layout.disableWithViewAllow();
 		} else if (caseEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
-			layout.disable(true);
+			layout.disableWithViewAllow();
 		}
 	}
 }

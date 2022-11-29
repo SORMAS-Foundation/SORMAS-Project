@@ -21,6 +21,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -97,7 +98,7 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.externalId = externalId;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public User getCreatingUser() {
 		return creatingUser;
 	}
@@ -125,7 +126,7 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.dateOfDiagnosis = dateOfDiagnosis;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Region getFacilityRegion() {
 		return facilityRegion;
 	}
@@ -134,7 +135,7 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.facilityRegion = facilityRegion;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getFacilityDistrict() {
 		return facilityDistrict;
 	}
@@ -152,7 +153,7 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.facilityType = facilityType;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Facility getFacility() {
 		return facility;
 	}
@@ -179,7 +180,7 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.notificationDetails = notificationDetails;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Case getCaze() {
 		return caze;
 	}

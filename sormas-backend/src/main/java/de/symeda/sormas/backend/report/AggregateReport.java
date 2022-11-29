@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -48,7 +49,7 @@ public class AggregateReport extends AbstractDomainObject {
 	private Integer deaths;
 	private String ageGroup;
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getReportingUser() {
 		return reportingUser;
@@ -85,7 +86,7 @@ public class AggregateReport extends AbstractDomainObject {
 		this.epiWeek = epiWeek;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn
 	public Region getRegion() {
 		return region;
@@ -95,7 +96,7 @@ public class AggregateReport extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn
 	public District getDistrict() {
 		return district;
@@ -105,7 +106,7 @@ public class AggregateReport extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
@@ -114,7 +115,7 @@ public class AggregateReport extends AbstractDomainObject {
 		this.healthFacility = healthFacility;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public PointOfEntry getPointOfEntry() {
 		return pointOfEntry;
 	}

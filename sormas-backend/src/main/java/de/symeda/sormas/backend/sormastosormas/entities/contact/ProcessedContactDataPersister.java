@@ -83,8 +83,9 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 	}
 
 	@Override
-	public void persistSharedData(SormasToSormasContactDto processedData, Contact existingContact) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, existingContact == null);
+	public void persistSharedData(SormasToSormasContactDto processedData, Contact existingContact, boolean isSync)
+		throws SormasToSormasValidationException {
+		persistProcessedData(processedData, existingContact == null, isSync);
 	}
 
 	@Override
@@ -126,7 +127,8 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 		return DuplicateResult.PERSON_ONLY;
 	}
 
-	private void persistProcessedData(SormasToSormasContactDto processedData, boolean isCreate) throws SormasToSormasValidationException {
+	private void persistProcessedData(SormasToSormasContactDto processedData, boolean isCreate, boolean isSync)
+		throws SormasToSormasValidationException {
 		ContactDto contact = processedData.getEntity();
 		ValidationErrorGroup contactValidationGroupName = buildContactValidationGroupName(contact);
 
@@ -139,7 +141,11 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 		} else {
 			//save contact first during update
 			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName, contact);
-			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
+
+			// #10544 only persons not owned should be updated
+			if (!(isSync && personFacade.isEditAllowed(person.getUuid()))) {
+				handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
+			}
 		}
 	}
 }

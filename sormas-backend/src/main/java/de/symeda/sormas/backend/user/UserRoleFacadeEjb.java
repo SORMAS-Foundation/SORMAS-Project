@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.user;
 
 import java.io.IOException;
@@ -65,6 +63,7 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -72,6 +71,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -103,17 +103,17 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	@Override
 	@PermitAll
 	public List<UserRoleDto> getAllAfter(Date since) {
-		return userRoleService.getAllAfter(since).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userRoleService.getAllAfter(since).stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserRoleDto> getAll() {
-		return userRoleService.getAll().stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userRoleService.getAll().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserRoleDto> getAllActive() {
-		return userRoleService.getAllActive().stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userRoleService.getAllActive().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -316,6 +316,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
+	@AuditIgnore
 	public List<UserRoleReferenceDto> getAllActiveAsReference() {
 		return userRoleService.getAllActive().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
@@ -447,6 +448,10 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public String generateUserRolesDocument() throws IOException {
+		return generateUserRolesDocument(true);
+	}
+
+	public String generateUserRolesDocument(boolean withUuid) throws IOException {
 		Path documentPath = generateUserRolesDocumentTempPath();
 
 		if (Files.exists(documentPath)) {
@@ -454,7 +459,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		}
 
 		try (OutputStream fos = Files.newOutputStream(documentPath)) {
-			generateUserRolesDocument(fos);
+			generateUserRolesDocument(fos, withUuid);
 		} catch (IOException e) {
 			Files.deleteIfExists(documentPath);
 			throw e;
@@ -463,7 +468,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		return documentPath.toString();
 	}
 
-	private void generateUserRolesDocument(OutputStream outStream) throws IOException {
+	private void generateUserRolesDocument(OutputStream outStream, boolean withUuid) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		// Bold style
@@ -472,15 +477,16 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		XSSFCellStyle boldStyle = workbook.createCellStyle();
 		boldStyle.setFont(boldFont);
 
-		addUserRolesSheet(boldStyle, workbook);
+		addUserRolesSheet(boldStyle, workbook, withUuid);
 		addUserRightsSheet(boldStyle, workbook);
+		addNotificationTypesSheet(boldStyle, workbook);
 		XssfHelper.addAboutSheet(workbook);
 
 		workbook.write(outStream);
 		workbook.close();
 	}
 
-	private void addUserRolesSheet(XSSFCellStyle boldStyle, XSSFWorkbook workbook) {
+	private void addUserRolesSheet(XSSFCellStyle boldStyle, XSSFWorkbook workbook, boolean withUuid) {
 		List<UserRole> userRoles = userRoleService.getAll(UserRole.CAPTION, true);
 
 		// Create User Role sheet
@@ -521,21 +527,12 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		descHeadlineCell.setCellStyle(boldStyle);
 		sheet.setColumnWidth(columnIndex, 256 * 50);
 
-		// lock the first twe columns and the header row
-		sheet.createFreezePane(2, 1, 2, 1);
-
-		for (UserRight userRight : UserRight.values()) {
-			String columnCaption = userRight.name();
-			Cell headerCell = headerRow.createCell(++columnIndex);
-			headerCell.setCellValue(columnCaption);
-			headerCell.setCellStyle(boldStyle);
-			sheet.setColumnWidth(columnIndex, 256 * 14);
+		if (withUuid) {
+			Cell uuidHeadlineCell = headerRow.createCell(++columnIndex);
+			uuidHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_uuid));
+			uuidHeadlineCell.setCellStyle(boldStyle);
+			sheet.setColumnWidth(columnIndex, 256 * 20);
 		}
-
-		Cell uuidHeadlineCell = headerRow.createCell(++columnIndex);
-		uuidHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_uuid));
-		uuidHeadlineCell.setCellStyle(boldStyle);
-		sheet.setColumnWidth(columnIndex, 256 * 20);
 
 		Cell portHealthUserHeadlineCell = headerRow.createCell(++columnIndex);
 		portHealthUserHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_portHealthUser));
@@ -557,6 +554,35 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		enabledHeadlineCell.setCellStyle(boldStyle);
 		sheet.setColumnWidth(columnIndex, 256 * 14);
 
+		Cell userRightsHeadlineCell = headerRow.createCell(++columnIndex);
+		userRightsHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_userRights));
+		userRightsHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 14);
+
+		for (UserRight userRight : UserRight.values()) {
+			String columnCaption = userRight.name();
+			Cell headerCell = headerRow.createCell(++columnIndex);
+			headerCell.setCellValue(columnCaption);
+			headerCell.setCellStyle(boldStyle);
+			sheet.setColumnWidth(columnIndex, 256 * 14);
+		}
+
+		Cell notificationsHeadlineCell = headerRow.createCell(++columnIndex);
+		notificationsHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.userRoleNotifications));
+		notificationsHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 14);
+
+		for (NotificationType notificationType : NotificationType.values()) {
+			String columnCaption = notificationType.name();
+			Cell headerCell = headerRow.createCell(++columnIndex);
+			headerCell.setCellValue(columnCaption);
+			headerCell.setCellStyle(boldStyle);
+			sheet.setColumnWidth(columnIndex, 256 * 14);
+		}
+
+		// lock the first twe columns and the header row
+		sheet.createFreezePane(2, 1, 2, 1);
+
 		//User roles rows
 		for (UserRole userRole : userRoles) {
 			Row row = sheet.createRow(rowCounter++);
@@ -572,13 +598,10 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			Cell descCell = row.createCell(columnIndex++);
 			descCell.setCellValue(userRole.getDescription());
 
-			for (UserRight userRight : UserRight.values()) {
-				Cell roleRightCell = row.createCell(columnIndex++);
-				setBooleanCellValue(roleRightCell, userRole.getUserRights().contains(userRight), authorizedStyle);
+			if (withUuid) {
+				Cell uuidCell = row.createCell(columnIndex++);
+				uuidCell.setCellValue(userRole.getUuid());
 			}
-
-			Cell uuidCell = row.createCell(columnIndex++);
-			uuidCell.setCellValue(userRole.getUuid());
 
 			Cell portHealthUserCell = row.createCell(columnIndex++);
 			setBooleanCellValue(portHealthUserCell, userRole.isPortHealthUser(), authorizedStyle);
@@ -591,6 +614,30 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 			Cell enabledCell = row.createCell(columnIndex++);
 			setBooleanCellValue(enabledCell, userRole.isEnabled(), authorizedStyle);
+
+			// create cell for the empty userrights column
+			row.createCell(columnIndex++);
+
+			for (UserRight userRight : UserRight.values()) {
+				Cell roleRightCell = row.createCell(columnIndex++);
+				setBooleanCellValue(roleRightCell, userRole.getUserRights().contains(userRight), authorizedStyle);
+			}
+
+			// create cell for the empty notification column
+			row.createCell(columnIndex++);
+
+			for (NotificationType notificationType : NotificationType.values()) {
+				Cell notificationTypeCell = row.createCell(columnIndex++);
+
+				notificationTypeCell.setCellValue(
+					Stream
+						.of(
+							userRole.getSmsNotificationTypes().contains(notificationType) ? Captions.userRoleNotificationTypeSms : null,
+							userRole.getEmailNotificationTypes().contains(notificationType) ? Captions.userRoleNotificationTypeEmail : null)
+						.filter(Objects::nonNull)
+						.map(I18nProperties::getCaption)
+						.collect(Collectors.joining(", ")));
+			}
 		}
 	}
 
@@ -655,6 +702,60 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			requiredUserRightsCell.setCellValue(
 				UserRight.getRequiredUserRights(Collections.singleton(userRight)).stream().map(UserRight::name).collect(Collectors.joining(", ")));
 
+		}
+	}
+
+	private void addNotificationTypesSheet(XSSFCellStyle boldStyle, XSSFWorkbook workbook) {
+		// Create User Rights sheet
+		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRoleNotifications));
+		XSSFSheet sheet = workbook.createSheet(safeName);
+
+		int rowCounter = 0;
+
+		// Header
+		Row headerRow = sheet.createRow(rowCounter++);
+		int columnIndex = -1;
+
+		Cell userRightHeadlineCell = headerRow.createCell(++columnIndex);
+		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.notificationType));
+		userRightHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 35);
+
+		Cell groupHeadlineCell = headerRow.createCell(++columnIndex);
+		groupHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.notificationType_group));
+		groupHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 50);
+
+		Cell captionHeadlineCell = headerRow.createCell(++columnIndex);
+		captionHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.notificationType_caption));
+		captionHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 50);
+
+		Cell descHeadlineCell = headerRow.createCell(++columnIndex);
+		descHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.notificationType_description));
+		descHeadlineCell.setCellStyle(boldStyle);
+		sheet.setColumnWidth(columnIndex, 256 * 75);
+
+		// lock the first column and the header row
+		sheet.createFreezePane(1, 1, 1, 1);
+
+		// User right rows
+		for (NotificationType notificationType : NotificationType.values()) {
+			Row row = sheet.createRow(rowCounter++);
+			columnIndex = 0;
+
+			Cell nameCell = row.createCell(columnIndex++);
+			nameCell.setCellValue(notificationType.name());
+			nameCell.setCellStyle(boldStyle);
+
+			Cell groupCell = row.createCell(columnIndex++);
+			groupCell.setCellValue(notificationType.getNotificationTypeGroup().toString());
+
+			Cell captionCell = row.createCell(columnIndex++);
+			captionCell.setCellValue(notificationType.toString());
+
+			Cell descCell = row.createCell(columnIndex++);
+			descCell.setCellValue(notificationType.getDescription());
 		}
 	}
 

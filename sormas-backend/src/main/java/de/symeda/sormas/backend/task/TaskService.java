@@ -63,7 +63,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -87,7 +87,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
-public class TaskService extends AdoServiceWithUserFilter<Task>
+public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext> {
 
 	@EJB
@@ -515,6 +515,22 @@ public class TaskService extends AdoServiceWithUserFilter<Task>
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.USER_NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			}
+		}
+
+		if (taskCriteria.getAssignedByUserLike() != null) {
+			String[] textFilters = taskCriteria.getAssignedByUserLike().split("\\s+");
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
+				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.USER_NAME), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

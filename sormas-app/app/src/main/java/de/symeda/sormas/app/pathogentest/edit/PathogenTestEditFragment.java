@@ -99,9 +99,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		if (record.getTestedDisease() != null && !diseases.contains(record.getTestedDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getTestedDisease()));
 		}
-		List<DiseaseVariant> diseaseVariants = record.getTestedDisease() != null
-			? DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getTestedDisease())
-			: new ArrayList<>();
+
+		List<DiseaseVariant> diseaseVariants =
+				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getTestedDisease());
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getTestedDiseaseVariant() != null && !diseaseVariants.contains(record.getTestedDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
@@ -145,9 +145,6 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		});
 
 		contentBinding.pathogenTestPcrTestSpecification.initializeSpinner(pcrTestSpecificationList);
-
-		contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
-
 		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList, new ValueChangeListener() {
 
 			final Disease currentDisease = record.getTestedDisease();
@@ -161,9 +158,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 					getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
 				}
 
-				if (this.currentDisease == null || contentBinding.pathogenTestTestedDisease.getValue() != currentDisease) {
-					updateDiseaseVariantsField(contentBinding);
-				}
+				updateDiseaseVariantsField(contentBinding);
 
 				testTypeList = DataUtils.toItems(
 					Arrays.asList(PathogenTestType.values()),
@@ -173,6 +168,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 				contentBinding.pathogenTestTestType.setSpinnerData(testTypeList);
 			}
 		});
+		contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
 
 		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
 
@@ -212,14 +208,17 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	}
 
 	private void updateDiseaseVariantsField(FragmentPathogenTestEditLayoutBinding contentBinding) {
-		List<DiseaseVariant> diseaseVariants = contentBinding.pathogenTestTestedDisease.getValue() != null
-			? DatabaseHelper.getCustomizableEnumValueDao()
-				.getEnumValues(CustomizableEnumType.DISEASE_VARIANT, (Disease) contentBinding.pathogenTestTestedDisease.getValue())
-			: new ArrayList<>();
+		DiseaseVariant selectedVariant = (DiseaseVariant) contentBinding.pathogenTestTestedDiseaseVariant.getValue();
+		List<DiseaseVariant> diseaseVariants =
+				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getTestedDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.pathogenTestTestedDiseaseVariant.setSpinnerData(diseaseVariantList);
-		contentBinding.pathogenTestTestedDiseaseVariant.setValue(null);
+		if (diseaseVariants.contains(selectedVariant)) {
+			contentBinding.pathogenTestTestedDiseaseVariant.setValue(selectedVariant);
+		} else {
+			contentBinding.pathogenTestTestedDiseaseVariant.setValue(null);
+		}
 		contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(DataUtils.emptyOrWithOneNullItem(diseaseVariantList) ? GONE : VISIBLE);
 	}
 

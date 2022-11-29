@@ -77,6 +77,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addSidePanelComponent(createCaseInfoLayout(resultingCase.getUuid()), CASE_LOC);
 		}
 
+		final String uuid = travelEntryDto.getUuid();
+		final EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
@@ -85,7 +87,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				getReference(),
 				UserRight.TRAVEL_ENTRY_EDIT,
 				travelEntryDto.isPseudonymized(),
-				isEditAllowed());
+				isEditAllowed(),
+				EditPermissionType.DOCUMENTS_ONLY.equals(travelEntryEditAllowed));
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -103,8 +106,6 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		final String uuid = travelEntryDto.getUuid();
-		final EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getTravelEntryFacade().isDeleted(uuid);
 
 		if (deleted) {

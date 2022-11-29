@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,12 +29,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Region extends InfrastructureAdo {
 
 	private static final long serialVersionUID = -2958216667876104358L;
@@ -72,6 +78,7 @@ public class Region extends InfrastructureAdo {
 		this.epidCode = epidCode;
 	}
 
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@OneToMany(mappedBy = District.REGION, cascade = {}, fetch = FetchType.LAZY)
 	@OrderBy(District.NAME)
 	public List<District> getDistricts() {
@@ -99,7 +106,7 @@ public class Region extends InfrastructureAdo {
 		this.externalID = externalID;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Area getArea() {
 		return area;
 	}
@@ -108,7 +115,7 @@ public class Region extends InfrastructureAdo {
 		this.area = area;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Country getCountry() {
 		return country;
 	}

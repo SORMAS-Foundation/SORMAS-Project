@@ -139,7 +139,7 @@ Feature: Create user
     Given I log in as a Admin User
     And I click on the Users from navbar
     Then I click on the NEW USER button
-    Then I create new Test user for test on DE specific
+    Then I create new Importierender Benutzer user for test on DE specific
     And I click on logout button from navbar
     And I login first time as a new created user from keycloak instance
     And I click on logout button from navbar
@@ -240,7 +240,9 @@ Feature: Create user
   Scenario: Edit and create user roles
     Given I log in as a Admin User
     And I click on the Users from navbar
+    And I check if there is any user with the "TestNatUser" role and change his role
     And I click on User roles tab from User Management Page
+    And I check if the "TestNatUser" user role exist and delete it
     And I click on New user role button on User Roles Page
     And I choose "National User" as the user role template
     And I click SAVE button on Create New User Role form

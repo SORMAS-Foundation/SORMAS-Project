@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,6 +43,8 @@ import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
@@ -63,6 +66,8 @@ import de.symeda.sormas.backend.location.Location;
 @Entity(name = User.TABLE_NAME)
 @Audited
 @EntityListeners(User.UserListener.class)
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -629432920970152112L;
@@ -215,7 +220,7 @@ public class User extends AbstractDomainObject {
 		this.address = address;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -224,6 +229,7 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@ManyToMany(cascade = {}, fetch = FetchType.LAZY)
 	@JoinTable(name = TABLE_NAME_USERS_USERROLES, joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "userrole_id"))
 	public Set<UserRole> getUserRoles() {
@@ -259,7 +265,7 @@ public class User extends AbstractDomainObject {
 		jurisdictionLevel = UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public User getAssociatedOfficer() {
 		return associatedOfficer;
 	}
@@ -272,7 +278,7 @@ public class User extends AbstractDomainObject {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}
@@ -281,7 +287,7 @@ public class User extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Community getCommunity() {
 		return community;
 	}
@@ -290,7 +296,7 @@ public class User extends AbstractDomainObject {
 		this.community = community;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
@@ -299,7 +305,7 @@ public class User extends AbstractDomainObject {
 		this.healthFacility = healthFacility;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Facility getLaboratory() {
 		return laboratory;
 	}
@@ -308,7 +314,7 @@ public class User extends AbstractDomainObject {
 		this.laboratory = laboratory;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public PointOfEntry getPointOfEntry() {
 		return pointOfEntry;
 	}

@@ -157,6 +157,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Task::new, checkChangeDate);
 
 		target.setAssigneeUser(userService.getByReferenceDto(source.getAssigneeUser()));
+		target.setAssignedByUser(userService.getByReferenceDto(source.getAssignedByUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
@@ -242,6 +243,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setAssigneeUser(UserFacadeEjb.toReferenceDto(source.getAssigneeUser()));
+		target.setAssignedByUser(UserFacadeEjb.toReferenceDto(source.getAssignedByUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
@@ -318,7 +320,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		// Let's retrieve the old assignee before updating the task
 		User oldAssignee = existingTask != null ? existingTask.getAssigneeUser() : null;
 
-		Task ado = fillOrBuildEntity(dto, existingTask,true);
+		Task ado = fillOrBuildEntity(dto, existingTask, true);
 
 		validate(dto);
 
@@ -556,6 +558,9 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getAssignee().get(User.FIRST_NAME),
 				joins.getAssignee().get(User.LAST_NAME),
 				task.get(Task.ASSIGNEE_REPLY),
+				joins.getAssignedBy().get(User.UUID),
+				joins.getAssignedBy().get(User.FIRST_NAME),
+				joins.getAssignedBy().get(User.LAST_NAME),
 				regionUuid,
 				regionName,
 				districtUuid,
@@ -609,6 +614,11 @@ public class TaskFacadeEjb implements TaskFacade {
 					expression = joins.getCreator().get(User.LAST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = joins.getCreator().get(User.FIRST_NAME);
+					break;
+				case TaskIndexDto.ASSIGNED_BY_USER:
+					expression = joins.getAssignedBy().get(User.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getAssignedBy().get(User.FIRST_NAME);
 					break;
 				case TaskIndexDto.CAZE:
 					expression = joins.getCasePerson().get(Person.LAST_NAME);

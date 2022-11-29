@@ -729,6 +729,53 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	}
 
 	@Test
+	public void testSyncNotUpdateOwnedPerson() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		SormasToSormasOriginInfoDto originInfo = createAndSaveSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false, null);
+
+		EventDto event =
+			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, rdcf, e -> {
+				e.setSormasToSormasOriginInfo(originInfo);
+			});
+
+		EventParticipantDto eventParticipant = creator.createEventParticipant(
+			event.toReference(),
+			creator.createPerson(),
+			"Involved",
+			officer,
+			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()),
+			rdcf);
+
+		event.setEventDesc("Test updated description");
+		eventParticipant.getPerson().setBirthName("Test birth name");
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(event.getChangeDate());
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		event.setChangeDate(calendar.getTime());
+
+		//owned case with same person should mek event participant person not synced
+		creator.createCase(officer, eventParticipant.getPerson().toReference(), rdcf);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
+		shareData.setEventParticipants(Collections.singletonList(new SormasToSormasEventParticipantDto(eventParticipant)));
+
+		SormasToSormasEncryptedDataDto encryptedData =
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(event.getUuid(), null, false)));
+
+		getSormasToSormasEventFacade().saveSyncedEntity(encryptedData);
+
+		EventDto syncedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
+		assertThat(syncedEvent.getEventDesc(), is("Test updated description"));
+
+		EventParticipantDto syncedEventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
+		assertThat(syncedEventParticipant.getPerson().getBirthName(), is(nullValue()));
+	}
+
+	@Test
 	public void testSyncRecursively() throws SormasToSormasException, SormasToSormasValidationException {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 

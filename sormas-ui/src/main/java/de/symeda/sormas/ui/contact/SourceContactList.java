@@ -28,9 +28,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class SourceContactList extends PaginationList<ContactIndexDto> {
@@ -68,12 +66,11 @@ public class SourceContactList extends PaginationList<ContactIndexDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			ContactIndexDto contact = displayedEntries.get(i);
 			SourceContactListEntry listEntry = new SourceContactListEntry(contact);
-			boolean isEditEntry = UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT) && isEditAllowed;
 			listEntry.addActionButton(
 				String.valueOf(i),
 				(ClickListener) e -> ControllerProvider.getContactController().navigateToData(listEntry.getContact().getUuid()),
-				isEditEntry);
-			listEntry.setEnabled(isEditEntry);
+				isEditAllowed);
+			listEntry.setEnabled(isEditAllowed);
 
 			listLayout.addComponent(listEntry);
 		}

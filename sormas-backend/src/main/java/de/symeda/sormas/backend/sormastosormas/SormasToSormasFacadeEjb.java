@@ -33,6 +33,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
@@ -197,17 +199,16 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 
 		for (ShareRequestInfo pendingRequest : pendingRequests) {
-			revokeShareRequest(pendingRequest);
+			revokeShareRequest(pendingRequest, shareInfo.getOrganizationId());
 		}
 	}
 
-	private void revokeShareRequest(ShareRequestInfo request) throws SormasToSormasException {
+	private void revokeShareRequest(ShareRequestInfo request, String targetOrganizationId) throws SormasToSormasException {
 		if (request.getRequestStatus() != ShareRequestStatus.PENDING) {
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
-		sormasToSormasRestClient
-			.post(request.getShares().get(0).getOrganizationId(), REVOKE_REQUEST_ENDPOINT, Collections.singletonList(request.getUuid()), null);
+		sormasToSormasRestClient.post(targetOrganizationId, REVOKE_REQUEST_ENDPOINT, Collections.singletonList(request.getUuid()), null);
 
 		request.setRequestStatus(ShareRequestStatus.REVOKED);
 		shareRequestInfoService.ensurePersisted(request);
@@ -220,7 +221,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	public void revokeShareRequest(String requestUuid) throws SormasToSormasException {
 		ShareRequestInfo request = shareRequestInfoService.getByUuid(requestUuid);
 
-		revokeShareRequest(request);
+		revokeShareRequest(request, request.getShares().get(0).getOrganizationId());
 	}
 
 	/**
@@ -341,6 +342,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	@PermitAll
+	@AuditIgnore
 	public boolean isAnyFeatureConfigured(FeatureType... sormasToSormasFeatures) {
 		return configFacadeEjb.isS2SConfigured() && featureConfigurationFacade.isAnyFeatureEnabled(sormasToSormasFeatures);
 	}
@@ -369,20 +371,40 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return isShareEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES);
 	}
 
+	/**
+	 *
+	 * @param sormasToSormasShares
+	 *            - tha shares to be checked
+	 * @param doDelete
+	 *            - whether to delete the revoked request or not - for automatic deletion it will be deleted separately
+	 * @throws SormasToSormasException
+	 *             when something goes wring during reject on the target system
+	 */
 	@RightsAllowed({
 		UserRight._CASE_DELETE,
 		UserRight._CONTACT_DELETE,
 		UserRight._EVENT_DELETE,
 		UserRight._SYSTEM })
-	public void revokePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares) throws SormasToSormasException {
-		List<ShareRequestInfo> pendingRequests = sormasToSormasShares.stream()
-			.map(SormasToSormasShareInfo::getRequests)
+	public void revokePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares, boolean doDelete) throws SormasToSormasException {
+		List<Pair<ShareRequestInfo, String>> pendingRequests = sormasToSormasShares.stream()
+			.map(
+				s -> s.getRequests()
+					.stream()
+					.filter(r -> r.getRequestStatus() == ShareRequestStatus.PENDING)
+					.map(r -> Pair.createPair(r, s.getOrganizationId()))
+					.collect(Collectors.toList()))
 			.flatMap(Collection::stream)
-			.filter(r -> r.getRequestStatus() == ShareRequestStatus.PENDING)
 			.collect(Collectors.toList());
 
-		for (ShareRequestInfo r : pendingRequests) {
-			revokeShareRequest(r.getUuid());
+		for (Pair<ShareRequestInfo, String> requestAndOrganization : pendingRequests) {
+			ShareRequestInfo request = requestAndOrganization.getElement0();
+			String organizationId = requestAndOrganization.getElement1();
+
+			revokeShareRequest(request, organizationId);
+
+			if (doDelete) {
+				shareRequestInfoService.deletePermanent(request);
+			}
 		}
 	}
 

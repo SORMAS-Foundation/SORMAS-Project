@@ -45,6 +45,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -816,7 +817,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 	}
 
 	@Test
-	public void testSyncCases() throws SormasToSormasValidationException, SormasToSormasException {
+	public void testSyncCases() throws SormasToSormasException {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		SormasToSormasOriginInfoDto originInfo =
@@ -1172,6 +1173,68 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		ImmunizationDto savedImmunization = getImmunizationFacade().getByUuid(uuid);
 		assertThat(savedImmunization.getReportingUser(), is(s2sClientUser.toReference()));
+	}
+
+	@Test
+	public void testSaveSyncedCase() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		final PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf, c -> {
+			c.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false, null));
+		});
+
+		caze.setFollowUpStatus(FollowUpStatus.LOST);
+		person.setBirthName("Test birth name");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+
+		SormasToSormasEncryptedDataDto encryptedData =
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(caze.getUuid(), null, false)));
+
+		getSormasToSormasCaseFacade().saveSyncedEntity(encryptedData);
+
+		CaseDataDto syncedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertThat(syncedCase.getFollowUpStatus(), is(FollowUpStatus.LOST));
+		assertThat(syncedCase.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
+
+		PersonDto syncedPerson = getPersonFacade().getByUuid(person.getUuid());
+		assertThat(syncedPerson.getBirthName(), is("Test birth name"));
+	}
+
+	@Test
+	public void testSyncNotUpdateOwnedPerson() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		final PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf, c -> {
+			c.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false, null));
+		});
+
+		// owned contact with same person should make person not be synced
+		creator.createContact(rdcf, officer, person.toReference());
+
+		caze.setFollowUpStatus(FollowUpStatus.LOST);
+		person.setBirthName("Test birth name");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+
+		SormasToSormasEncryptedDataDto encryptedData =
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(caze.getUuid(), null, false)));
+
+		getSormasToSormasCaseFacade().saveSyncedEntity(encryptedData);
+
+		CaseDataDto syncedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertThat(syncedCase.getFollowUpStatus(), is(FollowUpStatus.LOST));
+
+		PersonDto syncedPerson = getPersonFacade().getByUuid(person.getUuid());
+		assertThat(syncedPerson.getBirthName(), is(nullValue()));
 	}
 
 	private ContactDto createRemoteContactDto(TestDataCreator.RDCF remoteRdcf, CaseDataDto caze) {

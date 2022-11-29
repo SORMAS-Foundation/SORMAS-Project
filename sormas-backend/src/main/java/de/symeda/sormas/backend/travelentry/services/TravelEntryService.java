@@ -69,7 +69,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 			Root<TravelEntry> travelEntryRoot = cq.from(TravelEntry.class);
 			Join<TravelEntry, Person> personJoin = travelEntryRoot.join(TravelEntry.PERSON, JoinType.INNER);
 
-			cq.where(cb.and(createDefaultFilter(cb, travelEntryRoot), personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids)));
+			cq.where(personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids));
 
 			travelEntries.addAll(em.createQuery(cq).getResultList());
 		});

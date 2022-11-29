@@ -105,6 +105,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -168,11 +169,19 @@ public class DevModeView extends AbstractConfigurationView {
 		HorizontalLayout horizontalLayout = new HorizontalLayout();
 		horizontalLayout.setSpacing(true);
 
-		Button btnResetEnumCache = ButtonHelper.createButton((Captions.actionResetEnumCache), e -> {
-			FacadeProvider.getCustomizableEnumFacade().loadData();
-		});
-
+		Button btnResetEnumCache =
+			ButtonHelper.createButton((Captions.actionResetEnumCache), e -> FacadeProvider.getCustomizableEnumFacade().loadData());
 		horizontalLayout.addComponent(btnResetEnumCache);
+
+		Button btnExecuteAutomaticDeletion = ButtonHelper.createButton((Captions.actionExecuteAutomaticDeletion), e -> {
+			VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(Strings.headingAutomaticDeletionStarted),
+				I18nProperties.getString(Strings.messageAutomaticDeletionStarted),
+				ContentMode.TEXT,
+				640);
+			FacadeProvider.getDeletionConfigurationFacade().startAutomaticDeletion();
+		});
+		horizontalLayout.addComponent(btnExecuteAutomaticDeletion);
 
 		return horizontalLayout;
 	}
@@ -1247,8 +1256,8 @@ public class DevModeView extends AbstractConfigurationView {
 					int[] followUpDays = random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
 					List<LocalDateTime> followUpDates = new ArrayList<>();
 					for (int day : followUpDays) {
-						followUpDates.add(
-							UtilDate.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
+						followUpDates
+							.add(UtilDate.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
 					}
 
 					for (LocalDateTime date : followUpDates) {

@@ -77,13 +77,13 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 			headerLayout.addComponent(sendButton);
 			headerLayout.setExpandRatio(sendButton, 1);
 			headerLayout.setComponentAlignment(sendButton, Alignment.MIDDLE_RIGHT);
+
+			Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
+			headerLayout.addComponent(deleteButton);
+			headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
+			headerLayout.setWidth(100, Unit.PERCENTAGE);
 		}
-
-		Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
-		headerLayout.addComponent(deleteButton);
-		headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
-		headerLayout.setWidth(100, Unit.PERCENTAGE);
-
+		
 		return headerLayout;
 	}
 

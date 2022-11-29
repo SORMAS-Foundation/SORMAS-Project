@@ -15,7 +15,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -27,7 +27,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class AggregateReportService extends AdoServiceWithUserFilter<AggregateReport> {
+public class AggregateReportService extends AdoServiceWithUserFilterAndJurisdiction<AggregateReport> {
 
 	@EJB
 	private UserService userService;

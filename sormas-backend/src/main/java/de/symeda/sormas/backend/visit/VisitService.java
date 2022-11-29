@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityGraph;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
@@ -50,10 +51,9 @@ import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.JurisdictionCheckService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -66,7 +66,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
-public class VisitService extends BaseAdoService<Visit> implements JurisdictionCheckService<Visit> {
+public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit> {
 
 	@EJB
 	private ContactService contactService;
@@ -180,6 +180,11 @@ public class VisitService extends BaseAdoService<Visit> implements JurisdictionC
 		}, batchSize);
 	}
 
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
+		return null;
+	}
+
 	@SuppressWarnings("rawtypes")
 	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
 
@@ -204,10 +209,18 @@ public class VisitService extends BaseAdoService<Visit> implements JurisdictionC
 
 	@Override
 	protected void fetchReferences(From<?, Visit> from) {
-
 		from.fetch(Visit.SYMPTOMS);
 		Fetch<Visit, Person> personFetch = from.fetch(Visit.PERSON);
 		personFetch.fetch(Person.ADDRESS);
+	}
+
+	@Override
+	protected EntityGraph<Visit> getEntityFetchGraph() {
+		final EntityGraph<Visit> entityFetchGraph = super.getEntityFetchGraph();
+		entityFetchGraph.addAttributeNodes(Visit.SYMPTOMS);
+		entityFetchGraph.addAttributeNodes(Visit.PERSON);
+		entityFetchGraph.addSubgraph(Visit.PERSON).addAttributeNodes(Person.ADDRESS);
+		return entityFetchGraph;
 	}
 
 	// Used only for testing; directly retrieve the visits from the contact instead

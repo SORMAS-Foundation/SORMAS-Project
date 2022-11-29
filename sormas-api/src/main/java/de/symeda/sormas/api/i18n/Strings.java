@@ -387,6 +387,7 @@ public interface Strings {
 	String headingArchiveImmunization = "headingArchiveImmunization";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
+	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";
@@ -544,6 +545,10 @@ public interface Strings {
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
+	String headingExternalMessageExistingPathogenTests = "headingExternalMessageExistingPathogenTests";
+	String headingExternalMessageNewPathogenTests = "headingExternalMessageNewPathogenTests";
+	String headingExternalMessageProcessSample = "headingExternalMessageProcessSample";
+	String headingExternalMessageSampleInformation = "headingExternalMessageSampleInformation";
 	String headingExternalMessagesDeleted = "headingExternalMessagesDeleted";
 	String headingExternalMessagesDeleteProcessed = "headingExternalMessagesDeleteProcessed";
 	String headingFatalities = "headingFatalities";
@@ -598,6 +603,7 @@ public interface Strings {
 	String headingMaternalHistory = "headingMaternalHistory";
 	String headingMedicalInformation = "headingMedicalInformation";
 	String headingMergeGuide = "headingMergeGuide";
+	String headingMergePersonError = "headingMergePersonError";
 	String headingMissingDateFilter = "headingMissingDateFilter";
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
@@ -721,6 +727,7 @@ public interface Strings {
 	String headingViewNotFound = "headingViewNotFound";
 	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
 	String headingViewSurveillanceReport = "headingViewSurveillanceReport";
+	String headingViewTask = "headingViewTask";
 	String headingViewVisit = "headingViewVisit";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";
@@ -792,6 +799,7 @@ public interface Strings {
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
 	String infoDocumentOverride = "infoDocumentOverride";
+	String infoDontShareCheckboxAlreadyShared = "infoDontShareCheckboxAlreadyShared";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadDocumentTemplateImportGuide = "infoDownloadDocumentTemplateImportGuide";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
@@ -852,6 +860,7 @@ public interface Strings {
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
 	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
 	String infoPersonMergeDescription = "infoPersonMergeDescription";
+	String infoPersonMergeErrorWhenShared = "infoPersonMergeErrorWhenShared";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
@@ -947,6 +956,7 @@ public interface Strings {
 	String messageAreasArchived = "messageAreasArchived";
 	String messageAreasArchivingNotPossible = "messageAreasArchivingNotPossible";
 	String messageAreasDearchived = "messageAreasDearchived";
+	String messageAutomaticDeletionStarted = "messageAutomaticDeletionStarted";
 	String messageBulkCasesWithDifferentDiseasesSelected = "messageBulkCasesWithDifferentDiseasesSelected";
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
@@ -1116,8 +1126,10 @@ public interface Strings {
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
 	String messageImportError = "messageImportError";
+	String messageImportExtensionDoesNotMatchContent = "messageImportExtensionDoesNotMatchContent";
 	String messageImportFailed = "messageImportFailed";
 	String messageImportFailedFull = "messageImportFailedFull";
+	String messageImportFileTypeNotAllowed = "messageImportFileTypeNotAllowed";
 	String messageImportInvalidColumn = "messageImportInvalidColumn";
 	String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	String messageImportSuccessful = "messageImportSuccessful";

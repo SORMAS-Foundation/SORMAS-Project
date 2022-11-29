@@ -42,7 +42,7 @@ public class EditCasePage {
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
   public static final By CASE_TAB = By.cssSelector("div#tab-cases-data");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
-  public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
+  public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
@@ -314,7 +314,7 @@ public class EditCasePage {
   }
 
   public static By getByImmunizationUuid(String immunizationUuid) {
-    return By.id("edit-immunization-" + immunizationUuid);
+    return By.id("edit" + immunizationUuid);
   }
 
   public static final By IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL =
@@ -394,4 +394,8 @@ public class EditCasePage {
       By.cssSelector(".popupContent textarea");
   public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
       By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
+
+  public static By checkIfTextExists(String text) {
+    return By.xpath(String.format("//div[contains(text(),'%s')]", text));
+  }
 }

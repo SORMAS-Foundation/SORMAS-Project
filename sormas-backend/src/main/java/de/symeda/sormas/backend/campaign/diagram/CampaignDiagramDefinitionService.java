@@ -11,11 +11,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 
 @Stateless
 @LocalBean
-public class CampaignDiagramDefinitionService extends AdoServiceWithUserFilter<CampaignDiagramDefinition> {
+public class CampaignDiagramDefinitionService extends AdoServiceWithUserFilterAndJurisdiction<CampaignDiagramDefinition> {
 
 	public CampaignDiagramDefinitionService() {
 		super(CampaignDiagramDefinition.class);
