@@ -74,8 +74,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	long setMissingGeoCoordinates(boolean overwriteExistingCoordinates);
 
-	boolean isSharedWithoutOwnership(String uuid);
-
 	boolean isShared(String uuid);
 
 	List<PersonDto> getByExternalIds(List<String> externalIds);
@@ -91,8 +89,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	PersonDto getByContext(PersonContext context, String contextUuid);
 
 	boolean isEnrolledInExternalJournal(String uuid);
-
-	boolean isPersonAssociatedWithNotDeletedEntities(String uuid);
 
 	void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target);
 

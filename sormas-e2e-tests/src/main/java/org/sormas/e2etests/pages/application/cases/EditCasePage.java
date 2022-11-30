@@ -43,7 +43,7 @@ public class EditCasePage {
   public static final By CASE_TAB = By.cssSelector("div#tab-cases-data");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
   public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
-  public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
+  public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit0']");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
   public static final By EDIT_SAMPLE_BUTTON =
@@ -242,10 +242,10 @@ public class EditCasePage {
   public static final By VACCINATION_STATUS_INPUT = By.cssSelector("#vaccinationStatus input");
   public static final By GENERATED_DOCUMENT_NAME =
       By.xpath(
-          "//div[text()='Documents']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
+          "//div[text()='Documents']/../parent::div/../../following-sibling::div//div[@class='v-label v-disabled v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By GENERATED_DOCUMENT_NAME_DE =
       By.xpath(
-          "//div[text()='Dokumente']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
+          "//div[text()='Dokumente']/../parent::div/../../following-sibling::div//div[@class='v-label v-disabled v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
   public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
@@ -384,7 +384,7 @@ public class EditCasePage {
   }
 
   public static By getEditTaskButtonByNumber(Integer number) {
-    return By.cssSelector(String.format("#edit-task-%x", number));
+    return By.cssSelector(String.format("#edit%x", number));
   }
 
   public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =

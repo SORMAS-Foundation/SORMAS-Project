@@ -90,7 +90,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 								.deleteAllSelectedClinicalVisits(clinicalVisitGrid.getSelectedRows(), new Runnable() {
 
 									public void run() {
-										clinicalVisitGrid.reload();
+										reloadClinicalVisitGrid();
 									}
 								});
 						}));

@@ -271,13 +271,15 @@ public class ContactDataView extends AbstractContactView {
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
+			boolean isDocumentDeleteAllowed =
+				EditPermissionType.ALLOWED.equals(contactEditAllowed) || EditPermissionType.DOCUMENTS_ONLY.equals(contactEditAllowed);
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.CONTACT,
 				getContactRef(),
 				UserRight.CONTACT_EDIT,
 				contactDto.isPseudonymized(),
 				isEditAllowed(),
-				EditPermissionType.DOCUMENTS_ONLY.equals(contactEditAllowed));
+				isDocumentDeleteAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 

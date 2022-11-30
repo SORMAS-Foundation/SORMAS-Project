@@ -202,7 +202,7 @@ public class EventParticipantsController {
 			});
 	}
 
-	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
+	public CommitDiscardWrapperComponent<EventParticipantEditForm> getEventParticipantDataEditComponent(String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getAutomaticDeletionInfo(eventParticipantUuid);

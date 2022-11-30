@@ -98,10 +98,6 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, PERSON_LOC);
 
-		if (FacadeProvider.getPersonFacade().isSharedWithoutOwnership(getReference().getUuid())) {
-			editComponent.setEnabled(false);
-		}
-
 		UserProvider currentUser = UserProvider.getCurrent();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
@@ -180,7 +176,9 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	@Override
 	protected void setSubComponent(DirtyStateComponent newComponent) {
 		super.setSubComponent(newComponent);
-		if (getReference() != null && !FacadeProvider.getPersonFacade().isPersonAssociatedWithNotDeletedEntities(getReference().getUuid())) {
+		if (getReference() == null
+			|| !UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT)
+			|| !FacadeProvider.getPersonFacade().isEditAllowed(getReference().getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}

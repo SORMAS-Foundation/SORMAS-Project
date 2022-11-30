@@ -202,7 +202,8 @@ public class CaseDataView extends AbstractCaseView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 
-			boolean isDocumentDeleteAllowed = EditPermissionType.DOCUMENTS_ONLY.equals(caseEditAllowed);
+			boolean isDocumentDeleteAllowed =
+				EditPermissionType.ALLOWED.equals(caseEditAllowed) || EditPermissionType.DOCUMENTS_ONLY.equals(caseEditAllowed);
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.CASE,
 				getCaseRef(),

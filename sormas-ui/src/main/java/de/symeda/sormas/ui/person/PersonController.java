@@ -274,16 +274,15 @@ public class PersonController {
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
 		PersonContext personContext,
-		String personUuid,
+		PersonDto person,
 		Disease disease,
 		String diseaseDetails,
 		UserRight editUserRight,
 		final ViewMode viewMode) {
-		PersonDto personDto = personFacade.getByUuid(personUuid);
 
 		PersonEditForm editForm =
-			new PersonEditForm(personContext, disease, diseaseDetails, viewMode, personDto.isPseudonymized(), personDto.isInJurisdiction());
-		editForm.setValue(personDto);
+			new PersonEditForm(personContext, disease, diseaseDetails, viewMode, person.isPseudonymized(), person.isInJurisdiction());
+		editForm.setValue(person);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView =
 			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
@@ -300,23 +299,22 @@ public class PersonController {
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
 		PersonContext personContext,
-		String personUuid,
+		PersonDto person,
 		Disease disease,
 		String diseaseDetails,
 		UserRight editUserRight,
 		final ViewMode viewMode,
 		boolean isEditAllowed) {
-		PersonDto personDto = personFacade.getByUuid(personUuid);
 
 		PersonEditForm editForm = new PersonEditForm(
 			personContext,
 			disease,
 			diseaseDetails,
 			viewMode,
-			personDto.isPseudonymized(),
-			personDto.isInJurisdiction(),
+			person.isPseudonymized(),
+			person.isInJurisdiction(),
 			isEditAllowed && UserProvider.getCurrent().hasUserRight(editUserRight));
-		editForm.setValue(personDto);
+		editForm.setValue(person);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
 
