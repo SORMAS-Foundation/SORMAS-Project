@@ -43,7 +43,7 @@ public class EditCasePage {
   public static final By CASE_TAB = By.cssSelector("div#tab-cases-data");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
   public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
-  public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
+  public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit0']");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
   public static final By EDIT_SAMPLE_BUTTON =
@@ -384,7 +384,7 @@ public class EditCasePage {
   }
 
   public static By getEditTaskButtonByNumber(Integer number) {
-    return By.cssSelector(String.format("#edit-task-%x", number));
+    return By.cssSelector(String.format("#edit%x", number));
   }
 
   public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
