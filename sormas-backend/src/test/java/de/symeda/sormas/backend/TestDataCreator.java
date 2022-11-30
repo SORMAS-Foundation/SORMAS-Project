@@ -108,6 +108,9 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -140,6 +143,8 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
 
@@ -989,8 +994,13 @@ public class TestDataCreator {
 		return createVisit(disease, person, visitDateTime, visitStatus, visitOrigin, null);
 	}
 
-	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus,
-		VisitOrigin visitOrigin, Consumer<VisitDto> customConfig) {
+	public VisitDto createVisit(
+		Disease disease,
+		PersonReferenceDto person,
+		Date visitDateTime,
+		VisitStatus visitStatus,
+		VisitOrigin visitOrigin,
+		Consumer<VisitDto> customConfig) {
 
 		VisitDto visit = VisitDto.build(person, disease, visitOrigin);
 		visit.setVisitDateTime(visitDateTime);
@@ -2053,6 +2063,50 @@ public class TestDataCreator {
 			values.add(valueSupplier.apply(i));
 		}
 		return values;
+	}
+
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(
+		String serverId,
+		boolean ownershipHandedOver,
+		Consumer<SormasToSormasOriginInfoDto> extraConfig) {
+		SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setSenderName("Test Name");
+		originInfo.setSenderEmail("test@email.com");
+		originInfo.setOrganizationId(serverId);
+		originInfo.setOwnershipHandedOver(ownershipHandedOver);
+
+		if (extraConfig != null) {
+			extraConfig.accept(originInfo);
+		}
+
+		return beanTest.getSormasToSormasOriginInfoFacade().saveOriginInfo(originInfo);
+	}
+
+	public ShareRequestInfo createShareRequestInfo(
+		ShareRequestDataType dataType,
+		User sender,
+		String serverId,
+		boolean ownershipHandedOver,
+		ShareRequestStatus status,
+		Consumer<SormasToSormasShareInfo> setTarget) {
+
+		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
+		shareInfo.setOwnershipHandedOver(ownershipHandedOver);
+		shareInfo.setOrganizationId(serverId);
+		setTarget.accept(shareInfo);
+
+		ShareRequestInfo requestInfo = new ShareRequestInfo();
+		requestInfo.setUuid(DataHelper.createUuid());
+		requestInfo.setDataType(dataType);
+		requestInfo.setSender(sender);
+		requestInfo.setRequestStatus(status);
+		requestInfo.setShares(new ArrayList<>());
+		requestInfo.getShares().add(shareInfo);
+
+		beanTest.getShareRequestInfoService().persist(requestInfo);
+
+		return requestInfo;
 	}
 
 	/**

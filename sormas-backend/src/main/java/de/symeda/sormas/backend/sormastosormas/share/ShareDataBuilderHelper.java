@@ -76,7 +76,6 @@ public class ShareDataBuilderHelper {
 		PersonDto personDto = personFacade.toPseudonymizedDto(person, pseudonymizer, true);
 
 		pseudonymizePerson(personDto, requestInfo);
-
 		clearIgnoredProperties(personDto);
 
 		return personDto;

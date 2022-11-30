@@ -61,6 +61,8 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -74,6 +76,7 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.user.User;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
@@ -914,7 +917,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergePersonsAndRemoveDuplication(){
+	public void testMergePersonsAndRemoveDuplication() {
 
 		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
 		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
@@ -1146,13 +1149,13 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPersonAssociatedWithNullId() {
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(null);
+		boolean isAssociated = getPersonFacade().isEditAllowed(null);
 		assertFalse(isAssociated);
 	}
 
 	@Test
 	public void testPersonAssociatedWithUnexistingId() {
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(DataHelper.createUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(DataHelper.createUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1169,11 +1172,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getCaseFacade().delete(caseDataDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1183,11 +1186,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		ContactDto contactDto = creator.createContact(rdcf, userDto.toReference(), personDto.toReference());
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getContactFacade().delete(contactDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1197,11 +1200,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		TravelEntryDto travelEntryDto = creator.createTravelEntry(personDto.toReference(), userDto.toReference(), rdcf, null);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getTravelEntryFacade().delete(travelEntryDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1212,11 +1215,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto eventDto = creator.createEvent(userDto.toReference());
 		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, userDto.toReference());
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getEventParticipantFacade().delete(eventParticipantDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1226,11 +1229,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		ImmunizationDto immunizationDto = creator.createImmunization(Disease.CORONAVIRUS, personDto.toReference(), userDto.toReference(), rdcf);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getImmunizationFacade().delete(immunizationDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1340,5 +1343,439 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		personCriteria.setNameAddressPhoneEmailLike("detail2");
 		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
 		assertEquals(0, personIndexDtos.size());
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToCase() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person case not yet shared
+		person = creator.createPerson();
+		creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming case without ownership
+		person = creator.createPerson();
+		creator.createCase(userDto.toReference(), person.toReference(), rdcf, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming case with ownership
+		person = creator.createPerson();
+		creator.createCase(userDto.toReference(), person.toReference(), rdcf, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		}));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared without ownership
+		person = creator.createPerson();
+		CaseDataDto sharedCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(sharedCase.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared with ownership
+		person = creator.createPerson();
+		CaseDataDto handedOverCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(handedOverCase.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared with ownership but pending
+		person = creator.createPerson();
+		CaseDataDto pendingShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.PENDING,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(pendingShareCase.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared with ownership but rejected
+		person = creator.createPerson();
+		CaseDataDto rejectedShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.REJECTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(rejectedShareCase.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared with ownership but revoked
+		person = creator.createPerson();
+		CaseDataDto revokedShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.REVOKED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(revokedShareCase.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToContact() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of contact not yet shared
+		PersonDto person = creator.createPerson();
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming contact without ownership
+		person = creator.createPerson();
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming contact with ownership
+		person = creator.createPerson();
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		}));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of contact shared without ownership
+		person = creator.createPerson();
+		ContactDto sharedContact = creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setContact(getContactService().getByReferenceDto(sharedContact.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of contact shared with ownership
+		person = creator.createPerson();
+		ContactDto handedOverContact = creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setContact(getContactService().getByReferenceDto(handedOverContact.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToEventParticipant() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of event participant not yet shared
+		PersonDto person = creator.createPerson();
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming event participant without ownership
+		person = creator.createPerson();
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), e -> {
+			e.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}, rdcf);
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming event participant with ownership
+		person = creator.createPerson();
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), e -> {
+			e.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		}, rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of event participant shared without ownership
+		person = creator.createPerson();
+		EventParticipantDto sharedEventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setEventParticipant(getEventParticipantService().getByReferenceDto(sharedEventParticipant.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of event participant shared with ownership
+		person = creator.createPerson();
+		EventParticipantDto handedOverEventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+		creator.createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setEventParticipant(getEventParticipantService().getByReferenceDto(handedOverEventParticipant.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToImmunization() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of immunization not yet shared
+		PersonDto person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming immunization without ownership
+		person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		});
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming immunization with ownership
+		person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		});
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of immunization shared without ownership
+		person = creator.createPerson();
+		ImmunizationDto sharedImmuniztion = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setImmunization(getImmunizationService().getByReferenceDto(sharedImmuniztion.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of immunization shared with ownership
+		person = creator.createPerson();
+		ImmunizationDto handedOverImmunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);;
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setImmunization(getImmunizationService().getByReferenceDto(handedOverImmunization.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIseEditAllowedLinkedToTravelEntry() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		PersonDto person = creator.createPerson();
+
+		// person of owned travel entry
+		creator.createTravelEntry(person.toReference(), userDto.toReference(), rdcf, null);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming readonly contact and owned travel entry
+		person = creator.createPerson();
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}));
+		creator.createTravelEntry(person.toReference(), userDto.toReference(), rdcf, null);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToMultipleObjects() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of incoming readonly case and owned contact
+		PersonDto person = creator.createPerson();
+		creator.createCase(
+			userDto.toReference(),
+			person.toReference(),
+			rdcf,
+			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of handed over case and owned contact
+		person = creator.createPerson();
+		CaseDataDto handedOverCase2 = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(handedOverCase2.toReference())));
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming readonly case and handed over contact
+		person = creator.createPerson();
+		creator.createCase(
+			userDto.toReference(),
+			person.toReference(),
+			rdcf,
+			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+		ContactDto handedOverContact = creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setContact(getContactService().getByReferenceDto(handedOverContact.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of readonly case, contact and owned event participant
+		person = creator.createPerson();
+		creator.createCase(
+			userDto.toReference(),
+			person.toReference(),
+			rdcf,
+			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}));
+
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToSharedAndDeletedObject() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
+
+		// share case with ownership
+		// then delete it
+		// ==> the person should not be editable
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
+
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails());
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// with deleted case but active contact should be editable
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails());
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToNotOwnedCaseAndDeletedAssociatedObject() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case but owned contact should allow person edit
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case and deleted contact should not allow person edit
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case but owned event participant should allow person edit
+		EventParticipantDto eventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case and deleted event participant should not allow person edit
+		getEventParticipantFacade().delete(eventParticipant.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case but owned immunization should allow person edit
+		ImmunizationDto immunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case and deleted immunization should not allow person edit
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 	}
 }

@@ -36,7 +36,9 @@
     <!-- Don't log KeycloakService warnings and info as it doesn't provide much information for tests -->
     <logger name="de.symeda.sormas.backend.user.KeycloakService" level="ERROR" />
 
+	<!-- Suppress noisy logging on more detailed level -->
     <logger name="net.sf.ehcache" level="WARN" />
+    <!-- Suppress "No configuration found" -->
     <logger name="net.sf.ehcache.config.ConfigurationFactory" level="ERROR" />
 
     <root level="error">

@@ -26,11 +26,13 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
@@ -167,14 +169,17 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		configs.add(
 			TabConfig.of(
 				Captions.CaseData_person,
-				() -> ControllerProvider.getPersonController()
-					.getPersonEditComponent(
-						PersonContext.CASE,
-						caze.getPerson().getUuid(),
-						caze.getDisease(),
-						caze.getDiseaseDetails(),
-						UserRight.CASE_EDIT,
-						viewMode)));
+				() -> {
+					PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
+					return ControllerProvider.getPersonController()
+						.getPersonEditComponent(
+							PersonContext.CASE,
+							person,
+							caze.getDisease(),
+							caze.getDiseaseDetails(),
+							UserRight.PERSON_EDIT,
+							viewMode);
+				}));
 		configs.add(
 			TabConfig.of(
 				Captions.CaseData_hospitalization,

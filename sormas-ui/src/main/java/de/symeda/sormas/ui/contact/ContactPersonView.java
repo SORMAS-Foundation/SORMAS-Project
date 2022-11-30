@@ -33,6 +33,8 @@ public class ContactPersonView extends AbstractContactView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
 
+	private PersonDto person;
+
 	public ContactPersonView() {
 		super(VIEW_NAME);
 	}
@@ -40,14 +42,15 @@ public class ContactPersonView extends AbstractContactView {
 	@Override
 	protected void initView(String params) {
 
-		ContactDto dto = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+		ContactDto caze = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+		person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
 
 		CommitDiscardWrapperComponent<PersonEditForm> contactPersonComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
 				PersonContext.CONTACT,
-				dto.getPerson().getUuid(),
-				dto.getDisease(),
-				dto.getDiseaseDetails(),
+				person,
+				caze.getDisease(),
+				caze.getDiseaseDetails(),
 				UserRight.CONTACT_EDIT,
 				null,
 				isEditAllowed());
@@ -55,8 +58,13 @@ public class ContactPersonView extends AbstractContactView {
 
 		setEditPermission(
 			contactPersonComponent,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
+			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
 			PersonDto.ADDRESSES,
 			PersonDto.PERSON_CONTACT_DETAILS);
+	}
+
+	@Override
+	protected boolean isEditAllowed() {
+		return FacadeProvider.getPersonFacade().isEditAllowed(person.getUuid());
 	}
 }

@@ -843,7 +843,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caseRoot.get(Case.QUARANTINE_CHANGE_COMMENT),
 				exportOutbreakInfo ? cb.selectCase().when(cb.exists(outbreakSq(caseQueryContext)), cb.literal(I18nProperties.getString(Strings.yes)))
 						.otherwise(cb.literal(I18nProperties.getString(Strings.no))) : cb.nullLiteral(String.class),
-				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)));
+				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)),
+				caseRoot.get(Case.INVESTIGATED_DATE),
+				caseRoot.get(Case.OUTCOME_DATE));
 		//@formatter:on
 
 		cq.distinct(true);
@@ -4170,8 +4172,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
-		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return service.getByExternalId(externalId).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getByExternalId(externalId));
 	}
 
 	@Override

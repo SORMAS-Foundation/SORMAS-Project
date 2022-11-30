@@ -168,7 +168,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
@@ -1080,12 +1079,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public boolean isSharedWithoutOwnership(String uuid) {
-		SormasToSormasOriginInfo originInfo = sormasToSormasOriginInfoService.getByPerson(uuid);
-		return originInfo != null && !originInfo.isOwnershipHandedOver();
-	}
-
-	@Override
 	public boolean isShared(String uuid) {
 		return sormasToSormasOriginInfoService.getByPerson(uuid) != null;
 	}
@@ -1854,11 +1847,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public boolean isPersonAssociatedWithNotDeletedEntities(String uuid) {
-		return service.isPersonAssociatedWithNotDeletedEntities(uuid);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
 	public void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target) {
 		LocationDto sourceAddress = getByUuid(source.getUuid()).getAddress();
@@ -1901,6 +1889,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		Person person = em.createQuery(cq).getSingleResult();
 
 		return toPseudonymizedDto(person);
+	}
+
+	@Override
+	public boolean isEditAllowed(String uuid) {
+		return service.isEditAllowed(uuid);
 	}
 
 	@LocalBean

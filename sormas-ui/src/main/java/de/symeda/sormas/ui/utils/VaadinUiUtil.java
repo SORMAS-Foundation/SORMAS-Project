@@ -518,7 +518,7 @@ public final class VaadinUiUtil {
 		deleteLayout.setSizeUndefined();
 		deleteLayout.setSpacing(true);
 
-		Label description = new Label(content);
+		Label description = new Label(content, ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		deleteLayout.addComponent(description);
 
