@@ -858,9 +858,10 @@ public interface Strings {
 	String infoObserverMissingEmail = "infoObserverMissingEmail";
 	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
+	String infoPersonMergeConfirmationBothShared = "infoPersonMergeConfirmationBothShared";
 	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
 	String infoPersonMergeDescription = "infoPersonMergeDescription";
-	String infoPersonMergeErrorWhenShared = "infoPersonMergeErrorWhenShared";
+	String infoPersonMergeSharedMustLead = "infoPersonMergeSharedMustLead";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";

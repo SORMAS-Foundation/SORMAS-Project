@@ -74,7 +74,7 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	long setMissingGeoCoordinates(boolean overwriteExistingCoordinates);
 
-	boolean isShared(String uuid);
+	boolean isSharedOrReceived(String uuid);
 
 	List<PersonDto> getByExternalIds(List<String> externalIds);
 
