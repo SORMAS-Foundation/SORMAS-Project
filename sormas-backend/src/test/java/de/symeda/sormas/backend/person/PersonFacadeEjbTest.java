@@ -1380,27 +1380,13 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		//person of case shared without ownership
 		person = creator.createPerson();
-		CaseDataDto sharedCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
-		creator.createShareRequestInfo(
-			ShareRequestDataType.CASE,
-			user,
-			"target_id",
-			false,
-			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setCaze(getCaseService().getByReferenceDto(sharedCase.toReference())));
+		creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, false);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		//person of case shared with ownership
 		person = creator.createPerson();
-		CaseDataDto handedOverCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
-		creator.createShareRequestInfo(
-			ShareRequestDataType.CASE,
-			user,
-			"target_id",
-			true,
-			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setCaze(getCaseService().getByReferenceDto(handedOverCase.toReference())));
+		CaseDataDto handedOverCase = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
@@ -1474,27 +1460,13 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		//person of contact shared without ownership
 		person = creator.createPerson();
-		ContactDto sharedContact = creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
-		creator.createShareRequestInfo(
-			ShareRequestDataType.CONTACT,
-			user,
-			"target_id",
-			false,
-			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setContact(getContactService().getByReferenceDto(sharedContact.toReference())));
+		creator.createSharedContact(userDto.toReference(), person.toReference(), false);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		//person of contact shared with ownership
 		person = creator.createPerson();
-		ContactDto handedOverContact = creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
-		creator.createShareRequestInfo(
-			ShareRequestDataType.CONTACT,
-			user,
-			"target_id",
-			true,
-			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setContact(getContactService().getByReferenceDto(handedOverContact.toReference())));
+		ContactDto handedOverContact = creator.createSharedContact(userDto.toReference(), person.toReference(), true);
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 	}
@@ -1643,58 +1615,31 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// person of incoming readonly case and owned contact
 		PersonDto person = creator.createPerson();
-		creator.createCase(
-			userDto.toReference(),
-			person.toReference(),
-			rdcf,
-			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
 		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of handed over case and owned contact
 		person = creator.createPerson();
-		CaseDataDto handedOverCase2 = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
-		creator.createShareRequestInfo(
-			ShareRequestDataType.CASE,
-			user,
-			"target_id",
-			true,
-			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setCaze(getCaseService().getByReferenceDto(handedOverCase2.toReference())));
+		CaseDataDto handedOverCase2 = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+
 		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of incoming readonly case and handed over contact
 		person = creator.createPerson();
-		creator.createCase(
-			userDto.toReference(),
-			person.toReference(),
-			rdcf,
-			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
-		ContactDto handedOverContact = creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
-		creator.createShareRequestInfo(
-			ShareRequestDataType.CONTACT,
-			user,
-			"target_id",
-			true,
-			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setContact(getContactService().getByReferenceDto(handedOverContact.toReference())));
+		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
 
+		creator.createSharedContact(userDto.toReference(), person.toReference(), true);
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of readonly case, contact and owned event participant
 		person = creator.createPerson();
-		creator.createCase(
-			userDto.toReference(),
-			person.toReference(),
-			rdcf,
-			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
 
-		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
-			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
-		}));
+		creator.createReceivedContact(userDto.toReference(), person.toReference(), false);
 
 		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
 
@@ -1708,19 +1653,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		User user = getUserService().getByUuid(userDto.getUuid());
 
 		PersonDto person = creator.createPerson();
-		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
 
 		// share case with ownership
 		// then delete it
 		// ==> the person should not be editable
-		creator.createShareRequestInfo(
-			ShareRequestDataType.CASE,
-			user,
-			"target_id",
-			false,
-			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
-
+		CaseDataDto caze = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails());
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
@@ -1741,15 +1678,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		User user = getUserService().getByUuid(userDto.getUuid());
 
 		PersonDto person = creator.createPerson();
-		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
-
-		creator.createShareRequestInfo(
-			ShareRequestDataType.CASE,
-			user,
-			"target_id",
-			true,
-			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
+		creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
@@ -1803,11 +1732,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// received case
 		person = creator.createPerson();
-		creator.createCase(
-			userDto.toReference(),
-			person.toReference(),
-			rdcf,
-			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 
@@ -1829,11 +1754,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// received contact
 		person = creator.createPerson();
-		creator.createContact(
-			user.toReference(),
-			person.toReference(),
-			Disease.CORONAVIRUS,
-			(c) -> c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null)));
+		creator.createReceivedContact(user.toReference(), person.toReference(), false);
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 
@@ -1856,9 +1777,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// received event participant
 		person = creator.createPerson();
-		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), e -> {
-			e.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
-		}, rdcf);
+		creator.createReceivedEventParticipant(person, userDto.toReference(), rdcf);
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 
@@ -1880,9 +1799,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// received immunization
 		person = creator.createPerson();
-		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
-			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
-		});
+		creator.createReceivedImmunization(person.toReference(), userDto.toReference(), rdcf);
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 
@@ -1898,7 +1815,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			"target_id",
 			false,
 			ShareRequestStatus.ACCEPTED,
-			(s) -> s.setContact(getContactService().getByReferenceDto(sharedContact.toReference())));
+			(s) -> s.setContact(getContactService().getByReferenceDto(contact.toReference())));
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 	}
