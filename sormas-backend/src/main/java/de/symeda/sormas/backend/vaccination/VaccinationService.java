@@ -49,7 +49,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -89,7 +89,7 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 	}
 
 	public List<Vaccination> getVaccinationsByCriteria(
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
