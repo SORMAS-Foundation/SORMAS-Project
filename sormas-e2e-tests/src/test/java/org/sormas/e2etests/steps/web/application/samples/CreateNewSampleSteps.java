@@ -92,6 +92,7 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_UUID;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_SAMPLE_WITH_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SGOT_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SGPT_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SPECIMEN_CONDITION_COMBOBOX;
@@ -272,7 +273,7 @@ public class CreateNewSampleSteps implements En {
           selectResultVerifiedByLabSupervisor(
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_WITH_PATHOGEN_TEST_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
