@@ -28,7 +28,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
-import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.api.vaccination.VaccinationIndexDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
@@ -38,9 +38,9 @@ public class VaccinationListEntry extends SideComponentField {
 	private static final long serialVersionUID = -8775209997959611902L;
 	public static final String SEPARATOR = ": ";
 
-	private final VaccinationListEntryDto vaccination;
+	private final VaccinationIndexDto vaccination;
 
-	public VaccinationListEntry(VaccinationListEntryDto vaccination, boolean showDisease) {
+	public VaccinationListEntry(VaccinationIndexDto vaccination, boolean showDisease) {
 		this.vaccination = vaccination;
 
 		buildLayout(showDisease);
@@ -98,7 +98,7 @@ public class VaccinationListEntry extends SideComponentField {
 		}
 	}
 
-	public VaccinationListEntryDto getVaccination() {
+	public VaccinationIndexDto getVaccination() {
 		return vaccination;
 	}
 

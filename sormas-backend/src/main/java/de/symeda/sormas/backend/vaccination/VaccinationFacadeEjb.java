@@ -60,7 +60,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
-import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationIndexDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
@@ -269,7 +270,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public List<VaccinationListEntryDto> getIndexPage(
+	public List<VaccinationIndexDto> getIndexPage(
 		VaccinationCriteria criteria,
 		Integer first,
 		Integer max,
@@ -278,8 +279,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return vaccinationsList.stream().map(v -> toVaccinationListEntryDto(v, true, "")).collect(Collectors.toList());
 	}
 
-	private VaccinationListEntryDto toVaccinationListEntryDto(Vaccination vaccination, boolean relevant, String message) {
-		VaccinationListEntryDto dto = new VaccinationListEntryDto(vaccination.getUuid());
+	private VaccinationIndexDto toVaccinationListEntryDto(Vaccination vaccination, boolean relevant, String message) {
+		VaccinationIndexDto dto = new VaccinationIndexDto(vaccination.getUuid());
 		dto.setDisease(vaccination.getImmunization().getDisease());
 		dto.setVaccinationDate(vaccination.getVaccinationDate());
 		dto.setVaccineName(vaccination.getVaccineName());
@@ -318,7 +319,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+	public List<VaccinationIndexDto> getEntriesListWithRelevance(
 		CaseReferenceDto caseReferenceDto,
 		VaccinationCriteria criteria,
 		Integer first,
@@ -339,7 +340,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+	public List<VaccinationIndexDto> getEntriesListWithRelevance(
 		ContactReferenceDto contactReferenceDto,
 		VaccinationCriteria criteria,
 		Integer first,
@@ -360,7 +361,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+	public List<VaccinationIndexDto> getEntriesListWithRelevance(
 		EventParticipantReferenceDto eventParticipantReferenceDto,
 		VaccinationCriteria criteria,
 		Integer first,
