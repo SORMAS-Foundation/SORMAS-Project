@@ -51,7 +51,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
-import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.api.vaccination.VaccinationIndexDto;
 import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 
@@ -64,7 +64,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	private ComboBox<SampleIndexDto> sampleSelector;
 	private ComboBox<PathogenTestDto> pathogenTestSelector;
-	private ComboBox<VaccinationListEntryDto> vaccinationSelector;
+	private ComboBox<VaccinationIndexDto> vaccinationSelector;
 	private DocumentListComponent documentListComponent;
 
 	public QuarantineOrderLayout(
@@ -131,7 +131,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	protected void createVaccinationSelector(VaccinationCriteria vaccinationCriteria) {
-		List<VaccinationListEntryDto> vaccinations = FacadeProvider.getVaccinationFacade()
+		List<VaccinationIndexDto> vaccinations = FacadeProvider.getVaccinationFacade()
 			.getIndexPage(vaccinationCriteria, 0, 20, Collections.singletonList(new SortProperty("vaccinationDate", false)));
 
 		vaccinationSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Vaccination));

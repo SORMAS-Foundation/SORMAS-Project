@@ -25,7 +25,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Cloneable {
+public class VaccinationIndexDto extends PseudonymizableIndexDto implements Cloneable {
 
 	private static final long serialVersionUID = 5665903874736291912L;
 
@@ -36,7 +36,7 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 	private boolean isRelevant;
 	private String nonRelevantMessage;
 
-	public VaccinationListEntryDto(String uuid) {
+	public VaccinationIndexDto(String uuid) {
 		super(uuid);
 	}
 

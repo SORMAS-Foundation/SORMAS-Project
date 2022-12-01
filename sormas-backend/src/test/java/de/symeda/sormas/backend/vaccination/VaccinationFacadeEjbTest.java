@@ -40,7 +40,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
-import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.api.vaccination.VaccinationIndexDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -249,7 +249,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		VaccinationDto vaccination211 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
 		VaccinationDto vaccination212 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
 
-		List<VaccinationListEntryDto> vaccinations = getVaccinationFacade()
+		List<VaccinationIndexDto> vaccinations = getVaccinationFacade()
 			.getIndexPage(new VaccinationCriteria.Builder(person1.toReference()).withDisease(disease1).build(), null, null, null);
 		assertThat(vaccinations, hasSize(3));
 		assertThat(

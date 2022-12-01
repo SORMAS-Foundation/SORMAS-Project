@@ -27,24 +27,24 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.api.vaccination.VaccinationIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
-public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
+public class VaccinationList extends PaginationList<VaccinationIndexDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
 	private Disease disease;
-	private final Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier;
+	private final Function<Integer, List<VaccinationIndexDto>> vaccinationListSupplier;
 	private final Consumer<Runnable> actionCallback;
 	private final boolean isEditAllowed;
 
 	public VaccinationList(
 		Disease disease,
-		Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier,
+		Function<Integer, List<VaccinationIndexDto>> vaccinationListSupplier,
 		Consumer<Runnable> actionCallback,
 		boolean isEditAllowed) {
 		super(MAX_DISPLAYED_ENTRIES);
@@ -56,7 +56,7 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	@Override
 	public void reload() {
-		List<VaccinationListEntryDto> list = vaccinationListSupplier.apply(maxDisplayedEntries * 20);
+		List<VaccinationIndexDto> list = vaccinationListSupplier.apply(maxDisplayedEntries * 20);
 		setEntries(list);
 		if (!list.isEmpty()) {
 			showPage(1);
@@ -72,10 +72,10 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 	@Override
 	protected void drawDisplayedEntries() {
 		boolean isEditableAndHasEditRight = isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT);
-		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
+		for (VaccinationIndexDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
 			listEntry.addActionButton(listEntry.getVaccination().getUuid(), e -> actionCallback.accept(() -> {
-				VaccinationListEntryDto vaccination = listEntry.getVaccination();
+				VaccinationIndexDto vaccination = listEntry.getVaccination();
 				ControllerProvider.getVaccinationController()
 					.edit(
 						FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),

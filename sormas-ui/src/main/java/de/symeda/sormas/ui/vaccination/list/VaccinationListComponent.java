@@ -27,7 +27,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
-import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.api.vaccination.VaccinationIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
@@ -59,7 +59,7 @@ public class VaccinationListComponent extends SideComponent {
 			}, UserRight.IMMUNIZATION_CREATE);
 		}
 
-		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier;
+		Function<Integer, List<VaccinationIndexDto>> entriesListSupplier;
 
 		VaccinationCriteria criteria = criteriaSupplier.get();
 
