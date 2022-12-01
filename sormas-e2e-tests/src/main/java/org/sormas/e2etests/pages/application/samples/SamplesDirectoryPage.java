@@ -65,5 +65,5 @@ public class SamplesDirectoryPage {
   public static final By EXPORT_SAMPLE_BUTTON = By.id("export");
   public static final By BASIC_EXPORT_SAMPLE_BUTTON = By.id("exportBasic");
   public static final By DETAILED_EXPORT_SAMPLE_BUTTON = By.id("exportDetailed");
-  public static final By CHANGE_PATHOGEN_TEST_RESULT_YES_BUTTON = By.id("actionConfirm");
+  public static final By POSITIVE_TEST_RESULT_CONFIRM_BUTTON = By.id("actionConfirm");
 }

@@ -159,7 +159,7 @@ Feature: Pathogen Functionalities
     And I click on edit Sample
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for IgM test type with positive verified test result
-    Then I confirm the Change pathogen test result information
+    Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
     Then I save a new case
     And I click on the Sample button from navbar

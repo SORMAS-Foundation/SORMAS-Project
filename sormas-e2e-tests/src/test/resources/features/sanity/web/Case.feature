@@ -1302,12 +1302,12 @@ Feature: Case end to end tests
     Then I navigate to the last created case via the url
     Then I click on New Sample
     Then I create a new Sample with positive test result with Guinea Worm as disease
-    Then I confirm the Create case from contact with positive test result
+    And I save the created sample
     Then I navigate to the last created case via the url
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Dengue Fever as disease
-    Then I confirm the Create case from contact with positive test result
+    Then I confirm to create case for selected disease
     Then I navigate to the last created case via the url
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample

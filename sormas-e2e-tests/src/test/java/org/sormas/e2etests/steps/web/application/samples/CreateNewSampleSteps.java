@@ -110,12 +110,12 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.EDIT_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_COMBOBOX_DIV;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.TESTED_DISEASE_VARIANT;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CHANGE_PATHOGEN_TEST_RESULT_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CREATE_CASE_POSITIVE_TEST_RESULT_LABEL;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_ADDITIONAL_TEST_RESULTS_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_TEST_RESULTS_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.POSITIVE_TEST_RESULT_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_RECEIVED_CHECKBOX;
@@ -703,16 +703,16 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from contact with positive test result",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              POSITIVE_TEST_RESULT_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(POSITIVE_TEST_RESULT_CONFIRM_BUTTON);
         });
 
     When(
-        "I confirm the Change pathogen test result information",
+        "I confirm to create case for selected disease",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              CHANGE_PATHOGEN_TEST_RESULT_YES_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CHANGE_PATHOGEN_TEST_RESULT_YES_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
     When(
