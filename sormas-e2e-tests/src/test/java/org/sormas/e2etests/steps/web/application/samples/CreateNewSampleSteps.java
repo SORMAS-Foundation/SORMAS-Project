@@ -110,7 +110,6 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.EDIT_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_COMBOBOX_DIV;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.TESTED_DISEASE_VARIANT;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CREATE_CASE_POSITIVE_TEST_RESULT_LABEL;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_ADDITIONAL_TEST_RESULTS_BUTTON;
@@ -703,16 +702,15 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from contact with positive test result",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              CONFIRM_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
     When(
         "I confirm to create case for selected disease",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
     When(
