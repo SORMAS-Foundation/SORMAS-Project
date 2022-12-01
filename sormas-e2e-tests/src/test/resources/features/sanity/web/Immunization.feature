@@ -362,7 +362,7 @@ Feature: Immunization end to end tests
     And I check that vaccination entry is greyed out in the vaccination card
     And I check if Vaccination Status is set to "" on Edit Case page
 
-  @tmsLink=SORQA-668 @env_main @oldfake
+  @tmsLink=SORQA-668 @env_de @oldfake
     Scenario: Check automatic deletion of IMMUNIZATION created 3651 days ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -371,13 +371,9 @@ Feature: Immunization end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
-    Then I navigate to last created immunization by API via URL
     And I click on the Configuration button from navbar
     Then I navigate to Developer tab in Configuration
     Then I click on Execute Automatic Deletion button
     And I wait 30 seconds for system reaction
     Then I check if created immunization is available in API
     And API: I check that GET call status code is 204
-    Then I click on the Immunizations button from navbar
-    And I filter by last created immunization via API
-    Then I check that number of displayed Immunizations results is 0
