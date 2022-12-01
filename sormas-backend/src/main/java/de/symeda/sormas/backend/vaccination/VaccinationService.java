@@ -48,8 +48,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -126,7 +126,7 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 		}
 	}
 
-	protected Predicate buildCriteriaFilter(VaccinationListCriteria criteria, CriteriaBuilder cb, Root<Vaccination> root) {
+	protected Predicate buildCriteriaFilter(VaccinationCriteria criteria, CriteriaBuilder cb, Root<Vaccination> root) {
 		final Join<Vaccination, Immunization> immunizationJoin = root.join(Vaccination.IMMUNIZATION, JoinType.LEFT);
 		final Join<Immunization, Person> personJoin = immunizationJoin.join(Immunization.PERSON, JoinType.LEFT);
 
