@@ -677,6 +677,9 @@ public class VaccinationFacadeEjb
 	@Stateless
 	public static class VaccinationFacadeEjbLocal extends VaccinationFacadeEjb {
 
+		public VaccinationFacadeEjbLocal() {
+		}
+
 		@Inject
 		protected VaccinationFacadeEjbLocal(VaccinationService service, UserService userService) {
 			super(service, userService);
