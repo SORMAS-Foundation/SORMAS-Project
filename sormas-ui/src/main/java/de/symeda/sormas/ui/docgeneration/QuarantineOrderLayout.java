@@ -132,7 +132,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	protected void createVaccinationSelector(VaccinationCriteria vaccinationCriteria) {
 		List<VaccinationListEntryDto> vaccinations = FacadeProvider.getVaccinationFacade()
-			.getEntriesList(vaccinationCriteria, 0, 20, Collections.singletonList(new SortProperty("vaccinationDate", false)));
+			.getIndexPage(vaccinationCriteria, 0, 20, Collections.singletonList(new SortProperty("vaccinationDate", false)));
 
 		vaccinationSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Vaccination));
 		vaccinationSelector.setWidth(100F, Unit.PERCENTAGE);

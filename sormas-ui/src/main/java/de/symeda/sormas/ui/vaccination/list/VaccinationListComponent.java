@@ -81,7 +81,7 @@ public class VaccinationListComponent extends SideComponent {
 				throw new IllegalArgumentException("Invalid vaccination association type: " + criteria.getVaccinationAssociationType());
 			}
 		} else {
-			entriesListSupplier = maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries, null);
+			entriesListSupplier = maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getIndexPage(criteria, 0, maxDisplayedEntries, null);
 		}
 
 		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier, actionCallback, isEditAllowed);
