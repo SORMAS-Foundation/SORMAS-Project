@@ -270,7 +270,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public List<VaccinationIndexDto> getIndexPage(
+	public List<VaccinationIndexDto> getIndexList(
 		VaccinationCriteria criteria,
 		Integer first,
 		Integer max,

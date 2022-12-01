@@ -250,7 +250,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		VaccinationDto vaccination212 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
 
 		List<VaccinationIndexDto> vaccinations = getVaccinationFacade()
-			.getIndexPage(new VaccinationCriteria.Builder(person1.toReference()).withDisease(disease1).build(), null, null, null);
+			.getIndexList(new VaccinationCriteria.Builder(person1.toReference()).withDisease(disease1).build(), null, null, null);
 		assertThat(vaccinations, hasSize(3));
 		assertThat(
 			vaccinations,
@@ -259,17 +259,17 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 				hasProperty(EntityDto.UUID, is(vaccination112.getUuid())),
 				hasProperty(EntityDto.UUID, is(vaccination121.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getIndexPage(new VaccinationCriteria.Builder(person1.toReference()).withDisease(disease2).build(), null, null, null);
+			.getIndexList(new VaccinationCriteria.Builder(person1.toReference()).withDisease(disease2).build(), null, null, null);
 		assertThat(vaccinations, hasSize(1));
 		assertThat(vaccinations, hasItem(hasProperty(EntityDto.UUID, is(vaccination131.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getIndexPage(new VaccinationCriteria.Builder(person2.toReference()).withDisease(disease1).build(), null, null, null);
+			.getIndexList(new VaccinationCriteria.Builder(person2.toReference()).withDisease(disease1).build(), null, null, null);
 		assertThat(vaccinations, hasSize(2));
 		assertThat(
 			vaccinations,
 			hasItems(hasProperty(EntityDto.UUID, is(vaccination211.getUuid())), hasProperty(EntityDto.UUID, is(vaccination212.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getIndexPage(new VaccinationCriteria.Builder(person2.toReference()).withDisease(disease2).build(), null, null, null);
+			.getIndexList(new VaccinationCriteria.Builder(person2.toReference()).withDisease(disease2).build(), null, null, null);
 		assertThat(vaccinations, hasSize(0));
 	}
 

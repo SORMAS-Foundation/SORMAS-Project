@@ -63,7 +63,7 @@ public interface VaccinationFacade {
 
 	List<VaccinationDto> getVaccinationsByCriteria(VaccinationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<VaccinationIndexDto> getIndexPage(VaccinationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<VaccinationIndexDto> getIndexList(VaccinationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto);
 
