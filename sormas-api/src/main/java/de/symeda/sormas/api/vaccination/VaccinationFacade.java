@@ -101,5 +101,5 @@ public interface VaccinationFacade {
 
 	boolean isVaccinationRelevant(CaseDataDto caze, VaccinationDto vaccination);
 
-	long count(VaccinationListCriteria criteria);
+	long count(VaccinationCriteria criteria);
 }
