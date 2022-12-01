@@ -100,4 +100,6 @@ public interface VaccinationFacade {
 	VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson);
 
 	boolean isVaccinationRelevant(CaseDataDto caze, VaccinationDto vaccination);
+
+	long count(VaccinationListCriteria criteria);
 }

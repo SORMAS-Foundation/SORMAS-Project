@@ -298,6 +298,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
+	public long count(VaccinationListCriteria criteria) {
+		return vaccinationService.count((cb, root) -> vaccinationService.buildCriteriaFilter(criteria, cb, root));
+	}
+
+	@Override
 	public List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto) {
 
 		Case caze = caseService.getByUuid(cazeDto.getUuid());
