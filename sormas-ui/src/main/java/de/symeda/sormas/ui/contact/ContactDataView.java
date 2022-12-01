@@ -44,7 +44,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
@@ -243,7 +243,7 @@ public class ContactDataView extends AbstractContactView {
 					if (refreshedContact.getCaze() != null) {
 						refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
 					}
-					return new VaccinationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease())
+					return new VaccinationCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease())
 						.build()
 						.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
 						.contactReference(getContactRef())

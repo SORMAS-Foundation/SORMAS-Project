@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
@@ -125,7 +126,7 @@ public class PersonController {
 				PersonController.this.mergePersons(personGrid, persons, popupWindow, false);
 			}
 		};
-		
+
 		final Button mergeButton = confirmationComponent.getConfirmButton();
 		mergeButton.setCaption(I18nProperties.getCaption(Captions.actionMerge));
 		mergeButton.setEnabled(false);
@@ -157,17 +158,33 @@ public class PersonController {
 
 	private void mergePersons(PersonGrid personGrid, List<PersonIndexDto> personIndexDtos, Window popupWindow, boolean mergeProperties) {
 
+		final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
+		final PersonIndexDto leadPerson = selectedItems.iterator().next();
+		final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
+
+		String confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmation);
+
+		if (FacadeProvider.getPersonFacade().isSharedOrReceived(otherPerson.getUuid())) {
+			if (FacadeProvider.getPersonFacade().isSharedOrReceived(leadPerson.getUuid())) {
+				confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmationBothShared);
+			} else {
+				new Notification(
+					I18nProperties.getString(Strings.headingMergePersonError),
+					I18nProperties.getString(Strings.infoPersonMergeSharedMustLead),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+				return;
+			}
+		}
+
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
-			new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmation)),
+			new Label(confirmationMessage, ContentMode.HTML),
 			I18nProperties.getCaption(Captions.actionConfirm),
 			I18nProperties.getCaption(Captions.actionDiscard),
 			800,
 			confirm -> {
 				if (Boolean.TRUE.equals(confirm)) {
-					final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
-					final PersonIndexDto leadPerson = selectedItems.iterator().next();
-					final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
 					FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties);
 					popupWindow.close();
 					SormasUI.refreshView();

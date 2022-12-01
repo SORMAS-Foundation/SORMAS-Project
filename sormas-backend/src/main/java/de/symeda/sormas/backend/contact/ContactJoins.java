@@ -37,6 +37,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -71,6 +72,7 @@ public class ContactJoins extends QueryJoins<Contact> {
 	private PersonJoins personJoins;
 	private SampleJoins sampleJoins;
 	private VisitJoins visitJoins;
+	private Join<Contact, SormasToSormasShareInfo> sormasToSormasShareInfo;
 
 	public ContactJoins(From<?, Contact> contact) {
 		super(contact);
@@ -326,5 +328,13 @@ public class ContactJoins extends QueryJoins<Contact> {
 
 	private void setVisitJoins(VisitJoins visitJoins) {
 		this.visitJoins = visitJoins;
+	}
+
+	public Join<Contact, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
+		return getOrCreate(sormasToSormasShareInfo, Contact.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
+	}
+
+	private void setSormasToSormasShareInfo(Join<Contact, SormasToSormasShareInfo> sormasToSormasShareInfo) {
+		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
 	}
 }
