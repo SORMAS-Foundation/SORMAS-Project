@@ -259,7 +259,7 @@ public class ContactImporter extends DataImporter {
 					FacadeProvider.getContactFacade().save(newContact, true, false);
 
 					for (VaccinationDto vaccination : vaccinations) {
-						FacadeProvider.getVaccinationFacade().createWithImmunization(vaccination, newContact.getRegion(), newContact.getDistrict(), newContact.getPerson(), newContact.getDisease());
+						FacadeProvider.getVaccinationFacade().saveWithImmunization(vaccination, newContact.getRegion(), newContact.getDistrict(), newContact.getPerson(), newContact.getDisease());
 					}
 
 					consumer.result = null;

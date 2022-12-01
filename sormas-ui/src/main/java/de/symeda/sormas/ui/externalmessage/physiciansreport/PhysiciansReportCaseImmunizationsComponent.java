@@ -134,7 +134,7 @@ public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWra
 
 		for (VaccinationDto vaccination : vaccinationsToCreate) {
 			FacadeProvider.getVaccinationFacade()
-				.createWithImmunization(vaccination, getRegion(), getDistrict(), caze.getPerson(), caze.getDisease());
+				.saveWithImmunization(vaccination, getRegion(), getDistrict(), caze.getPerson(), caze.getDisease());
 		}
 
 		for (Map.Entry<VaccinationDto, DeletionDetails> deleteEntry : vaccinationsToDelete.entrySet()) {

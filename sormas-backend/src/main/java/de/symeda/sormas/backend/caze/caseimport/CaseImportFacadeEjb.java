@@ -230,7 +230,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			}
 
 			for (VaccinationDto vaccination : vaccinations) {
-				vaccinationFacade.createWithImmunization(
+				vaccinationFacade.saveWithImmunization(
 					vaccination,
 					caze.getResponsibleRegion(),
 					caze.getResponsibleDistrict(),

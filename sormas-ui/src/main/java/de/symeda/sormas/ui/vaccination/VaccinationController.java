@@ -105,7 +105,7 @@ public class VaccinationController {
 				if (doSave && immunization != null) {
 					FacadeProvider.getVaccinationFacade().save(form.getValue());
 				} else if (doSave) {
-					FacadeProvider.getVaccinationFacade().createWithImmunization(form.getValue(), region, district, person, disease);
+					FacadeProvider.getVaccinationFacade().saveWithImmunization(form.getValue(), region, district, person, disease);
 				}
 
 				if (commitCallback != null) {

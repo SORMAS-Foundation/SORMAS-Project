@@ -247,7 +247,7 @@ public class EventParticipantImporter extends DataImporter {
 
 					for (VaccinationDto vaccination : vaccinations) {
 						FacadeProvider.getVaccinationFacade()
-							.createWithImmunization(
+							.saveWithImmunization(
 								vaccination,
 								newEventParticipant.getRegion(),
 								newEventParticipant.getDistrict(),
