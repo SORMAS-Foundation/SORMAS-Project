@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -29,6 +30,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.user.User;
@@ -66,6 +68,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String REPORT_ID = "reportId";
 	public static final String ASSIGNEE = "assignee";
 	public static final String CAZE = "caze";
+	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
 
 	private ExternalMessageType type;
 	private Disease disease;
@@ -98,6 +101,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private List<SampleReport> sampleReports;
 	private Case caze;
+	private SurveillanceReport surveillanceReport;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -324,6 +328,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setCaze(Case caze) {
 		this.caze = caze;
+	}
+
+	@OneToOne(fetch = FetchType.LAZY)
+	public SurveillanceReport getSurveillanceReport() {
+		return surveillanceReport;
+	}
+
+	public void setSurveillanceReport(SurveillanceReport surveillanceReport) {
+		this.surveillanceReport = surveillanceReport;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = SampleReport.LAB_MESSAGE, fetch = FetchType.LAZY)

@@ -91,9 +91,9 @@ public class ExternalMessageController {
 		relatedLabMessageHandler = new RelatedLabMessageHandler();
 	}
 
-	public void showExternalMessage(String labMessageUuid, boolean withActions, Runnable onFormActionPerformed) {
+	public void showExternalMessage(String MessageUuid, boolean withActions, Runnable onFormActionPerformed) {
 
-		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
+		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(MessageUuid);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -143,11 +143,13 @@ public class ExternalMessageController {
 					showCorrectionsSavedPopup();
 				} else if (status == ProcessingResultStatus.DONE) {
 
-					CaseReferenceDto caseReference = result.getData().getRelatedSampleReportsWithSamples().values().stream().findFirst().get().getAssociatedCase();
+					CaseReferenceDto caseReference =
+						result.getData().getRelatedSampleReportsWithSamples().values().stream().findFirst().get().getAssociatedCase();
+					SurveillanceReportDto surveillanceReport = null;
 					if (caseReference != null) {
-						createSurveillanceReport(labMessage, caseReference);
+						surveillanceReport = createSurveillanceReport(labMessage, caseReference);
 					}
-					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples());
+					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples(), surveillanceReport);
 					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 				}
 
@@ -175,8 +177,8 @@ public class ExternalMessageController {
 
 			if (status == ProcessingResultStatus.DONE) {
 				CaseReferenceDto caseReferenceDto = result.getData().toReference();
-				createSurveillanceReport(labMessage, caseReferenceDto);
-				markExternalMessageAsProcessed(labMessage, caseReferenceDto);
+				SurveillanceReportDto surveillanceReport = createSurveillanceReport(labMessage, caseReferenceDto);
+				markExternalMessageAsProcessed(labMessage, surveillanceReport);
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}
 
@@ -184,27 +186,32 @@ public class ExternalMessageController {
 		});
 	}
 
-	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, Map<SampleReportDto, SampleDto> relatedSampleReports) {
+	public void markExternalMessageAsProcessed(
+		ExternalMessageDto externalMessage,
+		Map<SampleReportDto, SampleDto> relatedSampleReports,
+		SurveillanceReportDto surveillanceReport) {
 
 		for (Map.Entry<SampleReportDto, SampleDto> entry : relatedSampleReports.entrySet()) {
 			entry.getKey().setSample(entry.getValue().toReference());
 		}
+		externalMessage.setSurveillanceReport(surveillanceReport.toReference());
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}
 
-	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
-		externalMessage.setCaze(caze);
+	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, SurveillanceReportDto surveillanceReport) {
+		externalMessage.setSurveillanceReport(surveillanceReport.toReference());
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}
 
-	protected void createSurveillanceReport(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
+	protected SurveillanceReportDto createSurveillanceReport(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
 		SurveillanceReportDto surveillanceReport = SurveillanceReportDto.build(caze, FacadeProvider.getUserFacade().getCurrentUserAsReference());
 		setSurvReportFacility(surveillanceReport, externalMessage, caze);
 		surveillanceReport.setReportDate(externalMessage.getMessageDateTime());
 		setSurvReportingType(surveillanceReport, externalMessage);
 		FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
+		return surveillanceReport;
 	}
 
 	private void setSurvReportFacility(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseReferenceDto caze) {
@@ -213,6 +220,9 @@ public class ExternalMessageController {
 		if (reporterReference != null) {
 			reporter = FacadeProvider.getFacilityFacade().getByUuid(reporterReference.getUuid());
 			surveillanceReport.setFacility(reporterReference);
+			if (FacilityDto.OTHER_FACILITY_UUID.equals(reporter.getUuid())) {
+				surveillanceReport.setFacilityDetails(I18nProperties.getCaption(Captions.unknown));
+			}
 			surveillanceReport.setFacilityDistrict(reporter.getDistrict());
 			surveillanceReport.setFacilityRegion(reporter.getRegion());
 			surveillanceReport.setFacilityType(reporter.getType());

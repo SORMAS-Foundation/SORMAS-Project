@@ -19,10 +19,12 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -81,6 +83,14 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		if (criteria.getCaze() != null) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.CAZE).get(Case.UUID), criteria.getCaze().getUuid()));
+		}
+		if (criteria.getSurveillanceReport() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					labMessage.get(ExternalMessage.SURVEILLANCE_REPORT).get(SurveillanceReport.UUID),
+					criteria.getSurveillanceReport().getUuid()));
 		}
 		if (criteria.getSearchFieldLike() != null) {
 			String[] textFilters = criteria.getSearchFieldLike().split("\\s+");
@@ -255,5 +265,20 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		cq.select(cb.countDistinct(labMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public ExternalMessage getForSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalMessage> cq = cb.createQuery(ExternalMessage.class);
+		Root<ExternalMessage> externalMessageRoot = cq.from(ExternalMessage.class);
+
+		ExternalMessageCriteria criteria = new ExternalMessageCriteria();
+		criteria.setSurveillanceReport(surveillanceReport);
+
+		Predicate filter = buildCriteriaFilter(cb, externalMessageRoot, criteria);
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultStream().findFirst().orElse(null);
 	}
 }

@@ -8,6 +8,7 @@ import javax.naming.NamingException;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -67,4 +68,5 @@ public interface ExternalMessageFacade {
 	// Also considers deleted lab messages
 	boolean existsForwardedExternalMessageWith(String reportId);
 
+	ExternalMessageDto getForSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport);
 }

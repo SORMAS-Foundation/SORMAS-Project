@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -61,6 +62,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
@@ -103,6 +105,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
 	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;
+	@EJB
+	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -154,6 +158,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		if (source.getCaze() != null) {
 			target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		}
+		target.setSurveillanceReport(surveillanceReportService.getByReferenceDto(source.getSurveillanceReport()));
 		return target;
 	}
 
@@ -231,6 +236,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 		if (source.getCaze() != null) {
 			target.setCaze(source.getCaze().toReference());
+		}
+		if (source.getSurveillanceReport() != null) {
+			target.setSurveillanceReport(source.getSurveillanceReport().toReference());
 		}
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());
@@ -516,6 +524,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public ExternalMessageDto getForSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport) {
+		return toDto(externalMessageService.getForSurveillanceReport(surveillanceReport));
 	}
 
 	public static ExternalMessageReferenceDto toReferenceDto(ExternalMessage entity) {

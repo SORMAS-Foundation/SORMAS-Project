@@ -34,11 +34,14 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
@@ -71,6 +74,8 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	private FacilityService facilityService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
 
 	public static SurveillanceReportDto toDto(SurveillanceReport source) {
 		if (source == null) {
@@ -119,6 +124,12 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	@Override
 	@RightsAllowed(UserRight._CASE_EDIT)
 	public void deleteSurveillanceReport(String surveillanceReportUuid) {
+		ExternalMessageDto associatedMessage =
+			externalMessageFacade.getForSurveillanceReport(new SurveillanceReportReferenceDto(surveillanceReportUuid));
+		if (associatedMessage != null) {
+			associatedMessage.setSurveillanceReport(null);
+			externalMessageFacade.save(associatedMessage);
+		}
 		service.deletePermanent(service.getByUuid(surveillanceReportUuid));
 	}
 

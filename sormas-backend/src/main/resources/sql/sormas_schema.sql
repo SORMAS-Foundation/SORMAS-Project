@@ -12209,4 +12209,11 @@ ALTER  TABLE task_history ADD COLUMN assignedbyuser_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (500, 'Add the user who assigned the task to task entity #4621');
 
+-- 2022-11-30 Adjust the processing of external messages to create surveillance reports #9680
+ALTER TABLE externalmessage ADD COLUMN surveillancereport_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_surveillancereport_id FOREIGN KEY (surveillancereport_id) REFERENCES surveillancereports (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalmessage_history ADD COLUMN surveillancereport_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (501, 'Adjust the processing of external messages to create surveillance reports #9680');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

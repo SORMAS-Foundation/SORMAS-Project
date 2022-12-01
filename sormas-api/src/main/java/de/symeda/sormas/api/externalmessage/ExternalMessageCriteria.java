@@ -5,6 +5,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -26,6 +27,7 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	private ExternalMessageStatus externalMessageStatus;
 	private SampleReferenceDto sample;
 	private CaseReferenceDto caze;
+	private SurveillanceReportReferenceDto surveillanceReport;
 	private String searchFieldLike;
 	private Date messageDateFrom;
 	private Date messageDateTo;
@@ -72,6 +74,14 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
+	}
+
+	public SurveillanceReportReferenceDto getSurveillanceReport() {
+		return surveillanceReport;
+	}
+
+	public void setSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport) {
+		this.surveillanceReport = surveillanceReport;
 	}
 
 	public String getSearchFieldLike() {
