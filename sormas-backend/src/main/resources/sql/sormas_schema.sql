@@ -12127,11 +12127,7 @@ ALTER TABLE testreport_history
 ALTER TABLE testreport
     ADD CONSTRAINT fk_testreport_samplereport_id FOREIGN KEY (samplereport_id) REFERENCES samplereport (id);
 
-UPDATE testreport
-SET samplereport_id = (SELECT s.id
-                       FROM samplereport s
-                                LEFT JOIN externalmessage ON s.labmessage_id = externalmessage.id
-                       WHERE externalmessage.id = testreport.labmessage_id);
+UPDATE testreport SET samplereport_id = s.id FROM samplereport s WHERE testreport.labmessage_id = s.labmessage_id;
 
 ALTER TABLE testreport
     ALTER COLUMN samplereport_id SET not null;
