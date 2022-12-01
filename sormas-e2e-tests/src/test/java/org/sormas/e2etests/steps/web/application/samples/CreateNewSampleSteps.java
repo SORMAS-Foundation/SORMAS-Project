@@ -452,6 +452,12 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I save the created sample with pathogen test",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_WITH_PATHOGEN_TEST_BUTTON);
+        });
+
+    When(
         "^I check the created Sample is correctly displayed on Edit Sample page",
         () -> {
           final Sample actualSample = collectSampleData();
