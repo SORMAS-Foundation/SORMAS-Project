@@ -714,6 +714,13 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I confirm to create case for selected disease",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
+
+    When(
         "I confirm case with positive test result",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
