@@ -12,16 +12,22 @@ Feature: Login with different type of users
     And I click on logout button
 
     Examples:
-      | user                      |
-      | National User             |
-      | National Language User    |
-      | Contact Supervisor        |
-      | Surveillance Officer      |
-      | Surveillance Supervisor   |
-      | Laboratory Officer        |
-      | Point of Entry Supervisor |
-      | Admin User                |
-      | Rest AUTOMATION           |
+      | user                          |
+      | National User                 |
+      | National Language User        |
+      | Contact Supervisor            |
+      | Surveillance Officer          |
+      | Surveillance Supervisor       |
+      | Laboratory Officer            |
+      | Point of Entry Supervisor     |
+      | Admin User                    |
+      | Rest AUTOMATION               |
+      | National Clinician            |
+      | Admin Surveillance Supervisor |
+      | Contact Officer               |
+      | Community Officer             |
+      | Hospital Informant            |
+      | Clinician                     |
 
   @env_de @LoginDe
   Scenario Outline: Login with <user> user on German Environment
@@ -36,16 +42,22 @@ Feature: Login with different type of users
     And I click on logout button
 
     Examples:
-      | user                      |
-      | National User             |
-      | National Language User    |
-      | Contact Supervisor        |
-      | Surveillance Officer      |
-      | Surveillance Supervisor   |
-      | Laboratory Officer        |
-      | Point of Entry Supervisor |
-      | Admin User                |
-      | Rest AUTOMATION           |
+      | user                          |
+      | National User                 |
+      | National Language User        |
+      | Contact Supervisor            |
+      | Surveillance Officer          |
+      | Surveillance Supervisor       |
+      | Laboratory Officer            |
+      | Point of Entry Supervisor     |
+      | Admin User                    |
+      | Rest AUTOMATION               |
+      | National Clinician            |
+      | Admin Surveillance Supervisor |
+      | Contact Officer               |
+      | Community Officer             |
+      | Hospital Informant            |
+      | Clinician                     |
 
   @env_keycloak @LoginKeycloak
   Scenario Outline: Login with <user> user on Keycloak Environment
