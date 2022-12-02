@@ -281,7 +281,7 @@ public class TestDataCreator {
 	}
 
 	public CaseDataDto createCase(RDCF rdcf) {
-		UserDto user = createUser(rdcf, DefaultUserRole.NATIONAL_USER.toUserRole().toReference());
+		UserDto user = createUser(rdcf, getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = createPerson();
 		return createCase(
 			user.toReference(),

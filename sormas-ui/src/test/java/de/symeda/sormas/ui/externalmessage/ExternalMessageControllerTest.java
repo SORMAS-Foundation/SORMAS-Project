@@ -15,25 +15,27 @@
 
 package de.symeda.sormas.ui.externalmessage;
 
-import org.junit.jupiter.api.Test;
-
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
 
 public class ExternalMessageControllerTest extends AbstractBeanTest {
 
-	@Test
-	public void testCreateSurveillanceReport() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		TestDataCreator.RDCF caseRdcf = creator.createRDCF();
-		CaseDataDto caze = creator.createCase(caseRdcf);
-		ExternalMessageDto message = ExternalMessageDto.build();
-		creator.createExternalMessage(m -> m.setType(ExternalMessageType.PHYSICIANS_REPORT));
-		// TODO continue this test and check for correct creation of the surveillance report 
-		//  with all fields for physicians reports and lab messages
-	}
+//TODO: Create meaningful test
 
+//	@Test
+//	public void testCreateSurveillanceReport() {
+//		ExternalMessageController cut = new ExternalMessageController();
+//		TestDataCreator.RDCF rdcf = creator.createRDCF();
+//		CaseDataDto caze = creator.createCase(rdcf);
+//		Date messageDateTime = new Date();
+//		ExternalMessageDto externalMessage = creator.createExternalMessage(m -> {
+//			m.setType(ExternalMessageType.PHYSICIANS_REPORT);
+//
+//			m.setMessageDateTime(messageDateTime);
+//		});
+//		SurveillanceReportDto surveillanceReport = cut.createSurveillanceReport(externalMessage, caze.toReference());
+//		assertEquals(ReportingType.DOCTOR, surveillanceReport.getReportingType());
+//		assertEquals(messageDateTime, surveillanceReport.getReportDate());
+//		assertEquals(caze.getUuid(), surveillanceReport.getCaze().getUuid());
+//		assertEquals(rdcf.facility.getUuid(), surveillanceReport.getFacility().getUuid());
+//	}
 }
