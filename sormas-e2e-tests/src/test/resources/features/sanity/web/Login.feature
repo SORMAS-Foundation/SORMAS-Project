@@ -22,7 +22,6 @@ Feature: Login with different type of users
       | Point of Entry Supervisor     |
       | Admin User                    |
       | Rest AUTOMATION               |
-      | National Clinician            |
       | Admin Surveillance Supervisor |
       | Contact Officer               |
       | Community Officer             |
@@ -52,7 +51,6 @@ Feature: Login with different type of users
       | Point of Entry Supervisor     |
       | Admin User                    |
       | Rest AUTOMATION               |
-      | National Clinician            |
       | Admin Surveillance Supervisor |
       | Contact Officer               |
       | Community Officer             |
