@@ -40,7 +40,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
 
-public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> implements JurisdictionCheckService<ADO> {
+public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -52,7 +52,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 	}
 
 	/**
-	 * @deprecated Invocation without a {@link QueryContext} is only allowed interally in the same class. For invocation from other EJBs,
+	 * @deprecated Invocation without a {@link QueryContext} is only allowed internally in the same class. For invocation from other EJBs,
 	 *             use {@code createUserFilter(QueryContext)} instead (to be implemented by each subclass).
 	 */
 	@Deprecated
@@ -77,6 +77,17 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		Root<ADO> from = cq.from(getElementClass());
 
 		cq.where(cb.and(cb.equal(from.get(CoreAdo.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
+	public boolean isDeleted(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		cq.where(cb.and(cb.isTrue(from.get(CoreAdo.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
 		cq.select(cb.count(from));
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
@@ -181,19 +192,19 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 	@Override
 	public List<Long> getInJurisdictionIds(List<ADO> selectedEntities) {
-		return getIdList(selectedEntities, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return getIdList(selectedEntities, this::inJurisdictionOrOwned);
 	}
 
 	@Override
 	public boolean inJurisdictionOrOwned(ADO entity) {
-		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
+		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
 	/**
-	 * Used to fetch {@link #getInJurisdictionIds(List)}/{@link #inJurisdictionOrOwned(CoreAdo)}
+	 * Used to fetch {@link AdoServiceWithUserFilterAndJurisdiction#getInJurisdictionIds(List)}/{@link AdoServiceWithUserFilterAndJurisdiction#inJurisdictionOrOwned(AbstractDomainObject)}
 	 * (without {@link QueryContext} because there are no other conditions etc.).
 	 * 
 	 * @return A filter on entities within the users jurisdiction or owned by him.
 	 */
-	protected abstract Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> from);
+	public abstract Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> from);
 }

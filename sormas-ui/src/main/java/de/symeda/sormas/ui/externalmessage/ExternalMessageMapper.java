@@ -134,7 +134,7 @@ public class ExternalMessageMapper {
 					sample.getSpecimenCondition(),
 					sampleReport.getSpecimenCondition(),
 					SampleDto.SPECIMEN_CONDITION),
-				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
+				Mapping.of(sample::setLab, sample.getLab(), getFacilityReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
 		if (sampleReport.getSampleReceivedDate() != null) {
@@ -217,7 +217,7 @@ public class ExternalMessageMapper {
 						Mapping.of(
 							pathogenTest::setLab,
 							pathogenTest.getLab(),
-							getLabReference(sourceTestReport.getTestLabExternalIds()),
+							getFacilityReference(sourceTestReport.getTestLabExternalIds()),
 							PathogenTestDto.LAB),
 						Mapping.of(
 							pathogenTest::setLabDetails,
@@ -242,7 +242,7 @@ public class ExternalMessageMapper {
 					Mapping.of(
 						pathogenTest::setTestedDisease,
 						pathogenTest.getTestedDisease(),
-						externalMessage.getTestedDisease(),
+						externalMessage.getDisease(),
 						PathogenTestDto.TESTED_DISEASE),
 					Mapping.of(
 						pathogenTest::setReportDate,
@@ -330,7 +330,7 @@ public class ExternalMessageMapper {
 
 		try {
 			testedDiseaseVariant = FacadeProvider.getCustomizableEnumFacade()
-				.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, sourceTestReport.getTestedDiseaseVariant(), externalMessage.getTestedDisease());
+				.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, sourceTestReport.getTestedDiseaseVariant(), externalMessage.getDisease());
 			testedDiseaseVariantDetails = sourceTestReport.getTestedDiseaseVariantDetails();
 		} catch (CustomEnumNotFoundException e) {
 			String diseaseVariantString = sourceTestReport.getTestedDiseaseVariant();
@@ -350,14 +350,14 @@ public class ExternalMessageMapper {
 		return new ImmutableTriple<>(testResultText, testedDiseaseVariant, testedDiseaseVariantDetails);
 	}
 
-	public FacilityReferenceDto getLabReference(List<String> labExternalIds) {
+	public static FacilityReferenceDto getFacilityReference(List<String> facilityExternalIds) {
 
 		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
 		List<FacilityReferenceDto> labs;
 
-		if (labExternalIds != null && !labExternalIds.isEmpty()) {
+		if (facilityExternalIds != null && !facilityExternalIds.isEmpty()) {
 
-			labs = labExternalIds.stream()
+			labs = facilityExternalIds.stream()
 				.filter(Objects::nonNull)
 				.map(id -> facilityFacade.getByExternalIdAndType(id, FacilityType.LABORATORY, false))
 				.flatMap(List::stream)

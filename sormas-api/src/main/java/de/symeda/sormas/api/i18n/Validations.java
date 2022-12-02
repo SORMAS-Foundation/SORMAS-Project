@@ -73,6 +73,7 @@ public interface Validations {
 	String externalMessageFetchError = "externalMessageFetchError";
 	String externalMessageInitError = "externalMessageInitError";
 	String externalMessagePdfConversionError = "externalMessagePdfConversionError";
+	String externalMessageRefersToMultipleEntities = "externalMessageRefersToMultipleEntities";
 	String feverTemperatureAboveThreshold = "feverTemperatureAboveThreshold";
 	String feverTemperatureBelowThreshold = "feverTemperatureBelowThreshold";
 	String fileTooBig = "fileTooBig";
@@ -127,7 +128,10 @@ public interface Validations {
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String jurisdictionChangeUserAssignment = "jurisdictionChangeUserAssignment";
-	String missingRequiredUserRights = "missingRequiredUserRights";
+	String missingRequiredUserRightsBaseText = "missingRequiredUserRightsBaseText";
+	String missingRequiredUserRightsLargeDependency = "missingRequiredUserRightsLargeDependency";
+	String missingRequiredUserRightsNoDependency = "missingRequiredUserRightsNoDependency";
+	String missingRequiredUserRightsSmallDependency = "missingRequiredUserRightsSmallDependency";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
 	String noAddressDistrictInAddressRegion = "noAddressDistrictInAddressRegion";

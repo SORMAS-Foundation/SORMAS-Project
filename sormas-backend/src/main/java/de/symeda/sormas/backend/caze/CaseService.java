@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -86,6 +87,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -133,9 +135,13 @@ import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
@@ -227,6 +233,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private VaccinationService vaccinationService;
 	@EJB
 	private ExternalMessageService externalMessageService;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
 
 	public CaseService() {
 		super(Case.class);
@@ -271,15 +281,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected void fetchReferences(From<?, Case> from) {
-
-		from.fetch(Case.SYMPTOMS);
-		from.fetch(Case.THERAPY);
-		from.fetch(Case.HEALTH_CONDITIONS);
-		from.fetch(Case.HOSPITALIZATION);
-		from.fetch(Case.EPI_DATA);
-		from.fetch(Case.PORT_HEALTH_INFO);
-		from.fetch(Case.MATERNAL_HISTORY);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(
+			Case.SYMPTOMS,
+			Case.THERAPY,
+			Case.CLINICAL_COURSE,
+			Case.HEALTH_CONDITIONS,
+			Case.HOSPITALIZATION,
+			Case.EPI_DATA,
+			Case.PORT_HEALTH_INFO,
+			Case.MATERNAL_HISTORY);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -655,15 +666,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, caseCriteria.getRegion()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createRegionCriteriaFilter(cb, joins, caseCriteria.getRegion(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createDistrictFilterWithFallback(cb, joins, caseCriteria.getDistrict()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createDistrictCriteriaFilter(cb, joins, caseCriteria.getDistrict(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getCommunity() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createCommunityFilterWithFallback(cb, joins, caseCriteria.getCommunity()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CaseCriteriaHelper.createCommunityCriteriaFilter(cb, joins, caseCriteria.getCommunity(), caseCriteria.getJurisdictionType()));
 		}
 		if (caseCriteria.getFollowUpStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
@@ -900,51 +918,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_DEFINITION), CaseReferenceDefinition.FULFILLED));
 		}
 		if (caseCriteria.getWithOwnership() != null) {
-			Subquery<Boolean> sharesQuery = cq.subquery(Boolean.class);
-			Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
-			sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
-
-			Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
-			Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
-			latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
-			latestRequestDateQuery.where(
-				cb.equal(
-					shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
-					shareInfoFrom.get(SormasToSormasShareInfo.ID)));
-
-			Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
-			sharesQuery.where(
-				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.CAZE), from.get(Case.ID)),
-				cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
-				cb.equal(
-					requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
-						.get(ShareRequestInfo.REQUEST_STATUS),
-					ShareRequestStatus.ACCEPTED));
-
-			if (Boolean.TRUE.equals(caseCriteria.getWithOwnership())) {
-				filter =
-					CriteriaBuilderHelper
-						.and(
-							cb,
-							filter,
-							cb.and(
-								cb.or(
-									cb.isNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-									cb.equal(
-										from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
-											.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
-										true)),
-								cb.not(cb.exists(sharesQuery))));
-			} else {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(
-						cb.equal(
-							from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
-							false),
-						cb.exists(sharesQuery)));
-			}
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, createOwnershipPredicate(Boolean.TRUE.equals(caseCriteria.getWithOwnership()), from, cb, cq));
 		}
 
 		filter = CriteriaBuilderHelper.and(
@@ -959,6 +934,41 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				(latestShareDate) -> createChangeDateFilter(cq, cb, from, joins, latestShareDate, true, true)));
 
 		return filter;
+	}
+
+	public Predicate createOwnershipPredicate(boolean withOwnership, From<?, Case> from, CriteriaBuilder cb, CriteriaQuery<?> cq) {
+		Subquery<Boolean> sharesQuery = cq.subquery(Boolean.class);
+		Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
+		sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
+
+		Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
+		Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+		latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+		latestRequestDateQuery.where(
+			cb.equal(
+				shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+				shareInfoFrom.get(SormasToSormasShareInfo.ID)));
+
+		Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
+		sharesQuery.where(
+			cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.CAZE), from.get(Case.ID)),
+			cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
+			cb.equal(
+				requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
+					.get(ShareRequestInfo.REQUEST_STATUS),
+				ShareRequestStatus.ACCEPTED));
+
+		if (withOwnership) {
+			return cb.and(
+				cb.or(
+					cb.isNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+					cb.equal(from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER), true)),
+				cb.not(cb.exists(sharesQuery)));
+		} else {
+			return cb.or(
+				cb.equal(from.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER), false),
+				cb.exists(sharesQuery));
+		}
 	}
 
 	/**
@@ -1129,6 +1139,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		super.delete(caze, deletionDetails);
 	}
 
+	@Override
+	public void undelete(Case caze) {
+		// un-delete all samples that are only associated with this case
+		caze.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
+		super.undelete(caze);
+	}
+
 	private void deleteCaseInExternalSurveillanceTool(Case caze) {
 		try {
 			if (!caze.isDontShareWithReportingTool()) {
@@ -1183,12 +1200,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		// Remove the case as the related case of immunizations
 		immunizationService.unlinkRelatedCase(caze);
-
-		// Remove the case from any external message referencing it
-		externalMessageService.getForCase(new CaseReferenceDto(caze.getUuid())).forEach(labMessage -> {
-			labMessage.setCaze(null);
-			externalMessageService.ensurePersisted(labMessage);
-		});
 	}
 
 	@Override
@@ -1622,7 +1633,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> from) {
 		return inJurisdictionOrOwned(new CaseQueryContext(cb, query, from));
 	}
 
@@ -1634,7 +1645,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return CaseJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
-	public Collection<Case> getByPersonUuids(List<String> personUuids) {
+	public List<Case> getByPersonUuids(List<String> personUuids) {
 
 		List<Case> cases = new ArrayList<>();
 		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> cases.addAll(getCasesByPersonUuids(batchedUuids)));
@@ -1702,7 +1713,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
 		Predicate filter =
-			CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
+			CriteriaBuilderHelper.and(cb, createActiveCasesFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
 
 		if (caseCriteria != null) {
 			if (caseCriteria.getDisease() != null) {
@@ -1742,12 +1753,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final Root<Case> caze = cq.from(Case.class);
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		Join<Case, Symptoms> symptoms = caseQueryContext.getJoins().getSymptoms();
 
 		cq.multiselect(
 			caze.get(Case.UUID),
 			caze.get(Case.REPORT_DATE),
 			caze.get(Case.DISEASE),
 			caze.get(Case.CASE_CLASSIFICATION),
+			symptoms.get(Symptoms.ONSET_DATE),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(caseQueryContext)),
 			caze.get(Case.CHANGE_DATE));
 
@@ -1849,7 +1862,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate regionFilter = null;
 		RegionReferenceDto criteriaRegion = caseCriteria.getRegion();
 		if (criteriaRegion != null) {
-			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, criteriaRegion));
+			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionCriteriaFilter(cb, joins, criteriaRegion, null));
 		}
 
 		Predicate reportDateFilter = criteria.getReportDate() != null
@@ -2088,6 +2101,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid),
 				cb.equal(root.get(Case.DISEASE), disease),
+				cb.isFalse(root.get(Case.DELETED)),
 				cb.or(
 					cb.lessThan(symptomsJoin.get(Symptoms.ONSET_DATE), startDate),
 					cb.and(cb.isNull(symptomsJoin.get(Symptoms.ONSET_DATE)), cb.lessThan(root.get(Case.REPORT_DATE), startDate)))));
@@ -2098,6 +2112,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public DataHelper.Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		Root<Case> root = cq.from(Case.class);
+
+		cq.multiselect(root.get(Case.RESPONSIBLE_REGION), root.get(Case.RESPONSIBLE_DISTRICT));
+		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+
+		Tuple singleResult = em.createQuery(cq).getSingleResult();
+		Region region = (Region) singleResult.get(0);
+		District district = (District) singleResult.get(1);
+		return new DataHelper.Pair<>(RegionFacadeEjb.toReferenceDto(region), DistrictFacadeEjb.toReferenceDto(district));
 	}
 
 	private List<Case> getCasesSetAsDuplicate(Long caseId) {

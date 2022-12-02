@@ -127,7 +127,10 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ge
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getVaccinationStatusEventParticipantByText;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -400,6 +403,8 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EVENTS_RADIO_BUTTON);
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
         });
 
@@ -1075,8 +1080,13 @@ public class EventDirectorySteps implements En {
     When(
         "I confirm the save Event Participant Import popup",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          } else {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+          }
         });
     Then(
         "I check that number of displayed Event results is {int}",

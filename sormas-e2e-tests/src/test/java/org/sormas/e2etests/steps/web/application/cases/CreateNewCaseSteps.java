@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.constants.api.Endpoints.CASES_PATH;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_PRESENT_CONDITION_COMBOBOX;
@@ -52,13 +53,12 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACI
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACILITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NAME_UUID_EXTERNAL_ID_TOKEN_LIKE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_ATTRIBUTE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NICKNAME_ATTRIBUTE;
@@ -113,10 +113,12 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import io.restassured.http.Method;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -131,11 +133,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
@@ -156,6 +161,7 @@ public class CreateNewCaseSteps implements En {
   public static List<String> casesUUID = new ArrayList<>();
   private static String currentUrl;
   private static String phoneNumber;
+  private final RestAssuredClient restAssuredClient;
 
   @Inject
   public CreateNewCaseSteps(
@@ -164,11 +170,13 @@ public class CreateNewCaseSteps implements En {
       ApiState apiState,
       Faker faker,
       SoftAssert softly,
-      BaseSteps baseSteps) {
+      BaseSteps baseSteps,
+      RestAssuredClient restAssuredClient) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
     this.softly = softly;
     this.baseSteps = baseSteps;
+    this.restAssuredClient = restAssuredClient;
     Random r = new Random();
     char c = (char) (r.nextInt(26) + 'a');
     String firstName = faker.name().firstName() + c;
@@ -361,6 +369,12 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
+        });
+
+    When(
+        "I check if created case is available in API",
+        () -> {
+          getCaseByUUID(casesUUID.get(0));
         });
 
     When(
@@ -689,18 +703,19 @@ public class CreateNewCaseSteps implements En {
     When(
         "^I search for the last created person by First Name and Last Name in popup on Select Person window$",
         () -> {
-          webDriverHelpers.fillInWebElement(FIRST_NAME_LIKE_INPUT, aCase.getFirstName());
-          webDriverHelpers.fillInWebElement(LAST_NAME_LIKE_INPUT, aCase.getLastName());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              NAME_UUID_EXTERNAL_ID_TOKEN_LIKE, aCase.getFirstName() + " " + aCase.getLastName());
           webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
+
     When(
         "^I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window$",
         () -> {
-          webDriverHelpers.fillInWebElement(
-              FIRST_NAME_LIKE_INPUT, personSharedForAllEntities.getFirstName());
-          webDriverHelpers.fillInWebElement(
-              LAST_NAME_LIKE_INPUT, personSharedForAllEntities.getLastName());
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              NAME_UUID_EXTERNAL_ID_TOKEN_LIKE,
+              personSharedForAllEntities.getFirstName()
+                  + " "
+                  + personSharedForAllEntities.getLastName());
         });
 
     When(
@@ -1103,10 +1118,6 @@ public class CreateNewCaseSteps implements En {
           fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
           fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
           fillPlaceDescription(caze.getPlaceDescription());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
     When(
@@ -1316,6 +1327,9 @@ public class CreateNewCaseSteps implements En {
               "UUIDs are not equal");
           softly.assertAll();
         });
+    When(
+        "I accept first case in Shares Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
@@ -1591,5 +1605,11 @@ public class CreateNewCaseSteps implements En {
           tableObjects.add(objects);
         });
     return tableObjects;
+  }
+
+  @SneakyThrows
+  public void getCaseByUUID(String caseUUID) {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(CASES_PATH + "/" + caseUUID).build());
   }
 }

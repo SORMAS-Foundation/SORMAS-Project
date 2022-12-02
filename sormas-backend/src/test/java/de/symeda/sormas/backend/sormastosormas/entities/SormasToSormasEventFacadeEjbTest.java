@@ -31,11 +31,9 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -87,7 +85,6 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
@@ -519,7 +516,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		EventDto event =
-				creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, rdcf, null);
+			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, rdcf, null);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), creator.createPerson(), officer);
 		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
 
@@ -732,6 +729,53 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	}
 
 	@Test
+	public void testSyncNotUpdateOwnedPerson() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		SormasToSormasOriginInfoDto originInfo = createAndSaveSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false, null);
+
+		EventDto event =
+			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, rdcf, e -> {
+				e.setSormasToSormasOriginInfo(originInfo);
+			});
+
+		EventParticipantDto eventParticipant = creator.createEventParticipant(
+			event.toReference(),
+			creator.createPerson(),
+			"Involved",
+			officer,
+			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()),
+			rdcf);
+
+		event.setEventDesc("Test updated description");
+		eventParticipant.getPerson().setBirthName("Test birth name");
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(event.getChangeDate());
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		event.setChangeDate(calendar.getTime());
+
+		//owned case with same person should mek event participant person not synced
+		creator.createCase(officer, eventParticipant.getPerson().toReference(), rdcf);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
+		shareData.setEventParticipants(Collections.singletonList(new SormasToSormasEventParticipantDto(eventParticipant)));
+
+		SormasToSormasEncryptedDataDto encryptedData =
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(event.getUuid(), null, false)));
+
+		getSormasToSormasEventFacade().saveSyncedEntity(encryptedData);
+
+		EventDto syncedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
+		assertThat(syncedEvent.getEventDesc(), is("Test updated description"));
+
+		EventParticipantDto syncedEventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
+		assertThat(syncedEventParticipant.getPerson().getBirthName(), is(nullValue()));
+	}
+
+	@Test
 	public void testSyncRecursively() throws SormasToSormasException, SormasToSormasValidationException {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
@@ -777,10 +821,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		event.setChangeDate(calendar.getTime());
 
-		LocationDto locationDto = new LocationDto();
+		LocationDto locationDto = event.getEventLocation();
 		locationDto.setRegion(rdcf.region);
 		locationDto.setDistrict(rdcf.district);
-		event.setEventLocation(locationDto);
 
 		getEventFacade().validate(event);
 
@@ -885,7 +928,10 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
 
 				// make sure that no entities are found
-				postBody.getEvents().get(0).getEntity().setUuid(uuid);
+				EventDto entity = postBody.getEvents().get(0).getEntity();
+				entity.setUuid(uuid);
+				entity.getEventLocation().setUuid(DataHelper.createUuid());
+
 				postBody.getEventParticipants().get(0).getEntity().setUuid(uuid);
 				postBody.getSamples().get(0).getEntity().setUuid(uuid);
 

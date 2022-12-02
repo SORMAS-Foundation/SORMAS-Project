@@ -313,7 +313,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private final Map<ReinfectionDetailGroup, CaseReinfectionCheckBoxTree> reinfectionTrees = new EnumMap<>(ReinfectionDetailGroup.class);
 
-	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
+	public CaseDataForm(
+		String caseUuid,
+		PersonDto person,
+		Disease disease,
+		SymptomsDto symptoms,
+		ViewMode viewMode,
+		boolean isPseudonymized,
+		boolean inJurisdiction) {
 
 		super(
 			CaseDataDto.class,
@@ -323,7 +330,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()))
 				.add(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)),
-			UiFieldAccessCheckers.getDefault(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.caseUuid = caseUuid;
 		this.person = person;
@@ -416,6 +423,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
 			CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
+			if(FacadeProvider.getExternalShareInfoFacade().isSharedCase(this.caseUuid)){
+				dontShareCheckbox.setEnabled(false);
+				dontShareCheckbox.setDescription(I18nProperties.getString(Strings.infoDontShareCheckboxAlreadyShared));
+			}
 		}
 
 		TextField externalTokenField = addField(CaseDataDto.EXTERNAL_TOKEN, TextField.class);
@@ -618,7 +629,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.PREVIOUS_INFECTION_DATE);
 			ComboBox tfReinfectionStatus = addField(CaseDataDto.REINFECTION_STATUS, ComboBox.class);
 			tfReinfectionStatus.setReadOnly(true);
-			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.PREVIOUS_INFECTION_DATE, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.PREVIOUS_INFECTION_DATE, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, false);
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.REINFECTION_STATUS, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, false);
 
 			final Label reinfectionInfoLabel = new Label(VaadinIcons.EYE.getHtml(), ContentMode.HTML);
@@ -694,11 +705,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				} else {
 					reinfectionInfoLabel.setDescription(null);
 					reinfectionInfoLabel.setVisible(false);
-
-					for (CaseReinfectionCheckBoxTree reinfectionTree : reinfectionTrees.values()) {
-						reinfectionTree.clearCheckBoxTree();
-					}
-
 					reinfectionDetailsLeftLayout.setVisible(false);
 					reinfectionDetailsRightLayout.setVisible(false);
 				}

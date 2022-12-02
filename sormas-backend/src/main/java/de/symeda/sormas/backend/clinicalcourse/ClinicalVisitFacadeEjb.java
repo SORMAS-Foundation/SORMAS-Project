@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import static java.util.Objects.isNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -238,7 +240,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		restorePseudonymizedDto(clinicalVisit, existingClinicalVisit);
 
-		ClinicalVisit entity = fromDto(clinicalVisit, existingClinicalVisit, true);
+		ClinicalVisit entity = fillOrBuildEntity(clinicalVisit, existingClinicalVisit, true);
 
 		service.ensurePersisted(entity);
 
@@ -348,7 +350,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		for (ClinicalVisitExportDto exportDto : resultList) {
-			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
+			exportDto.setSymptoms(SymptomsFacadeEjb.toSymptomsDto(symptomsService.getById(exportDto.getSymptomsId())));
 
 			Boolean inJurisdiction = exportDto.getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(ClinicalVisitExportDto.class, exportDto, inJurisdiction, (v) -> {
@@ -419,7 +421,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setClinicalCourse(ClinicalCourseFacadeEjb.toReferenceDto(source.getClinicalCourse()));
-		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
+		target.setSymptoms(SymptomsFacadeEjb.toSymptomsDto(source.getSymptoms()));
 		target.setDisease(source.getDisease());
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
@@ -428,11 +430,17 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		return target;
 	}
 
-	public ClinicalVisit fromDto(@NotNull ClinicalVisitDto source, ClinicalVisit target, boolean checkChangeDate) {
+	public ClinicalVisit fillOrBuildEntity(@NotNull ClinicalVisitDto source, ClinicalVisit target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
+
 		target = DtoHelper.fillOrBuildEntity(source, target, ClinicalVisit::new, checkChangeDate);
 
+		if (targetWasNull) {
+			target.getSymptoms().setUuid(source.getSymptoms().getUuid());
+		}
+
 		target.setClinicalCourse(clinicalCourseService.getByReferenceDto(source.getClinicalCourse()));
-		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms(), checkChangeDate));
+		target.setSymptoms(symptomsFacade.fillOrBuildEntity(source.getSymptoms(), target.getSymptoms(), checkChangeDate));
 		target.setDisease(source.getDisease());
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());

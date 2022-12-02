@@ -28,9 +28,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class SourceContactList extends PaginationList<ContactIndexDto> {
@@ -38,11 +36,13 @@ public class SourceContactList extends PaginationList<ContactIndexDto> {
 	private static final long serialVersionUID = -8266250137859127204L;
 
 	private final ContactCriteria criteria = new ContactCriteria();
+	private final boolean isEditAllowed;
 
-	public SourceContactList(CaseReferenceDto caseReference) {
+	public SourceContactList(CaseReferenceDto caseReference, boolean isEditAllowed) {
 
 		super(5);
 		criteria.resultingCase(caseReference);
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -66,11 +66,12 @@ public class SourceContactList extends PaginationList<ContactIndexDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			ContactIndexDto contact = displayedEntries.get(i);
 			SourceContactListEntry listEntry = new SourceContactListEntry(contact);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
-				listEntry.addEditListener(
-					i,
-					(ClickListener) e -> ControllerProvider.getContactController().navigateToData(listEntry.getContact().getUuid()));
-			}
+			listEntry.addActionButton(
+				String.valueOf(i),
+				(ClickListener) e -> ControllerProvider.getContactController().navigateToData(listEntry.getContact().getUuid()),
+				isEditAllowed);
+			listEntry.setEnabled(isEditAllowed);
+
 			listLayout.addComponent(listEntry);
 		}
 	}

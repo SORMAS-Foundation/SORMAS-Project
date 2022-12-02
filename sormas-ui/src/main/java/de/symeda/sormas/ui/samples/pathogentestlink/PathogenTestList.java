@@ -39,12 +39,14 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
 	private final SampleReferenceDto sampleRef;
 	private final Consumer<Runnable> actionCallback;
+	private final boolean isEditable;
 
-	public PathogenTestList(SampleReferenceDto sampleRef, Consumer<Runnable> actionCallback) {
+	public PathogenTestList(SampleReferenceDto sampleRef, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 		super(MAX_DISPLAYED_ENTRIES);
 
 		this.sampleRef = sampleRef;
 		this.actionCallback = actionCallback;
+		this.isEditable = isEditAllowed;
 	}
 
 	@Override
@@ -66,15 +68,16 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	protected void drawDisplayedEntries() {
 		List<PathogenTestDto> displayedEntries = getDisplayedEntries();
 		for (PathogenTestDto pathogenTest : displayedEntries) {
-			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
-				String pathogenTestUuid = pathogenTest.getUuid();
-				listEntry.addEditButton(
-					"edit-test-" + pathogenTestUuid,
-					e -> actionCallback.accept(
-						() -> ControllerProvider.getPathogenTestController()
-							.edit(pathogenTestUuid, SormasUI::refreshView, (pathogenTestDto, callback) -> callback.run())));
-			}
+			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest, true);
+			String pathogenTestUuid = pathogenTest.getUuid();
+			boolean isEditableAndHasEditRight = isEditable && UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT);
+			listEntry.addActionButton(
+				pathogenTestUuid,
+				e -> actionCallback.accept(
+					() -> ControllerProvider.getPathogenTestController()
+						.edit(pathogenTestUuid, SormasUI::refreshView, (pathogenTestDto, callback) -> callback.run(), isEditableAndHasEditRight)),
+				isEditableAndHasEditRight);
+			listEntry.setEnabled(isEditable);
 			listLayout.addComponent(listEntry);
 		}
 	}

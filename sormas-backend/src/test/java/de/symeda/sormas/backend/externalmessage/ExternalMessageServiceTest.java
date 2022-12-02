@@ -1,13 +1,13 @@
 package de.symeda.sormas.backend.externalmessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.List;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -105,27 +105,16 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		assertEquals(0L, sut.countForCase(caze.getUuid()));
 
-		creator.createLabMessageWithTestReport(sample.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		assertEquals(1L, sut.countForCase(caze.getUuid()));
 
 		// create additional lab message matches
-		creator.createLabMessageWithTestReport(sample.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessageWithTestReport(sample2.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample2.toReference());
 		assertEquals(3L, sut.countForCase(caze.getUuid()));
 		assertEquals(0L, sut.countForContact(caze.getUuid()));
 		assertEquals(0L, sut.countForEventParticipant(caze.getUuid()));
-
-		// create physician's report match and noise
-		creator.createPhysiciansReportWithCase(caze.toReference());
-		creator.createPhysiciansReportWithCase(noiseCaze.toReference());
-		creator.createPhysiciansReportWithCase(noiseCaze.toReference());
-		assertEquals(4L, sut.countForCase(caze.getUuid()));
-
-		// create yet another physician's report match
-		creator.createPhysiciansReportWithCase(caze.toReference());
-		assertEquals(5L, sut.countForCase(caze.getUuid()));
-
 	}
 
 	@Test

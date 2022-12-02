@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -60,7 +61,10 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
@@ -87,7 +91,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		ExternalMessageIndexDto.REPORTER_POSTAL_CODE,
 		ExternalMessageIndexDto.MESSAGE_DATE_TIME,
 		ExternalMessageIndexDto.STATUS,
-		ExternalMessageIndexDto.TESTED_DISEASE);
+		ExternalMessageIndexDto.DISEASE);
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -104,19 +108,21 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@EJB
 	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;
 	@EJB
+	private SurveillanceReportService surveillanceReportService;
+	@EJB
 	private SampleService sampleService;
 	@EJB
 	private CaseService caseService;
 	@EJB
 	private UserService userService;
 
-	ExternalMessage fromDto(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
+	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, ExternalMessage::new, checkChangeDate);
 
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
-		target.setTestedDisease(source.getTestedDisease());
+		target.setDisease(source.getDisease());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
@@ -151,9 +157,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			}
 			target.setSampleReports(sampleReports);
 		}
-		if (source.getCaze() != null) {
-			target.setCaze(caseService.getByReferenceDto(source.getCaze()));
-		}
+		target.setSurveillanceReport(surveillanceReportService.getByReferenceDto(source.getSurveillanceReport()));
 		return target;
 	}
 
@@ -185,13 +189,34 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {
 		ExternalMessage externalMessage = externalMessageService.getByUuid(dto.getUuid());
 
-		externalMessage = fromDto(dto, externalMessage, checkChangeDate);
+		validate(dto);
+
+		externalMessage = fillOrBuildEntity(dto, externalMessage, checkChangeDate);
 		if (newTransaction) {
 			externalMessageService.ensurePersistedInNewTransaction(externalMessage);
 		} else {
 			externalMessageService.ensurePersisted(externalMessage);
 		}
 		return toDto(externalMessage);
+	}
+
+	@Override
+	public void validate(ExternalMessageDto externalMessageDto) {
+		if (externalMessageDto.getSurveillanceReport() != null) {
+			SurveillanceReport surveillanceReport = surveillanceReportService.getByReferenceDto(externalMessageDto.getSurveillanceReport());
+			if (externalMessageDto.getSampleReportsNullSafe()
+				.stream()
+				.map(sampleRep -> sampleRep.getSample())
+				.map(sampleRef -> sampleService.getByReferenceDto(sampleRef))
+				.anyMatch(
+					sample -> sample != null
+						&& (sample.getAssociatedContact() != null
+							|| sample.getAssociatedEventParticipant() != null
+							|| (sample.getAssociatedCase() != null
+								&& !sample.getAssociatedCase().getUuid().equals(surveillanceReport.getCaze().getUuid()))))) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.externalMessageRefersToMultipleEntities));
+			}
+		}
 	}
 
 	public ExternalMessageDto toDto(ExternalMessage source) {
@@ -204,7 +229,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
-		target.setTestedDisease(source.getTestedDisease());
+		target.setDisease(source.getDisease());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
@@ -229,8 +254,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		if (source.getSampleReports() != null) {
 			target.setSampleReports(source.getSampleReports().stream().map(sampleReportFacade::toDto).collect(toList()));
 		}
-		if (source.getCaze() != null) {
-			target.setCaze(source.getCaze().toReference());
+		if (source.getSurveillanceReport() != null) {
+			target.setSurveillanceReport(source.getSurveillanceReport().toReference());
 		}
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());
@@ -274,11 +299,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public List<ExternalMessageDto> getForSample(SampleReferenceDto sample) {
-
-		List<ExternalMessage> externalMessages = externalMessageService.getForSample(sample);
-
-		return externalMessages.stream().map(this::toDto).collect(Collectors.toList());
-
+		return externalMessageService.getForSample(sample).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -331,7 +352,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			labMessage.get(ExternalMessage.MESSAGE_DATE_TIME),
 			labMessage.get(ExternalMessage.REPORTER_NAME),
 			labMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
-			labMessage.get(ExternalMessage.TESTED_DISEASE),
+			labMessage.get(ExternalMessage.DISEASE),
 			labMessage.get(ExternalMessage.PERSON_FIRST_NAME),
 			labMessage.get(ExternalMessage.PERSON_LAST_NAME),
 			labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),
@@ -520,6 +541,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public ExternalMessageDto getForSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport) {
+		return toDto(externalMessageService.getForSurveillanceReport(surveillanceReport));
 	}
 
 	public static ExternalMessageReferenceDto toReferenceDto(ExternalMessage entity) {

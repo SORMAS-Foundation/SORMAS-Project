@@ -25,10 +25,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
@@ -38,15 +40,18 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 	private Disease disease;
 	private final Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier;
 	private final Consumer<Runnable> actionCallback;
+	private final boolean isEditAllowed;
 
 	public VaccinationList(
 		Disease disease,
 		Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier,
-		Consumer<Runnable> actionCallback) {
+		Consumer<Runnable> actionCallback,
+		boolean isEditAllowed) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.vaccinationListSupplier = vaccinationListSupplier;
 		this.disease = disease;
 		this.actionCallback = actionCallback;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -66,19 +71,25 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
+		boolean isEditableAndHasEditRight = isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT);
 		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
-			listEntry.addEditButton(
-				"edit-vaccination-" + listEntry.getVaccination().getUuid(),
-				e -> actionCallback.accept(
-					() -> ControllerProvider.getVaccinationController()
-						.edit(
-							FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
-							listEntry.getVaccination().getDisease(),
-							UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
-							true,
-							v -> SormasUI.refreshView(),
-							deleteCallback())));
+			listEntry.addActionButton(listEntry.getVaccination().getUuid(), e -> actionCallback.accept(() -> {
+				VaccinationListEntryDto vaccination = listEntry.getVaccination();
+				ControllerProvider.getVaccinationController()
+					.edit(
+						FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
+						listEntry.getVaccination().getDisease(),
+						UiFieldAccessCheckers.forDataAccessLevel(
+							UserProvider.getCurrent().getPseudonymizableDataAccessLevel(vaccination.isInJurisdiction()),
+							vaccination.isPseudonymized()),
+						true,
+						v -> SormasUI.refreshView(),
+						deleteCallback(),
+						isEditableAndHasEditRight);
+			}), isEditableAndHasEditRight);
+
+			listEntry.setEnabled(isEditAllowed && entryDto.isRelevant());
 			listLayout.addComponent(listEntry);
 		}
 	}

@@ -1342,7 +1342,10 @@ public class EditCaseSteps implements En {
 
     When(
         "I click on edit Sample",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_SAMPLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON);
+        });
 
     When(
         "I click on the Create button from Case Document Templates",
@@ -1938,7 +1941,8 @@ public class EditCaseSteps implements En {
 
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
-              "Automated test dummy description",
+              "Automated test dummy description "
+                  + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-M-dd")),
               "Point of entry details are not correct");
 
           softly.assertAll();
@@ -1955,7 +1959,7 @@ public class EditCaseSteps implements En {
         "I check if editable fields are read only for an archived case",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          TimeUnit.SECONDS.sleep(15);
+          TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(BACK_TO_CASES_LIST_BUTTON);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(INVESTIGATION_STATUS_OPTIONS),
@@ -2470,12 +2474,15 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(
               SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
         });
+    When(
+        "I click to hand over the ownership of the case in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
 
     When(
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          // Workaround before SORQA-565 will be fixed
+          // TODO Workaround before SORQA-565 will be fixed
           webDriverHelpers.refreshCurrentPage();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
@@ -2537,12 +2544,6 @@ public class EditCaseSteps implements En {
                 webDriverHelpers.isElementEnabled(
                     getPreExistingConditionComboboxWithValue_DE(preExistingCondition, value))));
 
-    Then(
-        "I check that Clinical Assessments heading is visible in DE",
-        () ->
-            Assert.assertTrue(
-                webDriverHelpers.isElementVisibleWithTimeout(CLINICAL_ASSESSMENTS_LABEL_DE, 15)));
-
     And(
         "I select {string} from documents templates list",
         (String templateName) -> {
@@ -2560,6 +2561,64 @@ public class EditCaseSteps implements En {
         (Integer taskNumber) -> {
           webDriverHelpers.clickOnWebElementBySelector(getEditTaskButtonByNumber(taskNumber - 1));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    And(
+        "^I check that the Archive case button is not available$",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ARCHIVE_CASE_BUTTON, 2),
+              "Archive case button is visible!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if date of report is set for (\\d+) day ago from today on Edit Case page for DE version$",
+        (Integer days) -> {
+          String actualReportDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+          String expectedReportDate =
+              (LocalDate.now().minusDays(days)).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+          Assert.assertEquals(actualReportDate, expectedReportDate, "Report date is incorrect!");
+        });
+
+    And(
+        "^I choose the reason of deletion in popup for Vaccination for DE version$",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              DELETE_VACCINATION_REASON_POPUP_DE_VERSION, "Anderer Grund");
+          webDriverHelpers.fillInWebElement(REASON_FOR_DELETION_DETAILS_TEXTAREA, "Other reason");
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+        });
+
+    And(
+        "^I choose \"([^\"]*)\" in Vaccination Status update popup for DE version$",
+        (String option) -> {
+          webDriverHelpers.isElementVisibleWithTimeout(VACCINATION_STATUS_UPDATE_POPUP_HEADER, 5);
+          switch (option) {
+            case "JA":
+              webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+              break;
+            case "NEIN":
+              webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+              break;
+          }
+          TimeUnit.SECONDS.sleep(3); // wait for reaction
+        });
+
+    And(
+        "^I check that vaccination is removed from vaccination card on Edit Case page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          boolean elementVisible =
+              webDriverHelpers.isElementVisibleWithTimeout(EDIT_VACCINATION_BUTTON, 5);
+          softly.assertFalse(elementVisible, "Vaccination ID is visible!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if element with text {string} is present in Case Edit",
+        (String text) -> {
+          Assert.assertTrue(webDriverHelpers.isElementPresent(checkIfTextExists(text)));
         });
   }
 

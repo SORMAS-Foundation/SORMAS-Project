@@ -129,7 +129,7 @@ public class DistrictsView extends AbstractConfigurationView {
 			addHeaderComponent(exportButton);
 
 			StreamResource streamResource = GridExportStreamResource
-				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.DISTRICTS, DistrictsGrid.ACTION_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}

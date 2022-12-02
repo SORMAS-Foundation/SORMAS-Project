@@ -42,12 +42,13 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.proxy.HibernateProxyHelper;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 
-import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 
@@ -167,7 +168,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 			return false;
 		}
 
-		if (o.getClass() == this.getClass()) {
+		if (HibernateProxyHelper.getClassWithoutInitializingProxy(o) == HibernateProxyHelper.getClassWithoutInitializingProxy(this)) {
 			// this works, because we are using UUIDs
 			AbstractDomainObject ado = (AbstractDomainObject) o;
 			return getUuid().equals(ado.getUuid());

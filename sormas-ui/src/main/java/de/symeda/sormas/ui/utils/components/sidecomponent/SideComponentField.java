@@ -44,8 +44,43 @@ public class SideComponentField extends HorizontalLayout {
 		setExpandRatio(editButton, 0);
 	}
 
+	public void addViewButton(String id, Button.ClickListener viewClickListener) {
+		Button viewButton =
+			ButtonHelper.createIconButtonWithCaption(id, null, VaadinIcons.EYE, viewClickListener, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+		addComponent(viewButton);
+		setComponentAlignment(viewButton, Alignment.TOP_RIGHT);
+		setExpandRatio(viewButton, 0);
+		viewButton.setEnabled(true);
+	}
+
 	@Override
 	public void setEnabled(boolean enabled) {
 		mainLayout.setEnabled(enabled);
+	}
+
+	public void addActionButton(String id, Button.ClickListener actionClickListener, boolean isEditEntry) {
+		Button actionButton = ButtonHelper.createIconButtonWithCaption(
+			isEditEntry ? "edit" + id : "view" + id,
+			null,
+			isEditEntry ? VaadinIcons.PENCIL : VaadinIcons.EYE,
+			actionClickListener,
+			ValoTheme.BUTTON_LINK,
+			CssStyles.BUTTON_COMPACT);
+		addComponent(actionButton);
+		setComponentAlignment(actionButton, Alignment.TOP_RIGHT);
+		setExpandRatio(actionButton, 0);
+	}
+
+	public void addDeleteButton(String id, Button.ClickListener actionClickListener) {
+		Button actionButton = ButtonHelper.createIconButtonWithCaption(
+			"delete" + id,
+			null,
+			VaadinIcons.TRASH,
+			actionClickListener,
+			ValoTheme.BUTTON_LINK,
+			CssStyles.BUTTON_COMPACT);
+		addComponent(actionButton);
+		setComponentAlignment(actionButton, Alignment.TOP_RIGHT);
+		setExpandRatio(actionButton, 0);
 	}
 }

@@ -1,8 +1,8 @@
 package de.symeda.sormas.ui.externalmessage;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -13,11 +13,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -40,7 +38,6 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
 public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 	@Test
@@ -116,7 +113,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 	public void testMigrateDiseaseVariant() throws CustomEnumNotFoundException {
 		CustomizableEnumFacadeEjb customizableEnumFacade = mock(CustomizableEnumFacadeEjb.class);
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
-		labMessage.setTestedDisease(Disease.CORONAVIRUS);
+		labMessage.setDisease(Disease.CORONAVIRUS);
 		TestReportDto testReport = TestReportDto.build();
 
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
@@ -227,8 +224,8 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		ExternalMessageDto labMessageDto = ExternalMessageDto.build();
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessageDto);
 
-		assertEquals(otherFacilityRef, mapper.getLabReference(Collections.emptyList()));
-		assertEquals(otherFacilityRef, mapper.getLabReference(Collections.singletonList("unknown")));
+		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.emptyList()));
+		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.singletonList("unknown")));
 
 		FacilityDto one = creator
 			.createFacility("One", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
@@ -242,12 +239,12 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		two.setChangeDate(new Date());
 		getFacilityFacade().save(two);
 
-		FacilityReferenceDto oneExternal = mapper.getLabReference(Collections.singletonList("oneExternal"));
+		FacilityReferenceDto oneExternal = mapper.getFacilityReference(Collections.singletonList("oneExternal"));
 		assertEquals(one.toReference(), oneExternal);
 
-		FacilityReferenceDto twoExternal = mapper.getLabReference(Collections.singletonList("twoExternal"));
+		FacilityReferenceDto twoExternal = mapper.getFacilityReference(Collections.singletonList("twoExternal"));
 		assertEquals(two.toReference(), twoExternal);
 
-		assertNull(mapper.getLabReference(Arrays.asList("oneExternal", "twoExternal")));
+		assertNull(mapper.getFacilityReference(Arrays.asList("oneExternal", "twoExternal")));
 	}
 }

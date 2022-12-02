@@ -132,7 +132,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 				grid,
 				this::getSelectedRows,
 				ExportEntityName.SUBCONTINENTS,
-				Collections.singletonList(SubcontinentsGrid.EDIT_BTN_ID),
+				Collections.singletonList(SubcontinentsGrid.ACTION_BTN_ID),
 				Collections.singletonList(SubcontinentIndexDto.DEFAULT_NAME));
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);

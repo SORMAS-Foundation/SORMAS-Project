@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -2442,7 +2442,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		Consumer<ExternalMessageDto> customConfig) {
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
-		labMessage.setTestedDisease(disease);
+		labMessage.setDisease(disease);
 		labMessage.setReportId(reportId);
 		labMessage.setStatus(status);
 

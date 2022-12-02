@@ -34,11 +34,14 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
@@ -71,6 +74,8 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	private FacilityService facilityService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
 
 	public static SurveillanceReportDto toDto(SurveillanceReport source) {
 		if (source == null) {
@@ -81,7 +86,8 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setReportingType(source.getReportingType());
-		target.setCreatingUser(source.getCreatingUser().toReference());
+		target.setExternalId(source.getExternalId());
+		target.setCreatingUser(source.getCreatingUser() == null ? null : source.getCreatingUser().toReference());
 		target.setReportDate(source.getReportDate());
 		target.setDateOfDiagnosis(source.getDateOfDiagnosis());
 		target.setFacilityRegion(RegionFacadeEjb.toReferenceDto(source.getFacilityRegion()));
@@ -118,6 +124,12 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	@Override
 	@RightsAllowed(UserRight._CASE_EDIT)
 	public void deleteSurveillanceReport(String surveillanceReportUuid) {
+		ExternalMessageDto associatedMessage =
+			externalMessageFacade.getForSurveillanceReport(new SurveillanceReportReferenceDto(surveillanceReportUuid));
+		if (associatedMessage != null) {
+			associatedMessage.setSurveillanceReport(null);
+			externalMessageFacade.save(associatedMessage);
+		}
 		service.deletePermanent(service.getByUuid(surveillanceReportUuid));
 	}
 
@@ -146,10 +158,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 		}, (reportDto, inJurisdiction) -> {
 			Optional<SurveillanceReport> report = resultList.stream().filter(r -> r.getUuid().equals(r.getUuid())).findFirst();
 			report.ifPresent(
-				surveillanceReport -> pseudonymizer.pseudonymizeUser(
-					surveillanceReport.getCreatingUser(),
-					currentUser,
-					reportDto::setCreatingUser));
+				surveillanceReport -> pseudonymizer.pseudonymizeUser(surveillanceReport.getCreatingUser(), currentUser, reportDto::setCreatingUser));
 		});
 
 		return reports;
@@ -157,7 +166,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 	@Override
 	public List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids) {
-		return service.getByCaseUuids(caseUuids).stream().map(s -> toDto(s)).collect(Collectors.toList());
+		return service.getByCaseUuids(caseUuids).stream().map(SurveillanceReportFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	private void restorePseudonymizedDto(SurveillanceReportDto dto, SurveillanceReport existingReport, SurveillanceReportDto existingDto) {
@@ -177,6 +186,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), SurveillanceReport::new, checkChangeDate);
 
 		target.setReportingType(source.getReportingType());
+		target.setExternalId(source.getExternalId());
 		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
 		target.setReportDate(source.getReportDate());
 		target.setDateOfDiagnosis(source.getDateOfDiagnosis());

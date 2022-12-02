@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.externalmessage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,13 +19,13 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -34,16 +34,19 @@ import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ExternalMessageFacadeEjbUnitTest {
 
 	@Mock
 	private EntityManager em;
 	@Mock
 	private ExternalMessageService externalMessageService;
+	@Mock
+	private SurveillanceReportService surveillanceReportService;
 	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
@@ -115,11 +118,11 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testSave() {
-
 		ExternalMessageDto externalMessageDto = new ExternalMessageDto();
 		String testUuid = "Test UUID";
 		externalMessageDto.setUuid(testUuid);
 		ExternalMessage externalMessage = new ExternalMessage();
+		externalMessage.setUuid(testUuid);
 
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);
 		sut.save(externalMessageDto);
@@ -129,7 +132,6 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testGetByUuid() {
-
 		String testUuid = "test UUID";
 		ExternalMessage externalMessage = new ExternalMessage();
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);

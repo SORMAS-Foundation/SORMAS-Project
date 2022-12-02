@@ -129,6 +129,11 @@
                     app:value="@={data.assigneeReply}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/task_assignedByUser"
+                    app:value="@{data.assignedByUser}"
+                    style="@style/ControlSingleColumnStyle" />
+
             </LinearLayout>
 
             <RelativeLayout

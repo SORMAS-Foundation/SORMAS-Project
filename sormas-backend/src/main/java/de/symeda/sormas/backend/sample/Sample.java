@@ -230,7 +230,7 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 		this.reportDateTime = reportDateTime;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
@@ -269,7 +269,7 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 		this.samplePurpose = samplePurpose;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn
 	public Facility getLab() {
 		return lab;

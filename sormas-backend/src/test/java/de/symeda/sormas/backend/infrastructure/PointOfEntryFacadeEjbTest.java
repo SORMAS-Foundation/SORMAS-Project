@@ -1,21 +1,23 @@
 package de.symeda.sormas.backend.infrastructure;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
-public class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
+class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetAllAfter() throws InterruptedException {
+	void testGetAllAfter() throws InterruptedException {
 
 		Region region = creator.createRegion("region");
 		District district = creator.createDistrict("district", region);
@@ -39,4 +41,27 @@ public class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(district.getUuid(), results.get(0).getDistrict().getUuid());
 		assertEquals(region.getUuid(), results.get(0).getRegion().getUuid());
 	}
+
+	@Test
+	void testCount() {
+
+		getPointOfEntryService().createConstantPointsOfEntry();
+		PointOfEntryFacade pointOfEntryFacade = getPointOfEntryFacade();
+		assertEquals(0, pointOfEntryFacade.count(null));
+		assertEquals(0, pointOfEntryFacade.count(new PointOfEntryCriteria()));
+
+		Region region = creator.createRegion("Region1");
+		District district = creator.createDistrict("District1", region);
+
+		creator.createPointOfEntry("poe1", region, district);
+		assertEquals(1, pointOfEntryFacade.count(null));
+		assertEquals(1, pointOfEntryFacade.count(new PointOfEntryCriteria()));
+
+		creator.createPointOfEntry("poe2", region, district);
+		assertEquals(2, pointOfEntryFacade.count(null));
+		assertEquals(2, pointOfEntryFacade.count(new PointOfEntryCriteria()));
+
+		assertEquals(1, pointOfEntryFacade.count(new PointOfEntryCriteria().nameLike("poe1")));
+	}
+
 }

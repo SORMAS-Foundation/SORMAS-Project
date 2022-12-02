@@ -1,40 +1,22 @@
 package de.symeda.sormas.backend.common;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.testcontainers.containers.PostgreSQLContainer.POSTGRESQL_PORT;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
-import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.junit.jupiter.api.Test;
 
 import info.novatec.beantest.api.BaseBeanTest;
 
@@ -59,14 +41,14 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 		for (String version : SUPPORTED_DATABASE_VERSIONS) {
 			assertTrue(
-				String.format("Supported version not recognized correctly: '%s'", version),
-				StartupShutdownService.isSupportedDatabaseVersion(version));
+				StartupShutdownService.isSupportedDatabaseVersion(version),
+				String.format("Supported version not recognized correctly: '%s'", version));
 		}
 
 		for (String version : UNSUPPORTED_DATABASE_VERSIONS) {
 			assertFalse(
-				String.format("Unsupported version not recognized correctly: '%s'", version),
-				StartupShutdownService.isSupportedDatabaseVersion(version));
+				StartupShutdownService.isSupportedDatabaseVersion(version),
+				String.format("Unsupported version not recognized correctly: '%s'", version));
 		}
 	}
 
@@ -116,52 +98,6 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 	}
 
 	/**
-	 * Test that the *_history tables have the same columns as the corresponding production tables
-	 *
-	 * TROUBLESHOOTING
-	 * - In case the container can't be started:
-	 * https://github.com/hzi-braunschweig/SORMAS-Project/issues/9177#issuecomment-1125130020
-	 *
-	 * @throws IOException
-	 *             if the resource(s) used in the test can't be read
-	 * @throws URISyntaxException
-	 *             if the path to a resource is not syntactically correct
-	 */
-
-	@Test
-	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
-
-		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer();
-		container.start();
-
-		Map<String, String> properties = new HashMap<>();
-		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
-		properties.put("javax.persistence.jdbc.user", container.getUsername());
-		properties.put("javax.persistence.jdbc.password", container.getPassword());
-		properties.put("javax.persistence.jdbc.driver", container.getDriverClassName());
-		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
-		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
-		properties.put("hibernate.jdbc.batch_size", "100");
-		properties.put("hibernate.order_inserts", "true");
-		properties.put("hibernate.order_updates", "true");
-		properties.put("hibernate.hbm2ddl.auto", "none");
-
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("beanTestPU", properties);
-		EntityManager em = emf.createEntityManager();
-
-		String checkHistoryTablesSql = new String(
-			Files.readAllBytes(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("checkHistoryTables.sql")).toURI())));
-		@SuppressWarnings("unchecked")
-		List<Object[]> results = (List<Object[]>) em.createNativeQuery(checkHistoryTablesSql).getResultList();
-		StringBuilder result = new StringBuilder();
-		results.forEach(objects -> {
-			result.append("\n");
-			Arrays.stream(objects).forEach(o -> result.append((o != null ? o.toString() : "") + " "));
-		});
-		assertTrue(result.toString(), CollectionUtils.isEmpty(results));
-	}
-
-	/**
 	 * Checks that the order of the updates is correct
 	 *
 	 * @param schemaResource
@@ -188,68 +124,14 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 						for (int v = currentVersion + 1; v < nextVersion; v++) {
 							assertTrue(
-								"Missing version: " + v + " ( found " + nextVersion + " after " + currentVersion + ")",
-								omittedVersionsList.contains(v));
+								omittedVersionsList.contains(v),
+								"Missing version: " + v + " ( found " + nextVersion + " after " + currentVersion + ")");
 						}
 
 						currentVersion = nextVersion;
 					}
 				}
 			}
-		}
-	}
-
-	public static class SormasPostgresSQLContainer extends JdbcDatabaseContainer<SormasPostgresSQLContainer> {
-
-		public SormasPostgresSQLContainer() {
-			super(
-				new ImageFromDockerfile().withFileFromClasspath("setup_sormas_db.sh", "testcontainers/setup_sormas_db.sh")
-					.withFileFromClasspath("sormas_schema.sql", "sql/sormas_schema.sql")
-					.withFileFromClasspath("Dockerfile", "testcontainers/Dockerfile"));
-			this.waitStrategy = new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*\\s")
-				.withTimes(2)
-				.withStartupTimeout(Duration.of(60, SECONDS));
-			addExposedPort(POSTGRESQL_PORT);
-			withEnv("POSTGRES_USER", getUsername());
-			withEnv("POSTGRES_PASSWORD", getPassword());
-			withEnv("POSTGRES_DB", getDatabaseName());
-		}
-
-		@Override
-		public String getDriverClassName() {
-			return "org.postgresql.Driver";
-		}
-
-		@Override
-		public String getJdbcUrl() {
-			String additionalUrlParams = constructUrlParameters("?", "&");
-			return "jdbc:postgresql://" + getContainerIpAddress() + ":" + getMappedPort(POSTGRESQL_PORT) + "/" + getDatabaseName()
-				+ additionalUrlParams;
-		}
-
-		@Override
-		public String getDatabaseName() {
-			return "sormas";
-		}
-
-		@Override
-		public String getUsername() {
-			return "sormas_user";
-		}
-
-		@Override
-		public String getPassword() {
-			return "password";
-		}
-
-		@Override
-		protected String getTestQueryString() {
-			return "SELECT 1";
-		}
-
-		@Override
-		protected void waitUntilContainerStarted() {
-			getWaitStrategy().waitUntilReady(this);
 		}
 	}
 }

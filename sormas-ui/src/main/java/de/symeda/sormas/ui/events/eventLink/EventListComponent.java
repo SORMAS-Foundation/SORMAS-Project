@@ -52,10 +52,10 @@ public class EventListComponent extends VerticalLayout {
 	private Button createButton;
 	private final Consumer<Runnable> actionCallback;
 
-	public EventListComponent(CaseReferenceDto caseRef, Consumer<Runnable> actionCallback) {
+	public EventListComponent(CaseReferenceDto caseRef, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 
 		this.actionCallback = actionCallback;
-		createEventListComponent(new EventList(caseRef, actionCallback), I18nProperties.getString(Strings.entityEvents), false, () -> {
+		createEventListComponent(new EventList(caseRef, actionCallback, isEditAllowed), I18nProperties.getString(Strings.entityEvents), false, () -> {
 			EventCriteria eventCriteria = new EventCriteria();
 
 			//check if there are active events in the database
@@ -65,15 +65,15 @@ public class EventListComponent extends VerticalLayout {
 			} else {
 				ControllerProvider.getEventController().create(caseRef);
 			}
-		});
+		}, isEditAllowed);
 
 	}
 
-	public EventListComponent(ContactReferenceDto contactRef, Consumer<Runnable> actionCallback) {
+	public EventListComponent(ContactReferenceDto contactRef, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 
 		this.actionCallback = actionCallback;
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
-		EventList eventList = new EventList(contact, actionCallback);
+		EventList eventList = new EventList(contact, actionCallback, isEditAllowed);
 
 		createEventListComponent(eventList, I18nProperties.getString(Strings.entityEvents), false, () -> {
 			EventCriteria eventCriteria = new EventCriteria();
@@ -85,7 +85,7 @@ public class EventListComponent extends VerticalLayout {
 			} else {
 				ControllerProvider.getEventController().create(contact);
 			}
-		});
+		}, isEditAllowed);
 
 		if (contact.getCaze() != null) {
 			CheckBox contactOnlyWithSourceCaseInEvent = new CheckBox(I18nProperties.getCaption(Captions.eventOnlyWithContactSourceCaseInvolved));
@@ -103,10 +103,10 @@ public class EventListComponent extends VerticalLayout {
 		}
 	}
 
-	public EventListComponent(EventReferenceDto superordinateEvent, Consumer<Runnable> actionCallback) {
+	public EventListComponent(EventReferenceDto superordinateEvent, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 
 		this.actionCallback = actionCallback;
-		EventList eventList = new EventList(superordinateEvent, actionCallback);
+		EventList eventList = new EventList(superordinateEvent, actionCallback, isEditAllowed);
 		createEventListComponent(eventList, I18nProperties.getCaption(Captions.eventSubordinateEvents), true, () -> {
 			EventCriteria eventCriteria = new EventCriteria();
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
@@ -115,10 +115,15 @@ public class EventListComponent extends VerticalLayout {
 			} else {
 				ControllerProvider.getEventController().createSubordinateEvent(superordinateEvent);
 			}
-		});
+		}, isEditAllowed);
 	}
 
-	private void createEventListComponent(EventList eventList, String heading, boolean bottomCreateButton, Runnable linkEventCallback) {
+	private void createEventListComponent(
+		EventList eventList,
+		String heading,
+		boolean bottomCreateButton,
+		Runnable linkEventCallback,
+		boolean isEditAllowed) {
 
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
@@ -138,7 +143,8 @@ public class EventListComponent extends VerticalLayout {
 		eventLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(eventLabel);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
+		if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)
+			&& isEditAllowed) {
 			createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);

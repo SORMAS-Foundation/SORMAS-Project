@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.vaadin.ui.Label;
 
@@ -16,11 +17,14 @@ import de.symeda.sormas.ui.utils.PaginationList;
 public class AdditionalTestList extends PaginationList<AdditionalTestDto> {
 
 	private String sampleUuid;
+	private final Consumer<Runnable> actionCallback;
+	private boolean isEditable;
 
-	public AdditionalTestList(String sampleUuid) {
-
+	public AdditionalTestList(String sampleUuid, Consumer<Runnable> actionCallback, boolean isEditable) {
 		super(3);
 		this.sampleUuid = sampleUuid;
+		this.isEditable = isEditable;
+		this.actionCallback = actionCallback;
 	}
 
 	@Override
@@ -46,11 +50,14 @@ public class AdditionalTestList extends PaginationList<AdditionalTestDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			AdditionalTestDto additionalTest = displayedEntries.get(i);
 			AdditionalTestListEntry listEntry = new AdditionalTestListEntry(additionalTest);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT)) {
-				listEntry.addEditListener(i, e -> {
-					ControllerProvider.getAdditionalTestController().openEditComponent(additionalTest, AdditionalTestList.this::reload);
-				});
-			}
+			boolean isEditableAndHasEditRight = isEditable && UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT);
+			listEntry.addActionButton(
+				additionalTest.getUuid(),
+				e -> actionCallback.accept(
+					() -> ControllerProvider.getAdditionalTestController()
+						.openEditComponent(additionalTest, AdditionalTestList.this::reload, isEditableAndHasEditRight)),
+				isEditableAndHasEditRight);
+			listEntry.setEnabled(isEditable);
 			listLayout.addComponent(listEntry);
 		}
 	}

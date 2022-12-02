@@ -89,9 +89,11 @@ public class TaskManagementSteps implements En {
     And(
         "I click on SHOW MORE FILTERS BUTTON on Task directory page",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(3);
+          TimeUnit.SECONDS.sleep(4);
         });
 
     When(
@@ -110,6 +112,20 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
           webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
               lastTaskEditButton, TASK_STATUS_OPTIONS, 6);
+        });
+    When(
+        "^I filter out last created task from Tasks Directory$",
+        () -> {
+          By lastTaskEditButton =
+              By.xpath(
+                  String.format(
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnExecution()));
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ASSIGNED_USER_FILTER_INPUT);
+          String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
+          webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
         });
 
     When(

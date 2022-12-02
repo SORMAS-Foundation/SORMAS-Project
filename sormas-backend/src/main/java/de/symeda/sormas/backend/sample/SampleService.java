@@ -61,6 +61,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -92,6 +93,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -133,6 +135,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalMessageService externalMessageService;
+	@EJB
+	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public SampleService() {
 		super(Sample.class);
@@ -821,10 +825,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.or(cb.equal(joins.getCaze().get(Case.ARCHIVED), false), cb.isNull(joins.getCaze().get(Case.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(cb, filter, assignedToActiveEntity(cb, joins));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, allAssignedEntitiesAreArchived(cb, joins));
 			}
 		}
 		if (criteria.getDeleted() != null) {
@@ -902,6 +905,43 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return filter;
 	}
 
+	private boolean sampleAssignedToActiveEntity(String sampleUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Sample> from = cq.from(getElementClass());
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, from);
+		SampleJoins joins = sampleQueryContext.getJoins();
+
+		cq.select(cb.literal(true));
+
+		Predicate predicate = cb.and(cb.equal(from.get(Sample.UUID), sampleUuid), assignedToActiveEntity(cb, joins));
+
+		cq.where(predicate);
+
+		Boolean exist = QueryHelper.getSingleResult(em, cq);
+
+		return Boolean.TRUE.equals(exist);
+	}
+
+	private Predicate assignedToActiveEntity(CriteriaBuilder cb, SampleJoins joins) {
+
+		return cb.or(
+			cb.isFalse(joins.getCaze().get(Case.ARCHIVED)),
+			cb.isFalse(joins.getContact().get(Contact.ARCHIVED)),
+			cb.isFalse(joins.getEventParticipant().get(EventParticipant.ARCHIVED)));
+	}
+
+	private Predicate allAssignedEntitiesAreArchived(CriteriaBuilder cb, SampleJoins joins) {
+
+		return cb.and(
+			cb.or(cb.isTrue(joins.getCaze().get(Case.ARCHIVED)), cb.isNull(joins.getCaze().get(Case.ARCHIVED))),
+			cb.or(cb.isTrue(joins.getContact().get(Contact.ARCHIVED)), cb.isNull(joins.getContact().get(Contact.ARCHIVED))),
+			cb.or(
+				cb.isTrue(joins.getEventParticipant().get(EventParticipant.ARCHIVED)),
+				cb.isNull(joins.getEventParticipant().get(EventParticipant.ARCHIVED))));
+	}
+
 	@Override
 	public void deletePermanent(Sample sample) {
 
@@ -938,9 +978,16 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			pathogenTestService.delete(pathogenTest, deletionDetails);
 		}
 
-		deleteSampleLinks(sample);
-
 		super.delete(sample, deletionDetails);
+	}
+
+	@Override
+	public void undelete(Sample sample) {
+
+		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+			pathogenTestService.undelete(pathogenTest);
+		}
+		super.undelete(sample);
 	}
 
 	public void unlinkFromEventParticipant(Sample sample) {
@@ -1093,9 +1140,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return cb.isFalse(root.get(Sample.DELETED));
 	}
 
-
 	public boolean isEditAllowed(Sample sample) {
 		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
+		}
+
+		if (featureConfigurationFacade.isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES) && !sampleAssignedToActiveEntity(sample.getUuid())) {
 			return false;
 		}
 
@@ -1148,5 +1198,4 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.select(pathogenTestJoin.get(PathogenTest.TESTED_DISEASE_VARIANT));
 		return em.createQuery(cq).getResultList();
 	}
-
 }

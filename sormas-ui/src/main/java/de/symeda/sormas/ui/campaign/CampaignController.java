@@ -61,11 +61,15 @@ public class CampaignController {
 			});
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-				campaignComponent.addDeleteWithReasonListener((deleteDetails) -> {
-					FacadeProvider.getCampaignFacade().delete(campaign.getUuid(),deleteDetails);
+				campaignComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+					FacadeProvider.getCampaignFacade().delete(campaign.getUuid(), deleteDetails);
 					campaignComponent.discard();
 					SormasUI.refreshView();
-				}, I18nProperties.getString(Strings.entityCampaign));
+				}, null, (deleteDetails) -> {
+					FacadeProvider.getCampaignFacade().undelete(campaign.getUuid());
+					campaignComponent.discard();
+					SormasUI.refreshView();
+				}, I18nProperties.getString(Strings.entityCampaign), campaign.getUuid(), FacadeProvider.getCampaignFacade());
 			}
 
 			// Initialize 'Archive' button
@@ -134,10 +138,14 @@ public class CampaignController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
-			campaignComponent.addDeleteWithReasonListener((deleteDetails) -> {
+			campaignComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				FacadeProvider.getCampaignFacade().delete(finalCampaignDto.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityCampaign));
+			}, null, (deleteDetails) -> {
+				FacadeProvider.getCampaignFacade().undelete(finalCampaignDto.getUuid());
+				campaignComponent.discard();
+				SormasUI.refreshView();
+			}, I18nProperties.getString(Strings.entityCampaign), finalCampaignDto.getUuid(), FacadeProvider.getCampaignFacade());
 		}
 
 		// Initialize 'Archive' button
@@ -157,7 +165,7 @@ public class CampaignController {
 
 		if (campaignDto.isDeleted()) {
 			campaignComponent.getWrappedComponent().getField(CampaignDto.DELETION_REASON).setVisible(true);
-			if (campaignComponent.getWrappedComponent().getField(CampaignDto.DELETION_REASON).getValue()== DeletionReason.OTHER_REASON){
+			if (campaignComponent.getWrappedComponent().getField(CampaignDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
 				campaignComponent.getWrappedComponent().getField(CampaignDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}

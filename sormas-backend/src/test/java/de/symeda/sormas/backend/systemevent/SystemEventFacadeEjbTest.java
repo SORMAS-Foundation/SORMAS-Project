@@ -1,9 +1,9 @@
 package de.symeda.sormas.backend.systemevent;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -12,7 +12,7 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
@@ -33,7 +33,8 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 		Date centralSyncDate = new Date(400000L);
 
 		SystemEventDto earlierSuccess = creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, earliestDate, SystemEventStatus.SUCCESS);
-		SystemEventDto latestSuccess = creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, intermediateDate, SystemEventStatus.SUCCESS);
+		SystemEventDto latestSuccess =
+			creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, intermediateDate, SystemEventStatus.SUCCESS);
 		SystemEventDto error = creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, latestDate, SystemEventStatus.ERROR);
 		SystemEventDto centralSync = creator.createSystemEvent(SystemEventType.CENTRAL_SYNC_INFRA, centralSyncDate, SystemEventStatus.SUCCESS);
 
@@ -71,7 +72,7 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getAllSystemEvents(), hasSize(2));
 
 		systemEventFacadeEjb.deleteAllDeletableSystemEvents(inBetween);
-		assertEquals(systemEventFacadeEjb.fromDto(systemEvent2, null, true), getAllSystemEvents().get(0));
+		assertEquals(systemEventFacadeEjb.fillOrBuildEntity(systemEvent2, null, true), getAllSystemEvents().get(0));
 
 		getSystemEventFacade().deleteAllDeletableSystemEvents(-1);
 		assertTrue(getAllSystemEvents().isEmpty());

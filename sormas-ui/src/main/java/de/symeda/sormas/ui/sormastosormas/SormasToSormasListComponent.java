@@ -72,9 +72,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 	private SormasToSormasOriginInfoDto originInfo;
 	private ShareDataLoader loadShares;
+	private boolean isEditAllowed = true;
 
-	public SormasToSormasListComponent(CaseDataDto caze) {
-
+	public SormasToSormasListComponent(CaseDataDto caze, boolean isEditAllowed) {
+		this.isEditAllowed = isEditAllowed;
 		sormasToSormasList =
 			new SormasToSormasList(caze.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasCaseNotShared, this::reloadListSync);
 
@@ -84,9 +85,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			e -> ControllerProvider.getSormasToSormasController().shareCaseFromDetailsPage(caze));
 	}
 
-	public SormasToSormasListComponent(ContactDto contact) {
+	public SormasToSormasListComponent(ContactDto contact, boolean isEditAllowed) {
 		sormasToSormasList =
 			new SormasToSormasList(contact.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasContactNotShared, this::reloadListSync);
+		this.isEditAllowed = isEditAllowed;
 
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
@@ -163,7 +165,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		header.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(header);
 
-		if (shareButtonClickListener != null && UserProvider.getCurrent().hasUserRight(UserRight.SORMAS_TO_SORMAS_SHARE)) {
+		if (shareButtonClickListener != null && UserProvider.getCurrent().hasUserRight(UserRight.SORMAS_TO_SORMAS_SHARE) && isEditAllowed) {
 			Button shareButtonButton =
 				ButtonHelper.createIconButton(Captions.sormasToSormasShare, VaadinIcons.SHARE, shareButtonClickListener, ValoTheme.BUTTON_PRIMARY);
 
@@ -187,7 +189,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 					currentUI.setPollInterval(-1);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
 				logger.error(e.getMessage(), e);
 
 				currentUI.setPollInterval(-1);

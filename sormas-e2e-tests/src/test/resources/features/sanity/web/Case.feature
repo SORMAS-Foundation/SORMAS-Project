@@ -530,7 +530,7 @@ Feature: Case end to end tests
     And I click on first person in person directory
     And I check if Date of dead for specified case is correct
 
-  @tmsLink=SORDEV-6843 @env_main
+  @tmsLink=SORDEV-6843 @env_main @ignore
   Scenario: Refine the update mechanism between case outcome and person other cause date
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -697,25 +697,25 @@ Feature: Case end to end tests
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Isolation as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
     When I click on the Cases button from navbar
@@ -1302,12 +1302,12 @@ Feature: Case end to end tests
     Then I navigate to the last created case via the url
     Then I click on New Sample
     Then I create a new Sample with positive test result with Guinea Worm as disease
-    Then I confirm the Create case from contact with positive test result
+    And I save the created sample
     Then I navigate to the last created case via the url
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Dengue Fever as disease
-    Then I confirm the Create case from contact with positive test result
+    Then I confirm to create case for selected disease
     Then I navigate to the last created case via the url
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
@@ -1537,6 +1537,7 @@ Feature: Case end to end tests
       And I click on the Cases button from navbar
       And I click on the NEW CASE button
       And I create a new case with specific data for DE version with date 2 days ago
+      And I click SAVE button on Create New Case form
       Then I collect uuid of the case
       Then I click on the Archive case button
       Then I check the end of processing date in the archive popup and select Archive cases checkbox
@@ -1768,7 +1769,7 @@ Feature: Case end to end tests
      Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
      Then API: I check that POST call body is "OK"
      And API: I check that POST call status code is 200
-     Given I log in as Admin User in Keycloak enabled environment
+     Given I log in as a Admin User
      Then I navigate to the last created case via the url
      And I collect uuid of the case
      Then I click on share case button
@@ -1776,7 +1777,7 @@ Feature: Case end to end tests
      And I fill comment in share popup with "shared with automated test"
      Then I click on share button in s2s share popup and wait for share to finish
      Then I navigate to "s2s_2" environment
-     Given I log in as Admin User in Keycloak enabled environment
+     Given I log in as a Admin User
      And I click on the Shares button from navbar
      Then I click on the The Eye Icon located in the Shares Page
      And I check if received case id is equal with sent
@@ -1834,8 +1835,6 @@ Feature: Case end to end tests
     And I check that "chronicKidneyDisease" Pre-existing condition is visible on page
     And I check that "chronicNeurologicCondition" Pre-existing condition is visible on page
     And I check that "cardiovascularDiseaseIncludingHypertension" Pre-existing condition is visible on page
-    Then I click on Clinical Course tab from Edit Case page
-    Then I check that Clinical Assessments heading is visible in DE
 
   @tmsLink=SORDEV-9789 @env_de
   Scenario: Test health conditions document template export
@@ -1859,11 +1858,228 @@ Feature: Case end to end tests
 
   @tmsLink=SORDEV-12446 @env_s2s_1
   Scenario: Hide share action in bulk mode for cases
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I click on the Cases button from navbar
     And I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page
     And I click on Bulk Actions combobox on Case Directory Page
     Then I check that Share option is not visible in Bulk Actions dropdown in Case Directory for DE specific
 
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a case in source system with handing ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the case in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    And I click on the Cases button from navbar
+    And I filter by CaseID on Case directory page
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I apply "Alle Fälle" to combobox on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on Bulk Actions combobox on Case Directory Page
+    Then I click on Delete button from Bulk Actions Combobox in Case Directory
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_2" environment
+    And I click on the Cases button from navbar
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I apply "Alle Fälle" to combobox on Case Directory Page
+    Then I click on the APPLY FILTERS button
+    And I select first created case for person from Cases list
+    Then I check if editable fields are read only for an archived case
 
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a case in target system with handing ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the case in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    And I click on the Cases button from navbar
+    And I select first created case for person from Cases list
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_1" environment
+    And I click on the Cases button from navbar
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I apply "Alle Fälle" to combobox on Case Directory Page
+    Then I click on the APPLY FILTERS button
+    And I select first created case for person from Cases list
+    Then I check if editable fields are read only for an archived case
+
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a case in source system without handing ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_2" environment
+    And I click on the Cases button from navbar
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I apply "Alle Fälle" to combobox on Case Directory Page
+    Then I click on the APPLY FILTERS button
+    And I select first created case for person from Cases list
+    Then I check if editable fields are read only for an archived case
+
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a case in target system without handing ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    And I click on the Cases button from navbar
+    And I filter by CaseID on Case directory page
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I apply "Alle Fälle" to combobox on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on Bulk Actions combobox on Case Directory Page
+    Then I click on Delete button from Bulk Actions Combobox in Case Directory
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url
+
+  @tmsLink=SORDEV-12087 @env_s2s_1
+  Scenario: Delete a case in source system with handing ownership before acceptance
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+
+  @tmsLink=SORQA-658 @env_de @oldfake
+    Scenario: Check automatic deletion of cases created 3651 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with creation date 3651 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I click on the Cases button from navbar
+    And I check if created case is available in API
+    And API: I check that POST call status code is 204
+    Then I filter with first Case ID
+    And I check that number of displayed cases results is 0
+
+    @tmsLink=SORQA-663 @env_de @oldfake @precon
+      Scenario: Check if 'Löschung geplant für' is available in Case Edit
+      Given API: I create a new person
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then API: I create a new case
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then I log in as a Admin User
+      Then I navigate to the last created case via the url
+      And I check if element with text "Löschung geplant für" is present in Case Edit
+
+  @tmsLink=SORQA-682 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of cases created 3645 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with creation date 3645 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I click on the Cases button from navbar
+    And I check if created case is available in API
+    And API: I check that POST call status code is 200
+    Then I filter with first Case ID
+    And I check that number of displayed cases results is 1

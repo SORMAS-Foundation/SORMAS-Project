@@ -15,8 +15,10 @@
 
 package de.symeda.sormas.backend.user;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -32,7 +34,7 @@ public class UserRoleServiceTest extends AbstractBeanTest {
 
 		creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER);
 
-		Assert.assertEquals(6, getUserRoleFacade().count(new UserRoleCriteria().enabled(true).jurisdictionLevel(JurisdictionLevel.NATION)));
+		assertEquals(6, getUserRoleFacade().count(new UserRoleCriteria().enabled(true).jurisdictionLevel(JurisdictionLevel.NATION)));
 
 		DefaultUserRole defaultUserRole = DefaultUserRole.NATIONAL_USER;
 		UserRoleDto userRoleDto =
@@ -48,10 +50,10 @@ public class UserRoleServiceTest extends AbstractBeanTest {
 		userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
 		getUserRoleFacade().saveUserRole(userRoleDto);
 
-		Assert.assertEquals(7, getUserRoleFacade().count(new UserRoleCriteria().enabled(true).jurisdictionLevel(JurisdictionLevel.NATION)));
+		assertEquals(7, getUserRoleFacade().count(new UserRoleCriteria().enabled(true).jurisdictionLevel(JurisdictionLevel.NATION)));
 
 		UserRole byLinkedDefaultUserRole = getUserRoleService().getByLinkedDefaultUserRole(DefaultUserRole.NATIONAL_USER);
-		Assert.assertNotNull(byLinkedDefaultUserRole);
-		Assert.assertEquals(DefaultUserRole.NATIONAL_USER.toString(), byLinkedDefaultUserRole.getCaption());
+		assertNotNull(byLinkedDefaultUserRole);
+		assertEquals(DefaultUserRole.NATIONAL_USER.toString(), byLinkedDefaultUserRole.getCaption());
 	}
 }

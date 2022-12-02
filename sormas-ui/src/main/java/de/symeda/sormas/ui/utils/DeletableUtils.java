@@ -28,6 +28,7 @@ public class DeletableUtils {
 
 		Label contentLabel = new Label(message, ContentMode.HTML);
 		contentLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		contentLabel.setWidthFull();
 		verticalLayout.addComponent(contentLabel);
 
 		ComboBox<DeletionReason> deleteReasonComboBox = new ComboBox(null, Arrays.asList(DeletionReason.values()));

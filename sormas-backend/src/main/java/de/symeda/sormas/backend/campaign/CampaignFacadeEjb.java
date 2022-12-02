@@ -27,7 +27,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -97,8 +96,8 @@ public class CampaignFacadeEjb
 
 		cq.where(filter);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -170,7 +169,8 @@ public class CampaignFacadeEjb
 	@RightsAllowed(UserRight._CAMPAIGN_EDIT)
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
-		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
+		Campaign existingCampaign = service.getByUuid(dto.getUuid());
+		Campaign campaign = fillOrBuildEntity(dto, existingCampaign, true);
 		if (!service.isEditAllowed(campaign)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}
@@ -359,6 +359,12 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
 	protected void pseudonymizeDto(Campaign source, CampaignDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 		// No pseudonymization for Campaign entities
 	}
@@ -366,16 +372,6 @@ public class CampaignFacadeEjb
 	@Override
 	protected void restorePseudonymizedDto(CampaignDto dto, CampaignDto existingDto, Campaign entity, Pseudonymizer pseudonymizer) {
 		// No pseudonymization for Campaign entities
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<CampaignDto> cq, Root<Campaign> root) {
-
-	}
-
-	@Override
-	public List<CampaignDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -391,8 +387,7 @@ public class CampaignFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.getName());
-		return dto;
+		return new CampaignReferenceDto(entity.getUuid(), entity.getName());
 	}
 
 	@Override

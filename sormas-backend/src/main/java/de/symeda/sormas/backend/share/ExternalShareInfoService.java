@@ -45,14 +45,14 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalShareInfo> {
+public class ExternalShareInfoService extends AdoServiceWithUserFilterAndJurisdiction<ExternalShareInfo> {
 
 	@EJB
 	private UserService userService;
@@ -244,11 +244,10 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 				buildLatestSurvToolShareDateFilter(cq, cb, from, associatedObjectName, changeDatePredicateBuilder);
 
 			filter = CriteriaBuilderHelper.and(cb, filter, changedSinceLastShareFilter);
-		}
-
-		// Exclude all entities which are not supposed to be shared with the reportingtool
-		if (filter != null && from.getJavaType().isAssignableFrom(Case.class)) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
+			// Exclude all entities which are not supposed to be shared with the reportingtool
+			if (from.getJavaType().isAssignableFrom(Case.class)) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
+			}
 		}
 
 		return filter;

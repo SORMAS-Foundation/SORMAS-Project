@@ -105,11 +105,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public boolean isDeleted(String travelEntryUuid) {
-		return service.isDeleted(travelEntryUuid);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
@@ -121,7 +116,9 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
 	}
 
 	@Override
@@ -129,8 +126,7 @@ public class TravelEntryFacadeEjb
 		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 
 		if (lastTravelEntry != null) {
-			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
-			TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, aDefault);
+			TravelEntryDto travelEntryDto = toPseudonymizedDto(lastTravelEntry);
 			return travelEntryDto.getDeaContent();
 		}
 
@@ -153,10 +149,7 @@ public class TravelEntryFacadeEjb
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(
-					source.getReportingUser(),
-					currentUser,
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 			});
 		}
 	}
@@ -185,6 +178,11 @@ public class TravelEntryFacadeEjb
 		List<TravelEntryIndexDto> travelEntryIndexList = service.getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(travelEntryIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
+	public List<TravelEntryDto> getByPersonUuids(List<String> uuids) {
+		return toDtos(service.getByPersonUuids(uuids).stream());
 	}
 
 	@Override

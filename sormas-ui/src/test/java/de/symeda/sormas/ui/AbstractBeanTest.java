@@ -35,7 +35,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.commons.io.input.BOMInputStream;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.opencsv.CSVReader;
 
@@ -53,7 +56,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
@@ -82,17 +84,29 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import info.novatec.beantest.api.BaseBeanTest;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator();
+
+	@BeforeEach
+	public void beforeEach() {
+		// so we can override init
+		init();
+	}
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.
 	 */
-	@Before
 	public void init() {
-		MockProducer.resetMocks();
+
+		super.initilaize();
+
+		MockProducer.wireMocks();
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
@@ -109,6 +123,14 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 //				.stream()
 //				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
 //		});
+		createDiseaseConfigurations();
+	}
+
+	@AfterEach
+	public void cleanUp() {
+
+		super.cleanUp();
+		MockProducer.resetMocks();
 	}
 
 	private void createTestUser() {
@@ -120,7 +142,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 		user.setChangeDate(new Date());
 		user.setLanguage(Language.EN);
-		user.setAddress(LocationDto.build());
 		user.getUserRoles().add(creator.getUserRoleReference(DefaultUserRole.ADMIN));
 		user.getUserRoles().add(creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
@@ -141,37 +162,40 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		em.getTransaction().commit();
 	}
 
-	private void initTestUser() {
-		EntityManager em = getEntityManager();
-		em.getTransaction().begin();
-
-		Query nativeQuery = em.createNativeQuery(
-			"INSERT INTO users (id, uuid, creationdate, changedate, username, firstName, lastName, password, seed, active, hasconsentedtogdpr, jurisdictionlevel) values (1, '"
-				+ DataHelper.createUuid() + "', now(), now(), 'admin', 'ad', 'min', 'testpass', 'seed', true, true, 'NONE')");
-		nativeQuery.executeUpdate();
-
-		nativeQuery = em.createNativeQuery(
-			"INSERT INTO userroles (id, uuid, creationdate, changedate, caption, jurisdictionLevel, enabled, porthealthuser, hasassociateddistrictuser, hasoptionalhealthfacility) values (1, '"
-				+ DataHelper.createUuid() + "', now(), now(), 'Admin init', 'NONE', false, false, false, false)");
-		nativeQuery.executeUpdate();
-
-		nativeQuery = em.createNativeQuery("INSERT INTO userroles_userrights (userrole_id, userright) values (1, 'USER_EDIT')");
-		nativeQuery.executeUpdate();
-
-		nativeQuery = em.createNativeQuery("INSERT INTO users_userroles (user_id, userrole_id) values (1, 1)");
-		nativeQuery.executeUpdate();
-
-		em.getTransaction().commit();
-	}
-
-	@Before
-	public void createDiseaseConfigurations() {
+	private void createDiseaseConfigurations() {
 		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
 		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			getDiseaseConfigurationService().ensurePersisted(configuration);
 		});
+	}
+
+	private void initTestUser() {
+		EntityManager em = getEntityManager();
+		em.getTransaction().begin();
+
+		Query nativeQuery = em.createNativeQuery(
+			"INSERT INTO location (id, uuid, creationdate, changedate) values (0, '" + DataHelper.createUuid() + "', now(), now())");
+		nativeQuery.executeUpdate();
+
+		nativeQuery = em.createNativeQuery(
+			"INSERT INTO users (id, uuid, creationdate, changedate, username, firstName, lastName, password, seed, active, hasconsentedtogdpr, jurisdictionlevel, address_id) values (0, '"
+				+ DataHelper.createUuid() + "', now(), now(), 'admin', 'ad', 'min', 'testpass', 'seed', true, true, 'NONE', 0)");
+		nativeQuery.executeUpdate();
+
+		nativeQuery = em.createNativeQuery(
+			"INSERT INTO userroles (id, uuid, creationdate, changedate, caption, jurisdictionLevel, enabled, porthealthuser, hasassociateddistrictuser, hasoptionalhealthfacility) values (0, '"
+				+ DataHelper.createUuid() + "', now(), now(), 'Admin init', 'NONE', false, false, false, false)");
+		nativeQuery.executeUpdate();
+
+		nativeQuery = em.createNativeQuery("INSERT INTO userroles_userrights (userrole_id, userright) values (0, 'USER_EDIT')");
+		nativeQuery.executeUpdate();
+
+		nativeQuery = em.createNativeQuery("INSERT INTO users_userroles (user_id, userrole_id) values (0, 0)");
+		nativeQuery.executeUpdate();
+
+		em.getTransaction().commit();
 	}
 
 	public CurrentUserService getCurrentUserService() {

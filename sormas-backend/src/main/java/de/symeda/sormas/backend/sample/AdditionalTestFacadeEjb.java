@@ -84,7 +84,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	public AdditionalTestDto saveAdditionalTest(@Valid AdditionalTestDto additionalTest, boolean checkChangeDate) {
 		AdditionalTest existingAdditionalTest = service.getByUuid(additionalTest.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingAdditionalTest, userService, UserRight.ADDITIONAL_TEST_CREATE, UserRight.ADDITIONAL_TEST_EDIT);
-		AdditionalTest entity = fromDto(additionalTest, checkChangeDate);
+		AdditionalTest entity = fillOrBuildEntity(additionalTest, existingAdditionalTest, checkChangeDate);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -156,9 +156,8 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		return dto;
 	}
 
-	public AdditionalTest fromDto(@NotNull AdditionalTestDto source, boolean checkChangeDate) {
-
-		AdditionalTest target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), AdditionalTest::new, checkChangeDate);
+	public AdditionalTest fillOrBuildEntity(@NotNull AdditionalTestDto source, AdditionalTest target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, AdditionalTest::new, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestDateTime(source.getTestDateTime());

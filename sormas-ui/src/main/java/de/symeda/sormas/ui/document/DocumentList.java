@@ -37,12 +37,22 @@ public class DocumentList extends VerticalLayout {
 	private final ReferenceDto entityRef;
 	private final UserRight editRight;
 	private final boolean pseudonymized;
+	private final boolean isEditAllowed;
+	private final boolean isDeleteAllowed;
 
-	public DocumentList(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight, boolean pseudonymized) {
+	public DocumentList(
+		DocumentRelatedEntityType relatedEntityType,
+		ReferenceDto entityRef,
+		UserRight editRight,
+		boolean pseudonymized,
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
 		this.relatedEntityType = relatedEntityType;
 		this.entityRef = entityRef;
 		this.editRight = editRight;
 		this.pseudonymized = pseudonymized;
+		this.isEditAllowed = isEditAllowed;
+		this.isDeleteAllowed = isDeleteAllowed;
 
 		setSpacing(true);
 		setMargin(false);
@@ -81,10 +91,12 @@ public class DocumentList extends VerticalLayout {
 		res.setExpandRatio(downloadButton, 0);
 
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_DELETE)) {
+		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_DELETE) && isDeleteAllowed) {
 			Button deleteButton = buildDeleteButton(document);
 			res.addComponent(deleteButton);
 			res.setExpandRatio(deleteButton, 0);
+		} else {
+			nameLabel.setEnabled(false);
 		}
 
 		return res;

@@ -17,31 +17,45 @@ package de.symeda.sormas.ui.caze.surveillancereport;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 
 public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportDto> {
 
 	private static final String FACILITY_TYPE_GROUP_LOC = "facilityTypeGroup";
+	private static final String VIEW_MESSAGE_LOC = "viewMessage";
 
 	//@formatter:off
 	protected static final String HTML_LAYOUT =
-			fluidRowLocs(SurveillanceReportDto.REPORTING_TYPE, SurveillanceReportDto.CREATING_USER) +
+			fluidRowLocs(SurveillanceReportDto.UUID, SurveillanceReportDto.CREATING_USER) +
+			fluidRowLocs(SurveillanceReportDto.REPORTING_TYPE, SurveillanceReportDto.EXTERNAL_ID) +
 			fluidRowLocs(SurveillanceReportDto.REPORT_DATE, SurveillanceReportDto.DATE_OF_DIAGNOSIS) +
 			fluidRowLocs(SurveillanceReportDto.FACILITY_REGION, SurveillanceReportDto.FACILITY_DISTRICT) +
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, SurveillanceReportDto.FACILITY_TYPE) +
 			fluidRowLocs(SurveillanceReportDto.FACILITY, SurveillanceReportDto.FACILITY_DETAILS) +
-			fluidRowLocs(SurveillanceReportDto.NOTIFICATION_DETAILS);
+			fluidRowLocs(SurveillanceReportDto.NOTIFICATION_DETAILS) +
+			fluidRowLocs(VIEW_MESSAGE_LOC);
 	//@formatter:on
+
+	Button viewMessageButton;
 
 	protected SurveillanceReportForm(SurveillanceReportDto report) {
 		super(
@@ -49,7 +63,9 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 			SurveillanceReportDto.I18N_PREFIX,
 			true,
 			null,
-			UiFieldAccessCheckers.forSensitiveData(report.isPseudonymized()));
+			UiFieldAccessCheckers.forDataAccessLevel(
+				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(report.isInJurisdiction()),
+				report.isPseudonymized()));
 
 		setValue(report);
 	}
@@ -61,9 +77,11 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 
 	@Override
 	protected void addFields() {
+		addField(SurveillanceReportDto.UUID).setReadOnly(true);
+		addField(SurveillanceReportDto.CREATING_USER).setReadOnly(true);
 
 		addField(SurveillanceReportDto.REPORTING_TYPE).setRequired(true);
-		addField(SurveillanceReportDto.CREATING_USER).setReadOnly(true);
+		addField(SurveillanceReportDto.EXTERNAL_ID).setEnabled(false);
 
 		addField(SurveillanceReportDto.REPORT_DATE).setRequired(true);
 		addField(SurveillanceReportDto.DATE_OF_DIAGNOSIS);
@@ -80,17 +98,38 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 
 		addField(SurveillanceReportDto.NOTIFICATION_DETAILS, TextArea.class).setRows(7);
 
+		viewMessageButton = ButtonHelper.createIconButton(
+			Captions.viewMessage,
+			VaadinIcons.EYE,
+			e -> ControllerProvider.getExternalMessageController()
+				.showExternalMessage(
+					FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(getValue().toReference()).getUuid(),
+					false,
+					null));
+		getContent().addComponent(viewMessageButton, VIEW_MESSAGE_LOC);
+		viewMessageButton.setVisible(false);
+		CssStyles.style(viewMessageButton, CssStyles.ALIGN_RIGHT, CssStyles.VSPACE_3);
+
 		initializeAccessAndAllowedAccesses();
 	}
 
 	private ComboBox addFacilityTypeGroupField() {
 		ComboBox facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId(FACILITY_TYPE_GROUP_LOC);
-		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.SurveillanceReport_facilityTypeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.values());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
 
 		return facilityTypeGroup;
+	}
+
+	@Override
+	public void setValue(SurveillanceReportDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			getContent().getComponent(VIEW_MESSAGE_LOC)
+				.setVisible(FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(newFieldValue.toReference()) != null ? true : false);
+		}
 	}
 }

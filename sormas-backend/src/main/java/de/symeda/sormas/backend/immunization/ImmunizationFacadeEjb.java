@@ -250,10 +250,6 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<ImmunizationDto> cq, Root<Immunization> root) {
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		if (userService.getCurrentUser() == null) {
@@ -307,6 +303,12 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
 	public List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
 		return service.getSimilarImmunizations(criteria).stream().map(result -> {
 			ImmunizationDto immunizationDto = new ImmunizationDto();
@@ -342,7 +344,7 @@ public class ImmunizationFacadeEjb
 
 		ImmunizationDto existingDto = toDto(existingImmunization);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingImmunization, pseudonymizer);
 
 		validate(dto);
@@ -369,7 +371,7 @@ public class ImmunizationFacadeEjb
 
 		onImmunizationChanged(immunization, internal);
 
-		return convertToDto(immunization, pseudonymizer);
+		return toPseudonymizedDto(immunization, pseudonymizer);
 	}
 
 	@Override
@@ -378,10 +380,7 @@ public class ImmunizationFacadeEjb
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(
-					source.getReportingUser(),
-					currentUser,
-					dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
 			});
 		}
@@ -519,7 +518,8 @@ public class ImmunizationFacadeEjb
 		if (includeVaccinations) {
 			List<Vaccination> vaccinationEntities = new ArrayList<>();
 			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-				Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
+				Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+				vaccination = vaccinationFacade.fillOrBuildEntity(vaccinationDto, vaccination, checkChangeDate);
 				vaccination.setImmunization(target);
 				vaccinationEntities.add(vaccination);
 			}
@@ -596,7 +596,7 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
-		return service.getByPersonUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(uuids, true).stream());
 	}
 
 	@RightsAllowed({
@@ -697,18 +697,15 @@ public class ImmunizationFacadeEjb
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._PERSON_EDIT })
 	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson, List<VaccinationDto> leadPersonVaccinations) {
+		Immunization immunization = fillOrBuildEntity(immunizationDto, null, false, false);
+		immunization.setUuid(DataHelper.createUuid());
 
-		Immunization newImmunization = new Immunization();
-		newImmunization.setUuid(DataHelper.createUuid());
+		immunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
+		service.persist(immunization);
 
-		newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, false);
+		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, immunization, leadPersonVaccinations);
 
-		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
-		service.persist(newImmunization);
-
-		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinations);
-
-		service.ensurePersisted(newImmunization);
+		service.ensurePersisted(immunization);
 	}
 
 	@Override

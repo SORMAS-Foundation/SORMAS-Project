@@ -74,11 +74,14 @@ public class CreateNewCasePage {
       By.cssSelector(".v-window #diseaseVariant div");
   public static final By PERSON_SEARCH_LOCATOR_BUTTON = By.id("personSearchLoc");
   public static final By UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT =
-      By.id("uuidExternalIdExternalTokenLike");
+      By.id("nameUuidExternalIdExternalTokenLike");
   public static final By FIRST_NAME_LIKE_INPUT =
       By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'firstName')]//input");
   public static final By LAST_NAME_LIKE_INPUT =
       By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'lastName')]//input");
+
+  public static final By NAME_UUID_EXTERNAL_ID_TOKEN_LIKE =
+      By.id("nameUuidExternalIdExternalTokenLike");
   public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
   public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON =
       By.xpath("//div[@class='v-select-optiongroup v-widget']/span");
@@ -87,7 +90,7 @@ public class CreateNewCasePage {
   public static final By CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new person']");
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
-      By.xpath("//div[@class='v-window v-widget']//following::div[@id='commit'][2]");
+      By.xpath("(//div[@class='popupContent']//div[@id='commit'])[2]");
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
       By.xpath(
           "//div[@class='v-grid v-widget v-has-width']//div[@class='v-grid-tablewrapper']/table/tbody[@class='v-grid-body']/tr[@class='v-grid-row v-grid-row-has-data']");

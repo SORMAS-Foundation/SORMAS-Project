@@ -189,7 +189,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	@Override
 	protected void handlePickOrCreateEvent(ExternalMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback) {
 		EventSelectionField eventSelect =
-			new EventSelectionField(labMessage.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
+			new EventSelectionField(labMessage.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -222,7 +222,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
-		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		EventDataForm eventCreateForm = new EventDataForm(true, false, true);
 		eventCreateForm.setValue(event);
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
@@ -261,7 +261,13 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		HandlerCallback<EventParticipantDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		EventParticipantEditForm createForm = new EventParticipantEditForm(event, false, eventParticipant.getPerson().isPseudonymized(), false);
+		EventParticipantEditForm createForm = new EventParticipantEditForm(
+			event,
+			false,
+			true,
+			eventParticipant.getPerson().isPseudonymized(),
+			eventParticipant.getPerson().isInJurisdiction(),
+			false);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
@@ -385,13 +391,12 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageDto externalMessageDto,
 		Disease disease) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
-		});
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, null);
 
 		// add pathogen test create components
 		addPathogenTests(pathogenTests, externalMessageDto, sampleCreateComponent);
 		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null);
 
 		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
 
@@ -403,20 +408,13 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageDto labMessage,
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
 
-		SampleController sampleController = ControllerProvider.getSampleController();
-		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
-		int caseSampleCount = sampleController.caseSampleCountOf(sample);
-
 		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
 		// always build at least one PathogenTestDto
 		if (pathogenTestsToAdd.isEmpty()) {
+			SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
 			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, user));
 		}
 
-		for (PathogenTestDto pathogenTest : pathogenTestsToAdd) {
-			PathogenTestForm pathogenTestCreateComponent =
-				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
-			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
-		}
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, null);
 	}
 }

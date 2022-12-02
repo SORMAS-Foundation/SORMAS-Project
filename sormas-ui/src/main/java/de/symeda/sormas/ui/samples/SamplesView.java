@@ -93,7 +93,7 @@ public class SamplesView extends AbstractView {
 					? this.sampleListComponent.getGrid().asMultiSelect().getSelectedItems()
 					: Collections.emptySet(),
 				ExportEntityName.SAMPLES,
-				SampleGrid.EDIT_BTN_ID);
+				SampleGrid.ACTION_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 

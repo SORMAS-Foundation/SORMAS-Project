@@ -342,6 +342,8 @@ public class CaseExportDto extends AbstractUuidDto {
 	private String quarantineChangeComment;
 
 	private Boolean isInJurisdiction;
+	private Date dateOfInvestigation;
+	private Date dateOfOutcome;
 
 	//@formatter:off
 	@SuppressWarnings("unchecked")
@@ -388,7 +390,8 @@ public class CaseExportDto extends AbstractUuidDto {
 						 // users
 						 Long reportingUserId, Long followUpStatusChangeUserId,
 						 Date previousQuarantineTo, String quarantineChangeComment,
-						 String associatedWithOutbreak, boolean isInJurisdiction
+						 String associatedWithOutbreak, boolean isInJurisdiction,
+						 Date dateOfInvestigation, Date dateOfOutcome
 	) {
 		//@formatter:on
 		super(uuid);
@@ -526,6 +529,9 @@ public class CaseExportDto extends AbstractUuidDto {
 
 		this.associatedWithOutbreak = associatedWithOutbreak;
 		this.isInJurisdiction = isInJurisdiction;
+
+		this.dateOfInvestigation = dateOfInvestigation;
+		this.dateOfOutcome = dateOfOutcome;
 	}
 
 	public CaseReferenceDto toReference() {
@@ -2354,6 +2360,31 @@ public class CaseExportDto extends AbstractUuidDto {
 	public String getFollowUpStatusChangeUserRoles() {
 		return followUpStatusChangeUserRoles;
 	}
+
+
+	@Order(179)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.INVESTIGATED_DATE)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public Date getDateOfInvestigation() {
+		return dateOfInvestigation;
+	}
+
+	@Order(180)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.OUTCOME_DATE)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public Date getDateOfOutcome() {
+		return dateOfOutcome;
+	}
+
+	public void setDateOfInvestigation(Date dateOfInvestigation) { this.dateOfInvestigation = dateOfInvestigation; }
+
+	public void setDateOfOutcome(Date dateOfOutcome) { this.dateOfOutcome = dateOfOutcome; }
 
 	public void setFollowUpStatusChangeUserRoles(Set<UserRoleReferenceDto> roles) {
 		this.followUpStatusChangeUserRoles = StringUtils.join(roles, ", ");

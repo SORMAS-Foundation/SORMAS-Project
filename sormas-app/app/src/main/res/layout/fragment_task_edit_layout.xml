@@ -108,6 +108,11 @@
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.assigneeReply}" />
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/task_assignedByUser"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.assignedByUser}" />
+
             </LinearLayout>
 
             <RelativeLayout

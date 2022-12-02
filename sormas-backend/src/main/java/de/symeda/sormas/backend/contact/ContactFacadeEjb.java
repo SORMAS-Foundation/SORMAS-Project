@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.contact;
 
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Objects.isNull;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -293,11 +294,6 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<ContactDto> cq, Root<Contact> root) {
-
-	}
-
-	@Override
 	public List<String> getAllActiveUuids() {
 
 		User user = userService.getCurrentUser();
@@ -361,7 +357,7 @@ public class ContactFacadeEjb
 		UserRight._CONTACT_CREATE,
 		UserRight._CONTACT_EDIT })
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
-		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid(), true) : null;
 		FacadeHelper.checkCreateAndEditRights(existingContact, userService, UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT);
 
 		if (internal && existingContact != null && !service.isEditAllowed(existingContact)) {
@@ -370,7 +366,7 @@ public class ContactFacadeEjb
 
 		final ContactDto existingContactDto = toDto(existingContact);
 
-		restorePseudonymizedDto(dto, existingContactDto, existingContact, Pseudonymizer.getDefault(userService::hasRight));
+		restorePseudonymizedDto(dto, existingContactDto, existingContact);
 
 		validateUserRights(dto, existingContactDto);
 		validate(dto);
@@ -548,6 +544,12 @@ public class ContactFacadeEjb
 	public void delete(String contactUuid, DeletionDetails deletionDetails) {
 		Contact contact = service.getByUuid(contactUuid);
 		deleteContact(contact, deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CONTACT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
 	}
 
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
@@ -820,7 +822,7 @@ public class ContactFacadeEjb
 					exportContact.setNumberOfVisits(visits.size());
 
 					if (lastCooperativeVisit != null) {
-						SymptomsDto symptoms = SymptomsFacadeEjb.toDto(lastCooperativeVisit.getSymptoms());
+						SymptomsDto symptoms = SymptomsFacadeEjb.toSymptomsDto(lastCooperativeVisit.getSymptoms());
 						pseudonymizer.pseudonymizeDto(SymptomsDto.class, symptoms, inJurisdiction, null);
 
 						exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
@@ -1004,7 +1006,7 @@ public class ContactFacadeEjb
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			visitSummaryDetails.forEach(v -> {
-				SymptomsDto symptoms = SymptomsFacadeEjb.toDto(v.getSymptoms());
+				SymptomsDto symptoms = SymptomsFacadeEjb.toSymptomsDto(v.getSymptoms());
 				pseudonymizer.pseudonymizeDto(SymptomsDto.class, symptoms, v.getInJurisdiction(), null);
 
 				visitSummaryMap.get(v.getContactId())
@@ -1359,8 +1361,17 @@ public class ContactFacadeEjb
 	}
 
 	public Contact fillOrBuildEntity(@NotNull ContactDto source, Contact target, boolean checkChangeDate) {
+		if (source == null) {
+			return null;
+		}
+
+		boolean targetWasNull = isNull(target);
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Contact::new, checkChangeDate);
+
+		if (targetWasNull) {
+			target.getEpiData().setUuid(source.getEpiData().getUuid());
+		}
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
@@ -1444,8 +1455,9 @@ public class ContactFacadeEjb
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
-		target.setEpiData(epiDataFacade.fromDto(source.getEpiData(), checkChangeDate));
-		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
+		target.setEpiData(epiDataFacade.fillOrBuildEntity(source.getEpiData(), target.getEpiData(), checkChangeDate));
+		target.setHealthConditions(
+			healthConditionsMapper.fillOrBuildEntity(source.getHealthConditions(), target.getHealthConditions(), checkChangeDate));
 		target.setReturningTraveler(source.getReturningTraveler());
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
@@ -1468,19 +1480,6 @@ public class ContactFacadeEjb
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
-	}
-
-	@Override
-	public boolean isDeleted(String contactUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Contact> from = cq.from(Contact.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(Contact.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), contactUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
 	}
 
 	@Override
@@ -1537,7 +1536,7 @@ public class ContactFacadeEjb
 
 	@Override
 	public List<ContactDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(personUuids).stream());
 	}
 
 	@Override
@@ -1553,7 +1552,6 @@ public class ContactFacadeEjb
 	@RightsAllowed({
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
-
 		return service.getNewContactCountPerClassification(contactCriteria);
 	}
 
@@ -1561,7 +1559,6 @@ public class ContactFacadeEjb
 	@RightsAllowed({
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
-
 		return service.getNewContactCountPerFollowUpStatus(contactCriteria);
 	}
 
@@ -1573,34 +1570,32 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected List<ContactDto> toPseudonymizedDtos(List<Contact> entities) {
+	protected List<ContactDto> toPseudonymizedDtos(List<Contact> adoList) {
 
-		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(entities);
+		Map<Long, ContactJurisdictionFlagsDto> jurisdictionsFlags = service.getJurisdictionsFlags(adoList);
 		Pseudonymizer pseudonymizer = createPseudonymizer();
-		List<ContactDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		return adoList.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
 	}
 
 	@Override
-	public ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer) {
+	public ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer) {
 
 		if (source == null) {
 			return null;
 		}
 
 		ContactJurisdictionFlagsDto jurisdictionFlags = service.getJurisdictionFlags(source);
-		return convertToDto(source, pseudonymizer, jurisdictionFlags);
+		return toPseudonymizedDto(source, pseudonymizer, jurisdictionFlags);
 	}
 
 	@Deprecated
 	@Override
-	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	public ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		throw new UnsupportedOperationException("Use variant with jurisdictionFlags parameter");
 	}
 
-	protected ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
+	protected ContactDto toPseudonymizedDto(Contact source, Pseudonymizer pseudonymizer, ContactJurisdictionFlagsDto jurisdictionFlags) {
 
 		ContactDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer, jurisdictionFlags);
@@ -1962,8 +1957,8 @@ public class ContactFacadeEjb
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		pseudonymizer.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, SimilarContactDto::getInJurisdiction, (c, isInJurisdiction) -> {
 			CaseReferenceDto contactCase = c.getCaze();
 			if (contactCase != null) {
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, contactCase, c.getCaseInJurisdiction(), null);

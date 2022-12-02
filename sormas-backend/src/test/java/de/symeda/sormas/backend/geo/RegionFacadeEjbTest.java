@@ -1,15 +1,15 @@
 package de.symeda.sormas.backend.geo;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.backend.infrastructure.region.Region;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 
 public class RegionFacadeEjbTest extends AbstractBeanTest {
 

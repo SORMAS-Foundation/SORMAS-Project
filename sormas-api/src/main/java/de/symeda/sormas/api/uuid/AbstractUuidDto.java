@@ -20,7 +20,7 @@ import java.io.Serializable;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -36,7 +36,7 @@ public class AbstractUuidDto implements HasUuid, Serializable {
 //  breaking change which we need to handle separately.
 
 	public static final String UUID = "uuid";
-	@AuditInclude
+	@AuditIncludeProperty
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 

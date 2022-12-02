@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,17 +46,27 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -80,9 +91,9 @@ public class ExternalMessageController {
 		relatedLabMessageHandler = new RelatedLabMessageHandler();
 	}
 
-	public void showExternalMessage(String labMessageUuid, boolean withActions, Runnable onFormActionPerformed) {
+	public void showExternalMessage(String MessageUuid, boolean withActions, Runnable onFormActionPerformed) {
 
-		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
+		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(MessageUuid);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -131,7 +142,14 @@ public class ExternalMessageController {
 				if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
 					showCorrectionsSavedPopup();
 				} else if (status == ProcessingResultStatus.DONE) {
-					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples());
+
+					CaseReferenceDto caseReference =
+						result.getData().getRelatedSampleReportsWithSamples().values().stream().findFirst().get().getAssociatedCase();
+					SurveillanceReportDto surveillanceReport = null;
+					if (caseReference != null) {
+						surveillanceReport = createSurveillanceReport(labMessage, caseReference);
+					}
+					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples(), surveillanceReport);
 					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 				}
 
@@ -158,7 +176,9 @@ public class ExternalMessageController {
 			ProcessingResultStatus status = result.getStatus();
 
 			if (status == ProcessingResultStatus.DONE) {
-				markExternalMessageAsProcessed(labMessage, result.getData().toReference());
+				CaseReferenceDto caseReferenceDto = result.getData().toReference();
+				SurveillanceReportDto surveillanceReport = createSurveillanceReport(labMessage, caseReferenceDto);
+				markExternalMessageAsProcessed(labMessage, surveillanceReport);
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}
 
@@ -166,19 +186,76 @@ public class ExternalMessageController {
 		});
 	}
 
-	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, Map<SampleReportDto, SampleDto> relatedSampleReports) {
+	public void markExternalMessageAsProcessed(
+		ExternalMessageDto externalMessage,
+		Map<SampleReportDto, SampleDto> relatedSampleReports,
+		SurveillanceReportDto surveillanceReport) {
 
 		for (Map.Entry<SampleReportDto, SampleDto> entry : relatedSampleReports.entrySet()) {
 			entry.getKey().setSample(entry.getValue().toReference());
 		}
+		externalMessage.setSurveillanceReport(surveillanceReport.toReference());
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}
 
-	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
-		externalMessage.setCaze(caze);
+	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, SurveillanceReportDto surveillanceReport) {
+		externalMessage.setSurveillanceReport(surveillanceReport.toReference());
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
+	}
+
+	protected SurveillanceReportDto createSurveillanceReport(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
+		SurveillanceReportDto surveillanceReport = SurveillanceReportDto.build(caze, FacadeProvider.getUserFacade().getCurrentUserAsReference());
+		setSurvReportFacility(surveillanceReport, externalMessage, caze);
+		surveillanceReport.setReportDate(externalMessage.getMessageDateTime());
+		setSurvReportingType(surveillanceReport, externalMessage);
+		FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
+		return surveillanceReport;
+	}
+
+	private void setSurvReportFacility(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseReferenceDto caze) {
+		FacilityReferenceDto reporterReference = ExternalMessageMapper.getFacilityReference(externalMessage.getReporterExternalIds());
+		FacilityDto reporter;
+		if (reporterReference != null) {
+			reporter = FacadeProvider.getFacilityFacade().getByUuid(reporterReference.getUuid());
+			surveillanceReport.setFacility(reporterReference);
+			if (FacilityDto.OTHER_FACILITY_UUID.equals(reporter.getUuid())) {
+				surveillanceReport.setFacilityDetails(I18nProperties.getCaption(Captions.unknown));
+			}
+			surveillanceReport.setFacilityDistrict(reporter.getDistrict());
+			surveillanceReport.setFacilityRegion(reporter.getRegion());
+			surveillanceReport.setFacilityType(reporter.getType());
+		} else {
+			reporter = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID);
+			surveillanceReport.setFacility(reporter.toReference());
+			String reporterName = externalMessage.getReporterName();
+			if (StringUtils.isNotBlank(reporterName)) {
+				surveillanceReport.setFacilityDetails(reporterName);
+			} else {
+				surveillanceReport.setFacilityDetails(I18nProperties.getCaption(Captions.unknown));
+			}
+			DataHelper.Pair<RegionReferenceDto, DistrictReferenceDto> regionAndDistrict =
+				FacadeProvider.getCaseFacade().getRegionAndDistrictRefsOf(caze);
+			surveillanceReport.setFacilityRegion(regionAndDistrict.getElement0());
+			surveillanceReport.setFacilityDistrict(regionAndDistrict.getElement1());
+			if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())) {
+				surveillanceReport.setFacilityType(FacilityType.LABORATORY);
+			} else if (ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())) {
+				surveillanceReport.setFacilityType(FacilityType.HOSPITAL);
+			}
+		}
+	}
+
+	protected void setSurvReportingType(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage) {
+		if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())) {
+			surveillanceReport.setReportingType(ReportingType.LABORATORY);
+		} else if (ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())) {
+			surveillanceReport.setReportingType(ReportingType.DOCTOR);
+		} else {
+			throw new UnsupportedOperationException(
+				String.format("There is no reporting type defined for this type of external message: %s", externalMessage.getType()));
+		}
 	}
 
 	public void assignAllSelectedItems(Collection<ExternalMessageIndexDto> selectedRows, Runnable callback) {
@@ -228,23 +305,25 @@ public class ExternalMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		Button deleteButton = ButtonHelper.createButton(
-			Captions.actionDelete,
-			I18nProperties.getCaption(Captions.actionDelete),
-			e -> VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.ExternalMessage)),
-				() -> {
-					if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
-						showAlreadyProcessedPopup(null, false);
-					} else {
-						FacadeProvider.getExternalMessageFacade().deleteExternalMessage(externalMessage.getUuid());
-						callback.run();
-					}
-				}),
-			ValoTheme.BUTTON_DANGER,
-			CssStyles.BUTTON_BORDER_NEUTRAL);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+			Button deleteButton = ButtonHelper.createButton(
+				Captions.actionDelete,
+				I18nProperties.getCaption(Captions.actionDelete),
+				e -> VaadinUiUtil.showDeleteConfirmationWindow(
+					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.ExternalMessage)),
+					() -> {
+						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
+							showAlreadyProcessedPopup(null, false);
+						} else {
+							FacadeProvider.getExternalMessageFacade().deleteExternalMessage(externalMessage.getUuid());
+							callback.run();
+						}
+					}),
+				ValoTheme.BUTTON_DANGER,
+				CssStyles.BUTTON_BORDER_NEUTRAL);
 
-		buttonsPanel.addComponent(deleteButton);
+			buttonsPanel.addComponent(deleteButton);
+		}
 
 		Button unclearButton = ButtonHelper.createButton(
 			Captions.actionUnclearLabMessage,

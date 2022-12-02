@@ -23,6 +23,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -56,11 +58,16 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 		setSpacing(false);
 		addStyleNames(CssStyles.SIDE_COMPONENT);
 
-		addComponent(createHeader(entityString, sendHandler, deleteHandler, editComponent));
+		addComponent(createHeader(entityString, sendHandler, deleteHandler, editComponent, shareInfoCriteria.getCaze().getUuid()));
 		addComponent(createShareInfoList(shareInfoCriteria));
 	}
 
-	private HorizontalLayout createHeader(String entityName, Runnable sendHandler, Runnable deleteHandler, DirtyStateComponent editComponent) {
+	private HorizontalLayout createHeader(
+		String entityName,
+		Runnable sendHandler,
+		Runnable deleteHandler,
+		DirtyStateComponent editComponent,
+		String caseUuid) {
 		Label header = new Label(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_title));
 		header.addStyleName(CssStyles.H3);
 
@@ -78,13 +85,24 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 			headerLayout.setExpandRatio(sendButton, 1);
 			headerLayout.setComponentAlignment(sendButton, Alignment.MIDDLE_RIGHT);
 		}
-
-		Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
-		headerLayout.addComponent(deleteButton);
-		headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
-		headerLayout.setWidth(100, Unit.PERCENTAGE);
+		if (isVisibleDeleteButton(caseUuid)) {
+			Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
+			headerLayout.addComponent(deleteButton);
+			headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
+			headerLayout.setWidth(100, Unit.PERCENTAGE);
+		}
 
 		return headerLayout;
+	}
+
+	private boolean isVisibleDeleteButton(String caseUuid) {
+		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+		boolean isSharedCase = FacadeProvider.getExternalShareInfoFacade().isSharedCase(caseUuid);
+
+		if (caseDataDto.isDontShareWithReportingTool() && !isSharedCase) {
+			return false;
+		}
+		return true;
 	}
 
 	private ExternalShareInfoList createShareInfoList(ExternalShareInfoCriteria criteria) {

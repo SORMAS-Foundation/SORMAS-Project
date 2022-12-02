@@ -20,10 +20,12 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
 	private final ImmunizationListCriteria immunizationCriteria;
+	private boolean isEditAllowed;
 
-	public ImmunizationList(ImmunizationListCriteria immunizationCriteria) {
+	public ImmunizationList(ImmunizationListCriteria immunizationCriteria, boolean isEditAllowed) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.immunizationCriteria = immunizationCriteria;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -43,20 +45,20 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
+		UserProvider currentUser = UserProvider.getCurrent();
 		for (ImmunizationListEntryDto immunization : getDisplayedEntries()) {
 			ImmunizationListEntry listEntry = new ImmunizationListEntry(immunization);
-			addEditButton(listEntry);
-			listLayout.addComponent(listEntry);
-		}
-	}
-
-	private void addEditButton(ImmunizationListEntry listEntry) {
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_EDIT)) {
-			listEntry.addEditButton(
-					"edit-immunization-" + listEntry.getImmunizationEntry().getUuid(),
+			if (currentUser != null) {
+				boolean isEditableAndHasEditRight = isEditAllowed && currentUser.hasUserRight(UserRight.IMMUNIZATION_EDIT);
+				listEntry.addActionButton(
+					listEntry.getImmunizationEntry().getUuid(),
 					(Button.ClickListener) event -> ControllerProvider.getImmunizationController()
-							.navigateToImmunization(listEntry.getImmunizationEntry().getUuid()));
+						.navigateToImmunization(listEntry.getImmunizationEntry().getUuid()),
+					isEditableAndHasEditRight);
+				listEntry.setEnabled(isEditableAndHasEditRight);
+			}
+
+			listLayout.addComponent(listEntry);
 		}
 	}
 }

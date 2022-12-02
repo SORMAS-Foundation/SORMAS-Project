@@ -133,10 +133,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	Date getOldestCaseOutcomeDate();
 
-	boolean isDeleted(String caseUuid);
-
-	boolean isArchived(String caseUuid);
-
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date since);
@@ -231,5 +227,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	EditPermissionType isEditContactAllowed(String uuid);
 
 	boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid);
+
+	Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze);
 
 }

@@ -12,9 +12,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 @Stateless(name = "PortHealthInfoFacade")
 public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 
-	@EJB
-	private PortHealthInfoService service;
-
 	public static PortHealthInfoDto toDto(PortHealthInfo source) {
 		if (source == null) {
 			return null;
@@ -49,8 +46,8 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		return target;
 	}
 
-	public PortHealthInfo fromDto(@NotNull PortHealthInfoDto source, boolean checkChangeDate) {
-		PortHealthInfo target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), PortHealthInfo::new, checkChangeDate);
+	public PortHealthInfo fillOrBuildEntity(@NotNull PortHealthInfoDto source, PortHealthInfo target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, PortHealthInfo::new, checkChangeDate);
 
 		target.setAirlineName(source.getAirlineName());
 		target.setFlightNumber(source.getFlightNumber());

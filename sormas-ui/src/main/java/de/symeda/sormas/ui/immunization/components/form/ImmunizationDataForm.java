@@ -70,6 +70,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -126,13 +127,13 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	private ComboBox facilityTypeGroup;
 	private final Consumer<Runnable> actionCallback;
 
-	public ImmunizationDataForm(boolean isPseudonymized, CaseReferenceDto relatedCase, Consumer<Runnable> actionCallback) {
+	public ImmunizationDataForm(boolean isPseudonymized, boolean inJurisdiction, CaseReferenceDto relatedCase, Consumer<Runnable> actionCallback) {
 		super(
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.getDefault(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 		this.relatedCase = relatedCase;
 		this.actionCallback = actionCallback;
 		addFields();
@@ -283,6 +284,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (!isEditableAllowed(ImmunizationDto.HEALTH_FACILITY)) {
+			setEnabled(false, ImmunizationDto.FACILITY_TYPE, ImmunizationDto.HEALTH_FACILITY_DETAILS);
+			facilityTypeGroup.setEnabled(false);
+		}
 
 		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
 

@@ -16,11 +16,11 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.function.Consumer;
 
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -34,6 +34,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
@@ -44,7 +45,7 @@ import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class SampleDataView extends AbstractSampleView {
@@ -62,6 +63,7 @@ public class SampleDataView extends AbstractSampleView {
 	public static final String SORMAS_TO_SORMAS_LOC = "sormsToSormas";
 
 	private CommitDiscardWrapperComponent<SampleEditForm> editComponent;
+	private Disease disease;
 
 	public SampleDataView() {
 		super(VIEW_NAME);
@@ -72,69 +74,19 @@ public class SampleDataView extends AbstractSampleView {
 
 		setHeightUndefined();
 
-		String htmlLayout = LayoutUtil.fluidRow(
-			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACT_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANT_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, PATHOGEN_TESTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ADDITIONAL_TESTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
-
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
-		CustomLayout layout = new CustomLayout();
-		layout.addStyleName(CssStyles.ROOT_COMPONENT);
-		layout.setTemplateContents(htmlLayout);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeightUndefined();
-		container.addComponent(layout);
 
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(getSampleRef().getUuid());
 
-		Disease disease = null;
-		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
-		if (associatedCase != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_VIEW)) {
-			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
-			disease = caseDto.getDisease();
-
-			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
-			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(caseInfoLayout, CASE_LOC);
-		}
-		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
-		if (associatedContact != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_VIEW)) {
-			final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
-
-			disease = contactDto.getDisease();
-
-			final ContactInfoLayout contactInfoLayout =
-				new ContactInfoLayout(contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
-			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(contactInfoLayout, CONTACT_LOC);
-
-		}
-		final EventParticipantReferenceDto associatedEventParticipant = sampleDto.getAssociatedEventParticipant();
-		if (associatedEventParticipant != null && UserProvider.getCurrent().hasAllUserRights(UserRight.EVENTPARTICIPANT_VIEW)) {
-			final EventParticipantDto eventParticipantDto =
-				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
-			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid(), false);
-
-			disease = eventDto.getDisease();
-
-			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(
-				eventParticipantDto,
-				eventDto,
-				UiFieldAccessCheckers.getDefault(eventParticipantDto.isPseudonymized()));
-
-			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
-		}
+		disease = null;
+		AbstractInfoLayout<EntityDto> dependentComponent = getDependentSideComponent(sampleDto);
 
 		SampleController sampleController = ControllerProvider.getSampleController();
-		editComponent = sampleController.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease, true);
+		editComponent = sampleController
+			.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), sampleDto.isInJurisdiction(), disease, true);
 
 		Consumer<Disease> createReferral = (relatedDisease) -> {
 			// save changes before referral creation
@@ -148,23 +100,40 @@ public class SampleDataView extends AbstractSampleView {
 		Consumer<SampleDto> navigate = targetSampleDto -> sampleController.navigateToData(targetSampleDto.getUuid());
 		sampleController.addReferredFromButton(editComponent, navigate);
 
-		editComponent.setMargin(new MarginInfo(false, false, true, false));
-		editComponent.setWidth(100, Unit.PERCENTAGE);
-		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-		layout.addComponent(editComponent, EDIT_LOC);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(
+			editComponent,
+			CASE_LOC,
+			CONTACT_LOC,
+			EVENT_PARTICIPANT_LOC,
+			PATHOGEN_TESTS_LOC,
+			ADDITIONAL_TESTS_LOC,
+			SORMAS_TO_SORMAS_LOC);
+
+		container.addComponent(layout);
+
+		if (dependentComponent != null) {
+			if (dependentComponent.getClass().equals(CaseInfoLayout.class)) {
+				layout.addSidePanelComponent(dependentComponent, CASE_LOC);
+			} else if (dependentComponent.getClass().equals(ContactInfoLayout.class)) {
+				layout.addSidePanelComponent(dependentComponent, CONTACT_LOC);
+			} else if (dependentComponent.getClass().equals(EventParticipantInfoLayout.class)) {
+				layout.addSidePanelComponent(dependentComponent, EVENT_PARTICIPANT_LOC);
+			}
+		}
 
 		SampleReferenceDto sampleReferenceDto = getSampleRef();
-		PathogenTestListComponent pathogenTestListComponent = new PathogenTestListComponent(sampleReferenceDto, this::showUnsavedChangesPopup);
-		layout.addComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
+		PathogenTestListComponent pathogenTestListComponent =
+			new PathogenTestListComponent(sampleReferenceDto, this::showUnsavedChangesPopup, isEditAllowed());
+		layout.addSidePanelComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
 		if (UserProvider.getCurrent() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
 
-			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(sampleReferenceDto.getUuid());
+			AdditionalTestListComponent additionalTestList =
+				new AdditionalTestListComponent(sampleReferenceDto.getUuid(), this::showUnsavedChangesPopup, isEditAllowed());
 			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
+			layout.addSidePanelComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
 		}
 
 		if (FacadeProvider.getSormasToSormasFacade()
@@ -183,6 +152,71 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		setSampleEditPermission(container);
+		final String uuid = sampleDto.getUuid();
+		final boolean deleted = FacadeProvider.getSampleFacade().isDeleted(uuid);
+
+		if (deleted) {
+			editComponent.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			disableComponentIfNotNull(layout.getComponent(CASE_LOC));
+			disableComponentIfNotNull(layout.getComponent(CONTACT_LOC));
+			disableComponentIfNotNull(layout.getComponent(EVENT_PARTICIPANT_LOC));
+			disableComponentIfNotNull(layout.getComponent(PATHOGEN_TESTS_LOC));
+			disableComponentIfNotNull(layout.getComponent(ADDITIONAL_TESTS_LOC));
+			disableComponentIfNotNull(layout.getComponent(SORMAS_TO_SORMAS_LOC));
+		}
+
+		editComponent.setEnabled(isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT));
+	}
+
+	private AbstractInfoLayout<EntityDto> getDependentSideComponent(SampleDto sampleDto) {
+
+		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
+		if (associatedCase != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_VIEW)) {
+			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+			disease = caseDto.getDisease();
+
+			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
+			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
+
+			return (AbstractInfoLayout) caseInfoLayout;
+		}
+
+		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
+		if (associatedContact != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_VIEW)) {
+			final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
+
+			disease = contactDto.getDisease();
+
+			final ContactInfoLayout contactInfoLayout =
+				new ContactInfoLayout(contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
+			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
+
+			return (AbstractInfoLayout) contactInfoLayout;
+		}
+
+		final EventParticipantReferenceDto associatedEventParticipant = sampleDto.getAssociatedEventParticipant();
+		if (associatedEventParticipant != null && UserProvider.getCurrent().hasAllUserRights(UserRight.EVENTPARTICIPANT_VIEW)) {
+			final EventParticipantDto eventParticipantDto =
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
+			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid(), false);
+
+			disease = eventDto.getDisease();
+
+			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(
+				eventParticipantDto,
+				eventDto,
+				UiFieldAccessCheckers.getDefault(eventParticipantDto.isPseudonymized()));
+
+			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
+
+			return (AbstractInfoLayout) eventParticipantInfoLayout;
+		}
+		return null;
+	}
+
+	private void disableComponentIfNotNull(Component component) {
+		if (component != null) {
+			component.setEnabled(false);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.person;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
@@ -14,8 +15,10 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
@@ -23,12 +26,22 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 
+	private boolean bulkEditMode;
+
+	public PersonGrid() {
+		super(PersonIndexDto.class);
+		initColumns();
+	}
+
 	public PersonGrid(PersonCriteria criteria) {
 		super(PersonIndexDto.class);
 		setSizeFull();
 		setLazyDataProvider();
 		setCriteria(criteria);
 		initColumns();
+
+		setBulkEditMode(isInEagerMode());
+
 		addItemClickListener(
 			new ShowDetailsListener<>(PersonIndexDto.UUID, e -> ControllerProvider.getPersonController().navigateToPerson(e.getUuid())));
 	}
@@ -87,10 +100,33 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 				.stream(),
 			query -> (int) FacadeProvider.getPersonFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		if (bulkEditMode && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setSelectionMode(SelectionMode.MULTI);
+		} else {
+			setSelectionMode(SelectionMode.NONE);
+		}
+	}
+
+	public void setFixDataProvider(List<PersonIndexDto> list) {
+		DataProvider<PersonIndexDto, PersonCriteria> dataProvider = DataProvider.fromFilteringCallbacks(query -> list.stream(), query -> list.size());
+		setDataProvider(dataProvider);
+	}
+
+	protected void setBulkEditMode(boolean bulkEditMode) {
+		this.bulkEditMode = bulkEditMode;
+		if (bulkEditMode && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setSelectionMode(SelectionMode.MULTI);
+		} else {
+			setSelectionMode(SelectionMode.NONE);
+		}
 	}
 
 	public void reload() {
+
+		if (getSelectionModel().isUserSelectionAllowed()) {
+			deselectAll();
+		}
+
 		getDataProvider().refreshAll();
 	}
 }

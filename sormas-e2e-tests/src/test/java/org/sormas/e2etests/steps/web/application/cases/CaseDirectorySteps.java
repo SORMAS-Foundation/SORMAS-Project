@@ -20,8 +20,6 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
@@ -50,9 +48,11 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.UUID_LABEL;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -380,6 +380,9 @@ public class CaseDirectorySteps implements En {
         "I click first result in grid on Link to Event form",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID));
 
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Case Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_DELETE_BUTTON));
     When(
         "I filter by CaseID on Case directory page",
         () -> {
@@ -499,7 +502,7 @@ public class CaseDirectorySteps implements En {
         "I click on new entry button from Epidemiological Data tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_LABEL);
         });
 
     Then(
@@ -573,13 +576,11 @@ public class CaseDirectorySteps implements En {
         "I check if name and name prefilled in Pick or create person are equal to one used in case creation",
         () -> {
           softly.assertEquals(
-              CaseReinfectionSteps.caze.getFirstName(),
-              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
-              "Prefilled first name is not equal");
-          softly.assertEquals(
-              CaseReinfectionSteps.caze.getLastName(),
-              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT),
-              "Prefilled last name is not equal");
+              CaseReinfectionSteps.caze.getFirstName()
+                  + " "
+                  + CaseReinfectionSteps.caze.getLastName(),
+              webDriverHelpers.getValueFromWebElement(UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT),
+              "Prefilled date name is not equal");
           softly.assertAll();
         });
     And(
@@ -971,8 +972,16 @@ public class CaseDirectorySteps implements En {
         });
     And(
         "I apply {string} to combobox on Case Directory Page",
-        (String caseParameter) ->
-            webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter));
+        (String caseParameter) -> {
+          webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
+          TimeUnit.SECONDS.sleep(2);
+        });
+    And(
+        "I apply {string} to ownership combobox on Case Directory Page",
+        (String caseParameter) -> {
+          webDriverHelpers.selectFromCombobox(CASE_OWNERSHIP_FILTER_COMBOBOX, caseParameter);
+          TimeUnit.SECONDS.sleep(2);
+        });
 
     And(
         "I apply Month filter different than Person has on Case directory page",
@@ -1150,9 +1159,10 @@ public class CaseDirectorySteps implements En {
         "I fill first and last name with last created peron data in Pick or Create person in popup",
         () -> {
           webDriverHelpers.fillInWebElement(
-              FIRST_NAME_INPUT, apiState.getLastCreatedPerson().getFirstName());
-          webDriverHelpers.fillInWebElement(
-              LAST_NAME_INPUT, apiState.getLastCreatedPerson().getLastName());
+              UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
         });
     When(
         "I click on first result in Pick or create Person popup",

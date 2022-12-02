@@ -184,6 +184,7 @@ Feature: Sample Functionalities
     Then I click on New Sample
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
+    And I save the created sample
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
     Then I save the new case

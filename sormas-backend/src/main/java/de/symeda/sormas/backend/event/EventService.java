@@ -88,7 +88,7 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
@@ -120,7 +120,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
-	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
@@ -156,9 +156,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	protected void fetchReferences(From<?, Event> from) {
-
-		from.fetch(Event.EVENT_LOCATION);
+	protected List<String> referencesToBeFetched() {
+		return Arrays.asList(Event.EVENT_LOCATION);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -568,6 +567,16 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		// Mark the event as deleted
 		super.delete(event, deletionDetails);
+	}
+
+	@Override
+	public void undelete(Event event) {
+		// undelete all event participants associated with this event
+		List<EventParticipant> eventParticipants = eventParticipantService.getAllByEventAfter(null, event);
+		for (EventParticipant eventParticipant : eventParticipants) {
+			eventParticipantService.undelete(eventParticipant);
+		}
+		super.undelete(event);
 	}
 
 	@Override
@@ -1020,7 +1029,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
 		return inJurisdictionOrOwned(new EventQueryContext(cb, cq, from));
 	}
 

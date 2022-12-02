@@ -143,7 +143,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 			addHeaderComponent(exportPopupButton);
 
 			StreamResource basicExportStreamResource = GridExportStreamResource
-				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.FACILITIES, FacilitiesGrid.ACTION_BTN_ID);
 
 			addExportButton(
 				basicExportStreamResource,
@@ -249,7 +249,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 
 		searchField = new SearchField();
 		searchField.addTextChangeListener(e -> {
-			criteria.nameCityLike(e.getText());
+			criteria.nameAddressLike(e.getText());
 			grid.reload();
 			rowCount.update(grid.getItemCount());
 		});
@@ -433,7 +433,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
-		searchField.setValue(criteria.getNameCityLike());
+		searchField.setValue(criteria.getNameAddressLike());
 		typeGroupFilter.setValue(criteria.getTypeGroup());
 		typeFilter.setValue(criteria.getType());
 		countryFilter.setValue(criteria.getCountry());

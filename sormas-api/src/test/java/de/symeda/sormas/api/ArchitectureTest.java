@@ -3,6 +3,7 @@ package de.symeda.sormas.api;
 import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.name;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static de.symeda.sormas.api.audit.Constants.createPrefix;
 import static de.symeda.sormas.api.audit.Constants.deletePrefix;
 import static de.symeda.sormas.api.audit.Constants.executePrefix;
@@ -16,25 +17,22 @@ import java.util.Set;
 
 import javax.ejb.Remote;
 
-import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.junit.ArchUnitRunner;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
-import de.symeda.sormas.api.audit.AuditInclude;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.uuid.HasUuid;
 
-@RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = "de.symeda.sormas.api")
 public class ArchitectureTest {
 
@@ -91,9 +89,6 @@ public class ArchitectureTest {
 		.haveSimpleNameEndingWith("Dto")
 		.and()
 		.containAnyFieldsThat(name("uuid"))
-		.and()
-//TODO: #10750 Remove exception from test
-		.doNotHaveSimpleName("ExternalDataDto")
 		.should()
 		.implement(HasUuid.class);
 
@@ -114,5 +109,94 @@ public class ArchitectureTest {
 		.and()
 		.haveName("uuid")
 		.should()
-		.beAnnotatedWith(AuditInclude.class);
+		.beAnnotatedWith(AuditIncludeProperty.class);
+
+	@ArchTest
+	public static final ArchRule testTypesInFacadeAreAuditable = methods().that()
+		.areDeclaredInClassesThat()
+		.haveSimpleNameEndingWith("Facade")
+		.should(new ArchCondition<JavaMethod>("have parameters and return type which is annotated with @AuditedClass") {
+
+			@Override
+			public void check(JavaMethod javaMethod, ConditionEvents conditionEvents) {
+				javaMethod.getParameters().forEach(parameter -> {
+					// audit parameters
+					JavaClass rawType = parameter.getRawType();
+					if (!mustAudit(rawType)) {
+						return;
+					}
+					conditionEvents.add(
+						SimpleConditionEvent.violated(
+							javaMethod,
+							"Parameter " + parameter + " of type " + rawType.getName() + " is not annotated with @AuditedClass"));
+
+				});
+
+				// audit return type
+				final JavaClass rawReturnType = javaMethod.getRawReturnType();
+				if (!mustAudit(rawReturnType)) {
+					return;
+				}
+				conditionEvents.add(
+					SimpleConditionEvent.violated(
+						javaMethod,
+						String.format("Return type %s of method %s is not annotated with @AuditedClass", rawReturnType, javaMethod)));
+
+			}
+
+			private boolean mustAudit(JavaClass rawType) {
+				String rawTypeName = rawType.getName();
+				// [L shows up in case of varargs
+				if (rawTypeName.startsWith("[L")) {
+					String componentTypeName = rawTypeName.substring(2, rawTypeName.length() - 1);
+					try {
+						Class<?> clazz = getClass().getClassLoader().loadClass(componentTypeName);
+						// only case right now for varargs is enums so this is fine for now...
+						if (clazz.isEnum()) {
+							return false;
+						}
+					} catch (ClassNotFoundException e) {
+						throw new RuntimeException(e);
+					}
+				}
+
+				// ignore enums as they can just be audited with toString()
+				if (rawType.isEnum()) {
+					return false;
+				}
+
+				// violated rule if parameter is a list and the list type is not annotated with @AuditedClass
+				final Class<?> reflect = rawType.reflect();
+				// todo collections etc are ignored with this, but I was not able to get access the concrete generic
+				//  type to check it further. This means we need to resort to warnings printed about @AuditedClass
+				//  being missing in the concrete type.
+				if (rawTypeName.startsWith("java.") || reflect.isPrimitive() || rawTypeName.startsWith("com.fasterxml.jackson.databind.JsonNode")) {
+					return false;
+				}
+
+				// ignore primitive arrays
+				if (rawType.isArray() && rawType.getComponentType().isPrimitive()) {
+					return false;
+				}
+
+				// ignore string arrays as they just can be audited with toString() if need be
+				if (rawType.isArray() && rawType.getComponentType().isEquivalentTo(String.class)) {
+					return false;
+				}
+
+				// ignore two-dimensional string arrays as they just can be audited with toString() if need be
+				if (rawType.isArray()
+					&& rawType.getComponentType().isArray()
+					&& rawType.getComponentType().getComponentType().isEquivalentTo(String.class)) {
+					return false;
+				}
+
+				// ignore byte arrays
+				if (rawType.isArray() && rawType.getComponentType().isEquivalentTo(byte.class)) {
+					return false;
+				}
+				return !rawType.isAnnotatedWith(AuditedClass.class)
+					&& !rawType.isAssignableTo(CanBeAnnotated.Predicates.annotatedWith(AuditedClass.class));
+			}
+		});
 }

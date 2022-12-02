@@ -33,6 +33,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -341,6 +342,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	@PermitAll
+	@AuditIgnore
 	public boolean isAnyFeatureConfigured(FeatureType... sormasToSormasFeatures) {
 		return configFacadeEjb.isS2SConfigured() && featureConfigurationFacade.isAnyFeatureEnabled(sormasToSormasFeatures);
 	}

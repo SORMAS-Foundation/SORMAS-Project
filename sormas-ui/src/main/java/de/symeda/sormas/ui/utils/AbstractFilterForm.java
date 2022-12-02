@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.utils;
 import static de.symeda.sormas.ui.utils.LayoutUtil.div;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.stream.Stream;
 
@@ -95,7 +96,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), ACTION_BUTTONS_ID)) + loc(MORE_FILTERS_ID));
+		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), ACTION_BUTTONS_ID)) + locCss(CssStyles.VSPACE_TOP_3, MORE_FILTERS_ID));
+
 	}
 
 	protected abstract String[] getMainFilterLocators();
@@ -225,7 +227,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 				this.getFieldGroup().commit();
 				this.fireValueChange(true);
 			} catch (FieldGroup.CommitException ex) {
-				ex.printStackTrace();
+				// do nothing
 			}
 		}
 	}

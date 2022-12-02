@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.backend;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -25,7 +27,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
@@ -236,18 +239,33 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 import info.novatec.beantest.api.BaseBeanTest;
 import info.novatec.beantest.api.BeanProviderHelper;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
 	public static final String CONFIDENTIAL = "Confidential";
 
+	@BeforeEach
+	public void beforeEach() {
+		// so we can override init
+		init();
+	}
+
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.
 	 */
-	@Before
 	public void init() {
+
+		super.initilaize();
+
 		MockProducer.resetMocks();
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
@@ -267,6 +285,12 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 		I18nProperties.setUserLanguage(Language.EN);
 
+		createDiseaseConfigurations();
+	}
+
+	@AfterEach
+	public void cleanUp() {
+		super.cleanUp();
 	}
 
 	protected void initH2Functions() {
@@ -294,8 +318,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		em.getTransaction().commit();
 	}
 
-	@Before
-	public void createDiseaseConfigurations() {
+	private void createDiseaseConfigurations() {
 		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
 		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
@@ -491,10 +514,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public SampleService getSampleService() {
 		return getBean(SampleService.class);
-	}
-
-	public PathogenTestFacade getSampleTestFacade() {
-		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 
 	public AdditionalTestFacade getAdditionalTestFacade() {
@@ -970,5 +989,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public SampleReportService getSampleReportService() {
 		return getBean(SampleReportService.class);
+	}
+
+	public <T extends Throwable> void assertThrowsWithMessage(Class<T> expectedType, String expectedMessage, Executable executable) {
+		T throwable = assertThrows(expectedType, executable);
+		assertEquals(expectedMessage, throwable.getMessage());
 	}
 }

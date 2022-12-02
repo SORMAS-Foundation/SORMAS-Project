@@ -1,21 +1,20 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.event;
+
+import static java.util.Objects.isNull;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -60,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -219,6 +219,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	public List<EventDto> getAllByCase(CaseDataDto caseDataDto) {
+		return toDtos(service.getAllByCase(caseDataDto.getUuid()).stream());
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -238,8 +243,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
 		return (detailedReferences)
-			? convertToDetailedReferenceDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight))
-			: convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+			? convertToDetailedReferenceDto(service.getByUuid(uuid), createPseudonymizer())
+			: toPseudonymizedDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -274,7 +279,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		EventDto existingDto = toDto(existingEvent);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingEvent, pseudonymizer);
 
 		validate(dto);
@@ -283,7 +288,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		onEventChange(toDto(event), internal);
 
-		return convertToDto(event, pseudonymizer);
+		return toPseudonymizedDto(event, pseudonymizer);
 	}
 
 	@PermitAll
@@ -316,6 +321,12 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		} catch (ExternalSurveillanceToolException e) {
 			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 		}
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
@@ -469,8 +480,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -676,11 +687,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		});
 
 		return indexList;
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<EventDto> cq, Root<Event> root) {
-
 	}
 
 	@Override
@@ -894,19 +900,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		return exportList;
-	}
-
-	@Override
-	public boolean isDeleted(String eventUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Event> from = cq.from(Event.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(Event.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), eventUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
 	}
 
 	@Override
@@ -1169,7 +1162,12 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	public Event fillOrBuildEntity(@NotNull EventDto source, Event target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
 		target = DtoHelper.fillOrBuildEntity(source, target, Event::new, checkChangeDate);
+
+		if (targetWasNull) {
+			target.getEventLocation().setUuid(source.getEventLocation().getUuid());
+		}
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
@@ -1188,7 +1186,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEvolutionDate(source.getEvolutionDate());
 		target.setEvolutionComment(source.getEvolutionComment());
-		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
+		target.setEventLocation(locationFacade.fillOrBuildEntity(source.getEventLocation(), target.getEventLocation(), checkChangeDate));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());

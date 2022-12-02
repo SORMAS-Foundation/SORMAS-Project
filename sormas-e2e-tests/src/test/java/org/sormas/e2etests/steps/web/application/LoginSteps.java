@@ -157,51 +157,14 @@ public class LoginSteps implements En {
           webDriverHelpers.fillInWebElement(
               LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
           log.info("Click on Login button");
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
-        });
-
-    Given(
-        "^I log in as ([^\"]*) in Keycloak enabled environment$",
-        (String userRole) -> {
-          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
-          EnvUser user = runningConfiguration.getUserByRole(locale, userRole);
-          log.info("Filling username");
-          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
-          log.info("Filling password");
-          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
-          log.info("Clicking on login button");
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
-          if (webDriverHelpers.isElementVisibleWithTimeout(GDPR_CHECKBOX, 10)) {
-            webDriverHelpers.clickOnWebElementBySelector(GDPR_CHECKBOX);
-            if (webDriverHelpers.isElementVisibleWithTimeout(ACTION_CONFIRM_GDPR_POPUP, 5)) {
-              webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP);
-            } else {
-              webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP_DE);
-            }
-          }
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
         });
     When(
         "I check that German word for Configuration is present in the left main menu",
         () -> {
           webDriverHelpers.checkWebElementContainsText(
               NavBarPage.CONFIGURATION_BUTTON, "Einstellungen");
-        });
-
-    When(
-        "I check that English word for User Settings is present in the left main menu",
-        () -> {
-          webDriverHelpers.checkWebElementContainsText(
-              NavBarPage.USER_SETTINGS_BUTTON, "User Settings");
-        });
-    When(
-        "I check that German word for User Settings is present in the left main menu",
-        () -> {
-          webDriverHelpers.checkWebElementContainsText(
-              NavBarPage.USER_SETTINGS_BUTTON, "Benutzereinstellungen");
         });
     Then(
         "I check that ([^\"]*) language is selected in User Settings",
@@ -244,12 +207,6 @@ public class LoginSteps implements En {
                   org.testng.Assert.assertTrue(
                       webDriverHelpers.isElementVisibleWithTimeout(LOGIN_BUTTON, 5),
                       "Login page is not displayed"));
-        });
-    And(
-        "I click on logout button on Keycloak enabled environment",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(LOGOUT_KEYCLOAK_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LoginPage.LOGIN_KEYCLOAK_BUTTON);
         });
   }
 }

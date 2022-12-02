@@ -9,16 +9,16 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -39,7 +39,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -250,7 +250,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		VaccinationDto vaccination212 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
 
 		List<VaccinationListEntryDto> vaccinations = getVaccinationFacade()
-			.getEntriesList(new VaccinationListCriteria.Builder(person1.toReference()).withDisease(disease1).build(), null, null, null);
+			.getEntriesList(new VaccinationCriteria.Builder(person1.toReference()).withDisease(disease1).build(), null, null, null);
 		assertThat(vaccinations, hasSize(3));
 		assertThat(
 			vaccinations,
@@ -259,17 +259,17 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 				hasProperty(EntityDto.UUID, is(vaccination112.getUuid())),
 				hasProperty(EntityDto.UUID, is(vaccination121.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getEntriesList(new VaccinationListCriteria.Builder(person1.toReference()).withDisease(disease2).build(), null, null, null);
+			.getEntriesList(new VaccinationCriteria.Builder(person1.toReference()).withDisease(disease2).build(), null, null, null);
 		assertThat(vaccinations, hasSize(1));
 		assertThat(vaccinations, hasItem(hasProperty(EntityDto.UUID, is(vaccination131.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getEntriesList(new VaccinationListCriteria.Builder(person2.toReference()).withDisease(disease1).build(), null, null, null);
+			.getEntriesList(new VaccinationCriteria.Builder(person2.toReference()).withDisease(disease1).build(), null, null, null);
 		assertThat(vaccinations, hasSize(2));
 		assertThat(
 			vaccinations,
 			hasItems(hasProperty(EntityDto.UUID, is(vaccination211.getUuid())), hasProperty(EntityDto.UUID, is(vaccination212.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getEntriesList(new VaccinationListCriteria.Builder(person2.toReference()).withDisease(disease2).build(), null, null, null);
+			.getEntriesList(new VaccinationCriteria.Builder(person2.toReference()).withDisease(disease2).build(), null, null, null);
 		assertThat(vaccinations, hasSize(0));
 	}
 

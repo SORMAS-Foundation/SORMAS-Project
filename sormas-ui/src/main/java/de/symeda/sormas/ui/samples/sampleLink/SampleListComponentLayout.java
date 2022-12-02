@@ -22,4 +22,17 @@ public class SampleListComponentLayout extends SideComponentLayout {
 			addComponent(sampleInfo);
 		}
 	}
+
+	public SampleListComponentLayout(SampleListComponent sampleListComponent, String infoText, boolean isEditAllowed) {
+		super(sampleListComponent);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			sampleListComponent.addStyleName(CssStyles.VSPACE_NONE);
+			MultilineLabel sampleInfo = new MultilineLabel(VaadinIcons.INFO_CIRCLE.getHtml() + " " + infoText, ContentMode.HTML);
+			sampleInfo.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
+			sampleInfo.setEnabled(isEditAllowed);
+			addComponent(sampleInfo);
+		}
+
+	}
 }

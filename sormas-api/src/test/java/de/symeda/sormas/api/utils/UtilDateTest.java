@@ -3,8 +3,9 @@ package de.symeda.sormas.api.utils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -23,7 +24,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @see UtilDate
@@ -70,9 +71,6 @@ public class UtilDateTest {
 		// All time artifacts are before 1894-01-01
 		result = UtilDate.from(LocalDate.of(1893, Month.DECEMBER, 31));
 		expected = new GregorianCalendar(1893, Calendar.DECEMBER, 31).getTime();
-		assertDatesEquals(expected, result);
-		result = UtilDate.of(1894, Month.JANUARY, 1);
-		expected = new GregorianCalendar(1894, Calendar.JANUARY, 1).getTime();
 		assertDatesEquals(expected, result);
 
 		// 4-digit year in the past
@@ -228,10 +226,10 @@ public class UtilDateTest {
 		assertDatesEquals(expected, result);
 	}
 
-	@Test(expected = DateTimeException.class)
+	@Test
 	public void testOfInvalidDayOfMonth() {
 
-		UtilDate.of(2015, Month.APRIL, 31);
+		assertThrows(DateTimeException.class, () -> UtilDate.of(2015, Month.APRIL, 31));
 	}
 
 	@Test

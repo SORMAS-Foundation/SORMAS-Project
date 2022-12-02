@@ -387,7 +387,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		restorePseudonymizedDto(dto, existingSample, existingSampleDto);
 
-		Sample sample = fromDto(dto, checkChangeDate);
+		Sample sample = fillOrBuildEntity(dto, existingSample, checkChangeDate);
 
 		// Set defaults for testing requests
 		if (sample.getPathogenTestingRequested() == null) {
@@ -762,6 +762,13 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
+	public void undelete(SampleReferenceDto sampleRef) {
+		Sample sample = sampleService.getByReferenceDto(sampleRef);
+		sampleService.undelete(sample);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
@@ -785,9 +792,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		return deletedSampleUuids;
 	}
 
-	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
-
-		Sample target = DtoHelper.fillOrBuildEntity(source, sampleService.getByUuid(source.getUuid()), Sample::new, checkChangeDate);
+	public Sample fillOrBuildEntity(@NotNull SampleDto source, Sample target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Sample::new, checkChangeDate);
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
 		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));

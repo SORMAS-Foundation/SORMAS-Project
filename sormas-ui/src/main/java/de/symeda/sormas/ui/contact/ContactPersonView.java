@@ -20,8 +20,10 @@ package de.symeda.sormas.ui.contact;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
@@ -31,6 +33,8 @@ public class ContactPersonView extends AbstractContactView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
 
+	private PersonDto person;
+
 	public ContactPersonView() {
 		super(VIEW_NAME);
 	}
@@ -38,12 +42,29 @@ public class ContactPersonView extends AbstractContactView {
 	@Override
 	protected void initView(String params) {
 
-		ContactDto dto = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+		ContactDto caze = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+		person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
 
 		CommitDiscardWrapperComponent<PersonEditForm> contactPersonComponent = ControllerProvider.getPersonController()
-			.getPersonEditComponent(PersonContext.CONTACT,dto.getPerson().getUuid(), dto.getDisease(), dto.getDiseaseDetails(), UserRight.CONTACT_EDIT, null);
+			.getPersonEditComponent(
+				PersonContext.CONTACT,
+				person,
+				caze.getDisease(),
+				caze.getDiseaseDetails(),
+				UserRight.CONTACT_EDIT,
+				null,
+				isEditAllowed());
 		setSubComponent(contactPersonComponent);
 
-		setEditPermission(contactPersonComponent);
+		setEditPermission(
+			contactPersonComponent,
+			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
+			PersonDto.ADDRESSES,
+			PersonDto.PERSON_CONTACT_DETAILS);
+	}
+
+	@Override
+	protected boolean isEditAllowed() {
+		return FacadeProvider.getPersonFacade().isEditAllowed(person.getUuid());
 	}
 }

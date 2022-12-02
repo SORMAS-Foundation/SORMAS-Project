@@ -21,12 +21,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -56,6 +58,8 @@ public class SurveillanceReport extends AbstractDomainObject {
 	public static final String CAZE = "caze";
 
 	private ReportingType reportingType;
+
+	private String externalId;
 
 	private User creatingUser;
 
@@ -87,7 +91,15 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.reportingType = reportingType;
 	}
 
-	@ManyToOne
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	public User getCreatingUser() {
 		return creatingUser;
 	}
@@ -115,7 +127,7 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.dateOfDiagnosis = dateOfDiagnosis;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Region getFacilityRegion() {
 		return facilityRegion;
 	}
@@ -124,7 +136,7 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.facilityRegion = facilityRegion;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getFacilityDistrict() {
 		return facilityDistrict;
 	}
@@ -142,7 +154,7 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.facilityType = facilityType;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Facility getFacility() {
 		return facility;
 	}
@@ -169,12 +181,16 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.notificationDetails = notificationDetails;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Case getCaze() {
 		return caze;
 	}
 
 	public void setCaze(Case caze) {
 		this.caze = caze;
+	}
+
+	public SurveillanceReportReferenceDto toReference() {
+		return new SurveillanceReportReferenceDto(getUuid());
 	}
 }

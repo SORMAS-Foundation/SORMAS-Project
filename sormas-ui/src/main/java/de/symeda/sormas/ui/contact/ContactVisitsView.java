@@ -86,83 +86,85 @@ public class ContactVisitsView extends AbstractContactView {
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			topLayout.setWidth(100, Unit.PERCENTAGE);
+		if (isEditAllowed()) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CONTACT_EDIT, UserRight.VISIT_EDIT)) {
+				topLayout.setWidth(100, Unit.PERCENTAGE);
 
-			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
-				Captions.bulkActions,
-				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-					ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
-				}));
+							public void run() {
+								navigateTo(criteria);
+							}
+						});
+					}));
 
-			topLayout.addComponent(bulkOperationsDropdown);
-			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
-			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
-		}
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
-			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
-			{
-				topLayout.addComponent(exportButton);
-				topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-				if (topLayout.getComponentCount() == 1) {
-					topLayout.setExpandRatio(exportButton, 1);
-				}
+				topLayout.addComponent(bulkOperationsDropdown);
+				topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
+				topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 			}
 
-			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
-				VisitExportDto.class,
-				VisitExportType.CONTACT_VISITS,
-				(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
-					.getVisitsExportList(
-						grid.getCriteria(),
-						grid.getSelectionModel() instanceof MultiSelectionModelImpl
-							? grid.asMultiSelect().getSelectedItems().stream().map(VisitIndexDto::getUuid).collect(Collectors.toSet())
-							: null,
-						VisitExportType.CONTACT_VISITS,
-						start,
-						max,
-						null),
-				(propertyId, type) -> {
-					String caption = findPrefixCaption(
-						propertyId,
-						VisitExportDto.I18N_PREFIX,
-						VisitDto.I18N_PREFIX,
-						PersonDto.I18N_PREFIX,
-						SymptomsDto.I18N_PREFIX);
-					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+				Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
+				{
+					topLayout.addComponent(exportButton);
+					topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
+					if (topLayout.getComponentCount() == 1) {
+						topLayout.setExpandRatio(exportButton, 1);
 					}
-					return caption;
-				},
-				ExportEntityName.CONTACT_VISITS,
-				null);
+				}
 
-			new FileDownloader(exportStreamResource).extend(exportButton);
-		}
+				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
+					VisitExportDto.class,
+					VisitExportType.CONTACT_VISITS,
+					(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
+						.getVisitsExportList(
+							grid.getCriteria(),
+							grid.getSelectionModel() instanceof MultiSelectionModelImpl
+								? grid.asMultiSelect().getSelectedItems().stream().map(VisitIndexDto::getUuid).collect(Collectors.toSet())
+								: null,
+							VisitExportType.CONTACT_VISITS,
+							start,
+							max,
+							null),
+					(propertyId, type) -> {
+						String caption = findPrefixCaption(
+							propertyId,
+							VisitExportDto.I18N_PREFIX,
+							VisitDto.I18N_PREFIX,
+							PersonDto.I18N_PREFIX,
+							SymptomsDto.I18N_PREFIX);
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+						}
+						return caption;
+					},
+					ExportEntityName.CONTACT_VISITS,
+					null);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
-			newButton = ButtonHelper.createIconButton(
-				Captions.visitNewVisit,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria)),
-				ValoTheme.BUTTON_PRIMARY);
+				new FileDownloader(exportStreamResource).extend(exportButton);
+			}
 
-			topLayout.addComponent(newButton);
-			topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.VISIT_CREATE, UserRight.CONTACT_EDIT)) {
+				newButton = ButtonHelper.createIconButton(
+					Captions.visitNewVisit,
+					VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria)),
+					ValoTheme.BUTTON_PRIMARY);
 
-			final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(this.getContactRef().getUuid());
-			if (contactDto.getResultingCase() != null) {
-				newButton.setEnabled(false);
-				final Label label = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-				label.setDescription(I18nProperties.getString(Strings.infoContactAlreadyConvertedToCase));
-				topLayout.addComponent(label);
-				topLayout.setComponentAlignment(label, Alignment.MIDDLE_RIGHT);
+				topLayout.addComponent(newButton);
+				topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+
+				final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(this.getContactRef().getUuid());
+				if (contactDto.getResultingCase() != null) {
+					newButton.setEnabled(false);
+					final Label label = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+					label.setDescription(I18nProperties.getString(Strings.infoContactAlreadyConvertedToCase));
+					topLayout.addComponent(label);
+					topLayout.setComponentAlignment(label, Alignment.MIDDLE_RIGHT);
+				}
 			}
 		}
 
@@ -197,7 +199,8 @@ public class ContactVisitsView extends AbstractContactView {
 		criteria.contact(getContactRef());
 
 		if (grid == null) {
-			grid = new VisitGrid(criteria);
+			grid =
+				new VisitGrid(criteria, isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_EDIT, UserRight.VISIT_EDIT));
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();
 			gridLayout.setMargin(true);
@@ -210,7 +213,5 @@ public class ContactVisitsView extends AbstractContactView {
 
 		grid.reload();
 //		updateActiveStatusButtonCaption();
-
-		setEditPermission(gridLayout);
 	}
 }

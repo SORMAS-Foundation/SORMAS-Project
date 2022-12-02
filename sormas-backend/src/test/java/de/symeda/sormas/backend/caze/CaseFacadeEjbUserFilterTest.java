@@ -18,6 +18,10 @@ package de.symeda.sormas.backend.caze;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -25,10 +29,7 @@ import java.util.List;
 
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -50,7 +51,6 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
@@ -187,23 +187,23 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		Date yesterday = UtilDate.yesterday();
 		List<CaseDataDto> allActiveCasesAfter = getCaseFacade().getAllAfter(yesterday);
 		assertThat(allActiveCasesAfter, hasSize(4));
-		Assert.assertFalse(allActiveCasesAfter.contains(case11));
-		Assert.assertFalse(allActiveCasesAfter.contains(case12));
+		assertFalse(allActiveCasesAfter.contains(case11));
+		assertFalse(allActiveCasesAfter.contains(case12));
 
 		loginWith(districtUser11);
 
 		List<CaseDataDto> allActiveCasesAfter2 = getCaseFacade().getAllAfter(yesterday);
 		assertThat(allActiveCasesAfter2, hasSize(4));
-		Assert.assertFalse(allActiveCasesAfter2.contains(case2));
-		Assert.assertFalse(allActiveCasesAfter2.contains(case11));
+		assertFalse(allActiveCasesAfter2.contains(case2));
+		assertFalse(allActiveCasesAfter2.contains(case11));
 
 		loginWith(districtUser12);
 
 		List<CaseDataDto> allActiveCasesAfter3 = getCaseFacade().getAllAfter(yesterday);
 		assertThat(allActiveCasesAfter3, hasSize(3));
-		Assert.assertFalse(allActiveCasesAfter3.contains(case2));
-		Assert.assertFalse(allActiveCasesAfter3.contains(case11));
-		Assert.assertFalse(allActiveCasesAfter3.contains(case12));
+		assertFalse(allActiveCasesAfter3.contains(case2));
+		assertFalse(allActiveCasesAfter3.contains(case11));
+		assertFalse(allActiveCasesAfter3.contains(case12));
 	}
 
 	@Test
@@ -249,13 +249,13 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			creator.createUser(rdcf1, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR), user -> user.setActive(false));
 
 		List<UserReferenceDto> usersHavingCaseInJurisdiction = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
-		Assert.assertNotNull(usersHavingCaseInJurisdiction);
-		Assert.assertEquals(5, usersHavingCaseInJurisdiction.size()); // contains also admin as test admin user is also national user
-		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(nationalUser));
-		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser1));
-		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser11));
-		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser12));
-		Assert.assertFalse(usersHavingCaseInJurisdiction.contains(inactiveUser));
+		assertNotNull(usersHavingCaseInJurisdiction);
+		assertEquals(5, usersHavingCaseInJurisdiction.size()); // contains also admin as test admin user is also national user
+		assertTrue(usersHavingCaseInJurisdiction.contains(nationalUser));
+		assertTrue(usersHavingCaseInJurisdiction.contains(districtUser1));
+		assertTrue(usersHavingCaseInJurisdiction.contains(districtUser11));
+		assertTrue(usersHavingCaseInJurisdiction.contains(districtUser12));
+		assertFalse(usersHavingCaseInJurisdiction.contains(inactiveUser));
 	}
 
 	@Test
@@ -387,11 +387,11 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
-		Assert.assertNotNull(userReferenceDtos);
-		Assert.assertTrue(userReferenceDtos.contains(nationalUser));
-		Assert.assertTrue(userReferenceDtos.contains(districtUser1));
-		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
-		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(nationalUser));
+		assertTrue(userReferenceDtos.contains(districtUser1));
+		assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 
 	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser) {

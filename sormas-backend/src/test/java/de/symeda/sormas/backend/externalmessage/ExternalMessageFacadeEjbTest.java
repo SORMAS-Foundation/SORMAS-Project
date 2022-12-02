@@ -17,14 +17,14 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -123,13 +123,13 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
-		creator.createLabMessageWithTestReport(sample.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
 		// create additional matches
-		creator.createLabMessageWithTestReport(sample.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessageWithTestReport(sample2.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample2.toReference());
 		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 	}
 

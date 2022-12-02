@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -28,7 +29,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.user.User;
@@ -43,7 +44,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String SAMPLE_REPORTS = "sampleReports";
 
 	public static final String TYPE = "type";
-	public static final String TESTED_DISEASE = "testedDisease";
+	public static final String DISEASE = "disease";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
@@ -65,10 +66,10 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
 	public static final String ASSIGNEE = "assignee";
-	public static final String CAZE = "caze";
+	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
 
 	private ExternalMessageType type;
-	private Disease testedDisease;
+	private Disease disease;
 	private Date messageDateTime;
 
 	private String reporterName;
@@ -97,7 +98,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private User assignee;
 
 	private List<SampleReport> sampleReports;
-	private Case caze;
+	private SurveillanceReport surveillanceReport;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -109,12 +110,12 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public Disease getTestedDisease() {
-		return testedDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setTestedDisease(Disease testedDisease) {
-		this.testedDisease = testedDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -307,7 +308,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.reportId = reportId;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getAssignee() {
 		return assignee;
@@ -317,13 +318,13 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.assignee = assignee;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	public Case getCaze() {
-		return caze;
+	@OneToOne(fetch = FetchType.LAZY)
+	public SurveillanceReport getSurveillanceReport() {
+		return surveillanceReport;
 	}
 
-	public void setCaze(Case caze) {
-		this.caze = caze;
+	public void setSurveillanceReport(SurveillanceReport surveillanceReport) {
+		this.surveillanceReport = surveillanceReport;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = SampleReport.LAB_MESSAGE, fetch = FetchType.LAZY)

@@ -32,16 +32,17 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class PrescriptionGrid extends Grid implements V7AbstractGrid<PrescriptionCriteria> {
 
-	private static final String EDIT_BTN_ID = "edit";
+	private static final String ACTION_BTN_ID = "edit";
+	private static final String VIEW_BTN_ID = "view";
 	private static final String DOCUMENT_TREATMENT_BTN_ID = "documentTreatment";
 
 	private PrescriptionCriteria prescriptionCriteria = new PrescriptionCriteria();
 
-	public PrescriptionGrid(TherapyView parentView, boolean isPseudonymized) {
+	public PrescriptionGrid(TherapyView parentView, boolean isPseudonymized, boolean isEditAllowed) {
 
 		setSizeFull();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
@@ -49,7 +50,9 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 		BeanItemContainer<PrescriptionIndexDto> container = new BeanItemContainer<>(PrescriptionIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
+
+		VaadinUiUtil.addIconColumn(generatedContainer, ACTION_BTN_ID, isEditAllowed ? VaadinIcons.EDIT : VaadinIcons.EYE);
+
 		setContainerDataSource(generatedContainer);
 
 		generatedContainer.addGeneratedProperty(DOCUMENT_TREATMENT_BTN_ID, new PropertyValueGenerator<String>() {
@@ -66,7 +69,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 		});
 
 		setColumns(
-			EDIT_BTN_ID,
+			ACTION_BTN_ID,
 			PrescriptionIndexDto.PRESCRIPTION_TYPE,
 			PrescriptionIndexDto.PRESCRIPTION_DATE,
 			PrescriptionIndexDto.PRESCRIPTION_PERIOD,
@@ -76,14 +79,15 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 			PrescriptionIndexDto.PRESCRIBING_CLINICIAN,
 			DOCUMENT_TREATMENT_BTN_ID);
 
-		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
+		VaadinUiUtil.setupActionColumn(getColumn(ACTION_BTN_ID));
 
 		if (!isPseudonymized) {
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer()).setMinimumWidth(180);
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
-		} else {
-			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHidden(true);
 		}
+
+		getColumn(DOCUMENT_TREATMENT_BTN_ID)
+			.setHidden(isPseudonymized || !isEditAllowed || !UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE));
 
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_PERIOD).setConverter(new PeriodDtoConverter());
@@ -106,8 +110,9 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 				PrescriptionDto prescription =
 					FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, (Runnable) () -> parentView.reloadTreatmentGrid());
-			} else if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController().openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, false);
+			} else if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
+				ControllerProvider.getTherapyController()
+					.openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, !isEditAllowed);
 			}
 		});
 	}

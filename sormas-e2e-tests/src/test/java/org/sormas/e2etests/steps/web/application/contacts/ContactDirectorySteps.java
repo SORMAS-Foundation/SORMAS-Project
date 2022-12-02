@@ -90,6 +90,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_ACTIONS_CONTACT_VALUES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_DELETE_BUTTON_CONTACT_PAGE;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX;
@@ -1037,6 +1038,9 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickWebElementByText(
               RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS, option);
         });
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Contact Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_DELETE_BUTTON_CONTACT_PAGE));
 
     When(
         "I am checking if options in checkbox for Contact are displayed correctly",

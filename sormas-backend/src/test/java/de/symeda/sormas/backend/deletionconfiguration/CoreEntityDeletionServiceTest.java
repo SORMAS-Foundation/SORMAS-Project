@@ -1,35 +1,24 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.http.HttpStatus;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -43,7 +32,10 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -78,12 +70,7 @@ import de.symeda.sormas.backend.user.User;
 
 public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
-	private static final int WIREMOCK_TESTING_PORT = 8888;
-
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
-
-	@Before
+	@BeforeEach
 	public void setupConfig() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_URL, "url");
 	}
@@ -98,13 +85,20 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		UserDto user = creator
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
-		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDontShareWithReportingTool(true));
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
 		creator.createClinicalVisit(caze);
 		creator.createTreatment(caze);
 		creator.createPrescription(caze);
 		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		creator.createSurveillanceReport(user.toReference(), caze.toReference());
+
+		byte[] contentAsBytes =  ("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
+				"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
+				"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
+				"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
+				"0 R>>\nstartxref\n149\n%EOF").getBytes();
+
 		creator.createDocument(
 			user.toReference(),
 			"document.pdf",
@@ -112,7 +106,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 			42L,
 			DocumentRelatedEntityType.CASE,
 			caze.getUuid(),
-			"content".getBytes(StandardCharsets.UTF_8));
+			contentAsBytes);
 
 		CaseDataDto duplicateCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		getCaseFacade().deleteCaseAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
@@ -172,13 +166,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(2, getCaseService().count());
 
 		useSystemUser();
-
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-				.withRequestBody(containing("caseUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		getCoreEntityDeletionService().executeAutomaticDeletion();
-		wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 		loginWith(user);
 
 		ContactDto resultingContactUpdated = getContactFacade().getByUuid(resultingContact.getUuid());
@@ -219,16 +207,30 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 			v.setVisitingPerson("John Smith");
 			v.setVisitRemarks("Test remarks");
 
-			SymptomsDto symptoms = new SymptomsDto();
+			SymptomsDto symptoms = v.getSymptoms();
 			symptoms.setPatientIllLocation("Test ill location");
 			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
 			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic");
-			v.setSymptoms(symptoms);
 		});
 
 		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate());
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
+
+		CaseDataDto caze2 = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		creator.createClinicalVisit(caze2, v -> {
+			v.setVisitingPerson("John Wayne");
+			v.setVisitRemarks("Visit remarks");
+
+			SymptomsDto symptoms = v.getSymptoms();
+			symptoms.setPatientIllLocation("Test sick location");
+			symptoms.setOtherHemorrhagicSymptoms(SymptomState.YES);
+			symptoms.setOtherHemorrhagicSymptomsText("OtherHemorrhagic for case 2");
+		});
+
+		VisitDto visit2 = creator.createVisit(caze2.getDisease(), caze2.getPerson(), caze2.getReportDate());
+		visit2.getSymptoms().setCough(SymptomState.YES);
+		getVisitFacade().saveVisit(visit2);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		SessionImpl em = (SessionImpl) getEntityManager();
@@ -239,15 +241,15 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
 		em.save(singleResult);
 
-		assertEquals(1, getCaseService().count());
+		assertEquals(2, getCaseService().count());
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
-		assertEquals(0, getCaseService().count());
-		assertEquals(0, getVisitService().count());
-		assertEquals(0, getSymptomsService().count());
+		assertEquals(1, getCaseService().count());
+		assertEquals(1, getVisitService().count());
+		assertEquals(3, getSymptomsService().count());
 	}
 
 	@Test
@@ -527,7 +529,31 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	}
 
 	@Test
-	public void testContactPermanentDeletion() throws IOException {
+	public void testUndelete() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
+
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		assertEquals(0, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());
+
+		getImmunizationFacade().undelete(immunization.getUuid());
+		List<ImmunizationIndexDto> indexList = getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null);
+		assertEquals(1, indexList.size());
+		Immunization undeletedImmunization = getImmunizationService().getByUuid(indexList.get(0).getUuid());
+		assertNull(undeletedImmunization.getDeletionReason());
+		assertNull(undeletedImmunization.getOtherDeletionReason());
+	}
+
+	@Test
+	public void testContactPermanentDeletion() {
+
+		// the Visit will be added only to contacts that have REPORT_DATE_TIME, LAST_CONTACT_DATE or FOLLOW_UP_UNTIL within less than ALLOWED_DATE_OFFSET days from Visit report date
+		// the test is checking the permanent deletion for contacts which are more than ALLOWED_DATE_OFFSET days apart from each other so there will be no shared Visit between them
+		// the second part tests the permanent deletion of contacts with the same person which are less than ALLOWED_DATE_OFFSET days apart
 		createDeletionConfigurations();
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
 
@@ -537,6 +563,10 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		PersonDto person = creator.createPerson();
 
 		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		final Date beyondRelevanceDate = DateUtils.addDays(new Date(), (-1) * (FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
+		contactDto.setReportDateTime(beyondRelevanceDate);
+		getContactFacade().save(contactDto);
 
 		TaskDto taskDto = creator
 			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto.toReference(), null, new Date(), null);
@@ -549,13 +579,27 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		VisitDto visitDto = creator.createVisit(contactDto.getDisease(), contactDto.getPerson(), contactDto.getReportDateTime());
 
-		assertEquals(1, getContactService().count());
-		assertEquals(1, getTaskFacade().getAllByContact(contactDto.toReference()).size());
-		assertEquals(1, getSampleService().count());
-		assertEquals(1, getVisitService().count());
+		ContactDto contactDto2 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
-		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		TaskDto taskDto2 = creator
+			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto2.toReference(), null, new Date(), null);
+
+		SampleDto sample2 = creator.createSample(
+			contactDto2.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(contactDto2.toReference()));
+
+		VisitDto visitDto2 = creator.createVisit(contactDto2.getDisease(), contactDto2.getPerson(), contactDto2.getReportDateTime());
+
+		assertEquals(2, getContactService().count());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto.toReference()).size());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto2.toReference()).size());
+		assertEquals(2, getSampleService().count());
+		assertEquals(2, getVisitService().count());
+
 		SessionImpl em = (SessionImpl) getEntityManager();
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		QueryImplementor query = em.createQuery("select i from contact i where i.uuid=:uuid");
 		query.setParameter("uuid", contactDto.getUuid());
 		Contact singleResult = (Contact) query.getSingleResult();
@@ -567,8 +611,58 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
+		assertEquals(1, getContactService().count());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto2.toReference()).size());
+		assertEquals(1, getSampleService().count());
+		assertEquals(1, getVisitService().count());
+
+		ContactDto contactDto3 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		TaskDto taskDto3 = creator
+			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto3.toReference(), null, new Date(), null);
+
+		SampleDto sample3 = creator.createSample(
+			contactDto3.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(contactDto3.toReference()));
+
+		VisitDto visitDto3 = creator.createVisit(contactDto3.getDisease(), contactDto3.getPerson(), contactDto3.getReportDateTime());
+
+		final Date tenYearsPlusAgoSecondContact = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl emSecondContact = (SessionImpl) getEntityManager();
+		QueryImplementor query2 = emSecondContact.createQuery("select i from contact i where i.uuid=:uuid");
+		query2.setParameter("uuid", contactDto2.getUuid());
+		Contact singleResult2 = (Contact) query2.getSingleResult();
+		singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgoSecondContact.getTime()));
+		singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgoSecondContact.getTime()));
+		emSecondContact.save(singleResult2);
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(1, getContactService().count());
+		assertEquals(0, getTaskFacade().getAllByContact(contactDto2.toReference()).size());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto3.toReference()).size());
+		assertEquals(1, getSampleService().count());
+		assertEquals(2, getVisitService().count());
+
+		final Date tenYearsPlusAgoThirdContact = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl emThirdContact = (SessionImpl) getEntityManager();
+		QueryImplementor query3 = emThirdContact.createQuery("select i from contact i where i.uuid=:uuid");
+		query3.setParameter("uuid", contactDto3.getUuid());
+		Contact singleResult3 = (Contact) query3.getSingleResult();
+		singleResult3.setCreationDate(new Timestamp(tenYearsPlusAgoThirdContact.getTime()));
+		singleResult3.setChangeDate(new Timestamp(tenYearsPlusAgoThirdContact.getTime()));
+		emThirdContact.save(singleResult3);
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
 		assertEquals(0, getContactService().count());
-		assertEquals(0, getTaskFacade().getAllByContact(contactDto.toReference()).size());
+		assertEquals(0, getTaskFacade().getAllByContact(contactDto3.toReference()).size());
 		assertEquals(0, getSampleService().count());
 		assertEquals(0, getVisitService().count());
 	}
@@ -800,9 +894,6 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 
-		assertEquals(0, getCaseService().count());
-		assertEquals(0, getShareRequestInfoService().count());
-		assertEquals(0, getSormasToSormasShareInfoService().count());
 		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
@@ -842,7 +933,6 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		loginWith(user);
 
 		assertEquals(0, getCaseService().count());
-		assertEquals(0, getSormasToSormasShareRequestService().count());
 		assertEquals(0, getShareRequestInfoService().count());
 		assertEquals(0, getSormasToSormasShareInfoService().count());
 	}

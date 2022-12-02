@@ -69,6 +69,7 @@ public interface Captions {
 	String actionDiscardAndContinue = "actionDiscardAndContinue";
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
+	String actionDone = "actionDone";
 	String actionEnable = "actionEnable";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	String actionExecuteAutomaticDeletion = "actionExecuteAutomaticDeletion";
@@ -100,6 +101,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionProceed = "actionProceed";
 	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
 	String actionReset = "actionReset";
@@ -121,6 +123,7 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
+	String actionUnDelete = "actionUnDelete";
 	String actionYes = "actionYes";
 	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";
@@ -171,6 +174,8 @@ public interface Captions {
 	String AdditionalTest_wbcCount = "AdditionalTest.wbcCount";
 	String additionalTestNewTest = "additionalTestNewTest";
 	String address = "address";
+	String adoptHomeAddressOfCasePerson = "adoptHomeAddressOfCasePerson";
+	String adoptHomeAddressOfCasePersonIfRelationMatches = "adoptHomeAddressOfCasePersonIfRelationMatches";
 	String AggregateReport_deaths = "AggregateReport.deaths";
 	String AggregateReport_disease = "AggregateReport.disease";
 	String AggregateReport_grouping = "AggregateReport.grouping";
@@ -533,6 +538,7 @@ public interface Captions {
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
+	String caseJurisdictionType = "caseJurisdictionType";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
@@ -541,6 +547,7 @@ public interface Captions {
 	String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
 	String caseOpenCasesGuide = "caseOpenCasesGuide";
 	String caseOpenMergeGuide = "caseOpenMergeGuide";
+	String casePersonAddress = "casePersonAddress";
 	String casePickCase = "casePickCase";
 	String casePlaceOfStay = "casePlaceOfStay";
 	String casePlusDays = "casePlusDays";
@@ -1308,6 +1315,7 @@ public interface Captions {
 	String externalMessage_deleteNewlyCreatedCase = "externalMessage.deleteNewlyCreatedCase";
 	String externalMessage_deleteNewlyCreatedContact = "externalMessage.deleteNewlyCreatedContact";
 	String externalMessage_deleteNewlyCreatedEventParticipant = "externalMessage.deleteNewlyCreatedEventParticipant";
+	String ExternalMessage_disease = "ExternalMessage.disease";
 	String ExternalMessage_labExternalId = "ExternalMessage.labExternalId";
 	String ExternalMessage_labMessageDetails = "ExternalMessage.labMessageDetails";
 	String ExternalMessage_labSampleId = "ExternalMessage.labSampleId";
@@ -1333,7 +1341,7 @@ public interface Captions {
 	String ExternalMessage_sampleReceivedDate = "ExternalMessage.sampleReceivedDate";
 	String ExternalMessage_specimenCondition = "ExternalMessage.specimenCondition";
 	String ExternalMessage_status = "ExternalMessage.status";
-	String ExternalMessage_testedDisease = "ExternalMessage.testedDisease";
+	String ExternalMessage_surveillanceReport = "ExternalMessage.surveillanceReport";
 	String ExternalMessage_type = "ExternalMessage.type";
 	String ExternalMessageCriteria_birthDateFrom = "ExternalMessageCriteria.birthDateFrom";
 	String ExternalMessageCriteria_birthDateTo = "ExternalMessageCriteria.birthDateTo";
@@ -1601,6 +1609,10 @@ public interface Captions {
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
+	String notificationType = "notificationType";
+	String notificationType_caption = "notificationType.caption";
+	String notificationType_description = "notificationType.description";
+	String notificationType_group = "notificationType.group";
 	String notSpecified = "notSpecified";
 	String notTestedYet = "notTestedYet";
 	String numberOfCharacters = "numberOfCharacters";
@@ -2065,14 +2077,17 @@ public interface Captions {
 	String SurveillanceReport = "SurveillanceReport";
 	String SurveillanceReport_creatingUser = "SurveillanceReport.creatingUser";
 	String SurveillanceReport_dateOfDiagnosis = "SurveillanceReport.dateOfDiagnosis";
+	String SurveillanceReport_externalId = "SurveillanceReport.externalId";
 	String SurveillanceReport_facility = "SurveillanceReport.facility";
 	String SurveillanceReport_facilityDetails = "SurveillanceReport.facilityDetails";
 	String SurveillanceReport_facilityDistrict = "SurveillanceReport.facilityDistrict";
 	String SurveillanceReport_facilityRegion = "SurveillanceReport.facilityRegion";
 	String SurveillanceReport_facilityType = "SurveillanceReport.facilityType";
+	String SurveillanceReport_facilityTypeGroup = "SurveillanceReport.facilityTypeGroup";
 	String SurveillanceReport_notificationDetails = "SurveillanceReport.notificationDetails";
 	String SurveillanceReport_reportDate = "SurveillanceReport.reportDate";
 	String SurveillanceReport_reportingType = "SurveillanceReport.reportingType";
+	String SurveillanceReport_uuid = "SurveillanceReport.uuid";
 	String surveillanceReportNewReport = "surveillanceReportNewReport";
 	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
 	String symptomJournalOptionsButton = "symptomJournalOptionsButton";
@@ -2274,6 +2289,7 @@ public interface Captions {
 	String syncUsers = "syncUsers";
 	String system = "system";
 	String Task = "Task";
+	String Task_assignedByUser = "Task.assignedByUser";
 	String Task_assigneeReply = "Task.assigneeReply";
 	String Task_assigneeUser = "Task.assigneeUser";
 	String Task_caze = "Task.caze";
@@ -2477,6 +2493,7 @@ public interface Captions {
 	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
 	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";
 	String versionIsMissing = "versionIsMissing";
+	String view = "view";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_aggregatereporting = "View.aggregatereports.aggregatereporting";
@@ -2578,6 +2595,7 @@ public interface Captions {
 	String View_user_userroles = "View.user.userroles";
 	String View_user_users = "View.user.users";
 	String View_users_sub = "View.users.sub";
+	String viewMessage = "viewMessage";
 	String Visit = "Visit";
 	String Visit_disease = "Visit.disease";
 	String Visit_origin = "Visit.origin";

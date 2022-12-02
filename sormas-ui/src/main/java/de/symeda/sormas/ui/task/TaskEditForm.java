@@ -88,7 +88,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			fluidRowLocs(TaskDto.TASK_STATUS) +
 			fluidRowLocs(TaskDto.OBSERVER_USERS) +
 			fluidRowLocs(OBSERVER_MISSING_INFO) +
-			fluidRowLocs(SAVE_INFO);
+			fluidRowLocs(SAVE_INFO) + fluidRowLocs(TaskDto.ASSIGNED_BY_USER);
 	//@formatter:on
 
 	private UserRight editOrCreateUserRight;
@@ -174,6 +174,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 		observerUsers.setImmediate(true);
 		CssStyles.style(observerUsers, CssStyles.OPTIONGROUP_MAX_HEIGHT_150);
+
+		ComboBox assignedBy = addField(TaskDto.ASSIGNED_BY_USER, ComboBox.class);
+		assignedBy.setReadOnly(true);
 
 		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE, TaskDto.TASK_STATUS);
 		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);

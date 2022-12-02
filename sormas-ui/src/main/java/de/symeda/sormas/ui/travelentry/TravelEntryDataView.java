@@ -58,6 +58,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
+		container.setEnabled(true);
 
 		LayoutWithSidePanel layout =
 			new LayoutWithSidePanel(editComponent, CASE_LOC, DOCUMENTS_LOC, QuarantineOrderDocumentsComponent.QUARANTINE_LOC, TASKS_LOC);
@@ -76,6 +77,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addSidePanelComponent(createCaseInfoLayout(resultingCase.getUuid()), CASE_LOC);
 		}
 
+		final String uuid = travelEntryDto.getUuid();
+		final EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
@@ -83,21 +86,31 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				DocumentRelatedEntityType.TRAVEL_ENTRY,
 				getReference(),
 				UserRight.TRAVEL_ENTRY_EDIT,
-				travelEntryDto.isPseudonymized());
+				travelEntryDto.isPseudonymized(),
+				isEditAllowed(),
+				EditPermissionType.DOCUMENTS_ONLY.equals(travelEntryEditAllowed));
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getTravelEntryRef(), documentList);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
-			TaskListComponent taskList = new TaskListComponent(TaskContext.TRAVEL_ENTRY, getTravelEntryRef(), travelEntryDto.getDisease());
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+			TaskListComponent taskList = new TaskListComponent(
+				TaskContext.TRAVEL_ENTRY,
+				getTravelEntryRef(),
+				travelEntryDto.getDisease(),
+				this::showUnsavedChangesPopup,
+				isEditAllowed());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryDto.getUuid());
+		final boolean deleted = FacadeProvider.getTravelEntryFacade().isDeleted(uuid);
 
-		if (travelEntryEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (travelEntryEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (travelEntryEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();

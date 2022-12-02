@@ -20,6 +20,8 @@ package org.sormas.e2etests.entities.services.api;
 
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -95,6 +97,85 @@ public class ContactApiService {
         .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
         .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
         .relationToCase("SAME_HOUSEHOLD")
+        .build();
+  }
+
+  public Contact buildGeneratedContactWithCreationDate(Person person, Integer days) {
+    environmentManager = new EnvironmentManager(restAssuredClient);
+    return Contact.builder()
+        .creationDate(
+            LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli())
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .uuid(UUID.randomUUID().toString())
+        .reportDateTime(new Date())
+        .reportingUser(
+            ReportingUser.builder()
+                .uuid(
+                    runningConfiguration
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
+                .build())
+        .district(
+            District.builder()
+                .caption(DistrictsValues.VoreingestellterLandkreis.getName())
+                .uuid(
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.VoreingestellterLandkreis.getName()))
+                .build())
+        .region(
+            Region.builder()
+                .caption(RegionsValues.VoreingestellteBundeslander.getName())
+                .uuid(
+                    environmentManager.getRegionUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName()))
+                .build())
+        .relationToCase("")
+        .contactClassification("UNCONFIRMED")
+        .followUpStatus("FOLLOW_UP")
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
+        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
+        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+        .relationToCase("SAME_HOUSEHOLD")
+        .build();
+  }
+
+  public Contact buildGeneratedContactWithParamRegionAndDistrictLinkedToPreviousCreatedCase(
+      Person person, Case caze, String region, String district) {
+    environmentManager = new EnvironmentManager(restAssuredClient);
+    return Contact.builder()
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .uuid(UUID.randomUUID().toString())
+        .reportDateTime(new Date())
+        .reportingUser(
+            ReportingUser.builder()
+                .uuid(
+                    runningConfiguration
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
+                .build())
+        .district(District.builder().uuid(environmentManager.getDistrictUUID(district)).build())
+        .region(Region.builder().uuid(environmentManager.getRegionUUID(region)).build())
+        .relationToCase("")
+        .contactClassification("UNCONFIRMED")
+        .followUpStatus("FOLLOW_UP")
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
+        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
+        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+        .relationToCase("SAME_HOUSEHOLD")
+        .caze(Case.builder().uuid(caze.getUuid()).build())
         .build();
   }
 

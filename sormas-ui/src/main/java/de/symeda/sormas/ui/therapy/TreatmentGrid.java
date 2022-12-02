@@ -26,14 +26,14 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCriteria> {
 
-	private static final String EDIT_BTN_ID = "edit";
+	private static final String ACTION_BTN_ID = "edit";
 
 	private TreatmentCriteria treatmentCriteria = new TreatmentCriteria();
 
-	public TreatmentGrid(boolean isPseudonymized) {
+	public TreatmentGrid(boolean isPseudonymized, boolean isEditAllowed) {
 		setSizeFull();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
@@ -41,18 +41,18 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 
 		BeanItemContainer<TreatmentIndexDto> container = new BeanItemContainer<>(TreatmentIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
+		VaadinUiUtil.addIconColumn(generatedContainer, ACTION_BTN_ID, isEditAllowed ? VaadinIcons.EDIT : VaadinIcons.EYE);
 		setContainerDataSource(generatedContainer);
 
 		setColumns(
-			EDIT_BTN_ID,
+			ACTION_BTN_ID,
 			TreatmentIndexDto.TREATMENT_TYPE,
 			TreatmentIndexDto.TREATMENT_DATE_TIME,
 			TreatmentIndexDto.DOSE,
 			TreatmentIndexDto.TREATMENT_ROUTE,
 			TreatmentIndexDto.EXECUTING_CLINICIAN);
 
-		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
+		VaadinUiUtil.setupActionColumn(getColumn(ACTION_BTN_ID));
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 		getColumn(TreatmentIndexDto.TREATMENT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
@@ -71,8 +71,8 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 				return;
 			}
 
-			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController().openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload);
+			if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
+				ControllerProvider.getTherapyController().openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload, isEditAllowed);
 			}
 		});
 	}

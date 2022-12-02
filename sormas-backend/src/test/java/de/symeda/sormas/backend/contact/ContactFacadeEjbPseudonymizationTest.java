@@ -31,9 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -58,7 +56,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
-@RunWith(MockitoJUnitRunner.class)
 public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
@@ -422,7 +419,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private PersonDto createPerson() {
 
-		LocationDto address = new LocationDto();
+		LocationDto address = LocationDto.build();
 		address.setRegion(rdcf1.region);
 		address.setDistrict(rdcf1.district);
 		address.setCommunity(rdcf1.community);

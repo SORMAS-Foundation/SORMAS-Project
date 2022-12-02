@@ -44,6 +44,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -55,6 +56,8 @@ import de.symeda.sormas.backend.vaccination.LastVaccineType;
 @LocalBean
 public class DirectoryImmunizationService extends AbstractDeletableAdoService<DirectoryImmunization> {
 
+	@EJB
+	private PersonService personService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -219,6 +222,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 				}
 
 				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, from.get(Immunization.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.UUID), textFilter),
@@ -329,6 +333,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 	}
 
 	private Predicate isInJurisdictionOrOwned(DirectoryImmunizationQueryContext qc) {
+
 		final User currentUser = userService.getCurrentUser();
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter;
@@ -338,7 +343,8 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 			filter = CriteriaBuilderHelper.or(
 				cb,
 				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
-				PersonJurisdictionPredicateValidator.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
+				PersonJurisdictionPredicateValidator
+					.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, personService.getPermittedAssociations())
 					.inJurisdictionOrOwned());
 		}
 		return filter;

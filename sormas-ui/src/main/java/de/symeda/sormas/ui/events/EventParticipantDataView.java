@@ -37,7 +37,7 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -53,7 +53,6 @@ import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
@@ -71,16 +70,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
-//	public static final String HTML_LAYOUT = LayoutUtil.fluidRow(
-//		LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
-
-	private CommitDiscardWrapperComponent<?> editComponent;
+	private CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent;
 
 	public EventParticipantDataView() {
 		super(VIEW_NAME);
@@ -115,7 +105,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		setHeightUndefined();
 
 		final EventParticipantReferenceDto eventParticipantRef = getReference();
-		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(eventParticipantRef.getUuid());
+		final String uuid = eventParticipantRef.getUuid();
+		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(uuid);
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -135,13 +126,17 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
+		EditPermissionType eventParticipantEditAllowed =
+			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantRef.getUuid());
+
 		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				sampleCriteria.eventParticipant(eventParticipantRef)
 					.disease(event.getDisease())
 					.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
-				this::showUnsavedChangesPopup);
+				this::showUnsavedChangesPopup,
+				true);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -172,8 +167,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		VaccinationListCriteria vaccinationCriteria =
-			new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
+		VaccinationCriteria vaccinationCriteria =
+			new VaccinationCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
 		QuarantineOrderDocumentsComponent.addComponentToLayout(
 			layout,
 			eventParticipantRef,
@@ -206,17 +201,22 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 						.eventParticipantReference(getReference())
 						.region(region)
 						.district(district);
-				}, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
+				}, this::showUnsavedChangesPopup, true)), VACCINATIONS_LOC);
 			}
 		}
 
-		EditPermissionType eventParticipantEditAllowed =
-			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantRef.getUuid());
+		final boolean deleted = FacadeProvider.getEventParticipantFacade().isDeleted(uuid);
 
-		if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (eventParticipantEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
+		}
+
+		if (!FacadeProvider.getPersonFacade().isEditAllowed(eventParticipant.getPerson().getUuid())) {
+			editComponent.getWrappedComponent().enablePersonFields(false);
 		}
 	}
 
@@ -245,16 +245,5 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		menu.addView(EventParticipantDataView.VIEW_NAME, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX), params);
 
 		setMainHeaderComponent(ControllerProvider.getEventParticipantController().getEventParticipantViewTitleLayout(eventParticipantDto));
-	}
-
-	@Override
-	protected void setSubComponent(DirtyStateComponent newComponent) {
-		super.setSubComponent(newComponent);
-
-		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(getReference().getUuid());
-		if (eventParticipant.isDeleted()) {
-			newComponent.setEnabled(false);
-		}
-
 	}
 }

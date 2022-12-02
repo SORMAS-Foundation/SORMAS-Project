@@ -49,6 +49,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
@@ -81,6 +82,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
+@AuditIgnore(retainWrites = true)
 @Stateless(name = "FeatureConfigurationFacade")
 public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade {
 
@@ -339,7 +341,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto.setEndDate(DateHelper.getEndOfDay(configuration.getEndDate()));
 		}
 
-		FeatureConfiguration entity = fromDto(configurationDto, true);
+		FeatureConfiguration entity = fillOrBuildEntity(configurationDto, service.getByUuid(configuration.getUuid()), true);
 		service.ensurePersisted(entity);
 	}
 
@@ -553,10 +555,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		return target;
 	}
 
-	public FeatureConfiguration fromDto(@NotNull FeatureConfigurationDto source, boolean checkChangeDate) {
-
-		FeatureConfiguration target =
-			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), FeatureConfiguration::new, checkChangeDate);
+	public FeatureConfiguration fillOrBuildEntity(@NotNull FeatureConfigurationDto source, FeatureConfiguration target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, FeatureConfiguration::new, checkChangeDate);
 
 		target.setFeatureType(source.getFeatureType());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));

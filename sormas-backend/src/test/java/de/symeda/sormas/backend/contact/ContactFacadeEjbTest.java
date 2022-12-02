@@ -24,12 +24,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -45,8 +46,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -139,18 +139,22 @@ import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest {
 
-	@Test(expected = ValidationRuntimeException.class)
+	@Test
 	public void testValidateWithNullReportingUser() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(
+				rdcf.region.getUuid(),
+				rdcf.district.getUuid(),
+				rdcf.facility.getUuid(),
+				"Surv",
+				"Sup",
+				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
-		CaseDataDto caze = creator
-			.createCase(null, cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(null, null, contactPerson.toReference(), caze, new Date(), new Date(), null);
-
-		ContactFacadeEjb.ContactFacadeEjbLocal contactFacadeEjb = getBean(ContactFacadeEjb.ContactFacadeEjbLocal.class);
-		contactFacadeEjb.validate(contact);
+		assertThrows(ValidationRuntimeException.class, () -> creator.createContact(null, null, contactPerson.toReference(), caze, new Date(), new Date(), null));
 	}
 
 	@Test
@@ -203,8 +207,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactSimilarityCriteria.setReportDate(new Date());
 
 		final List<SimilarContactDto> matchingContacts = getContactFacade().getMatchingContacts(contactSimilarityCriteria);
-		Assert.assertNotNull(matchingContacts);
-		Assert.assertEquals(2, matchingContacts.size());
+		assertNotNull(matchingContacts);
+		assertEquals(2, matchingContacts.size());
 		ArrayList<String> uuids = new ArrayList<>();
 		uuids.add(contact1.getUuid());
 		uuids.add(contact2.getUuid());
@@ -501,7 +505,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testContactDeletion() {
+	public void testContactDeletionAndUndeletion() {
 
 		Date since = new Date();
 
@@ -572,6 +576,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
 		assertEquals(DeletionReason.OTHER_REASON, getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
 		assertEquals("test reason", getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
+
+		getContactFacade().undelete(contact.getUuid());
+
+		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
+		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
+		assertNull(getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
+		assertNull(getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -854,11 +867,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		ContactCriteria contactCriteria = new ContactCriteria();
 		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
-		Assert.assertEquals(2, getContactFacade().getIndexList(null, 0, 100, null).size());
-		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike("signal"), 0, 100, null).size());
-		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike(event1.getUuid()), 0, 100, null).size());
-		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike("signal description"), 0, 100, null).size());
-		Assert.assertEquals(
+		assertEquals(2, getContactFacade().getIndexList(null, 0, 100, null).size());
+		assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike("signal"), 0, 100, null).size());
+		assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike(event1.getUuid()), 0, 100, null).size());
+		assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike("signal description"), 0, 100, null).size());
+		assertEquals(
 			1,
 			getContactFacade()
 				.getIndexList(contactCriteria.eventLike("signal description").onlyContactsSharingEventWithSourceCase(true), 0, 100, null)
@@ -1715,7 +1728,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testCreateWithoutUuid() {
 		RDCF rdcf = creator.createRDCF();
 
-		ContactDto contact = new ContactDto();
+		ContactDto contact = ContactDto.build();
 		contact.setReportDateTime(new Date());
 		contact.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		contact.setDisease(Disease.CORONAVIRUS);
@@ -1912,6 +1925,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
 
+		byte[] contentAsBytes =  ("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
+				"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
+				"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
+				"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
+				"0 R>>\nstartxref\n149\n%EOF").getBytes();
+
 		DocumentDto document = creator.createDocument(
 			leadUserReference,
 			"document.pdf",
@@ -1919,7 +1938,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			42L,
 			DocumentRelatedEntityType.CONTACT,
 			leadContact.getUuid(),
-			"content".getBytes(StandardCharsets.UTF_8));
+			contentAsBytes);
 		DocumentDto otherDocument = creator.createDocument(
 			leadUserReference,
 			"other_document.pdf",
@@ -1927,7 +1946,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			42L,
 			DocumentRelatedEntityType.CONTACT,
 			otherContact.getUuid(),
-			"other content".getBytes(StandardCharsets.UTF_8));
+			contentAsBytes);
 
 		// 2. Merge
 
@@ -2013,12 +2032,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			.createContact(userDto.toReference(), userDto.toReference(), personDto.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS);
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingContactInJurisdiction(contact.toReference());
-		Assert.assertNotNull(userReferenceDtos);
-		Assert.assertTrue(userReferenceDtos.contains(userDto));
-		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
-		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(userDto));
+		assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
-
 
 	@Test
 	public void searchContactsByPersonPhone() {

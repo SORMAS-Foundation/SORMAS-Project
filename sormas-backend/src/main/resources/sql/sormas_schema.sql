@@ -12127,11 +12127,7 @@ ALTER TABLE testreport_history
 ALTER TABLE testreport
     ADD CONSTRAINT fk_testreport_samplereport_id FOREIGN KEY (samplereport_id) REFERENCES samplereport (id);
 
-UPDATE testreport
-SET samplereport_id = (SELECT s.id
-                       FROM samplereport s
-                                LEFT JOIN externalmessage ON s.labmessage_id = externalmessage.id
-                       WHERE externalmessage.id = testreport.labmessage_id);
+UPDATE testreport SET samplereport_id = s.id FROM samplereport s WHERE testreport.labmessage_id = s.labmessage_id;
 
 ALTER TABLE testreport
     ALTER COLUMN samplereport_id SET not null;
@@ -12175,5 +12171,64 @@ DO $$
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (495, 'S2S_case editable on two systems, behavior of jurisdiction level wrong if share is without ownership #10553');
+
+-- 2022-10-10 [DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733
+
+ALTER TABLE externalmessage RENAME COLUMN testeddisease to disease;
+ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (496, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
+
+ALTER TABLE surveillancereports ADD COLUMN externalid varchar(255);
+ALTER TABLE surveillancereports_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalId to surveillance reports #6621');
+
+-- 2022-11-02 Automatic deletion based on end of process date #8996
+
+UPDATE campaigns SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE cases SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE contact SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE events SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE eventparticipant SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE immunization SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE travelentry SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (498, 'Automatic deletion based on end of process date #8996');
+
+-- 2022-10-25 [Merging] Merge persons via bulk actions [5] #5606
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_USER';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN_SUPERVISOR';
+
+INSERT INTO schema_version (version_number, comment) VALUES (499, '[Merging] Merge persons via bulk actions [5] #5606');
+
+-- 2022-11-7 Add the user who assigned the task to task entity #4621
+ALTER  TABLE task ADD COLUMN assignedbyuser_id bigint;
+ALTER  TABLE task_history ADD COLUMN assignedbyuser_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (500, 'Add the user who assigned the task to task entity #4621');
+
+-- 2022-11-30 Adjust the processing of external messages to create surveillance reports #9680
+ALTER TABLE externalmessage ADD COLUMN surveillancereport_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_surveillancereport_id FOREIGN KEY (surveillancereport_id) REFERENCES surveillancereports (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalmessage_history ADD COLUMN surveillancereport_id bigint;
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE sr_id bigint;
+    BEGIN
+        FOR rec IN SELECT DISTINCT ON (em.id) em.id as emid, em.caze_id AS emcaseid, s.associatedcase_id AS scaseid, messagedatetime, em.type FROM externalmessage em JOIN samplereport sr ON sr.labmessage_id = em.id JOIN samples s ON s.id = sr.sample_id WHERE status = 'PROCESSED' AND (s.associatedcase_id IS NOT NULL OR em.caze_id IS NOT NULL)
+            LOOP
+                INSERT INTO surveillancereports (id, uuid, changedate, creationdate, reportdate, caze_id, reportingtype) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.messagedatetime, CASE WHEN rec.emcaseid IS NOT NULL THEN rec.emcaseid ELSE rec.scaseid END, CASE WHEN rec.type = 'LAB_MESSAGE' THEN 'LABORATORY' ELSE 'DOCTOR' END) RETURNING id INTO sr_id;
+                UPDATE externalmessage SET surveillancereport_id = sr_id WHERE externalmessage.id = rec.emid;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE externalmessage DROP COLUMN caze_id;
+ALTER TABLE externalmessage_history DROP COLUMN caze_id;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (501, 'Adjust the processing of external messages to create surveillance reports #9680', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

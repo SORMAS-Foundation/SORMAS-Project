@@ -138,7 +138,9 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		validate(dto);
-		AggregateReport report = fromDto(dto, true);
+
+		AggregateReport existingAggregateReport = service.getByUuid(dto.getUuid());
+		AggregateReport report = fillOrBuildEntity(dto, existingAggregateReport, true);
 		service.ensurePersisted(report);
 		return toDto(report);
 	}
@@ -151,6 +153,10 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		if (aggregateReportDto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
+		}
+
+		if (userService.isPortHealthUser() && aggregateReportDto.getPointOfEntry() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
 		}
 	}
 
@@ -672,9 +678,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 	}
 
-	public AggregateReport fromDto(@NotNull AggregateReportDto source, boolean checkChangeDate) {
-
-		AggregateReport target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), AggregateReport::new, checkChangeDate);
+	public AggregateReport fillOrBuildEntity(@NotNull AggregateReportDto source, AggregateReport target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, AggregateReport::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));

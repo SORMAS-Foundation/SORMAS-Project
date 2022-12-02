@@ -3,8 +3,8 @@ package de.symeda.sormas.api.externalmessage;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.audit.AuditInclude;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -20,12 +20,12 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	public static final String BIRTH_DATE_TO = "birthDateTo";
 	public static final String ASSIGNEE = "assignee";
 	public static final String TYPE = "type";
-	@AuditInclude
+	@AuditIncludeProperty
 	private String uuid;
 	private ExternalMessageType type;
 	private ExternalMessageStatus externalMessageStatus;
 	private SampleReferenceDto sample;
-	private CaseReferenceDto caze;
+	private SurveillanceReportReferenceDto surveillanceReport;
 	private String searchFieldLike;
 	private Date messageDateFrom;
 	private Date messageDateTo;
@@ -66,12 +66,12 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 		this.sample = sample;
 	}
 
-	public CaseReferenceDto getCaze() {
-		return caze;
+	public SurveillanceReportReferenceDto getSurveillanceReport() {
+		return surveillanceReport;
 	}
 
-	public void setCaze(CaseReferenceDto caze) {
-		this.caze = caze;
+	public void setSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport) {
+		this.surveillanceReport = surveillanceReport;
 	}
 
 	public String getSearchFieldLike() {

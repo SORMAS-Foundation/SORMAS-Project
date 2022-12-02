@@ -213,8 +213,7 @@ public class EventParticipantFacadeEjb
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllByEventAfter(date, event).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getAllByEventAfter(date, event));
 	}
 
 	@Override
@@ -226,17 +225,6 @@ public class EventParticipantFacadeEjb
 		}
 
 		return service.getAllActiveUuids(user);
-	}
-
-	@Override
-	public List<EventParticipantDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return super.getAllAfter(date, batchSize, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -286,18 +274,13 @@ public class EventParticipantFacadeEjb
 			return Collections.emptyList();
 		}
 
-		List<String> deletedEventParticipants = service.getDeletedUuidsSince(since, user);
-		return deletedEventParticipants;
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<EventParticipantDto> cq, Root<EventParticipant> root) {
-
+		return service.getDeletedUuidsSince(since, user);
 	}
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		// todo plainly duplicated from AbstractCoreFacadeEjb.getByUuid
+		return toPseudonymizedDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -344,14 +327,14 @@ public class EventParticipantFacadeEjb
 			dto.setDistrict(district != null ? new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()) : null);
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingParticipant, pseudonymizer);
 
 		validate(dto);
 
 		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
 		// Create newly event participants with the same archiving status as the Event
-		entity.setArchived(existingParticipant == null ? event.isArchived(): existingParticipant.isArchived());
+		entity.setArchived(existingParticipant == null ? event.isArchived() : existingParticipant.isArchived());
 		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
@@ -362,7 +345,7 @@ public class EventParticipantFacadeEjb
 
 		onEventParticipantChanged(eventFacade.toDto(entity.getEvent()), existingDto, entity, internal);
 
-		return convertToDto(entity, pseudonymizer);
+		return toPseudonymizedDto(entity, pseudonymizer);
 	}
 
 	@PermitAll
@@ -416,8 +399,7 @@ public class EventParticipantFacadeEjb
 				});
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
-				String.format(
-					"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventParticipant related to other events."));
+				"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventParticipant related to other events.");
 		}
 	}
 
@@ -457,6 +439,12 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
+
+	@Override
 	public List<EventParticipantIndexDto> getIndexList(
 		EventParticipantCriteria eventParticipantCriteria,
 		Integer first,
@@ -464,7 +452,8 @@ public class EventParticipantFacadeEjb
 		List<SortProperty> sortProperties) {
 
 		if ((eventParticipantCriteria == null) || (eventParticipantCriteria.getEvent() == null && eventParticipantCriteria.getPerson() == null)) {
-			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
+			// Retrieving an index list independent of an event is not possible
+			return new ArrayList<>();
 		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -612,6 +601,8 @@ public class EventParticipantFacadeEjb
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.EVENT_TITLE),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
 
 		Predicate filter =
@@ -739,8 +730,7 @@ public class EventParticipantFacadeEjb
 				personAddressesCq.where(
 					personAddressesIdsExpr
 						.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getPersonAddressId).collect(Collectors.toList())));
-				List<Location> personAddressesList =
-					em.createQuery(personAddressesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
+				List<Location> personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 				personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
 			}
 
@@ -944,7 +934,7 @@ public class EventParticipantFacadeEjb
 		}
 
 		return service.getFirst(criteria)
-			.map(e -> convertToDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
+			.map(e -> toPseudonymizedDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
 			.orElse(null);
 	}
 
@@ -1035,24 +1025,17 @@ public class EventParticipantFacadeEjb
 	@Override
 	public List<EventParticipantDto> getAllActiveEventParticipantsByEvent(String eventUuid) {
 
-		User user = userService.getCurrentUser();
 		Event event = eventService.getByUuid(eventUuid);
 
-		if (user == null) {
+		if (userService.getCurrentUser() == null || event == null) {
 			return Collections.emptyList();
 		}
-
-		if (event == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
+		return toDtos(service.getAllActiveByEvent(event).stream());
 	}
 
 	@Override
 	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getByEventUuids(eventUuids));
 	}
 
 	@Override
@@ -1102,8 +1085,8 @@ public class EventParticipantFacadeEjb
 
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(SimilarEventParticipantDto.class, participants, p -> p.getInJurisdiction(), null);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		pseudonymizer.pseudonymizeDtoCollection(SimilarEventParticipantDto.class, participants, SimilarEventParticipantDto::getInJurisdiction, null);
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
 			participants = participants.stream().filter(e -> !e.isPseudonymized()).collect(Collectors.toList());
@@ -1114,7 +1097,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public List<EventParticipantDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(ep -> toDto(ep)).collect(Collectors.toList());
+		return toDtos(service.getByPersonUuids(personUuids).stream());
 	}
 
 	@Override
@@ -1127,8 +1110,7 @@ public class EventParticipantFacadeEjb
 
 		cq.where(cb.and(cb.equal(eventJoin.get(Event.UUID), eventUuid), cb.in(personJoin.get(EventParticipant.UUID)).value(personUuids)));
 
-		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
-		return resultList.stream().map(ep -> toDto(ep)).collect(Collectors.toList());
+		return toDtos(em.createQuery(cq).getResultList().stream());
 	}
 
 	@Override

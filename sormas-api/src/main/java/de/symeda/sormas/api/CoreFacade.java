@@ -29,11 +29,13 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	boolean isArchived(String uuid);
 
+	boolean isDeleted(String uuid);
+
 	void delete(String uuid, DeletionDetails deletionDetails);
 
-	boolean exists(String uuid);
+	void undelete(String uuid);
 
-	List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	boolean exists(String uuid);
 
 	DeletionInfoDto getAutomaticDeletionInfo(String uuid);
 

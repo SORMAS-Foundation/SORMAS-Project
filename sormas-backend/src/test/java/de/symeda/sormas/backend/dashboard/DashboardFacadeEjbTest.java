@@ -1,14 +1,14 @@
 package de.symeda.sormas.backend.dashboard;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -96,10 +96,10 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 		Date date = new Date();
 		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(case1.getResponsibleRegion())
-				.district(case1.getDistrict())
-				.disease(case1.getDisease())
-				.newCaseDateType(NewCaseDateType.REPORT)
-				.dateBetween(DateHelper.subtractDays(date, 1), DateHelper.addDays(date, 1));
+			.district(case1.getDistrict())
+			.disease(case1.getDisease())
+			.newCaseDateType(NewCaseDateType.REPORT)
+			.dateBetween(DateHelper.subtractDays(date, 1), DateHelper.addDays(date, 1));
 
 		DashboardFacade dashboardFacade = getDashboardFacade();
 		// no existing samples

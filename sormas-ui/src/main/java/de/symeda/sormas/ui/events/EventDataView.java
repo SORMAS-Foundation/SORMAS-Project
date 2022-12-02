@@ -88,6 +88,7 @@ public class EventDataView extends AbstractEventView {
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
+		container.setEnabled(true);
 
 		editComponent =
 			ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setExternalSurvToolLayoutVisibility);
@@ -112,7 +113,8 @@ public class EventDataView extends AbstractEventView {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
-			TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease());
+			TaskListComponent taskList =
+				new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease(), this::showUnsavedChangesPopup, isEditAllowed());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
@@ -121,10 +123,18 @@ public class EventDataView extends AbstractEventView {
 		actionList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addSidePanelComponent(actionList, ACTIONS_LOC);
 
+		final String uuid = event.getUuid();
+		final EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
-			documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
+			documentList = new DocumentListComponent(
+				DocumentRelatedEntityType.EVENT,
+				getEventRef(),
+				UserRight.EVENT_EDIT,
+				event.isPseudonymized(),
+				isEditAllowed(),
+				EditPermissionType.DOCUMENTS_ONLY.equals(eventEditAllowed));
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -138,7 +148,7 @@ public class EventDataView extends AbstractEventView {
 			superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
 
-			EventListComponent subordinateEventList = new EventListComponent(event.toReference(), this::showUnsavedChangesPopup);
+			EventListComponent subordinateEventList = new EventListComponent(event.toReference(), this::showUnsavedChangesPopup, isEditAllowed());
 			subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 		}
@@ -208,9 +218,11 @@ public class EventDataView extends AbstractEventView {
 			layout.setEnabled(false);
 		}
 
-		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(event.getUuid());
+		final boolean deleted = FacadeProvider.getEventFacade().isDeleted(uuid);
 
-		if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (eventEditAllowed == EditPermissionType.REFUSED) {
 			layout.disable();

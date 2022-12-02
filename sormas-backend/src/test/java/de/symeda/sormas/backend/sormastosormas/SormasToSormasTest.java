@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -116,7 +116,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		getPointOfEntryService().createConstantPointsOfEntry();
 	}
 
-	@After
+	@AfterEach
 	public void teardown() {
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
@@ -141,18 +141,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		String serverId,
 		boolean ownershipHandedOver,
 		Consumer<SormasToSormasOriginInfoDto> extraConfig) {
-		SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
-		originInfo.setUuid(DataHelper.createUuid());
-		originInfo.setSenderName("Test Name");
-		originInfo.setSenderEmail("test@email.com");
-		originInfo.setOrganizationId(serverId);
-		originInfo.setOwnershipHandedOver(ownershipHandedOver);
-
-		if (extraConfig != null) {
-			extraConfig.accept(originInfo);
-		}
-
-		return getSormasToSormasOriginInfoFacade().saveOriginInfo(originInfo);
+		return creator.createSormasToSormasOriginInfo(serverId, ownershipHandedOver, extraConfig);
 	}
 
 	protected PersonDto createPersonDto(TestDataCreator.RDCF rdcf) {

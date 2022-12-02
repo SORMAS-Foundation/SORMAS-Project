@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.constants.api.Endpoints.CONTACTS_PATH;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
@@ -42,9 +43,11 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_COMMENT_FIELD;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.HAND_THE_OWNERSHIP_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
@@ -57,6 +60,7 @@ import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
@@ -68,9 +72,12 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BU
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
 
 import cucumber.api.java8.En;
+import io.restassured.http.Method;
 import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,10 +88,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
@@ -92,6 +101,7 @@ import org.sormas.e2etests.entities.services.ContactDocumentService;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.enums.TaskTypeValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.cases.SymptomsTabPage;
@@ -114,6 +124,7 @@ public class EditContactSteps implements En {
   private static String currentUrl;
   private static String contactUUID;
   public static LocalDate lastContactDateForFollowUp;
+  private final RestAssuredClient restAssuredClient;
 
   @Inject
   public EditContactSteps(
@@ -122,8 +133,10 @@ public class EditContactSteps implements En {
       SoftAssert softly,
       ApiState apiState,
       AssertHelpers assertHelpers,
-      ContactDocumentService contactDocumentService) {
+      ContactDocumentService contactDocumentService,
+      RestAssuredClient restAssuredClient) {
     this.webDriverHelpers = webDriverHelpers;
+    this.restAssuredClient = restAssuredClient;
 
     When(
         "I open the last created contact in Contact directory page",
@@ -492,7 +505,19 @@ public class EditContactSteps implements En {
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
+    When(
+        "I click to hand over the ownership of the contact in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
+    When(
+        "I accept first contact in Shares Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
+    When(
+        "I click to accept potential duplicate in Shares Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM));
 
+    When(
+        "I click on share contact button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
     When(
         "^I click on ([^\"]*) radio button Contact Person tab$",
         (String buttonName) ->
@@ -1308,6 +1333,18 @@ public class EditContactSteps implements En {
               "Follow-up status comment is incorrect!");
           softly.assertAll();
         });
+
+    And(
+        "^I click on the NEW TASK button from Edit Contact page$",
+        () ->
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                EditContactPage.NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX));
+
+    When(
+        "I check if created contact is available in API",
+        () -> {
+          getContactByUUID(contactUUID);
+        });
   }
 
   private void selectContactClassification(String classification) {
@@ -1821,5 +1858,11 @@ public class EditContactSteps implements En {
     By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, uuid));
     webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditContactPage.UUID_INPUT);
+  }
+
+  @SneakyThrows
+  public void getContactByUUID(String contactUUID) {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(CONTACTS_PATH + "/" + contactUUID).build());
   }
 }
