@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -61,11 +62,14 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -190,6 +194,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {
 		ExternalMessage externalMessage = externalMessageService.getByUuid(dto.getUuid());
 
+		validate(dto);
+
 		externalMessage = fillOrBuildEntity(dto, externalMessage, checkChangeDate);
 		if (newTransaction) {
 			externalMessageService.ensurePersistedInNewTransaction(externalMessage);
@@ -197,6 +203,23 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			externalMessageService.ensurePersisted(externalMessage);
 		}
 		return toDto(externalMessage);
+	}
+
+	@Override
+	public void validate(ExternalMessageDto externalMessageDto) {
+		if (externalMessageDto.getSurveillanceReport() != null) {
+			Stream<Sample> sampleStream = externalMessageDto.getSampleReportsNullSafe()
+				.stream()
+				.map(sampleRep -> sampleRep.getSample())
+				.map(sampleRef -> sampleService.getByReferenceDto(sampleRef));
+			SurveillanceReport surveillanceReport = surveillanceReportService.getByReferenceDto(externalMessageDto.getSurveillanceReport());
+			if (sampleStream.anyMatch(sample -> sample.getAssociatedContact() != null)
+				|| sampleStream.anyMatch(sample -> sample.getAssociatedEventParticipant() != null)
+				|| sampleStream.map(sample -> sample.getAssociatedCase())
+					.allMatch(aCase -> aCase.getUuid().equals(surveillanceReport.getCaze().getUuid()))) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.externalMessageRefersToMultipleEntities));
+			}
+		}
 	}
 
 	public ExternalMessageDto toDto(ExternalMessage source) {

@@ -19,6 +19,8 @@ public interface ExternalMessageFacade {
 
 	ExternalMessageDto save(@Valid ExternalMessageDto dto);
 
+	void validate(ExternalMessageDto dto);
+
 	// Also returns deleted lab messages
 	ExternalMessageDto getByUuid(String uuid);
 
