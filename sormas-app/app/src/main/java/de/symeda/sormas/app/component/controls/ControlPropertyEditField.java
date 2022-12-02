@@ -109,13 +109,6 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 		changeErrorState();
 	}
 
-	public String enableErrorStatex(String errorMessage) {
-		this.hasError = true;
-		this.errorMessage = errorMessage;
-
-		changeErrorState();
-		return "";
-	}
 
 	public void enableErrorState(int messageResourceId) {
 		String message = "";
@@ -449,10 +442,6 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 					if (errorMessage != null) {
 						NotificationHelper.showNotification(v.getRootView(), ERROR, errorMessage);
 
-//						hasError = true;
-//						changeErrorState();
-//						System.out.println("Yes!!!!!!!!!!!!!1");
-//						showErrorNotification();
 					}
 				}
 			});

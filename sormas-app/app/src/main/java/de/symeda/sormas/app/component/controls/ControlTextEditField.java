@@ -41,6 +41,8 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
+import org.springframework.core.env.SystemEnvironmentPropertySource;
+
 import java.math.BigDecimal;
 
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -311,30 +313,47 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
         CharSequence valx = input.getText();
         if (valx == null && required) {
-            setSoftRequired(true);
+          //  setSoftRequired(true);
 
-            input.setError("!");
+         //   input.setError("!");
             return;
         }
 
 
         input.addTextChangedListener(new TextWatcher() {
 
+            String beforeData = "";
+            String onChangeData = "";
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+                beforeData = charSequence+"";
+              }
+
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                onChangeData = charSequence+"";
+                System.out.println(isExpression +" isExpression XXXXXXXXXXXX isRequired = "+isRequired+"XXXXXXXXXXXXX onChangeData = "+onChangeData+"XXXXXXXXXXXx beforeData = " +beforeData+" PPPPPP isRange"+isRange);
+
+                /*if (isRange && isExpression && isRequired){
+                    System.out.println((onChangeData.length() == 0) +" =XXXXXXXXXXX ENTERSSSSS XXXXXXXX =" +(beforeData.length() > 0));
+                    if(beforeData.length() > 0 && onChangeData.length() == 0) {
+                        enableErrorState("Number not in provided range!");
+                        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx");
+
+                    }*/
+          //  }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
+
                 if (inverseBindingListener != null) {
                     inverseBindingListener.onChange();
                 }
                 onValueChanged();
-                System.out.println("range: " + isRange + ", minVla = " + minValue + ", maxValue = " + maxValue);
+              //  System.out.println(isExpression +" isExpression XXXXXXXXXXXX isRequired = "+isRequired+"XXXXXXXXXXXXX onChangeData = "+onChangeData+"XXXXXXXXXXXx beforeData = " +beforeData+" PPPPPP isRange"+isRange);
+
                 if (isRange && minValue != null && maxValue != null) {
                     System.out.println(minValue + "--------%%%11%%%------------" + maxValue);
                     if (minValue != null && maxValue != null && input.getText() != null) {
@@ -358,6 +377,13 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
                     }
 
+                }
+
+                if (isRange && isExpression && isRequired){
+                     if(beforeData.length() > 0 && onChangeData.length() == 0) {
+                        enableErrorState("Number not in provided range!");
+
+                    }
                 }
             }
         });
@@ -485,6 +511,18 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         view.setFieldValue(text);
     }
 
+/*
+    @BindingAdapter("value")
+    public static void setValue(ControlTextEditField view, String text, Boolean hasErrorNow) {
+        view.setFieldValue(text);
+
+        if (hasErrorNow) {
+            changeVisualState(VisualState.ERROR);
+        } else {
+            changeVisualState(VisualState.NORMAL);
+        }
+    }
+*/
 
     @BindingAdapter("value")
     public static void setValue(ControlTextEditField view, Integer integerValue) {

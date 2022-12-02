@@ -72,17 +72,16 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 
-
 public class CampaignFormBuilder {
 
 	private final List<CampaignFormElement> formElements;
 	private final Map<String, Object> formValuesMap;
 	private final VerticalLayout campaignFormLayout;
 	private final Locale userLocale;
-	private Map<String, String> userTranslations = null;
-	private Map<String, String> userOptTranslations = null;
+	private Map<String, String> userTranslations = new HashMap<String, String>();
+	private Map<String, String> userOptTranslations = new HashMap<String, String>();
 	Map<String, Field<?>> fields;
-	private Map<String, String> optionsValues = null;
+	private Map<String, String> optionsValues = new HashMap<String, String>();
 	private List<String> constraints;
 	private List<CampaignFormTranslations> translationsOpt;
 
@@ -109,26 +108,25 @@ public class CampaignFormBuilder {
 
 	public void buildForm() {
 		int currentCol = -1;
-		//GridLayout currentLayout = campaignFormLayout;
+		// GridLayout currentLayout = campaignFormLayout;
 		int sectionCount = 0;
-		
-		int ii=0;
-		//System.out.println("Got one____");
-		VerticalLayout vertical = new VerticalLayout ();
+
+		int ii = 0;
+		// System.out.println("Got one____");
+		VerticalLayout vertical = new VerticalLayout();
 		vertical.setSizeFull();
 		vertical.setWidthFull();
 		vertical.setHeightFull();
 		vertical.setSpacing(false);
-		
+
 		TabSheet accrd = new TabSheet();
 		accrd.setHeight(750, Unit.PIXELS);
-        
+
 		int accrd_count = 0;
-		
+
 		for (CampaignFormElement formElement : formElements) {
 			CampaignFormElementType type = CampaignFormElementType.fromString(formElement.getType());
-			
-			
+
 			List<CampaignFormElementStyle> styles;
 			if (formElement.getStyles() != null) {
 				styles = Arrays.stream(formElement.getStyles()).map(CampaignFormElementStyle::fromString)
@@ -138,35 +136,58 @@ public class CampaignFormBuilder {
 			}
 
 			if (formElement.getOptions() != null) {
-					
-				if (userLocale != null) {
-					translationsOpt.stream().filter(t -> t.getLanguageCode().equals(userLocale.toString()))
-					.findFirst().ifPresent(filteredTranslations -> filteredTranslations.getTranslations().stream()
-					.filter(cd -> cd.getOptions() != null)
-					.findFirst().ifPresent(optionsList -> userOptTranslations = optionsList.getOptions().stream()
-					.filter(c -> c.getCaption() != null).collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption))));
-				}
-				
+				// userOptTranslations = null;
 
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
-				optionsValues = formElement.getOptions().stream().collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption));  // .collect(Collectors.toList());
-				
-				if(userOptTranslations == null) {
-					campaignFormElementOptions.setOptionsListValues(optionsValues);
-					//get18nOptCaption(formElement.getId(), optionsValues));
-				}else {
-					campaignFormElementOptions.setOptionsListValues(userOptTranslations);
-					
+				optionsValues = formElement.getOptions().stream()
+						.collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption)); // .collect(Collectors.toList());
+
+				if (userLocale != null) {
+					System.out.println("___userLocale.toString()_____" + userLocale.toString());
+					System.out.println("___translationsOpt_____" + translationsOpt.size());
+
+					translationsOpt.stream().filter(t -> t.getLanguageCode().equals(userLocale.toString())).findFirst()
+							.ifPresent(filteredTranslations -> filteredTranslations.getTranslations().stream()
+									.filter(cd -> cd.getElementId().equals(formElement.getId())).findFirst()
+									.ifPresent(optionsList -> userOptTranslations = optionsList.getOptions().stream()
+											.filter(c -> c.getCaption() != null)
+											.collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption))));
+
+					System.out.println("___userOptTranslations_____" + userOptTranslations.size());
+					System.out.println("___formElement.getId()_____" + formElement.getId());
 				}
-				
+
+				/*
+				 * if (userLocale != null) {
+				 * System.out.println("___userLocale.toString()_____"+userLocale.toString());
+				 * System.out.println("___translationsOpt_____"+translationsOpt.size());
+				 * translationsOpt.stream().filter(t ->
+				 * t.getLanguageCode().equals(userLocale.toString())).findFirst()
+				 * .ifPresent(filteredTranslations ->
+				 * filteredTranslations.getTranslations().stream()
+				 * 
+				 * .filter(cd -> cd.getElementId() == formElement.getId()).findFirst()
+				 * .ifPresent(optionsList -> userOptTranslations =
+				 * optionsList.getOptions().stream() .filter(c -> c.getCaption() != null)
+				 * .collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption))));
+				 * System.out.println("___userOptTranslations_____"+userOptTranslations.size());
+				 * System.out.println("___formElement.getId()_____"+formElement.getId()); }
+				 * 
+				 * 
+				 */
+
+				if (userOptTranslations.size() == 0) {
+					campaignFormElementOptions.setOptionsListValues(optionsValues);
+					// get18nOptCaption(formElement.getId(), optionsValues));
+				} else {
+					campaignFormElementOptions.setOptionsListValues(userOptTranslations);
+
+				}
+
 			} else {
 				optionsValues = new HashMap<String, String>();
 			}
 
-			
-			
-			
-			
 			if (formElement.getConstraints() != null) {
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
 				constraints = (List) Arrays.stream(formElement.getConstraints()).collect(Collectors.toList());
@@ -178,15 +199,13 @@ public class CampaignFormBuilder {
 						campaignFormElementOptions.setMax(Integer.parseInt(lss.substring(lss.lastIndexOf("=") + 1)));
 					} else if (lss.toLowerCase().contains("min")) {
 						campaignFormElementOptions.setMin(Integer.parseInt(lss.substring(lss.lastIndexOf("=") + 1)));
-					}
-					else if (lss.toLowerCase().contains("expression")) {
+					} else if (lss.toLowerCase().contains("expression")) {
 						campaignFormElementOptions.setExpression(true);
 					}
 				}
 
 			}
-			//input:checked 
-		
+			// input:checked
 
 			String dependingOnId = formElement.getDependingOn();
 			Object[] dependingOnValues = formElement.getDependingOnValues();
@@ -194,103 +213,100 @@ public class CampaignFormBuilder {
 			Object value = formValuesMap.get(formElement.getId());
 
 			int occupiedColumns = getOccupiedColumns(type, styles);
-			
-			
-			
-	
+
 			if (type == CampaignFormElementType.DAYWISE) {
 				accrd_count++;
-				if(accrd_count > 1){
-					
-					 final VerticalLayout layout = new VerticalLayout(vertical);
-					 layout.setMargin(true);
+				if (accrd_count > 1) {
+
+					final VerticalLayout layout = new VerticalLayout(vertical);
+					layout.setMargin(true);
 					// layout.addComponent(label);
-					 int temp = accrd_count;
-					 temp = temp-1;
-					 layout.setStyleName("daywise_background_"+temp); //.addStyleName(dependingOnId);
-					 accrd.addTab(layout, formElement.getCaption());
-					 
-					 
-					 vertical = new VerticalLayout ();
-						vertical.setSizeFull();
-						vertical.setWidthFull();
-						vertical.setHeightFull();
-						vertical.setSpacing(false);
-					 
+					int temp = accrd_count;
+					temp = temp - 1;
+					layout.setStyleName("daywise_background_" + temp); // .addStyleName(dependingOnId);
+					accrd.addTab(layout, formElement.getCaption());
+
+					vertical = new VerticalLayout();
+					vertical.setSizeFull();
+					vertical.setWidthFull();
+					vertical.setHeightFull();
+					vertical.setSpacing(false);
+
 				}
-			}else if (type == CampaignFormElementType.SECTION) {
+			} else if (type == CampaignFormElementType.SECTION) {
 				sectionCount++;
-				//vertical = new HorizontalLayout ();
-				//vertical.addComponent(new TextField("sectionCount"));
-			//	GridLayout sectionLayout = new GridLayout(12, 1);
-			//	sectionLayout.setMargin(new MarginInfo(true, true));
+				// vertical = new HorizontalLayout ();
+				// vertical.addComponent(new TextField("sectionCount"));
+				// GridLayout sectionLayout = new GridLayout(12, 1);
+				// sectionLayout.setMargin(new MarginInfo(true, true));
 				CssStyles.style(vertical, CssStyles.GRID_LAYOUT_SECTION,
 						sectionCount % 2 == 0 ? CssStyles.GRID_LAYOUT_EVEN : CssStyles.GRID_LAYOUT_ODD);
-				vertical.setId("dkjfaihsodjkfaldfhlasdf-"+sectionCount);
-				//vertical.setWidth(100, Unit.PERCENTAGE);
-			//	currentLayout = sectionLayout;
+				vertical.setId("dkjfaihsodjkfaldfhlasdf-" + sectionCount);
+				// vertical.setWidth(100, Unit.PERCENTAGE);
+				// currentLayout = sectionLayout;
 
-			//	campaignFormLayout.addComponent(sectionLayout, 0, campaignFormLayout.getRows() - 1, 11,
-			//			campaignFormLayout.getRows() - 1);
-			//	campaignFormLayout.insertRow(campaignFormLayout.getRows());
-				//Html html = new Html("<fieldset id='ddddddddddddddddddddddddddddddnn'>");
-				
-			//	vertical.addComponent((Component) html);
-				
+				// campaignFormLayout.addComponent(sectionLayout, 0,
+				// campaignFormLayout.getRows() - 1, 11,
+				// campaignFormLayout.getRows() - 1);
+				// campaignFormLayout.insertRow(campaignFormLayout.getRows());
+				// Html html = new Html("<fieldset id='ddddddddddddddddddddddddddddddnn'>");
+
+				// vertical.addComponent((Component) html);
+
 			} else if (type == CampaignFormElementType.LABEL) {
-			/*	if ((currentCol + 1) + (occupiedColumns - 1) > 11
-						|| currentCol > -1 && styles.contains(CampaignFormElementStyle.FIRST)) {
-					currentLayout.insertRow(currentLayout.getRows());
-					currentCol = -1;
-				}*/
+				/*
+				 * if ((currentCol + 1) + (occupiedColumns - 1) > 11 || currentCol > -1 &&
+				 * styles.contains(CampaignFormElementStyle.FIRST)) {
+				 * currentLayout.insertRow(currentLayout.getRows()); currentCol = -1; }
+				 */
 
 				Label field = new Label(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setId(formElement.getId());
-				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles, true, null, null, false);
+				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles, true, null, null,
+						false);
 
-				vertical.addComponent(field);//, (currentCol + 1), currentLayout.getRows() - 1,
-						//(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
+				vertical.addComponent(field);// , (currentCol + 1), currentLayout.getRows() - 1,
+				// (currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
 
-				//if (styles.contains(CampaignFormElementStyle.INLINE)) {
-				//	currentCol += occupiedColumns;
-			//	} else {
-			//		currentLayout.insertRow(currentLayout.getRows());
-				//	currentCol = -1;
-				//}
+				// if (styles.contains(CampaignFormElementStyle.INLINE)) {
+				// currentCol += occupiedColumns;
+				// } else {
+				// currentLayout.insertRow(currentLayout.getRows());
+				// currentCol = -1;
+				// }
 
 				if (dependingOnId != null && dependingOnValues != null) {
 					setVisibilityDependency(field, dependingOnId, dependingOnValues);
 				}
 			} else {
-				//if ((currentCol + 1) + (occupiedColumns - 1) > 11
-				//		|| currentCol > -1 && styles.contains(CampaignFormElementStyle.FIRST)) {
-				//	currentLayout.insertRow(currentLayout.getRows());
-				//	currentCol = -1;
-				//}
+				// if ((currentCol + 1) + (occupiedColumns - 1) > 11
+				// || currentCol > -1 && styles.contains(CampaignFormElementStyle.FIRST)) {
+				// currentLayout.insertRow(currentLayout.getRows());
+				// currentCol = -1;
+				// }
 
-				Field<?> field = createField(formElement.getId(), formElement.getCaption(), type, styles,
-						optionsValues, formElement.isWarnonerror(), formElement.getErrormessage(), formElement.getDefaultvalue(), formElement.isImportant());
+				Field<?> field = createField(formElement.getId(), formElement.getCaption(), type, styles, optionsValues,
+						formElement.isWarnonerror(), formElement.getErrormessage(), formElement.getDefaultvalue(),
+						formElement.isImportant());
 
-				setFieldValue(field, type, value, optionsValues, formElement.getDefaultvalue());
+				setFieldValue(field, type, value, optionsValues, formElement.getDefaultvalue(), false, null);
 				field.setId(formElement.getId());
 				field.setCaption(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setSizeFull();
 				field.setRequired(formElement.isImportant());
-				
-				
-				
-				//	field.setRequiredError(formElement.getErrormessage() == null ? "Please fill this field correctly" : formElement.getErrormessage());
-				
 
-				vertical.addComponent(field);//, (currentCol + 1), currentLayout.getRows() - 1,
-					//	(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
+				// field.setRequiredError(formElement.getErrormessage() == null ? "Please fill
+				// this field correctly" : formElement.getErrormessage());
 
-				//if (styles.contains(CampaignFormElementStyle.ROW)) { //isImportant
-				//	currentLayout.insertRow(currentLayout.getRows());
-				//	currentCol = -1;
-				//} else {
-				//	currentCol += occupiedColumns;
-				//}
+				vertical.addComponent(field);// , (currentCol + 1), currentLayout.getRows() - 1,
+				// (currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
+
+				// if (styles.contains(CampaignFormElementStyle.ROW)) { //isImportant
+				// currentLayout.insertRow(currentLayout.getRows());
+				// currentCol = -1;
+				// } else {
+				// currentCol += occupiedColumns;
+				// }
 
 				fields.put(formElement.getId(), field);
 
@@ -298,24 +314,26 @@ public class CampaignFormBuilder {
 					setVisibilityDependency((AbstractComponent) field, dependingOnId, dependingOnValues);
 				}
 			}
-		//	verticalx.addComponent(vertical);
-			
-			if(accrd_count == 0) {
-				
+			// verticalx.addComponent(vertical);
+
+			if (accrd_count == 0) {
+
 				campaignFormLayout.addComponent(vertical);
-			}else {
-				
+			} else {
+
 				campaignFormLayout.addComponent(accrd);
 			}
-			
-			
+
 			//
+			
+			userOptTranslations = new HashMap<String, String>();
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T extends Field<?>> T createField(String fieldId, String caption, CampaignFormElementType type,
-			List<CampaignFormElementStyle> styles, Map optionz, boolean isOnError, String errormsg, String defaultvalue, boolean required_valx) {
+			List<CampaignFormElementStyle> styles, Map optionz, boolean isOnError, String errormsg, String defaultvalue,
+			boolean required_valx) {
 		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(),
 				UiFieldAccessCheckers.getNoop());
 
@@ -365,14 +383,16 @@ public class CampaignFormBuilder {
 			field = null;
 		}
 
-		prepareComponent((AbstractComponent) field, fieldId, caption, type, styles, isOnError, errormsg, defaultvalue, required_valx);
+		prepareComponent((AbstractComponent) field, fieldId, caption, type, styles, isOnError, errormsg, defaultvalue,
+				required_valx);
 		return field;
 	}
 
 	@SuppressWarnings("deprecation")
 	private <T extends AbstractComponent> void prepareComponent(T field, String fieldId, String caption,
-			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError, String errormsg, String defaultvalue, boolean required_valx) {
-		
+			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError, String errormsg,
+			String defaultvalue, boolean required_valx) {
+
 		CampaignFormElementOptions constrainsVal = new CampaignFormElementOptions();
 
 		Styles cssStyles = Page.getCurrent().getStyles();
@@ -383,8 +403,9 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.RADIO || type == CampaignFormElementType.DATE
 				|| type == CampaignFormElementType.DROPDOWN) {
 			if (!styles.contains(CampaignFormElementStyle.INLINE)) {
-			//	CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE,
-			//			CssStyles.FLOAT_RIGHT);
+				// CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL,
+				// CssStyles.OPTIONGROUP_CAPTION_INLINE,
+				// CssStyles.FLOAT_RIGHT);
 			}
 			CssStyles.style(field, CssStyles.OPTIONGROUP_GRID_LAYOUT);
 		} else if (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.TEXTBOX
@@ -392,115 +413,112 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.ARRAY || type == CampaignFormElementType.RANGE
 				|| type == CampaignFormElementType.DATE) {
 			if (styles.contains(CampaignFormElementStyle.ROW)) {
-			//	CssStyles.style(field, CssStyles.TEXTFIELD_ROW, CssStyles.TEXTFIELD_CAPTION_INLINE);
+				// CssStyles.style(field, CssStyles.TEXTFIELD_ROW,
+				// CssStyles.TEXTFIELD_CAPTION_INLINE);
 			}
 
 			if (type == CampaignFormElementType.NUMBER) {
 
-				/*((TextField) field).addValueChangeListener(e -> {
-					if (e.getProperty().getValue() != null && e.getProperty().getValue().toString().contains(".0")) {
-						e.getProperty().setValue(e.getProperty().getValue().toString().replace(".0", ""));
-					}
-				});*/
-				//((TextField) field).addValidator(
-					//	new RegexpValidator("^[0-9]\\d*$", errormsg == null ? Validations.onlyNumbersAllowed : errormsg )); 
+				/*
+				 * ((TextField) field).addValueChangeListener(e -> { if
+				 * (e.getProperty().getValue() != null &&
+				 * e.getProperty().getValue().toString().contains(".0")) {
+				 * e.getProperty().setValue(e.getProperty().getValue().toString().replace(".0",
+				 * "")); } });
+				 */
+				// ((TextField) field).addValidator(
+				// new RegexpValidator("^[0-9]\\d*$", errormsg == null ?
+				// Validations.onlyNumbersAllowed : errormsg ));
 
-				((TextField) field).addValidator(new NumberNumericValueValidator(
-						I18nProperties.getValidationError(errormsg == null ? caption+": "+Validations.onlyNumbersAllowed : errormsg, caption)));
+				((TextField) field).addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(
+						errormsg == null ? caption + ": " + Validations.onlyNumbersAllowed : errormsg, caption)));
 			}
 			if (type == CampaignFormElementType.DECIMAL) {
 
-				/*((TextField) field).addValueChangeListener(e -> {
-					if (e.getProperty().getValue() != null && !e.getProperty().getValue().toString().contains(".")) {
-						e.getProperty().setValue(e.getProperty().getValue().toString() + ".0");
-					}
-				});*/
-				
-			//	((TextField) field).addValidator(
-				//		new RegexpValidator("^[0-9]\\d*$", errormsg == null ? Validations.onlyDecimalNumbersAllowed : errormsg )); 
+				/*
+				 * ((TextField) field).addValueChangeListener(e -> { if
+				 * (e.getProperty().getValue() != null &&
+				 * !e.getProperty().getValue().toString().contains(".")) {
+				 * e.getProperty().setValue(e.getProperty().getValue().toString() + ".0"); } });
+				 */
 
-				((TextField) field).addValidator(new NumberNumericValueValidator(
-						I18nProperties.getValidationError(errormsg == null ? caption+": "+Validations.onlyDecimalNumbersAllowed : errormsg, caption), null, null,
-						true));
+				// ((TextField) field).addValidator(
+				// new RegexpValidator("^[0-9]\\d*$", errormsg == null ?
+				// Validations.onlyDecimalNumbersAllowed : errormsg ));
+
+				((TextField) field).addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(
+						errormsg == null ? caption + ": " + Validations.onlyDecimalNumbersAllowed : errormsg, caption),
+						null, null, true));
 			}
-
-			
 
 			if (type == CampaignFormElementType.RANGE) {
 				String validationMessageTag = "";
 				Map<String, Object> validationMessageArgs = new HashMap<>();
-				
-			
+
 				if (constrainsVal.isExpression()) {
-					if(required_valx) {
-						((TextField) field).setRequiredError(errormsg == null ? caption+": Data entered not in range or calculated range" : caption+": "+errormsg);
-						}
-/*
-					System.out.println(type + "____________________1");
-
-					final String validationMessageTagx = Validations.numberNotInRange;
-
-					((TextField) field).addValueChangeListener(e -> {
-						
-						System.out.println(ww+ww + "_________________"+e.getProperty().getValue()+"______2");
-						if (e.getProperty().getValue() != null) {
-							System.out.println(type + "_______________"+ ww+1 +"___________3");
-							if (e.getProperty().getValue().toString().equals("0")) {
-								System.out.println(type + "____________"+ f+1 +"______________4");
-								validationMessageArgs.put("min", 1);
-								validationMessageArgs.put("max", 90);
-
-								((TextField) field)
-										.addValidator(
-												new NumberNumericValueValidator(
-														caption.toUpperCase() + ": "
-																+ I18nProperties.getValidationError(
-																		validationMessageTagx, validationMessageArgs),
-														1, 90, true, isOnError));
-
-							}
-						}
-
-					});
-					*/
+					if (required_valx) {
+						// ((TextField) field).setRequiredError(errormsg == null ? caption+": Data
+						// entered not in range or calculated range" : caption+": "+errormsg);
+					}
+					/*
+					 * System.out.println(type + "____________________1");
+					 * 
+					 * final String validationMessageTagx = Validations.numberNotInRange;
+					 * 
+					 * ((TextField) field).addValueChangeListener(e -> {
+					 * 
+					 * System.out.println(ww+ww +
+					 * "_________________"+e.getProperty().getValue()+"______2"); if
+					 * (e.getProperty().getValue() != null) { System.out.println(type +
+					 * "_______________"+ ww+1 +"___________3"); if
+					 * (e.getProperty().getValue().toString().equals("0")) { System.out.println(type
+					 * + "____________"+ f+1 +"______________4"); validationMessageArgs.put("min",
+					 * 1); validationMessageArgs.put("max", 90);
+					 * 
+					 * ((TextField) field) .addValidator( new NumberNumericValueValidator(
+					 * caption.toUpperCase() + ": " + I18nProperties.getValidationError(
+					 * validationMessageTagx, validationMessageArgs), 1, 90, true, isOnError));
+					 * 
+					 * } }
+					 * 
+					 * });
+					 */
 					constrainsVal.setExpression(false);
-					
-					
-					((TextField) field).addValidator(
-							new RegexpValidator("^[0-9]\\d*$", errormsg == null ? caption+": Number entered not in allowed range" : caption+": "+errormsg )); 
-					
-					
+
+					((TextField) field).addValidator(new RegexpValidator("^[0-9]\\d*$",
+							errormsg == null ? caption + ": Number entered not in allowed range"
+									: caption + ": " + errormsg));
+
 				} else {
-					
-							
-						if (constrainsVal.getMin() != null || constrainsVal.getMax() != null) {
-							
-							
-							if (constrainsVal.getMin() == null) {
-								validationMessageTag = Validations.numberTooBig;
-								validationMessageArgs.put("value", constrainsVal.getMax());
-							} else if (constrainsVal.getMax() == null) {
-								validationMessageTag = Validations.numberTooSmall;
-								validationMessageArgs.put("value", constrainsVal.getMin());
-							} else {
-								validationMessageTag = Validations.numberNotInRange;
-								validationMessageArgs.put("min", constrainsVal.getMin());
-								validationMessageArgs.put("max", constrainsVal.getMax());
-							}
-		
-							//field.addValidator(
-								//new NumberValidator(I18nProperties.getValidationError(validationMessageTag, validationMessageArgs), minValue, maxValue));
-						
-				
-					((TextField) field).addValidator(new NumberNumericValueValidator(
-							caption.toUpperCase()+": " + I18nProperties.getValidationError(validationMessageTag, validationMessageArgs),
-							constrainsVal.getMin(), constrainsVal.getMax(), true, isOnError));
-					
-					
+
+					if (constrainsVal.getMin() != null || constrainsVal.getMax() != null) {
+
+						if (constrainsVal.getMin() == null) {
+							validationMessageTag = Validations.numberTooBig;
+							validationMessageArgs.put("value", constrainsVal.getMax());
+						} else if (constrainsVal.getMax() == null) {
+							validationMessageTag = Validations.numberTooSmall;
+							validationMessageArgs.put("value", constrainsVal.getMin());
+						} else {
+							validationMessageTag = Validations.numberNotInRange;
+							validationMessageArgs.put("min", constrainsVal.getMin());
+							validationMessageArgs.put("max", constrainsVal.getMax());
+						}
+
+						// field.addValidator(
+						// new NumberValidator(I18nProperties.getValidationError(validationMessageTag,
+						// validationMessageArgs), minValue, maxValue));
+
+						((TextField) field).addValidator(new NumberNumericValueValidator(
+								caption.toUpperCase() + ": "
+										+ I18nProperties.getValidationError(validationMessageTag,
+												validationMessageArgs),
+								constrainsVal.getMin(), constrainsVal.getMax(), true, isOnError));
+
 					}
 				}
 			}
-		
+
 			// TODO: ADD VALIDATOR TYPE TEXTBOX, LIMITING ALLOWED TEXT/CHAR
 
 		}
@@ -520,8 +538,9 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.RADIOBASIC && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| type == CampaignFormElementType.TEXTBOX && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.DATE
-				|| type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL
-				|| type == CampaignFormElementType.RANGE)){// && styles.contains(CampaignFormElementStyle.ROW)) {
+						|| type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL
+						|| type == CampaignFormElementType.RANGE)) {// && styles.contains(CampaignFormElementStyle.ROW))
+																	// {
 			return 12;
 		}
 
@@ -553,16 +572,16 @@ public class CampaignFormBuilder {
 				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER
 						|| type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE
 						|| type == CampaignFormElementType.DATE || type == CampaignFormElementType.TEXTBOX)
-						//&& !styles.contains(CampaignFormElementStyle.ROW)
+				// && !styles.contains(CampaignFormElementStyle.ROW)
 				|| type == CampaignFormElementType.LABEL || type == CampaignFormElementType.SECTION) {
 			return 100f;
 		}
-		if(1 == 1) {
-		return 100f;
+		if (1 == 1) {
+			return 100f;
 		}
-		
+
 		if (colStyles.isEmpty()) {
-		//	return 33.3f;
+			// return 33.3f;
 		}
 
 		// Multiple col styles are not supported; use the first one
@@ -570,14 +589,17 @@ public class CampaignFormBuilder {
 		return Integer.parseInt(colStyle.substring(colStyle.indexOf("-") + 1)) / 12f * 100;
 	}
 
-	public <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value, Map<String,String> options, String defaultvalue) {
+	public <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value,
+			Map<String, String> options, String defaultvalue, Boolean isErrored, Object defaultErrorMsgr) {
 
 		switch (type) {
 		case YES_NO:
-			if(value != null) {
-				System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO "+value);
-			value = value.toString().equalsIgnoreCase("YES") ? true : value.toString().equalsIgnoreCase("NO") ? false : value;
-			
+			if (value != null) {
+				// System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+				// "+value);
+				value = value.toString().equalsIgnoreCase("YES") ? true
+						: value.toString().equalsIgnoreCase("NO") ? false : value;
+
 			}
 			((NullableOptionGroup) field).setValue(Sets.newHashSet(value));
 			break;
@@ -585,17 +607,34 @@ public class CampaignFormBuilder {
 		case NUMBER:
 		case RANGE:
 
+			Boolean isExpressionValue = false;
+			if (defaultErrorMsgr != null) {
+				if (defaultErrorMsgr.toString().endsWith("..")) {
+					isExpressionValue = true;
+					defaultErrorMsgr = defaultErrorMsgr.toString().equals("..") ? null
+							: defaultErrorMsgr.toString().replace("..", "");
+				}
+			}
+
+			if (isExpressionValue && !isErrored && value == null) {
+				((TextField) field).setCaption(
+						((TextField) field).getCaption() + defaultErrorMsgr != null ? defaultErrorMsgr.toString()
+								: "Data entered not in range or calculated range!");
+				((TextField) field).setRequiredError(defaultErrorMsgr != null ? defaultErrorMsgr.toString()
+						: "Data entered not in range or calculated range!");
+			}
+
 			((TextField) field).setValue(value != null ? value.toString() : defaultvalue != null ? defaultvalue : null);
-			
+
 			break;
 		case DECIMAL:
 			if (value != null) {
-				
-				((TextField) field).setValue(value != null ? value.toString()  : null);
+
+				((TextField) field).setValue(value != null ? value.toString() : null);
 			}
 			break;
 		case TEXTBOX:
-			
+
 			if (value != null) {
 
 				if (value.equals(true)) {
@@ -614,9 +653,8 @@ public class CampaignFormBuilder {
 				try {
 
 					String vc = value + "";
-					System.out.println(value);
+					// System.out.println(value);
 					Date dst = vc.contains("00:00:00") ? dateFormatter(value) : dateFormatterLongAndMobile(value);
-				
 
 					((DateField) field).setValue(value != null ? dst : null);
 
@@ -671,7 +709,7 @@ public class CampaignFormBuilder {
 			;
 			if (value != null) {
 				String dxz = options.get(value);
-					((ComboBox) field).select(value);
+				((ComboBox) field).select(value);
 			}
 			;
 
@@ -680,44 +718,40 @@ public class CampaignFormBuilder {
 			throw new IllegalArgumentException(type.toString());
 		}
 	}
-	
-	
-	
-	private Date dateFormatterLongAndMobile(Object value){
 
-		String dateStr = value+"";
+	private Date dateFormatterLongAndMobile(Object value) {
+
+		String dateStr = value + "";
 		DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
 		DateFormat formattercx = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 		DateFormat formatterx = new SimpleDateFormat("dd/MM/yyyy");
 		Date date;
-		System.out.println("date in question "+value);
-		
+		System.out.println("date in question " + value);
+
 		try {
 			date = (Date) formatter.parse(dateStr);
 		} catch (ParseException e) {
-			
+
 			try {
 				date = (Date) formatterx.parse(dateStr);
 			} catch (ParseException ed) {
-				
+
 				try {
 					date = (Date) formattercx.parse(dateStr);
 				} catch (ParseException edx) {
-					
-					 date = new Date((Long) value);
-				 }
-			 }
+
+					date = new Date((Long) value);
+				}
+			}
 		}
-		
-	return date;
+
+		return date;
 	}
-	
-	
 
 	private Date dateFormatter(Object value) throws ParseException {
 		// TODO Auto-generated method stub
 
-		String dateStr = value+"";
+		String dateStr = value + "";
 		DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
 		Date date;
 
@@ -745,17 +779,16 @@ public class CampaignFormBuilder {
 			return;
 		}
 //fieldValueMatchesDependingOnValuesNOTValuer
-		if(dependingOnValuesList.stream()
-				.anyMatch(v -> v.toString().contains("!"))) {
-			
-			//hide on default
-			component.setVisible(dependingOnValuesList.stream()
-					.anyMatch(v -> fieldValueMatchesDependingOnValuesNOTValuer(dependingOnField, dependingOnValuesList)));
-			
-			//check value and determine if to hide or show
+		if (dependingOnValuesList.stream().anyMatch(v -> v.toString().contains("!"))) {
+
+			// hide on default
+			component.setVisible(dependingOnValuesList.stream().anyMatch(
+					v -> fieldValueMatchesDependingOnValuesNOTValuer(dependingOnField, dependingOnValuesList)));
+
+			// check value and determine if to hide or show
 			dependingOnField.addValueChangeListener(e -> {
 				boolean visible = fieldValueMatchesDependingOnValuesNOTValuer(dependingOnField, dependingOnValuesList);
-				
+
 				component.setVisible(visible);
 				if (component instanceof Field) {
 					if (!visible) {
@@ -764,22 +797,22 @@ public class CampaignFormBuilder {
 				}
 			});
 		} else {
-		
-		//hide on default
-		component.setVisible(dependingOnValuesList.stream()
-				.anyMatch(v -> fieldValueMatchesDependingOnValues(dependingOnField, dependingOnValuesList)));
-		
-		//check value and determine if to hide or show
-		dependingOnField.addValueChangeListener(e -> {
-			boolean visible = fieldValueMatchesDependingOnValues(dependingOnField, dependingOnValuesList);
-			
-			component.setVisible(visible);
-			if (component instanceof Field) {
-				if (!visible) {
-					((Field<?>) component).setValue(null);
+
+			// hide on default
+			component.setVisible(dependingOnValuesList.stream()
+					.anyMatch(v -> fieldValueMatchesDependingOnValues(dependingOnField, dependingOnValuesList)));
+
+			// check value and determine if to hide or show
+			dependingOnField.addValueChangeListener(e -> {
+				boolean visible = fieldValueMatchesDependingOnValues(dependingOnField, dependingOnValuesList);
+
+				component.setVisible(visible);
+				if (component instanceof Field) {
+					if (!visible) {
+						((Field<?>) component).setValue(null);
+					}
 				}
-			}
-		});
+			});
 		}
 	}
 
@@ -799,15 +832,14 @@ public class CampaignFormBuilder {
 			return dependingOnValuesList.stream().anyMatch(
 					v -> v.toString().equalsIgnoreCase(booleanValue) || v.toString().equalsIgnoreCase(stringValue));
 		} else {
-			
+
 			return dependingOnValuesList.stream()
 					.anyMatch(v -> v.toString().equalsIgnoreCase(dependingOnField.getValue().toString()));
 		}
 	}
-	
 
-	
-	private boolean fieldValueMatchesDependingOnValuesNOTValuer(Field<?> dependingOnField, List<Object> dependingOnValuesList) {
+	private boolean fieldValueMatchesDependingOnValuesNOTValuer(Field<?> dependingOnField,
+			List<Object> dependingOnValuesList) {
 		if (dependingOnField.getValue() == null) {
 			return false;
 		}
@@ -816,16 +848,16 @@ public class CampaignFormBuilder {
 			String booleanValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
 					? "false"
 					: "true";
-			String stringValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
-					? "no"
+			String stringValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue()) ? "no"
 					: "yes";
 
-			return dependingOnValuesList.stream().anyMatch(
-					v -> v.toString().replaceAll("!", "").equalsIgnoreCase(booleanValue) || v.toString().replaceAll("!", "").equalsIgnoreCase(stringValue));
-		} else {
-			
 			return dependingOnValuesList.stream()
-					.anyMatch(v -> !v.toString().replaceAll("!", "").equalsIgnoreCase(dependingOnField.getValue().toString()));
+					.anyMatch(v -> v.toString().replaceAll("!", "").equalsIgnoreCase(booleanValue)
+							|| v.toString().replaceAll("!", "").equalsIgnoreCase(stringValue));
+		} else {
+
+			return dependingOnValuesList.stream().anyMatch(
+					v -> !v.toString().replaceAll("!", "").equalsIgnoreCase(dependingOnField.getValue().toString()));
 		}
 	}
 
@@ -836,17 +868,19 @@ public class CampaignFormBuilder {
 
 		return defaultCaption;
 	}
-	
-	
 
 	public List<CampaignFormDataEntry> getFormValues() {
 		return fields.keySet().stream().map(id -> {
 			Field<?> field = fields.get(id);
 			if (field instanceof NullableOptionGroup) {
-				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " +field.getValue());
-				return new CampaignFormDataEntry(id, field.getValue() != null ? field.getValue().toString().equals("[true]") ? "Yes"  : "No" : field.getValue());
-				
-			//	return new CampaignFormDataEntry(id, ((NullableOptionGroup) field).getNullableValue());
+				System.out
+						.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " + field.getValue());
+				return new CampaignFormDataEntry(id,
+						field.getValue() != null ? field.getValue().toString().equals("[true]") ? "Yes" : "No"
+								: field.getValue());
+
+				// return new CampaignFormDataEntry(id, ((NullableOptionGroup)
+				// field).getNullableValue());
 			} /*
 				 * else if (field instanceof DateField) {
 				 * 

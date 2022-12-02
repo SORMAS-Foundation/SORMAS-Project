@@ -52,6 +52,7 @@
                     android:id="@+id/campaignFormData_campaign"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:required="true"
+
                     app:value="@={data.campaign}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField

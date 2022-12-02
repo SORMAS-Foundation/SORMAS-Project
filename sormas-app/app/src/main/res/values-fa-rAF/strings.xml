@@ -191,7 +191,7 @@
     <string name="caption_new_task">New Task</string>
     <string name="caption_not_a_contact">Not a Contact</string>
     <string name="caption_not_an_event">Not an Event</string>
-    <string name="caption_outbreak">Outbreaks</string>
+    <string name="caption_outbreak"></string>
     <string name="caption_password">Password</string>
     <string name="caption_patient_information">Patient Information</string>
     <string name="caption_pending">Pending</string>
@@ -378,7 +378,7 @@
     <string name="heading_social_events">Social Events</string>
     <string name="heading_source_case">Source Case</string>
     <string name="heading_source_of_information">Source of Information</string>
-    <string name="heading_surveillance_outbreak">Surveillance Outbreak</string>
+    <string name="heading_surveillance_outbreak">Afghanistan Polio</string>
     <string name="heading_symptoms">Signs &amp; Symptoms</string>
     <string name="heading_sync_conflicts">Synchronization Conflicts</string>
     <string name="heading_synchronization">Synchronization</string>
