@@ -2001,13 +2001,6 @@ public class TestDataCreator {
 		return testReport;
 	}
 
-	public ExternalMessageDto createPhysiciansReportWithCase(CaseReferenceDto caze) {
-		return createExternalMessage(m -> {
-			m.setType(ExternalMessageType.PHYSICIANS_REPORT);
-			m.setCaze(caze);
-		});
-	}
-
 //	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
 //
 //		DiseaseVariant diseaseVariant = new DiseaseVariant();

@@ -115,17 +115,6 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 		assertEquals(3L, sut.countForCase(caze.getUuid()));
 		assertEquals(0L, sut.countForContact(caze.getUuid()));
 		assertEquals(0L, sut.countForEventParticipant(caze.getUuid()));
-
-		// create physician's report match and noise
-		creator.createPhysiciansReportWithCase(caze.toReference());
-		creator.createPhysiciansReportWithCase(noiseCaze.toReference());
-		creator.createPhysiciansReportWithCase(noiseCaze.toReference());
-		assertEquals(4L, sut.countForCase(caze.getUuid()));
-
-		// create yet another physician's report match
-		creator.createPhysiciansReportWithCase(caze.toReference());
-		assertEquals(5L, sut.countForCase(caze.getUuid()));
-
 	}
 
 	@Test
