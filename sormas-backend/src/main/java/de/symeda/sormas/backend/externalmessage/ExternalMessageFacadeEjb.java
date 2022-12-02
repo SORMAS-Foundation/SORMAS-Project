@@ -213,10 +213,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 				.map(sampleRep -> sampleRep.getSample())
 				.map(sampleRef -> sampleService.getByReferenceDto(sampleRef));
 			SurveillanceReport surveillanceReport = surveillanceReportService.getByReferenceDto(externalMessageDto.getSurveillanceReport());
-			if (sampleStream.anyMatch(sample -> sample.getAssociatedContact() != null)
-				|| sampleStream.anyMatch(sample -> sample.getAssociatedEventParticipant() != null)
-				|| sampleStream.map(sample -> sample.getAssociatedCase())
-					.allMatch(aCase -> aCase.getUuid().equals(surveillanceReport.getCaze().getUuid()))) {
+			if (sampleStream.anyMatch(
+				sample -> sample.getAssociatedContact() != null
+					|| sample.getAssociatedEventParticipant() != null
+					|| (sample.getAssociatedCase() != null
+						&& !sample.getAssociatedCase().getUuid().equals(surveillanceReport.getCaze().getUuid())))) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.externalMessageRefersToMultipleEntities));
 			}
 		}

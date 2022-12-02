@@ -87,7 +87,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 		target.setReportingType(source.getReportingType());
 		target.setExternalId(source.getExternalId());
-		target.setCreatingUser(source.getCreatingUser().toReference());
+		target.setCreatingUser(source.getCreatingUser() == null ? null : source.getCreatingUser().toReference());
 		target.setReportDate(source.getReportDate());
 		target.setDateOfDiagnosis(source.getDateOfDiagnosis());
 		target.setFacilityRegion(RegionFacadeEjb.toReferenceDto(source.getFacilityRegion()));
