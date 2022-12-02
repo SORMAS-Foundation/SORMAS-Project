@@ -25,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -33,9 +34,9 @@ import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class ExternalMessageFacadeEjbUnitTest {
@@ -44,6 +45,8 @@ public class ExternalMessageFacadeEjbUnitTest {
 	private EntityManager em;
 	@Mock
 	private ExternalMessageService externalMessageService;
+	@Mock
+	private SurveillanceReportService surveillanceReportService;
 	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
