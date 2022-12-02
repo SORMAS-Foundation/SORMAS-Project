@@ -159,9 +159,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			}
 			target.setSampleReports(sampleReports);
 		}
-		if (source.getCaze() != null) {
-			target.setCaze(caseService.getByReferenceDto(source.getCaze()));
-		}
 		target.setSurveillanceReport(surveillanceReportService.getByReferenceDto(source.getSurveillanceReport()));
 		return target;
 	}
@@ -257,9 +254,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setReportId(source.getReportId());
 		if (source.getSampleReports() != null) {
 			target.setSampleReports(source.getSampleReports().stream().map(sampleReportFacade::toDto).collect(toList()));
-		}
-		if (source.getCaze() != null) {
-			target.setCaze(source.getCaze().toReference());
 		}
 		if (source.getSurveillanceReport() != null) {
 			target.setSurveillanceReport(source.getSurveillanceReport().toReference());

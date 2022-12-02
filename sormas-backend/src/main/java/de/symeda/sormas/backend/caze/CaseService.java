@@ -1200,12 +1200,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		// Remove the case as the related case of immunizations
 		immunizationService.unlinkRelatedCase(caze);
-
-		// Remove the case from any external message referencing it
-		externalMessageService.getForCase(new CaseReferenceDto(caze.getUuid())).forEach(labMessage -> {
-			labMessage.setCaze(null);
-			externalMessageService.ensurePersisted(labMessage);
-		});
 	}
 
 	@Override

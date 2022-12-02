@@ -29,7 +29,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
@@ -67,7 +66,6 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
 	public static final String ASSIGNEE = "assignee";
-	public static final String CAZE = "caze";
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
 
 	private ExternalMessageType type;
@@ -100,7 +98,6 @@ public class ExternalMessage extends AbstractDomainObject {
 	private User assignee;
 
 	private List<SampleReport> sampleReports;
-	private Case caze;
 	private SurveillanceReport surveillanceReport;
 
 	@Enumerated(EnumType.STRING)
@@ -319,15 +316,6 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setAssignee(User assignee) {
 		this.assignee = assignee;
-	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	public Case getCaze() {
-		return caze;
-	}
-
-	public void setCaze(Case caze) {
-		this.caze = caze;
 	}
 
 	@OneToOne(fetch = FetchType.LAZY)

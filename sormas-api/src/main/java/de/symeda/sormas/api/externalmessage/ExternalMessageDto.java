@@ -24,7 +24,6 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -107,8 +106,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personEmail;
 	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
-	@AuditIncludeProperty
-	private CaseReferenceDto caze;
 	@AuditIncludeProperty
 	private SurveillanceReportReferenceDto surveillanceReport;
 
@@ -383,14 +380,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		}
 		sampleReports.add(sampleReport);
 
-	}
-
-	public CaseReferenceDto getCaze() {
-		return caze;
-	}
-
-	public void setCaze(CaseReferenceDto caze) {
-		this.caze = caze;
 	}
 
 	@Override
