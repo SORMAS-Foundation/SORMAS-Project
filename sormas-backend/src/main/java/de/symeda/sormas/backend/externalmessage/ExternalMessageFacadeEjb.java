@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -69,7 +68,6 @@ import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportServic
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -205,16 +203,17 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@Override
 	public void validate(ExternalMessageDto externalMessageDto) {
 		if (externalMessageDto.getSurveillanceReport() != null) {
-			Stream<Sample> sampleStream = externalMessageDto.getSampleReportsNullSafe()
+			SurveillanceReport surveillanceReport = surveillanceReportService.getByReferenceDto(externalMessageDto.getSurveillanceReport());
+			if (externalMessageDto.getSampleReportsNullSafe()
 				.stream()
 				.map(sampleRep -> sampleRep.getSample())
-				.map(sampleRef -> sampleService.getByReferenceDto(sampleRef));
-			SurveillanceReport surveillanceReport = surveillanceReportService.getByReferenceDto(externalMessageDto.getSurveillanceReport());
-			if (sampleStream.anyMatch(
-				sample -> sample.getAssociatedContact() != null
-					|| sample.getAssociatedEventParticipant() != null
-					|| (sample.getAssociatedCase() != null
-						&& !sample.getAssociatedCase().getUuid().equals(surveillanceReport.getCaze().getUuid())))) {
+				.map(sampleRef -> sampleService.getByReferenceDto(sampleRef))
+				.anyMatch(
+					sample -> sample != null
+						&& (sample.getAssociatedContact() != null
+							|| sample.getAssociatedEventParticipant() != null
+							|| (sample.getAssociatedCase() != null
+								&& !sample.getAssociatedCase().getUuid().equals(surveillanceReport.getCaze().getUuid()))))) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.externalMessageRefersToMultipleEntities));
 			}
 		}

@@ -18,9 +18,13 @@
 package de.symeda.sormas.api.caze.surveillancereport;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class SurveillanceReportReferenceDto extends ReferenceDto {
-    public SurveillanceReportReferenceDto(String uuid) {
-        setUuid(uuid);
-    }
+
+	public SurveillanceReportReferenceDto(String uuid) {
+		setUuid(uuid);
+	}
 }

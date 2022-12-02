@@ -72,6 +72,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
@@ -1963,6 +1964,22 @@ public class TestDataCreator {
 		beanTest.getExternalMessageFacade().save(message);
 
 		return message;
+	}
+
+	public ExternalMessageDto createLabMessageWithTestReportAndSurveillanceReport(
+		UserReferenceDto user,
+		CaseReferenceDto caze,
+		SampleReferenceDto sample) {
+		SurveillanceReportDto surveillanceReportDto = createSurveillanceReport(user, ReportingType.LABORATORY, caze);
+		ExternalMessageDto labMessage = createExternalMessage(lm -> {
+			lm.setType(ExternalMessageType.LAB_MESSAGE);
+			lm.setSurveillanceReport(surveillanceReportDto.toReference());
+			lm.setStatus(ExternalMessageStatus.PROCESSED);
+		});
+		SampleReportDto sampleReport = createSampleReport(labMessage, sample);
+		createTestReport(sampleReport);
+		return labMessage;
+
 	}
 
 	public ExternalMessageDto createLabMessageWithTestReport(SampleReferenceDto sample) {
