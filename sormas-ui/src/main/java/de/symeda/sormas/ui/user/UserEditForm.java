@@ -41,6 +41,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -149,7 +150,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
         
-        addField(UserDto.FORM_ACCESS, OptionGroup.class);
+        addField(UserDto.FORM_ACCESS, OptionGroup.class).setCaption(I18nProperties.getCaption(Captions.formAccess)); 
         OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
         formAccess.setMultiSelect(true);
         
@@ -158,7 +159,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         userRoles.setMultiSelect(true); 
                
      
-        
+        //User name
         
         ComboBox area = addInfrastructureField(UserDto.AREA);
         ComboBox region = addInfrastructureField(UserDto.REGION);
