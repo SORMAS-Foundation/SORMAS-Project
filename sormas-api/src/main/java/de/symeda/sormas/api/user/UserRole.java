@@ -48,7 +48,7 @@ public enum UserRole
 	SURVEILLANCE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
 	HOSPITAL_INFORMANT(false, false, true, false, JurisdictionLevel.HEALTH_FACILITY),
 	COMMUNITY_OFFICER(false, true, false, false, JurisdictionLevel.COMMUNITY),
-	COMMUNITY_INFORMANT(false, false, true, false, JurisdictionLevel.COMMUNITY),
+	//COMMUNITY_INFORMANT(false, false, true, false, JurisdictionLevel.COMMUNITY),
 	CASE_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
 	CASE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
 	CONTACT_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
@@ -62,7 +62,7 @@ public enum UserRole
 	NATIONAL_CLINICIAN(false, false, false, false, JurisdictionLevel.NATION),
 	POE_INFORMANT(false, false, false, true, JurisdictionLevel.POINT_OF_ENTRY),
 	POE_SUPERVISOR(true, false, false, true, JurisdictionLevel.REGION),
-	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
+	//IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
 	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
 	//SORMAS_TO_SORMAS_CLIENT(false, false, false, true, JurisdictionLevel.NATION),
 	BAG_USER(false, false, false, false, JurisdictionLevel.NONE);
@@ -84,7 +84,7 @@ public enum UserRole
 	public static final String _SURVEILLANCE_OFFICER = SURVEILLANCE_OFFICER.name();
 	public static final String _HOSPITAL_INFORMANT = HOSPITAL_INFORMANT.name();
 	public static final String _COMMUNITY_OFFICER = COMMUNITY_OFFICER.name();
-	public static final String _COMMUNITY_INFORMANT = COMMUNITY_INFORMANT.name();
+	public static final String _COMMUNITY_INFORMANT = "";
 	public static final String _CASE_SUPERVISOR = CASE_SUPERVISOR.name();
 	public static final String _CASE_OFFICER = CASE_OFFICER.name();
 	public static final String _CONTACT_SUPERVISOR = CONTACT_SUPERVISOR.name();
@@ -97,7 +97,7 @@ public enum UserRole
 	public static final String _POE_INFORMANT = POE_INFORMANT.name();
 	public static final String _POE_SUPERVISOR = POE_SUPERVISOR.name();
 	public static final String _POE_NATIONAL_USER = POE_NATIONAL_USER.name();
-	public static final String _IMPORT_USER = IMPORT_USER.name();
+	public static final String _IMPORT_USER = "";
 	public static final String _REST_EXTERNAL_VISITS_USER = "";
 	public static final String _REST_USER = REST_USER.name();
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "";
@@ -207,7 +207,7 @@ public enum UserRole
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
 			collection.add(HOSPITAL_INFORMANT);
-			collection.add(COMMUNITY_INFORMANT);
+			//collection.add(COMMUNITY_INFORMANT);
 			break;
 		case AREA_SURVEILLANCE_SUPERVISOR:
 			collection.add(AREA_SURVEILLANCE_SUPERVISOR);
@@ -232,9 +232,9 @@ public enum UserRole
 		case EXTERNAL_LAB_USER:
 			collection.add(EXTERNAL_LAB_USER);
 			break;
-		case IMPORT_USER:
-			collection.add(IMPORT_USER);
-			break;
+	//	case IMPORT_USER:
+	//		collection.add(IMPORT_USER);
+	//		break;
 	//	case REST_EXTERNAL_VISITS_USER:
 		//	collection.add(REST_EXTERNAL_VISITS_USER);
 	//		break;
