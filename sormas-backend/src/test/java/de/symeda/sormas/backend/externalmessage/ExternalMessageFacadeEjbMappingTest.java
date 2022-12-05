@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -24,12 +25,12 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class ExternalMessageFacadeEjbMappingTest {
@@ -38,6 +39,8 @@ public class ExternalMessageFacadeEjbMappingTest {
 	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;
 	@Mock
 	private UserService userservice;
+	@Mock
+	private SurveillanceReportService surveillanceReportService;
 	@InjectMocks
 	private ExternalMessageFacadeEjb sut;
 

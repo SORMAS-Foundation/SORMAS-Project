@@ -228,4 +228,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid);
 
+	Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze);
+
 }

@@ -26,7 +26,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
-public class VaccinationListCriteria extends BaseCriteria {
+public class VaccinationCriteria extends BaseCriteria {
 
 	private static final long serialVersionUID = 577972890587599470L;
 
@@ -56,17 +56,17 @@ public class VaccinationListCriteria extends BaseCriteria {
 			this.personReferenceDto = null;
 		}
 
-		public VaccinationListCriteria.Builder withDisease(Disease disease) {
+		public VaccinationCriteria.Builder withDisease(Disease disease) {
 			this.disease = disease;
 			return this;
 		}
 
-		public VaccinationListCriteria build() {
-			return new VaccinationListCriteria(this);
+		public VaccinationCriteria build() {
+			return new VaccinationCriteria(this);
 		}
 	}
 
-	private VaccinationListCriteria(VaccinationListCriteria.Builder builder) {
+	private VaccinationCriteria(VaccinationCriteria.Builder builder) {
 		this.personReferenceDto = builder.personReferenceDto;
 		this.personReferences = builder.personReferences;
 		this.disease = builder.disease;
@@ -88,7 +88,7 @@ public class VaccinationListCriteria extends BaseCriteria {
 		return vaccinationAssociationType;
 	}
 
-	public VaccinationListCriteria vaccinationAssociationType(VaccinationAssociationType vaccinationAssociationType) {
+	public VaccinationCriteria vaccinationAssociationType(VaccinationAssociationType vaccinationAssociationType) {
 		this.vaccinationAssociationType = vaccinationAssociationType;
 		return this;
 	}
@@ -97,7 +97,7 @@ public class VaccinationListCriteria extends BaseCriteria {
 		return caseReference;
 	}
 
-	public VaccinationListCriteria caseReference(CaseReferenceDto caseReference) {
+	public VaccinationCriteria caseReference(CaseReferenceDto caseReference) {
 		this.caseReference = caseReference;
 		return this;
 	}
@@ -106,7 +106,7 @@ public class VaccinationListCriteria extends BaseCriteria {
 		return contactReference;
 	}
 
-	public VaccinationListCriteria contactReference(ContactReferenceDto contactReference) {
+	public VaccinationCriteria contactReference(ContactReferenceDto contactReference) {
 		this.contactReference = contactReference;
 		return this;
 	}
@@ -115,7 +115,7 @@ public class VaccinationListCriteria extends BaseCriteria {
 		return eventParticipantReference;
 	}
 
-	public VaccinationListCriteria eventParticipantReference(EventParticipantReferenceDto eventParticipantReference) {
+	public VaccinationCriteria eventParticipantReference(EventParticipantReferenceDto eventParticipantReference) {
 		this.eventParticipantReference = eventParticipantReference;
 		return this;
 	}
@@ -124,7 +124,7 @@ public class VaccinationListCriteria extends BaseCriteria {
 		return region;
 	}
 
-	public VaccinationListCriteria region(RegionReferenceDto region) {
+	public VaccinationCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
@@ -133,7 +133,7 @@ public class VaccinationListCriteria extends BaseCriteria {
 		return district;
 	}
 
-	public VaccinationListCriteria district(DistrictReferenceDto district) {
+	public VaccinationCriteria district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
 	}

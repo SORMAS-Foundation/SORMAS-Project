@@ -1341,6 +1341,7 @@ public interface Captions {
 	String ExternalMessage_sampleReceivedDate = "ExternalMessage.sampleReceivedDate";
 	String ExternalMessage_specimenCondition = "ExternalMessage.specimenCondition";
 	String ExternalMessage_status = "ExternalMessage.status";
+	String ExternalMessage_surveillanceReport = "ExternalMessage.surveillanceReport";
 	String ExternalMessage_type = "ExternalMessage.type";
 	String ExternalMessageCriteria_birthDateFrom = "ExternalMessageCriteria.birthDateFrom";
 	String ExternalMessageCriteria_birthDateTo = "ExternalMessageCriteria.birthDateTo";
@@ -2594,6 +2595,7 @@ public interface Captions {
 	String View_user_userroles = "View.user.userroles";
 	String View_user_users = "View.user.users";
 	String View_users_sub = "View.users.sub";
+	String viewMessage = "viewMessage";
 	String Visit = "Visit";
 	String Visit_disease = "Visit.disease";
 	String Visit_origin = "Visit.origin";

@@ -404,6 +404,8 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EVENTS_RADIO_BUTTON);
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
         });
 

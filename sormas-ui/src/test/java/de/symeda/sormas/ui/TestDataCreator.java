@@ -280,6 +280,20 @@ public class TestDataCreator {
 		return contact;
 	}
 
+	public CaseDataDto createCase(RDCF rdcf) {
+		UserDto user = createUser(rdcf, getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = createPerson();
+		return createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			DataHelper.createUuid());
+	}
+
 	public CaseDataDto createCase(
 		UserReferenceDto user,
 		PersonReferenceDto cazePerson,
@@ -636,7 +650,6 @@ public class TestDataCreator {
 
 	public RegionDto createRegion(String regionName) {
 
-
 		RegionDto region = RegionDto.build();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
@@ -736,7 +749,7 @@ public class TestDataCreator {
 		return campaignForm;
 	}
 
-	public ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> config) {
+	public ExternalMessageDto createExternalMessage(Consumer<ExternalMessageDto> config) {
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
 		config.accept(labMessage);

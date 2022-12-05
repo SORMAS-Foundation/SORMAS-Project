@@ -698,22 +698,35 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void searchImmunizationsByPersonEmail() {
-		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
-		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
+	public void testGetIndexListFilterByCriteria() {
+
+		PersonDto personWithDetails = creator.createPerson("personWithDetails", "test");
+		PersonDto personWithoutDetails = creator.createPerson("personWithoutDetails", "test");
 
 		PersonContactDetailDto primaryEmail =
-			creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+			creator.createPersonContactDetail(personWithDetails.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
 		PersonContactDetailDto secondaryEmail =
-			creator.createPersonContactDetail(personWithEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+			creator.createPersonContactDetail(personWithDetails.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithDetails.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithDetails.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+		PersonContactDetailDto primaryOtherDetail =
+			creator.createPersonContactDetail(personWithDetails.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+		PersonContactDetailDto secondaryOtherDetail =
+			creator.createPersonContactDetail(personWithDetails.toReference(), false, PersonContactDetailType.OTHER, "detail2");
 
-		personWithEmail.getPersonContactDetails().add(primaryEmail);
-		personWithEmail.getPersonContactDetails().add(secondaryEmail);
-		getPersonFacade().save(personWithEmail);
+		personWithDetails.getPersonContactDetails().add(primaryEmail);
+		personWithDetails.getPersonContactDetails().add(secondaryEmail);
+		personWithDetails.getPersonContactDetails().add(primaryPhone);
+		personWithDetails.getPersonContactDetails().add(secondaryPhone);
+		personWithDetails.getPersonContactDetails().add(primaryOtherDetail);
+		personWithDetails.getPersonContactDetails().add(secondaryOtherDetail);
+		getPersonFacade().save(personWithDetails);
 
 		Date endDate = UtilDate.from(LocalDate.now().minusDays(1));
-		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithEmail, endDate);
-		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutEmail, endDate);
+		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithDetails, endDate);
+		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutDetails, endDate);
 
 		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 		List<ImmunizationIndexDto> immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
@@ -722,6 +735,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(uuids.contains(immunizationDto1.getUuid()));
 		assertTrue(uuids.contains(immunizationDto2.getUuid()));
 
+		// Email address
 		immunizationCriteria.setNameAddressPhoneEmailLike("test1@email.com");
 		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(1, immunizationIndexDtos.size());
@@ -730,33 +744,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		immunizationCriteria.setNameAddressPhoneEmailLike("test2@email.com");
 		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(0, immunizationIndexDtos.size());
-	}
 
-	@Test
-	public void searchImmunizationsByPersonPhone() {
-		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
-		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
-
-		PersonContactDetailDto primaryEmail =
-			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
-		PersonContactDetailDto secondaryEmail =
-			creator.createPersonContactDetail(personWithPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
-
-		personWithPhone.getPersonContactDetails().add(primaryEmail);
-		personWithPhone.getPersonContactDetails().add(secondaryEmail);
-		getPersonFacade().save(personWithPhone);
-
-		Date endDate = UtilDate.from(LocalDate.now().minusDays(1));
-		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithPhone, endDate);
-		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutPhone, endDate);
-
-		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
-		List<ImmunizationIndexDto> immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
-		assertEquals(2, immunizationIndexDtos.size());
-		List<String> uuids = immunizationIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
-		assertTrue(uuids.contains(immunizationDto1.getUuid()));
-		assertTrue(uuids.contains(immunizationDto2.getUuid()));
-
+		// Phone number
 		immunizationCriteria.setNameAddressPhoneEmailLike("111222333");
 		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(1, immunizationIndexDtos.size());
@@ -765,33 +754,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		immunizationCriteria.setNameAddressPhoneEmailLike("444555666");
 		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(0, immunizationIndexDtos.size());
-	}
 
-	@Test
-	public void searchImmunizationsByPersonOtherDetail() {
-		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
-		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
-
-		PersonContactDetailDto primaryEmail =
-			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
-		PersonContactDetailDto secondaryEmail =
-			creator.createPersonContactDetail(personWithOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
-
-		personWithOtherDetail.getPersonContactDetails().add(primaryEmail);
-		personWithOtherDetail.getPersonContactDetails().add(secondaryEmail);
-		getPersonFacade().save(personWithOtherDetail);
-
-		Date endDate = UtilDate.from(LocalDate.now().minusDays(1));
-		ImmunizationDto immunizationDto1 = createOngoingImmunizationWithEndDate(personWithOtherDetail, endDate);
-		ImmunizationDto immunizationDto2 = createOngoingImmunizationWithEndDate(personWithoutOtherDetail, endDate);
-
-		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
-		List<ImmunizationIndexDto> immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
-		assertEquals(2, immunizationIndexDtos.size());
-		List<String> uuids = immunizationIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
-		assertTrue(uuids.contains(immunizationDto1.getUuid()));
-		assertTrue(uuids.contains(immunizationDto2.getUuid()));
-
+		// Other contact detail
 		immunizationCriteria.setNameAddressPhoneEmailLike("detail1");
 		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(1, immunizationIndexDtos.size());
@@ -800,5 +764,16 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		immunizationCriteria.setNameAddressPhoneEmailLike("detail2");
 		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(0, immunizationIndexDtos.size());
+
+		// Immunization UUID
+		immunizationCriteria.setNameAddressPhoneEmailLike(immunizationDto1.getUuid());
+		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(1, immunizationIndexDtos.size());
+		assertEquals(immunizationDto1.getUuid(), immunizationIndexDtos.get(0).getUuid());
+
+		immunizationCriteria.setNameAddressPhoneEmailLike(immunizationDto2.getUuid());
+		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(1, immunizationIndexDtos.size());
+		assertEquals(immunizationDto2.getUuid(), immunizationIndexDtos.get(0).getUuid());
 	}
 }

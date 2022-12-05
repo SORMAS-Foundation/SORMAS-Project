@@ -62,10 +62,10 @@ public class FacilitiesGrid extends FilteredGrid<FacilityIndexDto, FacilityCrite
 			FacilityIndexDto.DISTRICT,
 			FacilityIndexDto.COMMUNITY,
 			FacilityIndexDto.POSTAL_CODE,
+			FacilityIndexDto.CITY,
 			FacilityIndexDto.STREET,
 			FacilityIndexDto.HOUSE_NUMBER,
 			FacilityIndexDto.ADDITIONAL_INFORMATION,
-			FacilityIndexDto.CITY,
 			FacilityIndexDto.LATITUDE,
 			FacilityIndexDto.LONGITUDE,
 			FacilityIndexDto.EXTERNAL_ID);

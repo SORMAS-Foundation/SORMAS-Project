@@ -28,6 +28,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -187,5 +188,9 @@ public class SurveillanceReport extends AbstractDomainObject {
 
 	public void setCaze(Case caze) {
 		this.caze = caze;
+	}
+
+	public SurveillanceReportReferenceDto toReference() {
+		return new SurveillanceReportReferenceDto(getUuid());
 	}
 }

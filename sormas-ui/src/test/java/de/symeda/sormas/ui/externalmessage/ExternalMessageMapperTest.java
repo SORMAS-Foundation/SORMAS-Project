@@ -224,8 +224,8 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		ExternalMessageDto labMessageDto = ExternalMessageDto.build();
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessageDto);
 
-		assertEquals(otherFacilityRef, mapper.getLabReference(Collections.emptyList()));
-		assertEquals(otherFacilityRef, mapper.getLabReference(Collections.singletonList("unknown")));
+		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.emptyList()));
+		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.singletonList("unknown")));
 
 		FacilityDto one = creator
 			.createFacility("One", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
@@ -239,12 +239,12 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		two.setChangeDate(new Date());
 		getFacilityFacade().save(two);
 
-		FacilityReferenceDto oneExternal = mapper.getLabReference(Collections.singletonList("oneExternal"));
+		FacilityReferenceDto oneExternal = mapper.getFacilityReference(Collections.singletonList("oneExternal"));
 		assertEquals(one.toReference(), oneExternal);
 
-		FacilityReferenceDto twoExternal = mapper.getLabReference(Collections.singletonList("twoExternal"));
+		FacilityReferenceDto twoExternal = mapper.getFacilityReference(Collections.singletonList("twoExternal"));
 		assertEquals(two.toReference(), twoExternal);
 
-		assertNull(mapper.getLabReference(Arrays.asList("oneExternal", "twoExternal")));
+		assertNull(mapper.getFacilityReference(Arrays.asList("oneExternal", "twoExternal")));
 	}
 }
