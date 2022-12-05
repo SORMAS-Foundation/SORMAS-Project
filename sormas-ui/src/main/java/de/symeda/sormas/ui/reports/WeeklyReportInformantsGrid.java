@@ -98,7 +98,7 @@ public class WeeklyReportInformantsGrid extends Grid {
 
 		List<WeeklyReportInformantSummary> reportDetailDtos = new ArrayList<>();
 		List<UserDto> informants =
-			FacadeProvider.getUserFacade().getUsersByAssociatedOfficer(officerRef, UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT);
+			FacadeProvider.getUserFacade().getUsersByAssociatedOfficer(officerRef, UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_OFFICER);
 		// sort by...
 		informants.sort(
 			(a, b) -> {

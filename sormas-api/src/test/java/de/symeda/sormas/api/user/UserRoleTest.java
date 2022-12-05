@@ -33,9 +33,10 @@ public class UserRoleTest {
 			UserRole.ADMIN,
 			UserRole.NATIONAL_USER,
 			UserRole.LAB_USER,
-			UserRole.REST_USER,
+			UserRole.REST_USER
 		//	UserRole.REST_EXTERNAL_VISITS_USER,
-			UserRole.IMPORT_USER);
+			//UserRole.IMPORT_USER
+			);
 
 		assertValidRolesCombination(
 			UserRole.NATIONAL_USER,
@@ -76,9 +77,9 @@ public class UserRoleTest {
 		
 		assertValidRolesCombination(UserRole.HOSPITAL_INFORMANT);
 
-		assertValidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.IMPORT_USER);
+	//	assertValidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.IMPORT_USER);
 
-		assertInvalidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.HOSPITAL_INFORMANT);
+		//assertInvalidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.HOSPITAL_INFORMANT);
 		assertInvalidRolesCombination(UserRole.ADMIN, UserRole.NATIONAL_USER, UserRole.SURVEILLANCE_SUPERVISOR);
 		assertInvalidRolesCombination(UserRole.NATIONAL_USER, UserRole.EVENT_OFFICER);
 	}

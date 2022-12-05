@@ -155,6 +155,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        //userRoles.removeItem(UserRole.IMPORT_USER); 
         userRoles.setMultiSelect(true); 
                
      

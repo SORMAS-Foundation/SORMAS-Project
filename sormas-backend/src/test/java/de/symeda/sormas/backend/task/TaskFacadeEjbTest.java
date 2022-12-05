@@ -224,7 +224,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			"Comm",
 			"Inf",
-			UserRole.COMMUNITY_INFORMANT);
+			UserRole.COMMUNITY_OFFICER);
 		loginWith(commInf);
 
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
