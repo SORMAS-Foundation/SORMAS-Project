@@ -329,6 +329,10 @@ public class MSersDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_AGGREGATE_REPORT_BUTTON);
           while (webDriverHelpers.getNumberOfElements(RESULT_IN_GRID) > 0) {
+            do {
+              webDriverHelpers.scrollInTable(5);
+            } while (!webDriverHelpers.isElementVisibleWithTimeout(getEditButtonByIndex(1), 2));
+
             webDriverHelpers.waitUntilIdentifiedElementIsPresent(getEditButtonByIndex(1));
             webDriverHelpers.doubleClickOnWebElementBySelector(getEditButtonByIndex(1));
             webDriverHelpers.clickOnWebElementBySelector(DELETE_AGGREGATED_REPORT_BUTTON);
