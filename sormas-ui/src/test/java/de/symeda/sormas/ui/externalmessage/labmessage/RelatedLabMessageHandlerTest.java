@@ -257,7 +257,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		});
 
 		//create a processed lab message with same report id
-		creator.createLabMessage((lm) -> {
+		creator.createExternalMessage((lm) -> {
 			lm.setReportId(reportId);
 			lm.addSampleReport(creator.createSampleReport(sample2.toReference()));
 			lm.getSampleReports().get(0).setLabSampleId(labSampleId);
@@ -295,7 +295,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		});
 
 		//create a processed lab message with same report id
-		creator.createLabMessage((lm) -> {
+		creator.createExternalMessage((lm) -> {
 			lm.setReportId(reportId);
 			lm.addSampleReport(creator.createSampleReport(sample.toReference()));
 			lm.getSampleReports().get(0).setLabSampleId(labSampleId);
@@ -322,7 +322,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		});
 
 		//create a processed lab message with same report id
-		creator.createLabMessage((lm) -> {
+		creator.createExternalMessage((lm) -> {
 			lm.addSampleReport(creator.createSampleReport(sample.toReference()));
 			lm.setReportId(reportId);
 			lm.getSampleReports().get(0).setLabSampleId(labSampleId);
@@ -1096,7 +1096,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		});
 
 		//create a processed lab message with same report id
-		creator.createLabMessage((lm) -> {
+		creator.createExternalMessage((lm) -> {
 			lm.setReportId(reportId);
 			lm.addSampleReport(creator.createSampleReport(sample.toReference()));
 			lm.getSampleReports().get(0).setLabSampleId(labSampleId);

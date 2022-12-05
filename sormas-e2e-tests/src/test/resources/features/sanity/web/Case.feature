@@ -697,25 +697,25 @@ Feature: Case end to end tests
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Isolation as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
     When I click on the Cases button from navbar
@@ -1302,12 +1302,12 @@ Feature: Case end to end tests
     Then I navigate to the last created case via the url
     Then I click on New Sample
     Then I create a new Sample with positive test result with Guinea Worm as disease
-    Then I confirm the Create case from contact with positive test result
+    And I confirm popup window
     Then I navigate to the last created case via the url
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Dengue Fever as disease
-    Then I confirm the Create case from contact with positive test result
+    Then I confirm to create case for selected disease
     Then I navigate to the last created case via the url
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample

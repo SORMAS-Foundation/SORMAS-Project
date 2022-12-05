@@ -57,7 +57,6 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -71,13 +70,14 @@ public class SormasToSormasController {
 		navigator.addView(ShareRequestsView.VIEW_NAME, ShareRequestsView.class);
 	}
 
-	public void shareCaseFromDetailsPage(CaseDataDto caze) {
+	public void shareCaseFromDetailsPage(CaseDataDto caze, Runnable callback) {
 		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), null, null);
 
-		shareToSormasFromDetailPage(
-			options -> FacadeProvider.getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options),
-			SormasToSormasOptionsForm.forCase(caze, currentShares));
+		shareToSormasFromDetailPage(options -> {
+			FacadeProvider.getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
+			callback.run();
+		}, SormasToSormasOptionsForm.forCase(caze, currentShares));
 	}
 
 	public void shareSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
@@ -89,7 +89,7 @@ public class SormasToSormasController {
 			new SormasToSormasOptionsDto());
 	}
 
-	public void shareContactFromDetailsPage(ContactDto contact) {
+	public void shareContactFromDetailsPage(ContactDto contact, Runnable callback) {
 		if (contact.getCaze() == null) {
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingSormasToSormasCantShareContactWithoutCase),
@@ -99,9 +99,10 @@ public class SormasToSormasController {
 
 		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), null, null);
-		shareToSormasFromDetailPage(
-			options -> FacadeProvider.getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options),
-			SormasToSormasOptionsForm.forContact(contact, currentShares));
+		shareToSormasFromDetailPage(options -> {
+			FacadeProvider.getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
+			callback.run();
+		}, SormasToSormasOptionsForm.forContact(contact, currentShares));
 	}
 
 	public void shareSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
@@ -113,13 +114,14 @@ public class SormasToSormasController {
 			new SormasToSormasOptionsDto());
 	}
 
-	public void shareEventFromDetailsPage(EventDto event) {
+	public void shareEventFromDetailsPage(EventDto event, Runnable callback) {
 		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), null, null);
 
-		shareToSormasFromDetailPage(
-			options -> FacadeProvider.getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options),
-			SormasToSormasOptionsForm.forEvent(event, currentShares));
+		shareToSormasFromDetailPage(options -> {
+			FacadeProvider.getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
+			callback.run();
+		}, SormasToSormasOptionsForm.forEvent(event, currentShares));
 	}
 
 	public void shareLabMessage(ExternalMessageDto labMessage, Runnable callback) {
@@ -326,7 +328,8 @@ public class SormasToSormasController {
 	}
 
 	private void shareToSormasFromDetailPage(HandleShareWithOptions handleShareWithOptions, SormasToSormasOptionsForm optionsForm) {
-		handleShareWithOptions(handleShareWithOptions, SormasUI::refreshView, optionsForm, new SormasToSormasOptionsDto());
+		handleShareWithOptions(handleShareWithOptions, () -> {
+		}, optionsForm, new SormasToSormasOptionsDto());
 	}
 
 	private void handleShareWithOptions(

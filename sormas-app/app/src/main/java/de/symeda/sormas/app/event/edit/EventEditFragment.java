@@ -226,6 +226,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.setEventManagementStatusClass(EventManagementStatus.class);
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
+		ValidationHelper.initEmailValidator(contentBinding.eventSrcEmail);
+		ValidationHelper.initPhoneNumberValidator(contentBinding.eventSrcTelNo);
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventEndDate);
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventReportDateTime);
 	}
