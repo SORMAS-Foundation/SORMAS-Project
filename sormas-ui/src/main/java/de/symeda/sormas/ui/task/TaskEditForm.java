@@ -20,9 +20,12 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
+import com.vaadin.v7.ui.AbstractField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -226,20 +229,14 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			}
 
 			// Validation
-			startDate.addValidator(
-				new DateComparisonValidator(
-					startDate,
-					dueDate,
-					true,
-					false,
-					I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), dueDate.getCaption())));
-			dueDate.addValidator(
-				new DateComparisonValidator(
-					dueDate,
-					startDate,
-					false,
-					false,
-					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
+			DateComparisonValidator.addStartEndValidators(startDate, dueDate);
+
+			List<AbstractField<Date>> validatedFields = Arrays.asList(startDate, dueDate);
+			validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+				validatedFields.forEach(otherField -> {
+					otherField.setValidationVisible(!otherField.isValid());
+				});
+			}));
 
 			Map<String, Long> userTaskCounts = FacadeProvider.getTaskFacade()
 				.getPendingTaskCountPerUser(availableUsers.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
