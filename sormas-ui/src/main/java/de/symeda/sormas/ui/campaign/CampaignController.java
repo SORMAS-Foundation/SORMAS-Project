@@ -17,10 +17,16 @@ package de.symeda.sormas.ui.campaign;
 
 import static com.vaadin.v7.data.Validator.InvalidValueException;
 import static de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria.CAMPAIGN;
+import static java.util.Objects.nonNull;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.vaadin.server.ConnectorResource;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ApplicationConstants;
 import com.vaadin.shared.ui.BrowserWindowOpenerState;
 import com.vaadin.ui.Alignment;
@@ -31,6 +37,13 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Buffered.SourceException;
+import com.vaadin.v7.data.Validator.EmptyValueException;
+import com.vaadin.v7.data.Validator.InvalidValueException;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -56,8 +69,10 @@ import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitRuntimeException;
 
 public class CampaignController {
+
 
 	public void createOrEditCampaign(String uuid) {//sormas-logo
 
@@ -313,6 +328,8 @@ public class CampaignController {
 		return campaignComponent;
 	}
 	
+
+	
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 			CampaignFormDataDto campaignFormData,
 			CampaignReferenceDto campaign,
@@ -337,13 +354,92 @@ public class CampaignController {
 			final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 			component.addCommitListener(() -> {
+				
 				if (!form.getFieldGroup().isModified()) {
+					
+					
+					
+					
 					try {
+					
 						form.validate();
-					} catch (InvalidValueException e) {
-						Notification.show(I18nProperties.getValidationError(Validations.errorsInForm), Type.ERROR_MESSAGE);
+					}
+					catch (InvalidValueException ex) {
+						System.out.println(")))))))))))))00000000000000(((((((((((((((((" +ex);
+
+						StringBuilder htmlMsg = new StringBuilder();
+						String message = ex.getMessage();
+						if (message != null && !message.isEmpty()) {
+							htmlMsg.append(ex.getHtmlMessage());
+						} else {
+							System.out.println(")))))))))))))00000000000000(((((((((((((((((");
+
+
+							InvalidValueException[] causes = ex.getCauses();
+							if (causes != null) {
+
+								InvalidValueException firstCause = null;
+								boolean multipleCausesFound = false;
+								for (int i = 0; i < causes.length; i++) {
+									if (!causes[i].isInvisible()) {
+										if (firstCause == null) {
+											firstCause = causes[i];
+										} else {
+											multipleCausesFound = true;
+											break;
+										}
+									}
+								}
+								if (multipleCausesFound) {
+									htmlMsg.append("<ul>");
+									// Alle nochmal
+									for (int i = 0; i < causes.length; i++) {
+										if (!causes[i].isInvisible()) {
+											htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
+										}
+									}
+									htmlMsg.append("</ul>");
+								} else if (firstCause != null) {
+									htmlMsg.append(findHtmlMessage(firstCause));
+									String additionalInfo = findHtmlMessageDetails(firstCause);
+									if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
+										htmlMsg.append(" : ");
+										htmlMsg.append(findHtmlMessageDetails(firstCause));
+									}
+								}
+
+							}
+						}
+						
+						
+						new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true)
+							.show(Page.getCurrent());
 						return;
 					}
+					
+					
+					
+					
+					//catch (InvalidValueException e) {
+					
+			
+//			for (Object property : form.getFieldGroup().getBoundPropertyIds()) {
+//				
+//				System.out.println("_________222222222222222222222222________" +property.toString());
+//				
+//				
+//				Field field = form.getFieldGroup().getField(property);
+//				 if (field instanceof AbstractField) {
+//	                    AbstractField af = (AbstractField) field;
+//	                    af.setValidationVisible(true);
+//	                }
+//				
+//			}
+				
+			
+					//	Notification.show(I18nProperties.getValidationError(Validations.errorsInForm), Type.ERROR_MESSAGE);
+				//		return;
+				//	}
 
 					CampaignFormDataDto formData = form.getValue();
 					FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
@@ -379,7 +475,33 @@ public class CampaignController {
 			return component;
 		}
 	
+	
+	private String findHtmlMessage(InvalidValueException exception) {
+		if (!(exception.getMessage() == null || exception.getMessage().isEmpty()))
+			return exception.getHtmlMessage();
 
+		for (InvalidValueException cause : exception.getCauses()) {
+			String message = findHtmlMessage(cause);
+			if (message != null)
+				return message;
+		}
+
+		return null;
+	}
+	
+	private String findHtmlMessageDetails(InvalidValueException exception) {
+		for (InvalidValueException cause : exception.getCauses()) {
+			String message = findHtmlMessage(cause);
+			if (message != null)
+				return message;
+		}
+
+		return null;
+	}
+
+	
+	
+	//ContinueCommitDiscardWrapper this is used to store data from FormBuilder
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 		CampaignFormDataDto campaignFormData,
 		CampaignReferenceDto campaign,
@@ -411,12 +533,16 @@ public class CampaignController {
 		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		component.addCommitListener(() -> {
+			
 			System.out.println("))))saving)))))");
 			if (!form.getFieldGroup().isModified()) {
 				
-				try {
+				try {  
+					form.setCommitterBoolen();
 					form.validate();
 				} catch (InvalidValueException e) {
+					
+					
 					Notification.show(I18nProperties.getValidationError(Validations.errorsInForm), Type.ERROR_MESSAGE);
 					return;
 				}
@@ -435,9 +561,20 @@ public class CampaignController {
 		
 		 // TODO duplicate form
 		component.addCommitandContListener(() -> {
-			System.out.println("))))))))))))))))");
+			System.out.println("))))))111111111111111111111111111111))))))))))");
 			if (!form.getFieldGroup().isModified()) {
+				System.out.println("))))))111111111111111111111111111111))))))))))");
+				/*
+				 getFieldsStream().forEach(field -> {
+					if (!field.isInvalidCommitted()) {
+						field.validate();
+					}
+				});
+				 */
+				
+				
 				try {
+					form.setCommitterBoolen();
 					form.validate();
 				} catch (InvalidValueException e) {
 					Notification.show(I18nProperties.getValidationError(Validations.errorsInForm), Type.ERROR_MESSAGE);
@@ -463,6 +600,7 @@ public class CampaignController {
 					//UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
 				}
 			}
+			System.out.println("))))))111111111111111111111111111111))))))))))");
 			
 		},  I18nProperties.getString(Strings.entityCampaignDataForm));
 

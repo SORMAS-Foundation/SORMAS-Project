@@ -30,14 +30,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Page;
+import com.vaadin.server.UserError;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component.ErrorEvent;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Property.ReadOnlyException;
+import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
@@ -61,6 +65,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.campaign.jsonHelpers.BasicCheckboxHelper;
@@ -143,9 +148,7 @@ public class CampaignFormBuilder {
 						.collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption)); // .collect(Collectors.toList());
 
 				if (userLocale != null) {
-					System.out.println("___userLocale.toString()_____" + userLocale.toString());
-					System.out.println("___translationsOpt_____" + translationsOpt.size());
-
+					
 					translationsOpt.stream().filter(t -> t.getLanguageCode().equals(userLocale.toString())).findFirst()
 							.ifPresent(filteredTranslations -> filteredTranslations.getTranslations().stream()
 									.filter(cd -> cd.getElementId().equals(formElement.getId())).findFirst()
@@ -153,8 +156,6 @@ public class CampaignFormBuilder {
 											.filter(c -> c.getCaption() != null)
 											.collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption))));
 
-					System.out.println("___userOptTranslations_____" + userOptTranslations.size());
-					System.out.println("___formElement.getId()_____" + formElement.getId());
 				}
 
 				/*
@@ -294,10 +295,11 @@ public class CampaignFormBuilder {
 				field.setCaption(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setSizeFull();
 				field.setRequired(formElement.isImportant());
-
-				// field.setRequiredError(formElement.getErrormessage() == null ? "Please fill
-				// this field correctly" : formElement.getErrormessage());
-
+				/*
+				 * if(formElement.isImportant()) {
+				 * field.setRequiredError(formElement.getErrormessage() == null ? "Please fill"+
+				 * "this field correctly" : formElement.getErrormessage()); }
+				 */
 				vertical.addComponent(field);// , (currentCol + 1), currentLayout.getRows() - 1,
 				// (currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
 
@@ -413,8 +415,8 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.ARRAY || type == CampaignFormElementType.RANGE
 				|| type == CampaignFormElementType.DATE) {
 			if (styles.contains(CampaignFormElementStyle.ROW)) {
-				// CssStyles.style(field, CssStyles.TEXTFIELD_ROW,
-				// CssStyles.TEXTFIELD_CAPTION_INLINE);
+				 CssStyles.style(field, CssStyles.TEXTFIELD_ROW,
+				 CssStyles.TEXTFIELD_CAPTION_INLINE);
 			}
 
 			if (type == CampaignFormElementType.NUMBER) {
@@ -726,7 +728,7 @@ public class CampaignFormBuilder {
 		DateFormat formattercx = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 		DateFormat formatterx = new SimpleDateFormat("dd/MM/yyyy");
 		Date date;
-		System.out.println("date in question " + value);
+		//System.out.println("date in question " + value);
 
 		try {
 			date = (Date) formatter.parse(dateStr);
@@ -757,13 +759,13 @@ public class CampaignFormBuilder {
 
 		date = (Date) formatter.parse(dateStr);
 
-		System.out.println(date);
+		//System.out.println(date);
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		String formatedDate = cal.get(Calendar.DATE) + "/" + (cal.get(Calendar.MONTH) + 1) + "/"
 				+ cal.get(Calendar.YEAR);
-		System.out.println("formatedDate : " + formatedDate);
+		//System.out.println("formatedDate : " + formatedDate);
 
 		Date res = new Date(formatedDate + "");
 
@@ -873,8 +875,11 @@ public class CampaignFormBuilder {
 		return fields.keySet().stream().map(id -> {
 			Field<?> field = fields.get(id);
 			if (field instanceof NullableOptionGroup) {
-				System.out
-						.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " + field.getValue());
+				/*
+				 * System.out
+				 * .println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " +
+				 * field.getValue());
+				 */
 				return new CampaignFormDataEntry(id,
 						field.getValue() != null ? field.getValue().toString().equals("[true]") ? "Yes" : "No"
 								: field.getValue());
@@ -898,10 +903,33 @@ public class CampaignFormBuilder {
 		}).collect(Collectors.toList());
 	}
 
-	public void validateFields() throws Validator.InvalidValueException {
-		fields.forEach((key, value) -> {
-			value.validate();
-		});
+//let change this method to litrate through all the field, check the validity, and return ;ist of those that are not valid in a catch block
+	public void validateFields() {
+		try {
+			fields.forEach((key, value) -> {
+
+				Field formField = fields.get(key);
+
+				if (!fields.get(key).isValid()) {
+					fields.get(key).setRequiredError("tttttttttttt");
+				}
+			});
+		} finally {
+
+			fields.forEach((key, value) -> {
+
+				Field formField = fields.get(key);
+				try {
+
+					formField.validate();
+
+				} catch (Validator.InvalidValueException e) {
+
+					throw (InvalidValueException) e;
+				}
+			});
+		}
+
 	}
 
 	public void resetFormValues() {
