@@ -161,8 +161,8 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, "National User");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfSpecificUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
