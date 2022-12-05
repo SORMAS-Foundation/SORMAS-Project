@@ -154,6 +154,7 @@ public class UserManagementSteps implements En {
     Then(
         "I Verify The User Role filter in the User Management Page",
         () -> {
+          TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               USERS_COUNTER_USER_MANAGEMENT);
           Integer numberOfTotalUsers =
