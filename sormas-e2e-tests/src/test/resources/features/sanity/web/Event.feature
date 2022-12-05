@@ -880,7 +880,6 @@ Feature: Create events
     Then I click on New Sample and discard changes is asked
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
-    And I save the created sample
     Then I confirm popup window
     Then I pick an existing case in pick or create a case popup
     Then I click on edit Sample
