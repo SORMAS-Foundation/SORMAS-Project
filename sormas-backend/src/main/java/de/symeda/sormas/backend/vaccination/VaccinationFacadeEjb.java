@@ -27,7 +27,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -120,7 +119,7 @@ public class VaccinationFacadeEjb
 	@RightsAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._IMMUNIZATION_EDIT })
-	public VaccinationDto save(@Valid VaccinationDto dto) {
+	public VaccinationDto save(VaccinationDto dto) {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
