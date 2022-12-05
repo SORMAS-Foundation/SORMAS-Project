@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.campaign;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,10 +55,10 @@ public class CampaignDto extends EntityDto {
 	
 	public String creatingusername;
 	
-	private Set<AreaReferenceDto> areas;
-	private Set<RegionReferenceDto> region;
-	private Set<DistrictReferenceDto> districts;
-	private Set<CommunityReferenceDto> community;
+	private Set<AreaReferenceDto> areas = new HashSet<AreaReferenceDto>();
+	private Set<RegionReferenceDto> region = new HashSet<RegionReferenceDto>();
+	private Set<DistrictReferenceDto> districts = new HashSet<DistrictReferenceDto>();
+	private Set<CommunityReferenceDto> community = new HashSet<CommunityReferenceDto>();
 	
 	@Valid
 	private List<CampaignDashboardElement> campaignDashboardElements;
