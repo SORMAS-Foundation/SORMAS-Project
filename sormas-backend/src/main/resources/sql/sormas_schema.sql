@@ -12231,4 +12231,10 @@ ALTER TABLE externalmessage_history DROP COLUMN caze_id;
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (501, 'Adjust the processing of external messages to create surveillance reports #9680', true);
 
+-- 2022-12-05 Fix upgradeNeeded flag set on schema version 501 #11086
+
+UPDATE schema_version SET upgradeNeeded = false WHERE version_number = 501;
+
+INSERT INTO schema_version (version_number, comment) VALUES (502, 'Fix upgradeNeeded flag set on schema version 501 #11086');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
