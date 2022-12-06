@@ -30,6 +30,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -690,9 +692,19 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			if ((Boolean) e.getProperty().getValue()) {
 				startDate.addValidator(startDateValidator);
 				endDate.addValidator(endDateValidator);
+
+				List<AbstractField<Date>> validatedFields = Arrays.asList(startDate, endDate);
+				validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+					validatedFields.forEach(otherField -> {
+						otherField.setValidationVisible(!otherField.isValid());
+					});
+				}));
+
 			} else {
 				startDate.removeValidator(startDateValidator);
+				startDate.setValidationVisible(true);
 				endDate.removeValidator(endDateValidator);
+				endDate.setValidationVisible(true);
 			}
 		});
 
