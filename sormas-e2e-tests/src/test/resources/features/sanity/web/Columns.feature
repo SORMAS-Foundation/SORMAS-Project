@@ -139,7 +139,7 @@ Scenario Outline: Sort column <col> by date and time in Cases directory
 
   Examples:
     | col |
-    |15 |
+#    |15 |
     |16 |
 
 @env_main @tmsLink=SORDEV-5342 @Case
@@ -155,6 +155,7 @@ Scenario Outline: Sort column <col> by date in Cases directory
 
   Examples:
     | col |
+    |15 |
     |18 |
 
 @env_main @tmsLink=SORDEV-5342 @Contacts
