@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.api.contact;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,9 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -157,7 +157,7 @@ public class ContactReferenceDto extends ReferenceDto {
 			return lastName;
 		}
 
-		public String toString() {
+		public String buildCaption() {
 			return firstName + " " + lastName;
 		}
 	}

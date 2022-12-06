@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.utils;
 import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.HasCaption;
 import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
@@ -36,6 +37,6 @@ public class CaptionRenderer extends TextRenderer {
 			return null;
 		}
 
-		return super.encode(((EntityDto) value).buildCaption());
+		return super.encode(((HasCaption) value).buildCaption());
 	}
 }

@@ -572,8 +572,7 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 			return LocationReferenceDto.buildCaption(city, street, houseNumber, additionalInformation);
 		}
 
-		@Override
-		public String toString() {
+		public String buildCaption() {
 			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		}
 	}

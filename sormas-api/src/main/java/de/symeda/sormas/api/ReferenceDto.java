@@ -20,6 +20,7 @@ import java.io.Serializable;
 import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
@@ -71,7 +72,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 
 	@Override
 	public String toString() {
-		return getCaption();
+		return getClass().getSimpleName() + StringUtils.SPACE + this.getUuid();
 	}
 
 	@Override
