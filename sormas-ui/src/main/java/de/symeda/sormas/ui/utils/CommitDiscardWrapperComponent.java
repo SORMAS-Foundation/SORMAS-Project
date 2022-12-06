@@ -129,7 +129,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Panel contentPanel;
 
 	private C wrappedComponent;
-	private FieldGroup[] fieldGroups;
+	public FieldGroup[] fieldGroups;
 
 	private HorizontalLayout buttonsPanel;
 	private Button commitButton;
@@ -283,6 +283,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						dirty = false;//this
 					}
 				} else if (source instanceof LocationEditForm) {
+					
+System.out.print("afsdfasdfasdfasdfasdf");
 					final LocationEditForm locationEditForm = (LocationEditForm) source;
 					if (atLeastOneFieldModified(
 						locationEditForm.getField(LocationDto.LATITUDE),
@@ -297,6 +299,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						dirty = false;//this
 					}
 				} else if (source instanceof AccessibleTextField) {
+					System.out.print("asdfddddddddddddddddddddddddddddddddddd");
 					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
 					if (accessibleTextField.isModified()) {
 						dirty = false;//this
@@ -317,7 +320,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return false;
 	}
 
-	protected Stream<Field<?>> getFieldsStream() {
+	public Stream<Field<?>> getFieldsStream() {
 
 		if (fieldGroups != null) {
 			return Arrays.stream(fieldGroups).map(FieldGroup::getFields).flatMap(Collection::stream);
@@ -572,6 +575,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
 
 		if (fieldGroups != null) {
+			System.out.println("NOT bu=buferrrrrrrrrrrrrrrrrrrrrrrrr");
 			if (fieldGroups.length > 1) {
 				// validate all fields first, so commit will likely work for all fieldGroups
 				// this is basically only needed when we have multiple field groups
@@ -597,6 +601,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					throw new CommitRuntimeException(e);
 			}
 		} else if (wrappedComponent instanceof Buffered) {
+			System.out.println("buferrrrrrrrrrrrrrrrrrrrrrrrr");
 			((Buffered) wrappedComponent).commit();
 		} else {
 			// NOOP
@@ -609,7 +614,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		onDone();
 	}
 
-	
+	//also saves the campaign form first field group
 //	@Override
 	public void commitandCont() throws InvalidValueException, SourceException, CommitRuntimeException {
 
@@ -679,6 +684,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		try {
 			commit();
 		} catch (InvalidValueException ex) {
+			
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
 			if (message != null && !message.isEmpty()) {
@@ -720,6 +726,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 				}
 			}
+			
+			System.out.println(")))))))))))))0000000000000000000");
 
 			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true)
 				.show(Page.getCurrent());
@@ -727,7 +735,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 	
 	public void commitAndHandleandCont() {
-		try {System.out.println("DEBUGEqqqqqqqqqqqqqqqqqqqqqqqqeRRRR");
+		try {
 			//commit();
 			commitandCont();
 			System.out.println("DEBUGEwwwwwwwwwwwwwwwwwwwwwwwwwwwwRRRR");
@@ -938,6 +946,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	
 	
 	public void addCommitandContListener(CommitandContListener listener, String entityName) {
+		System.out.println("D55555555555555555555555555555555555555qeRRRR");
+		
 		if (commitandContListeners.isEmpty())
 			buttonsPanel.addComponent(getCommitandContButton(entityName), 0);
 		if (!commitandContListeners.contains(listener))

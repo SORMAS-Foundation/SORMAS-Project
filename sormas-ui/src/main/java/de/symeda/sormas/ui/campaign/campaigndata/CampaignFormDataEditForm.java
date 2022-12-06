@@ -32,6 +32,8 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.Validator.EmptyValueException;
+import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -322,6 +324,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 		buildCampaignForm(newFieldValue);
 	}
+	
+	private Boolean isCommitClicked;
+	
 
 	@Override
 	public void validate() throws Validator.InvalidValueException {
@@ -330,8 +335,15 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		if (campaignFormBuilder == null) {
 			throw new RuntimeException("Campaign form builder has not been initialized");
 		}
-
+		//validateFieldsCommit
+		System.out.println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{"+isCommitClicked);
+		
+		if(isCommitClicked != null) {
+			if(isCommitClicked) {
 		campaignFormBuilder.validateFields();
+			}
+		}
+		
 	}
 
 	public void resetFormValues() {
@@ -363,5 +375,10 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	public void setCommitterBoolen() {
+		isCommitClicked = true;
+		
 	}
 }

@@ -191,7 +191,7 @@
     <string name="caption_new_task">New Task</string>
     <string name="caption_not_a_contact">Not a Contact</string>
     <string name="caption_not_an_event">Not an Event</string>
-    <string name="caption_outbreak">Outbreaks</string>
+    <string name="caption_outbreak"></string>
     <string name="caption_password">Password</string>
     <string name="caption_patient_information">Patient Information</string>
     <string name="caption_pending">Pending</string>

@@ -107,20 +107,22 @@ public class ExpressionProcessor {
 				if(e.getType().toString().equals("range")) {
 					
 					if(value.toString().equals("0")) { 
-
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
 								null,
-								null, null);
+								null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() +".." : "..");
 						//return;
 					} else {
-
+						
+						Boolean isErrored = value.toString().endsWith(".0");
+						System.out.println(e.getCaption() +" : "+value+" = naija bet: Success vs Mathew " + isErrored);
+						
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
 								value.toString().endsWith(".0") ? value.toString().replace(".0", "") : value,
-								null, null);
+								null, null, isErrored, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() +".." : "..");
 						//return;
 					}
 					
@@ -128,18 +130,18 @@ public class ExpressionProcessor {
 				
 						
 					} else if(valueType.isAssignableFrom(Double.class)) {
-					System.out.println("yes double detected "+Double.isFinite((double) value) +" = "+ value);
+					//System.out.println("yes double detected "+Double.isFinite((double) value) +" = "+ value);
 				campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()),
 							!Double.isFinite((double) value) ? 0 : value.toString().endsWith(".0") ? value.toString().replace(".0", "") : Precision.round((double) value, 2),
-									null, null);
+									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
 			//	return;
 				} else if(valueType.isAssignableFrom(Boolean.class)) {
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()), value,
-									null, null);
+									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
 				//	return;
 				//	
 				} else {
@@ -147,12 +149,12 @@ public class ExpressionProcessor {
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()), value,
-									null, null);
+									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
 					
 				}
 				} else if(e.getType().toString().equals("range") && valuex == null && e.getDefaultvalue() != null) {
 					
-					System.out.println("++++++++++++++++++++++++++++++++++++++++++++++============================");
+					//System.out.println("++++++++++++++++++++++++++++++++++++++++++++++============================");
 					
 				}
 			} catch (SpelEvaluationException evaluationException) {

@@ -78,13 +78,15 @@ public class CampaignFormDataFragmentUtils {
             final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
             String valuex = expressionValue+"";
             System.out.println("))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) "+valuex);
-            if(!valuex.isEmpty() && valuex != "" && expressionValue != null) {
+            if(!valuex.isEmpty() && !valuex.equals("")  && expressionValue != null) {//&& !valuex.equals("0")
 
                 if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
+
+                    System.out.println(expressionString+" =====)))))))))))))))==== "+expressionValue);
                     if (type == CampaignFormElementType.YES_NO) {
                         ControlSwitchField.setValue((ControlSwitchField) dynamicField, expressionValue, true, YesNo.class, null);
-                      //  ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, (Boolean) expressionValue);
-                    } else if (type == CampaignFormElementType.RANGE) {
+                     } else if (type == CampaignFormElementType.RANGE) {
+
                         ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
 
                     } else if (type == CampaignFormElementType.NUMBER) {
@@ -123,9 +125,13 @@ public class CampaignFormDataFragmentUtils {
 
     public static Object getExpressionValue(ExpressionParser expressionParser, List<CampaignFormDataEntry> formValues, String expressionString)
             throws SpelEvaluationException {
+        System.out.println("111111111");
         final EvaluationContext context = refreshEvaluationContext(formValues);
+        System.out.println("2222222222222");
         final Expression expression = expressionParser.parseExpression(expressionString);
+        System.out.println("3333333333333333333");
         final Class<?> valueType = expression.getValueType(context);
+        System.out.println(valueType+" )))))))))----------------- "+expressionString);
         return expression.getValue(context, valueType);
     }
 
@@ -172,7 +178,6 @@ public class CampaignFormDataFragmentUtils {
                 field.setVisibility(View.VISIBLE);
             }
         } else {
-            System.out.println(dependingOnValues+"  ????????????_____------____???????????????  "+parsedDependingOnFieldValue);
 
             if (dependingOnValues.contains(parsedDependingOnFieldValue)) {
                 field.setVisibility(View.GONE);
@@ -276,6 +281,7 @@ public class CampaignFormDataFragmentUtils {
                 super.inflateView(context, attrs, defStyle);
                 initLabel();
                 initLabelAndValidationListeners();
+                setLiveValidationDisabled(true);
                 initInput(isIntegerField, isRequired, false, null, null, false, false);
             }
         };
@@ -330,7 +336,8 @@ public class CampaignFormDataFragmentUtils {
                 super.inflateView(context, attrs, defStyle);
                 initLabel();
                 initLabelAndValidationListenersErrorMsg(errorMsg);
-                initInput(isIntegerField, isRequired, false, null, null, false, false);
+                setLiveValidationDisabled(true);
+                initInput(isIntegerField, isRequired, true, null, null, true, false);
             }
         };
     }
@@ -393,6 +400,7 @@ public class CampaignFormDataFragmentUtils {
                 super.inflateView(context, attrs, defStyle);
                 initLabel();
                 initLabelAndValidationListeners();
+                setLiveValidationDisabled(true);
                 initInput(isIntegerField, isRequired, true, minVal, maxVal, isExpressionx, warnOnError);
             }
         };
@@ -431,6 +439,7 @@ public class CampaignFormDataFragmentUtils {
                 super.inflateView(context, attrs, defStyle);
                 initLabel();
                 initLabelAndValidationListeners();
+                setLiveValidationDisabled(true);
                 initInput(isIntegerField);
             }
         };
@@ -471,7 +480,7 @@ public class CampaignFormDataFragmentUtils {
                 super.inflateView(context, attrs, defStyle);
                 initLabel();
                 initLabelAndValidationListeners();
-
+                setLiveValidationDisabled(true);
                 initializeDateField(fm);
                 initInput(true, isRequired);
             }
@@ -510,6 +519,7 @@ public class CampaignFormDataFragmentUtils {
                 super.inflateView(context, attrs, defStyle);
                 initLabel();
                 initLabelAndValidationListeners();
+                setLiveValidationDisabled(true);
                 //required = true;
 
                 initInput();
@@ -550,9 +560,10 @@ public class CampaignFormDataFragmentUtils {
                 super.inflateView(context, attrs, defStyle);
                 initLabel();
                 initLabelAndValidationListeners();
-                //required = true;
+                required = true;
 
                // initialize();
+                setLiveValidationDisabled(true);
                 initInputFirst();
             }
         };

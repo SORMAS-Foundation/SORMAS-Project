@@ -543,8 +543,6 @@ public class CampaignDataView extends AbstractCampaignView {
 			// split at "&"
 			String[] queryParameters = event.getParameters().split("&");
 			for (String queryParameter : queryParameters) {
-				System.out
-						.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + queryParameter);
 				String[] innerSplit = queryParameter.split("=");
 				if (queryParameter.contains("area")) {
 					AreaDto uu = FacadeProvider.getAreaFacade().getByUuid(innerSplit[1]);
