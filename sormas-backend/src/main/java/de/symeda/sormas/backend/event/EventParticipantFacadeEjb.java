@@ -213,8 +213,7 @@ public class EventParticipantFacadeEjb
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return service.getAllByEventAfter(date, event).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getAllByEventAfter(date, event));
 	}
 
 	@Override
@@ -1036,9 +1035,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
-		//todo
-		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return service.getByEventUuids(eventUuids).stream().map(e -> toPseudonymizedDto(e, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getByEventUuids(eventUuids));
 	}
 
 	@Override

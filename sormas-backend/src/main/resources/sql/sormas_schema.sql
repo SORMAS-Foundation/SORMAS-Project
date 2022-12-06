@@ -12127,11 +12127,7 @@ ALTER TABLE testreport_history
 ALTER TABLE testreport
     ADD CONSTRAINT fk_testreport_samplereport_id FOREIGN KEY (samplereport_id) REFERENCES samplereport (id);
 
-UPDATE testreport
-SET samplereport_id = (SELECT s.id
-                       FROM samplereport s
-                                LEFT JOIN externalmessage ON s.labmessage_id = externalmessage.id
-                       WHERE externalmessage.id = testreport.labmessage_id);
+UPDATE testreport SET samplereport_id = s.id FROM samplereport s WHERE testreport.labmessage_id = s.labmessage_id;
 
 ALTER TABLE testreport
     ALTER COLUMN samplereport_id SET not null;
@@ -12212,5 +12208,39 @@ ALTER  TABLE task ADD COLUMN assignedbyuser_id bigint;
 ALTER  TABLE task_history ADD COLUMN assignedbyuser_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (500, 'Add the user who assigned the task to task entity #4621');
+
+-- 2022-11-30 Adjust the processing of external messages to create surveillance reports #9680
+ALTER TABLE externalmessage ADD COLUMN surveillancereport_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_surveillancereport_id FOREIGN KEY (surveillancereport_id) REFERENCES surveillancereports (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalmessage_history ADD COLUMN surveillancereport_id bigint;
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE sr_id bigint;
+    BEGIN
+        FOR rec IN SELECT DISTINCT ON (em.id) em.id as emid, em.caze_id AS emcaseid, s.associatedcase_id AS scaseid, messagedatetime, em.type FROM externalmessage em JOIN samplereport sr ON sr.labmessage_id = em.id JOIN samples s ON s.id = sr.sample_id WHERE status = 'PROCESSED' AND (s.associatedcase_id IS NOT NULL OR em.caze_id IS NOT NULL)
+            LOOP
+                INSERT INTO surveillancereports (id, uuid, changedate, creationdate, reportdate, caze_id, reportingtype) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.messagedatetime, CASE WHEN rec.emcaseid IS NOT NULL THEN rec.emcaseid ELSE rec.scaseid END, CASE WHEN rec.type = 'LAB_MESSAGE' THEN 'LABORATORY' ELSE 'DOCTOR' END) RETURNING id INTO sr_id;
+                UPDATE externalmessage SET surveillancereport_id = sr_id WHERE externalmessage.id = rec.emid;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE externalmessage DROP COLUMN caze_id;
+ALTER TABLE externalmessage_history DROP COLUMN caze_id;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (501, 'Adjust the processing of external messages to create surveillance reports #9680', true);
+
+-- 2022-12-05 Fix upgradeNeeded flag set on schema version 501 #11086
+
+UPDATE schema_version SET upgradeNeeded = false WHERE version_number = 501;
+
+INSERT INTO schema_version (version_number, comment) VALUES (502, 'Fix upgradeNeeded flag set on schema version 501 #11086');
+
+-- 2022-12-05 [DEMIS2SORMAS] Add a Field for the NotificationBundleId to the External Message and map it when processing #10826
+ALTER TABLE externalmessage ADD COLUMN reportmessageid varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN reportmessageid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (503, '[DEMIS2SORMAS] Add a Field for the NotificationBundleId to the External Message and map it when processing #10826');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

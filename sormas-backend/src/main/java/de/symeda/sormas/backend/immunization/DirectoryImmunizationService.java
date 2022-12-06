@@ -222,6 +222,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 				}
 
 				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, from.get(Immunization.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.UUID), textFilter),

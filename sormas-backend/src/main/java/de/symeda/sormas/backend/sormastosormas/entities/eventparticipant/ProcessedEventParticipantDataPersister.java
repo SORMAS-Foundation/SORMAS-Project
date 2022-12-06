@@ -63,16 +63,20 @@ public class ProcessedEventParticipantDataPersister
 	}
 
 	@Override
-	public void persistSharedData(SormasToSormasEventParticipantDto processedData, EventParticipant existingEventParticipant)
+	public void persistSharedData(SormasToSormasEventParticipantDto processedData, EventParticipant existingEventParticipant, boolean isSync)
 
 		throws SormasToSormasValidationException {
 		EventParticipantDto eventParticipant = processedData.getEntity();
 		PersonDto person = eventParticipant.getPerson();
-		handleValidationError(
-			() -> personFacade.save(person, false, false, false),
-			Captions.EventParticipant,
-			buildEventParticipantValidationGroupName(eventParticipant),
-			person);
+
+		// #10544 only persons not owned should be updated
+		if (!(isSync && personFacade.isEditAllowed(person.getUuid()))) {
+			handleValidationError(
+				() -> personFacade.save(person, false, false, false),
+				Captions.EventParticipant,
+				buildEventParticipantValidationGroupName(eventParticipant),
+				person);
+		}
 
 		handleValidationError(
 			() -> eventParticipantFacade.saveEventParticipant(eventParticipant, false, false),

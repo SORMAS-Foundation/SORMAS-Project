@@ -185,4 +185,8 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 	}
+
+	public SurveillanceReportReferenceDto toReference() {
+		return new SurveillanceReportReferenceDto(getUuid());
+	}
 }

@@ -168,7 +168,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
@@ -1080,14 +1079,26 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public boolean isSharedWithoutOwnership(String uuid) {
-		SormasToSormasOriginInfo originInfo = sormasToSormasOriginInfoService.getByPerson(uuid);
-		return originInfo != null && !originInfo.isOwnershipHandedOver();
-	}
+	public boolean isSharedOrReceived(String uuid) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Person> from = cq.from(Person.class);
+		PersonJoins joins = new PersonJoins(from);
 
-	@Override
-	public boolean isShared(String uuid) {
-		return sormasToSormasOriginInfoService.getByPerson(uuid) != null;
+		cq.select(from.get(Person.ID));
+		cq.where(
+			cb.equal(from.get(Person.UUID), uuid),
+			cb.or(
+				cb.isNotNull(joins.getCaseJoins().getSormasToSormasShareInfo()),
+				cb.isNotNull(joins.getCaze().get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isNotNull(joins.getContactJoins().getSormasToSormasShareInfo()),
+				cb.isNotNull(joins.getContact().get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isNotNull(joins.getEventParticipantJoins().getSormasToSormasShareInfo()),
+				cb.isNotNull(joins.getEventParticipant().get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isNotNull(joins.getImmunizationJoins().getSormasToSormasShareInfo()),
+				cb.isNotNull(joins.getImmunization().get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+
+		return !em.createQuery(cq).getResultList().isEmpty();
 	}
 
 	/**
@@ -1854,11 +1865,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public boolean isPersonAssociatedWithNotDeletedEntities(String uuid) {
-		return service.isPersonAssociatedWithNotDeletedEntities(uuid);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
 	public void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target) {
 		LocationDto sourceAddress = getByUuid(source.getUuid()).getAddress();
@@ -1901,6 +1907,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		Person person = em.createQuery(cq).getSingleResult();
 
 		return toPseudonymizedDto(person);
+	}
+
+	@Override
+	public boolean isEditAllowed(String uuid) {
+		return service.isEditAllowed(uuid);
 	}
 
 	@LocalBean

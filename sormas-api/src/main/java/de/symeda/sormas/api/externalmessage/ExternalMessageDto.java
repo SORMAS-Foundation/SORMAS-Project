@@ -24,7 +24,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -64,8 +64,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
+	public static final String REPORT_MESSAGE_ID = "reportMessageId";
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
+	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
+
 	@AuditIncludeProperty
 	private ExternalMessageType type;
 	private Disease disease;
@@ -105,12 +108,15 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
 	@AuditIncludeProperty
-	private CaseReferenceDto caze;
+	private SurveillanceReportReferenceDto surveillanceReport;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String reportMessageId;
 	@AuditIncludeProperty
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 
@@ -304,12 +310,28 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.reportId = reportId;
 	}
 
+	public String getReportMessageId() {
+		return reportMessageId;
+	}
+
+	public void setReportMessageId(String reportMessageId) {
+		this.reportMessageId = reportMessageId;
+	}
+
 	public UserReferenceDto getAssignee() {
 		return assignee;
 	}
 
 	public void setAssignee(UserReferenceDto assignee) {
 		this.assignee = assignee;
+	}
+
+	public SurveillanceReportReferenceDto getSurveillanceReport() {
+		return surveillanceReport;
+	}
+
+	public void setSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport) {
+		this.surveillanceReport = surveillanceReport;
 	}
 
 	public static ExternalMessageDto build() {
@@ -370,14 +392,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		}
 		sampleReports.add(sampleReport);
 
-	}
-
-	public CaseReferenceDto getCaze() {
-		return caze;
-	}
-
-	public void setCaze(CaseReferenceDto caze) {
-		this.caze = caze;
 	}
 
 	@Override

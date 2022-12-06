@@ -30,7 +30,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
@@ -160,7 +160,7 @@ public class CaseDataView extends AbstractCaseView {
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-					return new VaccinationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
+					return new VaccinationCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
 						.build()
 						.vaccinationAssociationType(VaccinationAssociationType.CASE)
 						.caseReference(getCaseRef())
@@ -196,18 +196,26 @@ public class CaseDataView extends AbstractCaseView {
 
 			layout.addSidePanelComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
+		final String uuid = caze.getUuid();
+		final EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
-			documentList =
-				new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized(), isEditAllowed());
+
+			boolean isDocumentDeleteAllowed =
+				EditPermissionType.ALLOWED.equals(caseEditAllowed) || EditPermissionType.DOCUMENTS_ONLY.equals(caseEditAllowed);
+			documentList = new DocumentListComponent(
+				DocumentRelatedEntityType.CASE,
+				getCaseRef(),
+				UserRight.CASE_EDIT,
+				caze.isPseudonymized(),
+				isEditAllowed(),
+				isDocumentDeleteAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
-		final String uuid = caze.getUuid();
-		final EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 
 		if (deleted) {
@@ -217,7 +225,7 @@ public class CaseDataView extends AbstractCaseView {
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
 		} else if (caseEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
-			layout.disable(true);
+			layout.disableWithViewAllow();
 		}
 	}
 }

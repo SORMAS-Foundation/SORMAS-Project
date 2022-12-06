@@ -185,7 +185,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_de @oldfake
+  @env_main @oldfake
   Scenario: Create Person and attach immunizations with creation date 10 years ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -211,7 +211,7 @@ Feature: Check basic POSTs RestApi endpoints
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then API: I create a new travel entry with creation date 16 days ago
+    Then API: I create a new travel entry with creation date 14 days ago
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 

@@ -23,4 +23,6 @@ import javax.ejb.Remote;
 public interface ExternalShareInfoFacade {
 
 	List<ExternalShareInfoDto> getIndexList(ExternalShareInfoCriteria criteria, Integer first, Integer max);
+
+	boolean isSharedCase(String caseUuid);
 }

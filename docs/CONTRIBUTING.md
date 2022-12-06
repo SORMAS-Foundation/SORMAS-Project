@@ -7,6 +7,7 @@ This allows us to consider and process your contribution as quickly and smoothly
 
 * [Submitting an Issue](#submitting-an-issue)
   * [Bug Report](#bug-report)
+  * [Finding](#finding)
   * [Change Request](#change-request)
   * [Feature Request](#feature-request)
   * [Support Request](#support-request)
@@ -36,11 +37,11 @@ If you want to report a **security issue**, please follow our guidelines for [*R
 
 Bug reports cover everything that leads to the application behaving in an unintended way, including crashes, unexpected error messages, data loss, etc.
 
-* **Bug Description:** A description of what exactly happened, where it happened and under which circumstances. Provide as many details as possible, even if they might seem irrelevant to you.
-* **Steps to Reproduce:** If possible, provide a step-by-step instruction on the order of actions you performed before the bug occurred. This helps us to reproduce it on our system. Generally *optional*, but likely necessary for more complex bugs.
-* **Expected Behavior:** Quickly describe what you believe should have happened instead of the error you got. *Optional* when the error is identified by a crash or an error message, but likely necessary if the bug is the result of a misbehavior of the application.
-* **Screenshots:** If possible, make at least one screenshot of the bug and include it in your bug report (without exposing protected data). You can do this by simply dragging-and-dropping the image file into the template you're filling out. *Optional*, but very helpful for us.
-* **System Details:** Tell us which device you were using, on which SORMAS version the error occurred and, depending on whether you were using the mobile app or the web app, your Android version or web browser.
+* **Bug Description:** A description of what exactly happened, where it happened and under which circumstances. Provide as many details as possible, even if they might seem irrelevant to you. The following subheadings help to structure the needed information.
+* **Steps to Reproduce:** If possible, provide a step-by-step instruction on the order of actions you performed before the problem occurred. This helps us to reproduce it on our system. Generally *optional*, but likely necessary for more complex bugs.
+* **Screenshots:** If possible, make at least one screenshot of the actual behavior and include it in your report (without exposing protected data). You can do this by simply dragging-and-dropping the image file into the template you're filling out. *Optional*, but very helpful for us.
+* **System Details:** Tell us which device you were using, on which SORMAS version the problem occurred and, depending on whether you were using the mobile app or the web app, your Android version or web browser.
+* **Expected Behavior:** Quickly describe what you believe should have happened instead. *Optional* when the error is identified by a crash or an error message, but likely necessary if the problem is the result of a misbehavior of the application.
 * **Additional Information:** If there is anything else you want to add to your request, you can put it here. *Optional*.
 
 Before creating a bug report, please check the following rules:
@@ -59,6 +60,25 @@ The development team defines a **severity** for bugs to distinguish the conseque
 
 1. If there is a problem newly introduced on the `development` branch, it means that an issue recently worked on is not yet finished (so to be reopened and continued to work on). It's relevant for reviewing (now, soon or far later) to keep changes logically together as good as possible.
 2. For the Release Notes it is only relevant to mention changes from one version to the next, so listing fixed bugs that never existed from the end users point of view is pointless, confusing and noisy.
+
+### Finding
+
+Findings are used to document unexpected behaviour, mostly encountered within the development.
+
+* **Problem Description:** A description of what exactly happened, where it happened and under which circumstances. Provide as many details as possible, even if they might seem irrelevant to you. The following subheadings help to structure the needed information.
+* **Steps to Reproduce:** If possible, provide a step-by-step instruction on the order of actions you performed before the problem occurred. This helps us to reproduce it on our system. Generally *optional*, but likely necessary for more complex problem.
+* **Screenshots:** If possible, make at least one screenshot of the actual behavior and include it in your report (without exposing protected data). You can do this by simply dragging-and-dropping the image file into the template you're filling out. *Optional*, but very helpful for us.
+* **System Details:** Tell us which device you were using, on which SORMAS version the problem occurred and, depending on whether you were using the mobile app or the web app, your Android version or web browser.
+* **Expected Behavior:** Quickly describe what you believe should have happened instead. *Optional* when the error is identified by a crash or an error message, but likely necessary if the problem is the result of a misbehavior of the application.
+* **Additional Information:** If there is anything else you want to add to your request, you can put it here. *Optional*.
+
+The development team will investigate the finding and add more details when needed. The goal is to either
+1. convert it to a bug if it is considered to be a bug on a released version.
+2. convert it to a change or other type if there is something to improve.
+3. dismiss it as `duplicate` if the cause on the current development is found and reopened or fixed.
+4. dismiss it as `discarded` if the finding is not an issue.
+
+A **severity** as for bugs can also be used for findings.
 
 ### Change Request
 

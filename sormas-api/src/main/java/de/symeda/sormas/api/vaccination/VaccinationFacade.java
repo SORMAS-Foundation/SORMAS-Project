@@ -61,27 +61,27 @@ public interface VaccinationFacade {
 
 	List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease);
 
-	List<VaccinationDto> getVaccinationsByCriteria(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<VaccinationDto> getVaccinationsByCriteria(VaccinationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<VaccinationListEntryDto> getEntriesList(VaccinationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto);
 
 	List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		CaseReferenceDto caseReferenceDto,
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max);
 
 	List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		ContactReferenceDto contactReferenceDto,
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max);
 
 	List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		EventParticipantReferenceDto eventParticipantReferenceDto,
-		VaccinationListCriteria criteria,
+		VaccinationCriteria criteria,
 		Integer first,
 		Integer max);
 
@@ -100,4 +100,6 @@ public interface VaccinationFacade {
 	VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson);
 
 	boolean isVaccinationRelevant(CaseDataDto caze, VaccinationDto vaccination);
+
+	long count(VaccinationCriteria criteria);
 }

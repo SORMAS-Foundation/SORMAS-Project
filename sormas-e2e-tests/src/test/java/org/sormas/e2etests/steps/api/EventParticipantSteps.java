@@ -74,13 +74,24 @@ public class EventParticipantSteps implements En {
         });
 
     When(
-        "I check if event participant created via API still appears in the event participant list",
+        "I check if event participant created via API not appears in the event participant list",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           softly.assertFalse(
               webDriverHelpers.isElementPresent(
                   getByEventUuid(apiState.getCreatedEventParticipant().getUuid())),
               "Event participant still appears");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if event participant created via API still appears in the event participant list",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  getByEventUuid(apiState.getCreatedEventParticipant().getUuid())),
+              "Event participant not appears");
           softly.assertAll();
         });
 

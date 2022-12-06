@@ -56,7 +56,7 @@ public class EditEventPage {
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
   public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");
   public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
-  public static final By EDIT_FIRST_TASK = By.cssSelector("#edit-task-0");
+  public static final By EDIT_FIRST_TASK = By.cssSelector("#edit0");
   public static final By DELETE_BUTTON_DISABLED =
       By.xpath("//div[@id='delete' and @aria-disabled='true']");
   public static final By UNDO_DELETION_BUTTON = By.id("deleteUndelete");
@@ -96,6 +96,7 @@ public class EditEventPage {
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
+  public static final By DELETE_BULK_EDIT_BUTTON_EVENT_PARTICIPANT = By.id("bulkActions-4");
   public static final By CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT = By.id("bulkActions-5");
   public static final By EVENT_MANAGEMENT_STATUS_CHECK =
       By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");

@@ -57,7 +57,8 @@ public class ProcessedEventDataPersister extends ProcessedDataPersister<EventDto
 	}
 
 	@Override
-	public void persistSharedData(SormasToSormasEventDto processedData, Event existingEvent) throws SormasToSormasValidationException {
+	public void persistSharedData(SormasToSormasEventDto processedData, Event existingEvent, boolean isSync)
+		throws SormasToSormasValidationException {
 		EventDto event = processedData.getEntity();
 
 		handleValidationError(() -> eventFacade.save(event, false, false), Captions.CaseData, buildCaseValidationGroupName(event), event);

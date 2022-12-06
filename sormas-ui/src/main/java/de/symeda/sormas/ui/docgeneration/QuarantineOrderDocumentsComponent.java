@@ -24,7 +24,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -38,7 +38,7 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 		ReferenceDto referenceDto,
 		DocumentWorkflow workflow,
 		SampleCriteria sampleCriteria,
-		VaccinationListCriteria vaccinationCriteria) {
+		VaccinationCriteria vaccinationCriteria) {
 		super();
 		addDocumentBar(
 			() -> ControllerProvider.getDocGenerationController()
@@ -48,7 +48,7 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 
 	public static void addComponentToLayout(LayoutWithSidePanel targetLayout, CaseDataDto caze, DocumentListComponent documentList) {
 		SampleCriteria sampleCriteria = new SampleCriteria().caze(caze.toReference());
-		VaccinationListCriteria vaccinationCriteria = new VaccinationListCriteria.Builder(caze.getPerson()).withDisease(caze.getDisease()).build();
+		VaccinationCriteria vaccinationCriteria = new VaccinationCriteria.Builder(caze.getPerson()).withDisease(caze.getDisease()).build();
 		addComponentToLayout(
 			targetLayout,
 			caze.toReference(),
@@ -59,8 +59,8 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 	}
 
 	public static void addComponentToLayout(LayoutWithSidePanel targetLayout, ContactDto contact, DocumentListComponent documentList) {
-		VaccinationListCriteria vaccinationCriteria =
-			new VaccinationListCriteria.Builder(contact.getPerson()).withDisease(contact.getDisease()).build();
+		VaccinationCriteria vaccinationCriteria =
+			new VaccinationCriteria.Builder(contact.getPerson()).withDisease(contact.getDisease()).build();
 		SampleCriteria sampleCriteria = new SampleCriteria().contact(contact.toReference());
 
 		addComponentToLayout(
@@ -84,7 +84,7 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 		ReferenceDto referenceDto,
 		DocumentWorkflow workflow,
 		SampleCriteria sampleCriteria,
-		VaccinationListCriteria vaccinationCriteria) {
+		VaccinationCriteria vaccinationCriteria) {
 		if (isDocGenerationAllowed()) {
 			QuarantineOrderDocumentsComponent docGenerationComponent =
 				new QuarantineOrderDocumentsComponent(referenceDto, workflow, sampleCriteria, vaccinationCriteria);
@@ -98,7 +98,7 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 		ReferenceDto referenceDto,
 		DocumentWorkflow workflow,
 		SampleCriteria sampleCriteria,
-		VaccinationListCriteria vaccinationCriteria,
+		VaccinationCriteria vaccinationCriteria,
 		DocumentListComponent documentListComponent) {
 		if (isDocGenerationAllowed()) {
 			QuarantineOrderDocumentsComponent docGenerationComponent =
@@ -112,7 +112,7 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 		ReferenceDto referenceDto,
 		DocumentWorkflow workflow,
 		SampleCriteria sampleCriteria,
-		VaccinationListCriteria vaccinationCriteria,
+		VaccinationCriteria vaccinationCriteria,
 		DocumentListComponent documentListComponent) {
 		super();
 		addDocumentBar(

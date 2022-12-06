@@ -545,6 +545,10 @@ public interface Strings {
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
+	String headingExternalMessageExistingPathogenTests = "headingExternalMessageExistingPathogenTests";
+	String headingExternalMessageNewPathogenTests = "headingExternalMessageNewPathogenTests";
+	String headingExternalMessageProcessSample = "headingExternalMessageProcessSample";
+	String headingExternalMessageSampleInformation = "headingExternalMessageSampleInformation";
 	String headingExternalMessagesDeleted = "headingExternalMessagesDeleted";
 	String headingExternalMessagesDeleteProcessed = "headingExternalMessagesDeleteProcessed";
 	String headingFatalities = "headingFatalities";
@@ -795,6 +799,7 @@ public interface Strings {
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
 	String infoDocumentOverride = "infoDocumentOverride";
+	String infoDontShareCheckboxAlreadyShared = "infoDontShareCheckboxAlreadyShared";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadDocumentTemplateImportGuide = "infoDownloadDocumentTemplateImportGuide";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
@@ -853,9 +858,10 @@ public interface Strings {
 	String infoObserverMissingEmail = "infoObserverMissingEmail";
 	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
+	String infoPersonMergeConfirmationBothShared = "infoPersonMergeConfirmationBothShared";
 	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
 	String infoPersonMergeDescription = "infoPersonMergeDescription";
-	String infoPersonMergeErrorWhenShared = "infoPersonMergeErrorWhenShared";
+	String infoPersonMergeSharedMustLead = "infoPersonMergeSharedMustLead";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
@@ -1097,6 +1103,7 @@ public interface Strings {
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
+	String messageExternalJournalDidNotProvideMessage = "messageExternalJournalDidNotProvideMessage";
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
 	String messageExternalMessagesDeleted = "messageExternalMessagesDeleted";

@@ -32,7 +32,9 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -91,7 +93,21 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 				editState);
 
 			listEntry.setEnabled(editState);
+			if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+				addViewExternalMessageButton(listEntry);
+			}
 			listLayout.addComponent(listEntry);
+		}
+	}
+
+	private void addViewExternalMessageButton(SurveillanceReportListEntry listEntry) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			ExternalMessageDto externalMessage =
+				FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(listEntry.getReport().toReference());
+			if (externalMessage != null) {
+				listEntry.addAssociatedMessageListener(
+					clickEvent -> ControllerProvider.getExternalMessageController().showExternalMessage(externalMessage.getUuid(), false, null));
+			}
 		}
 	}
 
@@ -101,6 +117,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 		private Button editButton;
 
+		private Button associatedMessageButton;
 		private UiFieldAccessCheckers fieldAccessCheckers;
 
 		public SurveillanceReportListEntry(SurveillanceReportDto report) {
@@ -187,6 +204,23 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			row.addComponent(rowValue);
 
 			return row;
+		}
+
+		public void addAssociatedMessageListener(Button.ClickListener associatedMessageClickListener) {
+			if (associatedMessageButton == null) {
+				associatedMessageButton = ButtonHelper.createIconButtonWithCaption(
+					"see-associated-message-" + report.getUuid(),
+					null,
+					VaadinIcons.NOTEBOOK,
+					associatedMessageClickListener,
+					ValoTheme.BUTTON_LINK,
+					CssStyles.BUTTON_COMPACT);
+
+				addComponent(associatedMessageButton);
+				setComponentAlignment(associatedMessageButton, Alignment.TOP_RIGHT);
+				setExpandRatio(associatedMessageButton, 0);
+				associatedMessageButton.setDescription(I18nProperties.getDescription(Descriptions.SurveillanceReport_associatedMessage));
+			}
 		}
 	}
 }

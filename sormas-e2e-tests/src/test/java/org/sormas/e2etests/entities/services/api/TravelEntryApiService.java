@@ -101,7 +101,7 @@ public class TravelEntryApiService {
                 .build())
         .pointOfEntryDetails("test details")
         .dateOfArrival(
-            LocalDateTime.parse(LocalDateTime.now().toString())
+            LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli())

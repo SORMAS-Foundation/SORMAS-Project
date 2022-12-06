@@ -52,7 +52,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 	}
 
 	/**
-	 * @deprecated Invocation without a {@link QueryContext} is only allowed interally in the same class. For invocation from other EJBs,
+	 * @deprecated Invocation without a {@link QueryContext} is only allowed internally in the same class. For invocation from other EJBs,
 	 *             use {@code createUserFilter(QueryContext)} instead (to be implemented by each subclass).
 	 */
 	@Deprecated

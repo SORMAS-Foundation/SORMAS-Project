@@ -92,6 +92,7 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);
+		setHeightByRows(Math.max(1, Math.min(getContainer().size(), 10)));
 	}
 
 	@Override

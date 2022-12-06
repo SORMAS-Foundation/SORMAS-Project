@@ -277,7 +277,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			if (event.getProperty().getValue() != null
 				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 				labDetails.setVisible(true);
-				labDetails.setRequired(true);
+				labDetails.setRequired(isEditableAllowed(labDetails));
 			} else {
 				labDetails.setVisible(false);
 				labDetails.setRequired(false);

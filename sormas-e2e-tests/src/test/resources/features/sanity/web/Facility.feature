@@ -58,3 +58,10 @@ Feature: Facility end to end tests
     Then I set name, region and district in Facilities tab in Configuration
     And I set Facility Category to "Educational facility" and Facility Type to "Kindergarten/After school care" in Facilities tab in Configuration
     And I click on Save Button in new Facility form
+
+  @env_main @#7468
+  Scenario: Validate Facilities Configuration section
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I click on Facilities button in Configuration tab
+    Then I Verify the page elements are present in Facilities Configuration Page

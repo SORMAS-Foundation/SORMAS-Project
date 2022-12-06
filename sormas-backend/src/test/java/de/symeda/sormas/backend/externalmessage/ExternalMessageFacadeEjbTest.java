@@ -123,13 +123,13 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
-		creator.createLabMessageWithTestReport(sample.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
 		// create additional matches
-		creator.createLabMessageWithTestReport(sample.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessageWithTestReport(sample2.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample2.toReference());
 		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 	}
 
