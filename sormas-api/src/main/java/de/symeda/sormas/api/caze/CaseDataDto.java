@@ -29,13 +29,13 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
@@ -634,7 +634,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 		HealthConditionsDto healthConditionsClone = null;
 		try {
-			healthConditionsClone = (HealthConditionsDto)contact.getHealthConditions().clone();
+			healthConditionsClone = (HealthConditionsDto) contact.getHealthConditions().clone();
 			healthConditionsClone.setUuid(DataHelper.createUuid());
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
@@ -679,14 +679,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 		CaseDataDto caseData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
 
-		if (person.getPresentCondition() != null
-			&& person.getPresentCondition().isDeceased()
-			&& eventDisease == person.getCauseOfDeathDisease()
-			&& person.getDeathDate() != null
-			&& Math.abs(person.getDeathDate().getTime() - eventParticipant.getCreationDate().getTime()) <= MILLISECONDS_30_DAYS) {
-			caseData.setOutcome(CaseOutcome.DECEASED);
-			caseData.setOutcomeDate(person.getDeathDate());
-		}
+		updateCaseOutcome(caseData, person, eventDisease, eventParticipant.getCreationDate());
 
 		return caseData;
 	}
@@ -705,16 +698,20 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		caseData.setPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
 		caseData.setReportDate(travelEntry.getReportDate());
 
+		updateCaseOutcome(caseData, person, travelEntry.getDisease(), travelEntry.getReportDate());
+
+		return caseData;
+	}
+
+	private static void updateCaseOutcome(CaseDataDto caseData, PersonDto person, Disease disease, Date creationDate) {
 		if (person.getPresentCondition() != null
 			&& person.getPresentCondition().isDeceased()
-			&& travelEntry.getDisease() == person.getCauseOfDeathDisease()
+			&& disease == person.getCauseOfDeathDisease()
 			&& person.getDeathDate() != null
-			&& Math.abs(person.getDeathDate().getTime() - travelEntry.getReportDate().getTime()) <= MILLISECONDS_30_DAYS) {
+			&& Math.abs(person.getDeathDate().getTime() - creationDate.getTime()) <= MILLISECONDS_30_DAYS) {
 			caseData.setOutcome(CaseOutcome.DECEASED);
 			caseData.setOutcomeDate(person.getDeathDate());
 		}
-
-		return caseData;
 	}
 
 	public CaseReferenceDto toReference() {
