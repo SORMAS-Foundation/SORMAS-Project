@@ -82,7 +82,6 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.EditPermissionType;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
@@ -2979,12 +2978,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return convertToReferenceDto(aCase);
 	}
 
-	public void setUuidIfDtoExists(AbstractDomainObject target, EntityDto dto) {
-		if (dto != null) {
-			target.setUuid(dto.getUuid());
-		}
-	}
-
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
 		boolean targetWasNull = isNull(target);
 
@@ -2996,9 +2989,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}, checkChangeDate);
 
 		if (targetWasNull) {
-			setUuidIfDtoExists(target.getHospitalization(), source.getHospitalization());
-			setUuidIfDtoExists(target.getEpiData(), source.getEpiData());
-			setUuidIfDtoExists(target.getSymptoms(), source.getSymptoms());
+			FacadeHelper.setUuidIfDtoExists(target.getHospitalization(), source.getHospitalization());
+			FacadeHelper.setUuidIfDtoExists(target.getEpiData(), source.getEpiData());
+			FacadeHelper.setUuidIfDtoExists(target.getSymptoms(), source.getSymptoms());
 		}
 
 		target.setDisease(source.getDisease());
