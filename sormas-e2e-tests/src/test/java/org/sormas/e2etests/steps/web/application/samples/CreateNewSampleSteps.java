@@ -808,12 +808,17 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(GENERIC_ERROR_POPUP);
           List<String> popupExpected =
               List.of(
-                  "Probentyp",
-                  "Probenentnahme-Datum",
+                  "Bitte überprüfen Sie die Eingabedaten",
                   "Labor",
-                  "Ergebnis verifiziert von Laborleitung",
-                  "Art des Tests");
+                  "Art des Tests",
+                  "Ergebnis verifiziert von Laborleitung");
           webDriverHelpers.checkIsPopupContainsList(GENERIC_ERROR_POPUP, popupExpected);
+        });
+
+    When(
+        "I check if error popup contains {string}",
+        (String str) -> {
+          webDriverHelpers.checkWebElementContainsText(GENERIC_ERROR_POPUP, str);
         });
 
     When(

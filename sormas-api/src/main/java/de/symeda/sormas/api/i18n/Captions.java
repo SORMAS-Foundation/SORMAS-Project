@@ -1335,6 +1335,7 @@ public interface Captions {
 	String ExternalMessage_reporterName = "ExternalMessage.reporterName";
 	String ExternalMessage_reporterPostalCode = "ExternalMessage.reporterPostalCode";
 	String ExternalMessage_reportId = "ExternalMessage.reportId";
+	String ExternalMessage_reportMessageId = "ExternalMessage.reportMessageId";
 	String ExternalMessage_sampleDateTime = "ExternalMessage.sampleDateTime";
 	String ExternalMessage_sampleMaterial = "ExternalMessage.sampleMaterial";
 	String ExternalMessage_sampleOverallTestResult = "ExternalMessage.sampleOverallTestResult";

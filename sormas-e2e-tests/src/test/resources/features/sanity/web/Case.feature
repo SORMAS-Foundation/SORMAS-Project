@@ -1302,7 +1302,7 @@ Feature: Case end to end tests
     Then I navigate to the last created case via the url
     Then I click on New Sample
     Then I create a new Sample with positive test result with Guinea Worm as disease
-    And I save the created sample
+    And I confirm popup window
     Then I navigate to the last created case via the url
     Then I click on edit Sample
     Then I click on new test result for pathogen tests

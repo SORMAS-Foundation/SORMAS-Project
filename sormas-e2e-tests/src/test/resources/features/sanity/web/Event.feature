@@ -880,7 +880,6 @@ Feature: Create events
     Then I click on New Sample and discard changes is asked
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
-    And I save the created sample
     Then I confirm popup window
     Then I pick an existing case in pick or create a case popup
     Then I click on edit Sample
@@ -1412,3 +1411,20 @@ Feature: Create events
     Then I click on the Events button from navbar
     And I filter by last created event via api
     And I check the number of displayed Event results from All button is 1
+
+  @#10419 @env_main
+  Scenario: Verify Warning message in Event Participants for Bulk actions, when no event is selected
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    When I click on the first row from event participant list
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I click Enter Bulk Edit Mode in Event Participants Page
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Create Contacts button from bulk actions menu in Event Participant Tab
+    Then I verify the warning message 'No event participants selected' is displayed
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Delete button from bulk actions menu in Event Participant Tab
+    Then I verify the warning message 'No event participants selected' is displayed
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Create quarantine order documents from bulk actions menu in Event Participant Tab
+    Then I verify the warning message 'No event participants selected' is displayed

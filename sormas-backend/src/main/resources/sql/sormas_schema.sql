@@ -12237,4 +12237,10 @@ UPDATE schema_version SET upgradeNeeded = false WHERE version_number = 501;
 
 INSERT INTO schema_version (version_number, comment) VALUES (502, 'Fix upgradeNeeded flag set on schema version 501 #11086');
 
+-- 2022-12-05 [DEMIS2SORMAS] Add a Field for the NotificationBundleId to the External Message and map it when processing #10826
+ALTER TABLE externalmessage ADD COLUMN reportmessageid varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN reportmessageid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (503, '[DEMIS2SORMAS] Add a Field for the NotificationBundleId to the External Message and map it when processing #10826');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

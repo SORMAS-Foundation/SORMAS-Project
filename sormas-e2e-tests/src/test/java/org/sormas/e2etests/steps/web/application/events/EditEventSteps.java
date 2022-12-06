@@ -56,6 +56,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DEFAULT_COMBOBOX_VALUE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_BULK_EDIT_BUTTON_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_INPUT;
@@ -934,6 +935,19 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_CONTACTS_BULK_EDIT_BUTTON);
         });
+
+    When(
+        "I click on Delete button from bulk actions menu in Event Participant Tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BULK_EDIT_BUTTON_EVENT_PARTICIPANT);
+        });
+
+    When(
+        "I click on Create quarantine order documents from bulk actions menu in Event Participant Tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT);
+        });
+
     When(
         "I click checkbox to choose all Event Participants results in Event Participant Tab",
         () -> {
