@@ -245,12 +245,19 @@ public class EventDto extends SormasToSormasShareableDto {
 		return event;
 	}
 
-	public static EventDto build(CountryReferenceDto country, UserDto user, Disease disease) {
+	public static EventDto build(CountryReferenceDto country, UserDto user) {
 		EventDto event = build();
 
 		event.getEventLocation().setCountry(country);
 		event.getEventLocation().setRegion(user.getRegion());
 		event.setReportingUser(user.toReference());
+
+		return event;
+	}
+
+	public static EventDto build(CountryReferenceDto country, UserDto user, Disease disease) {
+		EventDto event = build(country, user);
+
 		event.setDisease(disease);
 
 		return event;
