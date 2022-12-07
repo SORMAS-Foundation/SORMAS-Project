@@ -285,6 +285,7 @@ public class ContactController {
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());
 
 		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(person);
+		createComponent.getWrappedComponent().getPersonCreateForm().setSearchedPerson(person);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 

@@ -328,6 +328,7 @@ public class CaseController {
 		selectOrCreateCase(dto, person, uuid -> {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, person, null, false);
+				caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 			} else {
 				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
