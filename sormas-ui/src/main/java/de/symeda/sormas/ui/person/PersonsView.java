@@ -42,6 +42,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DataSizeChangeListener;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -140,7 +141,7 @@ public class PersonsView extends AbstractView {
 				addHeaderComponent(setMissingCoordinatesButton);
 			}
 
-			grid.getDataProvider().addDataProviderListener(e -> updateAssociationButtons());
+			grid.getDataProvider().addDataProviderListener(new DataSizeChangeListener<>(s -> updateAssociationButtons(s)));
 		} else {
 			criteria = new PersonCriteria();
 			grid = null;
@@ -245,14 +246,12 @@ public class PersonsView extends AbstractView {
 			criteria.setPersonAssociation(firstAllowedAssociation != null ? firstAllowedAssociation : PersonCriteria.DEFAULT_ASSOCIATION);
 		}
 
-		updateAssociationButtons();
-
 		filterForm.setValue(criteria);
 
 		applyingCriteria = false;
 	}
 
-	private void updateAssociationButtons() {
+	private void updateAssociationButtons(Integer size) {
 
 		associationButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
@@ -264,7 +263,7 @@ public class PersonsView extends AbstractView {
 		if (activeAssociationButton != null) {
 			CssStyles.removeStyles(activeAssociationButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeAssociationButton.setCaption(
-				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(size)));
 		}
 	}
 
