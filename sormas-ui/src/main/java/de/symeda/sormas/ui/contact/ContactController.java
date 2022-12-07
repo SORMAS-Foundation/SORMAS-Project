@@ -558,7 +558,6 @@ public class ContactController {
 		createForm.setValue(createNewContact(person));
 		createForm.setPerson(person);
 		createForm.setPersonDetailsReadOnly();
-		createForm.setDiseaseReadOnly();
 
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
