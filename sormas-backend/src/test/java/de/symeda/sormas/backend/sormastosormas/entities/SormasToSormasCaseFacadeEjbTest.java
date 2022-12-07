@@ -1260,7 +1260,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 			r.setNotificationDetails("Test lab report notification");
 		});
 
-		creator.createSurveillanceReport(officer, ReportingType.DOCTOR, caze.toReference(), (r) -> {
+		SurveillanceReportDto surveillanceReport2 = creator.createSurveillanceReport(officer, ReportingType.DOCTOR, caze.toReference(), (r) -> {
 			r.setReportDate(new Date());
 			r.setFacilityRegion(rdcf.region);
 			r.setFacilityDistrict(rdcf.district);
@@ -1285,26 +1285,35 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
 
 				assertThat(postBody.getSurveillanceReports().size(), is(2));
-				SormasToSormasSurveillanceReportDto sharedSurveillanceReport1 = postBody.getSurveillanceReports().get(0);
-				assertThat(sharedSurveillanceReport1.getEntity().getReportDate().compareTo(surveillanceReport.getReportDate()), is(0)); // use compareTo because getReportDate() returns Timestamp object due to SurveillanceReport.java using TemporalType.Timestamp
-				assertThat(sharedSurveillanceReport1.getEntity().getReportingType(), is(surveillanceReport.getReportingType()));
-				assertThat(sharedSurveillanceReport1.getEntity().getFacilityRegion(), is(surveillanceReport.getFacilityRegion()));
-				assertThat(sharedSurveillanceReport1.getEntity().getFacilityDistrict(), is(surveillanceReport.getFacilityDistrict()));
-				assertThat(sharedSurveillanceReport1.getEntity().getFacility(), is(surveillanceReport.getFacility()));
-				assertThat(sharedSurveillanceReport1.getEntity().getNotificationDetails(), is(surveillanceReport.getNotificationDetails()));
+				SormasToSormasSurveillanceReportDto sharedSurveillanceReport = postBody.getSurveillanceReports()
+					.stream()
+					.filter(r -> r.getEntity().getUuid().equals(surveillanceReport.getUuid()))
+					.findFirst()
+					.get();
+				assertThat(sharedSurveillanceReport.getEntity().getReportDate().compareTo(surveillanceReport.getReportDate()), is(0)); // use compareTo because getReportDate() returns Timestamp object due to SurveillanceReport.java using TemporalType.Timestamp
+				assertThat(sharedSurveillanceReport.getEntity().getReportingType(), is(surveillanceReport.getReportingType()));
+				assertThat(sharedSurveillanceReport.getEntity().getFacilityRegion(), is(surveillanceReport.getFacilityRegion()));
+				assertThat(sharedSurveillanceReport.getEntity().getFacilityDistrict(), is(surveillanceReport.getFacilityDistrict()));
+				assertThat(sharedSurveillanceReport.getEntity().getFacility(), is(surveillanceReport.getFacility()));
+				assertThat(sharedSurveillanceReport.getEntity().getNotificationDetails(), is(surveillanceReport.getNotificationDetails()));
 
 				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 
-		List<SormasToSormasShareInfoDto> shareInfoList = getSormasToSormasShareInfoFacade()
+		List<SormasToSormasShareInfoDto> surveillanceReportShareInfoList = getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().surveillanceReport(surveillanceReport.toReference()), 0, 100);
 
-		SormasToSormasShareInfoDto contactShareInfo = shareInfoList.get(0);
+		SormasToSormasShareInfoDto contactShareInfo = surveillanceReportShareInfoList.get(0);
 		assertThat(contactShareInfo.getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
 		assertThat(contactShareInfo.getSender().getCaption(), is("ad MIN"));
 		assertThat(contactShareInfo.getComment(), is("Test comment"));
+
+		List<SormasToSormasShareInfoDto> surveillanceReport2ShareInfoList = getSormasToSormasShareInfoFacade()
+			.getIndexList(new SormasToSormasShareInfoCriteria().surveillanceReport(surveillanceReport2.toReference()), 0, 100);
+
+		assertThat(surveillanceReport2ShareInfoList, hasSize(1));
 	}
 
 	private ContactDto createRemoteContactDto(TestDataCreator.RDCF remoteRdcf, CaseDataDto caze) {
