@@ -17,6 +17,7 @@ package de.symeda.sormas.api.caze.surveillancereport;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -26,15 +27,15 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
-public class SurveillanceReportDto extends PseudonymizableDto {
+public class SurveillanceReportDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -8880285376883927386L;
 
@@ -68,6 +69,7 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 
 	private UserReferenceDto creatingUser;
 
+	@NotNull
 	private Date reportDate;
 
 	private Date dateOfDiagnosis;
@@ -188,5 +190,18 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 
 	public SurveillanceReportReferenceDto toReference() {
 		return new SurveillanceReportReferenceDto(getUuid());
+	}
+
+	/**
+	 * Used in S2S context
+	 */
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return null;
+	}
+
+	@Override
+	public void setReportingUser(UserReferenceDto reportingUser) {
+
 	}
 }

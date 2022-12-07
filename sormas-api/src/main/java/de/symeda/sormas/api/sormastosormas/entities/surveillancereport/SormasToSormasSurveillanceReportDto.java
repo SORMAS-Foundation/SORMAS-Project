@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,19 +13,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze.surveillancereport;
+package de.symeda.sormas.api.sormastosormas.entities.surveillancereport;
 
-import java.util.List;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 
-import javax.ejb.Remote;
+public class SormasToSormasSurveillanceReportDto extends SormasToSormasEntityDto<SurveillanceReportDto> {
 
-import de.symeda.sormas.api.BaseFacade;
+	public SormasToSormasSurveillanceReportDto() {
+	}
 
-@Remote
-public interface SurveillanceReportFacade
-	extends BaseFacade<SurveillanceReportDto, SurveillanceReportDto, SurveillanceReportReferenceDto, SurveillanceReportCriteria> {
-
-	void delete(String surveillanceReportUuid);
-
-	List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids);
+	public SormasToSormasSurveillanceReportDto(SurveillanceReportDto entity) {
+		super(entity);
+	}
 }

@@ -64,7 +64,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 	@Override
 	public void reload() {
-		List<SurveillanceReportDto> reports = FacadeProvider.getSurveillanceReportFacade().getIndexList(criteria, 0, maxDisplayedEntries * 20);
+		List<SurveillanceReportDto> reports = FacadeProvider.getSurveillanceReportFacade().getIndexList(criteria, 0, maxDisplayedEntries * 20, null);
 
 		setEntries(reports);
 		if (!reports.isEmpty()) {

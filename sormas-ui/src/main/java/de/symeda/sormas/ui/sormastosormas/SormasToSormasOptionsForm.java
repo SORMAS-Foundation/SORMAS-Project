@@ -82,6 +82,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		optionFeaturePropertyMap.put(SormasToSormasOptionsDto.WITH_SAMPLES, OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_SAMPLES));
 		optionFeaturePropertyMap
 			.put(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS, OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_IMMUNIZATIONS));
+		optionFeaturePropertyMap
+			.put(SormasToSormasOptionsDto.WITH_SURVEILLANCE_REPORTS, OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_REPORTS));
 	}
 
 	static {
@@ -89,6 +91,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasShareInfoDto::isWithSamples);
 		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS, SormasToSormasShareInfoDto::isWithImmunizations);
 		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasShareInfoDto::isWithEvenParticipants);
+		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_SURVEILLANCE_REPORTS, SormasToSormasShareInfoDto::isWithReports);
 	}
 
 	private final List<String> availableCustomOptions;
@@ -130,7 +133,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			Arrays.asList(
 				SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS,
 				SormasToSormasOptionsDto.WITH_SAMPLES,
-				SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
+				SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+				SormasToSormasOptionsDto.WITH_SURVEILLANCE_REPORTS),
 			FeatureType.SORMAS_TO_SORMAS_SHARE_CASES,
 			(form) -> {
 				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_SAMPLES)) {
@@ -162,6 +166,22 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
 						Boolean.TRUE,
 						SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+						Boolean.TRUE);
+				}
+
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_SURVEILLANCE_REPORTS)) {
+					FieldHelper.setEnabledWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.FALSE,
+						SormasToSormasOptionsDto.WITH_SURVEILLANCE_REPORTS,
+						false);
+
+					FieldHelper.setValueWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.TRUE,
+						SormasToSormasOptionsDto.WITH_SURVEILLANCE_REPORTS,
 						Boolean.TRUE);
 				}
 			});

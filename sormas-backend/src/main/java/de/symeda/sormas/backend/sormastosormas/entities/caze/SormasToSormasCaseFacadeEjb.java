@@ -214,7 +214,20 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization, options)));
 		}
 
-		return Stream.of(Stream.of(cazeShareInfo), contactShareInfos, sampleShareInfos, immunizationShareInfos)
+		Stream<SormasToSormasShareInfo> reportShareInfos = Stream.empty();
+		if (options.isWithSurveillanceReports()) {
+			reportShareInfos = caze.getSurveillanceReports()
+				.stream()
+				.map(
+					r -> r.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(
+							() -> ShareInfoHelper.createShareInfo(organizationId, r, SormasToSormasShareInfo::setSurveillanceReport, options)));
+		}
+
+		return Stream.of(Stream.of(cazeShareInfo), contactShareInfos, sampleShareInfos, immunizationShareInfos, reportShareInfos)
 			.flatMap(Function.identity())
 			.collect(Collectors.toList());
 	}

@@ -261,6 +261,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 				|| SormasToSormasContactDto[].class.isAssignableFrom(getShareDataClass())) {
 				options.setWithSamples(true);
 				options.setWithImmunizations(true);
+
+				if (SormasToSormasContactDto[].class.isAssignableFrom(getShareDataClass())) {
+					options.setWithSurveillanceReports(true);
+				}
 			}
 		}
 	}
@@ -924,6 +928,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		requestInfo.setWithSamples(options.isWithSamples());
 		requestInfo.setWithEventParticipants(options.isWithEventParticipants());
 		requestInfo.setWithImmunizations(options.isWithImmunizations());
+		requestInfo.setWithReports(options.isWithSurveillanceReports());
 		requestInfo.setPseudonymizedPersonalData(options.isPseudonymizeData());
 		requestInfo.setPseudonymizedSensitiveData(options.isPseudonymizeData());
 		requestInfo.setComment(options.getComment());

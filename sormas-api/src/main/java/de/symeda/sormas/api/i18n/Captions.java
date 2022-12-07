@@ -2012,6 +2012,7 @@ public interface Captions {
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withImmunizations = "SormasToSormasOptions.withImmunizations";
+	String SormasToSormasOptions_withReports = "SormasToSormasOptions.withReports";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
 	String sormasToSormasOriginInfo = "sormasToSormasOriginInfo";
 	String sormasToSormasOwnedBy = "sormasToSormasOwnedBy";

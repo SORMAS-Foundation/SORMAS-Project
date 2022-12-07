@@ -70,6 +70,8 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	private boolean withImmunizations;
 
+	private boolean withReports;
+
 	private boolean pseudonymizedPersonalData;
 
 	private boolean pseudonymizedSensitiveData;
@@ -154,6 +156,15 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	public void setWithImmunizations(boolean withImmunizations) {
 		this.withImmunizations = withImmunizations;
+	}
+
+	@Column
+	public boolean isWithReports() {
+		return withReports;
+	}
+
+	public void setWithReports(boolean withReports) {
+		this.withReports = withReports;
 	}
 
 	@Column

@@ -148,7 +148,7 @@ public class ExternalMessageController {
 					SurveillanceReportDto surveillanceReport = null;
 					if (caseReference != null) {
 						surveillanceReport = createSurveillanceReport(labMessage, caseReference);
-						FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
+						FacadeProvider.getSurveillanceReportFacade().save(surveillanceReport);
 					}
 					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples(), surveillanceReport);
 					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
@@ -179,7 +179,7 @@ public class ExternalMessageController {
 			if (status == ProcessingResultStatus.DONE) {
 				CaseReferenceDto caseReferenceDto = result.getData().toReference();
 				SurveillanceReportDto surveillanceReport = createSurveillanceReport(labMessage, caseReferenceDto);
-				FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
+				FacadeProvider.getSurveillanceReportFacade().save(surveillanceReport);
 				markExternalMessageAsProcessed(labMessage, surveillanceReport);
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}

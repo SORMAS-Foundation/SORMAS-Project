@@ -16,12 +16,11 @@
 package de.symeda.sormas.backend.caze.surveillancereport;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -36,11 +35,12 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
@@ -58,14 +58,13 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SurveillanceReportFacade")
 @RightsAllowed(UserRight._CASE_VIEW)
-public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
+public class SurveillanceReportFacadeEjb
+	extends
+	AbstractBaseEjb<SurveillanceReport, SurveillanceReportDto, SurveillanceReportDto, SurveillanceReportReferenceDto, SurveillanceReportService, SurveillanceReportCriteria>
+	implements SurveillanceReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-	@EJB
-	private SurveillanceReportService service;
-	@EJB
-	private UserService userService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -77,7 +76,134 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	@EJB
 	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
 
-	public static SurveillanceReportDto toDto(SurveillanceReport source) {
+	public SurveillanceReportFacadeEjb() {
+		super();
+	}
+
+	@Inject
+	public SurveillanceReportFacadeEjb(SurveillanceReportService service, UserService userService) {
+		super(SurveillanceReport.class, SurveillanceReportDto.class, service, userService);
+	}
+
+	public static SurveillanceReportReferenceDto toReferenceDto(SurveillanceReport entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new SurveillanceReportReferenceDto(entity.getUuid());
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_EDIT)
+	public SurveillanceReportDto save(@Valid @NotNull SurveillanceReportDto dto) {
+		return saveSurveillanceReport(dto, true);
+	}
+
+	@Override
+	public long count(SurveillanceReportCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+
+		Root<SurveillanceReport> root = cq.from(SurveillanceReport.class);
+
+		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.countDistinct(root));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public List<SurveillanceReportDto> getIndexList(
+		SurveillanceReportCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SurveillanceReport> cq = cb.createQuery(SurveillanceReport.class);
+		Root<SurveillanceReport> root = cq.from(SurveillanceReport.class);
+
+		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.orderBy(cb.desc(root.get(SurveillanceReport.CREATION_DATE)));
+
+		return toPseudonymizedDtos(QueryHelper.getResultList(em, cq, first, max));
+	}
+
+	@Override
+	public void validate(@Valid SurveillanceReportDto dto) throws ValidationRuntimeException {
+
+	}
+
+	@Override
+	protected SurveillanceReport fillOrBuildEntity(SurveillanceReportDto source, SurveillanceReport target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), SurveillanceReport::new, checkChangeDate);
+
+		target.setReportingType(source.getReportingType());
+		target.setExternalId(source.getExternalId());
+		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
+		target.setReportDate(source.getReportDate());
+		target.setDateOfDiagnosis(source.getDateOfDiagnosis());
+		target.setFacilityRegion(regionService.getByReferenceDto(source.getFacilityRegion()));
+		target.setFacilityDistrict(districtService.getByReferenceDto(source.getFacilityDistrict()));
+		target.setFacilityType(source.getFacilityType());
+		target.setFacility(facilityService.getByReferenceDto(source.getFacility()));
+		target.setFacilityDetails(source.getFacilityDetails());
+		target.setNotificationDetails(source.getNotificationDetails());
+		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
+
+		return target;
+	}
+
+	@Override
+	protected SurveillanceReportReferenceDto toRefDto(SurveillanceReport surveillanceReport) {
+		return toReferenceDto(surveillanceReport);
+	}
+
+	@Override
+	protected void pseudonymizeDto(SurveillanceReport source, SurveillanceReportDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+		User currentUser = userService.getCurrentUser();
+
+		pseudonymizer.pseudonymizeDto(
+			SurveillanceReportDto.class,
+			dto,
+			inJurisdiction,
+			(reportDto) -> pseudonymizer.pseudonymizeUser(source.getCreatingUser(), currentUser, reportDto::setCreatingUser));
+	}
+
+	@Override
+	protected void restorePseudonymizedDto(
+		SurveillanceReportDto dto,
+		SurveillanceReportDto existingDto,
+		SurveillanceReport existingReport,
+		Pseudonymizer pseudonymizer) {
+		if (existingDto != null) {
+			boolean inJurisdiction = service.inJurisdictionOrOwned(existingReport);
+			User currentUser = userService.getCurrentUser();
+
+			pseudonymizer.restoreUser(existingReport.getCreatingUser(), currentUser, dto, dto::setCreatingUser);
+			pseudonymizer.restorePseudonymizedValues(SurveillanceReportDto.class, dto, existingDto, inJurisdiction);
+		}
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_EDIT)
+	public void delete(String surveillanceReportUuid) {
+		SurveillanceReport report = service.getByUuid(surveillanceReportUuid);
+
+		ExternalMessageDto associatedMessage = externalMessageFacade.getForSurveillanceReport(toRefDto(report));
+		if (associatedMessage != null) {
+			associatedMessage.setSurveillanceReport(null);
+			externalMessageFacade.save(associatedMessage);
+		}
+		service.deletePermanent(report);
+	}
+
+	public SurveillanceReportDto toDto(SurveillanceReport source) {
 		if (source == null) {
 			return null;
 		}
@@ -102,109 +228,38 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 	}
 
-	@Override
-	@RightsAllowed(UserRight._CASE_EDIT)
-	public SurveillanceReportDto saveSurveillanceReport(@Valid SurveillanceReportDto dto) {
-		return saveSurveillanceReport(dto, true);
-	}
-
 	private SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto, boolean checkChangeDate) {
 		SurveillanceReport existingReport = service.getByUuid(dto.getUuid());
 		SurveillanceReportDto existingReportDto = toDto(existingReport);
 
-		restorePseudonymizedDto(dto, existingReport, existingReportDto);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		restorePseudonymizedDto(dto, existingReportDto, existingReport, pseudonymizer);
 
-		SurveillanceReport report = fromDto(dto, checkChangeDate);
+		validate(dto);
+
+		SurveillanceReport report = fillOrBuildEntity(dto, existingReport, checkChangeDate);
 
 		service.ensurePersisted(report);
 
-		return toDto(report);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._CASE_EDIT)
-	public void deleteSurveillanceReport(String surveillanceReportUuid) {
-		ExternalMessageDto associatedMessage =
-			externalMessageFacade.getForSurveillanceReport(new SurveillanceReportReferenceDto(surveillanceReportUuid));
-		if (associatedMessage != null) {
-			associatedMessage.setSurveillanceReport(null);
-			externalMessageFacade.save(associatedMessage);
-		}
-		service.deletePermanent(service.getByUuid(surveillanceReportUuid));
-	}
-
-	@Override
-	public List<SurveillanceReportDto> getIndexList(SurveillanceReportCriteria criteria, Integer first, Integer max) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SurveillanceReport> cq = cb.createQuery(SurveillanceReport.class);
-		Root<SurveillanceReport> root = cq.from(SurveillanceReport.class);
-
-		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.orderBy(cb.desc(root.get(SurveillanceReport.CREATION_DATE)));
-
-		List<SurveillanceReport> resultList = QueryHelper.getResultList(em, cq, first, max);
-		List<SurveillanceReportDto> reports = resultList.stream().map(SurveillanceReportFacadeEjb::toDto).collect(Collectors.toList());
-
-		List<Long> inJurisdictionIds = service.getInJurisdictionIds(resultList);
-		User currentUser = userService.getCurrentUser();
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(SurveillanceReportDto.class, reports, reportDto -> {
-			Optional<SurveillanceReport> report = resultList.stream().filter(r -> r.getUuid().equals(r.getUuid())).findFirst();
-			return report.isPresent() ? inJurisdictionIds.contains(report.get().getId()) : false;
-		}, (reportDto, inJurisdiction) -> {
-			Optional<SurveillanceReport> report = resultList.stream().filter(r -> r.getUuid().equals(r.getUuid())).findFirst();
-			report.ifPresent(
-				surveillanceReport -> pseudonymizer.pseudonymizeUser(surveillanceReport.getCreatingUser(), currentUser, reportDto::setCreatingUser));
-		});
-
-		return reports;
+		return toPseudonymizedDto(report);
 	}
 
 	@Override
 	public List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids) {
-		return service.getByCaseUuids(caseUuids).stream().map(SurveillanceReportFacadeEjb::toDto).collect(Collectors.toList());
-	}
-
-	private void restorePseudonymizedDto(SurveillanceReportDto dto, SurveillanceReport existingReport, SurveillanceReportDto existingDto) {
-		if (existingDto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(existingReport);
-			User currentUser = userService.getCurrentUser();
-
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-
-			pseudonymizer.restoreUser(existingReport.getCreatingUser(), currentUser, dto, dto::setCreatingUser);
-			pseudonymizer.restorePseudonymizedValues(SurveillanceReportDto.class, dto, existingDto, inJurisdiction);
-		}
-	}
-
-	public SurveillanceReport fromDto(@NotNull SurveillanceReportDto source, boolean checkChangeDate) {
-		SurveillanceReport target =
-			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), SurveillanceReport::new, checkChangeDate);
-
-		target.setReportingType(source.getReportingType());
-		target.setExternalId(source.getExternalId());
-		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
-		target.setReportDate(source.getReportDate());
-		target.setDateOfDiagnosis(source.getDateOfDiagnosis());
-		target.setFacilityRegion(regionService.getByReferenceDto(source.getFacilityRegion()));
-		target.setFacilityDistrict(districtService.getByReferenceDto(source.getFacilityDistrict()));
-		target.setFacilityType(source.getFacilityType());
-		target.setFacility(facilityService.getByReferenceDto(source.getFacility()));
-		target.setFacilityDetails(source.getFacilityDetails());
-		target.setNotificationDetails(source.getNotificationDetails());
-		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
-
-		return target;
-
+		return toPseudonymizedDtos(service.getByCaseUuids(caseUuids));
 	}
 
 	@LocalBean
 	@Stateless
 	public static class SurveillanceReportFacadeEjbLocal extends SurveillanceReportFacadeEjb {
 
+		public SurveillanceReportFacadeEjbLocal() {
+			super();
+		}
+
+		@Inject
+		public SurveillanceReportFacadeEjbLocal(SurveillanceReportService service, UserService userService) {
+			super(service, userService);
+		}
 	}
 }

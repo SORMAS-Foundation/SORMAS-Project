@@ -103,6 +103,7 @@ public class ShareDataBuilderHelper {
 		sormasToSormasOriginInfo.setWithSamples(options.isWithSamples());
 		sormasToSormasOriginInfo.setWithEventParticipants(options.isWithEventParticipants());
 		sormasToSormasOriginInfo.setWithImmunizations(options.isWithImmunizations());
+		sormasToSormasOriginInfo.setWithReports(options.isWithSurveillanceReports());
 		sormasToSormasOriginInfo.setComment(options.getComment());
 		sormasToSormasOriginInfo.setPseudonymizedData(options.isPseudonymizeData());
 
@@ -132,6 +133,7 @@ public class ShareDataBuilderHelper {
 		options.setWithSamples(requestInfo.isWithSamples());
 		options.setWithEventParticipants(requestInfo.isWithEventParticipants());
 		options.setWithImmunizations(requestInfo.isWithImmunizations());
+		options.setWithSurveillanceReports(requestInfo.isWithReports());
 		options.setComment(requestInfo.getComment());
 		options.setPseudonymizeData(requestInfo.isPseudonymizedPersonalData() || requestInfo.isPseudonymizedSensitiveData());
 
@@ -148,6 +150,7 @@ public class ShareDataBuilderHelper {
 		options.setWithSamples(originInfo.isWithSamples());
 		options.setWithEventParticipants(originInfo.isWithEventParticipants());
 		options.setWithImmunizations(originInfo.isWithImmunizations());
+		options.setWithSurveillanceReports(originInfo.isWithReports());
 		options.setComment(originInfo.getComment());
 
 		return options;

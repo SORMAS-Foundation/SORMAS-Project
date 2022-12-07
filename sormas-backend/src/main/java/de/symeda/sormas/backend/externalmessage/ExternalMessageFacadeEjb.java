@@ -64,6 +64,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
@@ -257,7 +258,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			target.setSampleReports(source.getSampleReports().stream().map(sampleReportFacade::toDto).collect(toList()));
 		}
 		if (source.getSurveillanceReport() != null) {
-			target.setSurveillanceReport(source.getSurveillanceReport().toReference());
+			target.setSurveillanceReport(SurveillanceReportFacadeEjb.toReferenceDto(source.getSurveillanceReport()));
 		}
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());

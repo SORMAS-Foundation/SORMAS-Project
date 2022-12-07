@@ -15,31 +15,39 @@
 
 package de.symeda.sormas.backend.caze.surveillancereport;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
-import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "surveillancereports")
 @Audited
-public class SurveillanceReport extends AbstractDomainObject {
+public class SurveillanceReport extends AbstractDomainObject implements SormasToSormasShareable {
 
 	private static final long serialVersionUID = -2599492274783441938L;
 
@@ -80,6 +88,10 @@ public class SurveillanceReport extends AbstractDomainObject {
 	private String notificationDetails;
 
 	private Case caze;
+
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -190,7 +202,41 @@ public class SurveillanceReport extends AbstractDomainObject {
 		this.caze = caze;
 	}
 
-	public SurveillanceReportReferenceDto toReference() {
-		return new SurveillanceReportReferenceDto(getUuid());
+	@Override
+	@ManyToOne(cascade = {
+		CascadeType.PERSIST,
+		CascadeType.MERGE,
+		CascadeType.DETACH,
+		CascadeType.REFRESH })
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
 	}
+
+	@Override
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.IMMUNIZATION, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
+	/**
+	 * Used only in S2S context
+	 * 
+	 * @return null
+	 */
+	@Override
+	@Transient
+	public User getReportingUser() {
+		return null;
+	}
+
 }
