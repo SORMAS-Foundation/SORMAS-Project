@@ -177,8 +177,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Inject
-	public EventFacadeEjb(EventService service, UserService userService) {
-		super(Event.class, EventDto.class, service, userService);
+	public EventFacadeEjb(EventService service) {
+		super(Event.class, EventDto.class, service);
 	}
 
 	public static EventReferenceDto toReferenceDto(Event entity) {
@@ -1478,8 +1478,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		@Inject
-		public EventFacadeEjbLocal(EventService service, UserService userService) {
-			super(service, userService);
+		public EventFacadeEjbLocal(EventService service) {
+			super(service);
 		}
 	}
 }

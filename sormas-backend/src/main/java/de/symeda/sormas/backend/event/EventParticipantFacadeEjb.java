@@ -134,7 +134,6 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -187,8 +186,8 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Inject
-	public EventParticipantFacadeEjb(EventParticipantService service, UserService userService) {
-		super(EventParticipant.class, EventParticipantDto.class, service, userService);
+	public EventParticipantFacadeEjb(EventParticipantService service) {
+		super(EventParticipant.class, EventParticipantDto.class, service);
 	}
 
 	public static EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
@@ -1273,6 +1272,11 @@ public class EventParticipantFacadeEjb
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 
+	@Override
+	protected CoreEntityType getCoreEntityType() {
+		return CoreEntityType.EVENT_PARTICIPANT;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
@@ -1281,13 +1285,8 @@ public class EventParticipantFacadeEjb
 		}
 
 		@Inject
-		public EventParticipantFacadeEjbLocal(EventParticipantService service, UserService userService) {
-			super(service, userService);
+		public EventParticipantFacadeEjbLocal(EventParticipantService service) {
+			super(service);
 		}
-	}
-
-	@Override
-	protected CoreEntityType getCoreEntityType() {
-		return CoreEntityType.EVENT_PARTICIPANT;
 	}
 }
