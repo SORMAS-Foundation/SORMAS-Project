@@ -194,7 +194,9 @@ public class ExternalMessageController {
 		for (Map.Entry<SampleReportDto, SampleDto> entry : relatedSampleReports.entrySet()) {
 			entry.getKey().setSample(entry.getValue().toReference());
 		}
-		externalMessage.setSurveillanceReport(surveillanceReport.toReference());
+		if (surveillanceReport != null) {
+			externalMessage.setSurveillanceReport(surveillanceReport.toReference());
+		}
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}
