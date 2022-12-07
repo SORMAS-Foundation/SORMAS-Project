@@ -202,6 +202,10 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJ
 		return getByOrganization(SormasToSormasShareInfo.IMMUNIZATION, immunizationUuid, organizationId);
 	}
 
+	public SormasToSormasShareInfo getBySurveillanceReportAndOrganization(String surveillanceUuid, String organizationId) {
+		return getByOrganization(SormasToSormasShareInfo.SURVEILLANCE_REPORT, surveillanceUuid, organizationId);
+	}
+
 	public SormasToSormasShareInfo getByOrganization(String associatedObjectField, String associatedObjectUuid, String organizationId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);

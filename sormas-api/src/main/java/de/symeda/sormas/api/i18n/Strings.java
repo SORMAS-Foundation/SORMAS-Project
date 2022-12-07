@@ -344,6 +344,7 @@ public interface Strings {
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
 	String errorSormasToSormasShareContactWithoutCase = "errorSormasToSormasShareContactWithoutCase";
 	String errorSormasToSormasShareContactWithUnsharedSourceCase = "errorSormasToSormasShareContactWithUnsharedSourceCase";
+	String errorSurveillanceReportNotEditable = "errorSurveillanceReportNotEditable";
 	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";

@@ -1316,6 +1316,38 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(surveillanceReport2ShareInfoList, hasSize(1));
 	}
 
+	@Test
+	public void testSaveSharedWithSurveillanceReports() throws SormasToSormasException, SormasToSormasValidationException {
+		PersonDto person = createPersonDto(rdcf);
+		CaseDataDto caze = createCaseDto(rdcf, person);
+		SurveillanceReportDto report = SurveillanceReportDto.build(caze.toReference(), null);
+		report.setReportingType(ReportingType.LABORATORY);
+		report.setFacilityRegion(rdcf.region);
+		report.setFacilityDistrict(rdcf.district);
+		report.setFacility(rdcf.facility);
+		report.setNotificationDetails("Test notification details");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+		shareData.setSurveillanceReports(Collections.singletonList(new SormasToSormasSurveillanceReportDto(report)));
+
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
+		getSormasToSormasCaseFacade().saveSharedEntities(encryptedData);
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		SurveillanceReportDto savedReport = getSurveillanceReportFacade().getByUuid(report.getUuid());
+
+		assertThat(savedReport, is(notNullValue()));
+		assertThat(savedReport.getReportingType(), is(report.getReportingType()));
+		assertThat(savedReport.getFacilityRegion(), is(report.getFacilityRegion()));
+		assertThat(savedReport.getFacilityDistrict(), is(report.getFacilityDistrict()));
+		assertThat(savedReport.getFacility(), is(report.getFacility()));
+		assertThat(savedReport.getNotificationDetails(), is(report.getNotificationDetails()));
+
+		assertThat(savedCase.getSormasToSormasOriginInfo().getUuid(), is(savedReport.getSormasToSormasOriginInfo().getUuid()));
+	}
+
 	private ContactDto createRemoteContactDto(TestDataCreator.RDCF remoteRdcf, CaseDataDto caze) {
 		ContactDto contact = ContactDto.build(caze);
 		contact.setRegion(remoteRdcf.region);

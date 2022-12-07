@@ -35,7 +35,10 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -95,7 +98,7 @@ public class SurveillanceReportFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._CASE_EDIT)
 	public SurveillanceReportDto save(@Valid @NotNull SurveillanceReportDto dto) {
-		return saveSurveillanceReport(dto, true);
+		return saveSurveillanceReport(dto, true, true);
 	}
 
 	@Override
@@ -228,9 +231,15 @@ public class SurveillanceReportFacadeEjb
 
 	}
 
-	private SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto, boolean checkChangeDate) {
+	@RightsAllowed(UserRight._CASE_EDIT)
+	public SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto, boolean checkChangeDate, boolean internal) {
+
 		SurveillanceReport existingReport = service.getByUuid(dto.getUuid());
 		SurveillanceReportDto existingReportDto = toDto(existingReport);
+
+		if (internal && existingReport != null && !service.isEditAllowed(existingReport)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSurveillanceReportNotEditable));
+		}
 
 		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingReportDto, existingReport, pseudonymizer);
