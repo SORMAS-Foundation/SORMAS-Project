@@ -66,16 +66,23 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	@SuppressWarnings("unchecked")
 	public ConfigurableFilterDataProvider<T, Void, C> getFilteredDataProvider() {
-		return (ConfigurableFilterDataProvider<T, Void, C>) super.getDataProvider();
+
+		DataProviderWrapper<T, ?> dataProvider = (DataProviderWrapper<T, ?>) super.getDataProvider();
+		return (ConfigurableFilterDataProvider<T, Void, C>) dataProvider.getWrappedDataProvider();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setDataProvider(DataProvider<T, ?> dataProvider) {
+
+		final DataProvider<T, ?> unpackedDataProvider;
 		if (!inEagerMode && !(dataProvider instanceof ConfigurableFilterDataProvider)) {
-			dataProvider = (ConfigurableFilterDataProvider<T, Void, C>) dataProvider.withConfigurableFilter();
+			unpackedDataProvider = (ConfigurableFilterDataProvider<T, Void, C>) dataProvider.withConfigurableFilter();
+		} else {
+			unpackedDataProvider = dataProvider;
 		}
-		super.setDataProvider(dataProvider);
+
+		super.setDataProvider(new DataProviderWrapper<>(unpackedDataProvider));
 	}
 
 	@Override
