@@ -281,7 +281,11 @@ Feature: Sample Functionalities
     And I click Add Pathogen test in Sample creation page
     And I check DATE AND TIME OF RESULT field
     And I click on save sample button
-    Then I check error popup message in German
+    Then I check if error popup contains "Bitte überprüfen Sie die Eingabedaten"
+    And I check if error popup contains "Labor"
+    And I check if error popup contains "Art des Tests"
+    And I check if error popup contains "Ergebnis verifiziert von Laborleitung"
+
 
   @tmsLink=SORDEV-6849 @env_main
   Scenario: Test Lab officers should have full access to entities whose sample was assigned to the lab officers lab

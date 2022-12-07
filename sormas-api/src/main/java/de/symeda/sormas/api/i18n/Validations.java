@@ -73,6 +73,7 @@ public interface Validations {
 	String externalMessageFetchError = "externalMessageFetchError";
 	String externalMessageInitError = "externalMessageInitError";
 	String externalMessagePdfConversionError = "externalMessagePdfConversionError";
+	String externalMessageRefersToMultipleEntities = "externalMessageRefersToMultipleEntities";
 	String feverTemperatureAboveThreshold = "feverTemperatureAboveThreshold";
 	String feverTemperatureBelowThreshold = "feverTemperatureBelowThreshold";
 	String fileTooBig = "fileTooBig";

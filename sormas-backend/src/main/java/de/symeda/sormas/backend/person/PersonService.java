@@ -43,6 +43,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -1056,33 +1057,44 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		super.deletePermanentByUuids(uuids);
 	}
 
-	public boolean isPersonAssociatedWithNotDeletedEntities(@NotNull String uuid) {
-
-		if (uuid == null) {
+	public boolean isEditAllowed(String personUuid) {
+		if (personUuid == null) {
 			return false;
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
+
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Person> from = cq.from(Person.class);
 
-		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, from);
-		final PersonJoins joins = personQueryContext.getJoins();
+		cq.select(from.get(Person.ID));
 
-		cq.select(cb.count(from.get(AbstractDomainObject.ID)));
+		PersonJoins joins = new PersonJoins(from);
 
-		Predicate predicate = cb.or(
-			cb.isFalse(joins.getCaze().get(Case.DELETED)),
-			cb.isFalse(joins.getContact().get(Contact.DELETED)),
-			cb.isFalse(joins.getTravelEntry().get(TravelEntry.DELETED)),
-			cb.isFalse(joins.getImmunization().get(Immunization.DELETED)),
-			cb.isFalse(joins.getEventParticipant().get(EventParticipant.DELETED)));
-		predicate = cb.and(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam), predicate);
+		Subquery<Long> travelEntrySubQuery = cq.subquery(Long.class);
+		Root<TravelEntry> travelEntryFrom = travelEntrySubQuery.from(TravelEntry.class);
+		travelEntrySubQuery.select(travelEntryFrom.get(TravelEntry.PERSON))
+			.where(
+				cb.equal(travelEntryFrom.join(TravelEntry.PERSON, JoinType.LEFT).get(Person.ID), from.get(Person.ID)),
+				cb.isFalse(travelEntryFrom.get(TravelEntry.DELETED)));
 
-		cq.where(predicate);
+		cq.where(
+			cb.equal(from.get(Person.UUID), personUuid),
+			cb.or(
+				cb.and(
+					cb.and(cb.isNotNull(joins.getCaze()), cb.isFalse(joins.getCaze().get(Case.DELETED))),
+					caseService.createOwnershipPredicate(true, joins.getCaze(), cb, cq)),
+				cb.and(
+					cb.and(cb.isNotNull(joins.getContact()), cb.isFalse(joins.getContact().get(Contact.DELETED))),
+					contactService.createOwnershipPredicate(true, joins.getContact(), cb, cq)),
+				cb.and(
+					cb.and(cb.isNotNull(joins.getEventParticipant()), cb.isFalse(joins.getEventParticipant().get(EventParticipant.DELETED))),
+					eventParticipantService.createOwnershipPredicate(true, joins.getEventParticipant(), cb, cq)),
+				cb.and(
+					cb.and(cb.isNotNull(joins.getImmunization()), cb.isFalse(joins.getImmunization().get(Immunization.DELETED))),
+					immunizationService.createOwnershipPredicate(true, joins.getImmunization(), cb, cq)),
+				cb.exists(travelEntrySubQuery)));
 
-		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
-		return q.getSingleResult() > 0;
+		return !em.createQuery(cq).getResultList().isEmpty();
 	}
 }

@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.api.infrastructure.community;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -36,10 +35,6 @@ public interface CommunityFacade extends GeoLocationFacade<CommunityDto, Communi
 
 	// todo handle parent infra generically
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
-
-	boolean isUsedInOtherInfrastructureData(Collection<String> communityUuids);
-
-	boolean hasArchivedParentInfrastructure(Collection<String> communityUuids);
 
 	Map<String, String> getDistrictUuidsForCommunities(List<CommunityReferenceDto> communities);
 }

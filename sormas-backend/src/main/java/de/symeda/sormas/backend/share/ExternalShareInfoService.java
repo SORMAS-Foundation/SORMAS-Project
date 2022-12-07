@@ -254,11 +254,10 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilterAndJurisdi
 				buildLatestSurvToolShareDateFilter(cq, cb, from, associatedObjectName, changeDatePredicateBuilder);
 
 			filter = CriteriaBuilderHelper.and(cb, filter, changedSinceLastShareFilter);
-		}
-
-		// Exclude all entities which are not supposed to be shared with the reportingtool
-		if (filter != null && from.getJavaType().isAssignableFrom(Case.class)) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
+			// Exclude all entities which are not supposed to be shared with the reportingtool
+			if (from.getJavaType().isAssignableFrom(Case.class)) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
+			}
 		}
 
 		return filter;

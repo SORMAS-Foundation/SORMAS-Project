@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
@@ -125,7 +126,7 @@ public class PersonController {
 				PersonController.this.mergePersons(personGrid, persons, popupWindow, false);
 			}
 		};
-		
+
 		final Button mergeButton = confirmationComponent.getConfirmButton();
 		mergeButton.setCaption(I18nProperties.getCaption(Captions.actionMerge));
 		mergeButton.setEnabled(false);
@@ -157,17 +158,33 @@ public class PersonController {
 
 	private void mergePersons(PersonGrid personGrid, List<PersonIndexDto> personIndexDtos, Window popupWindow, boolean mergeProperties) {
 
+		final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
+		final PersonIndexDto leadPerson = selectedItems.iterator().next();
+		final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
+
+		String confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmation);
+
+		if (FacadeProvider.getPersonFacade().isSharedOrReceived(otherPerson.getUuid())) {
+			if (FacadeProvider.getPersonFacade().isSharedOrReceived(leadPerson.getUuid())) {
+				confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmationBothShared);
+			} else {
+				new Notification(
+					I18nProperties.getString(Strings.headingMergePersonError),
+					I18nProperties.getString(Strings.infoPersonMergeSharedMustLead),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+				return;
+			}
+		}
+
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
-			new Label(I18nProperties.getString(Strings.infoPersonMergeConfirmation)),
+			new Label(confirmationMessage, ContentMode.HTML),
 			I18nProperties.getCaption(Captions.actionConfirm),
 			I18nProperties.getCaption(Captions.actionDiscard),
 			800,
 			confirm -> {
 				if (Boolean.TRUE.equals(confirm)) {
-					final Set<PersonIndexDto> selectedItems = personGrid.getSelectedItems();
-					final PersonIndexDto leadPerson = selectedItems.iterator().next();
-					final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
 					FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties);
 					popupWindow.close();
 					SormasUI.refreshView();
@@ -274,16 +291,15 @@ public class PersonController {
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
 		PersonContext personContext,
-		String personUuid,
+		PersonDto person,
 		Disease disease,
 		String diseaseDetails,
 		UserRight editUserRight,
 		final ViewMode viewMode) {
-		PersonDto personDto = personFacade.getByUuid(personUuid);
 
 		PersonEditForm editForm =
-			new PersonEditForm(personContext, disease, diseaseDetails, viewMode, personDto.isPseudonymized(), personDto.isInJurisdiction());
-		editForm.setValue(personDto);
+			new PersonEditForm(personContext, disease, diseaseDetails, viewMode, person.isPseudonymized(), person.isInJurisdiction());
+		editForm.setValue(person);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView =
 			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
@@ -300,23 +316,22 @@ public class PersonController {
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
 		PersonContext personContext,
-		String personUuid,
+		PersonDto person,
 		Disease disease,
 		String diseaseDetails,
 		UserRight editUserRight,
 		final ViewMode viewMode,
 		boolean isEditAllowed) {
-		PersonDto personDto = personFacade.getByUuid(personUuid);
 
 		PersonEditForm editForm = new PersonEditForm(
 			personContext,
 			disease,
 			diseaseDetails,
 			viewMode,
-			personDto.isPseudonymized(),
-			personDto.isInJurisdiction(),
+			person.isPseudonymized(),
+			person.isInJurisdiction(),
 			isEditAllowed && UserProvider.getCurrent().hasUserRight(editUserRight));
-		editForm.setValue(personDto);
+		editForm.setValue(person);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
 

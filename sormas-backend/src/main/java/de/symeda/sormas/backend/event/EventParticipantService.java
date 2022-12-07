@@ -45,6 +45,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -57,6 +58,8 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
@@ -244,8 +247,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				}
 				filter = CriteriaBuilderHelper.and(cb, filter, activePredicate);
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.or(cb.equal(event.get(Event.ARCHIVED), true), cb.equal(from.get(EventParticipant.ARCHIVED), true)));
+				Predicate archivedPredicate = cb.equal(from.get(EventParticipant.ARCHIVED), true);
+				if (featureConfigurationFacade.isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
+					archivedPredicate = cb.or(archivedPredicate, cb.equal(event.get(Event.ARCHIVED), true));
+				}
+				filter = CriteriaBuilderHelper.and(cb, filter, archivedPredicate);
 			}
 		}
 
@@ -572,7 +578,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, EventParticipant> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, EventParticipant> from) {
 		return inJurisdictionOrOwned(new EventParticipantQueryContext(cb, query, from));
 	}
 
@@ -629,5 +635,46 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON).get(Person.ID), personId), cb.isNotNull(eventSq.getSelection())));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public Predicate createOwnershipPredicate(boolean withOwnership, From<?, ?> from, CriteriaBuilder cb, CriteriaQuery<?> cq) {
+		Subquery<Boolean> sharesQuery = cq.subquery(Boolean.class);
+		Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
+		sharesQuery.select(shareInfoFrom.get(SormasToSormasShareInfo.ID));
+
+		Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
+		Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+		latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+		latestRequestDateQuery.where(
+			cb.equal(
+				shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+				shareInfoFrom.get(SormasToSormasShareInfo.ID)));
+
+		Join<Object, Object> requestsJoin = shareInfoFrom.join(SormasToSormasShareInfo.REQUESTS);
+		sharesQuery.where(
+			cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.EVENT_PARTICIPANT), from.get(EventParticipant.ID)),
+			cb.equal(shareInfoFrom.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER), true),
+			cb.equal(
+				requestsJoin.on(cb.equal(requestsJoin.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery))
+					.get(ShareRequestInfo.REQUEST_STATUS),
+				ShareRequestStatus.ACCEPTED));
+
+		if (withOwnership) {
+			return cb
+				.and(
+					cb.or(
+						cb.isNull(from.get(EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+						cb.equal(
+							from.join(EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT)
+								.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+							true)),
+					cb.not(cb.exists(sharesQuery)));
+		} else {
+			return cb.or(
+				cb.equal(
+					from.join(EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
+					false),
+				cb.exists(sharesQuery));
+		}
 	}
 }

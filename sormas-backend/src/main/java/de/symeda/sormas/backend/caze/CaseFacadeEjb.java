@@ -843,7 +843,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caseRoot.get(Case.QUARANTINE_CHANGE_COMMENT),
 				exportOutbreakInfo ? cb.selectCase().when(cb.exists(outbreakSq(caseQueryContext)), cb.literal(I18nProperties.getString(Strings.yes)))
 						.otherwise(cb.literal(I18nProperties.getString(Strings.no))) : cb.nullLiteral(String.class),
-				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)));
+				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)),
+				caseRoot.get(Case.INVESTIGATED_DATE),
+				caseRoot.get(Case.OUTCOME_DATE));
 		//@formatter:on
 
 		cq.distinct(true);
@@ -1397,6 +1399,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<VaccinationDto> relevantVaccinationsForCase = vaccinationFacade.getRelevantVaccinationsForCase(caze);
 		//checking if the vaccination selected for delete is in the relevant vaccinations of the case
 		return relevantVaccinationsForCase.stream().anyMatch(v -> !v.getUuid().equals(vaccinationUuid));
+	}
+
+	@Override
+	public Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze) {
+		return caseService.getRegionAndDistrictRefsOf(caze);
 	}
 
 	@Override
@@ -2982,9 +2989,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getHospitalization().setUuid(source.getHospitalization().getUuid());
-			target.getEpiData().setUuid(source.getEpiData().getUuid());
-			target.getSymptoms().setUuid(source.getSymptoms().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getHospitalization(), source.getHospitalization());
+			FacadeHelper.setUuidIfDtoExists(target.getEpiData(), source.getEpiData());
+			FacadeHelper.setUuidIfDtoExists(target.getSymptoms(), source.getSymptoms());
 		}
 
 		target.setDisease(source.getDisease());
@@ -4170,8 +4177,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
-		Pseudonymizer pseudonymizer = createPseudonymizer();
-		return service.getByExternalId(externalId).stream().map(c -> toPseudonymizedDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(service.getByExternalId(externalId));
 	}
 
 	@Override
