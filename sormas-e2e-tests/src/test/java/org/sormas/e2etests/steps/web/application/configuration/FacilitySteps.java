@@ -44,6 +44,7 @@ import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabP
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_CONTACT_PERSON_LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_CONTACT_PERSON_PHONE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_EXPOSURE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_TYPE_COMBOBOX_FACILITIES_CONFIGURATION;
@@ -86,7 +87,9 @@ import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class FacilitySteps implements En {
@@ -104,7 +107,8 @@ public class FacilitySteps implements En {
       SoftAssert softly,
       Faker faker,
       CaseService caseService,
-      EventService eventService) {
+      EventService eventService,
+      AssertHelpers assertHelpers) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
 
@@ -364,6 +368,25 @@ public class FacilitySteps implements En {
               webDriverHelpers.isElementPresent(RELEVANCE_STATUS_COMBOBOX_FACILITIES_CONFIGURATION),
               "Relevance status Combo box is Not present in Facilities Configuration");
           softly.assertAll();
+        });
+
+    When(
+        "I filter facility by {string}",
+        (String facilName) -> {
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_FACILITY, facilName);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check that number of displayed Facilities results is {int}",
+        (Integer nr) -> {
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      webDriverHelpers.getNumberOfElements(FACILITY_GRID_RESULTS_ROWS),
+                      nr.intValue(),
+                      "Number of displayed facilities is not correct"));
         });
   }
 
