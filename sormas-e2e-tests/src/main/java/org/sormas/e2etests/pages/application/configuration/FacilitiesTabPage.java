@@ -77,4 +77,5 @@ public class FacilitiesTabPage {
   public static final By ACTION_CONFIRM_BUTTON = By.id("actionConfirm");
   public static final By RELEVANCE_STATUS_COMBOBOX_FACILITIES_CONFIGURATION =
       By.cssSelector("#relevanceStatus > div");
+  public static final By FACILITY_GRID_RESULTS_ROWS = By.xpath("//tbody[@role='rowgroup']//tr");
 }
