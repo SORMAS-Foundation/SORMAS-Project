@@ -1043,7 +1043,7 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case data for duplicates merge with for one person data
     And I click on Save button in Case form
-    And I Pick a new person in Pick or create person popup during case creation
+    #And I Pick a new person in Pick or create person popup during case creation
     Then I check the created data for duplicated case is correctly displayed on Edit case page
     And I set Vaccination status to "Vaccinated" on Edit Case page
     And I click on save button from Edit Case page
