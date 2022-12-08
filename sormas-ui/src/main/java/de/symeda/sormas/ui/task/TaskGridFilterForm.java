@@ -54,6 +54,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		return new String[] {
 			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_STATUS,
+			TaskIndexDto.TASK_TYPE,
 			TaskIndexDto.REGION,
 			TaskIndexDto.DISTRICT,
 			TaskCriteria.FREE_TEXT };
@@ -68,6 +69,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 	protected void addFields() {
 		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_CONTEXT, 140));
 		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_STATUS, 140));
+		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_TYPE, 140));
 
 		final UserDto user = currentUserDto();
 		if (user.getDistrict() == null) {
