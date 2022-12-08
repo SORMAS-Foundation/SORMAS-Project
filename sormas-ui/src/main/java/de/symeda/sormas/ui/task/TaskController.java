@@ -256,7 +256,9 @@ public class TaskController {
 				if (Boolean.TRUE.equals(e)) {
 					FacadeProvider.getTaskFacade().updateArchived(task.getUuid(), archive);
 					callback.run();
-					Notification.show(I18nProperties.getString(Strings.messageTasksArchived), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(
+						archive ? I18nProperties.getString(Strings.messageTaskArchived) : I18nProperties.getString(Strings.messageTaskDearchived),
+						Type.ASSISTIVE_NOTIFICATION);
 				}
 
 				callback.run();
