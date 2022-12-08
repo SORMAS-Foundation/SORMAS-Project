@@ -1639,7 +1639,7 @@ Feature: Case end to end tests
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
     And I set date of sample collection to 5 day ago in Sample form
     And I set Final Laboratory Result to "Positiv" on Create new Sample page
-    And I save the created sample
+    And I save the created sample with pathogen test
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
   @tmsLink=SORDEV-5141 @env_main
