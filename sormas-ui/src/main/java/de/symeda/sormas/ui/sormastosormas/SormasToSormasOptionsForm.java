@@ -91,7 +91,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasShareInfoDto::isWithSamples);
 		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS, SormasToSormasShareInfoDto::isWithImmunizations);
 		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasShareInfoDto::isWithEvenParticipants);
-		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_SURVEILLANCE_REPORTS, SormasToSormasShareInfoDto::isWithReports);
+		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_SURVEILLANCE_REPORTS, SormasToSormasShareInfoDto::isWithSurveillanceReports);
 	}
 
 	private final List<String> availableCustomOptions;

@@ -51,6 +51,9 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -78,6 +81,8 @@ public class SurveillanceReportFacadeEjb
 	private CaseService caseService;
 	@EJB
 	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
+	@EJB
+	private SormasToSormasOriginInfoService originInfoService;
 
 	public SurveillanceReportFacadeEjb() {
 		super();
@@ -148,7 +153,7 @@ public class SurveillanceReportFacadeEjb
 
 		target.setReportingType(source.getReportingType());
 		target.setExternalId(source.getExternalId());
-		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDate(source.getReportDate());
 		target.setDateOfDiagnosis(source.getDateOfDiagnosis());
 		target.setFacilityRegion(regionService.getByReferenceDto(source.getFacilityRegion()));
@@ -158,6 +163,10 @@ public class SurveillanceReportFacadeEjb
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setNotificationDetails(source.getNotificationDetails());
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
+
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
+		}
 
 		return target;
 	}
@@ -175,7 +184,7 @@ public class SurveillanceReportFacadeEjb
 			SurveillanceReportDto.class,
 			dto,
 			inJurisdiction,
-			(reportDto) -> pseudonymizer.pseudonymizeUser(source.getCreatingUser(), currentUser, reportDto::setCreatingUser));
+			(reportDto) -> pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, reportDto::setReportingUser));
 	}
 
 	@Override
@@ -188,7 +197,7 @@ public class SurveillanceReportFacadeEjb
 			boolean inJurisdiction = service.inJurisdictionOrOwned(existingReport);
 			User currentUser = userService.getCurrentUser();
 
-			pseudonymizer.restoreUser(existingReport.getCreatingUser(), currentUser, dto, dto::setCreatingUser);
+			pseudonymizer.restoreUser(existingReport.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(SurveillanceReportDto.class, dto, existingDto, inJurisdiction);
 		}
 	}
@@ -216,7 +225,7 @@ public class SurveillanceReportFacadeEjb
 
 		target.setReportingType(source.getReportingType());
 		target.setExternalId(source.getExternalId());
-		target.setCreatingUser(source.getCreatingUser() == null ? null : source.getCreatingUser().toReference());
+		target.setReportingUser(source.getReportingUser() == null ? null : source.getReportingUser().toReference());
 		target.setReportDate(source.getReportDate());
 		target.setDateOfDiagnosis(source.getDateOfDiagnosis());
 		target.setFacilityRegion(RegionFacadeEjb.toReferenceDto(source.getFacilityRegion()));
@@ -226,6 +235,9 @@ public class SurveillanceReportFacadeEjb
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setNotificationDetails(source.getNotificationDetails());
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
+
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		return target;
 

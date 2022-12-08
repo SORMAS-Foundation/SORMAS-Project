@@ -21,6 +21,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -35,7 +36,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @LocalBean
 public class SurveillanceReportShareDataBuilder
 	extends
-	ShareDataBuilder<SurveillanceReportDto, SurveillanceReport, SormasToSormasSurveillanceReportDto, PreviewNotImplementedDto, SormasToSurveillanceReportDtoValidator> {
+	ShareDataBuilder<SurveillanceReportDto, SurveillanceReport, SormasToSormasSurveillanceReportDto, PreviewNotImplementedDto, SormasSormasToSurveillanceReportDtoValidator> {
 
 	@EJB
 	private SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
@@ -46,7 +47,7 @@ public class SurveillanceReportShareDataBuilder
 	}
 
 	@Inject
-	public SurveillanceReportShareDataBuilder(SormasToSurveillanceReportDtoValidator validator) {
+	public SurveillanceReportShareDataBuilder(SormasSormasToSurveillanceReportDtoValidator validator) {
 		super(validator);
 	}
 
@@ -57,7 +58,13 @@ public class SurveillanceReportShareDataBuilder
 		boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		SurveillanceReportDto reportDto = getDto(report, pseudonymizer);
-		return new SormasToSormasSurveillanceReportDto(reportDto);
+
+		SormasToSormasExternalMessageDto externalMessage = null;
+		if (ownerShipHandedOver && report.getExternalMessage() != null) {
+			externalMessage = dataBuilderHelper.getExternalMessageDto(report.getExternalMessage());
+		}
+
+		return new SormasToSormasSurveillanceReportDto(reportDto, externalMessage);
 	}
 
 	@Override
@@ -65,7 +72,6 @@ public class SurveillanceReportShareDataBuilder
 		SurveillanceReportDto report = surveillanceReportFacade.toPseudonymizedDto(surveillanceReport, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
-		// TODO - creating user <-> reporting user
 		report.setSormasToSormasOriginInfo(null);
 		dataBuilderHelper.clearIgnoredProperties(report);
 

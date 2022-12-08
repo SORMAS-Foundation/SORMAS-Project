@@ -382,6 +382,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			if (s.getSample() != null) {
 				sormasToSormasEntitiesHelper.updateSampleOnShare(s.getSample(), s);
 			}
+
+			if (s.getSurveillanceReport() != null) {
+				sormasToSormasEntitiesHelper.updateSurveillanceReportOnShare(s.getSurveillanceReport(), s);
+			}
 		});
 		entities.forEach(e -> {
 			SormasToSormasOriginInfo entityOriginInfo = e.getSormasToSormasOriginInfo();
@@ -948,7 +952,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		requestInfo.setWithSamples(options.isWithSamples());
 		requestInfo.setWithEventParticipants(options.isWithEventParticipants());
 		requestInfo.setWithImmunizations(options.isWithImmunizations());
-		requestInfo.setWithReports(options.isWithSurveillanceReports());
+		requestInfo.setWithSurveillanceReports(options.isWithSurveillanceReports());
 		requestInfo.setPseudonymizedPersonalData(options.isPseudonymizeData());
 		requestInfo.setPseudonymizedSensitiveData(options.isPseudonymizeData());
 		requestInfo.setComment(options.getComment());

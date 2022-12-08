@@ -17,29 +17,35 @@ package de.symeda.sormas.backend.sormastosormas.entities.surveillancereport;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSurveillanceReportValidationGroupName;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
+import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDtoValidator;
 
 @Stateless
 @LocalBean
-public class SormasToSurveillanceReportDtoValidator
+public class SormasSormasToSurveillanceReportDtoValidator
 	extends SormasToSormasDtoValidator<SurveillanceReportDto, SormasToSormasSurveillanceReportDto, PreviewNotImplementedDto> {
 
-	public SormasToSurveillanceReportDtoValidator() {
+	@EJB
+	private SormasToSormasExternalMessageDtoValidator externalMessageDtoValidator;
+
+	public SormasSormasToSurveillanceReportDtoValidator() {
 	}
 
 	@Inject
-	public SormasToSurveillanceReportDtoValidator(InfrastructureValidator infraValidator) {
+	public SormasSormasToSurveillanceReportDtoValidator(InfrastructureValidator infraValidator) {
 		super(infraValidator);
 	}
 
@@ -57,6 +63,11 @@ public class SormasToSurveillanceReportDtoValidator
 				report.setFacility(f.getEntity());
 				report.setFacilityDetails(f.getDetails());
 			});
+
+		SormasToSormasExternalMessageDto externalMessage = sharedData.getExternalMessage();
+		if (externalMessage != null) {
+			validationErrors.addAll(externalMessageDtoValidator.validate(externalMessage, direction));
+		}
 
 		return validationErrors;
 	}

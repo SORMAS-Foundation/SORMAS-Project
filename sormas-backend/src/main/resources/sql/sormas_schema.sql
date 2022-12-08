@@ -12243,4 +12243,22 @@ ALTER TABLE externalmessage_history ADD COLUMN reportmessageid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (503, '[DEMIS2SORMAS] Add a Field for the NotificationBundleId to the External Message and map it when processing #10826');
 
+-- 2022-12-08 S2S Surveillance Reports should be shareable (along with possibly attached External Messages) #10247
+ALTER TABLE sormastosormasorigininfo ADD COLUMN withsurveillancereports boolean DEFAULT false;
+ALTER TABLE sormastosormasorigininfo_history ADD COLUMN withsurveillancereports boolean DEFAULT false;
+ALTER TABLE sharerequestinfo ADD COLUMN withsurveillancereports boolean DEFAULT false;
+ALTER TABLE sharerequestinfo_history ADD COLUMN withsurveillancereports boolean DEFAULT false;
+ALTER TABLE sormastosormasshareinfo ADD COLUMN surveillancereport_id bigint;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_surveillancereport_id FOREIGN KEY (surveillancereport_id) REFERENCES surveillancereports (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_history ADD COLUMN surveillancereport_id bigint;
+
+ALTER TABLE surveillancereports ADD COLUMN sormastosormasorigininfo_id bigint;
+ALTER TABLE surveillancereports ADD CONSTRAINT fk_surveillancereports_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE surveillancereports_history ADD COLUMN sormastosormasorigininfo_id bigint;
+
+ALTER TABLE surveillancereports RENAME COLUMN creatinguser_id to reportinguser_id;
+ALTER TABLE surveillancereports_history RENAME COLUMN creatinguser_id to reportinguser_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (504, 'S2S Surveillance Reports should be shareable (along with possibly attached External Messages) #10247');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -27,9 +27,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -37,6 +37,7 @@ import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -54,7 +55,7 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 	public static final String TABLE_NAME = "surveillancereports";
 
 	public static final String REPORTING_TYPE = "reportingType";
-	public static final String CREATING_USER = "creatingUser";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String DATE_OF_DIAGNOSIS = "dateOfDiagnosis";
 	public static final String FACILITY_REGION = "facilityRegion";
@@ -64,12 +65,14 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 	public static final String FACILITY_DETAILS = "facilityDetails";
 	public static final String NOTIFICATION_DETAILS = "notificationDetails";
 	public static final String CAZE = "caze";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private ReportingType reportingType;
 
 	private String externalId;
 
-	private User creatingUser;
+	private User reportingUser;
 
 	private Date reportDate;
 
@@ -89,6 +92,7 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 
 	private Case caze;
 
+	private ExternalMessage externalMessage;
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -111,13 +115,14 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 		this.externalId = externalId;
 	}
 
+	@Override
 	@ManyToOne(fetch = FetchType.LAZY)
-	public User getCreatingUser() {
-		return creatingUser;
+	public User getReportingUser() {
+		return reportingUser;
 	}
 
-	public void setCreatingUser(User creatingUser) {
-		this.creatingUser = creatingUser;
+	public void setReportingUser(User reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -202,6 +207,15 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 		this.caze = caze;
 	}
 
+	@OneToOne(mappedBy = ExternalMessage.SURVEILLANCE_REPORT)
+	public ExternalMessage getExternalMessage() {
+		return externalMessage;
+	}
+
+	public void setExternalMessage(ExternalMessage externalMessage) {
+		this.externalMessage = externalMessage;
+	}
+
 	@Override
 	@ManyToOne(cascade = {
 		CascadeType.PERSIST,
@@ -227,16 +241,4 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
 		this.sormasToSormasShares = sormasToSormasShares;
 	}
-
-	/**
-	 * Used only in S2S context
-	 * 
-	 * @return null
-	 */
-	@Override
-	@Transient
-	public User getReportingUser() {
-		return null;
-	}
-
 }

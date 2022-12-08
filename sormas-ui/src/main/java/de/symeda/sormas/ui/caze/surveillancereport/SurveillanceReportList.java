@@ -84,15 +84,18 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			SurveillanceReportDto report = displayedEntries.get(i);
 			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(report);
 
-			boolean editState = UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && isEditAllowed;
+			boolean isEditable = UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
+				&& isEditAllowed
+				&& !report.isOwnershipHandedOver()
+				&& (report.getSormasToSormasOriginInfo() == null || report.getSormasToSormasOriginInfo().isOwnershipHandedOver());
 
 			listEntry.addActionButton(
 				report.getUuid(),
 				(Button.ClickListener) event -> ControllerProvider.getSurveillanceReportController()
-					.editSurveillanceReport(listEntry.getReport(), this::reload, editState),
-				editState);
+					.editSurveillanceReport(listEntry.getReport(), this::reload, isEditable),
+				isEditable);
 
-			listEntry.setEnabled(editState);
+			listEntry.setEnabled(isEditable);
 			if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 				addViewExternalMessageButton(listEntry);
 			}

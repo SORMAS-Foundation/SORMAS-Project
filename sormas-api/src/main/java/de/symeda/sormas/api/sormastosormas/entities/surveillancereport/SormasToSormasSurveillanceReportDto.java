@@ -17,13 +17,22 @@ package de.symeda.sormas.api.sormastosormas.entities.surveillancereport;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
 
 public class SormasToSormasSurveillanceReportDto extends SormasToSormasEntityDto<SurveillanceReportDto> {
 
+	private final SormasToSormasExternalMessageDto externalMessage;
+
 	public SormasToSormasSurveillanceReportDto() {
+		externalMessage = null;
 	}
 
-	public SormasToSormasSurveillanceReportDto(SurveillanceReportDto entity) {
+	public SormasToSormasSurveillanceReportDto(SurveillanceReportDto entity, SormasToSormasExternalMessageDto externalMessage) {
 		super(entity);
+		this.externalMessage = externalMessage;
+	}
+
+	public SormasToSormasExternalMessageDto getExternalMessage() {
+		return externalMessage;
 	}
 }

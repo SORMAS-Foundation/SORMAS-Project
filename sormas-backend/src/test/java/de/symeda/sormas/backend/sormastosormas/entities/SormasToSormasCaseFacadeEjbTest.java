@@ -53,6 +53,8 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -76,6 +78,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
 import de.symeda.sormas.api.sormastosormas.entities.SyncDataDto;
 import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
@@ -92,6 +95,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
@@ -1321,6 +1325,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		PersonDto person = createPersonDto(rdcf);
 		CaseDataDto caze = createCaseDto(rdcf, person);
 		SurveillanceReportDto report = SurveillanceReportDto.build(caze.toReference(), null);
+		report.setReportDate(new Date());
 		report.setReportingType(ReportingType.LABORATORY);
 		report.setFacilityRegion(rdcf.region);
 		report.setFacilityDistrict(rdcf.district);
@@ -1330,7 +1335,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		SormasToSormasDto shareData = new SormasToSormasDto();
 		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
-		shareData.setSurveillanceReports(Collections.singletonList(new SormasToSormasSurveillanceReportDto(report)));
+		shareData.setSurveillanceReports(Collections.singletonList(new SormasToSormasSurveillanceReportDto(report, null)));
 
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 		getSormasToSormasCaseFacade().saveSharedEntities(encryptedData);
@@ -1339,6 +1344,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		SurveillanceReportDto savedReport = getSurveillanceReportFacade().getByUuid(report.getUuid());
 
 		assertThat(savedReport, is(notNullValue()));
+		assertThat(savedReport.getReportDate().compareTo(report.getReportDate()), is(0));
 		assertThat(savedReport.getReportingType(), is(report.getReportingType()));
 		assertThat(savedReport.getFacilityRegion(), is(report.getFacilityRegion()));
 		assertThat(savedReport.getFacilityDistrict(), is(report.getFacilityDistrict()));
@@ -1346,6 +1352,36 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedReport.getNotificationDetails(), is(report.getNotificationDetails()));
 
 		assertThat(savedCase.getSormasToSormasOriginInfo().getUuid(), is(savedReport.getSormasToSormasOriginInfo().getUuid()));
+	}
+
+	@Test
+	public void testSaveSharedSurveillanceReportsWithExternalMessage() throws SormasToSormasException, SormasToSormasValidationException {
+		PersonDto person = createPersonDto(rdcf);
+		CaseDataDto caze = createCaseDto(rdcf, person);
+		SurveillanceReportDto report = SurveillanceReportDto.build(caze.toReference(), null);
+		report.setReportDate(new Date());
+		report.setReportingType(ReportingType.LABORATORY);
+		report.setFacilityRegion(rdcf.region);
+		report.setFacilityDistrict(rdcf.district);
+		report.setFacility(rdcf.facility);
+		report.setNotificationDetails("Test notification details");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+		ExternalMessageDto externalMessage = ExternalMessageDto.build();
+		externalMessage.setSurveillanceReport(report.toReference());
+		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
+
+		shareData.setSurveillanceReports(
+			Collections.singletonList(new SormasToSormasSurveillanceReportDto(report, new SormasToSormasExternalMessageDto(externalMessage))));
+
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
+		getSormasToSormasCaseFacade().saveSharedEntities(encryptedData);
+
+		ExternalMessage savedExternalMessage = getSurveillanceReportService().getByUuid(report.getUuid()).getExternalMessage();
+		assertThat(savedExternalMessage.getUuid(), is(externalMessage.getUuid()));
+		assertThat(savedExternalMessage.getStatus(), is(externalMessage.getStatus()));
 	}
 
 	private ContactDto createRemoteContactDto(TestDataCreator.RDCF remoteRdcf, CaseDataDto caze) {

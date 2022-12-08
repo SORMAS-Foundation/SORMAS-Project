@@ -43,7 +43,7 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 
 	public static final String REPORTING_TYPE = "reportingType";
 	public static final String EXTERNAL_ID = "externalId";
-	public static final String CREATING_USER = "creatingUser";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String DATE_OF_DIAGNOSIS = "dateOfDiagnosis";
 	public static final String FACILITY_REGION = "facilityRegion";
@@ -52,22 +52,21 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
 	public static final String NOTIFICATION_DETAILS = "notificationDetails";
-
-	public static SurveillanceReportDto build(CaseReferenceDto caze, UserReferenceDto creatingUser) {
-		SurveillanceReportDto surveillanceReport = new SurveillanceReportDto();
-
-		surveillanceReport.setUuid(DataHelper.createUuid());
-		surveillanceReport.setCaze(caze);
-		surveillanceReport.setCreatingUser(creatingUser);
-
-		return surveillanceReport;
-	}
+	private UserReferenceDto reportingUser;
 
 	private ReportingType reportingType;
 
 	private String externalId;
 
-	private UserReferenceDto creatingUser;
+	public static SurveillanceReportDto build(CaseReferenceDto caze, UserReferenceDto reportingUser) {
+		SurveillanceReportDto surveillanceReport = new SurveillanceReportDto();
+
+		surveillanceReport.setUuid(DataHelper.createUuid());
+		surveillanceReport.setCaze(caze);
+		surveillanceReport.setReportingUser(reportingUser);
+
+		return surveillanceReport;
+	}
 
 	@NotNull
 	private Date reportDate;
@@ -108,12 +107,14 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 		this.externalId = externalId;
 	}
 
-	public UserReferenceDto getCreatingUser() {
-		return creatingUser;
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
 	}
 
-	public void setCreatingUser(UserReferenceDto creatingUser) {
-		this.creatingUser = creatingUser;
+	@Override
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public Date getReportDate() {
@@ -190,18 +191,5 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 
 	public SurveillanceReportReferenceDto toReference() {
 		return new SurveillanceReportReferenceDto(getUuid());
-	}
-
-	/**
-	 * Used in S2S context
-	 */
-	@Override
-	public UserReferenceDto getReportingUser() {
-		return null;
-	}
-
-	@Override
-	public void setReportingUser(UserReferenceDto reportingUser) {
-
 	}
 }

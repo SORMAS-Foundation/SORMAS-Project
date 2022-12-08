@@ -47,7 +47,7 @@ public class SurveillanceReportFacadeEjbTest extends AbstractBeanTest {
 
 		SurveillanceReportDto savedReport = getSurveillanceReportFacade().save(newReport);
 		assertEquals(newReport.getCaze(), savedReport.getCaze());
-		assertEquals(newReport.getCreatingUser(), savedReport.getCreatingUser());
+		assertEquals(newReport.getReportingUser(), savedReport.getReportingUser());
 		assertEquals(newReport.getReportDate(), savedReport.getReportDate());
 		assertEquals(newReport.getDateOfDiagnosis(), savedReport.getDateOfDiagnosis());
 		assertEquals(newReport.getReportingType(), savedReport.getReportingType());
@@ -57,7 +57,7 @@ public class SurveillanceReportFacadeEjbTest extends AbstractBeanTest {
 
 		SurveillanceReportDto reloadedReport = getSurveillanceReportFacade().getByUuid(savedReport.getUuid());
 		assertEquals(newReport.getCaze(), reloadedReport.getCaze());
-		assertEquals(newReport.getCreatingUser(), reloadedReport.getCreatingUser());
+		assertEquals(newReport.getReportingUser(), reloadedReport.getReportingUser());
 		assertEquals(newReport.getReportDate(), reloadedReport.getReportDate());
 		assertEquals(newReport.getDateOfDiagnosis(), reloadedReport.getDateOfDiagnosis());
 		assertEquals(newReport.getReportingType(), reloadedReport.getReportingType());
