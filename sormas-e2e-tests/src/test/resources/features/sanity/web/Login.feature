@@ -25,7 +25,7 @@ Feature: Login with different type of users
       | Admin Surveillance Supervisor |
       | Contact Officer               |
       | Community Officer             |
-      | Hospital Informant            |
+  #    | Hospital Informant            |
       | Clinician                     |
 
   @env_de @LoginDe
@@ -54,7 +54,7 @@ Feature: Login with different type of users
       | Admin Surveillance Supervisor |
       | Contact Officer               |
       | Community Officer             |
-      | Hospital Informant            |
+  #    | Hospital Informant            |
       | Clinician                     |
 
   @env_keycloak @LoginKeycloak
