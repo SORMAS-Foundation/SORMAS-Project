@@ -1856,7 +1856,7 @@ Feature: Case end to end tests
     Then I click download in case document create page in DE
     When I check if downloaded docx file is correct
 
-  @tmsLink=SORDEV-12446 @env_s2s_1
+  @tmsLink=SORDEV-12446 @env_s2s_1 @testIt
   Scenario: Hide share action in bulk mode for cases
     Given I log in as a Admin User
     Then I click on the Cases button from navbar
