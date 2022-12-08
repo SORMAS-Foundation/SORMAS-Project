@@ -15,12 +15,6 @@
 
 package de.symeda.sormas.app.component.controls;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -36,6 +30,12 @@ import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.InverseBindingListener;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -45,6 +45,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.DateFormatHelper;
@@ -212,7 +213,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
 	@Override
 	public void setValue(Object value) {
-		String stringValue = DataHelper.toStringNullable(value);
+		String stringValue = AdoDtoHelper.toStringNullable(value);
 		stringValue = DataHelper.isNullOrEmpty(stringValue) && inaccessibleValue != null ? inaccessibleValue : stringValue;
 
 		internalValue = value;
@@ -220,7 +221,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	}
 
 	public void setValue(Object value, Object internalValue) {
-		String stringValue = DataHelper.toStringNullable(value);
+		String stringValue = AdoDtoHelper.toStringNullable(value);
 		stringValue = DataHelper.isNullOrEmpty(stringValue) && inaccessibleValue != null ? inaccessibleValue : stringValue;
 
 		this.internalValue = internalValue;
@@ -336,7 +337,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		String appendValue,
 		String valueFormat,
 		String defaultValue) {
-		setValue(textField, ado != null ? ado.toString() : null, appendValue, valueFormat, defaultValue, ado);
+		setValue(textField, ado != null ? ado.buildCaption() : null, appendValue, valueFormat, defaultValue, ado);
 	}
 
 	// Date & date range

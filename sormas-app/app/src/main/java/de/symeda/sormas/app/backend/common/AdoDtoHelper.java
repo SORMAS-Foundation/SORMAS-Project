@@ -15,6 +15,14 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.logger.LoggerFactory;
+
+import org.springframework.util.CollectionUtils;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -25,17 +33,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import org.springframework.util.CollectionUtils;
-
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
-
-import android.content.Context;
-import android.util.Log;
-
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -476,6 +477,15 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 			return DtoUserRightsHelper.isEditAllowed(getDtoClass());
 		} catch (UnsupportedOperationException e) {
 			return true;
+		}
+	}
+
+	public static String toStringNullable(Object nullable) {
+
+		if (nullable instanceof AbstractDomainObject) {
+			return ((AbstractDomainObject) nullable).buildCaption();
+		} else {
+			return DataHelper.toStringNullable(nullable);
 		}
 	}
 }

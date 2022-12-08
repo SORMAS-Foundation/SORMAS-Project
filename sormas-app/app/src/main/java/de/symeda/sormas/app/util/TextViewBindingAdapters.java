@@ -17,14 +17,6 @@ package de.symeda.sormas.app.util;
 
 import static android.view.View.VISIBLE;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -37,6 +29,14 @@ import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableList;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -254,7 +254,7 @@ public class TextViewBindingAdapters {
 		String defaultValue) {
 		String val = defaultValue;
 
-		if (location == null || location.toString().isEmpty()) {
+		if (location == null || location.buildCaption().isEmpty()) {
 			textField.setText(prependValue + ": " + val);
 		} else {
 			val = location.getCompleteString();
@@ -265,7 +265,7 @@ public class TextViewBindingAdapters {
 				textField.setText(prependValue + ": " + val);
 			}
 
-			textField.setText(location.toString());
+			textField.setText(location.buildCaption());
 		}
 	}
 
@@ -658,7 +658,7 @@ public class TextViewBindingAdapters {
 			if (valueFormat != null && valueFormat.trim() != "") {
 				textField.setText(String.format(valueFormat, user.getFirstName(), user.getLastName().toUpperCase()));
 			} else {
-				textField.setText(user.toString());
+				textField.setText(user.buildCaption());
 			}
 		}
 	}
@@ -680,7 +680,7 @@ public class TextViewBindingAdapters {
 				if (valueFormat != null && !valueFormat.trim().equals("")) {
 					textField.setText(String.format(valueFormat, person.getFirstName(), person.getLastName()));
 				} else {
-					textField.setText(person.toString());
+					textField.setText(person.buildCaption());
 				}
 			}
 		}
@@ -943,7 +943,7 @@ public class TextViewBindingAdapters {
 		"shortLocationValue",
 		"defaultValue" }, requireAll = false)
 	public static void setShortLocationValue(TextView textField, Location location, String defaultValue) {
-		if (location == null || location.toString().isEmpty()) {
+		if (location == null || location.buildCaption().isEmpty()) {
 			textField.setText(defaultValue);
 		} else {
 			textField.setText(location.getRegion() + ", " + location.getDistrict());
@@ -954,10 +954,10 @@ public class TextViewBindingAdapters {
 		"locationValue",
 		"defaultValue" }, requireAll = false)
 	public static void setLocationValue(TextView textField, Location location, String defaultValue) {
-		if (location == null || location.toString().isEmpty()) {
+		if (location == null || location.buildCaption().isEmpty()) {
 			textField.setText(defaultValue);
 		} else {
-			textField.setText(location.toString());
+			textField.setText(location.buildCaption());
 		}
 	}
 
@@ -1000,7 +1000,7 @@ public class TextViewBindingAdapters {
 		if (facility == null) {
 			textField.setText(defaultValue);
 		} else {
-			textField.setText(facility.toString());
+			textField.setText(facility.buildCaption());
 		}
 	}
 
@@ -1042,7 +1042,7 @@ public class TextViewBindingAdapters {
 		if (pointOfEntry == null) {
 			textField.setText(defaultValue);
 		} else {
-			textField.setText(pointOfEntry.toString());
+			textField.setText(pointOfEntry.buildCaption());
 		}
 	}
 
@@ -1050,10 +1050,10 @@ public class TextViewBindingAdapters {
 		"adoValue",
 		"defaultValue" }, requireAll = false)
 	public static void setAdoValue(TextView textField, AbstractDomainObject ado, String defaultValue) {
-		if (ado == null || StringUtils.isEmpty(ado.toString())) {
+		if (ado == null || StringUtils.isEmpty(ado.buildCaption())) {
 			textField.setText(defaultValue);
 		} else {
-			textField.setText(ado.toString());
+			textField.setText(ado.buildCaption());
 		}
 	}
 
@@ -1161,7 +1161,7 @@ public class TextViewBindingAdapters {
 		if (person == null)
 			return result;
 
-		return person.toString();
+		return person.buildCaption();
 	}
 
 	private static String getPersonInfo(Task record) {

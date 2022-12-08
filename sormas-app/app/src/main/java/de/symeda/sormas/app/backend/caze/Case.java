@@ -874,8 +874,8 @@ public class Case extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
-		return super.toString() + " " + (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+	public String buildCaption() {
+		return super.buildCaption() + " " + (getPerson() != null ? getPerson().buildCaption() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 
 	@Override

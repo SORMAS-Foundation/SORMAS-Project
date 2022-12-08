@@ -15,13 +15,13 @@
 
 package de.symeda.sormas.app.backend.infrastructure;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
@@ -123,7 +123,7 @@ public class PointOfEntry extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
 	}
 }

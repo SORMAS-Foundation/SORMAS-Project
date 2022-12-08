@@ -30,8 +30,8 @@ import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.VisualState;
@@ -119,7 +119,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 	@Override
 	public void setValue(Object value) {
 		internalValue = value;
-		setFieldValue(DataHelper.toStringNullable(value));
+		setFieldValue(AdoDtoHelper.toStringNullable(value));
 	}
 
 	@Override
