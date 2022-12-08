@@ -87,7 +87,7 @@ public class ContinentsView extends AbstractConfigurationView {
 		grid = new ContinentsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		rowCount = new RowCount(Strings.labelNumberOfContinents, grid.getItemCount());
+		rowCount = new RowCount(Strings.labelNumberOfContinents, grid.getDataSize());
 		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -274,7 +274,7 @@ public class ContinentsView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
-		rowCount.update(grid.getItemCount());
+		rowCount.update(grid.getDataSize());
 	}
 
 	public void updateFilterComponents() {

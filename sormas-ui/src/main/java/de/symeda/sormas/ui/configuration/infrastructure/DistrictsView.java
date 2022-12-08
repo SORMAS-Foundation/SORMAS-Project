@@ -95,7 +95,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		grid = new DistrictsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfDistricts, grid.getItemCount()));
+		gridLayout.addComponent(new RowCount(Strings.labelNumberOfDistricts, grid.getDataSize()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);

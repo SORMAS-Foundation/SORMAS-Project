@@ -93,7 +93,7 @@ public class RegionsView extends AbstractConfigurationView {
 		grid = new RegionsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfRegions, grid.getItemCount()));
+		gridLayout.addComponent(new RowCount(Strings.labelNumberOfRegions, grid.getDataSize()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);

@@ -294,7 +294,7 @@ public class CountriesView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
-		rowCount.update(grid.getItemCount());
+		rowCount.update(grid.getDataSize());
 	}
 
 	public void updateFilterComponents() {

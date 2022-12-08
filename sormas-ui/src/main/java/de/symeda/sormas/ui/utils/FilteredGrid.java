@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
@@ -35,6 +34,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	private C criteria;
 	private boolean inEagerMode;
+	private int dataSize;
 
 	public FilteredGrid(Class<T> beanType) {
 		super(beanType);
@@ -64,6 +64,17 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		this.inEagerMode = inEagerMode;
 	}
 
+	/**
+	 * @return Amount of total data with the given filter criteria.
+	 */
+	public int getDataSize() {
+		return dataSize;
+	}
+
+	private void setDataSize(int dataSize) {
+		this.dataSize = dataSize;
+	}
+
 	@SuppressWarnings("unchecked")
 	public ConfigurableFilterDataProvider<T, Void, C> getFilteredDataProvider() {
 
@@ -83,6 +94,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		}
 
 		super.setDataProvider(new DataProviderWrapper<>(unpackedDataProvider));
+		getDataProvider().addDataProviderListener(new DataSizeChangeListener<>(s -> setDataSize(s)));
 	}
 
 	@Override
@@ -133,10 +145,6 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 			bulkActionHandler(callback);
 		}
 
-	}
-
-	public int getItemCount() {
-		return getDataProvider().size(new Query<>());
 	}
 
 	/**

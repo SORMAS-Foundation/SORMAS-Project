@@ -90,7 +90,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		grid = new SubcontinentsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		rowCount = new RowCount(Strings.labelNumberOfSubcontinents, grid.getItemCount());
+		rowCount = new RowCount(Strings.labelNumberOfSubcontinents, grid.getDataSize());
 		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -290,7 +290,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
-		rowCount.update(grid.getItemCount());
+		rowCount.update(grid.getDataSize());
 	}
 
 	public void updateFilterComponents() {

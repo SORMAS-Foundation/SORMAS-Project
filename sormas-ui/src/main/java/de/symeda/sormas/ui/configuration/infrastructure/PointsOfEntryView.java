@@ -98,7 +98,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		grid = new PointsOfEntryGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfPointofEntry, grid.getItemCount()));
+		gridLayout.addComponent(new RowCount(Strings.labelNumberOfPointofEntry, grid.getDataSize()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);

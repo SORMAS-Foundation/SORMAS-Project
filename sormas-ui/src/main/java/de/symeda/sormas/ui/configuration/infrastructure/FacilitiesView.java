@@ -110,7 +110,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		gridLayout = new VerticalLayout();
 		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
-		rowCount = new RowCount(Strings.labelNumberOfFacilities, grid.getItemCount());
+		rowCount = new RowCount(Strings.labelNumberOfFacilities, grid.getDataSize());
 		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -125,7 +125,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				window.setCaption(I18nProperties.getString(Strings.headingImportFacilities));
 				window.addCloseListener(c -> {
 					grid.reload();
-					rowCount.update(grid.getItemCount());
+					rowCount.update(grid.getDataSize());
 				});
 			}, ValoTheme.BUTTON_PRIMARY);
 
@@ -211,7 +211,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				searchField.setEnabled(false);
 				grid.setEagerDataProvider();
 				grid.reload();
-				rowCount.update(grid.getItemCount());
+				rowCount.update(grid.getDataSize());
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
@@ -251,7 +251,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		searchField.addTextChangeListener(e -> {
 			criteria.nameAddressLike(e.getText());
 			grid.reload();
-			rowCount.update(grid.getItemCount());
+			rowCount.update(grid.getDataSize());
 		});
 		filterLayout.addComponent(searchField);
 
@@ -279,7 +279,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		countryFilter = addCountryFilter(filterLayout, country -> {
 			criteria.country(country);
 			grid.reload();
-			rowCount.update(grid.getItemCount());
+			rowCount.update(grid.getDataSize());
 		}, regionFilter);
 		countryFilter.addValueChangeListener(country -> {
 			CountryReferenceDto countryReferenceDto = (CountryReferenceDto) country.getProperty().getValue();
@@ -421,7 +421,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
-		rowCount.update(grid.getItemCount());
+		rowCount.update(grid.getDataSize());
 	}
 
 	public void updateFilterComponents() {

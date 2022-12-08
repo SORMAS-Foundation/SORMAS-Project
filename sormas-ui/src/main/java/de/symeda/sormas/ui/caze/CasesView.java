@@ -419,7 +419,7 @@ public class CasesView extends AbstractView {
 
 		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
-				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
+				if (grid.getDataSize() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getCaption(Captions.actionEnterBulkEditMode),
 						new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)),
@@ -872,7 +872,7 @@ public class CasesView extends AbstractView {
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 

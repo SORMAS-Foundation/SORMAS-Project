@@ -96,8 +96,8 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 
 		EventSelectionGrid tempGrid = this;
 		dataProvider.addDataProviderListener((DataProviderListener<EventIndexDto>) dataChangeEvent -> {
-			if (tempGrid.getItemCount() > 0) {
-				tempGrid.setHeightByRows(Math.min(tempGrid.getItemCount(), 5));
+			if (tempGrid.getDataSize() > 0) {
+				tempGrid.setHeightByRows(Math.min(tempGrid.getDataSize(), 5));
 			} else {
 				tempGrid.setHeightByRows(1);
 			}
