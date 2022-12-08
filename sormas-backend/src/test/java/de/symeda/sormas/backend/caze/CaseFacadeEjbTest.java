@@ -3116,6 +3116,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(caseUuids.contains(case2.getUuid()));
 	}
 
+	@Test
+	public void testHasPointOfEntry() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson("John", "Doe");
+
+		CaseDataDto case1 = creator.createCase(user.toReference(), personDto.toReference(), rdcf);
+		CaseDataDto case2 = creator.createCase(user.toReference(), rdcf, c -> {
+			c.setPerson(personDto.toReference());
+			c.setPointOfEntry(rdcf.pointOfEntry);
+		});
+
+		case1.setPointOfEntry(null);
+		getCaseFacade().save(case1);
+
+		boolean hasPointOfEntry = getCaseFacade().hasPointOfEntry(case1.getUuid());
+		assertFalse(hasPointOfEntry);
+		hasPointOfEntry = getCaseFacade().hasPointOfEntry(case2.getUuid());
+		assertTrue(hasPointOfEntry);
+	}
+
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
 	private static final SecureRandom rnd = new SecureRandom();
 

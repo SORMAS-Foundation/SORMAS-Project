@@ -4198,6 +4198,23 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caseSave(cazeDto, true, visit.getCaze(), cazeDto, true, true);
 	}
 
+	@RightsAllowed({
+		UserRight._PORT_HEALTH_INFO_VIEW })
+	public boolean hasPointOfEntry(String caseUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		CaseJoins caseCaseJoins = new CaseJoins(caseRoot);
+		Join<Case, PointOfEntry> pointOfEntryJoin = caseCaseJoins.getPointOfEntry();
+
+		cq.select(cb.count(caseRoot));
+		cq.where(cb.and(cb.equal(caseRoot.get(Case.UUID), caseUuid), cb.isNotNull(pointOfEntryJoin.get(PointOfEntry.ID))));
+
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
