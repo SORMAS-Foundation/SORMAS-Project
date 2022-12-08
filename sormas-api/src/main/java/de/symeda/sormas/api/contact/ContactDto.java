@@ -39,6 +39,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
@@ -373,6 +374,13 @@ public class ContactDto extends SormasToSormasShareableDto {
 	public static ContactDto build(EventParticipantDto eventParticipant) {
 		final ContactDto contact = build();
 		contact.setPerson(eventParticipant.getPerson().toReference());
+
+		return contact;
+	}
+
+	public static ContactDto build(PersonDto person) {
+		final ContactDto contact = build();
+		contact.setPerson(person.toReference());
 
 		return contact;
 	}

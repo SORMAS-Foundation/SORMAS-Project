@@ -1043,7 +1043,7 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case data for duplicates merge with for one person data
     And I click on Save button in Case form
-    And I Pick a new person in Pick or create person popup during case creation
+    #And I Pick a new person in Pick or create person popup during case creation
     Then I check the created data for duplicated case is correctly displayed on Edit case page
     And I set Vaccination status to "Vaccinated" on Edit Case page
     And I click on save button from Edit Case page
@@ -1639,7 +1639,7 @@ Feature: Case end to end tests
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
     And I set date of sample collection to 5 day ago in Sample form
     And I set Final Laboratory Result to "Positiv" on Create new Sample page
-    And I save the created sample
+    And I save the created sample with pathogen test
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
   @tmsLink=SORDEV-5141 @env_main
