@@ -435,10 +435,11 @@ public class CasesView extends AbstractView {
 					enterBulkEditMode();
 				}
 				moreButton.setPopupVisible(false);
-			}, ValoTheme.BUTTON_PRIMARY);
+			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_CAPTION_OVERFLOW);
 
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+			btnEnterBulkEditMode.setDescription(I18nProperties.getCaption(Captions.actionEnterBulkEditMode), ContentMode.HTML);
 			moreButton.addMenuEntry(btnEnterBulkEditMode);
 
 			btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, e -> {
