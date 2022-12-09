@@ -25,11 +25,12 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 @AuditedClass
-public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
+public abstract class ReferenceDto implements Serializable, HasUuid, HasCaption, Comparable<ReferenceDto> {
 
 	public static final String CAPTION = "caption";
 	public static final String NO_REFERENCE_UUID = "SORMAS-CONSTID-NO-REFERENCE";
@@ -68,6 +69,11 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 
 	public void setCaption(String caption) {
 		this.caption = caption;
+	}
+
+	@Override
+	public String buildCaption() {
+		return getCaption();
 	}
 
 	@Override

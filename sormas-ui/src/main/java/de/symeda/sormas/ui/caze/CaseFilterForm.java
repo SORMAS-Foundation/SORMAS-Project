@@ -45,14 +45,18 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -194,7 +198,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
 			regionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
-			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+			List<RegionReferenceDto> allActiveByServerCountry = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
+			for (RegionReferenceDto regionReferenceDto : allActiveByServerCountry) {
+				regionField.setItemCaption(regionReferenceDto, regionReferenceDto.buildCaption());
+			}
+			regionField.addItems(allActiveByServerCountry);
 		}
 
 		ComboBox districtField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.DISTRICT, 140));
@@ -224,8 +232,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
 		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
-		officerField
-			.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), selectedDisease, UserRight.CASE_RESPONSIBLE));
+		List<UserReferenceDto> usersByRegionAndRights =
+			FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), selectedDisease, UserRight.CASE_RESPONSIBLE);
+		officerField.addItems(usersByRegionAndRights);
+		usersByRegionAndRights.forEach(item -> officerField.setItemCaption(item, item.buildCaption()));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
@@ -252,7 +262,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ComboBox reportedByField = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
-		reportedByField.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
+		List<UserRoleReferenceDto> allActiveAsReference = FacadeProvider.getUserRoleFacade().getAllActiveAsReference();
+		reportedByField.addItems(allActiveAsReference);
+		allActiveAsReference.forEach(item -> reportedByField.setItemCaption(item, item.buildCaption()));
 
 		TextField reportingUserField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REPORTING_USER_LIKE, 200));
 		reportingUserField.setNullRepresentation("");
@@ -460,7 +472,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				officerField.removeAllItems();
 				if (region != null) {
 					enableFields(districtField);
-					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+					List<DistrictReferenceDto> allActiveByRegion = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid());
+					FieldHelper.updateItems(districtField, allActiveByRegion);
+					for (DistrictReferenceDto refDto : allActiveByRegion) {
+						districtField.setItemCaption(refDto, refDto.buildCaption());
+					}
 
 					disableFields(pointOfEntryField);
 					clearAndDisableFields(communityField, facilityField, facilityTypeField, facilityTypeGroupField);
@@ -487,23 +503,32 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					clearAndDisableFields(facilityField);
 					if (facilityTypeGroupField != null) {
 						if (facilityTypeGroupField.getValue() != null && facilityTypeField.getValue() != null) {
-							FieldHelper.updateItems(
-								facilityField,
-								FacadeProvider.getFacilityFacade()
-									.getActiveFacilitiesByDistrictAndType(newDistrict, (FacilityType) facilityTypeField.getValue(), true, false));
+							List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(newDistrict, (FacilityType) facilityTypeField.getValue(), true, false);
+							FieldHelper.updateItems(facilityField, facilities);
+							for (FacilityReferenceDto refDto : facilities) {
+								facilityField.setItemCaption(refDto, refDto.buildCaption());
+							}
 							enableFields(facilityField);
 						} else {
 							FieldHelper.updateEnumData(facilityTypeGroupField, FacilityTypeGroup.getAccomodationGroups());
 						}
 					}
 
-					FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
+					List<CommunityReferenceDto> communities = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid());
+					FieldHelper.updateItems(communityField, communities);
+					for (CommunityReferenceDto refDto : communities) {
+						communityField.setItemCaption(refDto, refDto.buildCaption());
+					}
 
 					if (pointOfEntryField != null && currentCaseOrigin == CaseOrigin.POINT_OF_ENTRY) {
 						pointOfEntryField.setEnabled(true);
-						FieldHelper.updateItems(
-							pointOfEntryField,
-							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
+						List<PointOfEntryReferenceDto> allActiveByDistrict =
+							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true);
+						FieldHelper.updateItems(pointOfEntryField, allActiveByDistrict);
+						for (PointOfEntryReferenceDto refDto : allActiveByDistrict) {
+							facilityField.setItemCaption(refDto, refDto.buildCaption());
+						}
 					}
 					Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
 					officerField
@@ -530,14 +555,16 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				if (facilityType == null && facilityField != null) {
 					facilityField.removeAllItems();
 				} else if (facilityField != null) {
+					List<FacilityReferenceDto> facilities;
 					if (community == null) {
-						FieldHelper.updateItems(
-							facilityField,
-							FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(currentDistrict, facilityType, true, false));
+						facilities =
+							FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(currentDistrict, facilityType, true, false);
 					} else {
-						FieldHelper.updateItems(
-							facilityField,
-							FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false));
+						facilities = FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false);
+					}
+					FieldHelper.updateItems(facilityField, facilities);
+					for (FacilityReferenceDto refDto : facilities) {
+						facilityField.setItemCaption(refDto, refDto.buildCaption());
 					}
 				}
 			}
@@ -568,13 +595,19 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 					CommunityReferenceDto community = (CommunityReferenceDto) communityField.getValue();
 					if (community != null) {
-						FieldHelper.updateItems(
-							facilityField,
-							FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false));
+						List<FacilityReferenceDto> facilities =
+							FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false);
+						FieldHelper.updateItems(facilityField, facilities);
+						for (FacilityReferenceDto refDto : facilities) {
+							facilityField.setItemCaption(refDto, refDto.buildCaption());
+						}
 					} else if (currentDistrict != null) {
-						FieldHelper.updateItems(
-							facilityField,
-							FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(currentDistrict, facilityType, true, false));
+						List<FacilityReferenceDto> facilities =
+							FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(currentDistrict, facilityType, true, false);
+						FieldHelper.updateItems(facilityField, facilities);
+						for (FacilityReferenceDto refDto : facilities) {
+							facilityField.setItemCaption(refDto, refDto.buildCaption());
+						}
 					}
 				}
 			}
@@ -678,11 +711,19 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		// district
 		if (region != null) {
 			enableFields(districtField);
-			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			List<DistrictReferenceDto> allActiveByRegion = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid());
+			districtField.addItems(allActiveByRegion);
+			for (DistrictReferenceDto refDto : allActiveByRegion) {
+				districtField.setItemCaption(refDto, refDto.buildCaption());
+			}
 			// community
 			if (district != null) {
 				districtField.setValue(district);
-				communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+				List<CommunityReferenceDto> allActiveByDistrict = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid());
+				communityField.addItems(allActiveByDistrict);
+				for (CommunityReferenceDto refDto : allActiveByDistrict) {
+					communityField.setItemCaption(refDto, refDto.buildCaption());
+				}
 				enableFields(communityField);
 				if (community != null) {
 					communityField.setValue(community);
@@ -708,12 +749,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				if (facilityType != null) {
 					facilityTypeField.setValue(facilityType);
 					enableFields(facilityField);
+					List<FacilityReferenceDto> facilities;
 					if (community != null) {
-						facilityField
-							.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false));
+						facilities = FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false);
 					} else {
-						facilityField
-							.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, facilityType, true, false));
+						facilities = FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, facilityType, true, false);
+					}
+					facilityField.addItems(facilities);
+					for (FacilityReferenceDto refDto : facilities) {
+						facilityField.setItemCaption(refDto, refDto.buildCaption());
 					}
 				} else {
 					disableFields(facilityField);
@@ -725,7 +769,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		if (pointOfEntryField != null && district != null) {
 			pointOfEntryField.setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);
-			pointOfEntryField.addItems(FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(district.getUuid(), true));
+			final List<PointOfEntryReferenceDto> pointOfEntries = FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(district.getUuid(), true);
+			pointOfEntryField.addItems(pointOfEntries);
+			for (PointOfEntryReferenceDto refDto : pointOfEntries) {
+				pointOfEntryField.setItemCaption(refDto, refDto.buildCaption());
+			}
 		}
 
 		// Disable fields according to user & jurisdiction

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.HasCaption;
 
 public class ComboBoxWithPlaceholder extends ComboBox {
 
@@ -33,6 +35,14 @@ public class ComboBoxWithPlaceholder extends ComboBox {
 	public ComboBoxWithPlaceholder() {
 		super();
 		this.setFilteringMode(FilteringMode.CONTAINS);
+	}
+
+	@Override
+	public void addItems(Collection<?> itemIds) throws UnsupportedOperationException {
+		super.addItems(itemIds);
+		for (Object item : itemIds) {
+			this.setItemCaption(item, item instanceof HasCaption ? ((HasCaption) item).buildCaption() : item.toString());
+		}
 	}
 
 	@Override
