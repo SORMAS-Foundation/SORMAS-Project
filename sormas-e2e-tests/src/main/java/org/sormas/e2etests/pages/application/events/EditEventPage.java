@@ -96,6 +96,7 @@ public class EditEventPage {
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
+  public static final By DELETE_BULK_EDIT_BUTTON_EVENT_PARTICIPANT = By.id("bulkActions-4");
   public static final By CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT = By.id("bulkActions-5");
   public static final By EVENT_MANAGEMENT_STATUS_CHECK =
       By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");

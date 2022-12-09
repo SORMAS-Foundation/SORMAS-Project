@@ -159,7 +159,7 @@ public class ExternalMessageProcessingUIHelper {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
 			LabMessageProcessingHelper.updateAddressAndSavePerson(
 				FacadeProvider.getPersonFacade().getByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
@@ -206,12 +206,13 @@ public class ExternalMessageProcessingUIHelper {
 			I18nProperties.getString(Strings.headingExternalMessageProcessSample),
 			false,
 			false);
-		sampleEditComponent.addDoneListener(() -> {
-			// prevent discard on close
-			closeListener.remove();
-			// close after commit/discard
-			window.close();
-		});
+		sampleEditComponent.addDoneListener(
+			() -> {
+				// prevent discard on close
+				closeListener.remove();
+				// close after commit/discard
+				window.close();
+			});
 	}
 
 	private static CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(

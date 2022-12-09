@@ -277,6 +277,9 @@ public class CaseDirectorySteps implements En {
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+          if (webDriverHelpers.isElementVisibleWithTimeout(BULK_EDIT_INFORMATION, 10)) {
+            webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
+          }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
     When(

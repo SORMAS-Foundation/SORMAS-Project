@@ -69,8 +69,7 @@ public class SampleShareDataBuilder
 
 	@Override
 	protected SormasToSormasSampleDto doBuildShareData(Sample sample, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo);
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		SampleDto sampleDto = getDto(sample, pseudonymizer);
 
@@ -81,7 +80,7 @@ public class SampleShareDataBuilder
 		}).collect(Collectors.toList());
 
 		List<AdditionalTestDto> additionalTests =
-				sample.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList());
+			sample.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 
 		List<SormasToSormasExternalMessageDto> externalMessages = Collections.emptyList();
 		if (ownerShipHandedOver) {
@@ -89,6 +88,9 @@ public class SampleShareDataBuilder
 				ExternalMessage m = r.getLabMessage();
 				ExternalMessageDto externalMessageDto = externalMessageFacade.toDto(m);
 				externalMessageDto.setAssignee(null);
+				// Cleanup surveillance report link until sending reports are implemented by #10247
+				// TODO - remove this lie when implementing #10247
+				externalMessageDto.setSurveillanceReport(null);
 
 				return new SormasToSormasExternalMessageDto(externalMessageDto);
 			}).collect(Collectors.toList());

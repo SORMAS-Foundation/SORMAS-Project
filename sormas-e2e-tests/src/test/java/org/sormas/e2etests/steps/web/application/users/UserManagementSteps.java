@@ -135,14 +135,14 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Active");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfActiveUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Inactive");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfInactiveUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
@@ -163,8 +163,8 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, "National User");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfSpecificUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
@@ -186,8 +186,8 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_USER_MANAGEMENT, "Bayern");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+//          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfSpecificUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));

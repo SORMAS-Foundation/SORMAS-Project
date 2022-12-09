@@ -158,7 +158,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationReferenceDto;
@@ -2990,9 +2989,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getHospitalization().setUuid(source.getHospitalization().getUuid());
-			target.getEpiData().setUuid(source.getEpiData().getUuid());
-			target.getSymptoms().setUuid(source.getSymptoms().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getHospitalization(), source.getHospitalization());
+			FacadeHelper.setUuidIfDtoExists(target.getEpiData(), source.getEpiData());
+			FacadeHelper.setUuidIfDtoExists(target.getSymptoms(), source.getSymptoms());
 		}
 
 		target.setDisease(source.getDisease());

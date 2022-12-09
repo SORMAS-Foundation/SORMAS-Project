@@ -1103,6 +1103,7 @@ public interface Strings {
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
+	String messageExternalJournalDidNotProvideMessage = "messageExternalJournalDidNotProvideMessage";
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
 	String messageExternalMessagesDeleted = "messageExternalMessagesDeleted";
