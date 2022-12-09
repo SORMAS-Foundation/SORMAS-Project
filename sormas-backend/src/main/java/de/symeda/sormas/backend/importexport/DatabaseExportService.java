@@ -152,6 +152,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.PATHOGEN_TESTS, PathogenTest.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.ADDITIONAL_TESTS, AdditionalTest.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.TASKS, Task.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.TASK_OBSERVER, Task.TASK_OBSERVER_TABLE);
 		EXPORT_CONFIGS.put(DatabaseTable.PERSONS, Person.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.PERSON_CONTACT_DETAILS, PersonContactDetail.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.LOCATIONS, Location.TABLE_NAME);

@@ -70,6 +70,7 @@ public enum DatabaseTable {
 	ADDITIONAL_TESTS(DatabaseTableType.SORMAS, SAMPLES, "additional_tests", dependingOnFeature(FeatureType.ADDITIONAL_TESTS)),
 
 	TASKS(DatabaseTableType.SORMAS, "tasks", dependingOnFeature(FeatureType.TASK_MANAGEMENT)),
+	TASK_OBSERVER(DatabaseTableType.SORMAS, TASKS, "task_observer"),
 
 	PERSONS(DatabaseTableType.SORMAS,
 		"persons",
