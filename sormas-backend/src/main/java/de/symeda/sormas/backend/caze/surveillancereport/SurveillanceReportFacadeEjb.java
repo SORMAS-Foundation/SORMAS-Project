@@ -16,10 +16,13 @@
 package de.symeda.sormas.backend.caze.surveillancereport;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,6 +33,9 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
@@ -37,6 +43,7 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceD
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -44,13 +51,15 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
-import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
@@ -69,6 +78,8 @@ public class SurveillanceReportFacadeEjb
 	AbstractBaseEjb<SurveillanceReport, SurveillanceReportDto, SurveillanceReportDto, SurveillanceReportReferenceDto, SurveillanceReportService, SurveillanceReportCriteria>
 	implements SurveillanceReportFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(SurveillanceReportFacadeEjb.class);
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 	@EJB
@@ -80,9 +91,15 @@ public class SurveillanceReportFacadeEjb
 	@EJB
 	private CaseService caseService;
 	@EJB
-	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
+	private ExternalMessageFacadeEjbLocal externalMessageFacade;
 	@EJB
 	private SormasToSormasOriginInfoService originInfoService;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
+	@EJB
+	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
 
 	public SurveillanceReportFacadeEjb() {
 		super();
@@ -262,12 +279,31 @@ public class SurveillanceReportFacadeEjb
 
 		service.ensurePersisted(report);
 
+		onReportChanged(report, internal);
+
 		return toPseudonymizedDto(report);
 	}
 
 	@Override
 	public List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids) {
 		return toPseudonymizedDtos(service.getByCaseUuids(caseUuids));
+	}
+
+	@RightsAllowed(UserRight._CASE_EDIT)
+	public void onReportChanged(SurveillanceReport report, boolean syncShares) {
+		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(report);
+		}
+	}
+
+	private void syncSharesAsync(SurveillanceReport report) {
+		executorService.schedule(() -> {
+			try {
+				sormasToSormasCaseFacade.syncShares(new ShareTreeCriteria(report.getCaze().getUuid()));
+			} catch (Exception e) {
+				logger.error("Failed to sync shares of SurveillanceReport", e);
+			}
+		}, 5, TimeUnit.SECONDS);
 	}
 
 	@LocalBean

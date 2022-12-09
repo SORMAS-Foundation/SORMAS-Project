@@ -54,6 +54,7 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 	public static final String NOTIFICATION_DETAILS = "notificationDetails";
 	private UserReferenceDto reportingUser;
 
+	@NotNull
 	private ReportingType reportingType;
 
 	private String externalId;

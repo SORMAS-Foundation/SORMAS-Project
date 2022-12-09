@@ -80,7 +80,10 @@ public class SampleShareDataBuilder
 		List<SormasToSormasExternalMessageDto> externalMessages = Collections.emptyList();
 		if (ownerShipHandedOver) {
 			externalMessages =
-				sample.getSampleReports().stream().map(s -> dataBuilderHelper.getExternalMessageDto(s.getLabMessage())).collect(Collectors.toList());
+				sample.getSampleReports()
+					.stream()
+					.map(s -> dataBuilderHelper.getExternalMessageDto(s.getLabMessage(), requestInfo))
+					.collect(Collectors.toList());
 		}
 
 		return new SormasToSormasSampleDto(sampleDto, pathogenTests, additionalTests, externalMessages);

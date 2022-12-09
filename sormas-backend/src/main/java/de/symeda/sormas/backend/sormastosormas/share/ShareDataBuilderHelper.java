@@ -182,9 +182,13 @@ public class ShareDataBuilderHelper {
 		}
 	}
 
-	public SormasToSormasExternalMessageDto getExternalMessageDto(ExternalMessage externalMessage) {
+	public SormasToSormasExternalMessageDto getExternalMessageDto(ExternalMessage externalMessage, ShareRequestInfo requestInfo) {
 		ExternalMessageDto externalMessageDto = externalMessageFacade.toDto(externalMessage);
 		externalMessageDto.setAssignee(null);
+
+		if (!requestInfo.isWithSurveillanceReports()) {
+			externalMessageDto.setSurveillanceReport(null);
+		}
 
 		return new SormasToSormasExternalMessageDto(externalMessageDto);
 	}

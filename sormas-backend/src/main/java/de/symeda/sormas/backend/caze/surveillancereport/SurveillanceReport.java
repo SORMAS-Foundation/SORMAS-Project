@@ -232,7 +232,7 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.IMMUNIZATION, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.SURVEILLANCE_REPORT, fetch = FetchType.LAZY)
 	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;

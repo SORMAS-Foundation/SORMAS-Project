@@ -61,7 +61,7 @@ public class SurveillanceReportShareDataBuilder
 
 		SormasToSormasExternalMessageDto externalMessage = null;
 		if (ownerShipHandedOver && report.getExternalMessage() != null) {
-			externalMessage = dataBuilderHelper.getExternalMessageDto(report.getExternalMessage());
+			externalMessage = dataBuilderHelper.getExternalMessageDto(report.getExternalMessage(), requestInfo);
 		}
 
 		return new SormasToSormasSurveillanceReportDto(reportDto, externalMessage);
