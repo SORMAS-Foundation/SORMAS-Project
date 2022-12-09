@@ -76,6 +76,7 @@ public enum DatabaseTable {
 		"persons",
 		dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE)),
 	PERSON_CONTACT_DETAILS(DatabaseTableType.SORMAS, PERSONS, "person_contact_details"),
+	PERSON_LOCATIONS(DatabaseTableType.SORMAS, PERSONS, "person_locations"),
 
 	LOCATIONS(DatabaseTableType.SORMAS, "locations", null),
 
@@ -93,7 +94,7 @@ public enum DatabaseTable {
 
 	CAMPAIGNS(DatabaseTableType.SORMAS, "campaigns", dependingOnFeature(FeatureType.CAMPAIGNS)),
 	CAMPAIGN_FORM_META(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_from_meta"),
-	CAMPAIGN_FORM_DATA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_from_data"),
+	CAMPAIGN_FORM_DATA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_form_data"),
 	CAMPAIGN_DIAGRAM_DEFINITIONS(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_diagram_definitions"),
 
 	EXTERNAL_MESSAGES(DatabaseTableType.EXTERNAL, "external_messages", dependingOnFeature(FeatureType.EXTERNAL_MESSAGES)),

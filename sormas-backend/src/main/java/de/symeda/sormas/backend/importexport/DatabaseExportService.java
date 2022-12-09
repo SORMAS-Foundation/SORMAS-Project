@@ -155,6 +155,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.TASK_OBSERVER, Task.TASK_OBSERVER_TABLE);
 		EXPORT_CONFIGS.put(DatabaseTable.PERSONS, Person.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.PERSON_CONTACT_DETAILS, PersonContactDetail.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.PERSON_LOCATIONS, Person.PERSON_LOCATIONS_TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.LOCATIONS, Location.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CONTINENTS, Continent.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SUBCONTINENTS, Subcontinent.TABLE_NAME);
