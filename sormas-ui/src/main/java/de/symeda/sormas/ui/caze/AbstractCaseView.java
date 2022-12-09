@@ -174,7 +174,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 					params);
 			}
 			if (caze.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY
-				&& hasPointOfEntry(caze)
+				&& ControllerProvider.getCaseController().hasPointOfEntry(caze)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 				menu.addView(
 					PortHealthInfoView.VIEW_NAME,
@@ -230,14 +230,6 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			PersonDto casePerson = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
 			ExternalJournalUtil.getExternalJournalUiButton(casePerson, caze).ifPresent(getButtonsLayout()::addComponent);
 		}
-	}
-	
-	private boolean hasPointOfEntry(CaseDataDto caze) {
-		if (caze.getPointOfEntry() != null) {
-			boolean hasPoe = FacadeProvider.getCaseFacade().hasPointOfEntry(caze.getUuid());
-			return hasPoe;
-		}
-		return true;
 	}
 
 	@Override

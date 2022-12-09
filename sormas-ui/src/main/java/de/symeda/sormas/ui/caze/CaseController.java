@@ -91,7 +91,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -1341,13 +1340,12 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<PortHealthInfoForm> getPortHealthInfoComponent(final String caseUuid) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		PointOfEntryReferenceDto casePointOfEntry = caze.getPointOfEntry();
 
-		if (casePointOfEntry == null) {
+		if (!hasPointOfEntry(caze)) {
 			return null;
 		}
 
-		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByUuid(casePointOfEntry.getUuid());
+		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caseUuid);// getByUuid(casePointOfEntry.getUuid());
 		PortHealthInfoForm form = new PortHealthInfoForm(pointOfEntry, caze.getPointOfEntryDetails());
 		form.setValue(caze.getPortHealthInfo());
 
@@ -1848,4 +1846,11 @@ public class CaseController {
 		protected String facilityDetails;
 	}
 
+	public boolean hasPointOfEntry(CaseDataDto caze) {
+		if (caze.getPointOfEntry() != null) {
+			PointOfEntryDto pointOfEntryDto = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caze.getUuid());
+			return pointOfEntryDto != null;
+		}
+		return true;
+	}
 }

@@ -1,7 +1,16 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +71,28 @@ class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, pointOfEntryFacade.count(new PointOfEntryCriteria()));
 
 		assertEquals(1, pointOfEntryFacade.count(new PointOfEntryCriteria().nameLike("poe1")));
+	}
+
+	@Test
+	public void testGetPointOfEntryByCaseUuid() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson("John", "Doe");
+
+		CaseDataDto case1 = creator.createCase(user.toReference(), personDto.toReference(), rdcf);
+		CaseDataDto case2 = creator.createCase(user.toReference(), rdcf, c -> {
+			c.setPerson(personDto.toReference());
+			c.setPointOfEntry(rdcf.pointOfEntry);
+		});
+
+		case1.setPointOfEntry(null);
+		getCaseFacade().save(case1);
+
+		PointOfEntryDto pointOfEntryDto = getPointOfEntryFacade().getByCaseUuid(case1.getUuid());
+		assertNull(pointOfEntryDto);
+		pointOfEntryDto = getPointOfEntryFacade().getByCaseUuid(case2.getUuid());
+		assertNotNull(pointOfEntryDto);
+		assertEquals(rdcf.pointOfEntry.getUuid(), pointOfEntryDto.getUuid());
 	}
 
 }

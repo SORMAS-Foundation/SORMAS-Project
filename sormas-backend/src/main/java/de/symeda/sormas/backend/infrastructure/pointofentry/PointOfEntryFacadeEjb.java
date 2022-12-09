@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.infrastructure.pointofentry;
 
+import com.vladmihalcea.hibernate.query.SQLExtractor;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,6 +13,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -219,6 +223,23 @@ public class PointOfEntryFacadeEjb
 		cq.select(root);
 
 		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
+	}
+
+	@Override
+	public PointOfEntryDto getByCaseUuid(String caseUuid){
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PointOfEntry> cq = cb.createQuery(PointOfEntry.class);
+		Root<Case> root = cq.from(Case.class);
+		CaseJoins caseCaseJoins = new CaseJoins(root);
+		Join<Case, PointOfEntry> pointOfEntryJoin = caseCaseJoins.getPointOfEntry();
+
+		cq.select(pointOfEntryJoin);
+		cq.where(cb.equal(root.get(Case.UUID), caseUuid));
+
+		Query query = em.createQuery(cq);
+		String sql = SQLExtractor.from(query);
+
+		return QueryHelper.getSingleResult(em,cq, this::toDto);
 	}
 
 	@Override
