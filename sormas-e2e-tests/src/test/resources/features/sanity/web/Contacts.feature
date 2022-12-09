@@ -141,7 +141,7 @@ Feature: Contacts end to end tests
       And I filter by Contact uuid
       Then I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
 
-  @env_main
+  @env_main @testIt
   Scenario: Edit all fields from Follow-up visits tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
