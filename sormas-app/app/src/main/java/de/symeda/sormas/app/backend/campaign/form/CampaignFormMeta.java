@@ -42,6 +42,7 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 
 	public static final String FORM_ID = "formId";
 	public static final String FORM_NAME = "formName";
+	public static final String FORM_CATEGORY = "formCategory";
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 	public static final String CAMPAIGN_FORM_TRANSLATIONS = "campaignFormTranslations";
 
@@ -50,6 +51,9 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String formName;
+
+	@Column(name = "formCategory")
+	private String formCategory;
 
 	@Column(length = 32)
 	private String languageCode;
@@ -84,6 +88,13 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 
 	public void setLanguageCode(String languageCode) {
 		this.languageCode = languageCode;
+	}
+
+	public String getFormCategory() {
+		return formCategory;
+	}
+	public void setFormCategory(String formCategory) {
+		this.formCategory = formCategory;
 	}
 
 	public String getCampaignFormElementsJson() {

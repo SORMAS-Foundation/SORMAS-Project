@@ -54,6 +54,8 @@ public class CampaignFormData extends PseudonymizableAdo {
     public static final String FORM_DATE = "formDate";
 	public static final String CAMPAIGN_FORM_META = "campaignformmeta";
 
+    public static final String FORM_CATEGORY = "formCategory";
+
     @Column(name = "formValues")
     private String formValuesJson;
     private List<CampaignFormDataEntry> formValues;
@@ -87,6 +89,10 @@ public class CampaignFormData extends PseudonymizableAdo {
 
     @DatabaseField
     private boolean archived;
+
+    @Column(name = "formCategory")
+    private String formCategory;
+
 
     /**
      * JsonRawValue annotation is used to handle this differently when merging data
@@ -198,6 +204,17 @@ public class CampaignFormData extends PseudonymizableAdo {
 
     public void setArchived(boolean archived) {
         this.archived = archived;
+    }
+
+    public String getFormCategory() {
+        return campaignFormMeta.getFormCategory();
+    }
+
+    public void setFormCategory(String formCategory) {
+        if (campaignFormMeta != null) {
+            formCategory = campaignFormMeta.getFormCategory();
+        }
+        this.formCategory = formCategory;
     }
 
     @Override

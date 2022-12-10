@@ -17,6 +17,7 @@ package de.symeda.sormas.app;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -74,6 +76,7 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ExitActivity;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -361,6 +364,13 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			// TODO
 			restartAndUpdateApplication();
 			return true;
+
+			case R.id.action_closeApp:
+				// TODO
+				exitApplication();
+				return true;
+
+
 
 //		case R.id.action_help:
 //			StringBuilder helpStringBuilder = new StringBuilder();
@@ -742,7 +752,34 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 	public void restartAndUpdateApplication() {
 		ProcessPhoenix.triggerRebirth(getApplicationContext());
 		ProcessPhoenix.triggerRebirth(getActiveActivity());
+
+
+
 	}
+
+	public void exitApplication() {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
+		builder.setTitle("Exit");
+		builder.setMessage("Do you want to exit? ");
+		builder.setPositiveButton("Yes. Exit Now!", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i){
+				finishAffinity();
+				System.exit(0);
+			}
+
+	});
+		builder.setNegativeButton("Not now", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i) {
+				dialogInterface.dismiss();
+			}
+		});
+		AlertDialog dialog= builder.create();
+		dialog.show();
+	}
+
+
 
 
 

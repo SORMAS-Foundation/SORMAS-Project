@@ -42,6 +42,14 @@
                 android:icon="@drawable/ic_sync_blue_24dp"
                 android:title="@string/action_markAllAsRead"
                 app:showAsAction="always|withText"/>
+
+
+            <item
+                android:id="@+id/action_closeApp"
+                android:icon="@drawable/ic_logout_36dp"
+                android:title="Exit Application"
+                app:showAsAction="always|withText"/>
+
         </menu>
 
     </item>

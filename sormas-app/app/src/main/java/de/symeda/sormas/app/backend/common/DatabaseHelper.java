@@ -182,7 +182,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 326;
+	public static final int DATABASE_VERSION = 328;
 
 	private static DatabaseHelper instance = null;
 
@@ -2897,6 +2897,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 					getDao(CampaignFormData.class).executeRaw("DROP INDEX IF EXISTS campaignFormDataPreventDuplicate;");
 
+				case 326:
+					currentVersion = 326;
+
+					getDao(CampaignFormMeta.class).executeRaw("ALTER TABLE campaignformmeta ADD COLUMN formCategory varchar(50);");
+
+				case 327:
+					currentVersion = 327;
+
+					getDao(CampaignFormData.class).executeRaw("ALTER TABLE campaignFormData ADD COLUMN formCategory varchar(50);");
+//
+//					currentVersion = 328;
+//					getDao(CampaignFormData.class).executeRaw("CREATE TRIGGER prevent_duplicate_on_admin_forms\n" +
+//							"before insert on campaignFormData\n" +
+//							"when EXISTS (SELECT *\n" +
+//							"                 FROM rec_info\n" +
+//							"                 WHERE campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory\n" +
+//							"                 )\n" +
+//							"begin\n" +
+//							" SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
+//							"end;");
 					// ATTENTION: break should only be done after last version
 					break;
 

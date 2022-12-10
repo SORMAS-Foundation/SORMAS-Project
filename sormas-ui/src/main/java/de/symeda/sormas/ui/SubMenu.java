@@ -102,11 +102,11 @@ public class SubMenu extends CssLayout {
 			// context
 			// to it
 
-			System.out.println("========================= " + iii);
+		
 //			String targetttt = "#!" + name + (iii != null ? "/"
 //					+ "formType=Intra-campaign&area=UC5BUE-L2P2UF-P2B7XZ-HEOO2EHM&campaign=VPRWOX-M7VHMR-2AALCV-3BSK2PDI"
 //					: "");
-			System.out.println("tttaaarrrrggggeeetttttt " + target);
+			
 		} 
 			Link link = new Link();
 			if (isBackNavigation) { // need to check if the view is campaign or campaign data

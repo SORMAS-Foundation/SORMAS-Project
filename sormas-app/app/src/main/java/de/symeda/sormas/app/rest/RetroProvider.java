@@ -484,7 +484,7 @@ public final class RetroProvider {
 		if (instance.caseFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.caseFacadeRetro == null) {
-					instance.caseFacadeRetro = instance.retrofit.create(CaseFacadeRetro.class);
+				//	instance.caseFacadeRetro = instance.retrofit.create(CaseFacadeRetro.class);
 				}
 			}
 		}
@@ -497,7 +497,7 @@ public final class RetroProvider {
 		if (instance.immunizationFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.immunizationFacadeRetro == null) {
-					instance.immunizationFacadeRetro = instance.retrofit.create(ImmunizationFacadeRetro.class);
+				//	instance.immunizationFacadeRetro = instance.retrofit.create(ImmunizationFacadeRetro.class);
 				}
 			}
 		}
@@ -510,7 +510,7 @@ public final class RetroProvider {
 		if (instance.personFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.personFacadeRetro == null) {
-					instance.personFacadeRetro = instance.retrofit.create(PersonFacadeRetro.class);
+				//	instance.personFacadeRetro = instance.retrofit.create(PersonFacadeRetro.class);
 				}
 			}
 		}
@@ -562,7 +562,7 @@ public final class RetroProvider {
 		if (instance.continentFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.continentFacadeRetro == null) {
-					instance.continentFacadeRetro = instance.retrofit.create(ContinentFacadeRetro.class);
+				//	instance.continentFacadeRetro = instance.retrofit.create(ContinentFacadeRetro.class);
 				}
 			}
 		}
@@ -575,7 +575,7 @@ public final class RetroProvider {
 		if (instance.subcontinentFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.subcontinentFacadeRetro == null) {
-					instance.subcontinentFacadeRetro = instance.retrofit.create(SubcontinentFacadeRetro.class);
+				//	instance.subcontinentFacadeRetro = instance.retrofit.create(SubcontinentFacadeRetro.class);
 				}
 			}
 		}
@@ -588,7 +588,7 @@ public final class RetroProvider {
 		if (instance.countryFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.countryFacadeRetro == null) {
-					instance.countryFacadeRetro = instance.retrofit.create(CountryFacadeRetro.class);
+					//instance.countryFacadeRetro = instance.retrofit.create(CountryFacadeRetro.class);
 				}
 			}
 		}
@@ -614,7 +614,7 @@ public final class RetroProvider {
 		if (instance.facilityFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.facilityFacadeRetro == null) {
-					instance.facilityFacadeRetro = instance.retrofit.create(FacilityFacadeRetro.class);
+				//	instance.facilityFacadeRetro = instance.retrofit.create(FacilityFacadeRetro.class);
 				}
 			}
 		}
@@ -627,7 +627,7 @@ public final class RetroProvider {
 		if (instance.pointOfEntryFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.pointOfEntryFacadeRetro == null) {
-					instance.pointOfEntryFacadeRetro = instance.retrofit.create(PointOfEntryFacadeRetro.class);
+				//	instance.pointOfEntryFacadeRetro = instance.retrofit.create(PointOfEntryFacadeRetro.class);
 				}
 			}
 		}
@@ -653,7 +653,7 @@ public final class RetroProvider {
 		if (instance.taskFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.taskFacadeRetro == null) {
-					instance.taskFacadeRetro = instance.retrofit.create(TaskFacadeRetro.class);
+				//	instance.taskFacadeRetro = instance.retrofit.create(TaskFacadeRetro.class);
 				}
 			}
 		}
@@ -666,7 +666,7 @@ public final class RetroProvider {
 		if (instance.contactFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.contactFacadeRetro == null) {
-					instance.contactFacadeRetro = instance.retrofit.create(ContactFacadeRetro.class);
+				//	instance.contactFacadeRetro = instance.retrofit.create(ContactFacadeRetro.class);
 				}
 			}
 		}
@@ -679,7 +679,7 @@ public final class RetroProvider {
 		if (instance.visitFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.visitFacadeRetro == null) {
-					instance.visitFacadeRetro = instance.retrofit.create(VisitFacadeRetro.class);
+				//	instance.visitFacadeRetro = instance.retrofit.create(VisitFacadeRetro.class);
 				}
 			}
 		}
@@ -692,7 +692,7 @@ public final class RetroProvider {
 		if (instance.eventFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.eventFacadeRetro == null) {
-					instance.eventFacadeRetro = instance.retrofit.create(EventFacadeRetro.class);
+				//	instance.eventFacadeRetro = instance.retrofit.create(EventFacadeRetro.class);
 				}
 			}
 		}
@@ -705,7 +705,7 @@ public final class RetroProvider {
 		if (instance.sampleFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.sampleFacadeRetro == null) {
-					instance.sampleFacadeRetro = instance.retrofit.create(SampleFacadeRetro.class);
+				//	instance.sampleFacadeRetro = instance.retrofit.create(SampleFacadeRetro.class);
 				}
 			}
 		}
@@ -718,7 +718,7 @@ public final class RetroProvider {
 		if (instance.pathogenTestFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.pathogenTestFacadeRetro == null) {
-					instance.pathogenTestFacadeRetro = instance.retrofit.create(PathogenTestFacadeRetro.class);
+				//	instance.pathogenTestFacadeRetro = instance.retrofit.create(PathogenTestFacadeRetro.class);
 				}
 			}
 		}
@@ -731,7 +731,7 @@ public final class RetroProvider {
 		if (instance.eventParticipantFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.eventParticipantFacadeRetro == null) {
-					instance.eventParticipantFacadeRetro = instance.retrofit.create(EventParticipantFacadeRetro.class);
+				//	instance.eventParticipantFacadeRetro = instance.retrofit.create(EventParticipantFacadeRetro.class);
 				}
 			}
 		}
@@ -744,7 +744,7 @@ public final class RetroProvider {
 		if (instance.weeklyReportFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.weeklyReportFacadeRetro == null) {
-					instance.weeklyReportFacadeRetro = instance.retrofit.create(WeeklyReportFacadeRetro.class);
+				//	instance.weeklyReportFacadeRetro = instance.retrofit.create(WeeklyReportFacadeRetro.class);
 				}
 			}
 		}
@@ -757,7 +757,7 @@ public final class RetroProvider {
 		if (instance.outbreakFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.outbreakFacadeRetro == null) {
-					instance.outbreakFacadeRetro = instance.retrofit.create(OutbreakFacadeRetro.class);
+				//	instance.outbreakFacadeRetro = instance.retrofit.create(OutbreakFacadeRetro.class);
 				}
 			}
 		}
@@ -770,7 +770,7 @@ public final class RetroProvider {
 		if (instance.classificationFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.classificationFacadeRetro == null) {
-					instance.classificationFacadeRetro = instance.retrofit.create(ClassificationFacadeRetro.class);
+				//	instance.classificationFacadeRetro = instance.retrofit.create(ClassificationFacadeRetro.class);
 				}
 			}
 		}
@@ -796,7 +796,7 @@ public final class RetroProvider {
 		if (instance.prescriptionFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.prescriptionFacadeRetro == null) {
-					instance.prescriptionFacadeRetro = instance.retrofit.create(PrescriptionFacadeRetro.class);
+				//	instance.prescriptionFacadeRetro = instance.retrofit.create(PrescriptionFacadeRetro.class);
 				}
 			}
 		}
@@ -809,7 +809,7 @@ public final class RetroProvider {
 		if (instance.treatmentFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.treatmentFacadeRetro == null) {
-					instance.treatmentFacadeRetro = instance.retrofit.create(TreatmentFacadeRetro.class);
+				//	instance.treatmentFacadeRetro = instance.retrofit.create(TreatmentFacadeRetro.class);
 				}
 			}
 		}
@@ -822,7 +822,7 @@ public final class RetroProvider {
 		if (instance.additionalTestFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.additionalTestFacadeRetro == null) {
-					instance.additionalTestFacadeRetro = instance.retrofit.create(AdditionalTestFacadeRetro.class);
+				//	instance.additionalTestFacadeRetro = instance.retrofit.create(AdditionalTestFacadeRetro.class);
 				}
 			}
 		}
@@ -835,7 +835,7 @@ public final class RetroProvider {
 		if (instance.clinicalVisitFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.clinicalVisitFacadeRetro == null) {
-					instance.clinicalVisitFacadeRetro = instance.retrofit.create(ClinicalVisitFacadeRetro.class);
+				//	instance.clinicalVisitFacadeRetro = instance.retrofit.create(ClinicalVisitFacadeRetro.class);
 				}
 			}
 		}
@@ -848,7 +848,7 @@ public final class RetroProvider {
 		if (instance.diseaseConfigurationFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.diseaseConfigurationFacadeRetro == null) {
-					instance.diseaseConfigurationFacadeRetro = instance.retrofit.create(DiseaseConfigurationFacadeRetro.class);
+				//	instance.diseaseConfigurationFacadeRetro = instance.retrofit.create(DiseaseConfigurationFacadeRetro.class);
 				}
 			}
 		}
@@ -939,7 +939,7 @@ public final class RetroProvider {
 		if (instance.aggregateReportFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
 				if (instance.aggregateReportFacadeRetro == null) {
-					instance.aggregateReportFacadeRetro = instance.retrofit.create(AggregateReportFacadeRetro.class);
+				//	instance.aggregateReportFacadeRetro = instance.retrofit.create(AggregateReportFacadeRetro.class);
 				}
 			}
 		}

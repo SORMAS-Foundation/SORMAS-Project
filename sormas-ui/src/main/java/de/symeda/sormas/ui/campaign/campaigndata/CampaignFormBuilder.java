@@ -415,8 +415,8 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.ARRAY || type == CampaignFormElementType.RANGE
 				|| type == CampaignFormElementType.DATE) {
 			if (styles.contains(CampaignFormElementStyle.ROW)) {
-				 CssStyles.style(field, CssStyles.TEXTFIELD_ROW,
-				 CssStyles.TEXTFIELD_CAPTION_INLINE);
+				// CssStyles.style(field, CssStyles.TEXTFIELD_ROW,
+				// CssStyles.TEXTFIELD_CAPTION_INLINE);
 			}
 
 			if (type == CampaignFormElementType.NUMBER) {
@@ -824,15 +824,17 @@ public class CampaignFormBuilder {
 		}
 
 		if (dependingOnField instanceof NullableOptionGroup) {
-			String booleanValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
-					? "true"
-					: "false";
+//			String booleanValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
+//					? "true"
+//					: "false";
 			String stringValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
-					? "yes"
-					: "no";
+					? "Yes"
+					: "No";
 
 			return dependingOnValuesList.stream().anyMatch(
-					v -> v.toString().equalsIgnoreCase(booleanValue) || v.toString().equalsIgnoreCase(stringValue));
+					v -> 
+					//v.toString().equalsIgnoreCase(booleanValue) || 
+					v.toString().equalsIgnoreCase(stringValue));
 		} else {
 
 			return dependingOnValuesList.stream()
@@ -911,7 +913,7 @@ public class CampaignFormBuilder {
 				Field formField = fields.get(key);
 
 				if (!fields.get(key).isValid()) {
-					fields.get(key).setRequiredError("tttttttttttt");
+					fields.get(key).setRequiredError("Error found");
 				}
 			});
 		} finally {

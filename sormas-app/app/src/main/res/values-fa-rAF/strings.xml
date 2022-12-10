@@ -89,7 +89,7 @@
     <string name="action_redownload_app_later">Redownload later</string>
     <string name="action_refer_case_from_poe">Refer case from Point of Entry</string>
     <string name="action_report">Report Problem</string>
-    <string name="action_repull_data">Re-synchronize System Settings</string>
+    <string name="action_repull_data">Re-sync Settings</string>
     <string name="action_reset_filters">Reset filters</string>
     <string name="action_save">Save</string>
     <string name="action_save_case">Save Case</string>

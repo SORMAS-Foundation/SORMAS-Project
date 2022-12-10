@@ -54,6 +54,7 @@ public class CampaignFormDataDto extends EntityDto {
 	public static final String FORM_TYPE = "formType";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String FORMCATEGORY = "formcategory";
 	
 	@Valid
 	private List<CampaignFormDataEntry> formValues;
@@ -67,6 +68,7 @@ public class CampaignFormDataDto extends EntityDto {
 	private CommunityReferenceDto community;
 	private UserReferenceDto creatingUser;
 	private String formType;
+	private String formCategory;
 	//private Double latitude;
 	//private Double longitude;
 
@@ -87,6 +89,7 @@ public class CampaignFormDataDto extends EntityDto {
 		campaignFormData.setCommunity(community);
 		campaignFormData.setFormDate(new Date());
 		campaignFormData.setFormType("");
+		//campaignFormData.setFormCategory(campaignFormMeta.getFormCategory() != null ? campaignFormMeta.getFormCategory().toString() : null);
 		//campaignFormData.setFormLat(formLat);
 		//campaignFormData.
 		return campaignFormData;
@@ -182,6 +185,17 @@ public class CampaignFormDataDto extends EntityDto {
 	public void setCreatingUser(UserReferenceDto creatingUser) {
 		this.creatingUser = creatingUser;
 	}
+
+	public String getFormCategory() {
+		
+		return campaignFormMeta.getFormCategory() != null ? campaignFormMeta.getFormCategory().toString() : null;
+	}
+
+	public void setFormCategory(String formCategory) {
+		this.formCategory = formCategory;
+	}
+
+
 
 	
 	//This is the implementation of the open street map for form submission

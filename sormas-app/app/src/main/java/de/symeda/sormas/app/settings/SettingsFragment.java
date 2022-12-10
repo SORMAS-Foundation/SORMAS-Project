@@ -98,9 +98,9 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.syncCaseLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasesLbds(getContext()));
 		binding.settingsLbdsDebugUrl.setValue(ConfigProvider.getServerLbdsDebugUrl());
 
-		binding.apmisAppVersion.setText("APMIS APK Version: " + ConfigProvider.APPVERSIONNUMBER);
+		binding.apmisAppVersion.setText("APMIS APP Version: " + ConfigProvider.APPVERSIONNUMBER);
 		if(HoldVersions.getServerVersionFromURL() == null) {
-			binding.apmisEngineVersion.setText("APMIS REST Engine Version: " + HoldVersions.getServerVersionFromURL());
+		//	binding.apmisEngineVersion.setText("APMIS REST Engine Version: " + HoldVersions.getServerVersionFromURL());
 		}
 		binding.sormasVersion.setText("APMIS Server Version: " + InfoProvider.InfoProvider_apmis());//HoldVersions
 		binding.sormasVersion.setOnClickListener(v -> {
