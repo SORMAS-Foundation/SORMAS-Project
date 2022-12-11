@@ -31,6 +31,8 @@ import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
@@ -85,6 +87,8 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		userRolesColumn.setSortable(false);
 		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value), new ActiveRenderer());
 		((Column<UserDto, LocationDto>) getColumn(UserDto.ADDRESS)).setRenderer(new CaptionRenderer());
+		((Column<UserDto, DistrictReferenceDto>) getColumn(UserDto.DISTRICT)).setRenderer(new CaptionRenderer());
+		((Column<UserDto, FacilityReferenceDto>) getColumn(UserDto.HEALTH_FACILITY)).setRenderer(new CaptionRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));

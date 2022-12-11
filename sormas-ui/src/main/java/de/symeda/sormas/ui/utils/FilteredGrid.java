@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -17,7 +18,9 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.ui.UserProvider;
@@ -87,6 +90,10 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	public void setColumns(String... columnIds) {
 		super.setColumns(columnIds);
 		getColumns().forEach(tColumn -> tColumn.setMaximumWidth(300));
+		
+		Arrays.asList(columnIds).forEach(columnId -> {
+			((Column<UserDto, HasCaption>) getColumn(columnId)).setRenderer(new CaptionRenderer());
+		});
 	}
 
 	/**
