@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.hibernate.internal.build.AllowSysOut;
+
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Page;
@@ -619,9 +621,11 @@ public class CampaignFormBuilder {
 			}
 
 			if (isExpressionValue && !isErrored && value == null) {
+				System.out.println("???????????? "+((TextField) field).getCaption()+" ***** "+ defaultErrorMsgr != null ? defaultErrorMsgr
+						: "Data entered not in range or calculated range!");
+				Object tempz = defaultErrorMsgr != null ? defaultErrorMsgr : "Data entered not in range or calculated range!";
 				((TextField) field).setCaption(
-						((TextField) field).getCaption() + defaultErrorMsgr != null ? defaultErrorMsgr.toString()
-								: "Data entered not in range or calculated range!");
+						((TextField) field).getCaption() + " "+tempz);
 				((TextField) field).setRequiredError(defaultErrorMsgr != null ? defaultErrorMsgr.toString()
 						: "Data entered not in range or calculated range!");
 			}

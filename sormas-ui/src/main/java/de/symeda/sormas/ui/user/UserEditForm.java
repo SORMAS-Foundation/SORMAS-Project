@@ -49,14 +49,17 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -69,6 +72,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 	private static final String PERSON_DATA_HEADING_LOC = "personDataHeadingLoc";
 	private static final String ADDRESS_HEADING_LOC = "addressHeadingLoc";
+	private static final String USER_TYPE_HEADING_LOC = "userTypeHeadingLoc";
 	private static final String USER_DATA_HEADING_LOC = "userDataHeadingLoc";
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
@@ -85,6 +89,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
                     loc(ADDRESS_HEADING_LOC) +
                     fluidRowLocs(UserDto.ADDRESS) +
+                    
+                    loc(USER_TYPE_HEADING_LOC) +
+                    fluidRowLocs(UserDto.TABLE_NAME_USERTYPES) +
 					
                     loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
@@ -119,6 +126,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         Label addressHeadingLabel = new Label(I18nProperties.getString(Strings.address));
         addressHeadingLabel.addStyleName(H3);
         getContent().addComponent(addressHeadingLabel, ADDRESS_HEADING_LOC);
+        
+        Label userTypeHeadingLabel = new Label(I18nProperties.getString(Strings.alluserstype));
+        userTypeHeadingLabel.addStyleName(H3);
+        getContent().addComponent(userTypeHeadingLabel, USER_TYPE_HEADING_LOC);
 
 		Label userDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingUserData));
 		userDataHeadingLabel.addStyleName(H3);
@@ -134,6 +145,23 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.WEEKLY_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
             addDiseaseField(UserDto.LIMITED_DISEASE, false);
         }
+        
+        ComboBox userTypes = addField(UserDto.TABLE_NAME_USERTYPES, ComboBox.class);
+        
+        if (UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER)) {
+        	 userTypes.removeItem(UserType.UNICEF_USER);
+        	 userTypes.removeItem(UserType.WHO_USER);
+		}
+		else {
+			 userTypes.removeItem(UserType.UNICEF_USER);
+			 userTypes.removeItem(UserType.EOC_USER);
+		}
+        	
+       
+        
+        
+               // usersType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + UserDto.TABLE_NAME_USERTYPES));
+
         
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
         getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
@@ -238,7 +266,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
          area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
-        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES, UserDto.FORM_ACCESS);
+        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES, UserDto.FORM_ACCESS, UserDto.TABLE_NAME_USERTYPES);
         addValidators(UserDto.USER_NAME, new UserNameValidator());
 
         addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
@@ -262,7 +290,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		final OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
 		community.setVisible(useCommunity);
 		setRequired(useCommunity, UserDto.COMMUNITY);
-		System.out.println("))))))))))))))))))(((((((((((((((( : "+useCommunity);
+	//	System.out.println("))))))))))))))))))(((((((((((((((( : "+useCommunity);
 		
 		if (useCommunity) {
 			community.clear();
@@ -385,6 +413,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
         formAccess.removeAllItems();
         formAccess.addItems(UserUiHelper.getAssignableForms());
+        
 
         super.setValue(userDto);
     }

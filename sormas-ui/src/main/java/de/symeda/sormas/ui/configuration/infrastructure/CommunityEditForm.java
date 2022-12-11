@@ -20,7 +20,14 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Locale;
+
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -41,7 +48,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	private static final long serialVersionUID = 6726008587163831260L;
 
 	private static final String HTML_LAYOUT =
-			fluidRowLocs(CommunityDto.NAME, CommunityDto.CLUSTER_NUMBER, CommunityDto.EXTERNAL_ID) + fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT);
+			fluidRowLocs(CommunityDto.NAME, CommunityDto.CLUSTER_NUMBER, CommunityDto.EXTERNAL_ID_DUMMY ) + fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT);
 
 	private boolean create;
 
@@ -58,17 +65,23 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		addFields();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
 		addField(CommunityDto.NAME, TextField.class);
-		addField(CommunityDto.CLUSTER_NUMBER, TextField.class).setCaption(I18nProperties.getCaption(Captions.clusterNumber));;
-		addField(RegionDto.EXTERNAL_ID, TextField.class).setCaption("CCode");;
+
+		addField(CommunityDto.CLUSTER_NUMBER, TextField.class);
+	
+		TextField tfe = addField(CommunityDto.EXTERNAL_ID_DUMMY, TextField.class);
+		tfe.addValidator( new RegexpValidator("^[0-9]\\d*$", "Not a valid input"));
+		tfe.setCaption("CCode");
+
 		ComboBox region = addInfrastructureField(CommunityDto.REGION);
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
 		
 
-		setRequired(true, CommunityDto.NAME, CommunityDto.NAME,CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
+		setRequired(true, CommunityDto.NAME, CommunityDto.NAME,CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID_DUMMY);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();

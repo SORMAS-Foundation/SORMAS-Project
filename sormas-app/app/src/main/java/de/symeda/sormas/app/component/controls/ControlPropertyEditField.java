@@ -436,9 +436,9 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 				@Override
 				public void onClick(View v) {
 					errorMessage = ErrorMsg != null && !ErrorMsg.equals("") ? ErrorMsg : errorMessage;
-					if(!errorMessage.isEmpty() || !errorMessage.equals("") ) {
-						labelError.setText(errorMessage);
-					}
+//					if(!errorMessage.isEmpty() || !errorMessage.equals("") ) {
+//					//	labelError.setText(errorMessage);
+//					}
 					if (errorMessage != null) {
 						NotificationHelper.showNotification(v.getRootView(), ERROR, errorMessage);
 

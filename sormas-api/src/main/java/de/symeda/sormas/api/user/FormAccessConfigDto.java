@@ -13,7 +13,7 @@ public class FormAccessConfigDto extends EntityDto{
 
 	public static final String I18N_PREFIX = "FormAccess";
 
-	public static final String USER_TYPE = "formAccess";
+	//public static final String USER_TYPE = "formAccess";
 	
 	private FormAccess formAccess;
 	
