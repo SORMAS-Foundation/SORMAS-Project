@@ -40,6 +40,7 @@ public class DistrictDto extends EntityDto {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_ID_DUMMY = "externalIddummy";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -53,6 +54,7 @@ public class DistrictDto extends EntityDto {
 	
 	//@Min(2)
 	private Long externalId;
+	private String externalIddummy;
 
 	public DistrictDto(
 		Date creationDate,
@@ -92,6 +94,23 @@ public class DistrictDto extends EntityDto {
 
 	public String getEpidCode() {
 		return epidCode;
+	}
+	
+	public String getExternalIddummy() {
+		
+		if(externalId != null) {
+			externalIddummy = externalId+"";
+		}
+		
+		return externalIddummy;
+	}
+
+	public void setExternalIddummy(String externalIddummy) {
+		
+		if(externalIddummy != null) {
+			this.externalId = Long.parseLong(externalIddummy);
+		}
+				
 	}
 
 	public void setEpidCode(String epidCode) {

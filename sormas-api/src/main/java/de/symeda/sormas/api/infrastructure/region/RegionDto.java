@@ -41,6 +41,7 @@ public class RegionDto extends EntityDto {
 	public static final String EPID_CODE = "epidCode";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_ID_DUMMY = "externalIddummy";
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country";
 
@@ -55,6 +56,7 @@ public class RegionDto extends EntityDto {
 	//@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;
+	private String externalIddummy;
 
 	public RegionDto(
 		Date creationDate,
@@ -152,6 +154,24 @@ public class RegionDto extends EntityDto {
 		this.country = country;
 	}
 
+	
+	
+	public String getExternalIddummy() {
+		
+		if(externalId != null) {
+			externalIddummy = externalId+"";
+		}
+		
+		return externalIddummy;
+	}
+
+	public void setExternalIddummy(String externalIddummy) {
+		
+		if(externalIddummy != null) {
+			this.externalId = Long.parseLong(externalIddummy);
+		}
+				
+	}
 	public RegionReferenceDto toReference() {
 		return new RegionReferenceDto(getUuid(), name, externalId);
 	}

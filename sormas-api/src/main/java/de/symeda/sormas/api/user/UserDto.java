@@ -43,7 +43,7 @@ public class UserDto extends EntityDto {
 	public static final String COLUMN_NAME_USERROLE = "userrole";
 	public static final String COLUMN_NAME_FORMACCESS = "formaccess";
 	public static final String COLUMN_NAME_USER_ID = "user_id";
-	public static final String TABLE_NAME_USERTYPES = "users_usertypes";
+	
 	
 
 	public static final String I18N_PREFIX = "User";
@@ -61,6 +61,7 @@ public class UserDto extends EntityDto {
 	public static final String ADDRESS = "address";
 	public static final String USER_ROLES = "userRoles";
 	public static final String FORM_ACCESS = "formAccess";
+	public static final String TABLE_NAME_USERTYPES = "usertype";
 	
 	public static final String REGION = "region";
 	public static final String AREA = "area";
@@ -298,7 +299,7 @@ public class UserDto extends EntityDto {
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), getFormAccess(), usertype);
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), getFormAccess(), getUsertype());
 	}
 
 	public Disease getLimitedDisease() {

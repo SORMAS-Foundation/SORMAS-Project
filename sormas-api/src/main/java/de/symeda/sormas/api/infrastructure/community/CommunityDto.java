@@ -40,6 +40,7 @@ public class CommunityDto extends EntityDto {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_ID_DUMMY = "externalIddummy";
 	public static final String CLUSTER_NUMBER="clusterNumber";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -50,6 +51,7 @@ public class CommunityDto extends EntityDto {
 	private boolean archived;
 	private Integer clusterNumber;
 	private Long externalId;
+	private String externalIddummy;
 
 	public CommunityDto(
 		Date creationDate,
@@ -123,6 +125,25 @@ public class CommunityDto extends EntityDto {
 
 	public Long getExternalId() {
 		return externalId;
+	}
+	
+	
+
+	public String getExternalIddummy() {
+		
+		if(externalId != null) {
+			externalIddummy = externalId+"";
+		}
+		
+		return externalIddummy;
+	}
+
+	public void setExternalIddummy(String externalIddummy) {
+		
+		if(externalIddummy != null) {
+			this.externalId = Long.parseLong(externalIddummy);
+		}
+				
 	}
 
 	public void setExternalId(Long externalId) {

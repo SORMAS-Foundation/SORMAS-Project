@@ -375,13 +375,13 @@ public class CampaignDataView extends AbstractCampaignView {
 			Collections.sort(campagaignFormReferences);
 
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
-				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
+				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> { 
 
-					System.out.println(criteria.getCampaign().getUuid()
+					System.out.println(campaignReferenceDtx.getUuid()
 							+ " ####################################################################"
 							+ campaignForm.getUuid());
 
-					ControllerProvider.getCampaignController().navigateToFormDataView(criteria.getCampaign().getUuid(),
+					ControllerProvider.getCampaignController().navigateToFormDataView(campaignReferenceDtx.getUuid(),
 							campaignForm.getUuid());
 
 					newFormButton.setPopupVisible(false);
