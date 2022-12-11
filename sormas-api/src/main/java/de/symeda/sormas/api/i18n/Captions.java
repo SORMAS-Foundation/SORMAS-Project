@@ -11,6 +11,8 @@ public interface Captions {
 	 */
 
 	String about = "ABOUT APMIS";
+	String clusterNumber = "Cluster Number";
+	String formAccess = "Form Access";
 	String aboutGuides= "GUIDES";
 	String aboutvideos= "Videos";
 	String apmisaboutguides = "User Guides";
