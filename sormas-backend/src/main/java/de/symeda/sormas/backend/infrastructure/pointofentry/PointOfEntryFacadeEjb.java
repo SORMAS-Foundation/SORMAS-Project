@@ -1,8 +1,5 @@
 package de.symeda.sormas.backend.infrastructure.pointofentry;
 
-import com.vladmihalcea.hibernate.query.SQLExtractor;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJoins;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +10,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -40,6 +36,8 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -226,7 +224,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public PointOfEntryDto getByCaseUuid(String caseUuid){
+	public PointOfEntryDto getByCaseUuid(String caseUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(PointOfEntry.class);
 		Root<Case> root = cq.from(Case.class);
@@ -236,10 +234,7 @@ public class PointOfEntryFacadeEjb
 		cq.select(pointOfEntryJoin);
 		cq.where(cb.equal(root.get(Case.UUID), caseUuid));
 
-		Query query = em.createQuery(cq);
-		String sql = SQLExtractor.from(query);
-
-		return QueryHelper.getSingleResult(em,cq, this::toDto);
+		return QueryHelper.getSingleResult(em, cq, this::toDto);
 	}
 
 	@Override

@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api;
 
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
 import javax.naming.ConfigurationException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -316,6 +317,10 @@ public class FacadeProvider {
 
 	public static PointOfEntryFacade getPointOfEntryFacade() {
 		return get().lookupEjbRemote(PointOfEntryFacade.class);
+	}
+
+	public static PortHealthInfoFacade getPortHealthInfoFacade() {
+		return get().lookupEjbRemote(PortHealthInfoFacade.class);
 	}
 
 	public static PopulationDataFacade getPopulationDataFacade() {

@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
+import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
@@ -530,6 +532,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public PointOfEntryFacade getPointOfEntryFacade() {
 		return getBean(PointOfEntryFacadeEjbLocal.class);
+	}
+
+	public PortHealthInfoFacade getPortHealthInfoFacade() {
+		return getBean(PortHealthInfoFacadeEjbLocal.class);
 	}
 
 	public FacilityFacade getFacilityFacade() {

@@ -1,13 +1,22 @@
 package de.symeda.sormas.backend.caze.porthealthinfo;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PortHealthInfoFacade")
 public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
@@ -73,6 +82,22 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		target.setDetails(source.getDetails());
 
 		return target;
+	}
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
+
+	@Override
+	public PortHealthInfoDto getByCaseUuid(String caseUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PortHealthInfo> cq = cb.createQuery(PortHealthInfo.class);
+		Root<Case> root = cq.from(Case.class);
+		Join<Case, PortHealthInfo> portHealthJoin = root.join(Case.PORT_HEALTH_INFO, JoinType.LEFT);
+
+		cq.select(portHealthJoin);
+		cq.where(cb.equal(root.get(Case.UUID), caseUuid));
+
+		return QueryHelper.getSingleResult(em, cq, PortHealthInfoFacadeEjb::toDto);
 	}
 
 	@LocalBean

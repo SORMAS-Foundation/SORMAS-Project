@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.caze;
 
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1347,7 +1348,7 @@ public class CaseController {
 
 		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caseUuid);// getByUuid(casePointOfEntry.getUuid());
 		PortHealthInfoForm form = new PortHealthInfoForm(pointOfEntry, caze.getPointOfEntryDetails());
-		form.setValue(caze.getPortHealthInfo());
+		form.setValue(getPortHealthInfo(caze));
 
 		final CommitDiscardWrapperComponent<PortHealthInfoForm> component = new CommitDiscardWrapperComponent<PortHealthInfoForm>(
 			form,
@@ -1847,10 +1848,18 @@ public class CaseController {
 	}
 
 	public boolean hasPointOfEntry(CaseDataDto caze) {
-		if (caze.getPointOfEntry() != null) {
+		if (caze.getPointOfEntry() == null) {
 			PointOfEntryDto pointOfEntryDto = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caze.getUuid());
 			return pointOfEntryDto != null;
 		}
 		return true;
+	}
+
+	public PortHealthInfoDto getPortHealthInfo(CaseDataDto caze) {
+		PortHealthInfoDto portHealthInfoDto = caze.getPortHealthInfo();
+		if (portHealthInfoDto == null) {
+			portHealthInfoDto = FacadeProvider.getPortHealthInfoFacade().getByCaseUuid(caze.getUuid());
+		}
+		return portHealthInfoDto;
 	}
 }
