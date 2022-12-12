@@ -89,6 +89,7 @@ public class TaskManagementSteps implements En {
     And(
         "I click on SHOW MORE FILTERS BUTTON on Task directory page",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // weak performance
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
