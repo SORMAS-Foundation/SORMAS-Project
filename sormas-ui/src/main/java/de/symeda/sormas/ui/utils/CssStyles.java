@@ -271,6 +271,7 @@ public final class CssStyles {
 
 	// MISC
 	public static final String RESIZABLE = "resizable";
+	public static final String ACTIVE_SIDE_COMPONENT_ELEMENT = "active-side-component-element";
 
 	// Grid layout
 	public static final String GRID_LAYOUT_EVEN = "even";

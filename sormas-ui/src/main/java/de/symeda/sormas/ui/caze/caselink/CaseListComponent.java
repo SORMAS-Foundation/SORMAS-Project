@@ -19,7 +19,7 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class CaseListComponent extends SideComponent {
 
-	public CaseListComponent(PersonReferenceDto personReferenceDto, Consumer<Runnable> actionCallback) {
+	public CaseListComponent(PersonReferenceDto personReferenceDto, String activeUuid, Consumer<Runnable> actionCallback) {
 
 		super(I18nProperties.getString(Strings.entityCases), actionCallback);
 
@@ -28,6 +28,7 @@ public class CaseListComponent extends SideComponent {
 		}, UserRight.CASE_CREATE);
 
 		CaseList caseList = new CaseList(personReferenceDto);
+		caseList.setActiveUuid(activeUuid);
 		addComponent(caseList);
 		caseList.reload();
 		if (!caseList.isEmpty()) {
