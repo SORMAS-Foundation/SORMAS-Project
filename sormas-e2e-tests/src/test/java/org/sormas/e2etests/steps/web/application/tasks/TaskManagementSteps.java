@@ -21,7 +21,6 @@ package org.sormas.e2etests.steps.web.application.tasks;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
-import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
@@ -90,10 +89,8 @@ public class TaskManagementSteps implements En {
         "I click on SHOW MORE FILTERS BUTTON on Task directory page",
         () -> {
           TimeUnit.SECONDS.sleep(2); // weak performance
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(
-              TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SHOW_MORE_FILTERS);
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
           TimeUnit.SECONDS.sleep(4);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
