@@ -94,6 +94,7 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(4);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
