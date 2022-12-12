@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
 import javax.naming.ConfigurationException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -32,6 +31,7 @@ import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;

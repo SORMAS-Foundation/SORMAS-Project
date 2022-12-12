@@ -1,25 +1,23 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 

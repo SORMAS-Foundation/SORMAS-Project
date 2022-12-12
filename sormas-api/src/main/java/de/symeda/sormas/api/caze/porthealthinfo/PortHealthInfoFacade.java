@@ -5,5 +5,5 @@ import javax.ejb.Remote;
 @Remote
 public interface PortHealthInfoFacade {
 
-  PortHealthInfoDto getByCaseUuid(String caseUuid);
+	PortHealthInfoDto getByCaseUuid(String caseUuid);
 }

@@ -21,6 +21,9 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "PortHealthInfoFacade")
 public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
+	
 	public static PortHealthInfoDto toDto(PortHealthInfo source) {
 		if (source == null) {
 			return null;
@@ -83,9 +86,6 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 
 		return target;
 	}
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
 
 	@Override
 	public PortHealthInfoDto getByCaseUuid(String caseUuid) {

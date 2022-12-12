@@ -35,5 +35,4 @@ class PortHealthInfoFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(portHealthInfoDto.getUuid(), healthInfoDto.getUuid());
 		assertEquals(portHealthInfoDto.getAirlineName(), healthInfoDto.getAirlineName());
 	}
-
 }
