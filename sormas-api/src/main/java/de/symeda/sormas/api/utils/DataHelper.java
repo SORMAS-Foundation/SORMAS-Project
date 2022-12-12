@@ -151,6 +151,11 @@ public final class DataHelper {
 		if (nullable == null) {
 			return "";
 		}
+
+		if (HasCaption.class.isAssignableFrom(nullable.getClass())) {
+			return ((HasCaption) nullable).buildCaption();
+		}
+
 		return nullable.toString();
 	}
 

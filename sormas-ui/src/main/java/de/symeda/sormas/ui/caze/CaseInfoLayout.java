@@ -105,7 +105,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 				addDescLabel(
 					leftColumnLayout,
 					CaseDataDto.PERSON,
-					caseDto.getPerson(),
+					caseDto.getPerson().buildCaption(),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
 
 				HorizontalLayout ageSexLayout = new HorizontalLayout();

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.data.Item;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -31,10 +32,34 @@ public class ComboBoxWithPlaceholder extends ComboBox {
 	private static final long serialVersionUID = 27751677500982303L;
 
 	PlaceholderReferenceDto placeholder = null;
+	private boolean ignoreDirtyMarkingOnGetOfHasCaption = false;
 
 	public ComboBoxWithPlaceholder() {
 		super();
 		this.setFilteringMode(FilteringMode.CONTAINS);
+	}
+
+	@Override
+	public Item addItem(Object itemId) throws UnsupportedOperationException {
+		Item item = super.addItem(itemId);
+		this.setItemCaption(item, item instanceof HasCaption ? ((HasCaption) item).buildCaption() : item.toString());
+		return item;
+	}
+
+	@Override
+	public String getItemCaption(Object itemId) {
+		if (itemId instanceof HasCaption) {
+			ignoreDirtyMarkingOnGetOfHasCaption = true;
+			this.setItemCaption(itemId, ((HasCaption) itemId).buildCaption());
+			ignoreDirtyMarkingOnGetOfHasCaption = false;
+		}
+		return super.getItemCaption(itemId);
+	}
+
+	public void markAsDirty() {
+		if (!ignoreDirtyMarkingOnGetOfHasCaption) {
+			super.markAsDirty();
+		}
 	}
 
 	@Override

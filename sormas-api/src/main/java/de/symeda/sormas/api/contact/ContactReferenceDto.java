@@ -29,6 +29,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
@@ -130,7 +131,7 @@ public class ContactReferenceDto extends ReferenceDto {
 		return builder.toString();
 	}
 
-	public static class PersonName implements Serializable {
+	public static class PersonName implements Serializable, HasCaption {
 
 		private static final long serialVersionUID = 3655299579771996044L;
 

@@ -23,6 +23,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class EventIndexDto extends PseudonymizableIndexDto {
@@ -529,7 +530,7 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		return isInJurisdictionOrOwned;
 	}
 
-	public static class EventIndexLocation implements Serializable {
+	public static class EventIndexLocation implements Serializable, HasCaption {
 
 		private String regionName;
 		private String districtName;
