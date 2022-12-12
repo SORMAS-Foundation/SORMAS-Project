@@ -1234,6 +1234,8 @@ public interface Strings {
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
 	String messageSystemFollowUpCanceledByDropping = "messageSystemFollowUpCanceledByDropping";
+	String messageTaskArchived = "messageTaskArchived";
+	String messageTaskDearchived = "messageTaskDearchived";
 	String messageTasksArchived = "messageTasksArchived";
 	String messageTasksDearchived = "messageTasksDearchived";
 	String messageTasksDeleted = "messageTasksDeleted";
