@@ -1012,7 +1012,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
-			return EditPermissionType.DOCUMENTS_ONLY;
+			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
 		return super.getEditPermissionType(event);

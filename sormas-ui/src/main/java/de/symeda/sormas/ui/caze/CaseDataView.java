@@ -205,7 +205,7 @@ public class CaseDataView extends AbstractCaseView {
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 
 			boolean isDocumentDeleteAllowed =
-				EditPermissionType.ALLOWED.equals(caseEditAllowed) || EditPermissionType.DOCUMENTS_ONLY.equals(caseEditAllowed);
+				EditPermissionType.ALLOWED.equals(caseEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(caseEditAllowed);
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.CASE,
 				getCaseRef(),
@@ -226,7 +226,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.disableWithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
-		} else if (caseEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
+		} else if (caseEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
 			layout.disableWithViewAllow();
 		}
 	}

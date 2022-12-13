@@ -272,7 +272,7 @@ public class ContactDataView extends AbstractContactView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			boolean isDocumentDeleteAllowed =
-				EditPermissionType.ALLOWED.equals(contactEditAllowed) || EditPermissionType.DOCUMENTS_ONLY.equals(contactEditAllowed);
+				EditPermissionType.ALLOWED.equals(contactEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(contactEditAllowed);
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.CONTACT,
 				getContactRef(),
@@ -293,7 +293,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.disableWithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
-		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
+		} else if (contactEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
 			layout.disableWithViewAllow();
 		}
 	}

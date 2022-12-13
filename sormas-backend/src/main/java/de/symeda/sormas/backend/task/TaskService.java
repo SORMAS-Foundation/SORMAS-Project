@@ -806,13 +806,13 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		switch (task.getTaskContext()) {
 		case CASE:
 			EditPermissionType casePermissionType = caseService.getEditPermissionType(task.getCaze());
-			return casePermissionType == EditPermissionType.DOCUMENTS_ONLY ? EditPermissionType.ALLOWED : casePermissionType;
+			return casePermissionType == EditPermissionType.WITHOUT_OWNERSHIP ? EditPermissionType.ALLOWED : casePermissionType;
 		case CONTACT:
 			EditPermissionType contactPermissionType = contactService.getEditPermissionType(task.getContact());
-			return contactPermissionType == EditPermissionType.DOCUMENTS_ONLY ? EditPermissionType.ALLOWED : contactPermissionType;
+			return contactPermissionType == EditPermissionType.WITHOUT_OWNERSHIP ? EditPermissionType.ALLOWED : contactPermissionType;
 		case EVENT:
 			EditPermissionType eventPermissionType = eventService.getEditPermissionType(task.getEvent());
-			return eventPermissionType == EditPermissionType.DOCUMENTS_ONLY ? EditPermissionType.ALLOWED : eventPermissionType;
+			return eventPermissionType == EditPermissionType.WITHOUT_OWNERSHIP ? EditPermissionType.ALLOWED : eventPermissionType;
 		case TRAVEL_ENTRY:
 			return travelEntryService.getEditPermissionType(task.getTravelEntry());
 		}
