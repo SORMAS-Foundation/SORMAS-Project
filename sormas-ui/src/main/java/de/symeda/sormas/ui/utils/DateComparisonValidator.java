@@ -16,12 +16,15 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.AbstractValidator;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -126,6 +129,15 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 
 	public static void addStartEndValidators(Field<Date> startDate, Field<Date> endDate) {
 		addStartEndValidators(startDate, endDate, true);
+	}
+
+	public static void dateFieldDependencyValidationVisibility(AbstractField<Date>... dates) {
+		List<AbstractField<Date>> validatedFields = Arrays.asList(dates);
+		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+			validatedFields.forEach(otherField -> {
+				otherField.setValidationVisible(!otherField.isValid());
+			});
+		}));
 	}
 
 	public static void addStartEndValidators(Field<Date> startDate, Field<Date> endDate, boolean dateOnly) {

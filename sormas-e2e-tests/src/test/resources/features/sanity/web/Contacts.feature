@@ -149,7 +149,7 @@ Feature: Contacts end to end tests
     When API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as a National User
+    Given I log in as a Admin User
     When I am accessing the Follow-up visits tab using of created contact via api
     Then I click on New visit button from Follow-up visits tab
     And I create a new Follow-up visit

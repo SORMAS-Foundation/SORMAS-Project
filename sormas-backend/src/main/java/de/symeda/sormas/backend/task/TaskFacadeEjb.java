@@ -997,9 +997,20 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._TASK_EDIT)
+	@RightsAllowed(UserRight._TASK_ARCHIVE)
 	public void updateArchived(List<String> taskUuids, boolean archived) {
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, archived));
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TASK_ARCHIVE)
+	public void updateArchived(String taskUuid, boolean archived) {
+		taskService.updateArchived(Collections.singletonList(taskUuid), archived);
+	}
+
+	@Override
+	public boolean isArchived(String taskUuid) {
+		return taskService.isArchived(taskUuid);
 	}
 
 	@Override
