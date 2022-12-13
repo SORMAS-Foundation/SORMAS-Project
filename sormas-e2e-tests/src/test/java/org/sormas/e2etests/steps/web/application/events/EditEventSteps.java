@@ -149,7 +149,6 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_ACTION;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DELETION_OF_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_NAVIGATION_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
@@ -1434,7 +1433,8 @@ public class EditEventSteps implements En {
           webDriverHelpers.selectFromCombobox(
               DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DELETION_OF_EVENT_PARTICIPANT);
+          //
+          // webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DELETION_OF_EVENT_PARTICIPANT);
           //          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON,
           // 30)) {
           //            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);

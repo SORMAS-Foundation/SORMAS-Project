@@ -226,20 +226,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			}
 
 			// Validation
-			startDate.addValidator(
-				new DateComparisonValidator(
-					startDate,
-					dueDate,
-					true,
-					false,
-					I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), dueDate.getCaption())));
-			dueDate.addValidator(
-				new DateComparisonValidator(
-					dueDate,
-					startDate,
-					false,
-					false,
-					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
+			DateComparisonValidator.addStartEndValidators(startDate, dueDate);
+			DateComparisonValidator.dateFieldDependencyValidationVisibility(startDate, dueDate);
 
 			Map<String, Long> userTaskCounts = FacadeProvider.getTaskFacade()
 				.getPendingTaskCountPerUser(availableUsers.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));

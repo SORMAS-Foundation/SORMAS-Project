@@ -257,6 +257,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>TASK_ARCHIVE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>ACTION_CREATE</role-name>
 	</security-role>
 

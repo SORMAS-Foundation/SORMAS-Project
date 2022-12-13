@@ -22,15 +22,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -41,7 +45,10 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ArchivingController;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -136,6 +143,31 @@ public class TaskController {
 				callback.run();
 			}, I18nProperties.getString(Strings.entityTask));
 		}
+
+		// Initialize 'Archive' button
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)) {
+			boolean archived = FacadeProvider.getTaskFacade().isArchived(dto.getUuid());
+			Button archiveButton = ButtonHelper.createButton(
+				ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID,
+				I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
+				e -> {
+					if (editView.isDirty()) {
+						DirtyCheckPopup.show(editView, () -> archiveOrDearchive(newDto, !archived, () -> {
+							popupWindow.close();
+							callback.run();
+						}));
+					} else {
+						archiveOrDearchive(newDto, !archived, () -> {
+							popupWindow.close();
+							callback.run();
+						});
+					}
+				},
+				ValoTheme.BUTTON_LINK);
+
+			editView.getButtonsPanel().addComponentAsFirst(archiveButton);
+			editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+		}
 	}
 
 	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {
@@ -209,6 +241,26 @@ public class TaskController {
 		});
 
 		editView.addDiscardListener(popupWindow::close);
+	}
+
+	private void archiveOrDearchive(TaskDto task, boolean archive, Runnable callback) {
+
+		VaadinUiUtil.showConfirmationPopup(
+			archive ? I18nProperties.getString(Strings.headingConfirmArchiving) : I18nProperties.getString(Strings.headingConfirmDearchiving),
+			new Label(
+				archive ? I18nProperties.getString(Strings.confirmationArchiveTask) : I18nProperties.getString(Strings.confirmationDearchiveTask)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			null,
+			e -> {
+				if (Boolean.TRUE.equals(e)) {
+					FacadeProvider.getTaskFacade().updateArchived(task.getUuid(), archive);
+					callback.run();
+					Notification.show(
+						archive ? I18nProperties.getString(Strings.messageTaskArchived) : I18nProperties.getString(Strings.messageTaskDearchived),
+						Type.ASSISTIVE_NOTIFICATION);
+				}
+			});
 	}
 
 	public void archiveAllSelectedItems(Collection<? extends TaskIndexDto> selectedRows, Runnable callback) {
