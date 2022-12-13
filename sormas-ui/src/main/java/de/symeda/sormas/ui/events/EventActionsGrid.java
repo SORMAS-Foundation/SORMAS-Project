@@ -159,19 +159,6 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 
 	public void setLazyDataProvider() {
 
-		DataProvider<EventActionIndexDto, EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getActionFacade()
-				.getEventActionList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getActionFacade().countEventActions(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getActionFacade()::getEventActionList, FacadeProvider.getActionFacade()::countEventActions);
 	}
 }
