@@ -348,6 +348,6 @@ Feature: Create user
     And I click SAVE button on User Role Page
     And I back to the User role list
     And I click on User Management tab from User Roles Page
-    Then I verify "TestNatUser" User Role is present in the User Role Combo box located in User management page
+    Then I check that "TestNatUser" is available in the user role filter
     And I click on User roles tab from User Management Page
     And I check if the "TestNatUser" user role exist and delete it
