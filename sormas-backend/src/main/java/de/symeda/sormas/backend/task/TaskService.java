@@ -44,6 +44,7 @@ import javax.persistence.criteria.Selection;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -424,7 +425,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 					cb.or(
 						cb.isTrue(from.get(Task.ARCHIVED)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE), cb.equal(joins.getCaze().get(Case.ARCHIVED), true)),
-						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(joins.getContactCase().get(Case.ARCHIVED), true)),
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(joins.getContact().get(Case.ARCHIVED), true)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(joins.getEvent().get(Event.ARCHIVED), true)),
 						cb.and(
 							cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
@@ -573,7 +574,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		TaskJoins joins = taskQueryContext.getJoins();
 
 		Join<Task, Case> caze = joins.getCaze();
-		Join<Contact, Case> contactCaze = joins.getContactCase();
+		Join<Task, Contact> contact = joins.getContact();
 		Join<Task, Event> event = joins.getEvent();
 		Join<Task, TravelEntry> travelEntry = joins.getTravelEntry();
 
@@ -589,8 +590,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
 					cb.and(
-						cb.or(cb.isNull(contactCaze.get(Case.ARCHIVED)), cb.isFalse(contactCaze.get(Case.ARCHIVED))),
-						cb.or(cb.isNull(contactCaze.get(Case.DELETED)), cb.isFalse(contactCaze.get(Case.DELETED))))),
+						cb.or(cb.isNull(contact.get(Case.ARCHIVED)), cb.isFalse(contact.get(Case.ARCHIVED))),
+						cb.or(cb.isNull(contact.get(Case.DELETED)), cb.isFalse(contact.get(Case.DELETED))))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
 					cb.and(
@@ -793,5 +794,29 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	public Predicate inJurisdictionOrOwned(TaskQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		return TaskJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+	}
+
+	public EditPermissionType getEditPermissionType(Task task) {
+		if (task.isArchived()) {
+			return featureConfigurationFacade.isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
+				? EditPermissionType.ALLOWED
+				: EditPermissionType.ARCHIVING_STATUS_ONLY;
+		}
+
+		switch (task.getTaskContext()) {
+		case CASE:
+			EditPermissionType casePermissionType = caseService.getEditPermissionType(task.getCaze());
+			return casePermissionType == EditPermissionType.DOCUMENTS_ONLY ? EditPermissionType.ALLOWED : casePermissionType;
+		case CONTACT:
+			EditPermissionType contactPermissionType = contactService.getEditPermissionType(task.getContact());
+			return contactPermissionType == EditPermissionType.DOCUMENTS_ONLY ? EditPermissionType.ALLOWED : contactPermissionType;
+		case EVENT:
+			EditPermissionType eventPermissionType = eventService.getEditPermissionType(task.getEvent());
+			return eventPermissionType == EditPermissionType.DOCUMENTS_ONLY ? EditPermissionType.ALLOWED : eventPermissionType;
+		case TRAVEL_ENTRY:
+			return travelEntryService.getEditPermissionType(task.getTravelEntry());
+		}
+
+		return EditPermissionType.ALLOWED;
 	}
 }

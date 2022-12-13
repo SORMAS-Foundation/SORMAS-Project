@@ -1007,8 +1007,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(event) || sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
+		if (!inJurisdictionOrOwned(event)) {
 			return EditPermissionType.REFUSED;
+		}
+
+		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
+			return EditPermissionType.DOCUMENTS_ONLY;
 		}
 
 		return super.getEditPermissionType(event);
