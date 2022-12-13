@@ -38,6 +38,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPr
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.CaptionRenderer;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class CasePreviewGrid extends BasePreviewGrid<SormasToSormasCasePreview> {
@@ -120,6 +121,12 @@ public class CasePreviewGrid extends BasePreviewGrid<SormasToSormasCasePreview> 
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<SormasToSormasCasePreview, Date>) getColumn(SormasToSormasCasePreview.ONSET_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
+		getColumn(SormasToSormasCasePreview.REGION).setRenderer(new CaptionRenderer());
+		getColumn(SormasToSormasCasePreview.DISTRICT).setRenderer(new CaptionRenderer());
+		getColumn(SormasToSormasCasePreview.COMMUNITY).setRenderer(new CaptionRenderer());
+		getColumn(SormasToSormasCasePreview.HEALTH_FACILITY).setRenderer(new CaptionRenderer());
+		getColumn(SormasToSormasCasePreview.POINT_OF_ENTRY).setRenderer(new CaptionRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(

@@ -38,6 +38,7 @@ import de.symeda.sormas.api.report.WeeklyReportRegionSummaryDto;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PercentageRenderer;
+import de.symeda.sormas.ui.utils.V7CaptionConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -104,6 +105,9 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 				column.setHeaderCaption("");
 				column.setSortable(false);
 			} else {
+				if (column.getPropertyId().equals(WeeklyReportRegionSummaryDto.REGION)) {
+					column.setConverter(new V7CaptionConverter());
+				}
 				column.setHeaderCaption(
 					I18nProperties
 						.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
