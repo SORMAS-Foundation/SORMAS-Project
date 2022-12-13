@@ -45,7 +45,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.DateFormatHelper;
@@ -213,7 +212,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
 	@Override
 	public void setValue(Object value) {
-		String stringValue = AdoDtoHelper.toStringNullable(value);
+		String stringValue = DataHelper.toStringNullable(value);
 		stringValue = DataHelper.isNullOrEmpty(stringValue) && inaccessibleValue != null ? inaccessibleValue : stringValue;
 
 		internalValue = value;
@@ -221,7 +220,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	}
 
 	public void setValue(Object value, Object internalValue) {
-		String stringValue = AdoDtoHelper.toStringNullable(value);
+		String stringValue = DataHelper.toStringNullable(value);
 		stringValue = DataHelper.isNullOrEmpty(stringValue) && inaccessibleValue != null ? inaccessibleValue : stringValue;
 
 		this.internalValue = internalValue;

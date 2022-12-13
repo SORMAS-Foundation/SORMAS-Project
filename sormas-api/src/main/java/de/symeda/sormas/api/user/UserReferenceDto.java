@@ -80,9 +80,4 @@ public class UserReferenceDto extends ReferenceDto {
 	public String getShortCaption() {
 		return buildCaption(firstName, lastName);
 	}
-
-	@Override
-	public String toString() {
-		return super.toString();
-	}
 }

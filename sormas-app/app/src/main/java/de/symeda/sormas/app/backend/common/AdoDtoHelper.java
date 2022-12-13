@@ -36,7 +36,6 @@ import java.util.concurrent.Callable;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -477,15 +476,6 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 			return DtoUserRightsHelper.isEditAllowed(getDtoClass());
 		} catch (UnsupportedOperationException e) {
 			return true;
-		}
-	}
-
-	public static String toStringNullable(Object nullable) {
-
-		if (nullable instanceof AbstractDomainObject) {
-			return ((AbstractDomainObject) nullable).buildCaption();
-		} else {
-			return DataHelper.toStringNullable(nullable);
 		}
 	}
 }

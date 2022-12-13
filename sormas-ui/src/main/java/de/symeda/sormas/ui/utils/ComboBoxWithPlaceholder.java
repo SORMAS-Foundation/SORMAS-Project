@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.Item;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -37,13 +36,6 @@ public class ComboBoxWithPlaceholder extends ComboBox {
 	public ComboBoxWithPlaceholder() {
 		super();
 		this.setFilteringMode(FilteringMode.CONTAINS);
-	}
-
-	@Override
-	public Item addItem(Object itemId) throws UnsupportedOperationException {
-		Item item = super.addItem(itemId);
-		this.setItemCaption(item, item instanceof HasCaption ? ((HasCaption) item).buildCaption() : item.toString());
-		return item;
 	}
 
 	@Override

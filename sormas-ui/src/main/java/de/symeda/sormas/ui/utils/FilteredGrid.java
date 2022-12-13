@@ -90,9 +90,11 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	public void setColumns(String... columnIds) {
 		super.setColumns(columnIds);
 		getColumns().forEach(tColumn -> tColumn.setMaximumWidth(300));
-		
+
 		Arrays.asList(columnIds).forEach(columnId -> {
-			((Column<UserDto, HasCaption>) getColumn(columnId)).setRenderer(new CaptionRenderer());
+			if (!columnId.equals(ACTION_BTN_ID)) {
+				((Column<UserDto, HasCaption>) getColumn(columnId)).setRenderer(new CaptionRenderer());
+			}
 		});
 	}
 
