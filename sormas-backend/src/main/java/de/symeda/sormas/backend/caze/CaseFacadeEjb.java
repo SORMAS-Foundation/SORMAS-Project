@@ -4166,6 +4166,30 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	public List<CaseDataDto> getDuplicatesWithPathogenTest(@Valid CaseDataDto caseDataDto, PathogenTestDto pathogenTestDto) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		CaseJoins caseCaseJoins = new CaseJoins(caseRoot);
+		Join<Case, Person> personJoin = caseCaseJoins.getPerson();
+		Join<Case, Sample> samplesJoin = caseCaseJoins.getSamples();
+		Join<Sample, PathogenTest> pathogenTestJoin = caseCaseJoins.getSampleJoins().getPathogenTest();
+
+		cq.select(caseRoot);
+		Predicate filter = cb.and(
+			cb.equal(caseRoot.get(Case.DISEASE), pathogenTestDto.getTestedDisease()),
+			cb.equal(personJoin.get(Person.UUID), caseDataDto.getPerson().getUuid()),
+			cb.equal(caseRoot.get(Case.DISEASE), pathogenTestJoin.get(PathogenTest.TESTED_DISEASE)),
+			cb.exists(sampleService.exists(cb, cq, samplesJoin, pathogenTestDto.getSample().getUuid())));
+
+		cq.where(filter);
+
+		List<Case> duplicateCases = em.createQuery(cq).getResultList();
+		return toDtos(duplicateCases.stream());
+	}
+
+	@Override
 	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson) {
 		return getDuplicates(casePerson, 0);
 	}

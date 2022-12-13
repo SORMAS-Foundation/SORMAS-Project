@@ -258,6 +258,7 @@ public class PathogenTestController {
 						}
 					});
 				} else {
+					//TODO fix here for bug
 					showCaseCloningWithNewDiseaseDialog(
 						caze,
 						dto.getTestedDisease(),
