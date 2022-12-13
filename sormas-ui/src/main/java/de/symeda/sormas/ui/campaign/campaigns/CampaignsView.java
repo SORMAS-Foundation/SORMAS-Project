@@ -123,7 +123,8 @@ public class CampaignsView extends AbstractCampaignView {
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.campaignActiveCampaigns));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.campaignArchivedCampaigns));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.campaignAllCampaigns));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.campaignAllCampaigns));
+		relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
 		relevanceStatusFilter.addValueChangeListener(e -> {
 			criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 			navigateTo(criteria);

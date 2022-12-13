@@ -90,6 +90,17 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 					return NO_CASE_CREATE != uuid;
 				}));
 
+		Column<EventParticipantIndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
 		Language userLanguage = I18nProperties.getUserLanguage();
 		setColumns(
 			EventParticipantIndexDto.UUID,
@@ -103,7 +114,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			EventParticipantIndexDto.CONTACT_COUNT,
 			SampleIndexDto.PATHOGEN_TEST_RESULT,
 			SampleIndexDto.SAMPLE_DATE_TIME,
-			EventParticipantIndexDto.VACCINATION_STATUS);
+			EventParticipantIndexDto.VACCINATION_STATUS,
+			DELETE_REASON_COLUMN);
 		((Column<EventParticipantIndexDto, Date>) getColumn(SampleIndexDto.SAMPLE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());

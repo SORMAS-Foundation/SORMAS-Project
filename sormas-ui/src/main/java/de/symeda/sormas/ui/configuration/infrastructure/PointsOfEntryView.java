@@ -123,8 +123,11 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource
-				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.ACTION_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				grid,
+				this::getSelectedRows,
+				ExportEntityName.POINTS_OF_ENTRY,
+				PointsOfEntryGrid.ACTION_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -271,12 +274,13 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
-				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 				relevanceStatusFilter
 					.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.pointOfEntryActivePointsOfEntry));
 				relevanceStatusFilter
 					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryArchivedPointsOfEntry));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.pointOfEntryAllPointsOfEntry));
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryAllPointsOfEntry));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
@@ -312,8 +316,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown
-						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					bulkOperationsDropdown.setVisible(
+						viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ACTIVE_AND_ARCHIVED.equals(criteria.getRelevanceStatus()));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}

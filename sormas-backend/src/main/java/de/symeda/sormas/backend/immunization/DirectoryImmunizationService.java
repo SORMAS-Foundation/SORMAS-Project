@@ -21,6 +21,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
@@ -106,6 +107,8 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 			immunization.get(Immunization.END_DATE),
 			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
 			immunization.get(Immunization.RECOVERY_DATE),
+			immunization.get(Immunization.DELETION_REASON),
+			immunization.get(Immunization.OTHER_DELETION_REASON),
 			JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(directoryImmunizationQueryContext)),
 			immunization.get(Immunization.CHANGE_DATE));
 
@@ -271,7 +274,20 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
 			}
 		}
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
+
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(Immunization.ARCHIVED), false), cb.isNull(from.get(Immunization.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.ARCHIVED), true));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.DELETED), true));
+			}
+		}
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
+		}
 
 		return filter;
 	}

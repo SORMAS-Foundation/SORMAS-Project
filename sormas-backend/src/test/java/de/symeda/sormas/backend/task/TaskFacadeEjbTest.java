@@ -104,7 +104,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails());
 
-		List<TaskIndexDto> tasks = getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ALL), 0, 100, null);
+		List<TaskIndexDto> tasks =
+			getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED), 0, 100, null);
 		assertEquals(0, tasks.size());
 	}
 

@@ -107,6 +107,8 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN),
 			contact.get(Contact.INTERNAL_TOKEN),
+			contact.get(Contact.DELETION_REASON),
+			contact.get(Contact.OTHER_DELETION_REASON),
 			JurisdictionHelper.booleanSelector(cb, contactService.inJurisdictionOrOwned(contactQueryContext)),
 			JurisdictionHelper.booleanSelector(
 				cb,

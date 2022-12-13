@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
@@ -116,6 +117,9 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 	private Long surveillanceToolShareCount;
 	private ExternalShareStatus surveillanceToolStatus;
 
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
+
 	public EventIndexDto(
 		Long id,
 		String uuid,
@@ -159,7 +163,9 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		String responsibleUserLastName,
 		boolean isInJurisdictionOrOwned,
 		Date changeDate,
-		EventIdentificationSource eventIdentificationSource) {
+		EventIdentificationSource eventIdentificationSource,
+		DeletionReason deletionReason,
+		String otherDeletionReason) {
 
 		super(uuid);
 		this.id = id;
@@ -191,6 +197,8 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 		this.regionUuid = regionUuid;
 		this.eventIdentificationSource = eventIdentificationSource;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	public EventIndexDto(String uuid) {
@@ -495,6 +503,22 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 
 	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
 		this.eventIdentificationSource = eventIdentificationSource;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	public EventReferenceDto toReference() {

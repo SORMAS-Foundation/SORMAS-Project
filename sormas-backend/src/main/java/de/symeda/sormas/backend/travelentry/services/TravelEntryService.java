@@ -58,7 +58,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 	@EJB
 	private DocumentService documentService;
 
-
 	public List<TravelEntry> getByPersonUuids(List<String> personUuids) {
 
 		List<TravelEntry> travelEntries = new LinkedList<>();
@@ -102,6 +101,8 @@ public class TravelEntryService extends BaseTravelEntryService {
 			travelEntry.get(TravelEntry.VACCINATED),
 			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
 			travelEntry.get(TravelEntry.QUARANTINE_TO),
+			travelEntry.get(TravelEntry.DELETION_REASON),
+			travelEntry.get(TravelEntry.OTHER_DELETION_REASON),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
 			travelEntry.get(TravelEntry.CHANGE_DATE));
 
@@ -284,7 +285,12 @@ public class TravelEntryService extends BaseTravelEntryService {
 					.and(cb, filter, cb.or(cb.equal(from.get(TravelEntry.ARCHIVED), false), cb.isNull(from.get(TravelEntry.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.ARCHIVED), true));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.DELETED), true));
 			}
+		}
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		}
 
 		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {
@@ -294,10 +300,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateFrom()));
 		} else if (criteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateTo()));
-		}
-
-		if (criteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.DELETED), criteria.getDeleted()));
 		}
 
 		if (!DataHelper.isNullOrEmpty(criteria.getNameUuidExternalIDLike())) {
@@ -314,7 +316,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
 
-		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		return filter;
 	}
 }

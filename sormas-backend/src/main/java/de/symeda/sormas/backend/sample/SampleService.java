@@ -241,7 +241,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				districtSelect,
-				joins.getLab().get(Facility.UUID)));
+				joins.getLab().get(Facility.UUID),
+				sample.get(Sample.DELETION_REASON),
+				sample.get(Sample.OTHER_DELETION_REASON)));
 
 		// Tests count subquery
 		Subquery<Long> testCountSq = cq.subquery(Long.class);
@@ -828,10 +830,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				filter = CriteriaBuilderHelper.and(cb, filter, assignedToActiveEntity(cb, joins));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, allAssignedEntitiesAreArchived(cb, joins));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.DELETED), true));
 			}
 		}
-		if (criteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.DELETED), criteria.getDeleted()));
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
 		}
 
 		if (criteria.getCaseCodeIdLike() != null) {

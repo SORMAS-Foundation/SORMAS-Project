@@ -1111,7 +1111,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 
 		final ContactJoins joins = cqc.getJoins();
 		final CriteriaBuilder cb = cqc.getCriteriaBuilder();
-		final From<?, ?> from = cqc.getRoot();
+		final From<?, Contact> from = cqc.getRoot();
 
 		Predicate filter = null;
 		Join<Contact, Case> caze = joins.getCaze();
@@ -1285,10 +1285,12 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 					.and(cb, filter, cb.and(cb.or(cb.equal(from.get(Contact.ARCHIVED), false), cb.isNull(from.get(Contact.ARCHIVED)))));
 			} else if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.ARCHIVED), true));
+			} else if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), true));
 			}
 		}
-		if (contactCriteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), contactCriteria.getDeleted()));
+		if (contactCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		}
 
 		if (!DataHelper.isNullOrEmpty(contactCriteria.getPersonLike())) {

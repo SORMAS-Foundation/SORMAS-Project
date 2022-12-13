@@ -175,6 +175,20 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.CONTACT_COUNT,
 				EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+			Column<EventIndexDto, String> deleteColumn = addColumn(entry -> {
+				if (entry.getDeletionReason() != null) {
+					return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+				} else {
+					return "-";
+				}
+			});
+			deleteColumn.setId(DELETE_REASON_COLUMN);
+			deleteColumn.setSortable(false);
+			deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+			columnIds.add(DELETE_REASON_COLUMN);
+		}
+
 		setColumns(columnIds.toArray(new String[columnIds.size()]));
 
 		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);

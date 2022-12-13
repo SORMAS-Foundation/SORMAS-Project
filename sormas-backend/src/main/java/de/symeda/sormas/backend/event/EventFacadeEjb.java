@@ -461,7 +461,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			responsibleUser.get(User.LAST_NAME),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
 			event.get(Event.CHANGE_DATE),
-			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
+			event.get(Event.DELETION_REASON),
+			event.get(Event.OTHER_DELETION_REASON));
 
 		Predicate filter = null;
 

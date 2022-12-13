@@ -131,6 +131,17 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		visitsColumn.setId(NUMBER_OF_VISITS);
 		visitsColumn.setSortable(false);
 
+		Column<IndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
 		addComponentColumn(indexDto -> {
 			Label label =
 				new Label(indexDto.getCompleteness() != null ? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %" : "-");
@@ -179,6 +190,10 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);
 		}
 
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+			removeColumn(DELETE_REASON_COLUMN);
+		}
+
 		for (Column<IndexDto, ?> column : getColumns()) {
 			column.setCaption(
 				I18nProperties.findPrefixCaptionWithDefault(
@@ -218,7 +233,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					.filter(
 						column -> FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
 							&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)),
-				Stream.of(COLUMN_COMPLETENESS))
+				Stream.of(COLUMN_COMPLETENESS),
+				Stream.of(DELETE_REASON_COLUMN))
 			.flatMap(s -> s);
 	}
 
