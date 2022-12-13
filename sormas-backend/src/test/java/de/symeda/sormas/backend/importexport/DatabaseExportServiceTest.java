@@ -3,12 +3,14 @@ package de.symeda.sormas.backend.importexport;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 
@@ -62,6 +64,10 @@ public class DatabaseExportServiceTest {
 	@Test
 	public void test_all_entities_have_export_configuration() {
 		Collection<String> exportableTables = DatabaseExportService.EXPORT_CONFIGS.values();
+		Set<DatabaseTable> joinTables = Arrays.stream(DatabaseTable.values()).filter(t -> t.getParentTable() != null).collect(Collectors.toSet());
+		Set<DatabaseTable> joinTablesFromExportConfigs =
+			DatabaseExportService.EXPORT_CONFIGS.keySet().stream().filter(t -> t.getParentTable() != null).collect(Collectors.toSet());
+
 		Set<String> missingEntities = new HashSet<>();
 		Set<String> exportedButNotWanted = new HashSet<>();
 
@@ -91,5 +97,6 @@ public class DatabaseExportServiceTest {
 			"Export configuration not wanted for entities [" + String.join(", ", exportedButNotWanted) + "]",
 			exportedButNotWanted,
 			hasSize(0));
+		assertTrue(joinTablesFromExportConfigs.containsAll(joinTables));
 	}
 }
