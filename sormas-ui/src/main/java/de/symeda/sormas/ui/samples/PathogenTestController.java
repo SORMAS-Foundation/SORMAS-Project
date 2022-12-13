@@ -258,13 +258,15 @@ public class PathogenTestController {
 						}
 					});
 				} else {
-					//TODO fix here for bug
-					showCaseCloningWithNewDiseaseDialog(
-						caze,
-						dto.getTestedDisease(),
-						dto.getTestedDiseaseDetails(),
-						dto.getTestedDiseaseVariant(),
-						dto.getTestedDiseaseVariantDetails());
+					List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(caze, dto);
+					if (duplicatedCases == null || duplicatedCases.size() == 0) {
+						showCaseCloningWithNewDiseaseDialog(
+							caze,
+							dto.getTestedDisease(),
+							dto.getTestedDiseaseDetails(),
+							dto.getTestedDiseaseVariant(),
+							dto.getTestedDiseaseVariantDetails());
+					}
 				}
 			}
 		};
