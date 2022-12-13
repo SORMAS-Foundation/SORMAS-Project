@@ -30,29 +30,31 @@ public class ColumnSteps implements En {
         (Integer col) -> {
           webDriverHelpers.clickOnWebElementBySelector(
               By.xpath("//thead//tr//th[" + col.toString() + "]"));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
         "I check that column {int} is sorted alphabetically in ascending order",
         (Integer col) -> {
-          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          TimeUnit.SECONDS.sleep(5); // For preventing premature data collection
           List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
           rawColumnData.replaceAll(element -> element.toLowerCase());
           rawColumnData.replaceAll(element -> nullifyEmptyString(element));
           List<String> ascColumnData = new ArrayList<>(rawColumnData);
           ascColumnData.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+          log.info("List elements before test " + rawColumnData);
           softly.assertEquals(
               rawColumnData,
               ascColumnData,
               "Column " + col.toString() + " is not correctly sorted!");
           softly.assertAll();
+          log.info("List elements after test " + rawColumnData);
         });
 
     When(
         "I check that column {int} is sorted alphabetically in descending order",
         (Integer col) -> {
-          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          TimeUnit.SECONDS.sleep(5); // For preventing premature data collection
           List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
           rawColumnData.replaceAll(element -> element.toLowerCase());
           rawColumnData.replaceAll(element -> nullifyEmptyString(element));

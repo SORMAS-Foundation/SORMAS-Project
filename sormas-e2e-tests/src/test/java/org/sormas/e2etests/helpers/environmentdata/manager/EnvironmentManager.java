@@ -58,9 +58,14 @@ public class EnvironmentManager {
     return countries.stream()
         .filter(country -> country.getDefaultName().equalsIgnoreCase(countryName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find country: " + countryName + "\n"
-                + "Available countries: "
-                + countries))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find country: "
+                        + countryName
+                        + "\n"
+                        + "Available countries: "
+                        + countries))
         .getUuid();
   }
 
@@ -115,9 +120,14 @@ public class EnvironmentManager {
     return districts.stream()
         .filter(district -> district.getName().equalsIgnoreCase(districtName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find district: " + districtName + "\n"
-                + "Available districts: "
-                + districts))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find district: "
+                        + districtName
+                        + "\n"
+                        + "Available districts: "
+                        + districts))
         .getUuid();
   }
 
@@ -165,9 +175,14 @@ public class EnvironmentManager {
     return continents.stream()
         .filter(continent -> continent.getDefaultName().equalsIgnoreCase(continentName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find continent: " + continentName + "\n"
-                + "Available continents: "
-                + continents))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find continent: "
+                        + continentName
+                        + "\n"
+                        + "Available continents: "
+                        + continents))
         .getUuid();
   }
 
@@ -199,9 +214,14 @@ public class EnvironmentManager {
     return communities.stream()
         .filter(community -> community.getName().equalsIgnoreCase(communityName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find community: " + communityName + "\n"
-                + "Available communities: "
-                + communities))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find community: "
+                        + communityName
+                        + "\n"
+                        + "Available communities: "
+                        + communities))
         .getUuid();
   }
 

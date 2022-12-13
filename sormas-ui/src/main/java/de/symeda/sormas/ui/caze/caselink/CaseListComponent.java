@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.caze.caselink;
 
+import java.util.function.Consumer;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
@@ -9,6 +11,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -16,8 +19,13 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class CaseListComponent extends SideComponent {
 
-	public CaseListComponent(PersonReferenceDto personReferenceDto) {
-		super(I18nProperties.getString(Strings.entityCases));
+	public CaseListComponent(PersonReferenceDto personReferenceDto, Consumer<Runnable> actionCallback) {
+
+		super(I18nProperties.getString(Strings.entityCases), actionCallback);
+
+		addCreateButton(I18nProperties.getCaption(Captions.caseNewCase), () -> {
+			ControllerProvider.getCaseController().createFromPersonReference(personReferenceDto);
+		}, UserRight.CASE_CREATE);
 
 		CaseList caseList = new CaseList(personReferenceDto);
 		addComponent(caseList);
