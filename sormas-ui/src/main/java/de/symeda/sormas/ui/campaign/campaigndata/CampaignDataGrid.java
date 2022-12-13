@@ -16,10 +16,7 @@
 package de.symeda.sormas.ui.campaign.campaigndata;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -27,7 +24,6 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -37,12 +33,12 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 	private static final long serialVersionUID = 8045806100043073638L;
 
 	public CampaignDataGrid(CampaignFormDataCriteria criteria) {
+
 		super(CampaignFormDataIndexDto.class);
 		setSizeFull();
 
-		setDataProvider();
+		setLazyDataProvider(FacadeProvider.getCampaignFormDataFacade()::getIndexList, FacadeProvider.getCampaignFormDataFacade()::count);
 		setCriteria(criteria);
-
 		addDefaultColumns();
 	}
 
@@ -71,23 +67,6 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 
 	public void reload() {
 		getDataProvider().refreshAll();
-	}
-
-	public void setDataProvider() {
-		DataProvider<CampaignFormDataIndexDto, CampaignFormDataCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getCampaignFormDataFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getCampaignFormDataFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
 	}
 
 	public void addCustomColumn(String property, String caption) {

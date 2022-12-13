@@ -2,9 +2,6 @@ package de.symeda.sormas.ui.campaign.campaignstatistics;
 
 import java.util.List;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
@@ -46,8 +43,8 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 	}
 
 	public void setDataProvider() {
-		ListDataProvider<CampaignStatisticsDto> dataProvider = DataProvider.fromStream(getGridData().stream());
-		setDataProvider(dataProvider);
+
+		setDataProvider(getGridData().stream());
 		setSelectionMode(SelectionMode.NONE);
 	}
 
