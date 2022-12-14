@@ -284,7 +284,10 @@ Feature: Immunization end to end tests
     And I set event Date filed on Create New Event form to current date for DE
     And I click SAVE button on Create New Event form
     And I click SAVE in Add Event Participant form on Edit Case Page for DE
-    And I click on Edit event button for the first event in Events section
+#    And I click on Edit event button for the first event in Events section
+    And I click on first Edit event button for in Events section
+    And I click SAVE button on Create New Event form
+    And I click on first Edit event button for in Events section
     And I click on the Event participant tab
     And I click on the first row from event participant
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
@@ -331,7 +334,8 @@ Feature: Immunization end to end tests
     And I click on the Edit Vaccination icon on vaccination card on Edit Case page
     And I set the vaccination date to 7 days before the current day for DE
     And I click SAVE button in new Vaccination form
-    And I click on Edit event button for the first event in Events section
+    And I click on first Edit event button for in Events section
+#    And I click on Edit event button for the first event in Events section
     And I click on the Event participant tab
     And I click Create Case for Event Participant
     And I pick a new case in pick or create a case popup

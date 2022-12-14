@@ -1008,6 +1008,12 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I click on first Edit event button for in Events section",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK);
+        });
+
+    When(
         "I click on the Navigate to event directory filtered on this event group",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
