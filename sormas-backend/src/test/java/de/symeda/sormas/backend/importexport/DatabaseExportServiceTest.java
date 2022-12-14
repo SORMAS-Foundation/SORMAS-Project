@@ -95,20 +95,20 @@ public class DatabaseExportServiceTest {
 				} else if (NOT_EXPORTED_ENTITIES.contains(clazz.reflect())) {
 					exportedButNotWantedEntity.add(clazz.getSimpleName());
 				}
-			}
 
-			for (JavaMethod method : clazz.getMethods()) {
-				if (method.isAnnotatedWith(JoinTable.class)) {
-					JoinTable joinTableAnnotation = method.getAnnotationOfType(JoinTable.class);
-					String tableName = joinTableAnnotation.name();
-					if (StringUtils.isBlank(tableName)) {
-						tableName = clazz.getSimpleName().toLowerCase();
-					}
+				for (JavaMethod method : clazz.getMethods()) {
+					if (method.isAnnotatedWith(JoinTable.class)) {
+						JoinTable joinTableAnnotation = method.getAnnotationOfType(JoinTable.class);
+						String joinTableName = joinTableAnnotation.name();
+						if (StringUtils.isBlank(joinTableName)) {
+							tableName = clazz.getSimpleName().toLowerCase();
+						}
 
-					if (!exportableTables.contains(tableName)) {
-						missingJoinTables.add(tableName);
-					} else if (NOT_EXPORTED_JOIN_TABLE_NAMES.contains(tableName)) {
-						exportedButNotWantedJoinTable.add(tableName);
+						if (!exportableTables.contains(joinTableName)) {
+							missingJoinTables.add(joinTableName);
+						} else if (NOT_EXPORTED_JOIN_TABLE_NAMES.contains(joinTableName)) {
+							exportedButNotWantedJoinTable.add(joinTableName);
+						}
 					}
 				}
 			}
