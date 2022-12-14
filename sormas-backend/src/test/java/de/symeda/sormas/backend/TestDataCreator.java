@@ -1982,6 +1982,18 @@ public class TestDataCreator {
 
 	}
 
+	public ExternalMessageDto createLabMessageWithSurveillanceReport(UserReferenceDto user, CaseReferenceDto caze) {
+		SurveillanceReportDto surveillanceReportDto = createSurveillanceReport(user, ReportingType.LABORATORY, caze);
+		ExternalMessageDto labMessage = createExternalMessage(lm -> {
+			lm.setType(ExternalMessageType.LAB_MESSAGE);
+			lm.setSurveillanceReport(surveillanceReportDto.toReference());
+			lm.setStatus(ExternalMessageStatus.PROCESSED);
+		});
+
+		return labMessage;
+
+	}
+
 	public ExternalMessageDto createLabMessageWithTestReport(SampleReferenceDto sample) {
 		ExternalMessageDto labMessage = createExternalMessage(lm -> lm.setType(ExternalMessageType.LAB_MESSAGE));
 		SampleReportDto sampleReport = createSampleReport(labMessage, sample);
