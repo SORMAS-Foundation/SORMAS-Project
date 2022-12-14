@@ -65,7 +65,7 @@ You can check your Java version from the shell/command line using: ``java -versi
 * Install the "temporal tables" extension for Postgres (<https://github.com/arkhipov/temporal_tables>)
   * **Windows**: Download the latest version for your Postgres version: <https://github.com/arkhipov/temporal_tables/releases/latest>, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
   * **Linux** (see <https://github.com/arkhipov/temporal_tables#installation)>
-* Add the PostgreSQL path (/etc/PostgreSQL/10/bin) to Environment Variables
+  * Add the PostgreSQL path (/etc/PostgreSQL/10/bin) to Environment Variables
 ```bash
 sudo apt-get install libpq-dev
 sudo apt-get install postgresql-server-dev-all

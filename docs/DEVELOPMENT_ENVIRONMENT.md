@@ -23,7 +23,7 @@ Download and install Maven for your operating system, see [binaries](https://dlc
 Download and install Ant, it can be done from [Ant site](https://ant.apache.org/bindownload.cgi) or with packages from your Linux distribution.
 
 ## Step 4: Install a Local SORMAS Server
-Please follow the [Server Installation Instructions](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/SERVER_SETUP.md#sormas-installation) to set up a local SORMAS instance that you will use to test your code. Alternatively, you can also use [Maven Cargo](../sormas-cargoserver/README.md), or a [Docker installation](SERVER_DOCKER_SETUP.md) (not recommended at this time).
+Please follow the [Server Installation Instructions](docs/SERVER_SETUP.md#sormas-installation) to set up a local SORMAS instance that you will use to test your code. Alternatively, you can also use [Maven Cargo](../sormas-cargoserver/README.md), or a [Docker installation](SERVER_DOCKER_SETUP.md) (not recommended at this time).
 
 ## Step 5: Install and Configure Your IDE
 
@@ -134,8 +134,11 @@ Optional, but strongly recommended:
 
 7. For eclipse formatted plugin, there is an issue for Idea: <https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter> - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
 
-If something is still not working, try to clean up (delete all from domains/sormas/autodeploy, domains/sormas/applications, domains/sormas/generated, and domains/sormas/osgi-cache) try to build again by executing `mvn clean install -DskipTests` on the `sormas-base` module
-
+If something is still not working:
+ -> Stop the payara domain, run Ant deploy-serverlibs to update libs
+ -> clean up (delete all from domains/sormas/autodeploy, domains/sormas/applications, domains/sormas/generated, and domains/sormas/osgi-cache) try to build again by executing `mvn clean install -DskipTests` on the `sormas-base` module
+ -> start the domain and deploy again
+ 
 ## Avoid redeployment problems
 
 **Problem**: Due to currently a not mitigated problem, it is only possible to deploy the `sormas-ear.ear` (contains `sormas-backend`) once without problems. If you undeploy it and deploy `sormas-ear.ear` again, the other artifacts `sormas-ui`and `sormas-rest` cannot successfully call the backend.

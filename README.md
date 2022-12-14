@@ -64,8 +64,8 @@ If you want to learn more about the development and contribution process, settin
 
 If you want to set up a SORMAS instance for production, testing or development purposes, please refer to the following guides:
 * [Installing a SORMAS Server](docs/SERVER_SETUP.md)
-* [Installing a SORMAS Server for Development](docs/SERVER_DOCKER_SETUP.md)
 * [Updating a SORMAS Server](docs/SERVER_UPDATE.md)
+* [Setup Development environment](docs/DEVELOPMENT_ENVIRONMENT.md)
 * [Creating a Demo Android App](docs/DEMO_APP.md)
 
 ## Project Structure
