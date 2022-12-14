@@ -23,7 +23,7 @@ Download and install Maven for your operating system, see [binaries](https://dlc
 Download and install Ant, it can be done from [Ant site](https://ant.apache.org/bindownload.cgi) or with packages from your Linux distribution.
 
 ## Step 4: Install a Local SORMAS Server
-Please follow the [Server Installation Instructions](docs/SERVER_SETUP.md#sormas-installation) to set up a local SORMAS instance that you will use to test your code. Alternatively, you can also use [Maven Cargo](../sormas-cargoserver/README.md), or a [Docker installation](SERVER_DOCKER_SETUP.md) (not recommended at this time).
+Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sormas-installation) to set up a local SORMAS instance that you will use to test your code. Alternatively, you can also use [Maven Cargo](../sormas-cargoserver/README.md), or a [Docker installation](SERVER_DOCKER_SETUP.md) (not recommended at this time).
 
 ## Step 5: Install and Configure Your IDE
 
