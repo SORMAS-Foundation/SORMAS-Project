@@ -101,7 +101,7 @@ public class DatabaseExportServiceTest {
 			}
 		}
 
-		// remove not exported entities from the lists of missing ones
+		// remove not exported entities from the list of missing ones
 		NOT_EXPORTED_ENTITIES.forEach(e -> missingEntities.remove(e.getSimpleName()));
 
 		assertThat("Missing export configuration for entities [" + String.join(", ", missingEntities) + "]", missingEntities, hasSize(0));
