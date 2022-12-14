@@ -1065,7 +1065,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			ensurePersisted(c);
 		});
 
-		deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
