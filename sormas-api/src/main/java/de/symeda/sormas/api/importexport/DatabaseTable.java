@@ -50,12 +50,14 @@ public enum DatabaseTable {
 
 	CONTACTS(DatabaseTableType.SORMAS, "contacts", dependingOnFeature(FeatureType.CONTACT_TRACING)),
 	VISITS(DatabaseTableType.SORMAS, "visits", dependingOnFeature(FeatureType.CONTACT_TRACING, FeatureType.CASE_FOLLOWUP)),
+	CONTACTS_VISITS(DatabaseTableType.SORMAS, VISITS, "contacts_visits"),
 
 	SYMPTOMS(DatabaseTableType.SORMAS,
 		"symptoms",
 		dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.CLINICAL_MANAGEMENT)),
 
 	EVENTS(DatabaseTableType.SORMAS, "events", dependingOnFeature(FeatureType.EVENT_SURVEILLANCE)),
+	EVENTS_EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "events_eventgroups"),
 	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups", dependingOnFeature(FeatureType.EVENT_GROUPS)),
 	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_persons_involved"),
 	ACTIONS(DatabaseTableType.SORMAS, EVENTS, "actions"),
@@ -93,6 +95,7 @@ public enum DatabaseTable {
 	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, "customizable_enum_values", null),
 
 	CAMPAIGNS(DatabaseTableType.SORMAS, "campaigns", dependingOnFeature(FeatureType.CAMPAIGNS)),
+	CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_campaignformmeta"),
 	CAMPAIGN_FORM_META(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_from_meta"),
 	CAMPAIGN_FORM_DATA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_form_data"),
 	CAMPAIGN_DIAGRAM_DEFINITIONS(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_diagram_definitions"),
@@ -105,6 +108,7 @@ public enum DatabaseTable {
 	SORMAS_TO_SORMAS_SHARE_INFO(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_share_info", dependingOnS2S()),
 	SORMAS_TO_SORMAS_SHARE_REQUESTS(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_share_requests", dependingOnS2S()),
 	SHARE_REQUEST_INFO(DatabaseTableType.EXTERNAL, null, "share_request_info", dependingOnS2S()),
+	SHARE_REQUEST_INFO_SHARE_INFO_TABLE(DatabaseTableType.EXTERNAL, SHARE_REQUEST_INFO, "sharerequestinfo_shareinfo"),
 
 	EXTERNAL_SHARE_INFO(DatabaseTableType.EXTERNAL,
 		null,
