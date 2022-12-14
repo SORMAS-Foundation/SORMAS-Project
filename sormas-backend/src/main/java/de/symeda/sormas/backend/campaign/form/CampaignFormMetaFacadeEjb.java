@@ -115,7 +115,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		return service.getAll()
 			.stream()
 			.map(CampaignFormMetaFacadeEjb::toReferenceDto)
-			.sorted(Comparator.comparing(ReferenceDto::toString))
+			.sorted(Comparator.comparing(ReferenceDto::buildCaption))
 			.collect(Collectors.toList());
 	}
 

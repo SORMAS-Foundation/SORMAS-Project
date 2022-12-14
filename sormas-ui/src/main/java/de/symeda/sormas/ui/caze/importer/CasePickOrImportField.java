@@ -76,13 +76,13 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 
 			Label responsibleRegionField = new Label();
 			responsibleRegionField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
-			responsibleRegionField.setValue(newCase.getResponsibleRegion().toString());
+			responsibleRegionField.setValue(newCase.getResponsibleRegion().buildCaption());
 			responsibleRegionField.setWidthUndefined();
 			caseInfoLayout.addComponent(responsibleRegionField);
 
 			Label responsibleDistrictField = new Label();
 			responsibleDistrictField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
-			responsibleDistrictField.setValue(newCase.getResponsibleDistrict().toString());
+			responsibleDistrictField.setValue(newCase.getResponsibleDistrict().buildCaption());
 			responsibleDistrictField.setWidthUndefined();
 			caseInfoLayout.addComponent(responsibleDistrictField);
 

@@ -185,7 +185,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				if (StringUtils.isNotEmpty(exposure.getLocation().getFacilityDetails())) {
 					typeOfPlaceString += " - " + exposure.getLocation().getFacilityDetails();
 				} else if (exposure.getLocation().getFacility() != null) {
-					typeOfPlaceString += " - " + exposure.getLocation().getFacility().toString();
+					typeOfPlaceString += " - " + exposure.getLocation().getFacility().buildCaption();
 				}
 			} else if (exposure.getTypeOfPlace() == TypeOfPlace.MEANS_OF_TRANSPORT) {
 				typeOfPlaceString = exposure.getMeansOfTransport() == null

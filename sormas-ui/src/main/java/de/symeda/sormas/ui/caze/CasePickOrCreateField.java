@@ -108,7 +108,7 @@ public class CasePickOrCreateField extends CustomField<CaseSelectionDto> {
 
 			Label responsibleDistrictField = new Label();
 			responsibleDistrictField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
-			responsibleDistrictField.setValue(newCase.getResponsibleDistrict() != null ? newCase.getResponsibleDistrict().toString() : "");
+			responsibleDistrictField.setValue(newCase.getResponsibleDistrict() != null ? newCase.getResponsibleDistrict().buildCaption() : "");
 			responsibleDistrictField.setWidthUndefined();
 			caseInfoLayout.addComponent(responsibleDistrictField);
 

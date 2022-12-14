@@ -160,7 +160,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 		int index = 0;
 		for (DistrictReferenceDto affectedDistrict : affectedDistricts) {
-			affectedDistrictsStringBuilder.append(affectedDistrict.toString());
+			affectedDistrictsStringBuilder.append(affectedDistrict.buildCaption());
 			if (index < affectedDistricts.size() - 1) {
 				affectedDistrictsStringBuilder.append(", ");
 			}
