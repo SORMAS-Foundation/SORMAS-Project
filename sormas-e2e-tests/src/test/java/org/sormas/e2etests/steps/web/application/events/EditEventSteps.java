@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CA
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BUTTONS_IN_VACCINATIONS_LOCATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_FIRST_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
@@ -1010,7 +1011,7 @@ public class EditEventSteps implements En {
     When(
         "I click on first Edit event button for in Events section",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK_BUTTON);
         });
 
     When(

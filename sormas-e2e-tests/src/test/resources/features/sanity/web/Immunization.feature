@@ -284,9 +284,6 @@ Feature: Immunization end to end tests
     And I set event Date filed on Create New Event form to current date for DE
     And I click SAVE button on Create New Event form
     And I click SAVE in Add Event Participant form on Edit Case Page for DE
-#    And I click on Edit event button for the first event in Events section
-    And I click on first Edit event button for in Events section
-    And I click SAVE button on Create New Event form
     And I click on first Edit event button for in Events section
     And I click on the Event participant tab
     And I click on the first row from event participant
@@ -335,7 +332,6 @@ Feature: Immunization end to end tests
     And I set the vaccination date to 7 days before the current day for DE
     And I click SAVE button in new Vaccination form
     And I click on first Edit event button for in Events section
-#    And I click on Edit event button for the first event in Events section
     And I click on the Event participant tab
     And I click Create Case for Event Participant
     And I pick a new case in pick or create a case popup
@@ -349,7 +345,7 @@ Feature: Immunization end to end tests
     And I fill a mandatory fields for a new contact form for DE
     And I change a Report Date to the current date for DE
     And I click on SAVE button in create contact form
-    And I click on CONFIRMED CONTACT radio button Contact Data tab for DE version
+    And I select CONFIRMED CONTACT radio button on Contact Data tab for DE version
     And I click SAVE button on Edit Contact Page
     And I click NEW VACCINATION button for DE
     And I fill new vaccination data in new Vaccination form with vaccination date 7 days before the current day for DE
@@ -363,8 +359,8 @@ Feature: Immunization end to end tests
     And I click on the NEW CASE button
     And I create a new case with specific mandatory fields with saved person details from contact for DE
     And I click on SAVE new contact button and choose same person in duplicate detection
-    And I check that vaccination entry is greyed out in the vaccination card
     And I check if Vaccination Status is set to "" on Edit Case page
+    And I check that vaccination entry is greyed out in the vaccination card
 
   @tmsLink=SORQA-668 @env_de @oldfake
     Scenario: Check automatic deletion of IMMUNIZATION created 3651 days ago

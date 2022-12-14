@@ -143,5 +143,5 @@ public class EpidemiologicalDataCasePage {
   }
 
   public static final By EDIT_SOURCE_CONTACTS_BUTTON =
-      By.cssSelector("[location='sourceContacts'] #edit-task-0");
+      By.cssSelector("[location='sourceContacts'] #edit0");
 }
