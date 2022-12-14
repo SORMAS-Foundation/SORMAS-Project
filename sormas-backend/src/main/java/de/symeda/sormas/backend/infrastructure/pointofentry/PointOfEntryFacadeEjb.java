@@ -238,6 +238,21 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
+	public boolean existForCase(String caseUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Case> root = cq.from(Case.class);
+		CaseJoins caseCaseJoins = new CaseJoins(root);
+		Join<Case, PointOfEntry> pointOfEntryJoin = caseCaseJoins.getPointOfEntry();
+
+		cq.select(cb.literal(true));
+		cq.where(cb.and(cb.equal(root.get(Case.UUID), caseUuid), cb.isNotNull(pointOfEntryJoin.get(PointOfEntry.ID))));
+
+		Boolean exist = QueryHelper.getSingleResult(em, cq);
+		return Boolean.TRUE.equals(exist);
+	}
+
+	@Override
 	public boolean hasArchivedParentInfrastructure(Collection<String> pointOfEntryUuids) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

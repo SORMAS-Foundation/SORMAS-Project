@@ -1346,7 +1346,7 @@ public class CaseController {
 			return null;
 		}
 
-		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caseUuid);// getByUuid(casePointOfEntry.getUuid());
+		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caseUuid);
 		PortHealthInfoForm form = new PortHealthInfoForm(pointOfEntry, caze.getPointOfEntryDetails());
 		form.setValue(getPortHealthInfo(caze));
 
@@ -1849,8 +1849,7 @@ public class CaseController {
 
 	public boolean hasPointOfEntry(CaseDataDto caze) {
 		if (caze.getPointOfEntry() == null) {
-			PointOfEntryDto pointOfEntryDto = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caze.getUuid());
-			return pointOfEntryDto != null;
+			return FacadeProvider.getPointOfEntryFacade().existForCase(caze.getUuid());
 		}
 		return true;
 	}

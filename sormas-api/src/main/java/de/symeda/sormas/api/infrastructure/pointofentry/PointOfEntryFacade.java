@@ -27,4 +27,6 @@ public interface PointOfEntryFacade extends InfrastructureFacade<PointOfEntryDto
 	boolean hasArchivedParentInfrastructure(Collection<String> pointOfEntryUuids);
 
 	PointOfEntryDto getByCaseUuid(String caseUuid);
+
+	boolean existForCase(String caseUuid);
 }
