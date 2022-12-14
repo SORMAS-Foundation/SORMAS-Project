@@ -218,8 +218,4 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 
 		return downloadButton;
 	}
-
-	public void setDataProviderListener(DataProviderListener<ExternalMessageIndexDto> dataProviderListener) {
-		this.dataProviderListener = dataProviderListener;
-	}
 }

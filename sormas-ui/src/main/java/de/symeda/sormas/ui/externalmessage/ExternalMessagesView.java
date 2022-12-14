@@ -103,7 +103,6 @@ public class ExternalMessagesView extends AbstractView {
 		gridLayout.addComponent(createStatusFilterBar());
 
 		grid = new ExternalMessageGrid(criteria);
-		grid.setDataProviderListener(e -> updateStatusButtons());
 		grid.addDataSizeChangeListener(e -> updateStatusButtons());
 
 		gridLayout.addComponent(grid);
