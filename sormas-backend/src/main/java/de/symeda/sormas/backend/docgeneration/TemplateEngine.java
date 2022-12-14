@@ -131,9 +131,6 @@ public class TemplateEngine {
 					} else if (property instanceof String) {
 						property = returnSanitizedString((String) property);
 					}
-//					else if (property instanceof HasCaption) {
-//						property = returnSanitizedString(((HasCaption) property).buildCaption());
-//					}
 
 					if (property != null && !(property instanceof String && ((String) property).isEmpty())) {
 						context.put((String) key, property);
