@@ -105,6 +105,7 @@ import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.caze.transformers.CaseListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.caze.transformers.CaseSelectionDtoResultTransformer;
@@ -229,6 +230,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private DocumentService documentService;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@EJB
+	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 	@EJB
 	private VaccinationService vaccinationService;
 	@EJB
@@ -1016,7 +1019,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
-			.forEach(s -> surveillanceReportService.deletePermanent(s));
+			.forEach(s -> surveillanceReportFacade.deleteSurveillanceReport(s.getUuid()));
 
 		// Delete documents related to this case
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, caze.getUuid()).forEach(d -> documentService.markAsDeleted(d));
