@@ -110,9 +110,9 @@ class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
 		case1.setPointOfEntry(null);
 		getCaseFacade().save(case1);
 
-		boolean existPoeForCase = getPointOfEntryFacade().existForCase(case1.getUuid());
+		boolean existPoeForCase = getPointOfEntryFacade().existsForCase(case1.getUuid());
 		assertFalse(existPoeForCase);
-		existPoeForCase = getPointOfEntryFacade().existForCase(case2.getUuid());
+		existPoeForCase = getPointOfEntryFacade().existsForCase(case2.getUuid());
 		assertTrue(existPoeForCase);
 	}
 }

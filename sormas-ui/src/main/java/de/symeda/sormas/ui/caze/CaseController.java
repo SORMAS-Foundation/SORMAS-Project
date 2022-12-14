@@ -1849,7 +1849,7 @@ public class CaseController {
 
 	public boolean hasPointOfEntry(CaseDataDto caze) {
 		if (caze.getPointOfEntry() == null) {
-			return FacadeProvider.getPointOfEntryFacade().existForCase(caze.getUuid());
+			return FacadeProvider.getPointOfEntryFacade().existsForCase(caze.getUuid());
 		}
 		return true;
 	}

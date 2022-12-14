@@ -28,5 +28,5 @@ public interface PointOfEntryFacade extends InfrastructureFacade<PointOfEntryDto
 
 	PointOfEntryDto getByCaseUuid(String caseUuid);
 
-	boolean existForCase(String caseUuid);
+	boolean existsForCase(String caseUuid);
 }

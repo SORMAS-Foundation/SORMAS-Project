@@ -238,7 +238,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public boolean existForCase(String caseUuid) {
+	public boolean existsForCase(String caseUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Case> root = cq.from(Case.class);
