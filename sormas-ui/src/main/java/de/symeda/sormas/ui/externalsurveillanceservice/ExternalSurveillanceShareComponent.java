@@ -58,7 +58,11 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 		setSpacing(false);
 		addStyleNames(CssStyles.SIDE_COMPONENT);
 
-		addComponent(createHeader(entityString, sendHandler, deleteHandler, editComponent, shareInfoCriteria.getCaze().getUuid()));
+		String caseUuid = null;
+		if (shareInfoCriteria.getCaze() != null) {
+			caseUuid = shareInfoCriteria.getCaze().getUuid();
+		}
+		addComponent(createHeader(entityString, sendHandler, deleteHandler, editComponent, caseUuid));
 		addComponent(createShareInfoList(shareInfoCriteria));
 	}
 
@@ -85,7 +89,7 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 			headerLayout.setExpandRatio(sendButton, 1);
 			headerLayout.setComponentAlignment(sendButton, Alignment.MIDDLE_RIGHT);
 		}
-		if (isVisibleDeleteButton(caseUuid)) {
+		if (deleteHandler != null && isVisibleDeleteButton(caseUuid)) {
 			Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
 			headerLayout.addComponent(deleteButton);
 			headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
@@ -96,11 +100,13 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 	}
 
 	private boolean isVisibleDeleteButton(String caseUuid) {
-		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		boolean isSharedCase = FacadeProvider.getExternalShareInfoFacade().isSharedCase(caseUuid);
+		if (caseUuid != null) {
+			CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+			boolean isSharedCase = FacadeProvider.getExternalShareInfoFacade().isSharedCase(caseUuid);
 
-		if (caseDataDto.isDontShareWithReportingTool() && !isSharedCase) {
-			return false;
+			if (caseDataDto.isDontShareWithReportingTool() && !isSharedCase) {
+				return false;
+			}
 		}
 		return true;
 	}

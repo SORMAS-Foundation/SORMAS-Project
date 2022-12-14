@@ -287,7 +287,6 @@ public class EventsView extends AbstractView {
 			{
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 				btnEnterBulkEditMode.addStyleName(ValoTheme.BUTTON_PRIMARY);
-
 				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
 				moreButton.addMenuEntry(btnEnterBulkEditMode);
 			}
@@ -297,7 +296,6 @@ public class EventsView extends AbstractView {
 			{
 				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
-
 				moreButton.addMenuEntry(btnLeaveBulkEditMode);
 			}
 

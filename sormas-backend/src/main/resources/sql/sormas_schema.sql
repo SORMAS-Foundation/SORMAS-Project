@@ -12243,4 +12243,17 @@ ALTER TABLE externalmessage_history ADD COLUMN reportmessageid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (503, '[DEMIS2SORMAS] Add a Field for the NotificationBundleId to the External Message and map it when processing #10826');
 
+-- 2022-12-08 Add task archive user right #4060
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_USER';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'SURVEILLANCE_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'CONTACT_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'CASE_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_CLINICIAN';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'POE_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'POE_NATIONAL_USER';
+
+INSERT INTO schema_version (version_number, comment) VALUES (504, 'Add task archive user right #4060');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

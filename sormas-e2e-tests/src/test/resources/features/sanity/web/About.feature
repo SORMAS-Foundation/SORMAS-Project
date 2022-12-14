@@ -63,7 +63,7 @@ Feature: About Directory end to end tests
     And I check if Data Dictionary contains entries name in English
     And I delete Data Dictionary downloaded file from About Directory
 
-  @env_main @tmsLink=SORDEV-10238 @LanguageRisk @ExcludedFromRelease
+  @env_main @tmsLink=SORDEV-10238 @LanguageRisk @ExcludedFromRelease @ignore
   Scenario: Check if data dictionary is in German when service language is set to German
     Given  I log in as a National Language User
     And I click on the About button from navbar

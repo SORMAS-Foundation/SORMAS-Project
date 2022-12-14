@@ -1,7 +1,7 @@
 @UI @Sanity @Configuration
 Feature: Country end to end tests
 
-  @tmsLink=SORDEV-7463 @env_main
+  @tmsLink=SORDEV-7463 @env_main @precon
   Scenario: Test configuration for country and its Subcontinent association
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
@@ -9,7 +9,7 @@ Feature: Country end to end tests
     And I fill search filter with "Germany" country name on Country Configuration Page
     Then I check the "Central Europe" name for the country on Country Configuration Page
 
-    @tmsLink=SORDEV-7464 @env_main
+    @tmsLink=SORDEV-7464 @env_main @precon
     Scenario: Test configuration for NCL and its Subcontinent association
       Given I log in as a Admin User
       Then I click on the Configuration button from navbar
@@ -51,3 +51,11 @@ Feature: Country end to end tests
     Then I verify the Subcontinent Central America combo box returns appropriate filter results in Countries Configuration page
     Then I verify the Subcontinent Central Asia combo box returns appropriate filter results in Countries Configuration page
     Then I verify the Subcontinent Central Europe combo box returns appropriate filter results in Countries Configuration page
+
+  @tmsLink=SORQA-707 @env_main @precon
+  Scenario: Test configuration for country and its Subcontinent association
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to countries tab in Configuration
+    And I fill search filter with "Cameroon" country name on Country Configuration Page
+    Then I check the "Central Africa" name for the country on Country Configuration Page
