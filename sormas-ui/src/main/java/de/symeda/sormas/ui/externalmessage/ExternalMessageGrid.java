@@ -19,15 +19,11 @@ import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -49,7 +45,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -142,38 +137,11 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 	}
 
 	public void setEagerDataProvider() {
-
-		ListDataProvider<ExternalMessageIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getExternalMessageFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-
-		setSelectionMode(SelectionMode.MULTI);
-
-		if (dataProviderListener != null) {
-			dataProvider.addDataProviderListener(dataProviderListener);
-		}
+		setEagerDataProvider(FacadeProvider.getExternalMessageFacade()::getIndexList);
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<ExternalMessageIndexDto, ExternalMessageCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getExternalMessageFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getExternalMessageFacade().count(query.getFilter().orElse(null)));
-
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
-
-		if (dataProviderListener != null) {
-			dataProvider.addDataProviderListener(dataProviderListener);
-		}
+		setLazyDataProvider(FacadeProvider.getExternalMessageFacade()::getIndexList, FacadeProvider.getExternalMessageFacade()::count);
 	}
 
 	public void reload() {

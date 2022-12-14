@@ -206,31 +206,11 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<TaskIndexDto, TaskCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getTaskFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getTaskFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getTaskFacade()::getIndexList, FacadeProvider.getTaskFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<TaskIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getTaskFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
-
-		if (dataProviderListener != null) {
-			dataProvider.addDataProviderListener(dataProviderListener);
-		}
+		setEagerDataProvider(FacadeProvider.getTaskFacade()::getIndexList);
 	}
 
 	public void setDataProviderListener(DataProviderListener<TaskIndexDto> dataProviderListener) {
