@@ -89,7 +89,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			if (newCase.getRegion() != null) {
 				Label regionField = new Label();
 				regionField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-				regionField.setValue(newCase.getRegion().toString());
+				regionField.setValue(newCase.getRegion().buildCaption());
 				regionField.setWidthUndefined();
 				caseInfoLayout.addComponent(regionField);
 			}
@@ -97,7 +97,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			if (newCase.getDistrict() != null) {
 				Label districtField = new Label();
 				districtField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-				districtField.setValue(newCase.getDistrict().toString());
+				districtField.setValue(newCase.getDistrict().buildCaption());
 				districtField.setWidthUndefined();
 				caseInfoLayout.addComponent(districtField);
 			}
@@ -107,7 +107,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			facilityField.setValue(
 				FacilityHelper.buildFacilityString(
 					null,
-					newCase.getHealthFacility() != null ? newCase.getHealthFacility().toString() : "",
+					newCase.getHealthFacility() != null ? newCase.getHealthFacility().buildCaption() : "",
 					newCase.getHealthFacilityDetails()));
 			facilityField.setWidthUndefined();
 			caseInfoLayout.addComponent(facilityField);

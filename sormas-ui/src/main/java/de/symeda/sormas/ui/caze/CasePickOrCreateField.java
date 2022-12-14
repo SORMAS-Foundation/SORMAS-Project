@@ -115,7 +115,7 @@ public class CasePickOrCreateField extends CustomField<CaseSelectionDto> {
 			if (newCase.getDistrict() != null) {
 				Label districtField = new Label();
 				districtField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-				districtField.setValue(newCase.getDistrict().toString());
+				districtField.setValue(newCase.getDistrict().buildCaption());
 				districtField.setWidthUndefined();
 				caseInfoLayout.addComponent(districtField);
 			}
@@ -125,7 +125,7 @@ public class CasePickOrCreateField extends CustomField<CaseSelectionDto> {
 			facilityField.setValue(
 				FacilityHelper.buildFacilityString(
 					null,
-					newCase.getHealthFacility() != null ? newCase.getHealthFacility().toString() : "",
+					newCase.getHealthFacility() != null ? newCase.getHealthFacility().buildCaption() : "",
 					newCase.getHealthFacilityDetails()));
 			facilityField.setWidthUndefined();
 			caseInfoLayout.addComponent(facilityField);
