@@ -95,7 +95,7 @@ public enum DatabaseTable {
 	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, "customizable_enum_values", null),
 
 	CAMPAIGNS(DatabaseTableType.SORMAS, "campaigns", dependingOnFeature(FeatureType.CAMPAIGNS)),
-	CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_campaignformmeta"),
+	CAMPAIGN_CAMPAIGNFORMMETA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_campaignformmeta"),
 	CAMPAIGN_FORM_META(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_from_meta"),
 	CAMPAIGN_FORM_DATA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_form_data"),
 	CAMPAIGN_DIAGRAM_DEFINITIONS(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_diagram_definitions"),
@@ -108,7 +108,7 @@ public enum DatabaseTable {
 	SORMAS_TO_SORMAS_SHARE_INFO(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_share_info", dependingOnS2S()),
 	SORMAS_TO_SORMAS_SHARE_REQUESTS(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_share_requests", dependingOnS2S()),
 	SHARE_REQUEST_INFO(DatabaseTableType.EXTERNAL, null, "share_request_info", dependingOnS2S()),
-	SHARE_REQUEST_INFO_SHARE_INFO_TABLE(DatabaseTableType.EXTERNAL, SHARE_REQUEST_INFO, "sharerequestinfo_shareinfo"),
+	SHARE_REQUEST_INFO_SHARE_INFO(DatabaseTableType.EXTERNAL, SHARE_REQUEST_INFO, "sharerequestinfo_shareinfo"),
 
 	EXTERNAL_SHARE_INFO(DatabaseTableType.EXTERNAL,
 		null,
