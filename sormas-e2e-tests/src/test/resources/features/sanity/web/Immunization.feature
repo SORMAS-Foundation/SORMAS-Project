@@ -351,7 +351,7 @@ Feature: Immunization end to end tests
     And I fill new vaccination data in new Vaccination form with vaccination date 7 days before the current day for DE
     And I click SAVE button in new Vaccination form
     And I click Create Case from Contact button
-    And I fill only mandatory fields for a new case form for DE
+    And I fill only mandatory fields to convert a contact into a case for DE
     And I click SAVE button on Create New Case form
     And I check that displayed vaccination card has correct vaccination date and name
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
