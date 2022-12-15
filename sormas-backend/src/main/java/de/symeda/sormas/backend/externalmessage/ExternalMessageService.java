@@ -14,6 +14,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -59,6 +60,20 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ExternalMessage> from) {
 		return null;
+	}
+
+	/**
+	 * Creates a default filter that should be used as the basis of queries.
+	 * This essentially removes external messages linked to {@link DeletableAdo#isDeleted()} case/contact/event participants from the
+	 * queries.
+	 */
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, ExternalMessage> root) {
+		Path<Boolean> sampleDeleted =
+			root.join(ExternalMessage.SAMPLE_REPORTS, JoinType.LEFT).join(SampleReport.SAMPLE, JoinType.LEFT).get(Sample.DELETED);
+		Path<Boolean> caseDeleted =
+			root.join(ExternalMessage.SURVEILLANCE_REPORT, JoinType.LEFT).join(SurveillanceReport.CAZE, JoinType.LEFT).get(Case.DELETED);
+
+		return cb.and(cb.or(cb.isNull(sampleDeleted), cb.isFalse(sampleDeleted)), cb.or(cb.isNull(caseDeleted), cb.isFalse(caseDeleted)));
 	}
 
 	public Predicate buildCriteriaFilter(CriteriaBuilder cb, Root<ExternalMessage> labMessage, ExternalMessageCriteria criteria) {
