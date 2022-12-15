@@ -1183,6 +1183,7 @@ public interface Strings {
 	String messagePersonAddedAsEventParticipant = "messagePersonAddedAsEventParticipant";
 	String messagePersonAlreadyCaseInEvent = "messagePersonAlreadyCaseInEvent";
 	String messagePersonAlreadyEventParticipant = "messagePersonAlreadyEventParticipant";
+	String messageThisPersonAlreadyEventParticipant = "messageThisPersonAlreadyEventParticipant";
 	String messagePersonContactDetailsPrimaryDuplicate = "messagePersonContactDetailsPrimaryDuplicate";
 	String messagePersonExternalTokenWarning = "messagePersonExternalTokenWarning";
 	String messagePersonSaved = "messagePersonSaved";
