@@ -148,7 +148,7 @@ public class PerformanceLogAnalysisGenerator {
 					String finishTime = matcherFinish.group(3);
 
 					Stack<String> finishCallstack = callstacks.get(finishThread);
-					if (finishCallstack != null && finishMethod.equals(finishCallstack.peek())) {
+					if (finishCallstack != null && !finishCallstack.isEmpty() && finishMethod.equals(finishCallstack.peek())) {
 						finishCallstack.pop();
 					}
 
