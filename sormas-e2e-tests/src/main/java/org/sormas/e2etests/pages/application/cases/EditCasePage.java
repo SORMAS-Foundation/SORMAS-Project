@@ -47,9 +47,8 @@ public class EditCasePage {
   public static final By EDIT_FIRST_TASK_BUTTON = By.cssSelector("[location='events'] #edit0");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
-  public static final By EDIT_SAMPLE_BUTTON =
-      By.cssSelector(
-          "[location='samples'] [class='v-button v-widget link v-button-link compact v-button-compact']");
+  public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
+
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
