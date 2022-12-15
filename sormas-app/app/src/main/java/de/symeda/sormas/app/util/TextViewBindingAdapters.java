@@ -946,7 +946,7 @@ public class TextViewBindingAdapters {
 		if (location == null || location.buildCaption().isEmpty()) {
 			textField.setText(defaultValue);
 		} else {
-			textField.setText(location.getRegion() + ", " + location.getDistrict());
+			textField.setText(location.getRegion().buildCaption() + ", " + location.getDistrict().buildCaption());
 		}
 	}
 

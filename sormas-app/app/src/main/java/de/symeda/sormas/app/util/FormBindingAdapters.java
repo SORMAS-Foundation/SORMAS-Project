@@ -74,7 +74,7 @@ public class FormBindingAdapters {
 			if (caze.getPerson() != null && caze.getPerson().getAddress() != null) {
 				location = "\n" + caze.getPerson().getAddress().buildCaption();
 			}
-			val = caze.toString() + location;
+			val = caze.buildCaption() + location;
 
 			if (valueFormat != null && valueFormat.trim() != "") {
 				control.setValue(String.format(valueFormat, val));
@@ -213,7 +213,7 @@ public class FormBindingAdapters {
 		if (location == null) {
 			textField.setValue(val);
 		} else {
-			val = location.toString();
+			val = location.buildCaption();
 
 			if (valueFormat != null && valueFormat.trim() != "") {
 				textField.setValue(String.format(valueFormat, val));
