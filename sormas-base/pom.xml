@@ -837,7 +837,7 @@
 				<artifactId>bean-test</artifactId>
 				<version>0.2.Final_Local</version>
 				<scope>system</scope>
-				<systemPath>${project.basedir}/../sormas-base/dependencies/bean-test-0.2.Final.jar</systemPath>
+				<systemPath>${project.basedir}/../sormas-base/sormas-serverlibs/bean-test-0.2.Final.jar</systemPath>
 				<!-- Changed scope "test" to "system" as workaround for currently no publicly available maven artifact -->
 			</dependency>
 			<dependency>
@@ -1510,7 +1510,7 @@
 		<module>../sormas-keycloak-service-provider</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
-		<module>./dependencies/serverlibs.pom</module>
+		<module>./sormas-serverlibs</module>
 		<module>../sormas-cargoserver</module>
 	</modules>
 </project>

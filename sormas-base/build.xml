@@ -46,7 +46,7 @@
 
 	<target name="deploy-serverlibs" description="Gather server jars">
 
-		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
+		<artifact:pom id="serverlibsPom" file="sormas-serverlibs/pom.xml">
 		</artifact:pom>
 
 		<echo>The following invalid POM warning can be ignored</echo>
@@ -82,7 +82,7 @@
 
 	<target name="collect-serverlibs" description="serverlibs für server setup bereitstellen">
 
-		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
+		<artifact:pom id="serverlibsPom" file="sormas-serverlibs/pom.xml">
 		</artifact:pom>
 
 		<artifact:dependencies filesetId="serverlibsid" pomRefId="serverlibsPom" useScope="compile" versionsId="dependency.versions" />
