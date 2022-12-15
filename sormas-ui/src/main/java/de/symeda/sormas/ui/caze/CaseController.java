@@ -816,8 +816,13 @@ public class CaseController {
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						saveCase(dto);
 					}
+				} else if (convertedPerson != null) {
+					PersonDto dbPerson = FacadeProvider.getPersonFacade().getByUuid(dto.getPerson().getUuid());
+					transferDataToPerson(createForm, dbPerson);
+					FacadeProvider.getPersonFacade().save(dbPerson);
+					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
+					saveCase(dto);
 				} else {
-
 					PersonDto searchedPerson = createForm.getSearchedPerson();
 					if (searchedPerson != null) {
 						dto.setPerson(searchedPerson.toReference());
