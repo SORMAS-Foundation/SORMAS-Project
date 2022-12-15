@@ -80,7 +80,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -1009,10 +1008,6 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		CriteriaQuery<?> cq = contactQueryContext.getQuery();
 		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
 
-		if (!getCurrentUser().hasUserRight(UserRight.CONTACT_VIEW)) {
-			return cb.disjunction();
-		}
-
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, contactQueryContext.getJoins().getCaseJoins());
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
 			userFilter = caseService.createUserFilter(caseQueryContext);
@@ -1045,11 +1040,6 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		CriteriaQuery cq = qc.getQuery();
 		From contactPath = qc.getRoot();
-
-		if (!currentUser.hasUserRight(UserRight.CONTACT_VIEW)) {
-			return cb.disjunction();
-		}
-
 		// National users can access all contacts in the system
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
