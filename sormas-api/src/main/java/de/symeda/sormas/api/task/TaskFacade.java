@@ -76,6 +76,10 @@ public interface TaskFacade {
 
 	void updateArchived(List<String> taskUuids, boolean archived);
 
+	void updateArchived(String taskUuid, boolean archived);
+
+	boolean isArchived(String taskUuid);
+
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getObsoleteUuidsSince(Date since);

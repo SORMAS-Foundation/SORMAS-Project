@@ -150,6 +150,9 @@ public class CaseDirectoryPage {
   public static final By ACTION_OKAY = By.id("actionOkay");
   public static final By MERGE_DUPLICATES_BUTTON = By.id("caseMergeDuplicates");
   public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
+
+  public static final By BULK_EDIT_INFORMATION =
+      By.xpath("//div[@class='v-window-header' and text()='Massenbearbeitung aktivieren']");
   public static final By LEAVE_BULK_EDIT_MODE = By.id("actionLeaveBulkEditMode");
   public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");

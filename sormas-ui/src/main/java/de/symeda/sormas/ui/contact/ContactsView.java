@@ -286,21 +286,19 @@ public class ContactsView extends AbstractView {
 		}
 
 		if (isBulkEditAllowed()) {
-			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(
+				Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-				btnEnterBulkEditMode.addStyleName(ValoTheme.BUTTON_PRIMARY);
-
 				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
 				moreButton.addMenuEntry(btnEnterBulkEditMode);
 			}
 
-			Button btnLeaveBulkEditMode =
-				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(
+					Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
-
 				moreButton.addMenuEntry(btnLeaveBulkEditMode);
 			}
 

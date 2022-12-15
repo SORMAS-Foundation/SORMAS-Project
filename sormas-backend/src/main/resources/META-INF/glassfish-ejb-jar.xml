@@ -318,6 +318,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>TASK_ARCHIVE</role-name>
+        <group-name>TASK_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>ACTION_CREATE</role-name>
         <group-name>ACTION_CREATE</group-name>
     </security-role-mapping>

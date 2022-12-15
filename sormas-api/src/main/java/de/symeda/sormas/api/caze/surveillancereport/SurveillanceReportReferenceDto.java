@@ -24,6 +24,9 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class SurveillanceReportReferenceDto extends ReferenceDto {
 
+	public SurveillanceReportReferenceDto() {
+	}
+
 	public SurveillanceReportReferenceDto(String uuid) {
 		setUuid(uuid);
 	}

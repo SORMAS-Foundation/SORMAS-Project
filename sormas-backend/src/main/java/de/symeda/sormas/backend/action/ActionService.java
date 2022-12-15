@@ -353,7 +353,17 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 			creatorUser.get(User.UUID),
 			creatorUser.get(User.FIRST_NAME),
 			creatorUser.get(User.LAST_NAME),
-			event.get(Event.CHANGE_DATE));
+			event.get(Event.CHANGE_DATE),
+			// Selections needed for ordering
+			cb.lower(event.get(Event.EVENT_TITLE)),
+			cb.lower(action.get(Action.TITLE)),
+			cb.lower(lastModifiedBy.get(User.LAST_NAME)),
+			cb.lower(creatorUser.get(User.LAST_NAME)),
+			cb.lower(eventReportingUser.get(User.LAST_NAME)),
+			cb.lower(eventResponsibleUser.get(User.LAST_NAME)),
+			cb.selectCase()
+				.when(cb.isNotNull(action.get(Action.LAST_MODIFIED_BY)), cb.lower(lastModifiedBy.get(User.LAST_NAME)))
+				.otherwise(cb.lower(creatorUser.get(User.LAST_NAME))));
 
 		cq.distinct(true);
 
@@ -399,10 +409,10 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 					expression = event.get(Event.RISK_LEVEL);
 					break;
 				case EventActionIndexDto.EVENT_REPORTING_USER:
-					expression = event.get(Event.REPORTING_USER);
+					expression = cb.lower(eventReportingUser.get(User.LAST_NAME));
 					break;
 				case EventActionIndexDto.EVENT_RESPONSIBLE_USER:
-					expression = event.get(Event.RESPONSIBLE_USER);
+					expression = cb.lower(eventResponsibleUser.get(User.LAST_NAME));
 					break;
 				case EventActionIndexDto.ACTION_CHANGE_DATE:
 					expression = action.get(Action.CHANGE_DATE);
@@ -424,8 +434,8 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 					break;
 				case EventActionIndexDto.ACTION_LAST_MODIFIED_BY:
 					expression = cb.selectCase()
-						.when(cb.isNotNull(action.get(Action.LAST_MODIFIED_BY)), cb.lower(action.get(Action.LAST_MODIFIED_BY).get(User.LAST_NAME)))
-						.otherwise(cb.lower(action.get(Action.CREATOR_USER).get(User.LAST_NAME)));
+						.when(cb.isNotNull(action.get(Action.LAST_MODIFIED_BY)), cb.lower(lastModifiedBy.get(User.LAST_NAME)))
+						.otherwise(cb.lower(creatorUser.get(User.LAST_NAME)));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
