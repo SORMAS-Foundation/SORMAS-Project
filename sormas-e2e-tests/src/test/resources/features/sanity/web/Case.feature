@@ -1167,7 +1167,7 @@ Feature: Case end to end tests
     And I click on SAVE new contact case button
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
-  @tmsLink=SORDEV-8413 @env_main
+  @tmsLink=SORDEV-8413 @env_main @testIt
   Scenario: Test Hide specific enum values based on the related disease
     Given I log in as a National User
     When I click on the Cases button from navbar
@@ -1290,7 +1290,7 @@ Feature: Case end to end tests
     Then I click on edit button for the last searched facility
     And I archive facility
 
-  @env_main @#8556
+  @env_main @#8556 @testIt
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Case
     Given API: I create a new person
     And API: I check that POST call body is "OK"

@@ -142,7 +142,7 @@ Feature: Pathogen Functionalities
     And I check that if Other field is correctly displayed
     And I delete the Pathogen test
 
-  @tmsLink=SORDEV-8058 @env_main
+  @tmsLink=SORDEV-8058 @env_main @testIt
   Scenario: Unify pathogen test saving logic between cases and contacts
     When API: I create a new person
     Then API: I check that POST call body is "OK"
