@@ -44,6 +44,7 @@ public class EditCasePage {
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
   public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit0']");
+  public static final By EDIT_FIRST_TASK_BUTTON = By.cssSelector("[location='events'] #edit0");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
   public static final By EDIT_SAMPLE_BUTTON =
@@ -342,7 +343,7 @@ public class EditCasePage {
           "//div[@location='vaccinations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-right v-align-middle']/div");
   public static final By EDIT_VACCINATION_BUTTON =
       By.xpath(
-          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
   public static final By VACCINATION_CARD_INFO_ICON =
       By.xpath(
           "//div[@location = 'vaccinations']//span[contains(@class, 'v-icon v-icon-info_circle')]");
