@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -108,9 +109,9 @@ public class FacilitiesView extends AbstractConfigurationView {
 
 		grid = new FacilitiesGrid(criteria);
 		gridLayout = new VerticalLayout();
-		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
-		rowCount = new RowCount(Strings.labelNumberOfFacilities, grid.getItemCount());
+		rowCount = new RowCount(Strings.labelNumberOfFacilities, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
 		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -125,7 +126,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				window.setCaption(I18nProperties.getString(Strings.headingImportFacilities));
 				window.addCloseListener(c -> {
 					grid.reload();
-					rowCount.update(grid.getItemCount());
+					rowCount.update(grid.getDataSize());
 				});
 			}, ValoTheme.BUTTON_PRIMARY);
 
@@ -209,9 +210,11 @@ public class FacilitiesView extends AbstractConfigurationView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
+				searchField.clear();
+				criteria.nameAddressLike(StringUtils.EMPTY);
 				grid.setEagerDataProvider();
 				grid.reload();
-				rowCount.update(grid.getItemCount());
+				rowCount.update(grid.getDataSize());
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
@@ -251,7 +254,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		searchField.addTextChangeListener(e -> {
 			criteria.nameAddressLike(e.getText());
 			grid.reload();
-			rowCount.update(grid.getItemCount());
+			rowCount.update(grid.getDataSize());
 		});
 		filterLayout.addComponent(searchField);
 
@@ -279,7 +282,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		countryFilter = addCountryFilter(filterLayout, country -> {
 			criteria.country(country);
 			grid.reload();
-			rowCount.update(grid.getItemCount());
+			rowCount.update(grid.getDataSize());
 		}, regionFilter);
 		countryFilter.addValueChangeListener(country -> {
 			CountryReferenceDto countryReferenceDto = (CountryReferenceDto) country.getProperty().getValue();
@@ -398,8 +401,9 @@ public class FacilitiesView extends AbstractConfigurationView {
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown
-						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					boolean visible = viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus());
+					bulkOperationsDropdown.setVisible(visible);
+					searchField.setEnabled(!visible);
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -421,7 +425,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
-		rowCount.update(grid.getItemCount());
+		rowCount.update(grid.getDataSize());
 	}
 
 	public void updateFilterComponents() {

@@ -18,6 +18,8 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -80,6 +82,7 @@ public class DistrictsView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 	private DistrictsGrid grid;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public DistrictsView() {
 
@@ -95,7 +98,9 @@ public class DistrictsView extends AbstractConfigurationView {
 		grid = new DistrictsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfDistricts, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfDistricts, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -161,6 +166,8 @@ public class DistrictsView extends AbstractConfigurationView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
+				searchField.clear();
+				criteria.nameEpidLike(StringUtils.EMPTY);
 				grid.setEagerDataProvider();
 				grid.reload();
 			});
@@ -288,6 +295,7 @@ public class DistrictsView extends AbstractConfigurationView {
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
+					searchField.setEnabled(!isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}

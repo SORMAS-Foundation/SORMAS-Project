@@ -18,6 +18,8 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -83,6 +85,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public PointsOfEntryView() {
 
@@ -98,7 +101,9 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		grid = new PointsOfEntryGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfPointofEntry, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfPointofEntry, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -123,8 +128,11 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource
-				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.ACTION_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				grid,
+				this::getSelectedRows,
+				ExportEntityName.POINTS_OF_ENTRY,
+				PointsOfEntryGrid.ACTION_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -155,6 +163,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
+				searchField.clear();
+				criteria.nameLike(StringUtils.EMPTY);
 				grid.setEagerDataProvider();
 				grid.reload();
 			});
@@ -312,8 +322,9 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown
-						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					boolean visible = viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus());
+					bulkOperationsDropdown.setVisible(visible);
+					searchField.setEnabled(!visible);
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}

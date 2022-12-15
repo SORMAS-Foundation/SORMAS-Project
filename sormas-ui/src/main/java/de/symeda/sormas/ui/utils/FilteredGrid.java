@@ -256,10 +256,10 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	/**
 	 * @deprecated Use {@link #getDataSize()}, because this call triggers another count query for lazy {@link DataProvider}s.
 	 */
-	@Deprecated
-	public int getItemCount() {
-		return getDataProvider().size(new Query<>());
-	}
+//	@Deprecated
+//	public int getItemCount() {
+//		return getDataProvider().size(new Query<>());
+//	}
 
 	/**
 	 * Add's a column to the left hand side of the grid complete with an edit-logo

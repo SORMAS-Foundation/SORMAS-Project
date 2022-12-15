@@ -18,6 +18,8 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
@@ -82,6 +84,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 	private CommunitiesGrid grid;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public CommunitiesView() {
 
@@ -97,7 +100,9 @@ public class CommunitiesView extends AbstractConfigurationView {
 		grid = new CommunitiesGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfCommunities, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfCommunities, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -160,6 +165,8 @@ public class CommunitiesView extends AbstractConfigurationView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
+				searchField.clear();
+				criteria.nameLike(StringUtils.EMPTY);
 				grid.setEagerDataProvider();
 				grid.reload();
 			});
@@ -302,6 +309,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
+					searchField.setEnabled(!isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
