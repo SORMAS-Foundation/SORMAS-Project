@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.importexport;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Arrays;
@@ -89,9 +90,7 @@ public class DatabaseExportServiceTest {
 					if (method.isAnnotatedWith(JoinTable.class)) {
 						JoinTable joinTableAnnotation = method.getAnnotationOfType(JoinTable.class);
 						String joinTableName = joinTableAnnotation.name();
-						if (StringUtils.isBlank(joinTableName)) {
-							joinTableName = clazz.getSimpleName().toLowerCase();
-						}
+						assertFalse(StringUtils.isBlank(joinTableName));
 
 						if (!exportableTables.contains(joinTableName)) {
 							missingJoinTables.add(joinTableName);
