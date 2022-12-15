@@ -171,7 +171,7 @@ Feature: Sample Functionalities
     And I complete all fields from Additional test result popup and save
     And I check that the created Additional test is correctly displayed
 
-  @#8556 @env_main @testIt
+  @#8556 @env_main
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -229,7 +229,7 @@ Feature: Sample Functionalities
     Then I set PCR RT PCR Test specification to "N501Y mutation detection" option
     And I save the created sample
 
-  @tmsLink=SORDEV-5669 @env_main @testIt
+  @tmsLink=SORDEV-5669 @env_main
   Scenario: Add variant specific Nucleic acid detection methods after creating sample
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -246,7 +246,7 @@ Feature: Sample Functionalities
     Then I set PCR RT PCR Test specification to "N501Y mutation detection" option
     And I save the created sample
 
-  @tmsLink=SORDEV-5669 @env_main @testIt
+  @tmsLink=SORDEV-5669 @env_main
   Scenario: Add variant specific Nucleic acid detection methods
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -407,7 +407,7 @@ Feature: Sample Functionalities
     And I check if Specimen condition combobox is not mandatory
     And I click on Save Button in Sample Edit page
 
-  @tmsLink=SORDEV-10588 @env_main @testIt
+  @tmsLink=SORDEV-10588 @env_main
   Scenario: Test "Specimen condition" should not be mandatory for sample added to case import
     Given I log in as a Admin User
     Then I click on the Cases button from navbar

@@ -861,7 +861,7 @@ Feature: Create events
     Then I click on edit button for the last searched facility
     And I archive facility
 
-  @env_main @#8556 @testIt
+  @env_main @#8556
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
