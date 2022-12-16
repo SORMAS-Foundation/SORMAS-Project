@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.user.UserService;
 @LocalBean
 public class ReceivedSurveillanceReportProcessor
 	extends
-	ReceivedDataProcessor<SurveillanceReport, SurveillanceReportDto, SormasToSormasSurveillanceReportDto, PreviewNotImplementedDto, SurveillanceReport, SurveillanceReportService, SormasSormasToSurveillanceReportDtoValidator> {
+	ReceivedDataProcessor<SurveillanceReport, SurveillanceReportDto, SormasToSormasSurveillanceReportDto, PreviewNotImplementedDto, SurveillanceReport, SurveillanceReportService, SormasToSormasSurveillanceReportDtoValidator> {
 
 	@EJB
 	private SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
@@ -51,7 +51,7 @@ public class ReceivedSurveillanceReportProcessor
 		SurveillanceReportService service,
 		UserService userService,
 		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
-		SormasSormasToSurveillanceReportDtoValidator validator) {
+		SormasToSormasSurveillanceReportDtoValidator validator) {
 		super(service, userService, configFacade, validator);
 	}
 

@@ -35,17 +35,17 @@ import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasTo
 
 @Stateless
 @LocalBean
-public class SormasSormasToSurveillanceReportDtoValidator
+public class SormasToSormasSurveillanceReportDtoValidator
 	extends SormasToSormasDtoValidator<SurveillanceReportDto, SormasToSormasSurveillanceReportDto, PreviewNotImplementedDto> {
 
 	@EJB
 	private SormasToSormasExternalMessageDtoValidator externalMessageDtoValidator;
 
-	public SormasSormasToSurveillanceReportDtoValidator() {
+	public SormasToSormasSurveillanceReportDtoValidator() {
 	}
 
 	@Inject
-	public SormasSormasToSurveillanceReportDtoValidator(InfrastructureValidator infraValidator) {
+	public SormasToSormasSurveillanceReportDtoValidator(InfrastructureValidator infraValidator) {
 		super(infraValidator);
 	}
 

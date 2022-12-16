@@ -36,7 +36,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @LocalBean
 public class SurveillanceReportShareDataBuilder
 	extends
-	ShareDataBuilder<SurveillanceReportDto, SurveillanceReport, SormasToSormasSurveillanceReportDto, PreviewNotImplementedDto, SormasSormasToSurveillanceReportDtoValidator> {
+	ShareDataBuilder<SurveillanceReportDto, SurveillanceReport, SormasToSormasSurveillanceReportDto, PreviewNotImplementedDto, SormasToSormasSurveillanceReportDtoValidator> {
 
 	@EJB
 	private SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
@@ -47,7 +47,7 @@ public class SurveillanceReportShareDataBuilder
 	}
 
 	@Inject
-	public SurveillanceReportShareDataBuilder(SormasSormasToSurveillanceReportDtoValidator validator) {
+	public SurveillanceReportShareDataBuilder(SormasToSormasSurveillanceReportDtoValidator validator) {
 		super(validator);
 	}
 
