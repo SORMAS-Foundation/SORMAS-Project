@@ -82,7 +82,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
 			() -> FacadeProvider.getSormasToSormasCaseFacade().getAllShares(caze.getUuid()),
-			e -> ControllerProvider.getSormasToSormasController().shareCaseFromDetailsPage(caze, this::reloadList));
+			e -> ControllerProvider.getSormasToSormasController().shareCaseFromDetailsPage(caze));
 	}
 
 	public SormasToSormasListComponent(ContactDto contact, boolean isEditAllowed) {
@@ -93,7 +93,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
 			() -> FacadeProvider.getSormasToSormasContactFacade().getAllShares(contact.getUuid()),
-			e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contact, this::reloadList));
+			e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contact));
 	}
 
 	public SormasToSormasListComponent(SampleDto sample) {
@@ -117,7 +117,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			event.getSormasToSormasOriginInfo(),
 			() -> FacadeProvider.getSormasToSormasEventFacade().getAllShares(event.getUuid()),
-			e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event, this::reloadList));
+			e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event));
 	}
 
 	public SormasToSormasListComponent(EventParticipantDto eventParticipant) {
