@@ -104,6 +104,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.dto.CaseGenerationConfig;
+import de.symeda.sormas.ui.configuration.dto.ContactGenerationConfig;
 import de.symeda.sormas.ui.configuration.validator.StringToNumberValidator;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -363,7 +364,7 @@ public class DevModeView extends AbstractConfigurationView {
 		contactCountField.setCaption(I18nProperties.getCaption(Captions.devModeContactCount));
 		contactGeneratorConfigBinder.forField(contactCountField)
 			.withValidator(new StringToNumberValidator("Must be a positive number"))
-			.bind(ContactGenerationConfig::getContactCount, ContactGenerationConfig::setContactCount);
+			.bind(ContactGenerationConfig::getEntityCount, ContactGenerationConfig::setEntityCount);
 		contactOptionsFirstLineLayout.addComponent(contactCountField);
 
 		DateField startDateField = new DateField();
@@ -915,26 +916,26 @@ public class DevModeView extends AbstractConfigurationView {
 	private void generateCases() {
 		CaseGenerationConfig config = caseGeneratorConfigBinder.getBean();
 		boolean valid = true;
-		if (config.getEntityCountAsNumber() <= 0){
-			showWarningNotification("You must set a valid value for 'Number of generated cases'");
+		if (config.getEntityCountAsNumber() <= 0) {
+			showWarningNotification("You must set a valid value for field 'Number of generated cases' in 'Generate Cases'");
 			valid = false;
 		}
-		if (config.getStartDate() == null){
-			showWarningNotification("You must set a valid value for 'Earliest Case start date'");
-			valid = false;
-		}
-
-		if (config.getEndDate() == null){
-			showWarningNotification("You must set a valid value for 'Latest Case start date'");
+		if (config.getStartDate() == null) {
+			showWarningNotification("You must set a valid value for field 'Earliest Case start date' in 'Generate Cases'");
 			valid = false;
 		}
 
-		if (config.getDistrict() == null){
-			showWarningNotification("You must set a valid value for 'District of the cases'");
+		if (config.getEndDate() == null) {
+			showWarningNotification("You must set a valid value for field 'Latest Case start date' in 'Generate Cases'");
 			valid = false;
 		}
 
-		if(valid){
+		if (config.getDistrict() == null) {
+			showWarningNotification("You must set a valid value for field 'District of the cases' in 'Generate Cases'");
+			valid = false;
+		}
+
+		if (valid) {
 			generateCases(config);
 		}
 
@@ -969,7 +970,8 @@ public class DevModeView extends AbstractConfigurationView {
 			fieldVisibilityCheckers =
 				FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 
-			LocalDateTime referenceDateTime = getReferenceDateTime(i, config.getEntityCountAsNumber(), baseOffset, disease, config.getStartDate(), daysBetween);
+			LocalDateTime referenceDateTime =
+				getReferenceDateTime(i, config.getEntityCountAsNumber(), baseOffset, disease, config.getStartDate(), daysBetween);
 
 			// person
 			PersonDto person = PersonDto.build();
@@ -1025,7 +1027,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 		dt = System.nanoTime() - dt;
 		long perCase = dt / config.getEntityCountAsNumber();
-		String msg = String.format("Generating %,d cases took %,d  ms (%,d ms per case)", config.getEntityCountAsNumber(), dt / 1_000_000, perCase / 1_000_000);
+		String msg = String
+			.format("Generating %,d cases took %,d  ms (%,d ms per case)", config.getEntityCountAsNumber(), dt / 1_000_000, perCase / 1_000_000);
 		logger.info(msg);
 		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
@@ -1174,11 +1177,31 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateContacts() {
+		ContactGenerationConfig contactGenerationConfig = contactGeneratorConfigBinder.getBean();
+		boolean valid =true;
+
+		if (contactGenerationConfig.getEntityCountAsNumber() <= 0) {
+			showWarningNotification("You must set a valid value for field 'Number of generated contacts' in 'Generate Contacts'");
+			valid = false;
+		}
+		if (contactGenerationConfig.getStartDate() == null) {
+			showWarningNotification("You must set a valid value for field 'Earliest Case start date' in 'Generate Contacts'");
+			valid = false;
+		}
+
+		if (contactGenerationConfig.getEndDate() == null) {
+			showWarningNotification("You must set a valid value for field 'Latest Case start date'  in 'Generate Contacts'");
+			valid = false;
+		}
+
+		if(valid){
+			generateContacts(contactGenerationConfig);
+		}
+	}
+	private void generateContacts(ContactGenerationConfig contactGenerationConfig) {
 		initializeRandomGenerator();
 
-		ContactGenerationConfig config = contactGeneratorConfigBinder.getBean();
-
-		Disease disease = config.getDisease();
+		Disease disease = contactGenerationConfig.getDisease();
 		List<Disease> diseases = disease == null ? FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true) : null;
 
 		if (disease == null) {
@@ -1187,19 +1210,19 @@ public class DevModeView extends AbstractConfigurationView {
 		}
 		List<String> personUuids = new ArrayList<>();
 		List<CaseReferenceDto> cases = null;
-		List<DistrictIndexDto> districts = config.getDistrict() == null
+		List<DistrictIndexDto> districts = contactGenerationConfig.getDistrict() == null
 			? FacadeProvider.getDistrictFacade()
 				.getIndexList(
-					new DistrictCriteria().region(config.getRegion()),
+					new DistrictCriteria().region(contactGenerationConfig.getRegion()),
 					0,
-					Math.min(config.getContactCountAsNumber() * 2, 50),
+					Math.min(contactGenerationConfig.getEntityCountAsNumber() * 2, 50),
 					Arrays.asList(new SortProperty(DistrictDto.NAME)))
 			: null;
-		if (!config.isCreateWithoutSourceCases()) {
+		if (!contactGenerationConfig.isCreateWithoutSourceCases()) {
 			cases = FacadeProvider.getCaseFacade()
 				.getRandomCaseReferences(
-					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(disease),
-					config.getContactCountAsNumber() * 2,
+					new CaseCriteria().region(contactGenerationConfig.getRegion()).district(contactGenerationConfig.getDistrict()).disease(disease),
+					contactGenerationConfig.getEntityCountAsNumber() * 2,
 					random());
 			if (cases == null) {
 				Notification.show("Error", I18nProperties.getString(Strings.messageMissingCases), Notification.Type.ERROR_MESSAGE);
@@ -1208,19 +1231,24 @@ public class DevModeView extends AbstractConfigurationView {
 		}
 
 		float baseOffset = random().nextFloat();
-		int daysBetween = (int) ChronoUnit.DAYS.between(config.startDate, config.endDate);
+		int daysBetween = (int) ChronoUnit.DAYS.between(contactGenerationConfig.getStartDate(), contactGenerationConfig.getEndDate());
 
 		long dt = System.nanoTime();
 
-		for (int i = 0; i < config.getContactCountAsNumber(); i++) {
+		for (int i = 0; i < contactGenerationConfig.getEntityCountAsNumber(); i++) {
 			fieldVisibilityCheckers =
 				FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 
-			LocalDateTime referenceDateTime =
-				getReferenceDateTime(i, config.getContactCountAsNumber(), baseOffset, disease, config.getStartDate(), daysBetween);
+			LocalDateTime referenceDateTime = getReferenceDateTime(
+				i,
+				contactGenerationConfig.getEntityCountAsNumber(),
+				baseOffset,
+				disease,
+				contactGenerationConfig.getStartDate(),
+				daysBetween);
 
 			PersonDto person;
-			if (config.isCreateMultipleContactsPerPerson() && !personUuids.isEmpty() && randomPercent(25)) {
+			if (contactGenerationConfig.isCreateMultipleContactsPerPerson() && !personUuids.isEmpty() && randomPercent(25)) {
 				String personUuid = random(personUuids);
 				person = FacadeProvider.getPersonFacade().getByUuid(personUuid);
 			} else {
@@ -1229,13 +1257,13 @@ public class DevModeView extends AbstractConfigurationView {
 				person.setSymptomJournalStatus(null);
 				setPersonName(person);
 
-				if (config.isCreateMultipleContactsPerPerson()) {
+				if (contactGenerationConfig.isCreateMultipleContactsPerPerson()) {
 					personUuids.add(person.getUuid());
 				}
 			}
 
 			CaseReferenceDto contactCase = null;
-			if (!config.isCreateWithoutSourceCases()) {
+			if (!contactGenerationConfig.isCreateWithoutSourceCases()) {
 				contactCase = random(cases);
 			}
 
@@ -1259,8 +1287,8 @@ public class DevModeView extends AbstractConfigurationView {
 				contact.setRegion(district.getRegion());
 				contact.setDistrict(district.toReference());
 			} else {
-				contact.setRegion(config.getRegion());
-				contact.setDistrict(config.getDistrict());
+				contact.setRegion(contactGenerationConfig.getRegion());
+				contact.setDistrict(contactGenerationConfig.getDistrict());
 			}
 
 			if (contact.getLastContactDate() != null && contact.getLastContactDate().after(contact.getReportDateTime())) {
@@ -1284,7 +1312,7 @@ public class DevModeView extends AbstractConfigurationView {
 			contact.setFollowUpUntil(contact.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP ? null : randomDate(referenceDateTime));
 
 			// Create visits
-			if (config.isCreateWithVisits()
+			if (contactGenerationConfig.isCreateWithVisits()
 				&& FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())
 				&& FollowUpStatus.NO_FOLLOW_UP != contact.getFollowUpStatus()) {
 				Date latestFollowUpDate = contact.getFollowUpUntil().before(new Date()) ? contact.getFollowUpUntil() : new Date();
@@ -1314,9 +1342,12 @@ public class DevModeView extends AbstractConfigurationView {
 		}
 
 		dt = System.nanoTime() - dt;
-		long perContact = dt / config.getContactCountAsNumber();
-		String msg = String
-			.format("Generating %,d contacts took %,d  ms (%,d ms per contact)", config.getContactCount(), dt / 1_000_000, perContact / 1_000_000);
+		long perContact = dt / contactGenerationConfig.getEntityCountAsNumber();
+		String msg = String.format(
+			"Generating %,d contacts took %,d  ms (%,d ms per contact)",
+			contactGenerationConfig.getEntityCountAsNumber(),
+			dt / 1_000_000,
+			perContact / 1_000_000);
 		logger.info(msg);
 		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
@@ -1572,122 +1603,122 @@ public class DevModeView extends AbstractConfigurationView {
 //		}
 //	}
 
-	private static class ContactGenerationConfig {
-
-		private String contactCount;
-		private LocalDate startDate;
-		private LocalDate endDate;
-		private Disease disease;
-		private RegionReferenceDto region;
-		private DistrictReferenceDto district;
-		private boolean createWithoutSourceCases;
-		private boolean createMultipleContactsPerPerson;
-		private boolean createWithVisits;
-
-		ContactGenerationConfig() {
-			loadDefaultConfig();
-		}
-
-		public void loadDefaultConfig() {
-			contactCount = "10";
-			startDate = LocalDate.now().minusDays(90);
-			endDate = LocalDate.now();
-			disease = null;
-			region = null;
-			district = null;
-			createWithoutSourceCases = false;
-			createMultipleContactsPerPerson = false;
-			createWithVisits = false;
-		}
-
-		public void loadPerformanceTestConfig() {
-			contactCount = "50";
-			startDate = LocalDate.now().minusDays(90);
-			endDate = LocalDate.now();
-			disease = Disease.CORONAVIRUS;
-			region = null;
-			district = null;
-			createWithoutSourceCases = false;
-			createMultipleContactsPerPerson = false;
-			createWithVisits = false;
-		}
-
-		public String getContactCount() {
-			return contactCount;
-		}
-
-		public void setContactCount(String contactCount) {
-			this.contactCount = contactCount;
-		}
-
-		public int getContactCountAsNumber() {
-			return Integer.parseInt(getContactCount());
-		}
-
-		public LocalDate getStartDate() {
-			return startDate;
-		}
-
-		public void setStartDate(LocalDate startDate) {
-			this.startDate = startDate;
-		}
-
-		public LocalDate getEndDate() {
-			return endDate;
-		}
-
-		public void setEndDate(LocalDate endDate) {
-			this.endDate = endDate;
-		}
-
-		public Disease getDisease() {
-			return disease;
-		}
-
-		public void setDisease(Disease disease) {
-			this.disease = disease;
-		}
-
-		public RegionReferenceDto getRegion() {
-			return region;
-		}
-
-		public void setRegion(RegionReferenceDto region) {
-			this.region = region;
-		}
-
-		public DistrictReferenceDto getDistrict() {
-			return district;
-		}
-
-		public void setDistrict(DistrictReferenceDto district) {
-			this.district = district;
-		}
-
-		public boolean isCreateWithoutSourceCases() {
-			return createWithoutSourceCases;
-		}
-
-		public void setCreateWithoutSourceCases(boolean createWithoutSourceCases) {
-			this.createWithoutSourceCases = createWithoutSourceCases;
-		}
-
-		public boolean isCreateMultipleContactsPerPerson() {
-			return createMultipleContactsPerPerson;
-		}
-
-		public void setCreateMultipleContactsPerPerson(boolean createMultipleContactsPerPerson) {
-			this.createMultipleContactsPerPerson = createMultipleContactsPerPerson;
-		}
-
-		public boolean isCreateWithVisits() {
-			return createWithVisits;
-		}
-
-		public void setCreateWithVisits(boolean createWithVisits) {
-			this.createWithVisits = createWithVisits;
-		}
-	}
+//	private static class ContactGenerationConfig {
+//
+//		private String contactCount;
+//		private LocalDate startDate;
+//		private LocalDate endDate;
+//		private Disease disease;
+//		private RegionReferenceDto region;
+//		private DistrictReferenceDto district;
+//		private boolean createWithoutSourceCases;
+//		private boolean createMultipleContactsPerPerson;
+//		private boolean createWithVisits;
+//
+//		ContactGenerationConfig() {
+//			loadDefaultConfig();
+//		}
+//
+//		public void loadDefaultConfig() {
+//			contactCount = "10";
+//			startDate = LocalDate.now().minusDays(90);
+//			endDate = LocalDate.now();
+//			disease = null;
+//			region = null;
+//			district = null;
+//			createWithoutSourceCases = false;
+//			createMultipleContactsPerPerson = false;
+//			createWithVisits = false;
+//		}
+//
+//		public void loadPerformanceTestConfig() {
+//			contactCount = "50";
+//			startDate = LocalDate.now().minusDays(90);
+//			endDate = LocalDate.now();
+//			disease = Disease.CORONAVIRUS;
+//			region = null;
+//			district = null;
+//			createWithoutSourceCases = false;
+//			createMultipleContactsPerPerson = false;
+//			createWithVisits = false;
+//		}
+//
+//		public String getContactCount() {
+//			return contactCount;
+//		}
+//
+//		public void setContactCount(String contactCount) {
+//			this.contactCount = contactCount;
+//		}
+//
+//		public int getContactCountAsNumber() {
+//			return Integer.parseInt(getContactCount());
+//		}
+//
+//		public LocalDate getStartDate() {
+//			return startDate;
+//		}
+//
+//		public void setStartDate(LocalDate startDate) {
+//			this.startDate = startDate;
+//		}
+//
+//		public LocalDate getEndDate() {
+//			return endDate;
+//		}
+//
+//		public void setEndDate(LocalDate endDate) {
+//			this.endDate = endDate;
+//		}
+//
+//		public Disease getDisease() {
+//			return disease;
+//		}
+//
+//		public void setDisease(Disease disease) {
+//			this.disease = disease;
+//		}
+//
+//		public RegionReferenceDto getRegion() {
+//			return region;
+//		}
+//
+//		public void setRegion(RegionReferenceDto region) {
+//			this.region = region;
+//		}
+//
+//		public DistrictReferenceDto getDistrict() {
+//			return district;
+//		}
+//
+//		public void setDistrict(DistrictReferenceDto district) {
+//			this.district = district;
+//		}
+//
+//		public boolean isCreateWithoutSourceCases() {
+//			return createWithoutSourceCases;
+//		}
+//
+//		public void setCreateWithoutSourceCases(boolean createWithoutSourceCases) {
+//			this.createWithoutSourceCases = createWithoutSourceCases;
+//		}
+//
+//		public boolean isCreateMultipleContactsPerPerson() {
+//			return createMultipleContactsPerPerson;
+//		}
+//
+//		public void setCreateMultipleContactsPerPerson(boolean createMultipleContactsPerPerson) {
+//			this.createMultipleContactsPerPerson = createMultipleContactsPerPerson;
+//		}
+//
+//		public boolean isCreateWithVisits() {
+//			return createWithVisits;
+//		}
+//
+//		public void setCreateWithVisits(boolean createWithVisits) {
+//			this.createWithVisits = createWithVisits;
+//		}
+//	}
 
 	private static class EventGenerationConfig {
 
