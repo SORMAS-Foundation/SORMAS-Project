@@ -21,6 +21,10 @@ public class BaseGenerationConfig {
 		return StringUtils.isBlank(getEntityCount()) ? 0 : Integer.parseInt(getEntityCount());
 	}
 
+	public int convetToNumber(String value){
+		return StringUtils.isBlank(value) ? 0 : Integer.parseInt(value);
+	}
+
 	public String getEntityCount() {
 		return entityCount;
 	}
