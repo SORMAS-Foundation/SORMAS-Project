@@ -15,11 +15,12 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import javax.validation.Valid;
+
+import de.symeda.sormas.api.ComputedForApi;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
-
-import javax.validation.Valid;
 
 public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 
@@ -27,6 +28,7 @@ public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	@Valid
 	protected SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	@ComputedForApi
 	protected boolean ownershipHandedOver;
 
 	public abstract UserReferenceDto getReportingUser();

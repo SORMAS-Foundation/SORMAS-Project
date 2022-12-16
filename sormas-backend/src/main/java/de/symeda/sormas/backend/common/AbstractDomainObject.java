@@ -75,6 +75,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
 
+	@NotExposedToApi
 	private Long id;
 	private String uuid;
 	private Timestamp creationDate;
