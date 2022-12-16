@@ -44,6 +44,7 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -102,6 +103,8 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.configuration.dto.CaseGenerationConfig;
+import de.symeda.sormas.ui.configuration.validator.StringToNumberValidator;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -275,7 +278,6 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private VerticalLayout createCaseGeneratorLayout() {
-
 		VerticalLayout caseGeneratorLayout = new VerticalLayout();
 		caseGeneratorLayout.setMargin(false);
 		caseGeneratorLayout.setSpacing(false);
@@ -289,8 +291,8 @@ public class DevModeView extends AbstractConfigurationView {
 		TextField caseCountField = new TextField();
 		caseCountField.setCaption(I18nProperties.getCaption(Captions.devModeCaseCount));
 		caseGeneratorConfigBinder.forField(caseCountField)
-			.withConverter(new StringToIntegerConverter("Must be a number"))
-			.bind(CaseGenerationConfig::getCaseCount, CaseGenerationConfig::setCaseCount);
+			.withValidator(new StringToNumberValidator("Must be a positive number"))
+			.bind(CaseGenerationConfig::getEntityCount, CaseGenerationConfig::setEntityCount);
 		caseOptionsLayout.addComponent(caseCountField);
 
 		DateField startDateField = new DateField();
@@ -360,7 +362,7 @@ public class DevModeView extends AbstractConfigurationView {
 		TextField contactCountField = new TextField();
 		contactCountField.setCaption(I18nProperties.getCaption(Captions.devModeContactCount));
 		contactGeneratorConfigBinder.forField(contactCountField)
-			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.withValidator(new StringToNumberValidator("Must be a positive number"))
 			.bind(ContactGenerationConfig::getContactCount, ContactGenerationConfig::setContactCount);
 		contactOptionsFirstLineLayout.addComponent(contactCountField);
 
@@ -900,14 +902,50 @@ public class DevModeView extends AbstractConfigurationView {
 		});
 	}
 
-	private void generateCases() {
-		initializeRandomGenerator();
+	private void showWarningNotification(String message) {
+		Notification notification = new Notification(
+			I18nProperties.getString(Strings.errorProblemOccurred, I18nProperties.getString(Strings.errorProblemOccurred)),
+			message,
+			Notification.Type.WARNING_MESSAGE,
+			true);
+		notification.setDelayMsec(-1);
+		notification.show(Page.getCurrent());
+	}
 
+	private void generateCases() {
 		CaseGenerationConfig config = caseGeneratorConfigBinder.getBean();
+		boolean valid = true;
+		if (config.getEntityCountAsNumber() <= 0){
+			showWarningNotification("You must set a valid value for 'Number of generated cases'");
+			valid = false;
+		}
+		if (config.getStartDate() == null){
+			showWarningNotification("You must set a valid value for 'Earliest Case start date'");
+			valid = false;
+		}
+
+		if (config.getEndDate() == null){
+			showWarningNotification("You must set a valid value for 'Latest Case start date'");
+			valid = false;
+		}
+
+		if (config.getDistrict() == null){
+			showWarningNotification("You must set a valid value for 'District of the cases'");
+			valid = false;
+		}
+
+		if(valid){
+			generateCases(config);
+		}
+
+	}
+
+	private void generateCases(CaseGenerationConfig config) {
+		initializeRandomGenerator();
 
 		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 		float baseOffset = random().nextFloat();
-		int daysBetween = (int) ChronoUnit.DAYS.between(config.startDate, config.endDate);
+		int daysBetween = (int) ChronoUnit.DAYS.between(config.getStartDate(), config.getEndDate());
 
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
@@ -915,14 +953,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		// just load some health facilities. Alphabetical order is not random, but the best we can get
 		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
-			.getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
+			.getIndexList(facilityCriteria, 0, Math.min(config.getEntityCountAsNumber() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
 
 		// Filter list, so that only health facilities meant for accomodation are selected
 		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
 
 		long dt = System.nanoTime();
 
-		for (int i = 0; i < config.getCaseCount(); i++) {
+		for (int i = 0; i < config.getEntityCountAsNumber(); i++) {
 			Disease disease = config.getDisease();
 			if (disease == null) {
 				disease = random(diseases);
@@ -931,7 +969,7 @@ public class DevModeView extends AbstractConfigurationView {
 			fieldVisibilityCheckers =
 				FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 
-			LocalDateTime referenceDateTime = getReferenceDateTime(i, config.getCaseCount(), baseOffset, disease, config.getStartDate(), daysBetween);
+			LocalDateTime referenceDateTime = getReferenceDateTime(i, config.getEntityCountAsNumber(), baseOffset, disease, config.getStartDate(), daysBetween);
 
 			// person
 			PersonDto person = PersonDto.build();
@@ -986,8 +1024,8 @@ public class DevModeView extends AbstractConfigurationView {
 		}
 
 		dt = System.nanoTime() - dt;
-		long perCase = dt / config.getCaseCount();
-		String msg = String.format("Generating %,d cases took %,d  ms (%,d ms per case)", config.getCaseCount(), dt / 1_000_000, perCase / 1_000_000);
+		long perCase = dt / config.getEntityCountAsNumber();
+		String msg = String.format("Generating %,d cases took %,d  ms (%,d ms per case)", config.getEntityCountAsNumber(), dt / 1_000_000, perCase / 1_000_000);
 		logger.info(msg);
 		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
@@ -1154,14 +1192,14 @@ public class DevModeView extends AbstractConfigurationView {
 				.getIndexList(
 					new DistrictCriteria().region(config.getRegion()),
 					0,
-					Math.min(config.getContactCount() * 2, 50),
+					Math.min(config.getContactCountAsNumber() * 2, 50),
 					Arrays.asList(new SortProperty(DistrictDto.NAME)))
 			: null;
 		if (!config.isCreateWithoutSourceCases()) {
 			cases = FacadeProvider.getCaseFacade()
 				.getRandomCaseReferences(
 					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(disease),
-					config.getContactCount() * 2,
+					config.getContactCountAsNumber() * 2,
 					random());
 			if (cases == null) {
 				Notification.show("Error", I18nProperties.getString(Strings.messageMissingCases), Notification.Type.ERROR_MESSAGE);
@@ -1174,12 +1212,12 @@ public class DevModeView extends AbstractConfigurationView {
 
 		long dt = System.nanoTime();
 
-		for (int i = 0; i < config.getContactCount(); i++) {
+		for (int i = 0; i < config.getContactCountAsNumber(); i++) {
 			fieldVisibilityCheckers =
 				FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 
 			LocalDateTime referenceDateTime =
-				getReferenceDateTime(i, config.getContactCount(), baseOffset, disease, config.getStartDate(), daysBetween);
+				getReferenceDateTime(i, config.getContactCountAsNumber(), baseOffset, disease, config.getStartDate(), daysBetween);
 
 			PersonDto person;
 			if (config.isCreateMultipleContactsPerPerson() && !personUuids.isEmpty() && randomPercent(25)) {
@@ -1276,7 +1314,7 @@ public class DevModeView extends AbstractConfigurationView {
 		}
 
 		dt = System.nanoTime() - dt;
-		long perContact = dt / config.getContactCount();
+		long perContact = dt / config.getContactCountAsNumber();
 		String msg = String
 			.format("Generating %,d contacts took %,d  ms (%,d ms per contact)", config.getContactCount(), dt / 1_000_000, perContact / 1_000_000);
 		logger.info(msg);
@@ -1450,89 +1488,93 @@ public class DevModeView extends AbstractConfigurationView {
 		super.enter(event);
 	}
 
-	private static class CaseGenerationConfig {
-
-		private int caseCount;
-		private LocalDate startDate;
-		private LocalDate endDate;
-		private Disease disease;
-		private RegionReferenceDto region;
-		private DistrictReferenceDto district;
-
-		CaseGenerationConfig() {
-			loadDefaultConfig();
-		}
-
-		public void loadDefaultConfig() {
-			caseCount = 10;
-			startDate = LocalDate.now().minusDays(90);
-			endDate = LocalDate.now();
-			disease = null;
-			region = null;
-			district = null;
-		}
-
-		public void loadPerformanceTestConfig() {
-			caseCount = 50;
-			startDate = LocalDate.now().minusDays(90);
-			endDate = LocalDate.now();
-			disease = Disease.CORONAVIRUS;
-			region = null;
-			district = null;
-		}
-
-		public int getCaseCount() {
-			return caseCount;
-		}
-
-		public void setCaseCount(int caseCount) {
-			this.caseCount = caseCount;
-		}
-
-		public LocalDate getStartDate() {
-			return startDate;
-		}
-
-		public void setStartDate(LocalDate startDate) {
-			this.startDate = startDate;
-		}
-
-		public LocalDate getEndDate() {
-			return endDate;
-		}
-
-		public void setEndDate(LocalDate endDate) {
-			this.endDate = endDate;
-		}
-
-		public Disease getDisease() {
-			return disease;
-		}
-
-		public void setDisease(Disease disease) {
-			this.disease = disease;
-		}
-
-		public RegionReferenceDto getRegion() {
-			return region;
-		}
-
-		public void setRegion(RegionReferenceDto region) {
-			this.region = region;
-		}
-
-		public DistrictReferenceDto getDistrict() {
-			return district;
-		}
-
-		public void setDistrict(DistrictReferenceDto district) {
-			this.district = district;
-		}
-	}
+//	private static class CaseGenerationConfig {
+//
+//		private String caseCount;
+//		private LocalDate startDate;
+//		private LocalDate endDate;
+//		private Disease disease;
+//		private RegionReferenceDto region;
+//		private DistrictReferenceDto district;
+//
+//		CaseGenerationConfig() {
+//			loadDefaultConfig();
+//		}
+//
+//		public void loadDefaultConfig() {
+//			caseCount = "10";
+//			startDate = LocalDate.now().minusDays(90);
+//			endDate = LocalDate.now();
+//			disease = null;
+//			region = null;
+//			district = null;
+//		}
+//
+//		public void loadPerformanceTestConfig() {
+//			caseCount = "50";
+//			startDate = LocalDate.now().minusDays(90);
+//			endDate = LocalDate.now();
+//			disease = Disease.CORONAVIRUS;
+//			region = null;
+//			district = null;
+//		}
+//
+//		public String getCaseCount() {
+//			return caseCount;
+//		}
+//
+//		public int getCaseCountAsNumber() {
+//			return StringUtils.isBlank(getCaseCount()) ? 0 : Integer.parseInt(getCaseCount());
+//		}
+//
+//		public void setCaseCount(String caseCount) {
+//			this.caseCount = caseCount;
+//		}
+//
+//		public LocalDate getStartDate() {
+//			return startDate;
+//		}
+//
+//		public void setStartDate(LocalDate startDate) {
+//			this.startDate = startDate;
+//		}
+//
+//		public LocalDate getEndDate() {
+//			return endDate;
+//		}
+//
+//		public void setEndDate(LocalDate endDate) {
+//			this.endDate = endDate;
+//		}
+//
+//		public Disease getDisease() {
+//			return disease;
+//		}
+//
+//		public void setDisease(Disease disease) {
+//			this.disease = disease;
+//		}
+//
+//		public RegionReferenceDto getRegion() {
+//			return region;
+//		}
+//
+//		public void setRegion(RegionReferenceDto region) {
+//			this.region = region;
+//		}
+//
+//		public DistrictReferenceDto getDistrict() {
+//			return district;
+//		}
+//
+//		public void setDistrict(DistrictReferenceDto district) {
+//			this.district = district;
+//		}
+//	}
 
 	private static class ContactGenerationConfig {
 
-		private int contactCount;
+		private String contactCount;
 		private LocalDate startDate;
 		private LocalDate endDate;
 		private Disease disease;
@@ -1547,7 +1589,7 @@ public class DevModeView extends AbstractConfigurationView {
 		}
 
 		public void loadDefaultConfig() {
-			contactCount = 10;
+			contactCount = "10";
 			startDate = LocalDate.now().minusDays(90);
 			endDate = LocalDate.now();
 			disease = null;
@@ -1559,7 +1601,7 @@ public class DevModeView extends AbstractConfigurationView {
 		}
 
 		public void loadPerformanceTestConfig() {
-			contactCount = 50;
+			contactCount = "50";
 			startDate = LocalDate.now().minusDays(90);
 			endDate = LocalDate.now();
 			disease = Disease.CORONAVIRUS;
@@ -1570,12 +1612,16 @@ public class DevModeView extends AbstractConfigurationView {
 			createWithVisits = false;
 		}
 
-		public int getContactCount() {
+		public String getContactCount() {
 			return contactCount;
 		}
 
-		public void setContactCount(int contactCount) {
+		public void setContactCount(String contactCount) {
 			this.contactCount = contactCount;
+		}
+
+		public int getContactCountAsNumber() {
+			return Integer.parseInt(getContactCount());
 		}
 
 		public LocalDate getStartDate() {
