@@ -818,7 +818,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		setEditArchiveFeature(false);
 		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ARCHIVING_STATUS_ONLY));
 
-		// shred case
+		// shared case
 		CaseDataDto caseToShare = creator.createCase(user.toReference(), rdcf, null);
 		task = creator.createTask(TaskContext.CASE, caseToShare.toReference(), null);
 
@@ -860,7 +860,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		setEditArchiveFeature(false);
 		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ARCHIVING_STATUS_ONLY));
 
-		// shred contact
+		// shared contact
 		ContactDto contactToShare = creator.createContact(rdcf, user.toReference(), creator.createPerson().toReference());
 		task = creator.createTask(TaskContext.CONTACT, contactToShare.toReference(), null);
 
@@ -902,7 +902,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		setEditArchiveFeature(false);
 		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ARCHIVING_STATUS_ONLY));
 
-		// shred event
+		// shared event
 		EventDto eventToShare = creator.createEvent(user.toReference());
 		task = creator.createTask(TaskContext.EVENT, eventToShare.toReference(), null);
 
