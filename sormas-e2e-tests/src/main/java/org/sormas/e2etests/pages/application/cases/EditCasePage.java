@@ -349,6 +349,10 @@ public class EditCasePage {
   public static final By VACCINATION_CARD_INFO_POPUP_TEXT =
       By.xpath("//div[@class='v-tooltip-text']");
   public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");
+  public static final By LINK_EVENT_BUTTON = By.xpath("//div[@id='Link event']");
+  public static final By LINKED_EVENT_TITLE =
+      By.xpath(
+          "//div[@location='events']//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase v-has-width']");
   public static final By ADD_A_PARTICIPANT_HEADER_DE =
       By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
   public static final By CHANGE_DISEASE_CONFIRMATION_POPUP =
