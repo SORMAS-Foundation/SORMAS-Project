@@ -136,7 +136,7 @@ public class EventDataView extends AbstractEventView {
 				UserRight.EVENT_EDIT,
 				event.isPseudonymized(),
 				isEditAllowed,
-				EditPermissionType.DOCUMENTS_ONLY.equals(eventEditAllowed));
+				UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_DELETE));
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
