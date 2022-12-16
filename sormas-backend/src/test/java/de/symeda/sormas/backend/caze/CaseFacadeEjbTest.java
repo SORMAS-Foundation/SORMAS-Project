@@ -3146,9 +3146,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		covidCase.setDisease(Disease.ANTHRAX);
 		CaseDataDto anthraxCase = getCaseFacade().cloneCase(covidCase);
 
-		PathogenTestDto searchPathogenTestDto = new PathogenTestDto();
-		searchPathogenTestDto.setTestedDisease(Disease.ANTHRAX);
-
 		List<CaseDataDto> duplicatedCases = getCaseFacade().getDuplicatesWithPathogenTest(covidCase, pathogenTestDto);
 		assertEquals(1, duplicatedCases.size());
 		assertEquals(anthraxCase.getUuid(), duplicatedCases.get(0).getUuid());
