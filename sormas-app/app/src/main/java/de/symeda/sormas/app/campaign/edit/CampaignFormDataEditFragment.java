@@ -86,6 +86,7 @@ import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUse
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserTranslations;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleDependingOn;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleExpression;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleExpressionSec;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.setVisibilityDependency;
 
 import androidx.viewpager.widget.ViewPager;
@@ -280,7 +281,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             campaignFormDataEntry.setValue(field.getValue());
                             if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                                 expressionMap.forEach((formElement, controlPropertyField) ->
-                                        handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                        handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                             }
                         });
 
@@ -351,7 +352,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             campaignFormDataEntry.setValue(field.getValue());
                             if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                                 expressionMap.forEach((formElement, controlPropertyField) ->
-                                        handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                        handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                             }
                         });
 
@@ -422,7 +423,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             campaignFormDataEntry.setValue(field.getValue());
                             if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                                 expressionMap.forEach((formElement, controlPropertyField) ->
-                                        handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                        handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                             }
                         });
 
@@ -493,7 +494,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             campaignFormDataEntry.setValue(field.getValue());
                             if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                                 expressionMap.forEach((formElement, controlPropertyField) ->
-                                        handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                        handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                             }
                         });
 
@@ -564,7 +565,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             campaignFormDataEntry.setValue(field.getValue());
                             if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                                 expressionMap.forEach((formElement, controlPropertyField) ->
-                                        handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                        handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                             }
                         });
 
@@ -635,7 +636,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             campaignFormDataEntry.setValue(field.getValue());
                             if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                                 expressionMap.forEach((formElement, controlPropertyField) ->
-                                        handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                        handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                             }
                         });
 
@@ -706,7 +707,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             campaignFormDataEntry.setValue(field.getValue());
                             if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                                 expressionMap.forEach((formElement, controlPropertyField) ->
-                                        handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                        handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                             }
                         });
 
@@ -777,7 +778,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             campaignFormDataEntry.setValue(field.getValue());
                             if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                                 expressionMap.forEach((formElement, controlPropertyField) ->
-                                        handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                        handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                             }
                         });
 
@@ -850,7 +851,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         campaignFormDataEntry.setValue(field.getValue());
                         if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
                             expressionMap.forEach((formElement, controlPropertyField) ->
-                                    handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable));
+                                    handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                         }
                     });
 

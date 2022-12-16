@@ -295,7 +295,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataPointOfEntry.setRequired(false);
 		}
 
-		if (user.hasUserRole(UserRole.COMMUNITY_INFORMANT) && user.getCommunity() != null) {
+		if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT) && user.getCommunity() != null) {
 			// Community Informants are not allowed to create cases in another community
 			contentBinding.caseDataCommunity.setEnabled(false);
 			contentBinding.caseDataCommunity.setRequired(false);

@@ -22,6 +22,22 @@ public class CampaignFormDataListAdapter extends BindingPagedListAdapter<Campaig
         if (getItemViewType(position) == TYPE_ITEM) {
             BindingViewHolder<CampaignFormData, RowCaseListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
             pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
+                 //   updateUnreadIndicator(holder, position);
         }
+
+
     }
+//
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowSampleListItemLayoutBinding> holder, Sample item) {
+//        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+
 }

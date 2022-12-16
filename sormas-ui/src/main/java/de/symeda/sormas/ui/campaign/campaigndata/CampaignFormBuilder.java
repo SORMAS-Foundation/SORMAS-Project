@@ -39,6 +39,7 @@ import com.vaadin.server.Page.Styles;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component.ErrorEvent;
+import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
@@ -621,13 +622,12 @@ public class CampaignFormBuilder {
 			}
 
 			if (isExpressionValue && !isErrored && value == null) {
-				System.out.println("???????????? "+((TextField) field).getCaption()+" ***** "+ defaultErrorMsgr != null ? defaultErrorMsgr
-						: "Data entered not in range or calculated range!");
-				Object tempz = defaultErrorMsgr != null ? defaultErrorMsgr : "Data entered not in range or calculated range!";
+				
+				Object tempz = defaultErrorMsgr != null ? defaultErrorMsgr : "Data entered not in range or calculated rangexxx!";
 				((TextField) field).setCaption(
-						((TextField) field).getCaption() + " "+tempz);
-				((TextField) field).setRequiredError(defaultErrorMsgr != null ? defaultErrorMsgr.toString()
-						: "Data entered not in range or calculated range!");
+						((TextField) field).getCaption());
+				((TextField) field).setRequiredError(defaultErrorMsgr != null ? defaultErrorMsgr.toString() : "Data entered not in range or calculated range!");
+			//	Notification.show("Error found", tempz.toString(), Notification.TYPE_TRAY_NOTIFICATION);
 			}
 
 			((TextField) field).setValue(value != null ? value.toString() : defaultvalue != null ? defaultvalue : null);

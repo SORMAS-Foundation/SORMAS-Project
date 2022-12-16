@@ -285,7 +285,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 				&& (user.hasUserRole(UserRole.COMMUNITY_OFFICER)
 					|| user.hasUserRole(UserRole.CASE_OFFICER)
 					|| user.hasUserRole(UserRole.POE_INFORMANT)
-					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
+					|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT)
 					|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT))) {
 				NavigationHelper.goToCases(LoginActivity.this);
 			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) && user.hasUserRole(UserRole.CONTACT_OFFICER)) {

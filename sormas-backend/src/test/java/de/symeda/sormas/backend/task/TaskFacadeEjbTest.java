@@ -217,15 +217,15 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(not(empty())));
 
 		// 3. Community level user does not see task of district level user
-		UserDto commInf = creator.createUser(
-			rdcf1.region.getUuid(),
-			rdcf1.district.getUuid(),
-			rdcf1.community.getUuid(),
-			null,
-			"Comm",
-			"Inf",
-			UserRole.COMMUNITY_INFORMANT);
-		loginWith(commInf);
+//		UserDto commInf = creator.createUser(
+//			rdcf1.region.getUuid(),
+//			rdcf1.district.getUuid(),
+//			rdcf1.community.getUuid(),
+//			null,
+//			"Comm",
+//			"Inf",
+//			UserRole._HOSPITAL_INFORMANT);
+//		loginWith(commInf);
 
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
 

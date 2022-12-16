@@ -355,19 +355,19 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
               //  System.out.println(isExpression +" isExpression XXXXXXXXXXXX isRequired = "+isRequired+"XXXXXXXXXXXXX onChangeData = "+onChangeData+"XXXXXXXXXXXx beforeData = " +beforeData+" PPPPPP isRange"+isRange);
 
                 if (isRange && minValue != null && maxValue != null) {
-                    System.out.println(minValue + "--------%%%11%%%------------" + maxValue);
+            //        System.out.println(minValue + "--------%%%11%%%------------" + maxValue);
                     if (minValue != null && maxValue != null && input.getText() != null) {
-                        System.out.println(minValue + "--------%%%22%%%------------" + maxValue);
+                 //      System.out.println(minValue + "--------%%%22%%%------------" + maxValue);
                         if (!input.getText().toString().equals("") || !input.getText().toString().isEmpty()) {
-                            System.out.println(minValue + "--------%%%333%%%------------" + maxValue);
+                   //         System.out.println(minValue + "--------%%%333%%%------------" + maxValue);
                             int valxx = Integer.parseInt(input.getText().toString());
                             if (valxx >= minValue && valxx <= maxValue) {
-                                System.out.println(minValue + "--------%%%444%%%------------" + maxValue);
+                     //           System.out.println(minValue + "--------%%%444%%%------------" + maxValue);
                             } else if (warnOnError) {
-                                System.out.println(minValue + "--------%%555%%%%------------" + maxValue);
+                      //          System.out.println(minValue + "--------%%555%%%%------------" + maxValue);
                                 NotificationHelper.showNotification((NotificationContext) input.getContext(), WARNING, "Number not in provided range! i.e min: " + minValue + " and max: " + maxValue);
                             } else {
-                                System.out.println(minValue + "Number not in provided range!" + maxValue);
+                         //       System.out.println(minValue + "Number not in provided range!" + maxValue);
                                 input.setError("Number not in provided range! i.e min: " + minValue + " and max: " + maxValue);
                                 setErrorIfEmptyRange();
                                 enableErrorState("Number not in provided range! i.e min: " + minValue + " and max: " + maxValue);

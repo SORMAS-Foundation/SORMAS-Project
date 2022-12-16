@@ -225,23 +225,24 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	public static boolean hasAnyUnsynchronizedData() {
 		final boolean hasUnsynchronizedCampaignData = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)
 			&& (DatabaseHelper.getCampaignFormDataDao().isAnyModified());
-		return DatabaseHelper.getCaseDao().isAnyModified()
-			|| DatabaseHelper.getImmunizationDao().isAnyModified()
-			|| DatabaseHelper.getContactDao().isAnyModified()
-			|| DatabaseHelper.getPersonDao().isAnyModified()
-			|| DatabaseHelper.getEventDao().isAnyModified()
-			|| DatabaseHelper.getEventParticipantDao().isAnyModified()
-			|| DatabaseHelper.getSampleDao().isAnyModified()
-			|| DatabaseHelper.getSampleTestDao().isAnyModified()
-			|| DatabaseHelper.getAdditionalTestDao().isAnyModified()
-			|| DatabaseHelper.getTaskDao().isAnyModified()
-			|| DatabaseHelper.getVisitDao().isAnyModified()
-			|| DatabaseHelper.getWeeklyReportDao().isAnyModified()
-			|| DatabaseHelper.getAggregateReportDao().isAnyModified()
-			|| DatabaseHelper.getPrescriptionDao().isAnyModified()
-			|| DatabaseHelper.getTreatmentDao().isAnyModified()
-			|| DatabaseHelper.getClinicalVisitDao().isAnyModified()
-			|| hasUnsynchronizedCampaignData;
+		return
+//				DatabaseHelper.getCaseDao().isAnyModified()
+//			|| DatabaseHelper.getImmunizationDao().isAnyModified()
+//			|| DatabaseHelper.getContactDao().isAnyModified()
+//			|| DatabaseHelper.getPersonDao().isAnyModified()
+//			|| DatabaseHelper.getEventDao().isAnyModified()
+//			|| DatabaseHelper.getEventParticipantDao().isAnyModified()
+//			|| DatabaseHelper.getSampleDao().isAnyModified()
+//			|| DatabaseHelper.getSampleTestDao().isAnyModified()
+//			|| DatabaseHelper.getAdditionalTestDao().isAnyModified()
+//			|| DatabaseHelper.getTaskDao().isAnyModified()
+//			|| DatabaseHelper.getVisitDao().isAnyModified()
+//			|| DatabaseHelper.getWeeklyReportDao().isAnyModified()
+//			|| DatabaseHelper.getAggregateReportDao().isAnyModified()
+//			|| DatabaseHelper.getPrescriptionDao().isAnyModified()
+//			|| DatabaseHelper.getTreatmentDao().isAnyModified()
+//			|| DatabaseHelper.getClinicalVisitDao().isAnyModified() ||
+			 hasUnsynchronizedCampaignData;
 	}
 
 	@AddTrace(name = "synchronizeChangedDataTrace")
@@ -420,9 +421,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@AddTrace(name = "pullInitialInfrastructureTrace")
 	private void pullInitialInfrastructure() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
-		new ContinentDtoHelper().pullEntities(false);
-		new SubcontinentDtoHelper().pullEntities(false);
-		new CountryDtoHelper().pullEntities(false);
+	//	new ContinentDtoHelper().pullEntities(false);
+	//	new SubcontinentDtoHelper().pullEntities(false);
+	//	new CountryDtoHelper().pullEntities(false);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			new AreaDtoHelper().pullEntities(false);
@@ -430,12 +431,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new RegionDtoHelper().pullEntities(false);
 		new DistrictDtoHelper().pullEntities(false);
 		new CommunityDtoHelper().pullEntities(false);
-		new FacilityDtoHelper().pullEntities(false);
-		new PointOfEntryDtoHelper().pullEntities(false);
+		//new FacilityDtoHelper().pullEntities(false);
+		//new PointOfEntryDtoHelper().pullEntities(false);
 		new UserDtoHelper().pullEntities(false);
-		new DiseaseClassificationDtoHelper().pullEntities(false);
-		new DiseaseConfigurationDtoHelper().pullEntities(false);
-		new CustomizableEnumValueDtoHelper().pullEntities(false);
+		//new DiseaseClassificationDtoHelper().pullEntities(false);
+		//new DiseaseConfigurationDtoHelper().pullEntities(false);
+	//	new CustomizableEnumValueDtoHelper().pullEntities(false);
 
 		// user role configurations may be removed, so have to pull the deleted uuids
 		// this may be applied to other entities later as well
@@ -466,36 +467,36 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	private void pullAndRemoveArchivedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
 
-		try {
+	//	try {
 			// Cases
-			List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-			for (String caseUuid : caseUuids) {
-				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
-			}
+			//List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+			//for (String caseUuid : caseUuids) {
+			//	DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+			//}
 
 			// Events
-			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventUuid : eventUuids) {
-				DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
-			}
+			//List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+			//for (String eventUuid : eventUuids) {
+			//	DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+			//}
 
 			// Tasks
-			List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-			for (String taskUuid : taskUuids) {
-				DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(taskUuid);
-			}
+		//	List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+			//for (String taskUuid : taskUuids) {
+			//	DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(taskUuid);
+			//}
 
 			// Inactive outbreaks
-			List<String> outbreakUuids =
-				executeUuidCall(RetroProvider.getOutbreakFacade().pullInactiveUuidsSince(since != null ? since.getTime() : 0));
-			for (String outbreakUuid : outbreakUuids) {
-				DatabaseHelper.getOutbreakDao().deleteOutbreakAndAllDependingEntities(outbreakUuid);
-			}
+		//List<String> outbreakUuids =
+			//	executeUuidCall(RetroProvider.getOutbreakFacade().pullInactiveUuidsSince(since != null ? since.getTime() : 0));
+		//	for (String outbreakUuid : outbreakUuids) {
+		//		DatabaseHelper.getOutbreakDao().deleteOutbreakAndAllDependingEntities(outbreakUuid);
+		//	}
 
-			ConfigProvider.setLastArchivedSyncDate(new Date());
-		} catch (SQLException e) {
-			Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveArchivedUuidsSince failed: " + e.getMessage());
-		}
+		//	ConfigProvider.setLastArchivedSyncDate(new Date());
+	//	} catch (SQLException e) {
+		//	Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveArchivedUuidsSince failed: " + e.getMessage());
+		//}
 	}
 
 	@AddTrace(name = "pullAndRemoveDeletedUuidsSinceTrace")
@@ -504,37 +505,37 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 if (1 == 3) {
 	// Cases
 	List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-	for (String caseUuid : caseUuids) {
+	//for (String caseUuid : caseUuids) {
 		//	DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
-	}
+	//}
 
 	// Immunization
-	List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+//	List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 	//	for (String immunizationUuid : immunizationUuids) {
 	//		DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
 	//	}
 
 	// Events
-	List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+//	List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 	//for (String eventUuid : eventUuids) {
 	//	DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
 	//}
 
 	//Event participants
-	List<String> eventParticipantUuids =
-			executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//List<String> eventParticipantUuids =
+	//		executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 	//	for (String eventParticipantUuid : eventParticipantUuids) {
 	///	DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
 	//}
 
 	// Contacts
-	List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+//	List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 	//	for (String contactUuid : contactUuids) {
 	//DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
 	//}
 
 	// Samples
-	List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+	//List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 	//for (String sampleUuid : sampleUuids) {
 	//	DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
 	//}
@@ -554,7 +555,7 @@ if (1 == 3) {
 
 		// first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
-		new PersonDtoHelper().pushEntities(true);
+//		new PersonDtoHelper().pushEntities(true);
 //		new CaseDtoHelper().pushEntities(true);
 //		new ImmunizationDtoHelper().pushEntities(true);
 //		new EventDtoHelper().pushEntities(true);
@@ -667,12 +668,12 @@ if (1 == 3) {
 		// users
 		List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
 		DatabaseHelper.getUserDao().deleteInvalid(userUuids);
-		// disease configurations
-		List<String> diseaseConfigurationUuids = executeUuidCall(RetroProvider.getDiseaseConfigurationFacade().pullUuids());
-		DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids);
-		// Disease variants
-		List<String> customizableEnumValueUuids = executeUuidCall(RetroProvider.getCustomizableEnumValueFacade().pullUuids());
-		DatabaseHelper.getCustomizableEnumValueDao().deleteInvalid(customizableEnumValueUuids);
+//		// disease configurations
+//		List<String> diseaseConfigurationUuids = executeUuidCall(RetroProvider.getDiseaseConfigurationFacade().pullUuids());
+//		DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids);
+//		// Disease variants
+//		List<String> customizableEnumValueUuids = executeUuidCall(RetroProvider.getCustomizableEnumValueFacade().pullUuids());
+//		DatabaseHelper.getCustomizableEnumValueDao().deleteInvalid(customizableEnumValueUuids);
 		// feature configurations
 		List<String> featureConfigurationUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullUuids());
 		DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids);
@@ -680,11 +681,11 @@ if (1 == 3) {
 		List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
 		DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
 		// points of entry
-		List<String> pointOfEntryUuids = executeUuidCall(RetroProvider.getPointOfEntryFacade().pullUuids());
-		DatabaseHelper.getPointOfEntryDao().deleteInvalid(pointOfEntryUuids);
+//		List<String> pointOfEntryUuids = executeUuidCall(RetroProvider.getPointOfEntryFacade().pullUuids());
+//		DatabaseHelper.getPointOfEntryDao().deleteInvalid(pointOfEntryUuids);
 		// facilities
-		List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
-		DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
+//		List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
+	//	DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
 		// communities
 		List<String> communityUuids = executeUuidCall(RetroProvider.getCommunityFacade().pullUuids());
 		DatabaseHelper.getCommunityDao().deleteInvalid(communityUuids);
@@ -692,26 +693,27 @@ if (1 == 3) {
 		List<String> districtUuids = executeUuidCall(RetroProvider.getDistrictFacade().pullUuids());
 		DatabaseHelper.getDistrictDao().deleteInvalid(districtUuids);
 		// regions
+	//	List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
 		List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
 		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
 		// areas
 		List<String> areaUuids = executeUuidCall(RetroProvider.getAreaFacade().pullUuids());
 		DatabaseHelper.getAreaDao().deleteInvalid(areaUuids);
 		// countries
-		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
-		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
+	//	List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
+	//	DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
 		// subcontinents
-		List<String> subcontinentUuids = executeUuidCall(RetroProvider.getSubcontinentFacade().pullUuids());
-		DatabaseHelper.getSubcontinentDao().deleteInvalid(subcontinentUuids);
+	//	List<String> subcontinentUuids = executeUuidCall(RetroProvider.getSubcontinentFacade().pullUuids());
+	//	DatabaseHelper.getSubcontinentDao().deleteInvalid(subcontinentUuids);
 		// continents
-		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
-		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
+	//	List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
+	//	DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
 
 		// order is important, due to dependencies
 
-		new ContinentDtoHelper().pullMissing(continentUuids);
-		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
-		new CountryDtoHelper().pullMissing(countryUuids);
+		//new ContinentDtoHelper().pullMissing(continentUuids);
+	//	new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
+	//	new CountryDtoHelper().pullMissing(countryUuids);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			new AreaDtoHelper().pullMissing(areaUuids);
@@ -720,20 +722,20 @@ if (1 == 3) {
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);
 		new CommunityDtoHelper().pullMissing(communityUuids);
-		new FacilityDtoHelper().pullMissing(facilityUuids);
-		new PointOfEntryDtoHelper().pullMissing(pointOfEntryUuids);
+	//	new FacilityDtoHelper().pullMissing(facilityUuids);
+		//new PointOfEntryDtoHelper().pullMissing(pointOfEntryUuids);
 		new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
 		new UserDtoHelper().pullMissing(userUuids);
-		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
-		new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids);
+	//	new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
+	//	new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids);
 		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			// campaigns
 			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
-			for(String dcs : campaignUuids){
-				System.out.println("  --0-0-0-0-0-0-0  "+dcs);
-			}
+			//for(String dcs : campaignUuids){
+			//	System.out.println("  --0-0-0-0-0-0-0  "+dcs);
+			//}
 
 			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
 			// campaignFormMetas

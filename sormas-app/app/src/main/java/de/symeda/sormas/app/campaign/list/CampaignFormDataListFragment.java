@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app.campaign.list;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,8 @@ public class CampaignFormDataListFragment extends PagedBaseListFragment<Campaign
         View view = super.onCreateView(inflater, container, savedInstanceState);
         linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         recyclerViewForList = view.findViewById(R.id.recyclerViewForList);
+        //view.getId()
+      //  recyclerViewForList.setBackgroundColor(Color.parseColor("#00FF00"));
 
         return view;
     }

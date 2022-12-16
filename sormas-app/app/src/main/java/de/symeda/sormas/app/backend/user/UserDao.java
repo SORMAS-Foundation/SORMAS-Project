@@ -152,7 +152,7 @@ public class UserDao extends AbstractAdoDao<User> {
 			Where where = builder.where();
 			where.and(
 				where.eq(User.ASSOCIATED_OFFICER + "_id", officer),
-				where.or(createRoleFilter(UserRole.HOSPITAL_INFORMANT, where), createRoleFilter(UserRole.COMMUNITY_INFORMANT, where)));
+				where.or(createRoleFilter(UserRole.HOSPITAL_INFORMANT, where), createRoleFilter(UserRole.HOSPITAL_INFORMANT, where)));
 
 			return (List<User>) builder.query();
 		} catch (SQLException e) {

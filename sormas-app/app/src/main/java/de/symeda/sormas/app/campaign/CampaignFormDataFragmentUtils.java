@@ -67,6 +67,74 @@ public class CampaignFormDataFragmentUtils {
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
+    public static void handleExpressionSec(
+            ExpressionParser expressionParser,
+            List<CampaignFormDataEntry> formValues,
+            CampaignFormElementType type,
+            ControlPropertyField dynamicField,
+            String expressionString,
+            Boolean isDisIgnore,
+            Object orginalValue) {
+        try {
+            if(!expressionString.isEmpty() && expressionString != null && !expressionString.equals("")) {
+                final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
+                String valuex = expressionValue + "";
+
+                System.out.println(")))))))))))))))))))))))))))))))))))))))))))))-----= " + valuex);
+                if (!valuex.isEmpty() && !valuex.equals("") && expressionValue != null) {//&& !valuex.equals("0")
+
+                    if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
+
+                        //     System.out.println(dynamicField.getCaption()+" : "+ expressionString+" =====)))))))))))))))==== "+expressionValue);
+                        if (type == CampaignFormElementType.YES_NO) {
+                            ControlSwitchField.setValue((ControlSwitchField) dynamicField, expressionValue, true, YesNo.class, null);
+                        } else if (type == CampaignFormElementType.RANGE) {
+                            System.out.println("+++++++++++111111+++++++++++++++++ " + valuex);
+                            String valudex = valuex.equals("0") ? null : valuex.endsWith(".0") ? valuex.replace(".0", "") : valuex;
+                            System.out.println(orginalValue+ "++++++++++++22222222++++++++++++++++ " + valudex);
+                            if (!orginalValue.toString().equals(valudex)) {
+                             //   if (!valudex.isEmpty() && !orginalValue.toString().equals(valudex)) {
+                                    System.out.println("++++++++++++333333333++++++++++++++++ " + valudex);
+                                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString());
+                               // }
+                            }
+                        } else if (type == CampaignFormElementType.NUMBER) {
+                            ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? "0" : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
+
+                        } else if (expressionValue.getClass().isAssignableFrom(Boolean.class)) {
+                            ControlTextEditField.setValue((ControlTextEditField) dynamicField, (Double) (!Double.isFinite((double) expressionValue) ? 0 : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : df.format((double) expressionValue)));
+                        } else {
+                            ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null : expressionValue.toString());
+                        }
+
+                        //  if (type == CampaignFormElementType.RANGE) {
+
+                        //  } else {
+                        //     dynamicField.setEnabled(isDisIgnore);
+                        // }
+                    }
+
+
+                }
+
+
+            }
+        } catch (SpelEvaluationException e) {
+            Log.e("Error evaluating expression on field : " + dynamicField.getCaption(), e.getMessage());
+        }
+        if (type == CampaignFormElementType.RANGE) {
+            dynamicField.setEnabled(true);
+        }else if (isDisIgnore) {
+            dynamicField.setEnabled(true);
+        }else{
+            dynamicField.setEnabled(false);
+        }
+
+    }
+
+
+
+
     public static void handleExpression(
             ExpressionParser expressionParser,
             List<CampaignFormDataEntry> formValues,
@@ -75,41 +143,49 @@ public class CampaignFormDataFragmentUtils {
             String expressionString,
             Boolean isDisIgnore) {
         try {
-            final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
-            String valuex = expressionValue+"";
-            System.out.println("))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) "+valuex);
-            if(!valuex.isEmpty() && !valuex.equals("")  && expressionValue != null) {//&& !valuex.equals("0")
+            if(!expressionString.isEmpty() && expressionString != null && !expressionString.equals("")) {
+                final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
+                String valuex = expressionValue + "";
+                ;
+                System.out.println(")))))))))))))))))))))))))))))))))))))))))))))-----= " + valuex);
+                if (!valuex.isEmpty() && !valuex.equals("") && expressionValue != null) {//&& !valuex.equals("0")
 
-                if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
+                    if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
 
-                    System.out.println(expressionString+" =====)))))))))))))))==== "+expressionValue);
-                    if (type == CampaignFormElementType.YES_NO) {
-                        ControlSwitchField.setValue((ControlSwitchField) dynamicField, expressionValue, true, YesNo.class, null);
-                     } else if (type == CampaignFormElementType.RANGE) {
+                        //     System.out.println(dynamicField.getCaption()+" : "+ expressionString+" =====)))))))))))))))==== "+expressionValue);
+                        if (type == CampaignFormElementType.YES_NO) {
+                            ControlSwitchField.setValue((ControlSwitchField) dynamicField, expressionValue, true, YesNo.class, null);
+                        } else if (type == CampaignFormElementType.RANGE) {
+                            System.out.println("+++++++++++111111+++++++++++++++++ " + valuex);
+                            String valudex = valuex.equals("0") ? null : valuex.endsWith(".0") ? valuex.replace(".0", "") : valuex;
+                            System.out.println("++++++++++++22222222++++++++++++++++ " + valudex);
+                            if (valudex != null) {
+                                if (!valudex.isEmpty()) {
+                                    System.out.println("++++++++++++333333333++++++++++++++++ " + valudex);
+                                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, valudex);
+                                }
+                            }
+                        } else if (type == CampaignFormElementType.NUMBER) {
+                            ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? "0" : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
 
-                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
+                        } else if (expressionValue.getClass().isAssignableFrom(Boolean.class)) {
+                            ControlTextEditField.setValue((ControlTextEditField) dynamicField, (Double) (!Double.isFinite((double) expressionValue) ? 0 : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : df.format((double) expressionValue)));
+                        } else {
+                            ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null : expressionValue.toString());
+                        }
 
-                    } else if (type == CampaignFormElementType.NUMBER) {
-                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? "0" : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
+                        //  if (type == CampaignFormElementType.RANGE) {
 
-                    } else if (expressionValue.getClass().isAssignableFrom(Boolean.class)) {
-                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, (Double) (!Double.isFinite((double) expressionValue) ? 0 : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : df.format((double) expressionValue)));
-                    } else {
-                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null : expressionValue.toString());
+                        //  } else {
+                        //     dynamicField.setEnabled(isDisIgnore);
+                        // }
                     }
 
-                    //  if (type == CampaignFormElementType.RANGE) {
 
-                    //  } else {
-                    //     dynamicField.setEnabled(isDisIgnore);
-                    // }
                 }
 
 
             }
-
-
-
         } catch (SpelEvaluationException e) {
             Log.e("Error evaluating expression on field : " + dynamicField.getCaption(), e.getMessage());
         }
@@ -125,13 +201,13 @@ public class CampaignFormDataFragmentUtils {
 
     public static Object getExpressionValue(ExpressionParser expressionParser, List<CampaignFormDataEntry> formValues, String expressionString)
             throws SpelEvaluationException {
-        System.out.println("111111111");
+     //   System.out.println("111111111");
         final EvaluationContext context = refreshEvaluationContext(formValues);
-        System.out.println("2222222222222");
+     //   System.out.println("2222222222222");
         final Expression expression = expressionParser.parseExpression(expressionString);
-        System.out.println("3333333333333333333");
+      //  System.out.println("3333333333333333333");
         final Class<?> valueType = expression.getValueType(context);
-        System.out.println(valueType+" )))))))))----------------- "+expressionString);
+      //  System.out.println(valueType+" )))))))))----------------- "+expressionString);
         return expression.getValue(context, valueType);
     }
 

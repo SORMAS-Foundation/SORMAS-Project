@@ -44,6 +44,8 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
+import org.springframework.core.env.SystemEnvironmentPropertySource;
+
 public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormData> {
 
     private AsyncTask saveTask;
@@ -70,12 +72,16 @@ public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormD
     @Override
     public void saveData() {
 
+        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
         if (saveTask != null) {
             NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
         }
 
         final CampaignFormData campaignFormDataToSave = getStoredRootEntity();
+        System.out.println(campaignFormDataToSave.getCampaignFormMeta().getFormCategory()+">>>>>edit>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>__");
+        campaignFormDataToSave.setFormCategory(campaignFormDataToSave.getCampaignFormMeta().getFormCategory());
 
         try {
             FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());

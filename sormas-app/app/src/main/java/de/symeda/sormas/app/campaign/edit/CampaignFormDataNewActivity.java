@@ -94,6 +94,9 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
         }
 
         final CampaignFormData campaignFormDataToSave = getStoredRootEntity();
+        System.out.println(campaignFormDataToSave.getCampaignFormMeta().getFormCategory()+">>>>>>>>>>>new>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>__");
+
+        campaignFormDataToSave.setFormCategory(campaignFormDataToSave.getCampaignFormMeta().getFormCategory());
 
         try {
             FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
@@ -112,7 +115,7 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
         campaignFormDataToSave.setFormValues(filledFormValues);
 
         CampaignFormDataNewFragment activeFragment = (CampaignFormDataNewFragment) getActiveFragment();
-        activeFragment.setLiveValidationDisabled(true);
+        activeFragment.setLiveValidationDisabled(false);
 
         saveTask = new SavingAsyncTask(getRootView(), campaignFormDataToSave) {
 
