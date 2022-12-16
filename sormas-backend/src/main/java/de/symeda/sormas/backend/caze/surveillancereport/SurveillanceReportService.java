@@ -84,6 +84,11 @@ public class SurveillanceReportService extends AdoServiceWithUserFilterAndJurisd
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, SurveillanceReport> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, SurveillanceReport> from) {
 		return null;
 	}

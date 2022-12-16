@@ -583,8 +583,17 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return createUserFilter(new SampleQueryContext(cb, cq, samplePath), null);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> from) {
+		return createUserFilter(new SampleQueryContext(cb, cq, from), null, true);
+	}
+
 	public Predicate createUserFilter(SampleQueryContext sampleQueryContext, SampleCriteria criteria) {
+		return createUserFilter(sampleQueryContext, criteria, false);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(SampleQueryContext sampleQueryContext, SampleCriteria criteria, boolean obsolete) {
 
 		final CriteriaQuery cq = sampleQueryContext.getQuery();
 		final CriteriaBuilder cb = sampleQueryContext.getCriteriaBuilder();
@@ -605,7 +614,11 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		if (criteria != null && criteria.getSampleAssociationType() != null && criteria.getSampleAssociationType() != SampleAssociationType.ALL) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
-				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
+				if (obsolete) {
+					filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
+				} else {
+					filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
+				}
 			} else if (sampleAssociationType == SampleAssociationType.CONTACT && !RequestContextHolder.isMobileSync()) {
 				filter = CriteriaBuilderHelper
 					.or(cb, filter, contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null));
@@ -615,30 +628,53 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 					filter,
 					eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 			}
-		} else if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				CriteriaBuilderHelper.or(
+		} else {
+			Predicate caseUserFilter;
+			if (obsolete) {
+				caseUserFilter = caseService.createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null);
+			} else {
+				caseUserFilter  = caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null);
+			}
+			if (currentUser.getLimitedDisease() != null) {
+				filter = CriteriaBuilderHelper.and(
 					cb,
-					caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
+					filter,
+					CriteriaBuilderHelper.or(
+						cb,
+							caseUserFilter,
+						RequestContextHolder.isMobileSync()
+							? null
+							: contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
+						RequestContextHolder.isMobileSync()
+							? null
+							: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()))));
+			} else {
+				filter = CriteriaBuilderHelper.or(
+					cb,
+					filter,
+						caseUserFilter,
 					RequestContextHolder.isMobileSync()
 						? null
 						: contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
 					RequestContextHolder.isMobileSync()
 						? null
-						: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()))));
-		} else {
-			filter = CriteriaBuilderHelper.or(
-				cb,
-				filter,
-				caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
-				RequestContextHolder.isMobileSync()
-					? null
-					: contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
-				RequestContextHolder.isMobileSync()
-					? null
-					: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
+						: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
+			}
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			if (obsolete) {
+				Predicate limitedChangeDateForObsoletePredicate =
+						CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilterForObsoleteEntities(cb, sampleQueryContext.getRoot()));
+				if (limitedChangeDateForObsoletePredicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDateForObsoletePredicate);
+				}
+			} else {
+				Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, sampleQueryContext.getRoot()));
+				if (limitedChangeDatePredicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+				}
+			}
 		}
 
 		return filter;

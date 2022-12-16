@@ -718,6 +718,12 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		return null;
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, User> from) {
+		// no filter by user needed
+		return null;
+	}
+
 	public Predicate createCurrentUserJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
 		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
 			return cb.conjunction();

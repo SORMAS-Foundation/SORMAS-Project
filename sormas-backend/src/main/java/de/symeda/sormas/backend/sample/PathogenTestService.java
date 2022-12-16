@@ -328,6 +328,11 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, PathogenTest> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
+	@Override
 	public void delete(PathogenTest pathogenTest, DeletionDetails deletionDetails) {
 		super.delete(pathogenTest, deletionDetails);
 	}

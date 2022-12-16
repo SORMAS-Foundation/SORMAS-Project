@@ -154,7 +154,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
 		HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 		properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
-		properties.put(FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, 30);
+		properties.put(FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, 30);
 		singleResult.setProperties(properties);
 		em.save(singleResult);
 

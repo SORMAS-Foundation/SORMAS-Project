@@ -67,6 +67,11 @@ public class UserRoleService extends AdoServiceWithUserFilterAndJurisdiction<Use
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, UserRole> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, UserRole> from) {
 		return null;
 	}

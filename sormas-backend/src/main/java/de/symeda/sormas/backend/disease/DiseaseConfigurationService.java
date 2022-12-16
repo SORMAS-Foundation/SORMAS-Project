@@ -58,6 +58,11 @@ public class DiseaseConfigurationService extends AdoServiceWithUserFilterAndJuri
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, DiseaseConfiguration> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, DiseaseConfiguration> from) {
 		return null;
 	}

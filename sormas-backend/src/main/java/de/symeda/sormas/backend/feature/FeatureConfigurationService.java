@@ -124,6 +124,11 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJuri
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, FeatureConfiguration> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, FeatureConfiguration> from) {
 		return null;
 	}

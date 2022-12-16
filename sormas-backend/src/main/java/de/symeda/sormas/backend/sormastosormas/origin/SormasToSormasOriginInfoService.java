@@ -46,6 +46,11 @@ public class SormasToSormasOriginInfoService extends AdoServiceWithUserFilterAnd
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, SormasToSormasOriginInfo> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, SormasToSormasOriginInfo> from) {
 		return null;
 	}

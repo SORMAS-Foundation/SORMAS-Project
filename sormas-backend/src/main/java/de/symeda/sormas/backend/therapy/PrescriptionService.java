@@ -148,6 +148,13 @@ public class PrescriptionService extends AdoServiceWithUserFilterAndJurisdiction
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Prescription> from) {
+
+		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
+		return caseService.createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
+	}
+
+	@Override
 	public boolean inJurisdictionOrOwned(Prescription entity) {
 		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
 	}

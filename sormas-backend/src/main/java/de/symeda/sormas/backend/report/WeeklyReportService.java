@@ -154,6 +154,11 @@ public class WeeklyReportService extends AdoServiceWithUserFilterAndJurisdiction
 		return filter;
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReport> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
 	/**
 	 * Filters users analogous to reportingUsers in ::createUserFilter
 	 * 

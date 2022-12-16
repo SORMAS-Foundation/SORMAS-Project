@@ -27,6 +27,11 @@ public class CampaignDiagramDefinitionService extends AdoServiceWithUserFilterAn
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignDiagramDefinition> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, CampaignDiagramDefinition> from) {
 		return null;
 	}

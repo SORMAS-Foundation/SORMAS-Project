@@ -30,6 +30,11 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilterAndJurisdic
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignFormMeta> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, CampaignFormMeta> from) {
 		return null;
 	}

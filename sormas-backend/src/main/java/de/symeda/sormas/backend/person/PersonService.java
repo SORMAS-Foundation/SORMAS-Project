@@ -272,6 +272,11 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		throw new UnsupportedOperationException("Should not be called -> obsolete!");
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
 	public Predicate createUserFilter(PersonQueryContext queryContext, PersonCriteria personCriteria) {
 
 		/*

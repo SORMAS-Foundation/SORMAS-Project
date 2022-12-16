@@ -148,6 +148,13 @@ public class ClinicalVisitService extends AdoServiceWithUserFilterAndJurisdictio
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
+		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
+		return caseService
+			.createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, new CaseJoins(clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT))));
+	}
+
+	@Override
 	public boolean inJurisdictionOrOwned(ClinicalVisit entity) {
 		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}

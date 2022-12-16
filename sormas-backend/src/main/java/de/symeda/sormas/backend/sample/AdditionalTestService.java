@@ -209,6 +209,11 @@ public class AdditionalTestService extends AdoServiceWithUserFilterAndJurisdicti
 		return filter;
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, AdditionalTest> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
 	/**
 	 * @param additionalTestUuids
 	 *            {@link AdditionalTest}s identified by {@code uuid} to be deleted.

@@ -119,6 +119,11 @@ public class AggregateReportService extends AdoServiceWithUserFilterAndJurisdict
 		return createUserFilter(new AggregateReportQueryContext(cb, cq, from));
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, AggregateReport> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(AggregateReportQueryContext queryContext) {
 

@@ -126,7 +126,15 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 		return createUserFilter(new ActionQueryContext(cb, cq, actionPath));
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Action> from) {
+		return createUserFilter(new ActionQueryContext(cb, cq, from), true);
+	}
+
 	public Predicate createUserFilter(ActionQueryContext queryContext) {
+		return createUserFilter(queryContext, false);
+	}
+	public Predicate createUserFilter(ActionQueryContext queryContext, boolean obsolete) {
 
 		CriteriaQuery<?> cq = queryContext.getQuery();
 		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
@@ -143,8 +151,12 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 		}
 
 		Predicate filter = cb.equal(joins.getCreator(), currentUser);
-
-		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()));
+		Predicate eventFilter;
+		if (obsolete) {
+			eventFilter = eventService.createUserFilterForObsoleteSync(new EventQueryContext(cb, cq, joins.getEventJoins()));
+		} else {
+			eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()));
+		}
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}

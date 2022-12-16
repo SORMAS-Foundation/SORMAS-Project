@@ -72,6 +72,12 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJ
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, SormasToSormasShareInfo> from) {
+		// no filter by user needed
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, SormasToSormasShareInfo> from) {
 		return null;
 	}

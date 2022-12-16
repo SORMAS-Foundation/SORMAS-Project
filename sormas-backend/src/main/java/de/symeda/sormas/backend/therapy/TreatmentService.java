@@ -144,6 +144,12 @@ public class TreatmentService extends AdoServiceWithUserFilterAndJurisdiction<Tr
 		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Treatment> from) {
+		Join<Treatment, Therapy> therapy = from.join(Treatment.THERAPY, JoinType.LEFT);
+		return caseService.createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
+	}
+
 	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids){
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Treatment> criteriaUpdate = cb.createCriteriaUpdate(getElementClass());

@@ -608,7 +608,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@Override
 	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Case> from) {
 
-		return createUserFilter(new CaseQueryContext(cb, cq, from), new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(true));
+		return createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, from), new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(true));
 	}
 
 	/**
@@ -1303,12 +1303,29 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return createUserFilter(new CaseQueryContext(cb, cq, from));
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> from) {
+		return createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, from));
+	}
+
 	public Predicate createUserFilter(CaseQueryContext caseQueryContext) {
 		return createUserFilter(caseQueryContext, null);
 	}
 
-	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilterForObsoleteSync(CaseQueryContext caseQueryContext) {
+		return createUserFilter(caseQueryContext, null, true);
+	}
+
 	public Predicate createUserFilter(CaseQueryContext caseQueryContext, CaseUserFilterCriteria userFilterCriteria) {
+		return createUserFilter(caseQueryContext, userFilterCriteria, false);
+	}
+
+	public Predicate createUserFilterForObsoleteSync(CaseQueryContext caseQueryContext, CaseUserFilterCriteria userFilterCriteria) {
+		return createUserFilter(caseQueryContext, userFilterCriteria, true);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(CaseQueryContext caseQueryContext, CaseUserFilterCriteria userFilterCriteria, boolean obsolete) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -1434,6 +1451,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.notEqual(casePath.get(Case.REPORTING_USER), currentUser),
 						cb.and(cb.equal(casePath.get(Case.REPORTING_USER), currentUser), cb.isNull(casePath.get(Case.CREATION_VERSION))))));
 			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			if (obsolete) {
+				Predicate limitedChangeDateForObsoletePredicate =
+						CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilterForObsoleteEntities(cb, casePath));
+				if (limitedChangeDateForObsoletePredicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDateForObsoletePredicate);
+				}
+			} else {
+				Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, casePath));
+				if (limitedChangeDatePredicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+				}
+			}
 		}
 
 		return filter;

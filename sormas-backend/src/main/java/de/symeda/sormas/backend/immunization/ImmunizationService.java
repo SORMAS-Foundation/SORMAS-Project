@@ -501,6 +501,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return createUserFilter(new ImmunizationQueryContext(cb, cq, from));
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> from) {
+		return createUserFilter(new ImmunizationQueryContext(cb, cq, from));
+	}
+
 	public Predicate createUserFilter(ImmunizationQueryContext qc) {
 
 		User currentUser = getCurrentUser();

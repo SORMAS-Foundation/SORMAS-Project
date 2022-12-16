@@ -34,6 +34,11 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from) {
 		return null;
 	}

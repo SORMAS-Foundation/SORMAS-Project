@@ -62,6 +62,11 @@ public class WeeklyReportEntryService extends AdoServiceWithUserFilterAndJurisdi
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReportEntry> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, WeeklyReportEntry> from) {
 		return null;
 	}

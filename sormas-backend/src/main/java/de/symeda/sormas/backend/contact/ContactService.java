@@ -505,7 +505,7 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 	@Override
 	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Contact> from) {
 
-		return createUserFilter(new ContactQueryContext(cb, cq, from), new ContactCriteria().excludeLimitedSyncRestrictions(true));
+		return createUserFilterForObsoleteSync(new ContactQueryContext(cb, cq, from), new ContactCriteria().excludeLimitedSyncRestrictions(true));
 	}
 
 	public Long countContactsForMap(Region region, District district, Disease disease, Date from, Date to) {
@@ -1004,11 +1004,28 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 		return createUserFilter(new ContactQueryContext(cb, cq, from));
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> from) {
+		return createUserFilterForObsoleteSync(new ContactQueryContext(cb, cq, from));
+	}
+
 	public Predicate createUserFilter(ContactQueryContext queryContext) {
 		return createUserFilter(queryContext, null);
 	}
 
+	public Predicate createUserFilterForObsoleteSync(ContactQueryContext queryContext) {
+		return createUserFilter(queryContext, null, true);
+	}
+
 	public Predicate createUserFilter(ContactQueryContext contactQueryContext, ContactCriteria contactCriteria) {
+		return createUserFilter(contactQueryContext, contactCriteria, false);
+	}
+
+	public Predicate createUserFilterForObsoleteSync(ContactQueryContext contactQueryContext, ContactCriteria contactCriteria) {
+		return createUserFilter(contactQueryContext, contactCriteria, true);
+	}
+
+	public Predicate createUserFilter(ContactQueryContext contactQueryContext, ContactCriteria contactCriteria, boolean obsolete) {
 
 		Predicate userFilter = null;
 
@@ -1017,11 +1034,19 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, contactQueryContext.getJoins().getCaseJoins());
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			userFilter = caseService.createUserFilter(caseQueryContext);
+			if (obsolete) {
+				userFilter = caseService.createUserFilterForObsoleteSync(caseQueryContext);
+			} else {
+				userFilter = caseService.createUserFilter(caseQueryContext);
+			}
 		} else {
 			CaseUserFilterCriteria userFilterCriteria =
 				new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(contactCriteria.isExcludeLimitedSyncRestrictions());
-			userFilter = caseService.createUserFilter(caseQueryContext, userFilterCriteria);
+			if (obsolete) {
+				userFilter = caseService.createUserFilterForObsoleteSync(caseQueryContext, userFilterCriteria);
+			} else {
+				userFilter = caseService.createUserFilter(caseQueryContext, userFilterCriteria);
+			}
 		}
 
 		Predicate filter;
@@ -1029,6 +1054,21 @@ public class ContactService extends AbstractCoreAdoService<Contact>
 			filter = CriteriaBuilderHelper.or(cb, createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
 		} else {
 			filter = createUserFilterWithoutCase(contactQueryContext, contactCriteria);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			if (obsolete) {
+				Predicate limitedChangeDateForObsoletePredicate =
+						CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilterForObsoleteEntities(cb, contactQueryContext.getRoot()));
+				if (limitedChangeDateForObsoletePredicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDateForObsoletePredicate);
+				}
+			} else {
+				Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, contactQueryContext.getRoot()));
+				if (limitedChangeDatePredicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+				}
+			}
 		}
 		return filter;
 	}

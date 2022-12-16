@@ -200,6 +200,11 @@ public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit>
 		return null;
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
+		return null;
+	}
+
 	@SuppressWarnings("rawtypes")
 	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
 

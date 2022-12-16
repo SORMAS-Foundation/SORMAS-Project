@@ -48,6 +48,11 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Document> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Document> from) {
 		return null;
 	}

@@ -73,6 +73,11 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, DirectoryImmunization> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, DirectoryImmunization> from) {
 		return null;
 	}

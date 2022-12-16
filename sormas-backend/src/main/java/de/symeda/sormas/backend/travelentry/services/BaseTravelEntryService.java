@@ -58,6 +58,11 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 		return createUserFilter(new TravelEntryQueryContext(cb, cq, from));
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> from) {
+		return createUserFilter(new TravelEntryQueryContext(cb, cq, from));
+	}
+
 	public Predicate createUserFilter(TravelEntryQueryContext qc) {
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {

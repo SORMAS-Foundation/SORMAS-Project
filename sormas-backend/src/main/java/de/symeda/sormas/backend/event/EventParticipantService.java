@@ -291,22 +291,42 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return createUserFilter(new EventParticipantQueryContext(cb, cq, from));
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> from) {
+		return createUserFilterForObsoleteSync(new EventParticipantQueryContext(cb, cq, from));
+	}
+
 	public Predicate createUserFilter(EventParticipantQueryContext eventParticipantQueryContext) {
 
 		final EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
-		return createUserFilter(eventParticipantQueryContext, eventUserFilterCriteria);
+		return createUserFilter(eventParticipantQueryContext, eventUserFilterCriteria, false);
+	}
+
+	public Predicate createUserFilterForObsoleteSync(EventParticipantQueryContext eventParticipantQueryContext) {
+		final EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
+		eventUserFilterCriteria.forceRegionJurisdiction(true);
+
+		return createUserFilter(eventParticipantQueryContext, eventUserFilterCriteria, true);
 	}
 
 	public Predicate createUserFilter(EventParticipantQueryContext epqc, EventUserFilterCriteria eventUserFilterCriteria) {
+		return createUserFilter(epqc, eventUserFilterCriteria, false);
+	}
+
+	public Predicate createUserFilter(EventParticipantQueryContext epqc, EventUserFilterCriteria eventUserFilterCriteria, boolean obsolete) {
 
 		final CriteriaBuilder cb = epqc.getCriteriaBuilder();
 		final CriteriaQuery<?> cq = epqc.getQuery();
 		final EventParticipantJoins joins = epqc.getJoins();
-
-		return eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
+		if (obsolete) {
+			return eventService.createUserFilterForObsoleteSync(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
+		} else {
+			return eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
+		}
 	}
 
 	public EventParticipant getByEventAndPerson(String eventUuid, String personUuid) {

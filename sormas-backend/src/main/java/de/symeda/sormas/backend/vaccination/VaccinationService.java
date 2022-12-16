@@ -370,6 +370,11 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Vaccination> from) {
+		return null;
+	}
+
+	@Override
 	public boolean inJurisdictionOrOwned(Vaccination entity) {
 		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}

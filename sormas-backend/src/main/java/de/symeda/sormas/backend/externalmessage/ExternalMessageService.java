@@ -62,6 +62,11 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ExternalMessage> from) {
+		return null;
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ExternalMessage> from) {
 		return null;
 	}

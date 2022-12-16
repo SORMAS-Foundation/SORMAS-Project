@@ -170,6 +170,11 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		return null;
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Outbreak> from) {
+		return null;
+	}
+
 	public Predicate buildCriteriaFilter(OutbreakCriteria criteria, CriteriaBuilder cb, Root<Outbreak> from) {
 
 		Predicate filter = null;

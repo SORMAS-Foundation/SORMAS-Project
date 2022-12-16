@@ -44,9 +44,11 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
+	public abstract Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
+
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
-				.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
+				.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, Integer.class);
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
 				&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
 			Date maxChangeDate = DateHelper.subtractDays(new Date(), maxChangeDatePeriod);
@@ -58,12 +60,12 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 
 	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, ADO> from) {
 		final Integer maxChangeDatePeriod = featureConfigurationFacade
-				.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_SYNCHRONIZATION, Integer.class);
+				.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, Integer.class);
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
 				&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
 			Date maxChangeDate = DateHelper.subtractDays(new Date(), maxChangeDatePeriod);
 			Timestamp timestamp = Timestamp.from(DateHelper.getStartOfDay(maxChangeDate).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.lessThan(from.get(ADO.CHANGE_DATE), timestamp));
+			return CriteriaBuilderHelper.or(cb, cb.lessThan(from.get(ADO.CHANGE_DATE), timestamp));
 		}
 		return null;
 	}
@@ -192,7 +194,11 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 	}
 
 	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<ADO> from) {
-		return createUserFilter(cb, cq, from);
+		if (RequestContextHolder.isMobileSync()) {
+			return createUserFilterForObsoleteSync(cb, cq, from);
+		} else {
+			return createUserFilter(cb, cq, from);
+		}
 	}
 
 	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<ADO> from) {

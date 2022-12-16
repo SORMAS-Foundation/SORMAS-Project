@@ -401,11 +401,28 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return createUserFilter(new EventQueryContext(cb, cq, from));
 	}
 
-	public Predicate createUserFilter(EventQueryContext queryContext) {
-		return createUserFilter(queryContext, null);
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> from) {
+		return createUserFilterForObsoleteSync(new EventQueryContext(cb, cq, from));
 	}
 
-	public Predicate createUserFilter(final EventQueryContext queryContext, final EventUserFilterCriteria eventUserFilterCriteria) {
+	public Predicate createUserFilter(EventQueryContext queryContext) {
+		return createUserFilter(queryContext, null, false);
+	}
+
+	public Predicate createUserFilterForObsoleteSync(EventQueryContext queryContext) {
+		return createUserFilter(queryContext, null, true);
+	}
+
+	public Predicate createUserFilter(EventQueryContext queryContext, EventUserFilterCriteria eventUserFilterCriteria) {
+		return createUserFilter(queryContext, eventUserFilterCriteria, false);
+	}
+
+	public Predicate createUserFilterForObsoleteSync(EventQueryContext queryContext, EventUserFilterCriteria eventUserFilterCriteria) {
+		return createUserFilter(queryContext, eventUserFilterCriteria, true);
+	}
+
+	public Predicate createUserFilter(final EventQueryContext queryContext, final EventUserFilterCriteria eventUserFilterCriteria, final boolean obsolete) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -484,6 +501,21 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb,
 				filter,
 				cb.or(cb.equal(eventJoin.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventJoin.get(Event.DISEASE))));
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			if (obsolete) {
+				Predicate limitedChangeDateForObsoletePredicate =
+						CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilterForObsoleteEntities(cb, eventJoin));
+				if (limitedChangeDateForObsoletePredicate != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, limitedChangeDateForObsoletePredicate);
+				}
+			} else {
+				Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, eventJoin));
+				if (limitedChangeDatePredicate != null) {
+					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+				}
+			}
 		}
 
 		return filter;

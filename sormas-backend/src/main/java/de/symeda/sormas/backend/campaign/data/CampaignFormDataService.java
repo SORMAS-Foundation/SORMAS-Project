@@ -131,6 +131,11 @@ public class CampaignFormDataService extends AdoServiceWithUserFilterAndJurisdic
 	}
 
 	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignFormData> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
+	@Override
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, CampaignFormData> from) {
 		return null;
 	}

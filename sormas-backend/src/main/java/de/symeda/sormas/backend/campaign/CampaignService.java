@@ -46,6 +46,11 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return null;
 	}
 
+	@Override
+	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
+		return null;
+	}
+
 	public Predicate buildCriteriaFilter(CampaignQueryContext queryContext, CampaignCriteria campaignCriteria) {
 
 		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
