@@ -122,7 +122,7 @@ public class UserRoleController {
 				if (!(dto.getUserRights().contains(UserRight.SORMAS_UI) && dto.getUserRights().contains(UserRight.SORMAS_REST))) {
 					Notification.show(
 						I18nProperties.getString(Strings.messageUserRoleSaved),
-						I18nProperties.getString(Strings.messageUserUnusableForLogin),
+						I18nProperties.getString(Strings.messageUserRoleUnusableForLogin),
 						Notification.Type.WARNING_MESSAGE);
 
 				} else {
