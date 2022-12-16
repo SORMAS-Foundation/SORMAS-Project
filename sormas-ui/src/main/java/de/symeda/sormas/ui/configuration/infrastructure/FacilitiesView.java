@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -210,8 +209,6 @@ public class FacilitiesView extends AbstractConfigurationView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
-				searchField.clear();
-				criteria.nameAddressLike(StringUtils.EMPTY);
 				grid.setEagerDataProvider();
 				grid.reload();
 				rowCount.update(grid.getDataSize());
@@ -401,9 +398,8 @@ public class FacilitiesView extends AbstractConfigurationView {
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					boolean visible = viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus());
-					bulkOperationsDropdown.setVisible(visible);
-					searchField.setEnabled(!visible);
+					bulkOperationsDropdown
+						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}

@@ -18,8 +18,6 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import java.util.Collections;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -163,8 +161,6 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
-				searchField.clear();
-				criteria.nameLike(StringUtils.EMPTY);
 				grid.setEagerDataProvider();
 				grid.reload();
 			});
@@ -322,9 +318,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					boolean visible = viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus());
-					bulkOperationsDropdown.setVisible(visible);
-					searchField.setEnabled(!visible);
+					bulkOperationsDropdown
+						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}

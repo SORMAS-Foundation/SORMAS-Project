@@ -18,8 +18,6 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import java.util.Collections;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
@@ -172,8 +170,6 @@ public class CountriesView extends AbstractConfigurationView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
-				searchField.clear();
-				criteria.nameCodeLike(StringUtils.EMPTY);
 				grid.setInEagerMode(true);
 				grid.reload();
 			});
