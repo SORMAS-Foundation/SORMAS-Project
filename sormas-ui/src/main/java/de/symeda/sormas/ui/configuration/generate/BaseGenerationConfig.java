@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.configuration.dto;
+package de.symeda.sormas.ui.configuration.generate;
 
 import java.time.LocalDate;
 

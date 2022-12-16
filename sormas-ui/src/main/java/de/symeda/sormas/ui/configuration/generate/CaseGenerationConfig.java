@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.configuration.dto;
+package de.symeda.sormas.ui.configuration.generate;
 
 import de.symeda.sormas.api.Disease;
 import java.time.LocalDate;
