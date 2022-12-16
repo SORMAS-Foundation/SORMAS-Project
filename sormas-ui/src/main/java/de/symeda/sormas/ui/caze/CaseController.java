@@ -325,15 +325,9 @@ public class CaseController {
 
 		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
 
-		selectOrCreateCase(dto, person, uuid -> {
-			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, person, null, false);
-				caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
-				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
-			} else {
-				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
-			}
-		});
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, person, null, false);
+		caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void convertSamePersonContactsAndEventParticipants(CaseDataDto caze, Runnable callback) {
@@ -816,12 +810,6 @@ public class CaseController {
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						saveCase(dto);
 					}
-				} else if (convertedPerson != null) {
-					PersonDto dbPerson = FacadeProvider.getPersonFacade().getByUuid(dto.getPerson().getUuid());
-					transferDataToPerson(createForm, dbPerson);
-					FacadeProvider.getPersonFacade().save(dbPerson);
-					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-					saveCase(dto);
 				} else {
 					PersonDto searchedPerson = createForm.getSearchedPerson();
 					if (searchedPerson != null) {
