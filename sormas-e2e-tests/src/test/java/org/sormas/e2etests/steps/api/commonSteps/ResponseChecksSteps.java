@@ -36,7 +36,8 @@ public class ResponseChecksSteps implements En {
             Assert.fail("Response body call is empty!");
           }
           if (responseBody.contains("TRANSACTIONROLLEDBACKEXCEPTION")) {
-              Assert.fail("API call failed due to wrong data used in sent json! [TRANSACTIONROLLEDBACKEXCEPTION]");
+            Assert.fail(
+                "API call failed due to wrong data used in sent json! [TRANSACTIONROLLEDBACKEXCEPTION]");
           }
           String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
           Assert.assertEquals(
@@ -51,7 +52,8 @@ public class ResponseChecksSteps implements En {
             Assert.fail("Response body call is empty!");
           }
           if (responseBody.contains("TRANSACTIONROLLEDBACKEXCEPTION")) {
-            Assert.fail("API call failed due to wrong data used in sent json! [TRANSACTIONROLLEDBACKEXCEPTION]");
+            Assert.fail(
+                "API call failed due to wrong data used in sent json! [TRANSACTIONROLLEDBACKEXCEPTION]");
           }
           String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
           Assert.assertEquals(

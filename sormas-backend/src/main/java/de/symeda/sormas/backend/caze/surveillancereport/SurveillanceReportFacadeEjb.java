@@ -122,7 +122,9 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._SYSTEM })
 	public void deleteSurveillanceReport(String surveillanceReportUuid) {
 		ExternalMessageDto associatedMessage =
 			externalMessageFacade.getForSurveillanceReport(new SurveillanceReportReferenceDto(surveillanceReportUuid));

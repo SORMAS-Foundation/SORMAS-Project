@@ -117,6 +117,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
 	private Integer visitCount;
+	private Integer missedVisitsCount;
 
 	private Date surveillanceToolLastShareDate;
 	private Long surveillanceToolShareCount;
@@ -549,5 +550,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 
 	public void setResponsibleDistrictName(String responsibleDistrictName) {
 		this.responsibleDistrictName = responsibleDistrictName;
+	}
+
+	public Integer getMissedVisitsCount() {
+		return missedVisitsCount;
+	}
+
+	public void setMissedVisitsCount(Integer missedVisitsCount) {
+		this.missedVisitsCount = missedVisitsCount;
 	}
 }

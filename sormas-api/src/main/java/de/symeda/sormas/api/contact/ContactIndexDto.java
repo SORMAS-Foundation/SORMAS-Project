@@ -84,6 +84,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	private int visitCount;
+	private Integer missedVisitsCount;
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
@@ -381,6 +382,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public boolean getCaseInJurisdiction() {
 		return contactJurisdictionFlagsDto.getCaseInJurisdiction();
+	}
+
+	public Integer getMissedVisitsCount() {
+		return missedVisitsCount;
+	}
+
+	public void setMissedVisitsCount(Integer missedVisitsCount) {
+		this.missedVisitsCount = missedVisitsCount;
 	}
 
 	public DeletionReason getDeletionReason() {

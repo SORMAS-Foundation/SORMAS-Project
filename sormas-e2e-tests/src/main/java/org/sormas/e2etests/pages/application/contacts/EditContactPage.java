@@ -115,6 +115,8 @@ public class EditContactPage {
   public static final By CHANGE_CASE_BUTTON = By.id("contactChangeCase");
   public static final By CASE_ID_LABEL = By.id("caseIdLabel");
   public static final By CONTACT_CLASSIFICATION_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
+  public static final By CONFIRMED_CONTACT_DE_BUTTON =
+      By.xpath("//label[contains(text(),'Best\u00E4tigter Kontakt')]");
   public static final By CASE_PERSON_LABEL =
       By.xpath(
           "//span[contains(text(), 'Case person')]/ancestor::div[@class='v-caption']/following-sibling::div");
@@ -189,7 +191,7 @@ public class EditContactPage {
   public static final By NOTIFICATION_MESSAGE_POPUP = By.cssSelector(".v-Notification-description");
   public static final By EDIT_VACCINATION_BUTTON =
       By.xpath(
-          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
 
   public static final By OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK =
       By.cssSelector("[location='toCaseBtnLoc'] div");
