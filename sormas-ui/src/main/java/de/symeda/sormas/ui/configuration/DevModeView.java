@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
@@ -106,6 +105,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.dto.CaseGenerationConfig;
 import de.symeda.sormas.ui.configuration.dto.ContactGenerationConfig;
 import de.symeda.sormas.ui.configuration.dto.EventGenerationConfig;
+import de.symeda.sormas.ui.configuration.dto.SampleGenerationConfig;
 import de.symeda.sormas.ui.configuration.validator.StringToNumberValidator;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -570,8 +570,8 @@ public class DevModeView extends AbstractConfigurationView {
 		TextField sampleCountField = new TextField();
 		sampleCountField.setCaption(I18nProperties.getCaption(Captions.devModeSampleCount));
 		sampleGeneratorConfigBinder.forField(sampleCountField)
-			.withConverter(new StringToIntegerConverter("Must be a number"))
-			.bind(SampleGenerationConfig::getSampleCount, SampleGenerationConfig::setSampleCount);
+			.withValidator(new StringToNumberValidator("Must be a positive number", true))
+			.bind(SampleGenerationConfig::getEntityCount, SampleGenerationConfig::setEntityCount);
 		sampleOptionsFirstLineLayout.addComponent(sampleCountField);
 
 		DateField startDateField = new DateField();
@@ -1034,17 +1034,42 @@ public class DevModeView extends AbstractConfigurationView {
 		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
 
-	private void generateSamples() {
+	private void  generateSamples() {
+		SampleGenerationConfig sampleGenerationConfig = sampleGeneratorConfigBinder.getBean();
+		boolean valid = true;
+		if (sampleGenerationConfig.getEntityCountAsNumber() <= 0) {
+			showWarningNotification("You must set a valid value for field 'Number of generated samples' in 'Generate Samples'");
+			valid = false;
+		}
+		if (sampleGenerationConfig.getStartDate() == null) {
+			showWarningNotification("You must set a valid value for field 'Sample collected start date' in 'Generate Samples'");
+			valid = false;
+		}
+
+		if (sampleGenerationConfig.getEndDate() == null) {
+			showWarningNotification("You must set a valid value for field 'Sample collected end date' in 'Generate Samples'");
+			valid = false;
+		}
+
+		if (sampleGenerationConfig.getSampleMaterial() == null) {
+			showWarningNotification("You must set a valid value for field 'Type of the Sample' in 'Generate Samples'");
+			valid = false;
+		}
+
+		if(valid) {
+			generateSamples(sampleGenerationConfig);
+		}
+	}
+
+	private void generateSamples(SampleGenerationConfig sampleGenerationConfig) {
 		initializeRandomGenerator();
 
-		SampleGenerationConfig config = sampleGeneratorConfigBinder.getBean();
-
 		float baseOffset = random().nextFloat();
-		int daysBetween = (int) ChronoUnit.DAYS.between(config.startDate, config.endDate);
+		int daysBetween = (int) ChronoUnit.DAYS.between(sampleGenerationConfig.getStartDate(), sampleGenerationConfig.getEndDate());
 
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
-		facilityCriteria.region(config.getRegion());
-		facilityCriteria.district(config.getDistrict());
+		facilityCriteria.region(sampleGenerationConfig.getRegion());
+		facilityCriteria.district(sampleGenerationConfig.getDistrict());
 
 		long dt = System.nanoTime();
 
@@ -1052,41 +1077,41 @@ public class DevModeView extends AbstractConfigurationView {
 
 		List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
 			.getRandomCaseReferences(
-				new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
-				config.getSampleCount() * 2,
+				new CaseCriteria().region(sampleGenerationConfig.getRegion()).district(sampleGenerationConfig.getDistrict()).disease(sampleGenerationConfig.getDisease()),
+				sampleGenerationConfig.getEntityCountAsNumber() * 2,
 				random());
 
 		if (nonNull(cases)) {
-			for (int i = 0; i < config.getSampleCount(); i++) {
+			for (int i = 0; i < sampleGenerationConfig.getEntityCountAsNumber(); i++) {
 
 				CaseReferenceDto caseReference = random(cases);
 
 				List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-				Disease disease = config.getDisease();
+				Disease disease = sampleGenerationConfig.getDisease();
 				if (disease == null) {
 					disease = random(diseases);
-					config.setDisease(disease);
+					sampleGenerationConfig.setDisease(disease);
 				}
 
 				LocalDateTime referenceDateTime =
-					getReferenceDateTime(i, config.getSampleCount(), baseOffset, config.getDisease(), config.getStartDate(), daysBetween);
+					getReferenceDateTime(i, sampleGenerationConfig.getEntityCountAsNumber(), baseOffset, sampleGenerationConfig.getDisease(), sampleGenerationConfig.getStartDate(), daysBetween);
 
 				SampleDto sample = SampleDto.build(user, caseReference);
 
-				sample.setSamplePurpose(config.getSamplePurpose());
+				sample.setSamplePurpose(sampleGenerationConfig.getSamplePurpose());
 
 				Date date = Date.from(referenceDateTime.toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 				sample.setSampleDateTime(date);
 
-				sample.setSampleMaterial(config.getSampleMaterial());
+				sample.setSampleMaterial(sampleGenerationConfig.getSampleMaterial());
 
 				sample.setFieldSampleID(UUID.randomUUID().toString());
 
 				sample.setComment(random(sampleComments));
 
-				sample.setLab(config.getLaboratory());
+				sample.setLab(sampleGenerationConfig.getLaboratory());
 
-				if (config.isRequestPathogenTestsToBePerformed()) {
+				if (sampleGenerationConfig.isRequestPathogenTestsToBePerformed()) {
 					Set pathogenTestTypes = new HashSet<PathogenTestType>();
 					int until = randomInt(1, PathogenTestType.values().length);
 					for (int j = 0; j < until; j++) {
@@ -1096,7 +1121,7 @@ public class DevModeView extends AbstractConfigurationView {
 					sample.setRequestedPathogenTests(pathogenTestTypes);
 				}
 
-				if (config.isRequestAdditionalTestsToBePerformed()) {
+				if (sampleGenerationConfig.isRequestAdditionalTestsToBePerformed()) {
 					Set additionalTestTypes = new HashSet<AdditionalTestType>();
 					int until = randomInt(1, AdditionalTestType.values().length);
 					for (int j = 0; j < until; j++) {
@@ -1106,13 +1131,13 @@ public class DevModeView extends AbstractConfigurationView {
 					sample.setRequestedAdditionalTests(additionalTestTypes);
 				}
 
-				if (config.isSendDispatch()) {
+				if (sampleGenerationConfig.isSendDispatch()) {
 					sample.setShipped(true);
 					sample.setShipmentDate(date);
 					sample.setShipmentDetails(random(sampleShipmentDetails));
 				}
 
-				if (config.isReceived()) {
+				if (sampleGenerationConfig.isReceived()) {
 					sample.setReceived(true);
 					sample.setReceivedDate(date);
 
@@ -1121,17 +1146,17 @@ public class DevModeView extends AbstractConfigurationView {
 
 				SampleDto sampleDto = FacadeProvider.getSampleFacade().saveSample(sample);
 
-				if (config.isRequestAdditionalTestsToBePerformed()) {
+				if (sampleGenerationConfig.isRequestAdditionalTestsToBePerformed()) {
 					createAdditionalTest(sampleDto, date);
 				}
 
 			}
 
 			dt = System.nanoTime() - dt;
-			long perSample = dt / config.getSampleCount();
+			long perSample = dt / sampleGenerationConfig.getEntityCountAsNumber();
 			String msg = String.format(
 				"Generating %d samples took %.2f  s (%.1f ms per sample)",
-				config.getSampleCount(),
+				sampleGenerationConfig.getEntityCountAsNumber(),
 				(double) dt / 1_000_000_000,
 				(double) perSample / 1_000_000);
 			logger.info(msg);
@@ -1893,184 +1918,184 @@ public class DevModeView extends AbstractConfigurationView {
 //
 //	}
 
-	private static class SampleGenerationConfig {
-
-		private int sampleCount;
-		private SamplePurpose samplePurpose;
-		private LocalDate startDate;
-		private LocalDate endDate;
-		private SampleMaterial sampleMaterial;
-		private String sampleMaterialText;
-		private FacilityReferenceDto laboratory;
-
-		private boolean externalLabOrInternalInHouseTesting = false;
-		private boolean requestPathogenTestsToBePerformed = false;
-		private boolean requestAdditionalTestsToBePerformed = false;
-		private boolean sendDispatch = false;
-		private boolean received = false;
-		private String comment;
-
-		private Disease disease;
-		private RegionReferenceDto region;
-		private DistrictReferenceDto district;
-
-		private SampleGenerationConfig() {
-		}
-
-		public static SampleGenerationConfig getDefaultConfig() {
-			SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
-			sampleGenerationConfig.sampleCount = 10;
-			sampleGenerationConfig.startDate = LocalDate.now().minusDays(90);
-			sampleGenerationConfig.endDate = LocalDate.now();
-			sampleGenerationConfig.disease = null;
-			sampleGenerationConfig.region = null;
-			sampleGenerationConfig.district = null;
-			sampleGenerationConfig.samplePurpose = SamplePurpose.INTERNAL;
-			sampleGenerationConfig.sampleMaterial = SampleMaterial.BLOOD;
-			return sampleGenerationConfig;
-		}
-
-		public static SampleGenerationConfig getPerformanceTestConfig() {
-			SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
-			sampleGenerationConfig.sampleCount = 50;
-			sampleGenerationConfig.startDate = LocalDate.now().minusDays(90);
-			sampleGenerationConfig.endDate = LocalDate.now();
-			sampleGenerationConfig.disease = Disease.CORONAVIRUS;
-			sampleGenerationConfig.region = null;
-			sampleGenerationConfig.district = null;
-			sampleGenerationConfig.samplePurpose = SamplePurpose.EXTERNAL;
-			sampleGenerationConfig.sampleMaterial = SampleMaterial.BLOOD;
-			sampleGenerationConfig.laboratory = FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false).get(0);
-			return sampleGenerationConfig;
-		}
-
-		public SamplePurpose getSamplePurpose() {
-			return samplePurpose;
-		}
-
-		public void setSamplePurpose(SamplePurpose samplePurpose) {
-			this.samplePurpose = samplePurpose;
-		}
-
-		public SampleMaterial getSampleMaterial() {
-			return sampleMaterial;
-		}
-
-		public void setSampleMaterial(SampleMaterial sampleMaterial) {
-			this.sampleMaterial = sampleMaterial;
-		}
-
-		public String getSampleMaterialText() {
-			return sampleMaterialText;
-		}
-
-		public void setSampleMaterialText(String sampleMaterialText) {
-			this.sampleMaterialText = sampleMaterialText;
-		}
-
-		public FacilityReferenceDto getLaboratory() {
-			return laboratory;
-		}
-
-		public void setLaboratory(FacilityReferenceDto laboratory) {
-			this.laboratory = laboratory;
-		}
-
-		public int getSampleCount() {
-			return sampleCount;
-		}
-
-		public void setSampleCount(int contactCount) {
-			this.sampleCount = contactCount;
-		}
-
-		public LocalDate getStartDate() {
-			return startDate;
-		}
-
-		public void setStartDate(LocalDate startDate) {
-			this.startDate = startDate;
-		}
-
-		public LocalDate getEndDate() {
-			return endDate;
-		}
-
-		public void setEndDate(LocalDate endDate) {
-			this.endDate = endDate;
-		}
-
-		public boolean isRequestPathogenTestsToBePerformed() {
-			return requestPathogenTestsToBePerformed;
-		}
-
-		public void setRequestPathogenTestsToBePerformed(boolean requestPathogenTestsToBePerformed) {
-			this.requestPathogenTestsToBePerformed = requestPathogenTestsToBePerformed;
-		}
-
-		public boolean isExternalLabOrInternalInHouseTesting() {
-			return externalLabOrInternalInHouseTesting;
-		}
-
-		public boolean isRequestAdditionalTestsToBePerformed() {
-			return requestAdditionalTestsToBePerformed;
-		}
-
-		public void setRequestAdditionalTestsToBePerformed(boolean requestAdditionalTestsToBePerformed) {
-			this.requestAdditionalTestsToBePerformed = requestAdditionalTestsToBePerformed;
-		}
-
-		public void setExternalLabOrInternalInHouseTesting(boolean externalLabOrInternalInHouseTesting) {
-			this.externalLabOrInternalInHouseTesting = externalLabOrInternalInHouseTesting;
-		}
-
-		public boolean isSendDispatch() {
-			return sendDispatch;
-		}
-
-		public void setSendDispatch(boolean sendDispatch) {
-			this.sendDispatch = sendDispatch;
-		}
-
-		public boolean isReceived() {
-			return received;
-		}
-
-		public void setReceived(boolean received) {
-			this.received = received;
-		}
-
-		public String getComment() {
-			return comment;
-		}
-
-		public void setComment(String comment) {
-			this.comment = comment;
-		}
-
-		public Disease getDisease() {
-			return disease;
-		}
-
-		public void setDisease(Disease disease) {
-			this.disease = disease;
-		}
-
-		public RegionReferenceDto getRegion() {
-			return region;
-		}
-
-		public void setRegion(RegionReferenceDto region) {
-			this.region = region;
-		}
-
-		public DistrictReferenceDto getDistrict() {
-			return district;
-		}
-
-		public void setDistrict(DistrictReferenceDto district) {
-			this.district = district;
-		}
-
-	}
+//	private static class SampleGenerationConfig {
+//
+//		private int sampleCount;
+//		private SamplePurpose samplePurpose;
+//		private LocalDate startDate;
+//		private LocalDate endDate;
+//		private SampleMaterial sampleMaterial;
+//		private String sampleMaterialText;
+//		private FacilityReferenceDto laboratory;
+//
+//		private boolean externalLabOrInternalInHouseTesting = false;
+//		private boolean requestPathogenTestsToBePerformed = false;
+//		private boolean requestAdditionalTestsToBePerformed = false;
+//		private boolean sendDispatch = false;
+//		private boolean received = false;
+//		private String comment;
+//
+//		private Disease disease;
+//		private RegionReferenceDto region;
+//		private DistrictReferenceDto district;
+//
+//		private SampleGenerationConfig() {
+//		}
+//
+//		public static SampleGenerationConfig getDefaultConfig() {
+//			SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
+//			sampleGenerationConfig.sampleCount = 10;
+//			sampleGenerationConfig.startDate = LocalDate.now().minusDays(90);
+//			sampleGenerationConfig.endDate = LocalDate.now();
+//			sampleGenerationConfig.disease = null;
+//			sampleGenerationConfig.region = null;
+//			sampleGenerationConfig.district = null;
+//			sampleGenerationConfig.samplePurpose = SamplePurpose.INTERNAL;
+//			sampleGenerationConfig.sampleMaterial = SampleMaterial.BLOOD;
+//			return sampleGenerationConfig;
+//		}
+//
+//		public static SampleGenerationConfig getPerformanceTestConfig() {
+//			SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
+//			sampleGenerationConfig.sampleCount = 50;
+//			sampleGenerationConfig.startDate = LocalDate.now().minusDays(90);
+//			sampleGenerationConfig.endDate = LocalDate.now();
+//			sampleGenerationConfig.disease = Disease.CORONAVIRUS;
+//			sampleGenerationConfig.region = null;
+//			sampleGenerationConfig.district = null;
+//			sampleGenerationConfig.samplePurpose = SamplePurpose.EXTERNAL;
+//			sampleGenerationConfig.sampleMaterial = SampleMaterial.BLOOD;
+//			sampleGenerationConfig.laboratory = FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false).get(0);
+//			return sampleGenerationConfig;
+//		}
+//
+//		public SamplePurpose getSamplePurpose() {
+//			return samplePurpose;
+//		}
+//
+//		public void setSamplePurpose(SamplePurpose samplePurpose) {
+//			this.samplePurpose = samplePurpose;
+//		}
+//
+//		public SampleMaterial getSampleMaterial() {
+//			return sampleMaterial;
+//		}
+//
+//		public void setSampleMaterial(SampleMaterial sampleMaterial) {
+//			this.sampleMaterial = sampleMaterial;
+//		}
+//
+//		public String getSampleMaterialText() {
+//			return sampleMaterialText;
+//		}
+//
+//		public void setSampleMaterialText(String sampleMaterialText) {
+//			this.sampleMaterialText = sampleMaterialText;
+//		}
+//
+//		public FacilityReferenceDto getLaboratory() {
+//			return laboratory;
+//		}
+//
+//		public void setLaboratory(FacilityReferenceDto laboratory) {
+//			this.laboratory = laboratory;
+//		}
+//
+//		public int getSampleCount() {
+//			return sampleCount;
+//		}
+//
+//		public void setSampleCount(int contactCount) {
+//			this.sampleCount = contactCount;
+//		}
+//
+//		public LocalDate getStartDate() {
+//			return startDate;
+//		}
+//
+//		public void setStartDate(LocalDate startDate) {
+//			this.startDate = startDate;
+//		}
+//
+//		public LocalDate getEndDate() {
+//			return endDate;
+//		}
+//
+//		public void setEndDate(LocalDate endDate) {
+//			this.endDate = endDate;
+//		}
+//
+//		public boolean isRequestPathogenTestsToBePerformed() {
+//			return requestPathogenTestsToBePerformed;
+//		}
+//
+//		public void setRequestPathogenTestsToBePerformed(boolean requestPathogenTestsToBePerformed) {
+//			this.requestPathogenTestsToBePerformed = requestPathogenTestsToBePerformed;
+//		}
+//
+//		public boolean isExternalLabOrInternalInHouseTesting() {
+//			return externalLabOrInternalInHouseTesting;
+//		}
+//
+//		public boolean isRequestAdditionalTestsToBePerformed() {
+//			return requestAdditionalTestsToBePerformed;
+//		}
+//
+//		public void setRequestAdditionalTestsToBePerformed(boolean requestAdditionalTestsToBePerformed) {
+//			this.requestAdditionalTestsToBePerformed = requestAdditionalTestsToBePerformed;
+//		}
+//
+//		public void setExternalLabOrInternalInHouseTesting(boolean externalLabOrInternalInHouseTesting) {
+//			this.externalLabOrInternalInHouseTesting = externalLabOrInternalInHouseTesting;
+//		}
+//
+//		public boolean isSendDispatch() {
+//			return sendDispatch;
+//		}
+//
+//		public void setSendDispatch(boolean sendDispatch) {
+//			this.sendDispatch = sendDispatch;
+//		}
+//
+//		public boolean isReceived() {
+//			return received;
+//		}
+//
+//		public void setReceived(boolean received) {
+//			this.received = received;
+//		}
+//
+//		public String getComment() {
+//			return comment;
+//		}
+//
+//		public void setComment(String comment) {
+//			this.comment = comment;
+//		}
+//
+//		public Disease getDisease() {
+//			return disease;
+//		}
+//
+//		public void setDisease(Disease disease) {
+//			this.disease = disease;
+//		}
+//
+//		public RegionReferenceDto getRegion() {
+//			return region;
+//		}
+//
+//		public void setRegion(RegionReferenceDto region) {
+//			this.region = region;
+//		}
+//
+//		public DistrictReferenceDto getDistrict() {
+//			return district;
+//		}
+//
+//		public void setDistrict(DistrictReferenceDto district) {
+//			this.district = district;
+//		}
+//
+//	}
 }
