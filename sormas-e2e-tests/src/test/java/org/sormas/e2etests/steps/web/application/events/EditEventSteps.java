@@ -219,6 +219,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.entities.pojo.web.EventGroup;
@@ -745,9 +746,14 @@ public class EditEventSteps implements En {
     When(
         "I click on save button in Add Participant form",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(1); // wait for reaction
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // needed for button to be available
+          int attempts = 0;
+          do {
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            attempts++;
+          } while (attempts < 5
+              && webDriverHelpers.isElementPresent(By.cssSelector(".v-window-wrap")));
         });
     When(
         "I add a participant to the event",
