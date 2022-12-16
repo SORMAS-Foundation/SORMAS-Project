@@ -1,9 +1,10 @@
-package de.symeda.sormas.ui.configuration.generate;
+package de.symeda.sormas.ui.configuration.generate.config;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.ui.configuration.generate.config.BaseGenerationConfig;
 import java.time.LocalDate;
 
-public class EventGenerationConfig extends BaseGenerationConfig{
+public class EventGenerationConfig extends BaseGenerationConfig {
 
   private String minParticipantsPerEvent;
   private String maxParticipantsPerEvent;

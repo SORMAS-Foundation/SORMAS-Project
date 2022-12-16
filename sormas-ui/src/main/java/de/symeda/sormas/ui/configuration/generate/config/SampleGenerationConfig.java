@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.configuration.generate;
+package de.symeda.sormas.ui.configuration.generate.config;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -7,7 +7,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import java.time.LocalDate;
 
-public class SampleGenerationConfig extends BaseGenerationConfig{
+public class SampleGenerationConfig extends BaseGenerationConfig {
   private SamplePurpose samplePurpose;
   private SampleMaterial sampleMaterial;
   private String sampleMaterialText;
