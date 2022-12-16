@@ -15,9 +15,7 @@
 
 package de.symeda.sormas.ui.user;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,12 +55,7 @@ public class UserRoleController {
 	public CommitDiscardWrapperComponent<UserRoleCreateForm> getUserRoleCreateComponent() {
 
 		UserRoleCreateForm createForm = new UserRoleCreateForm();
-		UserRoleDto userRoleDto = UserRoleDto.build();
-		Set<UserRight> userRightsSet = new HashSet<>();
-		userRightsSet.add(UserRight.SORMAS_UI);
-		userRightsSet.add(UserRight.SORMAS_REST);
-		userRoleDto.setUserRights(userRightsSet);
-		createForm.setValue(userRoleDto);
+		createForm.setValue(UserRoleDto.build());
 		final CommitDiscardWrapperComponent<UserRoleCreateForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT),
@@ -124,22 +117,17 @@ public class UserRoleController {
 						return;
 					}
 				}
-				if (!(dto.getUserRights().contains(UserRight.SORMAS_UI) && dto.getUserRights().contains(UserRight.SORMAS_REST))) {
-					List<UserRight> userRights = new ArrayList<>();
-					userRights.add(UserRight.SORMAS_UI);
-					userRights.add(UserRight.SORMAS_REST);
-					new Notification(
-						I18nProperties.getString(Strings.messageCheckInputData),
-						I18nProperties.getValidationError(Validations.missingRequiredUserRightsBaseText, userRights),
-						Notification.Type.WARNING_MESSAGE,
-						true).show(Page.getCurrent());
-
-					return;
-
-				}
 				FacadeProvider.getUserRoleFacade().saveUserRole(dto);
 
-				Notification.show(I18nProperties.getString(Strings.messageUserRoleSaved), Notification.Type.WARNING_MESSAGE);
+				if (!(dto.getUserRights().contains(UserRight.SORMAS_UI) && dto.getUserRights().contains(UserRight.SORMAS_REST))) {
+					Notification.show(
+						I18nProperties.getString(Strings.messageUserRoleSaved),
+						I18nProperties.getString(Strings.messageUserUnusableForLogin),
+						Notification.Type.WARNING_MESSAGE);
+
+				} else {
+					Notification.show(I18nProperties.getString(Strings.messageUserRoleSaved), Notification.Type.WARNING_MESSAGE);
+				}
 				SormasUI.refreshView();
 			}
 		});

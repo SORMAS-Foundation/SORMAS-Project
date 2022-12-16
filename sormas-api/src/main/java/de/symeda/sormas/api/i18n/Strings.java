@@ -1263,6 +1263,7 @@ public interface Strings {
 	String messageUserSyncFailedFull = "messageUserSyncFailedFull";
 	String messageUserSyncPartiallySuccessful = "messageUserSyncPartiallySuccessful";
 	String messageUserSyncSuccessful = "messageUserSyncSuccessful";
+	String messageUserUnusableForLogin = "messageUserUnusableForLogin";
 	String messageVaccinationNoDateNotRelevantForCase = "messageVaccinationNoDateNotRelevantForCase";
 	String messageVaccinationNoDateNotRelevantForContact = "messageVaccinationNoDateNotRelevantForContact";
 	String messageVaccinationNoDateNotRelevantForEventParticipant = "messageVaccinationNoDateNotRelevantForEventParticipant";
