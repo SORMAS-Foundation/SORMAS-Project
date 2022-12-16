@@ -70,6 +70,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -604,6 +606,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caze,
 				isInJurisdiction,
 				c -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null));
+
+			if (diseaseConfigurationFacade.hasFollowUp(caze.getDisease())) {
+				int numberOfMissedVisits =
+					FollowUpLogic.getNumberOfRequiredVisitsSoFar(caze.getReportDate(), caze.getFollowUpUntil()) - caze.getVisitCount();
+				if (numberOfMissedVisits < 0) {
+					numberOfMissedVisits = 0;
+				}
+				caze.setMissedVisitsCount(numberOfMissedVisits);
+			}
 		}
 
 		return cases;
@@ -659,6 +670,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				pseudonymizer
 					.pseudonymizeUser(userService.getByUuid(caze.getReportingUser().getUuid()), userService.getCurrentUser(), caze::setReportingUser);
 			});
+
+			if (diseaseConfigurationFacade.hasFollowUp(caze.getDisease())) {
+				int numberOfMissedVisits =
+						FollowUpLogic.getNumberOfRequiredVisitsSoFar(caze.getReportDate(), caze.getFollowUpUntil()) - caze.getVisitCount();
+				if (numberOfMissedVisits < 0) {
+					numberOfMissedVisits = 0;
+				}
+				caze.setMissedVisitsCount(numberOfMissedVisits);
+			}
 		}
 
 		return cases;
@@ -4163,6 +4183,30 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					getCaseDataByUuid((String) casePersonUuids[0]),
 					personFacade.getByUuid((String) casePersonUuids[1])))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CaseDataDto> getDuplicatesWithPathogenTest(@Valid CaseDataDto caseDataDto, PathogenTestDto pathogenTestDto) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		CaseJoins caseCaseJoins = new CaseJoins(caseRoot);
+		Join<Case, Person> personJoin = caseCaseJoins.getPerson();
+		Join<Case, Sample> samplesJoin = caseCaseJoins.getSamples();
+		Join<Sample, PathogenTest> pathogenTestJoin = caseCaseJoins.getSampleJoins().getPathogenTest();
+
+		cq.select(caseRoot);
+		Predicate filter = cb.and(
+			cb.equal(caseRoot.get(Case.DISEASE), pathogenTestDto.getTestedDisease()),
+			cb.equal(personJoin.get(Person.UUID), caseDataDto.getPerson().getUuid()),
+			cb.equal(caseRoot.get(Case.DISEASE), pathogenTestJoin.get(PathogenTest.TESTED_DISEASE)),
+			cb.exists(sampleService.exists(cb, cq, samplesJoin, pathogenTestDto.getSample().getUuid())));
+
+		cq.where(filter);
+
+		List<Case> duplicateCases = em.createQuery(cq).getResultList();
+		return toDtos(duplicateCases.stream());
 	}
 
 	@Override

@@ -1235,6 +1235,8 @@ public interface Strings {
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
 	String messageSystemFollowUpCanceledByDropping = "messageSystemFollowUpCanceledByDropping";
+	String messageTaskArchived = "messageTaskArchived";
+	String messageTaskDearchived = "messageTaskDearchived";
 	String messageTasksArchived = "messageTasksArchived";
 	String messageTasksDearchived = "messageTasksDearchived";
 	String messageTasksDeleted = "messageTasksDeleted";
@@ -1255,6 +1257,7 @@ public interface Strings {
 	String messageUserRightsExportFailed = "messageUserRightsExportFailed";
 	String messageUserRoleCombination = "messageUserRoleCombination";
 	String messageUserRoleSaved = "messageUserRoleSaved";
+	String messageUserRoleUnusableForLogin = "messageUserRoleUnusableForLogin";
 	String messageUsersDisabled = "messageUsersDisabled";
 	String messageUsersEnabled = "messageUsersEnabled";
 	String messageUserSyncCanceled = "messageUserSyncCanceled";

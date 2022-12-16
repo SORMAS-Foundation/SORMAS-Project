@@ -220,7 +220,9 @@ public class SurveillanceReportFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._SYSTEM })
 	public void delete(String surveillanceReportUuid) {
 		SurveillanceReport report = service.getByUuid(surveillanceReportUuid);
 
