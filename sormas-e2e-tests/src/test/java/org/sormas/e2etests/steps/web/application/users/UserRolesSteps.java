@@ -235,6 +235,7 @@ public class UserRolesSteps implements En {
               EXPORT_USER_ROLES_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EXPORT_USER_ROLES_BUTTON);
           FilesHelper.waitForFileToDownload(USER_ROLES_FILE_PATH, 30);
+          FilesHelper.validateFileIsNotEmpty(USER_ROLES_FILE_PATH);
         });
   }
 }

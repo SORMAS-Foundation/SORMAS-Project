@@ -353,7 +353,7 @@ Feature: Create user
     And I check if the "TestNatUser" user role exist and delete it
 
   @#10420 @env_main
-  Scenario: Validate newly created user role is present in filtering options
+  Scenario: Validate Export User Role file download functionality
     Given I log in as a Admin User
     And I click on the Users from navbar
     And I click on User roles tab from User Management Page
