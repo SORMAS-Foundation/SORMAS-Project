@@ -23,15 +23,19 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.PersonalData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Corresponding event participant")
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class EventParticipantReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
 
 	@PersonalData
+	@Schema(description = "First name of the event participant")
 	private String firstName;
 	@PersonalData
+	@Schema(description = "Last name of the event participant")
 	private String lastName;
 
 	public EventParticipantReferenceDto() {

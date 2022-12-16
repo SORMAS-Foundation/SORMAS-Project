@@ -33,8 +33,10 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
+@Schema(description = "Report of the sample taken for lab-analysis.")
 public class SampleReportDto extends EntityDto {
 
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
@@ -45,12 +47,16 @@ public class SampleReportDto extends EntityDto {
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String TEST_REPORTS = "testReports";
 
+	@Schema(description = "Date and time when the sample was collected.")
 	private Date sampleDateTime;
+	@Schema(description = "Date and time when the sample was received.")
 	private Date sampleReceivedDate;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "ID of the sample given by the laboratory.")
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the sample material.")
 	private String sampleMaterialText;
 	private SpecimenCondition specimenCondition;
 	private PathogenTestResultType sampleOverallTestResult;

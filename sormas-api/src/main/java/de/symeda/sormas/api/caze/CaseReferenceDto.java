@@ -23,15 +23,19 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.PersonalData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
+@Schema(description = "Corresponding case")
 public class CaseReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 
 	@PersonalData
+	@Schema(description = "First name(s) of the affected person")
 	private String firstName;
 	@PersonalData
+	@Schema(description = "Last name of the affected person")
 	private String lastName;
 
 	public CaseReferenceDto() {

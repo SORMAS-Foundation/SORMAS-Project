@@ -21,8 +21,10 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
+@Schema(description = "Corresponding therapy")
 public class TherapyDto extends EntityDto {
 
 	private static final long serialVersionUID = -1467303502817738376L;

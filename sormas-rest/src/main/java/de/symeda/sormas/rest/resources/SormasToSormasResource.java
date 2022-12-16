@@ -43,12 +43,16 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.rest.security.s2s.oidc.ClientCredentials;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path(SormasToSormasApiConstants.RESOURCE_PATH)
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @ClientCredentials
 @RolesAllowed(UserRight._SORMAS_TO_SORMAS_CLIENT)
+@Tag(name = "Sormas To Sormas Resource",
+	description = "For exchange of encrypted data between two SORMAS instances.\n\n"
+		+ "Requires valid certificates to authenticate requests. Typically not used as a client-facing resource.")
 public class SormasToSormasResource {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasResource.class);

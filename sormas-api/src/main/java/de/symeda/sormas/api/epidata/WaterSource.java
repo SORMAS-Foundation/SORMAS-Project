@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.epidata;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Watersource where subject gets daily drinking water")
 public enum WaterSource {
 
 	PIPE_NETWORK,

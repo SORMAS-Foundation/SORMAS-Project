@@ -37,66 +37,104 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/pathogentests")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Pathogen Test Resource",
+	description = "Management of pathogen test data.\n\n"
+		+ "Multiple pathogen tests can be performed a single **Sample** object, usually taken for a **Case** or **Contact**, "
+		+ "to confirm or refute the presence of a disease.")
 public class PathogenTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<PathogenTestDto> getAllPathogenTests(@PathParam("since") long since) {
+	@Operation(summary = "Get all pathogen tests from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of pathogen tests for the given time interval.", useReturnTypeSchema = true)
+	public List<PathogenTestDto> getAllPathogenTests(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	@Operation(summary = "Get a batch of pathogen tests that fulfill certain criteria.",
+		description = "**-** pathogen tests are no older than a given date in the past until now [*since*]\n\n"
+			+ "**-** TBD_RESTAPI_SWAGGER_DOC [*lastSynchronizedUuid*]\n\n" + "**-** number of results does not exceed a given number [*size*]")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of pathogen tests for the given interval that met the criteria.",
+		useReturnTypeSchema = true)
 	public List<PathogenTestDto> getAllPathogenTests(
-		@PathParam("since") long since,
-		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since,
+		@Parameter(required = true, description = "batch size") @PathParam("size") int size,
+		@Parameter(required = true, description = "TBD_RESTAPI_SWAGGER_DOC") @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST
 	@Path("/query")
-	public List<PathogenTestDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get pathogen tests based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of pathogen tests by their UUIDs.", useReturnTypeSchema = true)
+	public List<PathogenTestDto> getByUuids(
+		@RequestBody(description = "List of UUIDs used to query pathogentest entries.", required = true) List<String> uuids) {
 		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getByUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/query/samples")
-	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
+	@Operation(summary = "Get all pathogen tests for specific samples represented by their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of pathogen tests.", useReturnTypeSchema = true)
+	public List<PathogenTestDto> getBySampleUuids(
+		@RequestBody(description = "List of sample UUIDs used to query pathogen test entries.", required = true) List<String> sampleUuids) {
 		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getBySampleUuids(sampleUuids);
 		return result;
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postPathogenTests(@Valid List<PathogenTestDto> dtos) {
+	@Operation(summary = "Submit a list of pathogen tests to the server.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list containing the upload success status of each uploaded pathogen test.",
+		useReturnTypeSchema = true)
+	public List<PushResult> postPathogenTests(
+		@RequestBody(description = "List of PathogenTestDtos to be added to the server.", required = true) @Valid List<PathogenTestDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getPathogenTestFacade()::savePathogenTest);
 		return result;
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available pathogen tests.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getPathogenTestFacade().getAllActiveUuids();
 	}
 
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get the unique IDs of all pathogen test data that has been deleted during the given interval.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
+	public List<String> getDeletedUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getPathogenTestFacade().getDeletedUuidsSince(new Date(since));
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of PathogenTestDtos based on PathogenTestCriteria filter params.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a page of pathogen tests that have met the filter criteria.",
+		useReturnTypeSchema = true)
 	public Page<PathogenTestDto> getIndexList(
-		@RequestBody CriteriaWithSorting<PathogenTestCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "PathogenTest-based query-filter with sorting property.",
+			required = true) CriteriaWithSorting<PathogenTestCriteria> criteriaWithSorting,
+		@Parameter(required = true, description = "page offset") @QueryParam("offset") int offset,
+		@Parameter(required = true, description = "page size") @QueryParam("size") int size) {
 		return FacadeProvider.getPathogenTestFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}

@@ -1,0 +1,6 @@
+openAPI:
+  info:
+    version: 1.78.0-SNAPSHOT
+    title: SORMAS REST API
+  servers:
+    - url: /sormas-rest

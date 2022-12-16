@@ -28,6 +28,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class PrescriptionDto extends PseudonymizableDto {
@@ -53,27 +54,36 @@ public class PrescriptionDto extends PseudonymizableDto {
 	public static final String ADDITIONAL_NOTES = "additionalNotes";
 
 	private TherapyReferenceDto therapy;
+	@Schema(description = "Date the prescription was written")
 	private Date prescriptionDate;
+	@Schema(description = "Date when the treatment with the prescribed medication starts")
 	private Date prescriptionStart;
+	@Schema(description = "Date when the treatment with the prescried medication ends")
 	private Date prescriptionEnd;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Clinician that prescribed the treatment")
 	private String prescribingClinician;
 	private TreatmentType prescriptionType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about the prescription")
 	private String prescriptionDetails;
 	private TypeOfDrug typeOfDrug;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "How many times a day the prescribed medication has to be administered")
 	private String frequency;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Dosage of the prescribed drug")
 	private String dose;
 	private TreatmentRoute route;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about the route the medication has to be administered through")
 	private String routeDetails;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Additional notes about the prescription")
 	private String additionalNotes;
 
 	public static PrescriptionDto buildPrescription(TherapyReferenceDto therapy) {

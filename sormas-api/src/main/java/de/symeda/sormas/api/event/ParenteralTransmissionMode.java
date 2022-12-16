@@ -16,7 +16,10 @@
 package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(
+	description = "Enum specifying the parenteral transmission mode: INTRAVENOUS_DRUG_USE, HOUSEHOLD_CONTACT, MEDICALLY_ASSOCIATED, TATTOOING_PIERCING, PEDICURE_MANICURE, OTHER")
 public enum ParenteralTransmissionMode {
 
 	INTRAVENOUS_DRUG_USE,

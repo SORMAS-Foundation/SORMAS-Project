@@ -37,14 +37,15 @@ public class AttributeConverter extends ModelResolver {
                 annos.put(anno.annotationType().getName(), anno);
             }
         }
-        if (parent != null && annos.containsKey("de.symeda.sormas.api.utils.Required")) {
+        if (parent != null &&
+                annos.containsKey("de.symeda.sormas.api.utils.Required")) {
             addRequiredItem(parent, property.getName());
         }
     }
 
-
     @Override
-    public Schema<?> resolve(AnnotatedType annotatedType, ModelConverterContext modelConverterContext, Iterator<ModelConverter> iterator) {
+    public Schema<?> resolve(AnnotatedType annotatedType, ModelConverterContext modelConverterContext,
+            Iterator<ModelConverter> iterator) {
         Schema schema = super.resolve(annotatedType, modelConverterContext, iterator);
 
         //@formatter:off

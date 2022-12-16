@@ -20,7 +20,9 @@ import javax.annotation.Nullable;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum type specifying the vaccine. Specific for Disease.CORONAVIRUS.")
 public enum Vaccine {
 
 	@Diseases(value = {

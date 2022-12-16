@@ -27,7 +27,9 @@ import java.util.Map;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum denoting the broad type of task")
 public enum TaskType {
 
 	ACTIVE_SEARCH_FOR_OTHER_CASES(TaskContext.CASE),

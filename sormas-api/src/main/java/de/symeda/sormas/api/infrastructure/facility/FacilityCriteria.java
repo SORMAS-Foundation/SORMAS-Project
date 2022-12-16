@@ -26,6 +26,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class FacilityCriteria extends BaseCriteria implements Serializable, Cloneable {
 
@@ -35,6 +36,7 @@ public class FacilityCriteria extends BaseCriteria implements Serializable, Clon
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	@Schema(description = "Search-term for the facility's name or address")
 	private String nameAddressLike;
 	private FacilityTypeGroup typeGroup;
 	private FacilityType type;

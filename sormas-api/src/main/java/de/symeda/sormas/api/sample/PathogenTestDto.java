@@ -40,8 +40,10 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
+@Schema(description = "Data transfer object for pathogen tests.")
 public class PathogenTestDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -5213210080802372054L;
@@ -83,56 +85,75 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Disease testedDisease;
 	private DiseaseVariant testedDiseaseVariant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the disease")
 	private String testedDiseaseDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the disease variant")
 	private String testedDiseaseVariantDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String typingId;
 	@Required
 	private PathogenTestType testType;
 	private PCRTestSpecification pcrTestSpecification;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "The name of the pathogen test that is performed on this sample")
 	private String testTypeText;
 	@Required
+	@Schema(description = "The date and time when the sample is analyzed")
 	private Date testDateTime;
 	@Required
 	private FacilityReferenceDto lab;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "The name and/or description of the laboratory")
 	private String labDetails;
 	@Required
 	@SensitiveData
 	private UserReferenceDto labUser;
 	@Required
+	@Schema(description = "The result of the pathogen test")
 	private PathogenTestResultType testResult;
 	@Required
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with this pathogen test")
 	private String testResultText;
 	@Required
+	@Schema(description = "Whether the test result is verified by a lab supervisor")
 	private Boolean testResultVerified;
+	@Schema(
+		description = "You can only edit this field when there are at least two received samples for the case this pathogen test has been done for.")
 	private boolean fourFoldIncreaseAntibodyTiter;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "The serotype/serogroup for this test")
 	private String serotype;
+	@Schema(description = "The CQ/CT-value for this test")
 	private Float cqValue;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@Schema(description = "The date and time the pathogen test is reported")
 	private Date reportDate;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@Schema(description = "Indicates that this pathogen test is created via a LIMS (laboratory information management system).")
 	private boolean viaLims;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalOrderId;
+	@Schema(description = "Indicates whether this pathogen test result is preliminary.")
 	private Boolean preliminary;
-
+	@Schema(description = "Indicates whether the sample has been deleted.")
 	private boolean deleted;
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Detailed deletion reason other than proposed reasons")
 	private String otherDeletionReason;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {

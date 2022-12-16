@@ -47,7 +47,7 @@
 			<artifactId>jersey-media-json-jackson</artifactId>
 		</dependency>
 
-	  	<dependency>
+		<dependency>
 			<groupId>javax.security.enterprise</groupId>
 			<artifactId>javax.security.enterprise-api</artifactId>
 		</dependency>
@@ -55,11 +55,13 @@
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2</artifactId>
+			<version>2.2.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+			<version>2.2.3</version>
 		</dependency>
 
 		<!-- Keycloak -->
@@ -93,7 +95,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>31.0.1-jre</version>
-			<scope>test</scope>
+			<!-- <scope>test</scope> -->
 		</dependency>
 
 
@@ -128,85 +130,51 @@
 			</plugin>
 
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<version>1.0.0</version>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-							<files>
-								<file>src/main/resources/workflow-documentation.properties</file>
-							</files>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<!-- Swagger Generation -->
 			<plugin>
-				<groupId>io.openapitools.swagger</groupId>
+				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
+				<version>2.2.3</version>
+				<configuration>
+					<outputPath>${basedir}/target/</outputPath>
+					<outputFormat>JSONANDYAML</outputFormat>
+					<prettyPrint>true</prettyPrint>
+					<objectMapperProcessorClass>de.symeda.sormas.rest.swagger.SwaggerConfig</objectMapperProcessorClass>
+				</configuration>
 				<executions>
 					<execution>
-						<id>generate-swagger</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-					<execution>
 						<id>generate-swagger-for-journal</id>
-						<phase>generate-test-resources</phase>
 						<goals>
-							<goal>generate</goal>
+							<goal>resolve</goal>
 						</goals>
 						<configuration>
-							<outputFilename>external_visits_API</outputFilename>
-							<swaggerConfig>
-								<info>
-									<title>SORMAS external visits journal API</title>
-									<description>
-										${externalVisitsDescription}
-									</description>
-									<version>1.41.1</version>
-								</info>
-							</swaggerConfig>
+							<contextId>external visits api</contextId>
 							<resourcePackages>
 								<resourcePackage>de.symeda.sormas.rest.externaljournal</resourcePackage>
 							</resourcePackages>
+							<outputFileName>external_visits_API</outputFileName>
+							<configurationFilePath>${basedir}/src/main/resources/externalVisitsOpenApiConfig.yml</configurationFilePath>
 						</configuration>
 					</execution>
-				</executions>
-				<configuration>
-					<!-- Swagger Generation Config -->
-					<resourcePackages>
-						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
-						<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
-						<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
-					</resourcePackages>
-					<outputDirectory>${basedir}/target/</outputDirectory>
-					<outputFilename>swagger</outputFilename>
-					<outputFormats>JSON,YAML</outputFormats>
-					<prettyPrint>true</prettyPrint>
+					<execution>
+						<id>rest api</id>
+						<goals>
+							<goal>resolve</goal>
+						</goals>
+						<configuration>
+							<contextId>rest api</contextId>
+							<resourcePackages>
+								<resourcePackage>de.symeda.sormas.rest</resourcePackage>
+								<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
+								<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
+							</resourcePackages>
+							<outputFileName>swagger</outputFileName>
+							<configurationFilePath>${basedir}/src/main/resources/openApiConfig.yml</configurationFilePath>
+						</configuration>
 
-					<!-- Swagger API documentation metadata -->
-					<swaggerConfig>
-						<info>
-							<title>SORMAS REST API</title>
-							<version>${project.version}</version>
-						</info>
-						<servers>
-							<server>
-								<url>${sormasRest.apiRoot}</url>
-							</server>
-						</servers>
-					</swaggerConfig>
-				</configuration>
+					</execution>
+
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

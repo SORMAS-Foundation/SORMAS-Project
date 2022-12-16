@@ -41,6 +41,7 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaWithDateType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CaseCriteria extends CriteriaWithDateType implements ExternalShareCriteria, Cloneable {
 
@@ -100,55 +101,94 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private FacilityReferenceDto healthFacility;
 	private PointOfEntryReferenceDto pointOfEntry;
 	private UserReferenceDto surveillanceOfficer;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, report date?")
 	private Date newCaseDateFrom;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date newCaseDateTo;
+	@Schema(description = "Start date of a time period in which a case has been created")
 	private Date creationDateFrom;
+	@Schema(description = "End date of a time period in which a new case has been created")
 	private Date creationDateTo;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private CriteriaDateType newCaseDateType;
 	// Used to re-construct whether users have filtered by epi weeks or dates
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private PersonReferenceDto person;
+	@Schema(description = "Filter-flag: Whether only cases should be shown that have no geodetic coordinates")
 	private Boolean mustHaveNoGeoCoordinates;
+	@Schema(description = "Filter-flag: Whether only cases should be shown that have entered a country via seaport, airport or landcrossing"
+		+ " and also have no responsible health facility assigned.")
 	private Boolean mustBePortHealthCaseWithoutFacility;
+	@Schema(description = "Filter-flag: Whether to show only cases that have at least one prescription, treatment or clinical visit documented")
 	private Boolean mustHaveCaseManagementData;
+	@Schema(description = "Filter-flag: Whether only cases should be shown that have no responsible surveillance officer assigned")
 	private Boolean withoutResponsibleOfficer;
+	@Schema(description = "Filter-flag: Whether only cases should be shown that had their quarantine period extended")
 	private Boolean withExtendedQuarantine;
+	@Schema(description = "Filter-flag: Whether only cases should be shown that had their quarantine period reduced")
 	private Boolean withReducedQuarantine;
+	@Schema(defaultValue = "Filter-flag: Whether only cases should be shown that need help during their quarantine period")
 	private Boolean onlyQuarantineHelpNeeded;
+	@Schema(description = "Filter-flag: Whether only the envelopes of deleted cases should be shown")
 	private Boolean deleted = Boolean.FALSE;
+	@Schema(description = "Filter-pattern for case names")
 	private String caseLike;
+	@Schema(description = "Filter-pattern for event names")
 	private String eventLike;
+	@Schema(description = "Filter-flag: Whether only cases linked to a event should be shown")
 	private Boolean onlyCasesWithEvents = Boolean.FALSE;
+	@Schema(description = "Filter-pattern for the name of the user that reported the case")
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
 	private EntityRelevanceStatus relevanceStatus;
+	@Schema(description = "Filter-pattern for TBD_RESTAPI_SWAGGER_DOC")
 	private String sourceCaseInfoLike;
+	@Schema(description = "Date until which the cases are quarantined")
 	private Date quarantineTo;
+	@Schema(description = "Birth years that should be filtered for")
 	private Integer birthdateYYYY;
+	@Schema(description = "Birth months that should be filtered for")
 	private Integer birthdateMM;
+	@Schema(description = "Birth days that should be filtered for")
 	private Integer birthdateDD;
 	private QuarantineType quarantineType;
 	private FollowUpStatus followUpStatus;
+	@Schema(description = "End date of time period in which a follow-up on the case has to be done")
 	private Date followUpUntilTo;
+	@Schema(description = "Start date of time period in which a follow-up on the case has to be done")
 	private Date followUpUntilFrom;
+	@Schema(description = "Start date of time period in which a follow-up visit of the case has to be conducted")
 	private Date followUpVisitsFrom;
+	@Schema(description = "End date of time period in which a follow-up visit of the contact has to be conducted")
 	private Date followUpVisitsTo;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Integer followUpVisitsInterval;
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
 	private ReinfectionStatus reinfectionStatus;
+	@Schema(description = "End date of time period in which the contacts have been reported")
 	private Date reportDateTo;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
+	@Schema(description = "Filter-flag: Whether cases from other jurisdictions should also be shown")
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
+	@Schema(description = "Filter-flag: Whether only cases from other SORMAS instances should be shown")
 	private Boolean onlyContactsFromOtherInstances;
+	@Schema(description = "Filter-flag: Whether only cases with a reinfection should be shown")
 	private Boolean onlyCasesWithReinfection;
+	@Schema(description = "Filter-flag: Whether only cases that have not been shared with a external reporting tool should be shown")
 	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
+	@Schema(description = "Filter-flag: Whether only cases that have been shared with a external reporting tool should be shown")
 	private Boolean onlyEntitiesSharedWithExternalSurvTool;
+	@Schema(description = "Filter-flag: Whether only cases should be shown that changed since they where last shared with a external reportign tool")
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+	@Schema(description = "Filter-flag: Whether only cases that are prohibited from being shared with a external reporting tool should be shown")
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
+	@Schema(description = "Filter-flag: Whether only cases that have their reference definition set to FULFILLED should be shown")
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
+	@Schema(description = "Filter-pattern for the name of the person that has a case of a disease")
 	private String personLike;
+	@Schema(description = "Filter-flag: Whether only cases should be shown that the SORMAS instance has ownership of")
 	private Boolean withOwnership;
 
 	public CaseCriteria() {

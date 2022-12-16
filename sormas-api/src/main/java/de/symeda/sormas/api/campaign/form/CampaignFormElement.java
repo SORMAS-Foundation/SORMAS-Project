@@ -11,6 +11,7 @@ import java.util.Objects;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.i18n.Validations;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CampaignFormElement implements Serializable {
 
@@ -59,17 +60,25 @@ public class CampaignFormElement implements Serializable {
 		"h6" };
 
 	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Form element type from among VALID_TYPES. TBD_RESTAPI_SWAGGER_DOC")
 	private String type;
 	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String id;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String caption;
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String expression;
+	@Schema(description = "Form element style from among VALID_STYLES. TBD_RESTAPI_SWAGGER_DOC")
 	private String[] styles;
 	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String dependingOn;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String[] dependingOnValues;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private boolean important;
 
 	public String getType() {
@@ -142,17 +151,19 @@ public class CampaignFormElement implements Serializable {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		CampaignFormElement that = (CampaignFormElement) o;
-		return important == that.important &&
-				Objects.equals(type, that.type) &&
-				Objects.equals(id, that.id) &&
-				Objects.equals(caption, that.caption) &&
-				Objects.equals(expression, that.expression) &&
-				Arrays.equals(styles, that.styles) &&
-				Objects.equals(dependingOn, that.dependingOn) &&
-				Arrays.equals(dependingOnValues, that.dependingOnValues);
+		return important == that.important
+			&& Objects.equals(type, that.type)
+			&& Objects.equals(id, that.id)
+			&& Objects.equals(caption, that.caption)
+			&& Objects.equals(expression, that.expression)
+			&& Arrays.equals(styles, that.styles)
+			&& Objects.equals(dependingOn, that.dependingOn)
+			&& Arrays.equals(dependingOnValues, that.dependingOnValues);
 	}
 
 	@Override

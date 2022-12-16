@@ -11,6 +11,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @SuppressWarnings("serial")
 public class AggregateReportCriteria extends BaseCriteria implements Serializable {
@@ -33,9 +34,12 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 	private FacilityReferenceDto healthFacility;
 	private PointOfEntryReferenceDto pointOfEntry;
 	private Disease disease;
+	@Schema(description = "Indicates whether rows with empty disease entries should be shown.")
 	private Boolean showZeroRows = Boolean.FALSE;
+	@Schema(description = "Indicates whether duplicate reports should be shown.")
 	private Boolean showOnlyDuplicates = Boolean.FALSE;
 	private UserReferenceDto reportingUser;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Boolean considerNullJurisdictionCheck = false;
 
 	private AggregateReportGroupingLevel aggregateReportGroupingLevel;

@@ -26,6 +26,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.JsonDataEntry;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 
@@ -35,7 +36,9 @@ public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 	public static final String VALUE = "value";
 
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Form data entry identifier")
 	private String id;
+	@Schema(description = "Form data entry content")
 	private Object value;
 
 	public CampaignFormDataEntry() {

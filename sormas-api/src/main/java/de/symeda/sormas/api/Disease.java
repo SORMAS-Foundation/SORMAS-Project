@@ -20,7 +20,9 @@ import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "All Diseases SORMAS supports research for.")
 public enum Disease
 	implements
 	StatisticsGroupingKey {
@@ -87,14 +89,23 @@ public enum Disease
 	OTHER(true, true, true, false, true, 21, false, false, false),
 	UNDEFINED(true, true, true, false, true, 0, false, false, false);
 
+	@Schema(description = "Indicates whether the disease is set as active by default.")
 	private final boolean defaultActive;
+	@Schema(description = "Indicates whether the disease is set as a primary disease by default.")
 	private final boolean defaultPrimary;
+	@Schema(description = "Indicates whether case surveillance for the disease is enabled by default.")
 	private final boolean defaultCaseSurveillanceEnabled;
+	@Schema(description = "Indicates whether report aggregation for the disease is enabled by default.")
 	private final boolean defaultAggregateReportingEnabled;
+	@Schema(description = "Indicates whether follow-up reporting for the disease is enabled by default.")
 	private final boolean defaultFollowUpEnabled;
+	@Schema(description = "Duration, after which follow up reporting should be done.")
 	private final int defaultFollowUpDuration;
+	@Schema(description = "Indicates whether a disease can have different variants.")
 	private final boolean variantAllowed;
+	@Schema(description = "Indicates whether extended classification for the disease is enabled by default.")
 	private final boolean defaultExtendedClassification;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private final boolean defaultExtendedClassificationMulti;
 
 	Disease(

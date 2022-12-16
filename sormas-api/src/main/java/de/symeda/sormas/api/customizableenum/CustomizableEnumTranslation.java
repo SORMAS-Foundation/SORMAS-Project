@@ -24,14 +24,17 @@ import java.util.Objects;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.i18n.Validations;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CustomizableEnumTranslation implements Serializable {
 
 	private static final long serialVersionUID = 1031723613185793585L;
 
 	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Translation language")
 	private String languageCode;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String value;
 
 	public String getLanguageCode() {

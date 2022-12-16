@@ -16,7 +16,10 @@
 package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(
+	description = "Enum specifying the human transmission mode: FECAL_ORAL_SMEAR_INFECTION, PARENTERAL, DIRECT_SKIN_CONTACT, RESPIRATORY, SEXUAL, CONNATAL, OTHER")
 public enum HumanTransmissionMode {
 
 	FECAL_ORAL_SMEAR_INFECTION,

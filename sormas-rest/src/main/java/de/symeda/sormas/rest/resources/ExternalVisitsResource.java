@@ -24,11 +24,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/visits-external")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed(UserRight._EXTERNAL_VISITS)
+@Tag(name = "External Visits Resource",
+	description = "Management of visit data adapted from external journals.\n\n" + "See also: **Visits**, **Clinical Visits**.")
 public class ExternalVisitsResource extends EntityDtoResource {
 
 	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.1";

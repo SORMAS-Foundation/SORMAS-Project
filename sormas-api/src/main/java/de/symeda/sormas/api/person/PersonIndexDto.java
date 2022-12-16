@@ -10,6 +10,9 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class PersonIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
@@ -31,31 +34,44 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "First name(s) of the person")
 	private String firstName;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Last name of the person")
 	private String lastName;
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
+	@Schema(description = "Name of the district the person lives in")
 	private String district;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Name of the street the person lives in")
 	private String street;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Number of the house the person lives in")
 	private String houseNumber;
 	@PersonalData()
 	@SensitiveData()
 	@Pseudonymizer(PostalCodePseudonymizer.class)
+	@Schema(description = "Postal code of the community the person lives in")
 	private String postalCode;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Name of the city/communty the person lives in")
 	private String city;
 	@SensitiveData
+	@Schema(description = "Person's phone number")
 	private String phone;
 	@SensitiveData
+	@Schema(description = "Person's e-mail address")
 	private String emailAddress;
+	@Schema(description = "The date the person data entry was last changed")
 	private Date changeDate;
+
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private Boolean isInJurisdiction;
 
 	public PersonIndexDto(

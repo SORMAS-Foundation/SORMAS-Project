@@ -26,6 +26,7 @@ import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.uuid.HasUuid;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @AuditedClass
 public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
@@ -36,7 +37,9 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	@Required
 	@AuditIncludeProperty
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
+	@Schema(description = "Universally unique identifier.")
 	private String uuid;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String caption;
 
 	protected ReferenceDto() {

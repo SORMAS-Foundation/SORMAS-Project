@@ -83,6 +83,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class CaseDataDto extends SormasToSormasShareableDto {
@@ -234,9 +235,11 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private DiseaseVariant diseaseVariant;
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the researched disease")
 	private String diseaseDetails;
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about the researched disease variant")
 	private String diseaseVariantDetails;
 	@Diseases({
 		Disease.PLAGUE })
@@ -258,9 +261,14 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Eligible party identification code. "
+		+ "Should be generated according to pattern: _CountryisoCode_-_RegionCode_-_DistrictCode_-_YY_-_UserInput_\n\n"
+		+ "For Locationcodes see documentation of the corresponding LocationDtos. UserInput can be chosen at will,"
+		+ " but it has to be ensured, that there are no cases with identical epidNumbers")
 	private String epidNumber;
 	@Outbreaks
 	@Required
+	@Schema(description = "Date when the case was reported.")
 	private Date reportDate;
 	@Outbreaks
 	private UserReferenceDto reportingUser;
@@ -268,17 +276,23 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		COUNTRY_CODE_FRANCE,
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(
+		description = "Date the paper form was recieved at region level. Hidden for countries = COUNTRY_CODE_FRANCE, COUNTRY_CODE_GERMANY, COUNTRY_CODE_SWITZERLAND")
 	private Date regionLevelDate;
 	@HideForCountries(countries = {
 		COUNTRY_CODE_FRANCE,
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(
+		description = "Date the paper form was recieved at national level. Hidden for countries = COUNTRY_CODE_FRANCE, COUNTRY_CODE_GERMANY, COUNTRY_CODE_SWITZERLAND")
 	private Date nationalLevelDate;
 	@Outbreaks
 	@HideForCountries(countries = {
 		COUNTRY_CODE_FRANCE,
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(
+		description = "Date the paper form was recieved at district level. Hidden for countries = COUNTRY_CODE_FRANCE, COUNTRY_CODE_GERMANY, COUNTRY_CODE_SWITZERLAND")
 	private Date districtLevelDate;
 	@Outbreaks
 	@Required
@@ -290,28 +304,37 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Outbreaks
 	private UserReferenceDto classificationUser;
 	@Outbreaks
+	@Schema(description = "Date when the case was classified")
 	private Date classificationDate;
 	@Outbreaks
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text commenting the classification")
 	private String classificationComment;
 
+	@Schema(description = "Whether the case has a clinical confirmation")
 	private YesNoUnknown clinicalConfirmation;
+	@Schema(description = "Whether the case has a epidemiological conformation")
 	private YesNoUnknown epidemiologicalConfirmation;
+	@Schema(description = "Whether the case has a laboratory diagnostic confirmation")
 	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	@Outbreaks
 	@Required
 	private InvestigationStatus investigationStatus;
 	@Outbreaks
+	@Schema(description = "Date when a case investigation was conducted")
 	private Date investigatedDate;
 	@Outbreaks
 	private CaseOutcome outcome;
 	@Outbreaks
+	@Schema(description = "Date when the case outcome wasdetermined ")
 	private Date outcomeDate;
+	@Schema(description = "Whether another illness of the person was caused by the current case")
 	private YesNoUnknown sequelae;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String sequelaeDetails;
 
 	@Required
@@ -345,11 +368,12 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the facility")
 	private String healthFacilityDetails;
 
 	@Valid
 	private HealthConditionsDto healthConditions;
-
+	@Schema(description = "Whether the case subject is pregnant")
 	private YesNoUnknown pregnant;
 	@Diseases({
 		Disease.AFP,
@@ -367,12 +391,15 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private VaccinationStatus vaccinationStatus;
 	@Diseases({
 		Disease.MONKEYPOX })
+	@Schema(description = "Whether the case subject has a smallpox vaccination scar")
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({
 		Disease.MONKEYPOX })
+	@Schema(description = "Whether the case subject has recieved a smallpox vaccination")
 	private YesNoUnknown smallpoxVaccinationReceived;
 	@Diseases({
 		Disease.MONKEYPOX })
+	@Schema(description = "Date when the last smallpox vaccination was conducted")
 	private Date smallpoxLastVaccinationDate;
 	@Outbreaks
 	@SensitiveData
@@ -380,14 +407,17 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
+	@Schema(description = "Name of the clinician responsible for the case")
 	private String clinicianName;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
+	@Schema(description = "Phone number of the clinician responsible for the case")
 	private String clinicianPhone;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
+	@Schema(description = "E-mail address of the clinician responsible for the case")
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -396,6 +426,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		Disease.CONGENITAL_RUBELLA })
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the hospital ward the case person resides at")
 	private String notifyingClinicDetails;
 	@Deprecated
 	@SensitiveData
@@ -404,12 +435,15 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Pseudonymizer(LatitudePseudonymizer.class)
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Double reportLat;
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Double reportLon;
+	@Schema(description = "Accuracy of the recorded geodetic latitude and longitude")
 	private Float reportLatLonAccuracy;
 	@Valid
 	private HospitalizationDto hospitalization;
@@ -424,6 +458,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Valid
 	private MaternalHistoryDto maternalHistory;
 	@Size(max = 32, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String creationVersion;
 	@SensitiveData
 	@Valid
@@ -435,119 +470,159 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the point-of-entry")
 	private String pointOfEntryDetails;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text general comments about the case")
 	private String additionalDetails;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Case ID in external Systems (e.g. external national reporting tool)")
 	private String externalID;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Exernal token ID/file number of the case")
 	private String externalToken;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Internal token ID/case number of the case")
 	private String internalToken;
+	@Schema(description = "Whether the case is shall be shared with the whole country")
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
+	@Schema(description = "Whether the case is part of a nosocomial outbreak")
 	private boolean nosocomialOutbreak;
 	@HideForCountriesExcept
 	private InfectionSetting infectionSetting;
 	private QuarantineType quarantine;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the type of quarantine")
 	private String quarantineTypeDetails;
+	@Schema(description = "Date when the case's quarantine starts.")
 	private Date quarantineFrom;
+	@Schema(description = "Date when the case's quarantine ends.")
 	private Date quarantineTo;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Description of measures taken to ensure the basic care and supply of a quarantined person.")
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Indicates whether the quarantine is ordered verbally.")
 	private boolean quarantineOrderedVerbally;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Indicates whether the quarantine is ordered via a written document.")
 	private boolean quarantineOrderedOfficialDocument;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Date when the quarantine is ordered verbally.")
 	private Date quarantineOrderedVerballyDate;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Date when the quarantine is ordered via written document.")
 	private Date quarantineOrderedOfficialDocumentDate;
 	@HideForCountriesExcept
+	@Schema(description = "Whether quarantining at home of the person is possible.")
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text comment about quarantining at home.")
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
+	@Schema(description = "Whether the supply of a person quarantined at home is taken care of.")
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text comment detailing the supply situation for quarantine at home.")
 	private String quarantineHomeSupplyEnsuredComment;
+	@Schema(description = "Indicates whether the quarantine duration has been extended.")
 	private boolean quarantineExtended;
+	@Schema(description = "Indicates whether the quarantine duration has been reduced.")
 	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Indicates whether a official quarantine order has been issued.")
 	private boolean quarantineOfficialOrderSent;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Date when the official quarantine order is issued.")
 	private Date quarantineOfficialOrderSentDate;
+	@Schema(description = "Whether the case occured shortly after a mother gave birth")
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Free text comment about the follow-up status")
 	private String followUpComment;
+	@Schema(description = "Date until the case has to be followed up.")
 	private Date followUpUntil;
+	@Schema(description = "Enables and indicates the overwriting of the initial follow-up date.")
 	private boolean overwriteFollowUpUntil;
 
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, specific to countries = COUNTRY_CODE_SWITZERLAND")
 	private Integer caseIdIsm;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, specific to countries = COUNTRY_CODE_SWITZERLAND")
 	private ContactTracingContactType contactTracingFirstContactType;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, specific to countries = COUNTRY_CODE_SWITZERLAND")
 	private Date contactTracingFirstContactDate;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, specific to countries = COUNTRY_CODE_SWITZERLAND")
 	private YesNoUnknown wasInQuarantineBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, specific to countries = COUNTRY_CODE_SWITZERLAND")
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, specific to countries = COUNTRY_CODE_SWITZERLAND")
 	private String quarantineReasonBeforeIsolationDetails;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, specific to countries = COUNTRY_CODE_SWITZERLAND")
 	private EndOfIsolationReason endOfIsolationReason;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String endOfIsolationReasonDetails;
 
 	@HideForCountriesExcept
+	@Schema(description = "Whether the case person is prohibited to work")
 	private YesNoUnknown prohibitionToWork;
 	@HideForCountriesExcept
+	@Schema(description = "Date after which the case person is prohibited to work.")
 	private Date prohibitionToWorkFrom;
 	@HideForCountriesExcept
+	@Schema(description = "Date until which the case person is prohibited to work.")
 	private Date prohibitionToWorkUntil;
 
 	@Diseases({
 		Disease.CORONAVIRUS })
 	@HideForCountriesExcept
+	@Schema(description = "Whether the case is a reinfecton with the same disease")
 	private YesNoUnknown reInfection;
 	@Diseases({
 		Disease.CORONAVIRUS })
 	@HideForCountriesExcept
+	@Schema(description = "Date when the previous infection with the disease occured")
 	private Date previousInfectionDate;
 	@Diseases({
 		Disease.CORONAVIRUS })
@@ -556,45 +631,58 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Diseases({
 		Disease.CORONAVIRUS })
 	@HideForCountriesExcept
+	@Schema(description = "Map containing researchable details about the reinfection and whether the specific detail was researched")
 	private Map<ReinfectionDetail, Boolean> reinfectionDetails;
 
 	@HideForCountriesExcept
+	@Schema(description = "Whether the case person donated blood, an organ or tissue")
 	private YesNoUnknown bloodOrganOrTissueDonated;
 
 	@HideForCountriesExcept
+	@Schema(description = "Whether the reason for the case classification as NO_CASE was a negative test")
 	private boolean notACaseReasonNegativeTest;
 
 	@HideForCountriesExcept
+	@Schema(description = "Whether the reason for the case classification as NO_CASE was information by a physician")
 	private boolean notACaseReasonPhysicianInformation;
 
 	@HideForCountriesExcept
+	@Schema(description = "Whether the reason for the case classification as NO_CASE was the presence of a different pathogen")
 	private boolean notACaseReasonDifferentPathogen;
 
 	@HideForCountriesExcept
+	@Schema(description = "Whether the reason for the case classification as NO_CASE was anything other than the proposed reasons")
 	private boolean notACaseReasonOther;
 
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text comment detailing the reason for the classification as NO_CASE")
 	private String notACaseReasonDetails;
+	@Schema(description = "Date the follow-up period was changed to manually")
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;
-
+	@Schema(description = "Whether the case is specifically prohibited from being shared with an external reporting tool")
 	private boolean dontShareWithReportingTool;
 
 	@HideForCountriesExcept
 	private CaseReferenceDefinition caseReferenceDefinition;
 
+	@Schema(description = "Date the issued quarantine was originally supposed to end")
 	private Date previousQuarantineTo;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Free text comment detailing the reason why quarantine time was changed")
 	private String quarantineChangeComment;
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Map<String, String> externalData;
+	@Schema(description = "Whether the case was deleted. The envelope case object is kept for reference, but content is deleted")
 	private boolean deleted;
 	private DeletionReason deletionReason;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Detailed deletion reason other than proposed reasons.")
 	private String otherDeletionReason;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {

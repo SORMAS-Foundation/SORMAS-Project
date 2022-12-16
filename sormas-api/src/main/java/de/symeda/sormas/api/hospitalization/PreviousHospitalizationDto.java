@@ -35,8 +35,10 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
+@Schema(description = "Data transfer object for data about previous, now completed, hospital stays related to the researched disease.")
 public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -7544440109802739018L;
@@ -60,8 +62,11 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
 
+	@Schema(description = "Whether the person was previously admitted at a health facility")
 	private YesNoUnknown admittedToHealthFacility;
+	@Schema(description = "Date the person was admitted")
 	private Date admissionDate;
+	@Schema(description = "Date the person was discharged")
 	private Date dischargeDate;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -72,18 +77,24 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
+	@Schema(description = "Whether the person was isolated")
 	private YesNoUnknown isolated;
+	@Schema(description = "Date when the person was isolated")
 	private Date isolationDate;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Free text description of the previous hospitalization")
 	private String description;
 
 	private HospitalizationReasonType hospitalizationReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text specification of OTHER hospitalization reason")
 	private String otherHospitalizationReason;
-
+	@Schema(description = "Whether the person was admitted to a intensive care unit")
 	private YesNoUnknown intensiveCareUnit;
+	@Schema(description = "Date when the person was admitted to a intensive care unit")
 	private Date intensiveCareUnitStart;
+	@Schema(description = "Date when the person was discharged from a intensive care unit")
 	private Date intensiveCareUnitEnd;
 
 	public static PreviousHospitalizationDto build(CaseDataDto caze) {

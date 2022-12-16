@@ -39,6 +39,7 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaWithDateType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class EventCriteria extends CriteriaWithDateType implements ExternalShareCriteria, Serializable {
 
@@ -69,24 +70,33 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private UserRoleReferenceDto reportingUserRole;
+	@Schema(description = "Whether the event in question was deleted")
 	private Boolean deleted = Boolean.FALSE;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private EntityRelevanceStatus relevanceStatus;
+	@Schema(description = "Earliest date and time when the event in question started (lower bound)")
 	private Date eventDateFrom;
+	@Schema(description = "Latest date and time when the event in question started (upper bound)")
 	private Date eventDateTo;
 	private CriteriaDateType eventDateType = EventCriteriaDateType.EVENT_DATE;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
+	@Schema(description = "Earliest evolution date and time")
 	private Date eventEvolutionDateFrom;
+	@Schema(description = "Latest evolution date and time")
 	private Date eventEvolutionDateTo;
 	private DateFilterOption evolutionDateFilterOption = DateFilterOption.DATE;
 	private UserReferenceDto responsibleUser;
+	@Schema(description = "Free text search filter for event title")
 	private String freeText;
+	@Schema(description = "Free text search filter for event participants")
 	private String freeTextEventParticipants;
+	@Schema(description = "Free text search filter for event group")
 	private String freeTextEventGroups;
 	private EventSourceType srcType;
 	private CaseReferenceDto caze;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Boolean userFilterIncluded = true;
 	private TypeOfPlace typeOfPlace;
 	private PersonReferenceDto person;
@@ -94,21 +104,31 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private FacilityReferenceDto facility;
 	private EventReferenceDto superordinateEvent;
 	private EventGroupReferenceDto eventGroup;
+	@Schema(description = "Event UUIDs to be excluded from the search")
 	private Set<String> excludedUuids;
+	@Schema(description = "Whether the event has no parent events, i.e. it's a root event")
 	private Boolean hasNoSuperordinateEvent;
 	private EventManagementStatus eventManagementStatus;
 	private EventIdentificationSource eventIdentificationSource;
 
 	// Actions criterias
 	private ActionStatus actionStatus;
+	@Schema(description = "Earliest date and time when the action was last changed (lower bound)")
 	private Date actionChangeDateFrom;
+	@Schema(description = "Latest date and time when the action was last changed (upper bound)")
 	private Date actionChangeDateTo;
 	private DateFilterOption actionChangeDateFilterOption = DateFilterOption.DATE;
+	@Schema(description = "Earliest date and time when the action in question started (lower bound)")
 	private Date actionDateFrom;
+	@Schema(description = "Latest date and time when the action in question started (upper bound)")
 	private Date actionDateTo;
 	private DateFilterOption actionDateFilterOption = DateFilterOption.DATE;
+	@Schema(description = "Whether to only show results that were not shared with an external surveillance tool")
 	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
+	@Schema(description = "Whether to only show results shared with an external surveillance tool")
 	private Boolean onlyEntitiesSharedWithExternalSurvTool;
+	@Schema(
+		description = "Whether to only show new results since the last sharing action with an external surveillance tool (for synchronization purposes)")
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 
 	public EventCriteria() {

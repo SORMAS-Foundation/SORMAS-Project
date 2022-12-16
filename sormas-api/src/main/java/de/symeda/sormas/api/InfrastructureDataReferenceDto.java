@@ -15,9 +15,12 @@
 
 package de.symeda.sormas.api;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public abstract class InfrastructureDataReferenceDto extends ReferenceDto implements Cloneable {
 
 	private static final long serialVersionUID = -3451269378082767059L;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
 
 	protected InfrastructureDataReferenceDto() {

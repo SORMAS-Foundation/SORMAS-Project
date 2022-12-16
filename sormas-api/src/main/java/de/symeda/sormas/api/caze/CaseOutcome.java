@@ -19,7 +19,9 @@ package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Possible outcomes of a case")
 public enum CaseOutcome
 	implements
 	StatisticsGroupingKey {

@@ -28,19 +28,30 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @Path("/info")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Info Resource",
+	description = "Read-only access to information about the configuration of a SORMAS server w.r.t. server-client compatibility.")
 public class InfoResource {
 
 	@GET
 	@Path("/version")
+	@Operation(summary = "Get information on the SORMAS server version.")
+	@ApiResponse(description = "Returns the SORMAS server's version string.", responseCode = "200", useReturnTypeSchema = true)
 	public String getVersion() {
 		return InfoProvider.get().getVersion();
 	}
 
 	@GET
 	@Path("/appurl")
-	public String getAppUrl(@QueryParam("appVersion") String appVersionString) {
+	@Operation(summary = "TBD_RESTAPI_SWAGGER_DOC")
+	@ApiResponse(description = "TBD_RESTAPI_SWAGGER_DOC", responseCode = "200", useReturnTypeSchema = true)
+	public String getAppUrl(@Parameter(required = true, description = "Client version string") @QueryParam("appVersion") String appVersionString) {
 
 		int[] appVersion = VersionHelper.extractVersion(appVersionString);
 
@@ -61,18 +72,29 @@ public class InfoResource {
 
 	@GET
 	@Path("/locale")
+	@Operation(summary = "Get the langauge/localization the SORMAS server is configured for.")
+	@ApiResponse(description = "Returns the configured localization language of the SORMAS server (e.g. \"de-DE\").",
+		responseCode = "200",
+		useReturnTypeSchema = true)
 	public String getLocale() {
 		return FacadeProvider.getConfigFacade().getCountryLocale();
 	}
 
 	@GET
 	@Path("/checkcompatibility")
-	public CompatibilityCheckResponse isCompatibleToApi(@QueryParam("appVersion") String appVersion) {
+	@Operation(summary = "Check whether the client is compatible with the addressed SORMAS server.")
+	@ApiResponse(description = "Returns a CompatibilityCheckResponse denotng the compatibility status.",
+		responseCode = "200",
+		useReturnTypeSchema = true)
+	public CompatibilityCheckResponse isCompatibleToApi(
+		@Parameter(required = true, description = "Client version string") @QueryParam("appVersion") String appVersion) {
 		return InfoProvider.get().isCompatibleToApi(appVersion);
 	}
 
 	@GET
 	@Path("/countryname")
+	@Operation(summary = "Get the name of the country the SORMAS server is configured for.")
+	@ApiResponse(description = "Returns the configured country name of the SORMAS server.", responseCode = "200", useReturnTypeSchema = true)
 	public String getCountryName() {
 		return FacadeProvider.getConfigFacade().getCountryName();
 	}

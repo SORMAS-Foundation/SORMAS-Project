@@ -25,17 +25,22 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.ObjectUtils;
 
 import de.symeda.sormas.api.i18n.Validations;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for content related to the drug enforcement administration (DEA).")
 public class DeaContentEntry implements Serializable, Comparable<DeaContentEntry> {
 
 	private static final long serialVersionUID = -9182801671706246792L;
 
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String caption;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String value;
 
-	public DeaContentEntry(){ }
+	public DeaContentEntry() {
+	}
 
 	public DeaContentEntry(String caption, String value) {
 		this.caption = caption;

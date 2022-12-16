@@ -20,7 +20,10 @@ import java.util.Date;
 
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light-weight index infomation on prescription entries for larger queries.")
 public class PrescriptionIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 9189039796173435070L;
@@ -36,14 +39,20 @@ public class PrescriptionIndexDto extends AbstractUuidDto {
 	public static final String PRESCRIBING_CLINICIAN = "prescribingClinician";
 
 	private PrescriptionIndexType prescriptionIndexType;
+	@Schema(description = "Date the prescription was written")
 	private Date prescriptionDate;
+	@Schema(description = "Time period the medication is prescribed for")
 	private PeriodDto prescriptionPeriod;
+	@Schema(description = "Frequency with wich the prescribed medication has to administered")
 	private String frequency;
+	@Schema(description = "Dosage of the prescribed drug")
 	private String dose;
 	private PrescriptionIndexRoute prescriptionIndexRoute;
 	@SensitiveData
+	@Schema(description = "Clinician that prescribed the treatment")
 	private String prescribingClinician;
-
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private Boolean isInJurisdiction;
 
 	public PrescriptionIndexDto(
@@ -72,6 +81,7 @@ public class PrescriptionIndexDto extends AbstractUuidDto {
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
+	@Hidden
 	public String getPrescriptionType() {
 		return prescriptionIndexType.formatString();
 	}
@@ -112,6 +122,7 @@ public class PrescriptionIndexDto extends AbstractUuidDto {
 		this.dose = dose;
 	}
 
+	@Hidden
 	public String getPrescriptionRoute() {
 		return prescriptionIndexRoute.formatString();
 	}
@@ -132,10 +143,12 @@ public class PrescriptionIndexDto extends AbstractUuidDto {
 		return isInJurisdiction;
 	}
 
+	@Schema(description = "Light-weight index infomation about the type of prescription.")
 	public static class PrescriptionIndexType implements Serializable {
 
 		private TreatmentType prescriptionType;
 		@SensitiveData
+		@Schema(description = "Details about the prescription")
 		private String prescriptionDetails;
 		private TypeOfDrug typeOfDrug;
 
@@ -158,10 +171,12 @@ public class PrescriptionIndexDto extends AbstractUuidDto {
 		}
 	}
 
+	@Schema(description = "Light-weight index infomation about the route the medication is administered through")
 	public static class PrescriptionIndexRoute implements Serializable {
 
 		private TreatmentRoute route;
 		@SensitiveData
+		@Schema(description = "Details about the route the medication has to administered through")
 		private String routeDetails;
 
 		public TreatmentRoute getRoute() {

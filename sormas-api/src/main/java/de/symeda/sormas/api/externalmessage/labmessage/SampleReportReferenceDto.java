@@ -20,8 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
+@Schema(description = "Reference to the report of the sample taken for lab-analysis.")
 public class SampleReportReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -5497058456244885735L;

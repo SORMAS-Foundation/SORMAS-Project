@@ -15,7 +15,9 @@
 package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Methodology of identifying the occurrence of an event.")
 public enum EventIdentificationSource {
 
 	UNKNOWN,

@@ -27,7 +27,9 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light-weight index infomation on contact entries for larger queries.")
 public class ContactIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7511900591141885152L;
@@ -59,37 +61,56 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String REGION_UUID = "regionUuid";
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String COMMUNITY_UUID = "communityUuid";
-
+	@Schema(description = "Universal ID (UUID) of the person that had a contact")
 	private String personUuid;
 	@PersonalData
+	@Schema(description = "First name of the person that had a contact")
 	private String firstName;
 	@PersonalData
+	@Schema(description = "Last name of the person that had a contact")
 	private String lastName;
 	private CaseReferenceDto caze;
+	@Schema(description = "Disease with which the contact occured")
 	private Disease disease;
+	@Schema(description = "Details about the disease in free text")
 	private String diseaseDetails;
+	@Schema(description = "Date when the last contact occured")
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
+	@Schema(description = "Percentage, indicates how many of all available data entries have actually been filled")
 	private Float completeness;
 	private FollowUpStatus followUpStatus;
+	@Schema(description = "Date until the case has to be followed up.")
 	private Date followUpUntil;
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
+	@Schema(description = "Universal ID (UUID) of the district where the contact occured")
 	private String districtUuid;
+	@Schema(description = "Universal ID (UUID) of the SORMAS user working on the contact")
 	private String contactOfficerUuid;
+	@Schema(description = "Date and time at which the contact was reported")
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
+	@Schema(description = "Number of follow-up calls assessing the health condition of the person that had a contact")
 	private int visitCount;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Integer missedVisitsCount;
+	@Schema(description = "Case Id in external systems.")
 	private String externalID;
+	@Schema(description = "External token ID / file number of the contact.")
 	private String externalToken;
+	@Schema(description = "Internal token ID / file number of the contact.")
 	private String internalToken;
+	@Schema(description = "Name of the region where the person that had a contact lives")
 	private String regionName;
+	@Schema(description = "Name of the district where the person that had a contact lives")
 	private String districtName;
+	@Schema(description = "Name of the region where the person that has a case of the disease lives")
 	private String caseRegionName;
+	@Schema(description = "Name of the district where the person that has a case of the disease lives")
 	private String caseDistrictName;
 
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;

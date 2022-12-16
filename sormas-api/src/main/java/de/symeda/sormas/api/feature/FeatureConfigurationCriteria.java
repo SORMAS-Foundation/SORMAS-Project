@@ -4,6 +4,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class FeatureConfigurationCriteria extends BaseCriteria implements Cloneable {
 
@@ -19,7 +20,9 @@ public class FeatureConfigurationCriteria extends BaseCriteria implements Clonea
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
+	@Schema(description = "Indicates whether the feature configuration is enabled.")
 	private Boolean enabled;
+	@Schema(description = "Free Text search for searching in feature configuration entries.")
 	private String searchText;
 
 	public FeatureType[] getFeatureTypes() {

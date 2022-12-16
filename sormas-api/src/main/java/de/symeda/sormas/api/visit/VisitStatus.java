@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.visit;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Whether the subject was unavailable, uncooperative or cooperative when the visit was conducted")
 public enum VisitStatus {
 
 	UNAVAILABLE,

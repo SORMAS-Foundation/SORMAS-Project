@@ -19,10 +19,12 @@ import java.io.Serializable;
 import java.util.Map;
 
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * A customizable enum containing specific risks different than the one specified in {@link RiskLevel}.
  */
+@Schema(description = "Customizable enum containing specific risks different than the ones specified in RiskLevel")
 public class SpecificRisk extends CustomizableEnum implements Serializable {
 
 	private static final long serialVersionUID = 7727639877710862924L;

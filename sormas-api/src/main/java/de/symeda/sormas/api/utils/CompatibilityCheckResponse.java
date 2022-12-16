@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Enum denoting the result of a compatibility check")
 public enum CompatibilityCheckResponse {
 
 	COMPATIBLE,

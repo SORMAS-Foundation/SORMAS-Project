@@ -28,6 +28,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class EventGroupCriteria extends BaseCriteria implements Serializable {
 
@@ -45,12 +46,18 @@ public class EventGroupCriteria extends BaseCriteria implements Serializable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	@Schema(description = "Earliest date of any of the group's events")
 	private Date eventDateFrom;
+	@Schema(description = "Latest date of any of the group's events")
 	private Date eventDateTo;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
+	@Schema(description = "Free text search filter for event group's name")
 	private String freeText;
+	@Schema(description = "Free text search filter for the names of the group's events")
 	private String freeTextEvent;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Boolean userFilterIncluded = true;
+	@Schema(description = "Set of event UUIDs excluded form the search")
 	private Set<String> excludedUuids;
 	private EntityRelevanceStatus relevanceStatus;
 

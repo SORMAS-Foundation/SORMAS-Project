@@ -18,7 +18,10 @@
 package de.symeda.sormas.api;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Whether to simply show the CASE_COUNT or show the number of cases per DistrictDto.CASE_INCIDENCE_DIVISOR;"
+	+ " rounded to two decimal places with rounding mode half up")
 public enum CaseMeasure {
 
 	/**

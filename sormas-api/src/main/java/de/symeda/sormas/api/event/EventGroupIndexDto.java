@@ -17,6 +17,7 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class EventGroupIndexDto extends AbstractUuidDto {
 
@@ -29,8 +30,11 @@ public class EventGroupIndexDto extends AbstractUuidDto {
 	public static final String EVENT_COUNT = "eventCount";
 	public static final String CHANGED_DATE = "changeDate";
 
+	@Schema(description = "Titular name of the event group")
 	private String name;
+	@Schema(description = "Number of events that are part of the group")
 	private Long eventCount;
+	@Schema(description = "Date when the group was last changed")
 	private Date changeDate;
 
 	public EventGroupIndexDto(String uuid, String name, Date changeDate, Long eventCount) {

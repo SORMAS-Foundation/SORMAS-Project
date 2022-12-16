@@ -1,7 +1,11 @@
 package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum to show ALL or filter according to: \n\n" + "only persons associated with a CASE,\n\n"
+	+ "only persons associated with a CONTACT,\n\n" + "only persons associated with at least one event, so they are a EVENT_PARTICIPANT,\n\n"
+	+ "only perons associated with a established TRAVEL_ENTRY.")
 public enum PersonAssociation {
 
 	/**

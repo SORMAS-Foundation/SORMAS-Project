@@ -15,7 +15,9 @@
 package de.symeda.sormas.api.document;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Type of the entity the document is related to.")
 public enum DocumentRelatedEntityType {
 
 	CASE,

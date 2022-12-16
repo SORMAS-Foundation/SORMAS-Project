@@ -13,7 +13,9 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for Contact info with extended personal information")
 public class ContactIndexDetailedDto extends ContactIndexDto {
 
 	private static final long serialVersionUID = 577830364406605991L;
@@ -33,28 +35,39 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	public static final String RELATION_TO_CASE = "relationToCase";
 
 	private Sex sex;
+	@Schema(description = "Approximate age of the person associated with the contact")
 	private String approximateAge;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Name of the city of the person associated with the contact")
 	private String city;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Name of the Street of the person associated with the contact")
 	private String street;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "House number of the person associated with the contact")
 	private String houseNumber;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Additonal address information (e.g. ground floor)")
 	private String additionalInformation;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
+	@Schema(description = "Postal code of the person associated with the contact")
 	private String postalCode;
 	@SensitiveData
+	@Schema(description = "Phone number of the person associated with the contact")
 	private String phone;
+	@Schema(description = "User that reported the contact")
 	private UserReferenceDto reportingUser;
+	@Schema(description = "ID of the latest event the person attended where a contact occured")
 	private String latestEventId;
+	@Schema(description = "Title of the latest event the person attended where a contact occured")
 	private String latestEventTitle;
+	@Schema(description = "Number of events the person attended where contacts occured")
 	private Long eventCount;
 	private ContactRelation relationToCase;
 

@@ -37,8 +37,11 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Hidden;
 
 @FeatureIndependent
+@Schema(description = "Data transfer object for information on a SORMAS user.")
 public class UserDto extends EntityDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
@@ -71,21 +74,28 @@ public class UserDto extends EntityDto {
 
 	private boolean active = true;
 
+	@Schema(description = "Account name")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@AuditIncludeProperty
 	private String userName;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "First name(s)")
 	private String firstName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Last name")
 	private String lastName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "User e-mail address")
 	private String userEmail;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "User phone number")
 	private String phone;
 	@Valid
+	@Schema(description = "User address")
 	private LocationDto address;
 
+	@Schema(description = "Roles associated with the user")
 	private Set<UserRoleReferenceDto> userRoles = Collections.emptySet();
 
 	private RegionReferenceDto region;
@@ -99,12 +109,15 @@ public class UserDto extends EntityDto {
 	// point of entry of POE users
 	private PointOfEntryReferenceDto pointOfEntry;
 
+	// associated officer this user reports to
 	private UserReferenceDto associatedOfficer;
 
 	private Disease limitedDisease;
 
+	@Schema(description = "Preferred language")
 	private Language language;
 
+	@Schema(description = "Whether the user has already accepted the GDPR terms & conditions")
 	private boolean hasConsentedToGdpr;
 
 	private JurisdictionLevel jurisdictionLevel;
@@ -148,6 +161,7 @@ public class UserDto extends EntityDto {
 		this.lastName = lastName;
 	}
 
+	@Hidden
 	public String getName() {
 		return firstName + " " + lastName;
 	}

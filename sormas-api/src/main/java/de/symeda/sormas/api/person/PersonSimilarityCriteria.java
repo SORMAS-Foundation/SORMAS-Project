@@ -2,6 +2,8 @@ package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @SuppressWarnings("serial")
 public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable {
@@ -12,11 +14,17 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	public static final String BIRTHDATE_DD = "birthdateDD";
 
 	private Sex sex;
+	@Schema(description = "Birth year that should be filtered for")
 	private Integer birthdateYYYY;
+	@Schema(description = "Birth month that should be filtered for")
 	private Integer birthdateMM;
+	@Schema(description = "Birth day that should be filtered for")
 	private Integer birthdateDD;
+	@Schema(description = "Passport number of a person that should be filtered for")
 	private String passportNumber;
+	@Schema(description = "National health ID of a person that should be filtered for")
 	private String nationalHealthId;
+	@Schema(description = "Filter pattern for name, UUID, external ID or external Token")
 	private String nameUuidExternalIdExternalTokenLike;
 	private Boolean matchMissingInfo = Boolean.FALSE;
 
@@ -88,6 +96,7 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 		this.nameUuidExternalIdExternalTokenLike = nameUuidExternalIdExternalTokenLike;
 	}
 
+	@Hidden
 	public void setName(PersonDto person) {
 		this.nameUuidExternalIdExternalTokenLike = person.getFirstName() + " " + person.getLastName();
 	}
@@ -113,13 +122,12 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	}
 
 	public static PersonSimilarityCriteria forPerson(PersonDto person) {
-		PersonSimilarityCriteria personSimilarityCriteria = new PersonSimilarityCriteria()
-				.sex(person.getSex())
-				.birthdateDD(person.getBirthdateDD())
-				.birthdateMM(person.getBirthdateMM())
-				.birthdateYYYY(person.getBirthdateYYYY())
-				.passportNumber(person.getPassportNumber())
-				.nationalHealthId(person.getNationalHealthId());
+		PersonSimilarityCriteria personSimilarityCriteria = new PersonSimilarityCriteria().sex(person.getSex())
+			.birthdateDD(person.getBirthdateDD())
+			.birthdateMM(person.getBirthdateMM())
+			.birthdateYYYY(person.getBirthdateYYYY())
+			.passportNumber(person.getPassportNumber())
+			.nationalHealthId(person.getNationalHealthId());
 		personSimilarityCriteria.setNameUuidExternalIdExternalTokenLike(person.getFirstName() + " " + person.getLastName());
 		return personSimilarityCriteria;
 	}

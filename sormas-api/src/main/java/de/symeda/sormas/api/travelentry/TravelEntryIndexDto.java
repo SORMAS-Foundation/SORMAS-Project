@@ -6,6 +6,7 @@ import java.util.Date;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
@@ -22,22 +23,33 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 	public static final String TESTED_NEGATIVE = "testedNegative";
 	public static final String QUARANTINE_TO = "quarantineTo";
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "First name(s) of the person associated with the travel entry")
 	private String personFirstName;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Last name of the person associated with the travel entry")
 	private String personLastName;
 
+	@Schema(description = "Name of the home district of the person associated with the travel entry")
 	private String homeDistrictName;
+	@Schema(description = "Name of the point-of-entry where the person entered the country")
 	private String pointOfEntryName;
 
+	@Schema(description = "Whether the person associated with the travel entry has recovered from the researched disease before")
 	private boolean recovered;
+	@Schema(description = "Whether the person associated with the travel entry is vaccinated")
 	private boolean vaccinated;
+	@Schema(description = "Whether the person associated with the travel entry tested negative for the researched disease")
 	private boolean testedNegative;
+	@Schema(description = "Date until which the person associated with the travel entry has to quarantine")
 	private Date quarantineTo;
 
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered "
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private boolean isInJurisdiction;
 
 	public TravelEntryIndexDto(

@@ -44,7 +44,12 @@ import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -57,26 +62,39 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/contacts")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Contact Resource",
+	description = "Management of contact tracking data. Contacts are usually created for persons that had an encounter with a known case and bear the risk of being infected themselves.\n\n"
+		+ "A contact entry can be escalated to a case.\n\n" + "See also: **Cases**, **Travel Entry**.")
 public class ContactResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<ContactDto> getAllContacts(@PathParam("since") long since) {
+	@Operation(summary = "Get all contact data from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of all contact data for the given interval.", useReturnTypeSchema = true)
+	public List<ContactDto> getAllContacts(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getContactFacade().getAllAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	@Operation(summary = "Get a batch of contacts that fulfill certain criteria.",
+		description = "**-** contacts that are no older than a given date in the past until now [*since*]\n\n"
+			+ "**-** TBD_RESTAPI_SWAGGER_DOC [*lastSynchronizedUuid*]\n\n" + "**-** number of results does not exceed a given number [*size*]")
+	@ApiResponse(responseCode = "200", description = "Returns a list of contacts for the given interval.", useReturnTypeSchema = true)
 	public List<ContactDto> getAllContacts(
-		@PathParam("since") long since,
-		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since,
+		@Parameter(required = true, description = "batch size") @PathParam("size") int size,
+		@Parameter(required = true, description = "TBD_RESTAPI_SWAGGER_DOC") @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getContactFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST
 	@Path("/query")
-	public List<ContactDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get contact data based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list contact data by their UUIDs.", useReturnTypeSchema = true)
+	public List<ContactDto> getByUuids(
+		@RequestBody(description = "List of UUIDs used to query contact data entries.", required = true) List<String> uuids) {
 
 		List<ContactDto> result = FacadeProvider.getContactFacade().getByUuids(uuids);
 		return result;
@@ -84,71 +102,110 @@ public class ContactResource extends EntityDtoResource {
 
 	@POST
 	@Path("/query/persons")
-	public List<ContactDto> getByPersonUuids(List<String> uuids) {
+	@Operation(summary = "Get contact data based on the unique IDs of the person that had the contact.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of contact data based on the UUIDs of the queried persons.",
+		useReturnTypeSchema = true)
+	public List<ContactDto> getByPersonUuids(
+		@RequestBody(description = "List of person UUIDs used to query contact data entries.", required = true) List<String> uuids) {
 		return FacadeProvider.getContactFacade().getByPersonUuids(uuids);
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postContacts(@Valid List<ContactDto> dtos) {
+	@Operation(summary = "Submit a list of contact data entries to the server.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list containing the upload success status of each uploaded entry.",
+		useReturnTypeSchema = true)
+	public List<PushResult> postContacts(
+		@RequestBody(description = "List of ContactDtos to be added to the existing contact data entries.",
+			required = true) @Valid List<ContactDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContactFacade()::save);
 		return result;
 	}
 
 	@POST
+	@Operation(summary = "Submit a single CoreAndPersonDTO to create a new case and a new person related to it.")
+	@ApiResponse(responseCode = "200", description = "Returns the uploaded entry.", useReturnTypeSchema = true)
 	@Path("/pushWithPerson")
-	public CoreAndPersonDto<ContactDto> postContact(@Valid CoreAndPersonDto<ContactDto> dto) {
+	public CoreAndPersonDto<ContactDto> postContact(
+		@RequestBody(
+			description = "CoreAndPersonDto containing the PersonDto and the ContactDto that are to be added to the existing contact data entries.",
+			required = true) @Valid CoreAndPersonDto<ContactDto> dto) {
 		return FacadeProvider.getContactFacade().save(dto);
 
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available contact data entries.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getContactFacade().getAllActiveUuids();
 	}
 
 	@GET
 	@Path("/archived/{since}")
-	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get the unique IDs of all contact data that has been marked as archived for the given interval.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
+	public List<String> getArchivedUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getContactFacade().getArchivedUuidsSince(new Date(since));
 	}
 
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get the unique IDs of all contact data that has been deleted during the given interval.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
+	public List<String> getDeletedUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getContactFacade().getDeletedUuidsSince(new Date(since));
 	}
 
 	@GET
 	@Path("/obsolete/{since}")
-	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get the unique IDs of all contact data that has been marked as obsolete for the given interval.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
+	public List<String> getObsoleteUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getContactFacade().getObsoleteUuidsSince(new Date(since));
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of Contacts based on ContactCriteria filter params.")
+	@ApiResponse(description = "Returns a page of contacts that met the filter criteria.", responseCode = "200", useReturnTypeSchema = true)
 	public Page<ContactIndexDto> getIndexList(
-		@RequestBody CriteriaWithSorting<ContactCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(
+			description = "Contacts based query-filter criteria with sorting proprerty.") CriteriaWithSorting<ContactCriteria> criteriaWithSorting,
+		@QueryParam("offset") @Parameter(description = "page offset", required = true) int offset,
+		@QueryParam("size") @Parameter(description = "page size", required = true) int size) {
 		return FacadeProvider.getContactFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST
 	@Path("/detailedIndexList")
+	@Operation(summary = "Get a page of Contacts with additional personal information based on ContactCriteria filter params.")
+	@ApiResponse(description = "Returns a page of contacts with additional personal information that met the filter criteria.",
+		responseCode = "200",
+		useReturnTypeSchema = true)
 	public Page<ContactIndexDetailedDto> getIndexDetailedList(
-		@RequestBody CriteriaWithSorting<ContactCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(
+			description = "Contacts based query-filter criteria with sorting proprerty.") CriteriaWithSorting<ContactCriteria> criteriaWithSorting,
+		@QueryParam("offset") @Parameter(description = "page offset", required = true) int offset,
+		@QueryParam("size") @Parameter(description = "page size", required = true) int size) {
 		return FacadeProvider.getContactFacade()
 			.getIndexDetailedPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST
 	@Path("/externalData")
-	public Response updateExternalData(@Valid List<ExternalDataDto> externalData) {
+	@Operation(summary = "Submit a list of ExternalData objects to update the external data entries in the corresponding contacts")
+	@ApiResponse(responseCode = "200", description = "OK", useReturnTypeSchema = true)
+	public Response updateExternalData(
+		@RequestBody(
+			description = "List of ExternalDataDtos containing the updated data about the external reporting tool") @Valid List<ExternalDataDto> externalData) {
 		try {
 			FacadeProvider.getContactFacade().updateExternalData(externalData);
 			return Response.status(Response.Status.OK).build();
@@ -159,13 +216,21 @@ public class ContactResource extends EntityDtoResource {
 
 	@POST
 	@Path("/delete")
-	public List<String> delete(List<String> uuids) {
+	@Operation(summary = "Delete contact data entries from storage based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of UUIDs of the deleted centact entries with the deletion reason \"Deleted via ReST call\".",
+		useReturnTypeSchema = true)
+	public List<String> delete(@RequestBody(description = "List of UUIDs used to delete contact data entries.") List<String> uuids) {
 		return FacadeProvider.getContactFacade().deleteContacts(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@GET
 	@Path("/{uuid}")
-	public ContactDto getByUuid(@PathParam("uuid") String uuid) {
+	@Operation(summary = "Get a single contact based on its universally unique ID (UUID).")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Returns a contact for the given UUID.", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "204", description = "Contact with the given UUID cannot be found.", useReturnTypeSchema = false) })
+	public ContactDto getByUuid(@Parameter(required = true, description = "UUID of contact.") @PathParam("uuid") String uuid) {
 		return FacadeProvider.getContactFacade().getByUuid(uuid);
 	}
 

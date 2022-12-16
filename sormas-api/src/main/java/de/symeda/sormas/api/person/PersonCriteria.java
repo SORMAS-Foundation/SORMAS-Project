@@ -4,6 +4,7 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class PersonCriteria extends BaseCriteria implements Cloneable {
 
@@ -24,9 +25,13 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	public static final String COMMUNITY = "community";
 	public static final String PERSON_ASSOCIATION = "personAssociation";
 
+	@Schema(description = "Birth year that should be filtered for")
 	private Integer birthdateYYYY;
+	@Schema(description = "Birth month that should be filtered for")
 	private Integer birthdateMM;
+	@Schema(description = "Birth day that should be filtered for")
 	private Integer birthdateDD;
+	@Schema(description = "Filter pattern for name, address, phone number, or e-mail addres of a person")
 	private String nameAddressPhoneEmailLike;
 	private PresentCondition presentCondition;
 	private RegionReferenceDto region;

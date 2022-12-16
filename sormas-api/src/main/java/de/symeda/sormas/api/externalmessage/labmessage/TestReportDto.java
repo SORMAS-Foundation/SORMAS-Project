@@ -15,8 +15,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
+@Schema(description = "Report of the test performed by the laboratory.")
 public class TestReportDto extends EntityDto {
 
 	private static final long serialVersionUID = 3377642632219354380L;
@@ -35,30 +37,42 @@ public class TestReportDto extends EntityDto {
 	@Required
 	private SampleReportReferenceDto sampleReport;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Laboratory in which the test was performed.")
 	private String testLabName;
+	@Schema(description = "External IDs of the laboratory in which the test was performed.")
 	private List<String> testLabExternalIds;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Postal code of the laboratory in which the test was performed.")
 	private String testLabPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "City of the laboratory in which the test was performed.")
 	private String testLabCity;
 
 	private PathogenTestType testType;
+	@Schema(description = "Date and time when the test was performed.")
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
+	@Schema(description = "Whether the test result is verified by a lab supervisor.")
 	private Boolean testResultVerified;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with this test.")
 	private String testResultText;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String typingId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalOrderId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "The disease variant for which this test is done.")
 	private String testedDiseaseVariant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the disease variant.")
 	private String testedDiseaseVariantDetails;
-
+	@Schema(description = "Indicates whether this test result is preliminary.")
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
 

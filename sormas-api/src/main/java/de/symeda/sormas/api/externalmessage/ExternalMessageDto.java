@@ -35,9 +35,11 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @AuditedClass
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
+@Schema(description = "Data transfer object for external message related information.")
 public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public static final String I18N_PREFIX = "ExternalMessage";
@@ -73,37 +75,54 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private ExternalMessageType type;
 	private Disease disease;
 	@AuditIncludeProperty
+	@Schema(description = "Date and time when the message was created.")
 	private Date messageDateTime;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Name of the external user who reported the message.")
 	private String reporterName;
-
+	@Schema(description = "List of external IDs from the external user who reported the message.")
 	private List<String> reporterExternalIds;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Postal code of the external user who reported the message.")
 	private String reporterPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "City of the external user who reported the message.")
 	private String reporterCity;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "First name of the person the message is about.")
 	private String personFirstName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Last name of the person the message is about.")
 	private String personLastName;
+	@Schema(description = "Sex of the person the message is about.")
 	private Sex personSex;
+	@Schema(description = "The present condition of the person the message is about.")
 	private PresentCondition personPresentCondition;
+	@Schema(description = "Day of the birthdate of the person the message is about.")
 	private Integer personBirthDateDD;
+	@Schema(description = "Month of the birthdate of the person the message is about.")
 	private Integer personBirthDateMM;
+	@Schema(description = "Year of the birthdate of the person the message is about.")
 	private Integer personBirthDateYYYY;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Postal code of the person the message is about.")
 	private String personPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "City of the person the message is about.")
 	private String personCity;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Street of the person the message is about.")
 	private String personStreet;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "House number of the person the message is about.")
 	private String personHouseNumber;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Phone number of the person the message is about.")
 	private String personPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "E-mail address of the person the message is about.")
 	private String personEmail;
 	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
@@ -111,8 +130,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private SurveillanceReportReferenceDto surveillanceReport;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the external message.")
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Report ID of the message.")
 	private String reportId;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)

@@ -26,7 +26,9 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light weight index information on feature configuration entries for larger queries.")
 public class FeatureConfigurationIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = -8033830301352311580L;
@@ -39,14 +41,20 @@ public class FeatureConfigurationIndexDto extends AbstractUuidDto {
 
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
 	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
+	@Schema(description = "UUID of the region the feature configuration is associated to.")
 	private String regionUuid;
+	@Schema(description = "Name of the region the feature configuration is associated to.")
 	private String regionName;
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
 	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
+	@Schema(description = "UUID of the district the feature configuration is associated to.")
 	private String districtUuid;
+	@Schema(description = "Name of the district the feature configuration is associated to.")
 	private String districtName;
 	private Disease disease;
+	@Schema(description = "Indicates whether the feature configuration is enabled.")
 	private boolean enabled;
+	@Schema(description = "Date and time until which the feature configuration is enabled.")
 	private Date endDate;
 
 	public FeatureConfigurationIndexDto(

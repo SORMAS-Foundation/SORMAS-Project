@@ -11,14 +11,17 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.i18n.Validations;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CampaignFormTranslations implements Serializable {
 
 	private static final long serialVersionUID = 8326680921734712660L;
 
 	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Translation language")
 	private String languageCode;
 	@Valid
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private List<TranslationElement> translations;
 
 	public String getLanguageCode() {

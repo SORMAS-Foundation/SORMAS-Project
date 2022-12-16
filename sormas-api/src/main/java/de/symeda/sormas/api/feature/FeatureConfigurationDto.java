@@ -8,6 +8,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class FeatureConfigurationDto extends EntityDto {
 
@@ -23,8 +24,11 @@ public class FeatureConfigurationDto extends EntityDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date endDate;
+	@Schema(description = "Indicates whether the feature configuration is enabled.")
 	private boolean enabled;
+	@Schema(description = "Additional properties of a feature; i.e. adjustable settings (on/off or numbered value) for a specific functionality.")
 	private Map<FeatureTypeProperty, Object> properties;
 
 	public static FeatureConfigurationDto build() {

@@ -34,6 +34,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CampaignFormDataDto extends EntityDto {
 
@@ -51,13 +52,20 @@ public class CampaignFormDataDto extends EntityDto {
 
 	@Valid
 	private List<CampaignFormDataEntry> formValues;
+	@Schema(description = "Corresponding campaign")
 	private CampaignReferenceDto campaign;
 	@Valid
+	@Schema(description = "Corresponding meta information")
 	private CampaignFormMetaReferenceDto campaignFormMeta;
+	@Schema(description = "Date and time when the campaign form was created")
 	private Date formDate;
+	@Schema(description = "Corresponding region")
 	private RegionReferenceDto region;
+	@Schema(description = "Corresponding district")
 	private DistrictReferenceDto district;
+	@Schema(description = "Corresponding community")
 	private CommunityReferenceDto community;
+	@Schema(description = "Reference to the user who created the form")
 	private UserReferenceDto creatingUser;
 
 	public static CampaignFormDataDto build(

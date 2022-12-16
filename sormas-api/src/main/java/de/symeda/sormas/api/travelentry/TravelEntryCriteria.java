@@ -8,6 +8,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TravelEntryCriteria extends BaseCriteria implements Serializable, Cloneable {
 
@@ -17,16 +18,24 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 	public static final String ONLY_ENTRIES_TESTED_NEGATIVE = "onlyEntriesTestedNegative";
 	public static final String ONLY_ENTRIES_CONVERTED_TO_CASE = "onlyEntriesConvertedToCase";
 
+	@Schema(description = "Filter-pattern for the name, UUID or external ID of a travel entry")
 	private String nameUuidExternalIDLike;
+	@Schema(description = "Whether only travel entries that have recovered from a case of the diesase should be shown.")
 	private Boolean onlyRecoveredEntries = Boolean.FALSE;
+	@Schema(description = "Whether only travel entries that are vaccinated should be shown")
 	private Boolean onlyVaccinatedEntries = Boolean.FALSE;
+	@Schema(description = "Whether only travel entries that have tested negative for the researched disease should be shown")
 	private Boolean onlyEntriesTestedNegative = Boolean.FALSE;
+	@Schema(description = "Whether only travel entries that have been converted into cases should be shown")
 	private Boolean onlyEntriesConvertedToCase = Boolean.FALSE;
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
+	@Schema(description = "Whether deleted travel entries should be shown")
 	private Boolean deleted = Boolean.FALSE;
 	private EntityRelevanceStatus relevanceStatus;
+	@Schema(description = "Date that sets lower boundary for time period in which the travel entries were reported")
 	private Date reportDateFrom;
+	@Schema(description = "Date that sets upper boundary for time period in which the travel entries were reported")
 	private Date reportDateTo;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 
@@ -95,6 +104,7 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 		this.caze = caze;
 		return this;
 	}
+
 	public Boolean getDeleted() {
 		return deleted;
 	}
@@ -135,10 +145,7 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 		this.dateFilterOption = dateFilterOption;
 	}
 
-	public TravelEntryCriteria reportDateBetween(
-			Date reportDateFrom,
-			Date reportDateTo,
-			DateFilterOption dateFilterOption) {
+	public TravelEntryCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
 		this.reportDateFrom = reportDateFrom;
 		this.reportDateTo = reportDateTo;
 		this.dateFilterOption = dateFilterOption;

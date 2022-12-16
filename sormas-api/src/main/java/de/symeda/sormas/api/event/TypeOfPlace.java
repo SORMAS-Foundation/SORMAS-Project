@@ -22,7 +22,9 @@ import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Type of place where a exposure occured")
 public enum TypeOfPlace {
 
 	FACILITY,

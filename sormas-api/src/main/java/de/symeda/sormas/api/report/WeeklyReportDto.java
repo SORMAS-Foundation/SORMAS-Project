@@ -27,7 +27,9 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for weekly reports.")
 public class WeeklyReportDto extends EntityDto {
 
 	private static final long serialVersionUID = -2884998571593631851L;
@@ -48,13 +50,17 @@ public class WeeklyReportDto extends EntityDto {
 	public static final String REPORT_ENTRIES = "reportEntries";
 
 	private UserReferenceDto reportingUser;
+	@Schema(description = "Time and date when the weekly report was generated.")
 	private Date reportDateTime;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private FacilityReferenceDto healthFacility;
 	private UserReferenceDto assignedOfficer;
+	@Schema(description = "Total number of cases in the weekly report.")
 	private Integer totalNumberOfCases;
+	@Schema(description = "The year in which the weekly report was generated (for filtering).")
 	private Integer year;
+	@Schema(description = "The epidemiological week in which the weekly report was generated (for filtering).")
 	private Integer epiWeek;
 	private List<WeeklyReportEntryDto> reportEntries = new ArrayList<>();
 

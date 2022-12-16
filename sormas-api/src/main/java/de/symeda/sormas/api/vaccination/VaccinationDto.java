@@ -38,8 +38,10 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT)
+@Schema(description = "Data transfer object for vaccination information")
 public class VaccinationDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Vaccination";
@@ -73,39 +75,52 @@ public class VaccinationDto extends PseudonymizableDto {
 		hide = true)
 	private HealthConditionsDto healthConditions;
 	@Required
+
+	@Schema(description = "Date when the vaccination was reported")
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
+	@Schema(description = "Date when vaccinated")
 	private Date vaccinationDate;
 	private Vaccine vaccineName;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text for vaccine name, if another vaccine was used than is selectable in 'vaccineName'")
 	private String otherVaccineName;
 	private VaccineManufacturer vaccineManufacturer;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(
+		description = "Free text for the vaccine manufacturer, if a vaccine of another manufacturer was used than is selectable under 'vaccineManufacturer'")
 	private String otherVaccineManufacturer;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text descripton for type of vaccine")
 	private String vaccineType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text descripton doses of vaccine")
 	private String vaccineDose;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "International Nonproprietary Names (INN) of vaccine substance")
 	private String vaccineInn;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Batch number of vaccine")
 	private String vaccineBatchNumber;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Unique Ingredient Identifier (UNII) Code of vaccination")
 	private String vaccineUniiCode;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Code of vaccination according to Anatomical Therapeutic Chemical (ATC) Classification System")
 	private String vaccineAtcCode;
 	private VaccinationInfoSource vaccinationInfoSource;
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
 		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),
 		hide = true)
+	@Schema(description = "Whether the patient is pregnant")
 	private YesNoUnknown pregnant;
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
 		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),

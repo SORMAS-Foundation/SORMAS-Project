@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.infrastructure;
 
 import de.symeda.sormas.api.audit.AuditedClass;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -25,19 +26,33 @@ public class InfrastructureChangeDatesDto implements Serializable {
 
 	private static final long serialVersionUID = 6269655187128160377L;
 
+	@Schema(description = "Cut-off date for when the collection of continents was last modified.")
 	private Date continentChangeDate;
+	@Schema(description = "Cut-off date for when the collection of subcontinents was last modified.")
 	private Date subcontinentChangeDate;
+	@Schema(description = "Cut-off date for when the collection of countries was last modified.")
 	private Date countryChangeDate;
+	@Schema(description = "Cut-off date for when the collection of areas was last modified.")
 	private Date areaChangeDate;
+	@Schema(description = "Cut-off date for when the collection of regions was last modified.")
 	private Date regionChangeDate;
+	@Schema(description = "Cut-off date for when the collection of disctricts was last modified.")
 	private Date districtChangeDate;
+	@Schema(description = "Cut-off date for when the collection of communities was last modified.")
 	private Date communityChangeDate;
+	@Schema(description = "Cut-off date for when the collection of facilities was last modified.")
 	private Date facilityChangeDate;
+	@Schema(description = "Cut-off date for when the collection of points-of-entry was last modified.")
 	private Date pointOfEntryChangeDate;
+	@Schema(description = "Cut-off date for when the user database was last modified.")
 	private Date userChangeDate;
+	@Schema(description = "Cut-off date for when the disease classification database was last modified.")
 	private Date diseaseClassificationChangeDate;
+	@Schema(description = "Cut-off date for when the disease configuration database was last modified.")
 	private Date diseaseConfigurationChangeDate;
+	@Schema(description = "Cut-off date for  when the database of user roles was last modified.")
 	private Date userRoleChangeDate;
+	@Schema(description = "Cut-off date for when the feature configuration database was last modified.")
 	private Date featureConfigurationChangeDate;
 
 	public Date getContinentChangeDate() {

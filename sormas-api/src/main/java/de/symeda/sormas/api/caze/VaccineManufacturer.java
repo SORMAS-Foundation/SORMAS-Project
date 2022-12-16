@@ -18,7 +18,9 @@ package de.symeda.sormas.api.caze;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum type for vaccine manufacturer. Specific for Disease.CORONAVIRUS.")
 public enum VaccineManufacturer {
 
 	@Diseases(value = {

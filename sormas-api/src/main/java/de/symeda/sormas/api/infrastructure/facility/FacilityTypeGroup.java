@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum for grouped classification of facility types")
 public enum FacilityTypeGroup {
 
 	ACCOMMODATION,

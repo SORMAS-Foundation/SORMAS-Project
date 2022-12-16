@@ -30,8 +30,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @FeatureIndependent
+@Schema(description = "Data transfer object for region-related information")
 public class RegionDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = -1610675328037466348L;
@@ -44,12 +46,18 @@ public class RegionDto extends InfrastructureDto {
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country";
 
+	@Schema(description = "Name of the Region")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
+	@Schema(
+		description = "Region's Eligible Party Identification Code. Unique two letter abbreviated code name of the region to enable generation of epidNumber in **CaseDataDto**")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String epidCode;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Float growthRate;
+	@Schema(description = "Indicates whether this object has been archived")
 	private boolean archived;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)

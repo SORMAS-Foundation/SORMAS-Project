@@ -25,6 +25,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CommunityCriteria extends BaseCriteria implements Serializable, Cloneable {
 
@@ -33,6 +34,7 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@Schema(description = "Search-term for for community name")
 	private String nameLike;
 	private EntityRelevanceStatus relevanceStatus;
 

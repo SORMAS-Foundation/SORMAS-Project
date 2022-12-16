@@ -39,6 +39,7 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ContactCriteria extends BaseCriteria implements Serializable {
 
@@ -88,15 +89,25 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
+	@Schema(description = "Start date of time period in which the contacts have been reported")
 	private Date reportDateFrom;
+	@Schema(description = "End date of time period in which the contacts have been reported")
 	private Date reportDateTo;
 	// Used to re-construct whether users have filtered by epi weeks or dates
+
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
+	@Schema(description = "Start date of time period in which a follow-up on the contact has to be done")
 	private Date followUpUntilFrom;
+	@Schema(description = "End date of time period in which a follow-up on the contact has to be done")
 	private Date followUpUntilTo;
+	@Schema(description = "Start date of time period in which a follow-up visit of the contact has to be conducted")
 	private Date followUpVisitsFrom;
+	@Schema(description = "Start date of time period in which a follow-up visit of the contact has to be conducted")
 	private Date followUpVisitsTo;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Integer followUpVisitsInterval;
+	@Schema(description = "Whether the follow-up filter should search for strict matches for the set end date."
+		+ "Results in search for only the specific followUpUntilTo date, even if a time period was set by followUpUntilFrom.")
 	private Boolean followUpUntilToPrecise;
 	/**
 	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
@@ -105,40 +116,68 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
 	private ContactRelation relationToCase;
+	@Schema(description = "Start date of time period in which the persons last contact must have occured")
 	private Date lastContactDateFrom;
+	@Schema(description = "End date of time period in which the persons last contact must have occured")
 	private Date lastContactDateTo;
 	private Boolean deleted = Boolean.FALSE;
+	@Schema(description = "Filter-pattern for contact or case name")
 	private String contactOrCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
+	@Schema(description = "Whether only high priority contacts should be searched")
 	private Boolean onlyHighPriorityContacts;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	private QuarantineType quarantineType;
+	@Schema(description = "Start date of the subjects quarantine period")
 	private Date quarantineFrom;
+	@Schema(description = "End date of the subjects quarantine period")
 	private Date quarantineTo;
+	@Schema(description = "Filter-flag: Whether only contacts should be shown that need help during thier quarantine persiod")
 	private Boolean onlyQuarantineHelpNeeded;
+	@Schema(description = "Filter-flag: Whether only contacts should be shown that had their quarantine ordered verbally")
 	private Boolean quarantineOrderedVerbally;
+	@Schema(description = "Filter-flag: Whether only contacts should be shown that had their quarantine ordered by a written document")
 	private Boolean quarantineOrderedOfficialDocument;
+	@Schema(description = "Filter-flag: Whether only contacts should be shown that had no quarantine ordered")
 	private Boolean quarantineNotOrdered;
+	@Schema(description = "Filter-flag: Whether only contacts should be shown that had their quarantine period extended")
 	private Boolean withExtendedQuarantine;
+	@Schema(description = "Filter-flag: Whether only contacts should be shown that had their quarantine period reduced")
 	private Boolean withReducedQuarantine;
+	@Schema(description = "Specific person that shall be filtered for")
 	private PersonReferenceDto person;
+	@Schema(description = "Birth years that shall be filtered for")
 	private Integer birthdateYYYY;
+	@Schema(description = "Birth months that shall be filtered for")
 	private Integer birthdateMM;
+	@Schema(description = "Birth days that shall be filtered for")
 	private Integer birthdateDD;
+	@Schema(description = "Whether only returning travellers should be filtered for")
 	private YesNoUnknown returningTraveler;
+	@Schema(description = "Filter-pattern for event name")
 	private String eventLike;
+	@Schema(description = "UUID of the event where contacts occured")
 	private String eventUuid;
 	private Boolean includeContactsFromOtherJurisdictions = Boolean.FALSE;
+	@Schema(description = "Filter-flag: Whether only contacts sharing a event with the source case shall be filtered for")
 	private Boolean onlyContactsSharingEventWithSourceCase;
 	private EventParticipantReferenceDto eventParticipant;
+	@Schema(description = "Filter-flag: Only contacts that are linked to a particular source case in the given event")
 	private EventReferenceDto onlyContactsWithSourceCaseInGivenEvent;
+	@Schema(description = "Filter-flag: Whether only contacts from other instances shall be filtered for")
 	private Boolean onlyContactsFromOtherInstances;
+	@Schema(description = "Start date for a period in which the contact data was created")
 	private Date creationDateFrom;
+	@Schema(description = "End date for a period in which the contact data was created")
 	private Date creationDateTo;
+	@Schema(description = "Filter-pattern for name of reporting user")
 	private String reportingUserLike;
+	@Schema(description = "Filter-pattern for name of the person that had a contact")
 	private String personLike;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private boolean excludeLimitedSyncRestrictions;
+	@Schema(description = "Whether the organization requesting the index has ownership of the requested data")
 	private Boolean withOwnership = true;
 
 	public UserRoleReferenceDto getReportingUserRole() {

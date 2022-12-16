@@ -40,10 +40,12 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.CONTACT_TRACING })
+@Schema(description = "Data transfer object for exposure related data")
 public class ExposureDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 6551672739041643946L;
@@ -105,18 +107,24 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String LARGE_ATTENDANCE_NUMBER = "largeAttendanceNumber";
 
 	@SensitiveData
+	@Schema(description = "User reporting the exposure")
 	private UserReferenceDto reportingUser;
+	@Schema(description = "Whether a probable infection environment is known")
 	@HideForCountriesExcept
 	private boolean probableInfectionEnvironment;
+	@Schema(description = "Start date of the exposure")
 	private Date startDate;
+	@Schema(description = "End date of the exposure")
 	private Date endDate;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Description of the exposure")
 	private String description;
 	@Required
 	private ExposureType exposureType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details of how the exposure occured")
 	private String exposureTypeDetails;
 	@Valid
 	private LocationDto location;
@@ -126,34 +134,47 @@ public class ExposureDto extends PseudonymizableDto {
 	private TypeOfPlace typeOfPlace;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about the type of place where an exposure occured")
 	private String typeOfPlaceDetails;
 	private MeansOfTransport meansOfTransport;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about the means of transport where the exposure occured")
 	private String meansOfTransportDetails;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Number of the connection, where an exposure on public transport occured")
 	private String connectionNumber;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Seat number of the public transport connection where the exposure occured")
 	private String seatNumber;
 
 	private WorkEnvironment workEnvironment;
 
 	// Details
+	@Schema(description = "Wheter the exposure happened indoors")
 	private YesNoUnknown indoors;
+	@Schema(description = "Wheter the exposure happened outdoors")
 	private YesNoUnknown outdoors;
+	@Schema(description = "Wheter the person having an exposure was wearing a mask")
 	private YesNoUnknown wearingMask;
+	@Schema(description = "Wheter the person having an exposure was wearing personal protective equipment")
 	private YesNoUnknown wearingPpe;
+	@Schema(description = "Wheter the person having an exposure took any other protective measures")
 	private YesNoUnknown otherProtectiveMeasures;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about protective measures that were taken")
 	private String protectiveMeasuresDetails;
+	@Schema(description = "Wheter the exposure happened at a short distance")
 	private YesNoUnknown shortDistance;
+	@Schema(description = "Wheter long face to face contact happened during the exposure")
 	private YesNoUnknown longFaceToFaceContact;
 	@Diseases({
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Schema(description = "Wheter the exposure happened at a animal market")
 	private YesNoUnknown animalMarket;
 	@Diseases({
 		Disease.AFP,
@@ -164,6 +185,7 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Schema(description = "Wheter the exposure happened through the skin (eg.g pricked by a needle)")
 	private YesNoUnknown percutaneous;
 	@Diseases({
 		Disease.AFP,
@@ -174,6 +196,7 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Schema(description = "Wheter contact with bodily fluids happendes during the exposure")
 	private YesNoUnknown contactToBodyFluids;
 	@Diseases({
 		Disease.AFP,
@@ -184,6 +207,7 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Schema(description = "Wheter the exposure happened while handling samples")
 	private YesNoUnknown handlingSamples;
 	@Diseases({
 		Disease.AFP,
@@ -193,6 +217,7 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Schema(description = "Wheter the exposure happened by eating raw animal products")
 	private YesNoUnknown eatingRawAnimalProducts;
 	@Diseases({
 		Disease.AFP,
@@ -206,12 +231,16 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Schema(description = "Wheter the exposure happened while handling animals")
 	private YesNoUnknown handlingAnimals;
+	@Schema(description = "Condition of animals that were handled during a exposure")
 	private AnimalCondition animalCondition;
+	@Schema(description = "Wheter animals handled during a exposure were vaccinated")
 	private YesNoUnknown animalVaccinated;
 	private AnimalContactType animalContactType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about the type of animal contact")
 	private String animalContactTypeDetails;
 	@Diseases({
 		Disease.AFP,
@@ -220,6 +249,7 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Schema(description = "Whether exposure happened near a body of water")
 	private YesNoUnknown bodyOfWater;
 	@Diseases({
 		Disease.AFP,
@@ -238,37 +268,50 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about the waer source")
 	private String waterSourceDetails;
 	@PersonalData
 	private ContactReferenceDto contactToCase;
+	@Schema(description = "Whether prophylactic measures where taken")
 	private YesNoUnknown prophylaxis;
+	@Schema(description = "Date when prophylactic measures where taken")
 	private Date prophylaxisDate;
+	@Schema(description = "Whether exposure happened in a risk area")
 	private YesNoUnknown riskArea;
 
 	// Exposure sub-types
 	private GatheringType gatheringType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about the gathering where a exposure might have occured")
 	private String gatheringDetails;
 	private HabitationType habitationType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about subjects habitation")
 	private String habitationDetails;
 	private TypeOfAnimal typeOfAnimal;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about the type of animal subject was exposed to")
 	private String typeOfAnimalDetails;
 
 	// Fields specific to ExposureType.BURIAL
+	@Schema(description = "Specific to ExposureType.BURIAL: Whether subject had physical contact during the preparation of the burial")
 	private YesNoUnknown physicalContactDuringPreparation;
+	@Schema(description = "Specific to ExposureType.BURIAL: Whether subject had physical contact with the deceased body")
 	private YesNoUnknown physicalContactWithBody;
+	@Schema(description = "Specific to ExposureType.BURIAL: Whether the deceased person was ill")
 	private YesNoUnknown deceasedPersonIll;
 	@PersonalData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Specific to ExposureType.BURIAL: Name of the deceased person")
 	private String deceasedPersonName;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Specific to ExposureType.BURIAL: Subjects relation to deceased person")
 	private String deceasedPersonRelation;
+	@Schema(description = "Specific to ExposureType.BURIAL: Whether a large number of people attended the burial")
 	private YesNoUnknown largeAttendanceNumber;
 
 	public static ExposureDto build(ExposureType exposureType) {

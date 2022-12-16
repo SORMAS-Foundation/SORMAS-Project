@@ -34,6 +34,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 import org.apache.commons.lang3.StringUtils;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class SampleIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -75,16 +76,26 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	@EmbeddedSensitiveData
 	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventParticipantReferenceDto associatedEventParticipant;
+	@Schema(description = "Eligible party identification code.\n" + "For detailed information about epidNumber see *CaseDataDto*.")
 	private String epidNumber;
+	@Schema(description = "ID of the sample given by the laboratory.")
 	private String labSampleID;
 	private Disease disease;
+	@Schema(description = "Any additional information associated with the disease.")
 	private String diseaseDetails;
+	@Schema(description = "The district where the sample is taken.")
 	private String district;
+	@Schema(description = "Indicates whether the sample has been shipped.")
 	private boolean shipped;
+	@Schema(description = "Indicates whether the sample has been received.")
 	private boolean received;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private boolean referred;
+	@Schema(description = "Date and time when the sample was collected.")
 	private Date sampleDateTime;
+	@Schema(description = "Date and time the sample was shipped.")
 	private Date shipmentDate;
+	@Schema(description = "Date and time the sample was received at the laboratory.")
 	private Date receivedDate;
 	private FacilityReferenceDto lab;
 	private SampleMaterial sampleMaterial;
@@ -93,9 +104,12 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private PathogenTestResultType pathogenTestResult;
 	private AdditionalTestingStatus additionalTestingStatus;
 	private SamplingReason samplingReason;
+	@Schema(description = "Any additional information associated with the sampling reason.")
 	private String samplingReasonDetails;
+	@Schema(description = "How many pathogen tests have been made with this sample.")
 	private Long pathogenTestCount;
 	private PathogenTestType typeOfLastTest;
+	@Schema(description = "CQ value of the last performed pathogen test.")
 	private Float lastTestCqValue;
 
 	private SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto;

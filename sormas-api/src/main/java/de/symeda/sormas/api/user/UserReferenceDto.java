@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -25,17 +24,21 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @FeatureIndependent
+@Schema(description = "Corresponding user")
 public class UserReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
+	@Schema(description = "First name(s)")
 	private String firstName;
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
+	@Schema(description = "Last name")
 	private String lastName;
 
 	public UserReferenceDto() {

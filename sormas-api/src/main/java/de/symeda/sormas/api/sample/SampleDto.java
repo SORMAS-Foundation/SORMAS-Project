@@ -36,6 +36,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
 public class SampleDto extends SormasToSormasShareableDto {
@@ -83,74 +84,92 @@ public class SampleDto extends SormasToSormasShareableDto {
 	private ContactReferenceDto associatedContact;
 	private EventParticipantReferenceDto associatedEventParticipant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "ID of the sample given by the laboratory.")
 	private String labSampleID;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "ID of the sample given by the sampling facility.")
 	private String fieldSampleID;
 	@Required
+	@Schema(description = "Date and time when the sample was collected.")
 	private Date sampleDateTime;
-
 	@Required
+	@Schema(description = "Date and time when the sample was reported.")
 	private Date reportDateTime;
 	@Required
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
+	@Schema(description = "Geographical latitude of the location where the sample was reported.")
 	private Double reportLat;
 	@SensitiveData
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
+	@Schema(description = "Geographical longitude of the location where the sample was reported.")
 	private Double reportLon;
-
+	@Schema(description = "Accuracy of the recorded geographical data (latitude and longitude).")
 	private Float reportLatLonAccuracy;
-
 	@Required
 	private SampleMaterial sampleMaterial;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the sample material.")
 	private String sampleMaterialText;
 	@Required
 	private SamplePurpose samplePurpose;
-
 	private FacilityReferenceDto lab;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the laboratory.")
 	private String labDetails;
+	@Schema(description = "Date and time the sample was shipped.")
 	private Date shipmentDate;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the shipment.")
 	private String shipmentDetails;
+	@Schema(description = "Date and time the sample was received at the laboratory.")
 	private Date receivedDate;
 	private SpecimenCondition specimenCondition;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Possible reason for not performing a test.")
 	private String noTestPossibleReason;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "General comments.")
 	private String comment;
 	private SampleSource sampleSource;
 	private SampleReferenceDto referredTo;
+	@Schema(description = "Indicates whether the sample has been shipped.")
 	private boolean shipped;
+	@Schema(description = "Indicates whether the sample has been received.")
 	private boolean received;
 	private PathogenTestResultType pathogenTestResult;
-
+	@Schema(description = "Indicates whether a pathogen test has been requested.")
 	private Boolean pathogenTestingRequested;
+	@Schema(description = "Indicates whether additional testing has been requested.")
 	private Boolean additionalTestingRequested;
+	@Schema(description = "Type of the requested pathogen test.")
 	private Set<PathogenTestType> requestedPathogenTests;
+	@Schema(description = "Type of the additional requested test.")
 	private Set<AdditionalTestType> requestedAdditionalTests;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text description for requested pathogen tests other than the proposed tests.")
 	private String requestedOtherPathogenTests;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text description for additionally requested tests other than the proposed tests.")
 	private String requestedOtherAdditionalTests;
-
 	private SamplingReason samplingReason;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Any additional information associated with the sampling reason.")
 	private String samplingReasonDetails;
-
+	@Schema(description = "Indicates whether the sample has been deleted.")
 	private boolean deleted;
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Detailed deletion reason other than proposed reasons.")
 	private String otherDeletionReason;
 
 	@ImportIgnore

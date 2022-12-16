@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.contact;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Status of the follow-up research about the contact.")
 public enum FollowUpStatus {
 
 	FOLLOW_UP,

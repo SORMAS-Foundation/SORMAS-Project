@@ -8,6 +8,7 @@ import java.util.Objects;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.i18n.Validations;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CampaignDashboardElement implements Serializable {
 
@@ -21,13 +22,19 @@ public class CampaignDashboardElement implements Serializable {
 	public static final String HEIGHT = "height";
 
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Identifier of the diagram")
 	private String diagramId;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Identifier of the page tab")
 	private String tabId;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Identifier of the sub-tab")
 	private String subTabId;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Integer order;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Integer width;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Integer height;
 
 	public CampaignDashboardElement() {
@@ -100,15 +107,17 @@ public class CampaignDashboardElement implements Serializable {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		CampaignDashboardElement that = (CampaignDashboardElement) o;
-		return Objects.equals(diagramId, that.diagramId) &&
-				Objects.equals(tabId, that.tabId) &&
-				Objects.equals(subTabId, that.subTabId) &&
-				Objects.equals(order, that.order) &&
-				Objects.equals(width, that.width) &&
-				Objects.equals(height, that.height);
+		return Objects.equals(diagramId, that.diagramId)
+			&& Objects.equals(tabId, that.tabId)
+			&& Objects.equals(subTabId, that.subTabId)
+			&& Objects.equals(order, that.order)
+			&& Objects.equals(width, that.width)
+			&& Objects.equals(height, that.height);
 	}
 
 	@Override

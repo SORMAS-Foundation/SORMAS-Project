@@ -8,6 +8,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class PointOfEntryCriteria extends BaseCriteria implements Serializable, Cloneable {
 
@@ -16,8 +17,10 @@ public class PointOfEntryCriteria extends BaseCriteria implements Serializable, 
 	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@Schema(description = "Search-term for point-of-entry name")
 	private String nameLike;
 	private PointOfEntryType type;
+	@Schema(description = "Whether to filter for active points-of-entry only")
 	private Boolean active;
 	private EntityRelevanceStatus relevanceStatus;
 

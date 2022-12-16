@@ -4,22 +4,35 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for disease configuration related data")
 public class DiseaseConfigurationDto extends EntityDto {
 
 	private static final long serialVersionUID = -7653585175036656526L;
 
 	private Disease disease;
+	@Schema(description = "Whether research of the disease is activated on the server")
 	private Boolean active;
+	@Schema(description = "Whether the disease is set as primarily researched disease")
 	private Boolean primaryDisease;
+	@Schema(description = "Whether case surveillance is enabled for the disease")
 	private Boolean caseSurveillanceEnabled;
+	@Schema(description = "Whether aggregation of reports is activated for the disease")
 	private Boolean aggregateReportingEnabled;
+	@Schema(description = "Whether follow up is enabled for the disease")
 	private Boolean followUpEnabled;
+	@Schema(description = "Time duration in which a follow-up has to happen for people who had contact with the disease")
 	private Integer followUpDuration;
+	@Schema(description = "Time duration in which a follow-up has to happen for cases of the disease")
 	private Integer caseFollowUpDuration;
+	@Schema(description = "Time duration in which a follow-up has to happen for people that attended a event where a case was present")
 	private Integer eventParticipantFollowUpDuration;
+	@Schema(description = "Whether extended classification is activated for the disease")
 	private Boolean extendedClassification;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Boolean extendedClassificationMulti;
+	@Schema(description = "Separated age groups for data recorded about the disease")
 	private List<String> ageGroups;
 
 	public Disease getDisease() {

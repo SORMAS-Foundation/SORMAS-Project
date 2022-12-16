@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum type for the information source of a vaccination")
 public enum VaccinationInfoSource {
 
 	VACCINATION_CARD,

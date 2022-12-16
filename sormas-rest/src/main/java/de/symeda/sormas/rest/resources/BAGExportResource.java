@@ -35,15 +35,22 @@ import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.CsvStreamUtils;
 import de.symeda.sormas.api.utils.DateHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/bagexport")
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed(UserRight._BAG_EXPORT)
+@Tag(name = "BAG Export Resource",
+	description = "Read-only interface for exporting cases and contacts to the BAG (Bundesamt für Gesundheit - Schweiz)")
 public class BAGExportResource {
 
 	@GET
 	@Path("/cases")
+	@Operation(summary = "Get all BAG cases as a *.csv file.")
+	@ApiResponse(responseCode = "200", description = "Returns a file download containing a list of BAG-exported cases.", useReturnTypeSchema = true)
 	public Response exportCases(String file) {
 		return createFileDownloadResponse(
 			output -> CsvStreamUtils.writeCsvContentToStream(
@@ -60,6 +67,10 @@ public class BAGExportResource {
 
 	@GET
 	@Path("/contacts")
+	@Operation(summary = "Get all BAG contacts as a *.csv file.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a file download containing a list of BAG-exported contacts.",
+		useReturnTypeSchema = true)
 	public Response exportContacts(String file) {
 		return createFileDownloadResponse(
 			output -> CsvStreamUtils.writeCsvContentToStream(

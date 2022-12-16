@@ -24,7 +24,9 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for outbreak-related information")
 public class OutbreakDto extends EntityDto {
 
 	private static final long serialVersionUID = -1947258237240456473L;
@@ -33,10 +35,13 @@ public class OutbreakDto extends EntityDto {
 
 	private DistrictReferenceDto district;
 	private Disease disease;
+	@Schema(description = "Date and time when the outbreak has started.")
 	private Date startDate;
+	@Schema(description = "Date and time when the outbreak has ended.")
 	private Date endDate;
 
 	private UserReferenceDto reportingUser;
+	@Schema(description = "Date and time when the outbreak has been reported.")
 	private Date reportDate;
 
 	public static OutbreakDto build(DistrictReferenceDto district, Disease disease, UserReferenceDto reportingUser) {

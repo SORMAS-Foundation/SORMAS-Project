@@ -39,8 +39,10 @@ import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.TASK_MANAGEMENT)
+@Schema(description = "Data transfer object for schedulable and assignable tasks")
 public class TaskDto extends EntityDto {
 
 	private static final long serialVersionUID = 2439546041916003653L;
@@ -75,12 +77,15 @@ public class TaskDto extends EntityDto {
 	private TaskContext taskContext;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Schema(description = "Case this task is related to")
 	private CaseReferenceDto caze;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Schema(description = "Event this task is related to")
 	private EventReferenceDto event;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Schema(description = "Contact this task is related to")
 	private ContactReferenceDto contact;
 
 	@EmbeddedPersonalData
@@ -91,28 +96,41 @@ public class TaskDto extends EntityDto {
 	private TaskType taskType;
 	private TaskPriority priority;
 	@Required
+	@Schema(description = "Date and time when this task is due")
 	private Date dueDate;
+	@Schema(description = "Date and time when this task should begin")
 	private Date suggestedStart;
 	private TaskStatus taskStatus;
+	@Schema(description = "Date and time when the task status was last changed")
 	private Date statusChangeDate;
+	@Schema(description = "Date and time when this task changed its status to inProgress")
 	private Date perceivedStart;
 
+	@Schema(description = "User who created the task")
 	private UserReferenceDto creatorUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Free text task description")
 	private String creatorComment;
 	@Required
+	@Schema(description = "User that the task is assigned to")
 	private UserReferenceDto assigneeUser;
+	@Schema(description = "User that assigned the task")
 	private UserReferenceDto assignedByUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Task assessment or questions by the assigned user")
 	private String assigneeReply;
+	@Schema(description = "List of task observing users")
 	private Set<UserReferenceDto> observerUsers;
 
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
+	@Schema(description = "Geographical latitude of TBD_RESTAPI_SWAGGER_DOC")
 	private Double closedLat;
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
+	@Schema(description = "Geographical longitude of TBD_RESTAPI_SWAGGER_DOC")
 	private Double closedLon;
+	@Schema(description = "Accuracy of the recorded geographical data (latitude and longitude)")
 	private Float closedLatLonAccuracy;
 
 	public static TaskDto build(TaskContext context, ReferenceDto entityRef) {

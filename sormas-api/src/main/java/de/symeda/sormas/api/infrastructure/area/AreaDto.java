@@ -10,8 +10,10 @@ import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
+@Schema(description = "Data transfer object for area-related information")
 public class AreaDto extends InfrastructureDto {
 
 	public static final String I18N_PREFIX = "Area";
@@ -20,10 +22,15 @@ public class AreaDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = -6241927331721175673L;
 
+	@Schema(description = "Name of the Area")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String name;
+
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
+
+	@Schema(description = "Indicates whether this object has been archived")
 	private boolean archived;
 
 	public static AreaDto build() {

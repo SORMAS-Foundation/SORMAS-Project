@@ -27,8 +27,11 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.TRAVEL_ENTRIES)
+@Schema(
+	description = "Data transfer object for travel entries used for tracking travellers into a country, depending on said countries pandemic regulations.")
 public class TravelEntryDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 4503438472222204446L;
@@ -86,7 +89,9 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private PersonReferenceDto person;
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
+	@Schema(description = "Whether this travel entry has been archived")
 	private boolean archived;
+	@Schema(description = "Whether this travel entry has been deleted")
 	private boolean deleted;
 	private Disease disease;
 	@SensitiveData
@@ -104,46 +109,70 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private PointOfEntryReferenceDto pointOfEntry;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text description with details on the point-of-entry into the country")
 	private String pointOfEntryDetails;
 	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
+	@Schema(description = "Whether the subject has recovered from the disease")
 	private boolean recovered;
+	@Schema(description = "Whether the subject is vaccinated against the disease")
 	private boolean vaccinated;
+	@Schema(description = "Whether the subject tested negative for the disease")
 	private boolean testedNegative;
 	@Valid
+	@Schema(description = "List of special remarks regarding the Drug Enforcement Administration (DEA)")
 	private List<DeaContentEntry> deaContent;
 
 	private QuarantineType quarantine;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text description detailing the quarantine situation")
 	private String quarantineTypeDetails;
+	@Schema(description = "Date when the quarantine began")
 	private Date quarantineFrom;
+	@Schema(description = "Date when the quarantine ends/ended")
 	private Date quarantineTo;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Description of measures taken to ensure the basic care and supply of a quarantined person")
 	private String quarantineHelpNeeded;
+	@Schema(description = "Indicates whether the quarantine is ordered verbally")
 	private boolean quarantineOrderedVerbally;
+	@Schema(description = "Indicates whether the quarantine is ordered via a written document")
 	private boolean quarantineOrderedOfficialDocument;
+	@Schema(description = "Date when the quarantine is ordered verbally")
 	private Date quarantineOrderedVerballyDate;
+	@Schema(description = "Date when the quarantine is ordered via written document")
 	private Date quarantineOrderedOfficialDocumentDate;
+	@Schema(description = "Whether quarantining at home of the person is possible")
 	private YesNoUnknown quarantineHomePossible;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Comment about quarantining at home")
 	private String quarantineHomePossibleComment;
+	@Schema(description = "Whether the supply of a person quarantined at home is taken care of")
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text description detailing the supply situation for quarantine at home")
 	private String quarantineHomeSupplyEnsuredComment;
+	@Schema(description = "Indicates wether the quarantine duration has been extended")
 	private boolean quarantineExtended;
+	@Schema(description = "Indicates wether the quarantine duration has been reduced")
 	private boolean quarantineReduced;
+	@Schema(description = "Indicates wether a official quarantine order has been issued")
 	private boolean quarantineOfficialOrderSent;
+	@Schema(description = "Date when the official quarantine order is issued")
 	private Date quarantineOfficialOrderSentDate;
+	@Schema(description = "Date when the official quarantine order was received")
 	private Date dateOfArrival;
 
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Detailed deletion reason other than proposed reasons")
 	private String otherDeletionReason;
 
 	public static TravelEntryDto build(PersonReferenceDto person) {

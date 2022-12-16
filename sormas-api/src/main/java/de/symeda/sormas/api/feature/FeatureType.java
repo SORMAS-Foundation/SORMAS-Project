@@ -31,10 +31,12 @@ import com.google.common.collect.ImmutableMap;
 
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * New server features are automatically added to the database in FeatureConfigurationService.createMissingFeatureConfigurations().
  */
+@Schema(description = "Enum specyfing the type of feature; i.e. server functionality.")
 public enum FeatureType {
 
 	// FEATURE MODULES

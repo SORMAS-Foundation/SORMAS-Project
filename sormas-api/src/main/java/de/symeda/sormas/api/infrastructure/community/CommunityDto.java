@@ -28,8 +28,10 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @FeatureIndependent
+@Schema(description = "Data transfer object for community-related information")
 public class CommunityDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = -8833267932522978860L;
@@ -42,13 +44,17 @@ public class CommunityDto extends InfrastructureDto {
 	public static final String DISTRICT = "district";
 	public static final String EXTERNAL_ID = "externalID";
 
+	@Schema(description = "Name of the Community")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Float growthRate;
 	@MappingException(reason = MappingException.FILLED_FROM_OTHER_ENTITY)
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@Schema(description = "Indicates whether this object has been archived")
 	private boolean archived;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 

@@ -8,7 +8,9 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for aggregate report-related information.")
 public class AggregateReportDto extends EntityDto {
 
 	private static final long serialVersionUID = 8293942361133853979L;
@@ -33,17 +35,25 @@ public class AggregateReportDto extends EntityDto {
 
 	private UserReferenceDto reportingUser;
 	private Disease disease;
+	@Schema(description = "The year the aggregated report was generated for (for filtering).")
 	private Integer year;
+	@Schema(description = "The epidemiological week the aggregated report was generated for (for filtering).")
 	private Integer epiWeek;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private FacilityReferenceDto healthFacility;
 	private PointOfEntryReferenceDto pointOfEntry;
+	@Schema(description = "Number of suspected new cases per disease in the aggregated report.")
 	private Integer newCases;
+	@Schema(description = "Number of lab confirmations per disease in the aggregated report.")
 	private Integer labConfirmations;
+	@Schema(description = "Number of deaths per disease in the aggregated report.")
 	private Integer deaths;
+	@Schema(description = "The age group in which the cases occured.")
 	private String ageGroup;
+	@Schema(description = "Indicates whether the aggregated report is a duplicate.")
 	private boolean duplicate;
+	@Schema(description = "Indicates whether the age group is expired.")
 	private boolean expiredAgeGroup;
 
 	public UserReferenceDto getReportingUser() {

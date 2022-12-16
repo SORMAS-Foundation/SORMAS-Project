@@ -34,42 +34,66 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/diseaseconfigurations")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Disease Configuration Resource", description = "Configuration data for supported diseases")
 public class DiseaseConfigurationResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<DiseaseConfigurationDto> getAllDiseaseConfigurations(@PathParam("since") long since) {
+	@Operation(summary = "Get all disease configuration data from a date in the past until now.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of disease configuration data for the given interval.",
+		useReturnTypeSchema = true)
+	public List<DiseaseConfigurationDto> getAllDiseaseConfigurations(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getDiseaseConfigurationFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<DiseaseConfigurationDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get disease configuration data entries based on their unique IDs (UUIDs)")
+	@ApiResponse(responseCode = "200", description = "Returns a list of disease configuration data based on the queried UUIDs")
+	public List<DiseaseConfigurationDto> getByUuids(
+		@RequestBody(description = "List of disease configuration UUIDs used for the query", required = true) List<String> uuids) {
 		return FacadeProvider.getDiseaseConfigurationFacade().getByUuids(uuids);
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDS) of all disease configuraton data entries.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getAllUuids() {
 		return FacadeProvider.getDiseaseConfigurationFacade().getAllUuids();
 	}
 
 	@GET
 	@Path("/diseaseNames")
+	@Operation(summary = "Get all diseases that fulfill the given filter criteria.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of diseases", useReturnTypeSchema = true)
 	public List<Disease> getDiseases(
-		@QueryParam("active") boolean active,
-		@QueryParam("primary") boolean primary,
-		@QueryParam("caseBased") boolean caseBased) {
+		@Parameter(description = "Whether the disease is set to active (whether the server is configured to tracking the disease)",
+			required = true) @QueryParam("active") boolean active,
+		@Parameter(
+			description = "Whether the disease is set to primary (whether the the course of the diseasee will be prominently displayed in dashboard)",
+			required = true) @QueryParam("primary") boolean primary,
+		@Parameter(description = "TBD_RESTAPI_SWAGGER_DOC", required = true) @QueryParam("caseBased") boolean caseBased) {
 		return FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(active, primary, caseBased);
 	}
 
 	@GET
 	@Path("/diseaseVariants")
-	public List<CustomizableEnum> getDiseaseVariants(@QueryParam("disease") String disease) {
+	@Operation(summary = "Get the different variants of a disease based on the name of the disease.")
+	@ApiResponse(responseCode = "200", description = "Returns a List of disease variants.", useReturnTypeSchema = true)
+	public List<CustomizableEnum> getDiseaseVariants(
+		@Parameter(required = true, description = "Name of the disease that will be queried for variants") @QueryParam("disease") String disease) {
 		return FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, Disease.valueOf(disease));
 	}
 

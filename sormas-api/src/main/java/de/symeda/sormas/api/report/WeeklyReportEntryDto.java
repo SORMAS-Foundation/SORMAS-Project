@@ -19,7 +19,9 @@ package de.symeda.sormas.api.report;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for weekly report entries.")
 public class WeeklyReportEntryDto extends EntityDto {
 
 	private static final long serialVersionUID = 7863410150359837423L;
@@ -27,6 +29,7 @@ public class WeeklyReportEntryDto extends EntityDto {
 	public static final String I18N_PREFIX = "WeeklyReportEntry";
 
 	private Disease disease;
+	@Schema(description = "Number of cases in the weekly report entry.")
 	private Integer numberOfCases;
 
 	public Disease getDisease() {

@@ -7,7 +7,9 @@ import java.util.Objects;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for aggregate case count-related information.")
 public class AggregateCaseCountDto implements Serializable {
 
 	public static final String I18N_PREFIX = "AggregateReport";
@@ -30,22 +32,38 @@ public class AggregateCaseCountDto implements Serializable {
 	public static final String DEATHS = "deaths";
 	public static final String REPORTING_USER = "reportingUser";
 	private static final long serialVersionUID = -6857559727281292882L;
+
+	@Schema(description = "Name of the region the aggregated report is associated to.")
 	private String regionName;
+	@Schema(description = "Id of the region the aggregated report is associated to.")
 	private Long regionId;
+	@Schema(description = "Name of the district the aggregated report is associated to.")
 	private String districtName;
+	@Schema(description = "Id of the district the aggregated report is associated to.")
 	private Long districtId;
+	@Schema(description = "Name of the health facility the aggregated report is associated to.")
 	private String healthFacilityName;
+	@Schema(description = "Id of the health facility the aggregated report is associated to.")
 	private Long healthFacilityId;
+	@Schema(description = "Name of the point-of-entry the aggregated report is associated to.")
 	private String pointOfEntryName;
+	@Schema(description = "Id of the point-of-entry the aggregated report is associated to.")
 	private Long pointOfEntryId;
+	@Schema(description = "The year the aggregated report was generated for.")
 	private int year;
+	@Schema(description = "The epidemiological week the aggregated report was generated for.")
 	private int epiWeek;
 	private Disease disease;
+	@Schema(description = "Number of suspected new cases per disease in the aggregated report.")
 	private long newCases;
+	@Schema(description = "Number of lab confirmations per disease in the aggregated report.")
 	private long labConfirmations;
+	@Schema(description = "Number of deaths per disease in the aggregated report.")
 	private long deaths;
+	@Schema(description = "The age group for which the report was aggregated.")
 	private String ageGroup;
 	private UserReferenceDto reportingUser;
+	@Schema(description = "Date and time the aggregated report was last changed.")
 	private Date changeDate;
 
 	public AggregateCaseCountDto() {

@@ -20,8 +20,10 @@ package de.symeda.sormas.api.infrastructure.region;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.utils.FeatureIndependent;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @FeatureIndependent
+@Schema(description = "Corresponding region")
 public class RegionReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -1610675328037466348L;

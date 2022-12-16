@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.api.sormastosormas.share.incoming;
@@ -32,7 +29,9 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Class providing light weight information about a person that is SORMAS to SORMAS shareable.")
 public class SormasToSormasPersonPreview extends PseudonymizableDto implements Serializable {
 
 	private static final long serialVersionUID = -5945798718115243796L;
@@ -47,15 +46,20 @@ public class SormasToSormasPersonPreview extends PseudonymizableDto implements S
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "First name(s) of the person")
 	private String firstName;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Last name of the person")
 	private String lastName;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Birth day of the person")
 	private Integer birthdateDD;
+	@Schema(description = "Birth month of the person")
 	private Integer birthdateMM;
+	@Schema(description = "Birth year of the person")
 	private Integer birthdateYYYY;
 	private Sex sex;
 	@EmbeddedPersonalData

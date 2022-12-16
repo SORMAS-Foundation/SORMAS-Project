@@ -26,17 +26,22 @@ import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.uuid.HasUuid;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @AuditedClass
+@Schema(description = "Data transfer object for external identification related data")
 public class ExternalDataDto implements Serializable, HasExternalData, HasUuid {
 
 	@AuditIncludeProperty
+	@Schema(description = "UUID of the object whose external data shall be changed")
 	private String uuid;
 	@AuditIncludeProperty
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "External ID of the case/contact/event object")
 	private String externalId;
 	@AuditIncludeProperty
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "External token ID / file number of the object")
 	private String externalToken;
 
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)

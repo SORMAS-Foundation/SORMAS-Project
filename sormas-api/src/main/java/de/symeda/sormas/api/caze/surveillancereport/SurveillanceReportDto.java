@@ -32,6 +32,7 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class SurveillanceReportDto extends PseudonymizableDto {
@@ -64,12 +65,15 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 
 	private ReportingType reportingType;
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
 
 	private UserReferenceDto creatingUser;
 
+	@Schema(description = "Date when the report was generated")
 	private Date reportDate;
 
+	@Schema(description = "Date when the diagnosis reported on was made")
 	private Date dateOfDiagnosis;
 
 	private RegionReferenceDto facilityRegion;
@@ -82,10 +86,12 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the facility")
 	private String facilityDetails;
 
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the report")
 	private String notificationDetails;
 
 	private CaseReferenceDto caze;

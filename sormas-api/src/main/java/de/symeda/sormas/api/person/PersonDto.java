@@ -56,6 +56,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
@@ -135,12 +136,14 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "First name of the person")
 	private String firstName;
 	@Outbreaks
 	@Required
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Last name of the person")
 	private String lastName;
 	@HideForCountriesExcept
 	@PersonalData
@@ -149,16 +152,19 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Salutation other than the proposed ones")
 	private String otherSalutation;
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Birth name of the person")
 	private String birthName;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@HideForCountries
+	@Schema(description = "Nickname of the person")
 	private String nickname;
 	@PersonalData
 	@SensitiveData
@@ -166,6 +172,7 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
+	@Schema(description = "Name of the Person's mother")
 	private String mothersName;
 	@PersonalData
 	@SensitiveData
@@ -173,6 +180,7 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
+	@Schema(description = "Maiden name of the person's mother")
 	private String mothersMaidenName;
 	@PersonalData
 	@SensitiveData
@@ -180,11 +188,13 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
+	@Schema(description = "Name of the person's father")
 	private String fathersName;
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Names of the person's guardians")
 	private String namesOfGuardians;
 	@Outbreaks
 	@Required
@@ -192,61 +202,77 @@ public class PersonDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Day of the month when the person was born")
 	private Integer birthdateDD;
 	@Outbreaks
+	@Schema(description = "Month when the person was born")
 	private Integer birthdateMM;
 	@Outbreaks
+	@Schema(description = "Year when the person was born")
 	private Integer birthdateYYYY;
 	@Outbreaks
+	@Schema(description = "Approximate age of the person")
 	private Integer approximateAge;
 	@Outbreaks
 	private ApproximateAgeType approximateAgeType;
 	@Outbreaks
+	@Schema(description = "Date when the approximate age of the person was recorded, so that approximate increases in age can be made")
 	private Date approximateAgeReferenceDate;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
+	@Schema(description = "Region where the person was born")
 	private RegionReferenceDto placeOfBirthRegion;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
+	@Schema(description = "District where the person was born")
 	private DistrictReferenceDto placeOfBirthDistrict;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SensitiveData
+	@Schema(description = "Community where the person was born")
 	private CommunityReferenceDto placeOfBirthCommunity;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
+	@Schema(description = "Type of facility where the person was born")
 	private FacilityType placeOfBirthFacilityType;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SensitiveData
+	@Schema(description = "Facility where the person was born")
 	private FacilityReferenceDto placeOfBirthFacility;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about the facility where the person was born")
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
+	@Schema(description = "Gestational age (age of pregnancy) when the person was born")
 	private Integer gestationAgeAtBirth;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
+	@Schema(description = "Weight of the person at birth in decigramm")
 	private Integer birthWeight;
 
 	@Outbreaks
 	private PresentCondition presentCondition;
+	@Schema(description = "Date of the person's death")
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;
+	@Schema(description = "Disease that caused the person's death")
 	private Disease causeOfDeathDisease;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about the cause of the person's death")
 	private String causeOfDeathDetails;
 	@Diseases({
 		Disease.AFP,
@@ -269,6 +295,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.OTHER })
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Description of the place where the person died")
 	private String deathPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -280,6 +307,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@HideForCountries
+	@Schema(description = "Date when the person was buried")
 	private Date burialDate;
 	@Diseases({
 		Disease.AFP,
@@ -293,6 +321,7 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@HideForCountries
+	@Schema(description = "Description of the person's burial")
 	private String burialPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -319,11 +348,13 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
+	@Schema(description = "Details about the person's education")
 	private String educationDetails;
 
 	private OccupationType occupationType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Details about the person's occupation")
 	private String occupationDetails;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
@@ -333,21 +364,26 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
+	@Schema(description = "Passport number of the person")
 	private String passportNumber;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@HideForCountries
+	@Schema(description = "National health ID of the person")
 	private String nationalHealthId;
 	@Valid
+	@Schema(description = "Past addresses of the person")
 	private List<LocationDto> addresses = new ArrayList<>();
 	@Valid
 	private List<PersonContactDetailDto> personContactDetails = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
+	@Schema(description = "Whether the person uses a covid app")
 	private boolean hasCovidApp;
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
+	@Schema(description = "Whether a covid code was delivered to the person")
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
@@ -355,24 +391,30 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Person's Id in external systems.")
 	private String externalId;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "External token ID / file number of the person.")
 	private String externalToken;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Internal token ID / file number of the person.")
 	private String internalToken;
 
 	@HideForCountriesExcept(countries = {})
 	@SensitiveData
+	@Schema(description = "Country where the person was born")
 	private CountryReferenceDto birthCountry;
 	@HideForCountriesExcept(countries = {})
 	@SensitiveData
+	@Schema(description = "Contries the person posses the citizenship of")
 	private CountryReferenceDto citizenship;
 	@SensitiveData
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "General comments about the person")
 	private String additionalDetails;
 
 	@SuppressWarnings("serial")

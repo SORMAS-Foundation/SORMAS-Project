@@ -20,7 +20,9 @@ import java.util.Date;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light weight index information on share requests for larger queries")
 public class ShareRequestIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 2314636780125234734L;
@@ -36,13 +38,19 @@ public class ShareRequestIndexDto extends AbstractUuidDto {
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String COMMENT = "comment";
 
+	@Schema(description = "Date when the share request was created")
 	private Date creationDate;
 	private ShareRequestDataType dataType;
 	private ShareRequestStatus status;
+	@Schema(description = "Id of the organization making the share request")
 	private String organizationId;
+	@Schema(description = "Name of the organization making the share request")
 	private String organizationName;
+	@Schema(description = "Name of the person making the share request")
 	private String senderName;
+	@Schema(description = "Whether a transition of ownership is requested")
 	private boolean ownershipHandedOver;
+	@Schema(description = "Free text comment on the share request")
 	private String comment;
 
 	public ShareRequestIndexDto(

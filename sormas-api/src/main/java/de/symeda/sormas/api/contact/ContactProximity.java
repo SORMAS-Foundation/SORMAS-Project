@@ -19,7 +19,8 @@ package de.symeda.sormas.api.contact;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-
+import io.swagger.v3.oas.annotations.media.Schema;
+@Schema(description = "Degrees of proximity of a contact.")
 public enum ContactProximity {
 
 	TOUCHED_FLUID,

@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Whether the person died by an epidemic disease or another cause")
 public enum CauseOfDeath {
 
 	EPIDEMIC_DISEASE,

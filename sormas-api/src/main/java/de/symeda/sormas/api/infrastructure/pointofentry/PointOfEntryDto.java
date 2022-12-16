@@ -18,8 +18,11 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
+@Schema(description = "Data transfer object for information related to the point-of-entry into a country")
 public class PointOfEntryDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = 4124483408068181854L;
@@ -46,18 +49,24 @@ public class PointOfEntryDto extends InfrastructureDto {
 	public static final String EXTERNAL_ID = "externalID";
 
 	private PointOfEntryType pointOfEntryType;
+	@Schema(description = "Name of the point-of-entry")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@Schema(description = "Geodetic latitude of the point-of-entry's coordinates")
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
 	private Double latitude;
+	@Schema(description = "Geodetic longitude of the point-of-entry's coordinates")
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
 	private Double longitude;
+	@Schema(description = "Name of the point-of-entry")
 	private boolean active;
+	@Schema(description = "Indicates whether this object has been archived")
 	private boolean archived;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
@@ -105,6 +114,7 @@ public class PointOfEntryDto extends InfrastructureDto {
 		return dto;
 	}
 
+	@Hidden
 	public boolean isOtherPointOfEntry() {
 
 		return OTHER_AIRPORT_UUID.equals(getUuid())
@@ -113,10 +123,12 @@ public class PointOfEntryDto extends InfrastructureDto {
 			|| OTHER_POE_UUID.equals(getUuid());
 	}
 
+	@Hidden
 	public boolean isNameOtherPointOfEntry() {
 		return isNameOtherPointOfEntry(getName());
 	}
 
+	@Hidden
 	public static boolean isNameOtherPointOfEntry(String name) {
 		return OTHER_AIRPORT.equals(name) || OTHER_SEAPORT.equals(name) || OTHER_GROUND_CROSSING.equals(name) || OTHER_POE.equals(name);
 	}

@@ -2,7 +2,9 @@ package de.symeda.sormas.api.report;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "The level of infrastructure grouping.")
 public enum AggregateReportGroupingLevel {
 
 	REGION,

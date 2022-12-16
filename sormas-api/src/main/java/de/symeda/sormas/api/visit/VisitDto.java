@@ -35,6 +35,7 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CONTACT_TRACING,
@@ -59,28 +60,36 @@ public class VisitDto extends PseudonymizableDto {
 	public static final String ORIGIN = "origin";
 
 	@Required
+	@Schema(description = "Person that is visited/followed up on")
 	private PersonReferenceDto person;
 	private Disease disease;
 	@Required
+	@Schema(description = "Date and time when the visit was conducted.")
 	private Date visitDateTime;
 	@Required
 	@SensitiveData
+	@Schema(description = "User conducting the visit")
 	private UserReferenceDto visitUser;
 	@Required
 	private VisitStatus visitStatus;
 	@SensitiveData
+	@Schema(description = "Remarks about the visit")
 	private String visitRemarks;
 	@Valid
+	@Schema(description = "Symptoms recorded during the visit")
 	private SymptomsDto symptoms;
 	@SensitiveData
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
+	@Schema(description = "Geodetic latitude of TBD_RESTAPI_SWAGGER_DOC")
 	private Double reportLat;
 	@SensitiveData
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
+	@Schema(description = "Geodetic longitude of TBD_RESTAPI_SWAGGER_DOC")
 	private Double reportLon;
 
+	@Schema(description = "Accuracy of geodetic latitude and longitude")
 	private Float reportLatLonAccuracy;
 	private VisitOrigin origin;
 

@@ -8,6 +8,7 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceD
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ExternalMessageCriteria extends BaseCriteria implements Serializable {
 
@@ -21,15 +22,21 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	public static final String ASSIGNEE = "assignee";
 	public static final String TYPE = "type";
 	@AuditIncludeProperty
+	@Schema(description = "UUID of the external message.")
 	private String uuid;
 	private ExternalMessageType type;
 	private ExternalMessageStatus externalMessageStatus;
 	private SampleReferenceDto sample;
 	private SurveillanceReportReferenceDto surveillanceReport;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String searchFieldLike;
+	@Schema(description = "Date at the beginning of the interval (for filtering by message sent date).")
 	private Date messageDateFrom;
+	@Schema(description = "Date at the end of the interval (for filtering by message sent date).")
 	private Date messageDateTo;
+	@Schema(description = "Date at the beginning of the interval (for filtering by birth date).")
 	private Date birthDateFrom;
+	@Schema(description = "Date at the end of the interval (for filtering by birth date).")
 	private Date birthDateTo;
 	private UserReferenceDto assignee;
 

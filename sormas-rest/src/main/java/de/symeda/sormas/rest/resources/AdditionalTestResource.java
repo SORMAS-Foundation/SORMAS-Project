@@ -36,54 +36,82 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.sample.AdditionalTestCriteria;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/additionaltests")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Additional Tests Resource", description = "Information about additional conductable medical tests.")
 public class AdditionalTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<AdditionalTestDto> getAllAdditionalTests(@PathParam("since") long since) {
+	@Operation(summary = "Get all additional tests from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of additional Tests for the given interval.", useReturnTypeSchema = true)
+	public List<AdditionalTestDto> getAllAdditionalTests(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getAdditionalTestFacade().getAllActiveAdditionalTestsAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	@Operation(summary = "Get a batch of addtional tests that fulfill certain criteria.",
+		description = "**-** tests are no older than a given date in the past until now [*since*]\n\n"
+			+ "**-** TBD_RESTAPI_SWAGGER_DOC [*lastSynchronizedUuid*]\n\n" + "**-** number of results does not exceed a given number [*size*]")
+	@ApiResponse(responseCode = "200", description = "Returns a list of additional tests for the given interval.", useReturnTypeSchema = true)
 	public List<AdditionalTestDto> getAllAdditionalTests(
-		@PathParam("since") long since,
-		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since,
+		@Parameter(required = true, description = "batch size") @PathParam("size") int size,
+		@Parameter(required = true, description = "TBD_RESTAPI_SWAGGER_DOC") @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getAdditionalTestFacade().getAllActiveAdditionalTestsAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST
 	@Path("/query")
-	public List<AdditionalTestDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get data of additional tests based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of additional tests by their UUIDs.", useReturnTypeSchema = true)
+	public List<AdditionalTestDto> getByUuids(
+		@RequestBody(description = "List of UUIDs used to query additional test data entries.") List<String> uuids) {
 		List<AdditionalTestDto> result = FacadeProvider.getAdditionalTestFacade().getByUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postAdditionalTests(@Valid List<AdditionalTestDto> dtos) {
+	@Operation(summary = "Submit a list of additional test entries to the server.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list containig the upload success status of each uploaded entry.",
+		useReturnTypeSchema = true)
+	public List<PushResult> postAdditionalTests(
+		@RequestBody(
+			description = "List of AdditionalTestDtos to be added to the existing additional test data entries.") @Valid List<AdditionalTestDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getAdditionalTestFacade()::saveAdditionalTest);
 		return result;
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available additional test data entries.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getAdditionalTestFacade().getAllActiveUuids();
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of AdditionalTests based on AdditionalTestCriteria filter params.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a page of additional tests that have met the filter criteria.",
+		useReturnTypeSchema = true)
 	public Page<AdditionalTestDto> getIndexList(
-		@RequestBody CriteriaWithSorting<AdditionalTestCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "Additional test based query-filter with sorting property.",
+			required = true) CriteriaWithSorting<AdditionalTestCriteria> criteriaWithSorting,
+		@QueryParam("offset") @Parameter(required = true, description = "page offset") int offset,
+		@QueryParam("size") @Parameter(required = true, description = "page size") int size) {
 		return FacadeProvider.getAdditionalTestFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}

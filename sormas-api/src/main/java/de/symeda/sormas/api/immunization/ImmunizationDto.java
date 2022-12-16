@@ -48,8 +48,10 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT)
+@Schema(description = "Data transfer object for immunization information")
 public class ImmunizationDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6538566879882613529L;
@@ -97,13 +99,16 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private Disease disease;
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Additional information about the disease")
 	private String diseaseDetails;
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Required
+	@Schema(description = "The date on which the vaccination is reported")
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
+	@Schema(description = "Indicates whether this immunization has been archived")
 	private boolean archived;
 	@Required
 	private ImmunizationStatus immunizationStatus;
@@ -111,12 +116,14 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private MeansOfImmunization meansOfImmunization;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
+	@Schema(description = "Additional information about means of immunization. This field is required if the means of immunization is 'OTHER'.")
 	private String meansOfImmunizationDetails;
 	@Required
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
 
 	@Required
@@ -139,30 +146,45 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the facility, like name or description")
 	private String healthFacilityDetails;
 
+	@Schema(description = "Start date of the immunization")
 	private Date startDate;
+	@Schema(description = "End date of the immunization")
 	private Date endDate;
+	@Schema(description = "Number of doses of vaccine given for immunization. "
+		+ "This field is required only if the means of immunization is vaccination.")
 	private Integer numberOfDoses;
+	@Schema(description = "Free text of the information on the number of doses of vaccine given for immunization. "
+		+ "This field is required only if the means of immunization is vaccination.")
 	private String numberOfDosesDetails;
+	@Schema(description = "Indicates if there was a previous infection")
 	private YesNoUnknown previousInfection;
 
+	@Schema(description = "Date of last infection")
 	private Date lastInfectionDate;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData
+	@Schema(description = "General comments about the immunization")
 	private String additionalDetails;
-
+	@Schema(description = "Date of first positive test result")
 	private Date positiveTestResultDate;
+	@Schema(description = "Date of recovery")
 	private Date recoveryDate;
+	@Schema(description = "Date from when immunization is valid")
 	private Date validFrom;
+	@Schema(description = "Date until when the immunization is valid")
 	private Date validUntil;
 
 	private CaseReferenceDto relatedCase;
 
+	@Schema(description = "Whether this immunization entry has been deleted")
 	private boolean deleted;
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Detailed deletion reason other than proposed reasons.")
 	private String otherDeletionReason;
 
 	@Valid

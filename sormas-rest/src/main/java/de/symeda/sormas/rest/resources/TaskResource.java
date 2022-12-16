@@ -37,8 +37,12 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
-import de.symeda.sormas.rest.resources.EntityDtoResource;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -51,26 +55,40 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/tasks")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Task Resource",
+	description = "Access to broad task functionality.\n\n"
+		+ "Tasks are related to **Cases**, **Contacts** or **Travel Entries** and can be scheduled, assigned to users, and tracked via their *status*.")
 public class TaskResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<TaskDto> getAll(@PathParam("since") long since) {
+	@Operation(summary = "Get all active tasks from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of active tasks for the given interval.", useReturnTypeSchema = true)
+	public List<TaskDto> getAll(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	@Operation(summary = "Get a batch of active tasks that fulfill certain criteria.",
+		description = "**-** tasks are no older than a given date in the past until now [*since*]\n\n"
+			+ "**-** TBD_RESTAPI_SWAGGER_DOC [*lastSynchronizedUuid*]\n\n" + "**-** number of results does not exceed a given number [*size*]")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of active tasks for the given interval that met the criteria.",
+		useReturnTypeSchema = true)
 	public List<TaskDto> getAll(
-		@PathParam("since") long since,
-		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since,
+		@Parameter(required = true, description = "batch size") @PathParam("size") int size,
+		@Parameter(required = true, description = "TBD_RESTAPI_SWAGGER_DOC") @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST
 	@Path("/query")
-	public List<TaskDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get tasks based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of tasks by their UUIDs.", useReturnTypeSchema = true)
+	public List<TaskDto> getByUuids(@RequestBody(description = "List of UUIDs used to query task entries.", required = true) List<String> uuids) {
 
 		List<TaskDto> result = FacadeProvider.getTaskFacade().getByUuids(uuids);
 		return result;
@@ -78,7 +96,12 @@ public class TaskResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postTasks(@Valid List<TaskDto> dtos) {
+	@Operation(summary = "Submit a list of tasks to the server.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list containing the upload success status of each uploaded task.",
+		useReturnTypeSchema = true)
+	public List<PushResult> postTasks(
+		@RequestBody(description = "List of TaskDtos to be added to the server.", required = true) @Valid List<TaskDto> dtos) {
 
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getTaskFacade()::saveTask);
 		return result;
@@ -86,40 +109,58 @@ public class TaskResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available tasks.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getTaskFacade().getAllActiveUuids();
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of TaskIndexDtos based on TaskCriteria filter params.")
+	@ApiResponse(responseCode = "200", description = "Returns a page of tasks that have met the filter criteria.", useReturnTypeSchema = true)
 	public Page<TaskIndexDto> getIndexList(
-		@RequestBody CriteriaWithSorting<TaskCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "Task-based query-filter with sorting property.",
+			required = true) CriteriaWithSorting<TaskCriteria> criteriaWithSorting,
+		@Parameter(required = true, description = "page offset") @QueryParam("offset") int offset,
+		@Parameter(required = true, description = "page size") @QueryParam("size") int size) {
 		return FacadeProvider.getTaskFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@GET
 	@Path("/{uuid}")
-	public TaskDto getByUuid(@PathParam("uuid") String uuid) {
+	@Operation(summary = "Get a specific task based on its unique ID (UUID).")
+	@ApiResponse(responseCode = "200", description = "Returns a task by its UUID.", useReturnTypeSchema = true)
+	public TaskDto getByUuid(
+		@Parameter(required = true, description = "Universally unique identifier to query the task.") @PathParam("uuid") String uuid) {
 		return FacadeProvider.getTaskFacade().getByUuid(uuid);
 	}
 
 	@GET
 	@Path("/archived/{since}")
-	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get all archived tasks from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of UUIDs of archived tasks for the given interval.", useReturnTypeSchema = true)
+	public List<String> getArchivedUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getTaskFacade().getArchivedUuidsSince(new Date(since));
 	}
 
 	@GET
 	@Path("/obsolete/{since}")
-	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get all obsolete tasks from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of UUIDs of obsolete tasks for the given interval.", useReturnTypeSchema = true)
+	public List<String> getObsoleteUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getTaskFacade().getObsoleteUuidsSince(new Date(since));
 	}
 
 	@POST
 	@Path("/delete")
-	public List<String> delete(List<String> uuids) {
+	@Operation(summary = "Delete tasks based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of UUIDs of tasks for which deletion was successful.",
+		useReturnTypeSchema = true)
+	public List<String> delete(@RequestBody(description = "List of UUIDs denoting the tasks to be deleted.", required = true) List<String> uuids) {
 		return FacadeProvider.getTaskFacade().deleteTasks(uuids);
 	}
 
