@@ -1428,3 +1428,24 @@ Feature: Create events
     And I click on Bulk Actions combobox in Event Parcitipant Tab
     And I click on Create quarantine order documents from bulk actions menu in Event Participant Tab
     Then I verify the warning message 'No event participants selected' is displayed
+
+  @#5762 @env_main
+  Scenario: Link Event to a Case
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click Link Event button on Edit Case Page
+    And I fill Event Id filter in Link to Event form with last created via API Event uuid
+    And I click first result in grid on Link to Event form
+    And I click on SAVE button in Link Event to group form
+    Then I click on save button in Add Participant form
+    And I validate last created via API Event data is displayed under Linked Events section
