@@ -222,6 +222,15 @@ public class UserManagementSteps implements En {
         });
 
     And(
+        "^I check that \"([^\"]*)\" is available in the user role filter in User management Page$",
+        (String userRole) -> {
+          softly.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(USER_ROLES_COMBOBOX, userRole),
+              "Provided user role is not available in the user role template dropdown menu!");
+          softly.assertAll();
+        });
+
+    And(
         "^I filter users by \"([^\"]*)\" user role$",
         (String userRole) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_ROLES_COMBOBOX);

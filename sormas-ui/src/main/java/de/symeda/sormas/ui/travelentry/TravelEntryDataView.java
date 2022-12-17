@@ -82,7 +82,9 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		final String uuid = travelEntryDto.getUuid();
 		final EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(uuid);
+		boolean editAllowed = isEditAllowed();
 		DocumentListComponent documentList = null;
+
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			documentList = new DocumentListComponent(
@@ -90,8 +92,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				getReference(),
 				UserRight.TRAVEL_ENTRY_EDIT,
 				travelEntryDto.isPseudonymized(),
-				isEditAllowed(),
-				EditPermissionType.DOCUMENTS_ONLY.equals(travelEntryEditAllowed));
+				editAllowed,
+				editAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -104,7 +106,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				getTravelEntryRef(),
 				travelEntryDto.getDisease(),
 				this::showUnsavedChangesPopup,
-				isEditAllowed());
+				editAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}

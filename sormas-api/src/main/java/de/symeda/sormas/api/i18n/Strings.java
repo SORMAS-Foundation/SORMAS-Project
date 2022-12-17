@@ -1256,6 +1256,7 @@ public interface Strings {
 	String messageUserRightsExportFailed = "messageUserRightsExportFailed";
 	String messageUserRoleCombination = "messageUserRoleCombination";
 	String messageUserRoleSaved = "messageUserRoleSaved";
+	String messageUserRoleUnusableForLogin = "messageUserRoleUnusableForLogin";
 	String messageUsersDisabled = "messageUsersDisabled";
 	String messageUsersEnabled = "messageUsersEnabled";
 	String messageUserSyncCanceled = "messageUserSyncCanceled";
