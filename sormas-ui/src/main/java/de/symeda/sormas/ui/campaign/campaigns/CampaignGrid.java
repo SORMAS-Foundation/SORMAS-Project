@@ -16,12 +16,8 @@
 package de.symeda.sormas.ui.campaign.campaigns;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -32,7 +28,6 @@ import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -90,28 +85,12 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 
 	public void setLazyDataProvider() {
 
-		DataProvider<CampaignIndexDto, CampaignCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getCampaignFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getCampaignFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getCampaignFacade()::getIndexList, FacadeProvider.getCampaignFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
 
-		ListDataProvider<CampaignIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getCampaignFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
+		setEagerDataProvider(FacadeProvider.getCampaignFacade()::getIndexList);
 	}
 
 	public void reload() {

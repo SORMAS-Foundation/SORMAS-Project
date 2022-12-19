@@ -148,16 +148,15 @@ public class EventsView extends AbstractView {
 
 		if (isDefaultViewType()) {
 			grid = new EventGrid(eventCriteria, getClass());
-			((EventGrid) grid).setDataProviderListener(e -> updateStatusButtons());
-			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 		} else if (isActionViewType()) {
 			grid = new EventActionsGrid(eventCriteria, getClass());
-			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_actions));
 		} else {
 			grid = new EventGroupsGrid(eventGroupCriteria, getClass());
 			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_groups));
 		}
+		grid.addDataSizeChangeListener(e -> updateStatusButtons());
+
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -715,7 +714,7 @@ public class EventsView extends AbstractView {
 			CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 			if (activeStatusButton != null) {
 				activeStatusButton
-					.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+					.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 			}
 		}
 	}

@@ -87,7 +87,8 @@ public class ContinentsView extends AbstractConfigurationView {
 		grid = new ContinentsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		rowCount = new RowCount(Strings.labelNumberOfContinents, grid.getItemCount());
+		rowCount = new RowCount(Strings.labelNumberOfContinents, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
 		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -102,14 +103,14 @@ public class ContinentsView extends AbstractConfigurationView {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.CONTINENT));
 				window.setCaption(I18nProperties.getString(Strings.headingImportContinents));
-				window.addCloseListener(c -> grid.reload(true));
+				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importButton);
 
 			importDefaultContinentsButton = ButtonHelper.createIconButton(Captions.actionImportAllContinents, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new ImportDefaultContinentsLayout());
 				window.setCaption(I18nProperties.getString(Strings.headingImportAllContinents));
-				window.addCloseListener(c -> grid.reload(true));
+				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importDefaultContinentsButton);
 		} else if (!infrastructureDataEditable) {
@@ -274,7 +275,6 @@ public class ContinentsView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
-		rowCount.update(grid.getItemCount());
 	}
 
 	public void updateFilterComponents() {
