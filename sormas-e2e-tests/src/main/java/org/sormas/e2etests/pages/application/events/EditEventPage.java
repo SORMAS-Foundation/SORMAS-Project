@@ -34,6 +34,7 @@ public class EditEventPage {
   public static final By TITLE_INPUT = By.cssSelector("#eventTitle");
   public static final By SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By SAVE_BUTTON_FOR_POPUP_WINDOWS = By.cssSelector(".popupContent #commit");
+  public static final By EDIT_EVENT_PAGE_SAVE_BUTTON = By.cssSelector("#commit");
   public static final By EVENT_STATUS_OPTIONS =
       By.cssSelector("#eventStatus .v-select-option label");
   public static final By RISK_LEVEL_INPUT = By.cssSelector(" #riskLevel input");
