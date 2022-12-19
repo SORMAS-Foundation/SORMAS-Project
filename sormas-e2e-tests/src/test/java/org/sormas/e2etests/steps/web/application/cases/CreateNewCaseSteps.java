@@ -304,6 +304,7 @@ public class CreateNewCaseSteps implements En {
           if (option.equals("first")) {
             webDriverHelpers.fillInWebElement(
                 CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
+            TimeUnit.SECONDS.sleep(3);
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
