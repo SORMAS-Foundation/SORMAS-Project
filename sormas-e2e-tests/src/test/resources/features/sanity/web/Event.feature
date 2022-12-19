@@ -8,7 +8,7 @@ Feature: Create events
     And I click on the NEW EVENT button
     And I create a new event with status CLUSTER
 
-  @env_main @testIt
+  @env_main
   Scenario: Create a new event and change its status multiple times
     Given I log in as a National User
     And I click on the Events button from navbar
