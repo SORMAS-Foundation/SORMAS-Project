@@ -439,6 +439,12 @@ public class EventController {
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 				if (!eventIndexDto.contains(selectedEvent)) {
 					createEventParticipantWithPerson(eventReferenceDto, personReference);
+				} else {
+					SormasUI.refreshView();
+					Notification notification =
+						new Notification(I18nProperties.getString(Strings.messageThisPersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(10000);
+					notification.show(Page.getCurrent());
 				}
 			} else {
 				create(personReference);
