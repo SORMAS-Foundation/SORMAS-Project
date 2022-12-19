@@ -65,7 +65,7 @@ public class AreasView extends AbstractConfigurationView {
 		grid = new AreasGrid(criteria);
 		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfAreas, grid.getItemCount()));
+		gridLayout.addComponent(new RowCount(Strings.labelNumberOfAreas, grid.getDataSize()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);

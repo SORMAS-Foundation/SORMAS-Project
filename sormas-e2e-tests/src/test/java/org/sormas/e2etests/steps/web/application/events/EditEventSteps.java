@@ -62,6 +62,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIP
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_EVENT_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_EVENT_PAGE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_FIRST_TASK;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EPIDEMIOLOGICAL_EVIDENCE_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_ACTIONS_TAB;
@@ -219,6 +220,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.entities.pojo.web.EventGroup;
@@ -745,9 +747,14 @@ public class EditEventSteps implements En {
     When(
         "I click on save button in Add Participant form",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(1); // wait for reaction
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // needed for button to be available
+          int attempts = 0;
+          do {
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            attempts++;
+          } while (attempts < 5
+              && webDriverHelpers.isElementPresent(By.cssSelector(".v-window-wrap")));
         });
     When(
         "I add a participant to the event",
@@ -814,7 +821,7 @@ public class EditEventSteps implements En {
         "I set participant vaccination status to ([^\"]*)",
         (String vaccinationStatus) -> {
           webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
         });
 
@@ -1397,8 +1404,8 @@ public class EditEventSteps implements En {
     When(
         "I click on Save Button in Edit Event directory",
         () -> {
-          webDriverHelpers.scrollToElement(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.scrollToElement(EDIT_EVENT_PAGE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
           TimeUnit.SECONDS.sleep(1); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);

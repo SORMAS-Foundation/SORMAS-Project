@@ -177,7 +177,6 @@ public class CasesView extends AbstractView {
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
-			((AbstractCaseGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -194,7 +193,7 @@ public class CasesView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
-		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+		grid.addDataSizeChangeListener(e -> updateStatusButtons());
 
 		OptionGroup casesViewSwitcher = new OptionGroup();
 		casesViewSwitcher.setId("casesViewSwitcher");
@@ -419,7 +418,7 @@ public class CasesView extends AbstractView {
 
 		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
-				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
+				if (grid.getDataSize() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getCaption(Captions.actionEnterBulkEditMode),
 						new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)),
@@ -879,7 +878,7 @@ public class CasesView extends AbstractView {
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 

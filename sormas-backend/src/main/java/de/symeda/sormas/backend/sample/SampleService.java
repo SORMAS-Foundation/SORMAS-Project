@@ -674,6 +674,22 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return filter;
 	}
 
+	public Subquery exists(CriteriaBuilder cb, CriteriaQuery cq, Join<Case, Sample> samplesJoin, String sampleUuid) {
+		Subquery<Boolean> sampleSq = cq.subquery(Boolean.class);
+		Root<Sample> sampleRoot = sampleSq.from(Sample.class);
+
+		sampleSq.select(sampleRoot.get(Sample.ID));
+
+		Predicate predicate = cb.and(
+			cb.equal(sampleRoot.get(Sample.UUID), sampleUuid),
+			cb.equal(samplesJoin.get(Sample.SAMPLE_DATE_TIME), sampleRoot.get(Sample.SAMPLE_DATE_TIME)),
+			cb.equal(samplesJoin.get(Sample.SAMPLE_MATERIAL), sampleRoot.get(Sample.SAMPLE_MATERIAL)));
+
+		sampleSq.where(predicate);
+
+		return sampleSq;
+	}
+
 	@Override
 	public SampleJurisdictionFlagsDto getJurisdictionFlags(Sample entity) {
 

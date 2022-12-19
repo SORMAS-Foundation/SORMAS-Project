@@ -90,7 +90,8 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		grid = new SubcontinentsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		rowCount = new RowCount(Strings.labelNumberOfSubcontinents, grid.getItemCount());
+		rowCount = new RowCount(Strings.labelNumberOfSubcontinents, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
 		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -105,14 +106,14 @@ public class SubcontinentsView extends AbstractConfigurationView {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.SUBCONTINENT));
 				window.setCaption(I18nProperties.getString(Strings.headingImportSubcontinents));
-				window.addCloseListener(c -> grid.reload(true));
+				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importButton);
 
 			importDefaultSubcontinentsButton = ButtonHelper.createIconButton(Captions.actionImportAllSubcontinents, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new ImportDefaultSubcontinentsLayout());
 				window.setCaption(I18nProperties.getString(Strings.headingImportAllSubcontinents));
-				window.addCloseListener(c -> grid.reload(true));
+				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importDefaultSubcontinentsButton);
 		} else if (!infrastructureDataEditable) {
@@ -205,7 +206,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		continentFilter.addItems(FacadeProvider.getContinentFacade().getAllActiveAsReference());
 		continentFilter.addValueChangeListener(e -> {
 			criteria.continent((ContinentReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
+			grid.reload();
 		});
 		filterLayout.addComponent(continentFilter);
 
@@ -291,7 +292,6 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
-		rowCount.update(grid.getItemCount());
 	}
 
 	public void updateFilterComponents() {

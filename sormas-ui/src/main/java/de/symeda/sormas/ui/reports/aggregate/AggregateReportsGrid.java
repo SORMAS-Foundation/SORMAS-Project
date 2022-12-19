@@ -1,8 +1,5 @@
 package de.symeda.sormas.ui.reports.aggregate;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.report.AggregateCaseCountDto;
@@ -82,14 +79,12 @@ public class AggregateReportsGrid extends FilteredGrid<AggregateCaseCountDto, Ag
 
 	public void reload() {
 
-		ListDataProvider<AggregateCaseCountDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getIndexList(getCriteria()).stream().map(aggregatedCaseCountDto -> {
-				if (aggregatedCaseCountDto.getAgeGroup() != null) {
-					aggregatedCaseCountDto.setAgeGroup(AgeGroupUtils.createCaption(aggregatedCaseCountDto.getAgeGroup()));
-				}
-				return aggregatedCaseCountDto;
-			}));
-		setDataProvider(dataProvider);
-		dataProvider.refreshAll();
+		setDataProvider(FacadeProvider.getAggregateReportFacade().getIndexList(getCriteria()).stream().map(aggregatedCaseCountDto -> {
+			if (aggregatedCaseCountDto.getAgeGroup() != null) {
+				aggregatedCaseCountDto.setAgeGroup(AgeGroupUtils.createCaption(aggregatedCaseCountDto.getAgeGroup()));
+			}
+			return aggregatedCaseCountDto;
+		}));
+		getDataProvider().refreshAll();
 	}
 }

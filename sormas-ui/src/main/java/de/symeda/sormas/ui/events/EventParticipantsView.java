@@ -456,7 +456,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 }

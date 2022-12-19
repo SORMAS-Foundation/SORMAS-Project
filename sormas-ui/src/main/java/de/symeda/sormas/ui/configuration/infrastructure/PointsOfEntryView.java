@@ -83,6 +83,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public PointsOfEntryView() {
 
@@ -98,7 +99,9 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		grid = new PointsOfEntryGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfPointofEntry, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfPointofEntry, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);

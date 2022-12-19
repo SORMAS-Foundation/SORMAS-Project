@@ -18,11 +18,8 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
@@ -35,7 +32,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -179,19 +175,6 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 
 	public void setLazyDataProvider() {
 
-		DataProvider<EventActionIndexDto, EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getActionFacade()
-				.getEventActionList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getActionFacade().countEventActions(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getActionFacade()::getEventActionList, FacadeProvider.getActionFacade()::countEventActions);
 	}
 }

@@ -198,7 +198,6 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
@@ -1993,10 +1992,10 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementEnabled(FACILITY_TYPE_COMBOBOX),
               true,
               "Facility type combobox is not editable state but it should be since archived entities default value is true!");
-          softly.assertEquals(
-              webDriverHelpers.isElementEnabled(EditEventPage.SAVE_BUTTON),
-              true,
-              "Save button is not editable state but it should be since archived entities default value is true!");
+//          softly.assertEquals(
+//              webDriverHelpers.isElementEnabled(EditEventPage.SAVE_BUTTON),
+//              true,
+//              "Save button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
               true,
@@ -2334,6 +2333,14 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_DE);
         });
 
+    Then(
+        "^I click Link Event button on Edit Case Page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
+        });
+
     And(
         "^I click SAVE in Add Event Participant form on Edit Case Page for DE$",
         () -> {
@@ -2349,13 +2356,6 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-        });
-
-    When(
-        "^I click Link Event button on Edit Case Page$",
-        () -> {
-          webDriverHelpers.scrollToElement(LINK_EVENT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
         });
 
     When(
@@ -2619,6 +2619,16 @@ public class EditCaseSteps implements En {
         "I check if element with text {string} is present in Case Edit",
         (String text) -> {
           Assert.assertTrue(webDriverHelpers.isElementPresent(checkIfTextExists(text)));
+        });
+    And(
+        "I validate last created via API Event data is displayed under Linked Events section",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINKED_EVENT_TITLE);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(LINKED_EVENT_TITLE),
+              apiState.getCreatedEvent().getEventTitle(),
+              "Event title is not correct");
+          softly.assertAll();
         });
   }
 

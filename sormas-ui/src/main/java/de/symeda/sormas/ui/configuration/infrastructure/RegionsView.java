@@ -79,6 +79,7 @@ public class RegionsView extends AbstractConfigurationView {
 	protected Button createButton;
 	protected Button importButton;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public RegionsView() {
 
@@ -93,7 +94,9 @@ public class RegionsView extends AbstractConfigurationView {
 		grid = new RegionsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfRegions, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfRegions, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);

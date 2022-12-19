@@ -140,7 +140,7 @@ public class PersonsView extends AbstractView {
 				addHeaderComponent(setMissingCoordinatesButton);
 			}
 
-			grid.getDataProvider().addDataProviderListener(e -> updateAssociationButtons());
+			grid.addDataSizeChangeListener(e -> updateAssociationButtons());
 		} else {
 			criteria = new PersonCriteria();
 			grid = null;
@@ -264,7 +264,7 @@ public class PersonsView extends AbstractView {
 		if (activeAssociationButton != null) {
 			CssStyles.removeStyles(activeAssociationButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeAssociationButton.setCaption(
-				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 

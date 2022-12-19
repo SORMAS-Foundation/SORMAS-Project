@@ -90,8 +90,7 @@ public class TaskGridComponent extends VerticalLayout {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createAssigneeFilterBar());
 		gridLayout.addComponent(grid);
-		grid.getDataProvider().addDataProviderListener(e -> updateAssigneeFilterButtons());
-		grid.setDataProviderListener(e -> updateAssigneeFilterButtons());
+		grid.addDataSizeChangeListener(e -> updateAssigneeFilterButtons());
 
 		gridLayout.setMargin(true);
 		styleGridLayout(gridLayout);
@@ -278,7 +277,7 @@ public class TaskGridComponent extends VerticalLayout {
 		if (activeStatusButton != null) {
 			CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 
