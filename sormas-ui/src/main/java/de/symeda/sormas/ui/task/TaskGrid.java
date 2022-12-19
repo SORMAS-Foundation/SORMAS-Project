@@ -18,12 +18,8 @@
 package de.symeda.sormas.ui.task;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
@@ -38,7 +34,6 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;

@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
