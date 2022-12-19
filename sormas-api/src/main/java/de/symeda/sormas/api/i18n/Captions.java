@@ -251,6 +251,7 @@ public interface Captions {
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
 	String campaignAdditionalChart = "campaignAdditionalChart";
 	String campaignAdditionalForm = "campaignAdditionalForm";
+	String campaignAllActiveAndArchivedCampaigns = "campaignAllActiveAndArchivedCampaigns";
 	String campaignAllCampaigns = "campaignAllCampaigns";
 	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
 	String campaignCampaignData = "campaignCampaignData";
@@ -262,6 +263,7 @@ public interface Captions {
 	String campaignDashboardOrder = "campaignDashboardOrder";
 	String campaignDashboardSubTabName = "campaignDashboardSubTabName";
 	String campaignDashboardTabName = "campaignDashboardTabName";
+	String campaignDeletedCampaigns = "campaignDeletedCampaigns";
 	String campaignDiagramGroupBy = "campaignDiagramGroupBy";
 	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
@@ -277,7 +279,6 @@ public interface Captions {
 	String captionDefault = "captionDefault";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllActiveAndArchivedCases = "caseAllActiveAndArchivedCases";
-	String caseDeletedCases = "caseDeletedCases";
 	String caseArchivedCases = "caseArchivedCases";
 	String caseBackToDirectory = "caseBackToDirectory";
 	String caseCalculateCompleteness = "caseCalculateCompleteness";
@@ -448,6 +449,7 @@ public interface Captions {
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDataEnterHomeAddressNow = "caseDataEnterHomeAddressNow";
 	String caseDefaultView = "caseDefaultView";
+	String caseDeletedCases = "caseDeletedCases";
 	String caseDetailedView = "caseDetailedView";
 	String caseDocuments = "caseDocuments";
 	String caseEditData = "caseEditData";
@@ -729,8 +731,8 @@ public interface Captions {
 	String contactContactsOverview = "contactContactsOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
 	String contactCreateNew = "contactCreateNew";
-	String contactDetailedOverview = "contactDetailedOverview";
 	String contactDeletedContacts = "contactDeletedContacts";
+	String contactDetailedOverview = "contactDetailedOverview";
 	String ContactExport_address = "ContactExport.address";
 	String ContactExport_addressCommunity = "ContactExport.addressCommunity";
 	String ContactExport_addressDistrict = "ContactExport.addressDistrict";
@@ -1148,8 +1150,8 @@ public interface Captions {
 	String eventAllGroups = "eventAllGroups";
 	String eventArchivedEvents = "eventArchivedEvents";
 	String eventArchivedGroups = "eventArchivedGroups";
-	String eventDeletedEvents = "eventDeletedEvents";
 	String eventDefaultView = "eventDefaultView";
+	String eventDeletedEvents = "eventDeletedEvents";
 	String eventEditEvent = "eventEditEvent";
 	String eventEditEventGroup = "eventEditEventGroup";
 	String eventEventActions = "eventEventActions";
@@ -1199,9 +1201,9 @@ public interface Captions {
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String EventParticipant_vaccinationStatus = "EventParticipant.vaccinationStatus";
+	String eventParticipantActiveAndArchivedEventParticipants = "eventParticipantActiveAndArchivedEventParticipants";
 	String eventParticipantActiveEventParticipants = "eventParticipantActiveEventParticipants";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
-	String eventParticipantActiveAndArchivedEventParticipants = "eventParticipantActiveAndArchivedEventParticipants";
 	String eventParticipantArchivedEventParticipants = "eventParticipantArchivedEventParticipants";
 	String eventParticipantContactCountOnlyWithSourceCaseInEvent = "eventParticipantContactCountOnlyWithSourceCaseInEvent";
 	String eventParticipantCreateNew = "eventParticipantCreateNew";
@@ -1476,10 +1478,10 @@ public interface Captions {
 	String Immunization_validFrom = "Immunization.validFrom";
 	String Immunization_validUntil = "Immunization.validUntil";
 	String immunizationActiveImmunizations = "immunizationActiveImmunizations";
-	String immunizationArchivedImmunizations = "immunizationArchivedImmunizations";
 	String immunizationAllActiveAndArchivedImmunizations = "immunizationAllActiveAndArchivedImmunizations";
-	String immunizationDeletedImmunizations = "immunizationDeletedImmunizations";
+	String immunizationArchivedImmunizations = "immunizationArchivedImmunizations";
 	String immunizationCreateNewImmunization = "immunizationCreateNewImmunization";
+	String immunizationDeletedImmunizations = "immunizationDeletedImmunizations";
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";
@@ -2361,8 +2363,8 @@ public interface Captions {
 	String TravelEntry_changeDate = "TravelEntry.changeDate";
 	String TravelEntry_creationDate = "TravelEntry.creationDate";
 	String TravelEntry_dateOfArrival = "TravelEntry.dateOfArrival";
-	String TravelEntry_deletionReason = "TravelEntry.deletionReason";
 	String TravelEntry_deletedTravelEntries = "TravelEntry.deletedTravelEntries";
+	String TravelEntry_deletionReason = "TravelEntry.deletionReason";
 	String TravelEntry_differentPointOfEntryJurisdiction = "TravelEntry.differentPointOfEntryJurisdiction";
 	String TravelEntry_diseaseVariant = "TravelEntry.diseaseVariant";
 	String TravelEntry_externalId = "TravelEntry.externalId";
