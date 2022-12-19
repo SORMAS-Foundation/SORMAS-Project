@@ -13,6 +13,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -33,6 +34,7 @@ import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -56,18 +58,37 @@ public class ContactListCriteriaBuilder {
 	@EJB
 	private ContactService contactService;
 
-	public CriteriaQuery<ContactIndexDto> buildIndexCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
-		return buildIndexCriteria(ContactIndexDto.class, this::getContactIndexSelections, contactCriteria, this::getIndexOrders, sortProperties);
+	public CriteriaQuery<ContactIndexDto> buildIndexCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties, List<Long> ids) {
+		return buildIndexCriteria(ContactIndexDto.class, this::getContactIndexSelections, contactCriteria, this::getIndexOrders, sortProperties, ids);
 	}
 
-	public CriteriaQuery<ContactIndexDetailedDto> buildIndexDetailedCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
+	public CriteriaQuery<ContactIndexDetailedDto> buildIndexDetailedCriteria(
+		ContactCriteria contactCriteria,
+		List<SortProperty> sortProperties,
+		List<Long> ids) {
 
 		return buildIndexCriteria(
 			ContactIndexDetailedDto.class,
 			this::getContactIndexDetailedSelections,
 			contactCriteria,
 			this::getIndexDetailOrders,
-			sortProperties);
+			sortProperties,
+			ids);
+	}
+
+	public CriteriaQuery<Tuple> buildIndexCriteriaPrefetchIds(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
+		return buildIndexCriteria(Tuple.class, this::getContactIndexSelections, contactCriteria, this::getIndexOrders, sortProperties, null);
+	}
+
+	public CriteriaQuery<Tuple> buildIndexDetailedCriteriaPrefetchIds(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
+
+		return buildIndexCriteria(
+			Tuple.class,
+			this::getContactIndexDetailedSelections,
+			contactCriteria,
+			this::getIndexDetailOrders,
+			sortProperties,
+			null);
 	}
 
 	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
@@ -254,7 +275,10 @@ public class ContactListCriteriaBuilder {
 		BiFunction<Root<Contact>, ContactQueryContext, List<Selection<?>>> selectionProvider,
 		ContactCriteria contactCriteria,
 		OrderExpressionProvider orderExpressionProvider,
-		List<SortProperty> sortProperties) {
+		List<SortProperty> sortProperties,
+		List<Long> ids) {
+
+		boolean prefetchIds = ids == null;
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<T> cq = cb.createQuery(type);
@@ -262,14 +286,40 @@ public class ContactListCriteriaBuilder {
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
 		final ContactJoins joins = contactQueryContext.getJoins();
 
-		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, contactQueryContext));
-		selections.add(cb.size(contact.get(Contact.VISITS)));
-		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
+		List<Selection<?>> selections = new ArrayList<>();
+
 		Expression<Date> latestChangedDateFunction = cb
 			.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, contact.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
-		selections.add(latestChangedDateFunction);
+
+		List<Selection<?>> selectionListPrefetchIds = new ArrayList<>();
+		if (CollectionUtils.isEmpty(sortProperties)) {
+			selectionListPrefetchIds.add(latestChangedDateFunction);
+			cq.orderBy(cb.desc(latestChangedDateFunction));
+		} else {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				List<Expression<?>> expressions = orderExpressionProvider.forProperty(sortProperty, contact, joins, cb);
+				selectionListPrefetchIds.addAll(expressions);
+				order.addAll(expressions.stream().map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList()));
+			}
+			cq.orderBy(order);
+		}
+
+		if (prefetchIds) {
+			selections.add(contact.get(AbstractDomainObject.ID));
+			selections.addAll(selectionListPrefetchIds);
+		} else {
+			selections.addAll(selectionProvider.apply(contact, contactQueryContext));
+			selections.add(cb.size(contact.get(Contact.VISITS)));
+			// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
+			selections.add(latestChangedDateFunction);
+		}
 
 		Predicate filter = buildContactFilter(contactCriteria, contactQueryContext);
+
+		if (!prefetchIds) {
+			filter = CriteriaBuilderHelper.and(cb, filter, contact.get(AbstractDomainObject.ID).in(ids));
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -277,20 +327,6 @@ public class ContactListCriteriaBuilder {
 
 		cq.multiselect(selections);
 		cq.distinct(true);
-
-		if (CollectionUtils.isEmpty(sortProperties)) {
-			cq.orderBy(cb.desc(latestChangedDateFunction));
-		} else {
-			List<Order> order = new ArrayList<>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				order.addAll(
-					orderExpressionProvider.forProperty(sortProperty, contact, joins, cb)
-						.stream()
-						.map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e))
-						.collect(Collectors.toList()));
-			}
-			cq.orderBy(order);
-		}
 
 		return cq;
 	}
