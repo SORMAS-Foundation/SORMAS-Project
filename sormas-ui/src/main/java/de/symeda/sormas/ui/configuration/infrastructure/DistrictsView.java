@@ -80,6 +80,7 @@ public class DistrictsView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 	private DistrictsGrid grid;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public DistrictsView() {
 
@@ -95,7 +96,9 @@ public class DistrictsView extends AbstractConfigurationView {
 		grid = new DistrictsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfDistricts, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfDistricts, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);

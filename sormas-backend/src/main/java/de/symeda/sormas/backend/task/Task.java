@@ -42,6 +42,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.NotExposedToApi;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
@@ -106,6 +107,7 @@ public class Task extends AbstractDomainObject {
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
 
+	@NotExposedToApi
 	private boolean archived;
 
 	@Enumerated(EnumType.STRING)
