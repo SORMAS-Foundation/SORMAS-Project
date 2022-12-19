@@ -260,8 +260,6 @@ public class TaskController {
 						archive ? I18nProperties.getString(Strings.messageTaskArchived) : I18nProperties.getString(Strings.messageTaskDearchived),
 						Type.ASSISTIVE_NOTIFICATION);
 				}
-
-				callback.run();
 			});
 	}
 

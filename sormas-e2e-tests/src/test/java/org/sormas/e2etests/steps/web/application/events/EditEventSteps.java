@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CA
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BUTTONS_IN_VACCINATIONS_LOCATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_FIRST_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
@@ -149,7 +150,6 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_ACTION;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DELETION_OF_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_NAVIGATION_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
@@ -219,6 +219,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.entities.pojo.web.EventGroup;
@@ -745,9 +746,14 @@ public class EditEventSteps implements En {
     When(
         "I click on save button in Add Participant form",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(1); // wait for reaction
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // needed for button to be available
+          int attempts = 0;
+          do {
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            attempts++;
+          } while (attempts < 5
+              && webDriverHelpers.isElementPresent(By.cssSelector(".v-window-wrap")));
         });
     When(
         "I add a participant to the event",
@@ -1006,6 +1012,12 @@ public class EditEventSteps implements En {
         "I click on Edit event button for the first event in Events section",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_GROUP_BUTTON);
+        });
+
+    When(
+        "I click on first Edit event button for in Events section",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK_BUTTON);
         });
 
     When(
@@ -1434,7 +1446,8 @@ public class EditEventSteps implements En {
           webDriverHelpers.selectFromCombobox(
               DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DELETION_OF_EVENT_PARTICIPANT);
+          //
+          // webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DELETION_OF_EVENT_PARTICIPANT);
           //          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON,
           // 30)) {
           //            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);

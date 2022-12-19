@@ -206,8 +206,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	}
 
 	@Override
-	@Transactional(rollbackOn = {
-		Exception.class })
+	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
+		rollbackOn = {
+			Exception.class })
 	@DenyAll
 	public void share(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
