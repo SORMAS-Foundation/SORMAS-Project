@@ -1404,6 +1404,7 @@ public class EditEventSteps implements En {
     When(
         "I click on Save Button in Edit Event directory",
         () -> {
+
           webDriverHelpers.scrollToElement(EDIT_EVENT_PAGE_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
           TimeUnit.SECONDS.sleep(1); // wait for reaction
