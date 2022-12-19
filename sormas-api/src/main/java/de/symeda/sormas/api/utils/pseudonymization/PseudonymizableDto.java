@@ -14,8 +14,8 @@
  */
 package de.symeda.sormas.api.utils.pseudonymization;
 
-import de.symeda.sormas.api.ComputedForApi;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.MappingException;
 
 public abstract class PseudonymizableDto extends EntityDto implements Pseudonymizable {
 
@@ -27,14 +27,14 @@ public abstract class PseudonymizableDto extends EntityDto implements Pseudonymi
 	/**
 	 * Whether sensitive and/or personal data of this DTO is pseudonymized.
 	 */
-	@ComputedForApi
+	@MappingException(reason = MappingException.COMPUTED_FOR_API)
 	private boolean pseudonymized;
 
 	/**
 	 * Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered
 	 * to decide whether sensitive and/or personal data is supposed to be shown.
 	 */
-	@ComputedForApi
+	@MappingException(reason = MappingException.COMPUTED_FOR_API)
 	private boolean inJurisdiction;
 
 	public boolean isPseudonymized() {

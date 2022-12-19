@@ -22,5 +22,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ComputedForApi {
+public @interface MappingException {
+
+    String COMPUTED_FOR_API = "Computed for API";
+    String FILLED_FROM_OTHER_ENTITY = "Filled from other entity";
+
+    String reason() default "";
 }

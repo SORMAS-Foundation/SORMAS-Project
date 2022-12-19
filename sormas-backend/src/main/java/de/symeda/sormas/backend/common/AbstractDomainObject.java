@@ -80,6 +80,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	private String uuid;
 	private Timestamp creationDate;
 	private Timestamp changeDate;
+	@NotExposedToApi
 	private User changeUser;
 
 	@Override
