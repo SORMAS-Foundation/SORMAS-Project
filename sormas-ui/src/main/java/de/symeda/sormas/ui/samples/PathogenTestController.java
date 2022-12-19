@@ -319,8 +319,11 @@ public class PathogenTestController {
 						showChangeAssociatedSampleResultDialog(dto, null);
 					}
 				} else {
-					List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(contact.getPerson().getUuid(), dto);
-					showCreateContactCaseDialog(contact, dto.getTestedDisease());
+					List<CaseDataDto> duplicatedCases =
+						FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(contact.getPerson().getUuid(), dto);
+					if (duplicatedCases == null || duplicatedCases.size() == 0) {
+						showCreateContactCaseDialog(contact, dto.getTestedDisease());
+					}
 				}
 			}
 		};
@@ -375,11 +378,15 @@ public class PathogenTestController {
 						showChangeAssociatedSampleResultDialog(dto, null);
 					}
 				} else {
-					showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
-						if (eventDisease == null) {
-							handleCaseCreationFromContactOrEventParticipant(caseCreated, dto);
-						}
-					});
+					List<CaseDataDto> duplicatedCases =
+						FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(eventParticipant.getPerson().getUuid(), dto);
+					if (duplicatedCases == null || duplicatedCases.size() == 0) {
+						showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
+							if (eventDisease == null) {
+								handleCaseCreationFromContactOrEventParticipant(caseCreated, dto);
+							}
+						});
+					}
 				}
 			}
 		};
