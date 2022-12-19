@@ -821,7 +821,7 @@ public class EditEventSteps implements En {
         "I set participant vaccination status to ([^\"]*)",
         (String vaccinationStatus) -> {
           webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
         });
 
