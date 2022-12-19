@@ -17,18 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.stream.Collectors;
-
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -80,32 +73,17 @@ public class FacilitiesGrid extends FilteredGrid<FacilityIndexDto, FacilityCrite
 	}
 
 	public void reload() {
+		if (ViewModelProviders.of(FacilitiesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
 		getDataProvider().refreshAll();
 	}
 
 	public void setLazyDataProvider() {
-
-		DataProvider<FacilityIndexDto, FacilityCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getFacilityFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getFacilityFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getFacilityFacade()::getIndexList, FacadeProvider.getFacilityFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-
-		ListDataProvider<FacilityIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getFacilityFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
+		setEagerDataProvider(FacadeProvider.getFacilityFacade()::getIndexList);
 	}
 }
