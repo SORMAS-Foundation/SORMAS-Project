@@ -52,6 +52,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
 import javax.persistence.Query;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -64,7 +65,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.followup.FollowUpLogic;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +108,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -1222,8 +1223,15 @@ public class ContactFacadeEjb
 	@Override
 	public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
-		CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, sortProperties);
-		List<ContactIndexDto> dtos = QueryHelper.getResultList(em, query, first, max);
+		CriteriaQuery<Tuple> cqIds = listCriteriaBuilder.buildIndexCriteriaPrefetchIds(contactCriteria, sortProperties);
+		List<Long> indexListIds =
+			QueryHelper.getResultList(em, cqIds, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+
+		List<ContactIndexDto> dtos = new ArrayList<>();
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, sortProperties, batchedIds);
+			dtos.addAll(QueryHelper.getResultList(em, query, null, null));
+		});
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDto.class, dtos, ContactIndexDto::getInJurisdiction, (c, isInJurisdiction) -> {
@@ -1234,7 +1242,7 @@ public class ContactFacadeEjb
 		dtos.forEach(contact -> {
 			if (diseaseConfigurationFacade.hasFollowUp(contact.getDisease())) {
 				int numberOfMissedVisits =
-						FollowUpLogic.getNumberOfRequiredVisitsSoFar(contact.getReportDateTime(), contact.getFollowUpUntil()) - contact.getVisitCount();
+					FollowUpLogic.getNumberOfRequiredVisitsSoFar(contact.getReportDateTime(), contact.getFollowUpUntil()) - contact.getVisitCount();
 				if (numberOfMissedVisits < 0) {
 					numberOfMissedVisits = 0;
 				}
@@ -1264,8 +1272,16 @@ public class ContactFacadeEjb
 		Integer max,
 		List<SortProperty> sortProperties) {
 
-		CriteriaQuery<ContactIndexDetailedDto> query = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties);
-		List<ContactIndexDetailedDto> dtos = QueryHelper.getResultList(em, query, first, max);
+		CriteriaQuery<Tuple> cqIds = listCriteriaBuilder.buildIndexDetailedCriteriaPrefetchIds(contactCriteria, sortProperties);
+		List<Long> indexListIds =
+			QueryHelper.getResultList(em, cqIds, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+
+		List<ContactIndexDetailedDto> dtos = new ArrayList<>();
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaQuery<ContactIndexDetailedDto> query =
+				listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties, batchedIds);
+			dtos.addAll(QueryHelper.getResultList(em, query, null, null));
+		});
 
 		if (userService.hasRight(UserRight.EVENT_VIEW)) {
 			// Load event count and latest events info per contact
@@ -1297,7 +1313,7 @@ public class ContactFacadeEjb
 		dtos.forEach(contact -> {
 			if (diseaseConfigurationFacade.hasFollowUp(contact.getDisease())) {
 				int numberOfMissedVisits =
-						FollowUpLogic.getNumberOfRequiredVisitsSoFar(contact.getReportDateTime(), contact.getFollowUpUntil()) - contact.getVisitCount();
+					FollowUpLogic.getNumberOfRequiredVisitsSoFar(contact.getReportDateTime(), contact.getFollowUpUntil()) - contact.getVisitCount();
 				if (numberOfMissedVisits < 0) {
 					numberOfMissedVisits = 0;
 				}
