@@ -258,7 +258,7 @@ public class PathogenTestController {
 						}
 					});
 				} else {
-					List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(caze, dto);
+					List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(caze.getPerson().getUuid(), dto);
 					if (duplicatedCases == null || duplicatedCases.size() == 0) {
 						showCaseCloningWithNewDiseaseDialog(
 							caze,
@@ -319,6 +319,7 @@ public class PathogenTestController {
 						showChangeAssociatedSampleResultDialog(dto, null);
 					}
 				} else {
+					List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(contact.getPerson().getUuid(), dto);
 					showCreateContactCaseDialog(contact, dto.getTestedDisease());
 				}
 			}
