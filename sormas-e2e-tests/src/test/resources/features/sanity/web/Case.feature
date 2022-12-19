@@ -1907,7 +1907,7 @@ Feature: Case end to end tests
     And I select first created case for person from Cases list
     Then I check if editable fields are read only for an archived case
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @testIt
   Scenario: Delete a case in target system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"
