@@ -13,11 +13,9 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.contact.Contact;
 
 @Stateless
 @LocalBean
@@ -44,9 +42,6 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		From<?, Campaign> from = queryContext.getRoot();
 
 		Predicate filter = null;
-//		if (campaignCriteria.getDeleted() != null) {
-//			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.DELETED), campaignCriteria.getDeleted()));
-//		}
 		if (campaignCriteria.getStartDateAfter() != null || campaignCriteria.getStartDateBefore() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
@@ -77,12 +72,12 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 			} else if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.ARCHIVED), true));
 			} else if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.DELETED), true));
 			}
 		}
 
 		if (campaignCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Contact.DELETED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Campaign.DELETED)));
 		}
 
 		return filter;

@@ -52,8 +52,8 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 			(ActionPriority) objects[25],
 			actionLastModifiedBy,
 			actionCreatorUser,
-			(DeletionReason) objects[33],
-			(String) objects[34]);
+			(DeletionReason) objects[41],
+			(String) objects[42]);
 	}
 
 	@Override
