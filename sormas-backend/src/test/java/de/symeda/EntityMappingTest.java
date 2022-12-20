@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.hibernate.annotations.Type;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.EntityDto;
@@ -251,7 +251,7 @@ public class EntityMappingTest {
 	}
 
 	@Test
-	@Ignore("Ignored until all fields have been fixed or marked with exception annotation!")
+	@Disabled("Ignored until all fields have been fixed or marked with exception annotation!")
 	public void testDtoEntityFieldMatching() {
 
 		final StringBuilder stringBuilder = new StringBuilder("\n");
