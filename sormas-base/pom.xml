@@ -31,7 +31,7 @@
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<swagger.version>2.1.13</swagger.version>
+		<swagger.version>2.2.7</swagger.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
 		<keycloak.version>18.0.1</keycloak.version>
 		<resteasy.version>3.15.3.Final</resteasy.version>
@@ -1217,27 +1217,7 @@
 					<version>1.0.8</version>
 				</plugin>
 
-				<!-- Swagger -->
-				<plugin>
-					<groupId>io.openapitools.swagger</groupId>
-					<artifactId>swagger-maven-plugin</artifactId>
-					<version>2.1.2</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>generate</goal>
-							</goals>
-						</execution>
-					</executions>
-					<dependencies>
-						<!-- Currently necessary to get the latest bugfixes in swagger-core -->
-						<dependency>
-							<groupId>io.swagger.core.v3</groupId>
-							<artifactId>swagger-jaxrs2</artifactId>
-							<version>${swagger.version}</version>
-						</dependency>
-					</dependencies>
-				</plugin>
+
 
 				<!-- *** Plugins for generate-reports *** -->
 				<plugin>
@@ -1330,6 +1310,12 @@
 						<commitIdGenerationMode>full</commitIdGenerationMode>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>io.swagger.core.v3</groupId>
+					<artifactId>swagger-maven-plugin</artifactId>
+					<version>${swagger.version}</version>
+				</plugin>
+
 				<!-- *** Plugins for generate-reports END *** -->
 
 			</plugins>

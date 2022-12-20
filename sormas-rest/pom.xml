@@ -55,13 +55,11 @@
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2</artifactId>
-			<version>2.2.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
-			<version>2.2.3</version>
 		</dependency>
 
 		<!-- Keycloak -->
@@ -134,7 +132,6 @@
 			<plugin>
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
-				<version>2.2.3</version>
 				<configuration>
 					<outputPath>${basedir}/target/</outputPath>
 					<outputFormat>JSONANDYAML</outputFormat>
@@ -164,9 +161,7 @@
 						<configuration>
 							<contextId>rest api</contextId>
 							<resourcePackages>
-								<resourcePackage>de.symeda.sormas.rest</resourcePackage>
-								<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
-								<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
+								<resourcePackage>de.symeda.sormas.rest.resources</resourcePackage>
 							</resourcePackages>
 							<outputFileName>swagger</outputFileName>
 							<configurationFilePath>${basedir}/src/main/resources/openApiConfig.yml</configurationFilePath>
