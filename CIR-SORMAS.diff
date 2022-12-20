@@ -1,0 +1,234 @@
+From f28ce100d218865ab69f4387128b6ab6b768e9cb Mon Sep 17 00:00:00 2001
+From: Jonas Cirotzki <jonas.cirotzki@posteo.de>
+Date: Mon, 19 Dec 2022 13:44:55 +0100
+Subject: [PATCH] [#11181] bump everything swagger related to version 2.2.7
+
+---
+ sormas-api/pom.xml                            |  2 -
+ sormas-base/pom.xml                           | 30 ++----
+ sormas-rest/pom.xml                           |  3 -
+ .../rest/swagger/AttributeConverter.java      | 95 ++++++++++---------
+ 4 files changed, 59 insertions(+), 71 deletions(-)
+
+diff --git a/sormas-api/pom.xml b/sormas-api/pom.xml
+index 05aa220156..647d1a7416 100644
+--- a/sormas-api/pom.xml
++++ b/sormas-api/pom.xml
+@@ -51,13 +51,11 @@
+ 		<dependency>
+             <groupId>io.swagger.core.v3</groupId>
+             <artifactId>swagger-jaxrs2</artifactId>
+-			<version>2.2.3</version>
+         </dependency>
+ 
+         <dependency>
+             <groupId>io.swagger.core.v3</groupId>
+             <artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+-			<version>2.2.3</version>
+         </dependency>
+ 
+ 		<dependency>
+diff --git a/sormas-base/pom.xml b/sormas-base/pom.xml
+index 8f1cf55d2b..8f2dc978b3 100644
+--- a/sormas-base/pom.xml
++++ b/sormas-base/pom.xml
+@@ -31,7 +31,7 @@
+ 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
+ 		<vaadin.version>8.14.3</vaadin.version>
+ 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+-		<swagger.version>2.1.13</swagger.version>
++		<swagger.version>2.2.7</swagger.version>
+ 		<bouncycastle.version>1.70</bouncycastle.version>
+ 		<keycloak.version>18.0.1</keycloak.version>
+ 		<resteasy.version>3.15.3.Final</resteasy.version>
+@@ -1217,27 +1217,7 @@
+ 					<version>1.0.8</version>
+ 				</plugin>
+ 
+-				<!-- Swagger -->
+-				<plugin>
+-					<groupId>io.openapitools.swagger</groupId>
+-					<artifactId>swagger-maven-plugin</artifactId>
+-					<version>2.1.2</version>
+-					<executions>
+-						<execution>
+-							<goals>
+-								<goal>generate</goal>
+-							</goals>
+-						</execution>
+-					</executions>
+-					<dependencies>
+-						<!-- Currently necessary to get the latest bugfixes in swagger-core -->
+-						<dependency>
+-							<groupId>io.swagger.core.v3</groupId>
+-							<artifactId>swagger-jaxrs2</artifactId>
+-							<version>${swagger.version}</version>
+-						</dependency>
+-					</dependencies>
+-				</plugin>
++
+ 
+ 				<!-- *** Plugins for generate-reports *** -->
+ 				<plugin>
+@@ -1330,6 +1310,12 @@
+ 						<commitIdGenerationMode>full</commitIdGenerationMode>
+ 					</configuration>
+ 				</plugin>
++				<plugin>
++					<groupId>io.swagger.core.v3</groupId>
++					<artifactId>swagger-maven-plugin</artifactId>
++					<version>${swagger.version}</version>
++				</plugin>
++
+ 				<!-- *** Plugins for generate-reports END *** -->
+ 
+ 			</plugins>
+diff --git a/sormas-rest/pom.xml b/sormas-rest/pom.xml
+index b5839e8ae4..aa70fad4f3 100644
+--- a/sormas-rest/pom.xml
++++ b/sormas-rest/pom.xml
+@@ -55,13 +55,11 @@
+ 		<dependency>
+ 			<groupId>io.swagger.core.v3</groupId>
+ 			<artifactId>swagger-jaxrs2</artifactId>
+-			<version>2.2.3</version>
+ 		</dependency>
+ 
+ 		<dependency>
+ 			<groupId>io.swagger.core.v3</groupId>
+ 			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+-			<version>2.2.3</version>
+ 		</dependency>
+ 
+ 		<!-- Keycloak -->
+@@ -134,7 +132,6 @@
+ 			<plugin>
+ 				<groupId>io.swagger.core.v3</groupId>
+ 				<artifactId>swagger-maven-plugin</artifactId>
+-				<version>2.2.3</version>
+ 				<configuration>
+ 					<outputPath>${basedir}/target/</outputPath>
+ 					<outputFormat>JSONANDYAML</outputFormat>
+diff --git a/sormas-rest/src/main/java/de/symeda/sormas/rest/swagger/AttributeConverter.java b/sormas-rest/src/main/java/de/symeda/sormas/rest/swagger/AttributeConverter.java
+index 0deba1d365..24a6462538 100644
+--- a/sormas-rest/src/main/java/de/symeda/sormas/rest/swagger/AttributeConverter.java
++++ b/sormas-rest/src/main/java/de/symeda/sormas/rest/swagger/AttributeConverter.java
+@@ -1,54 +1,61 @@
+ package de.symeda.sormas.rest.swagger;
+ 
++import java.lang.annotation.Annotation;
++import java.util.HashMap;
++import java.util.Iterator;
++import java.util.Map;
++
+ import com.fasterxml.jackson.databind.ObjectMapper;
++
+ import de.symeda.sormas.api.Disease;
+-import de.symeda.sormas.api.utils.*;
++import de.symeda.sormas.api.utils.Complication;
++import de.symeda.sormas.api.utils.DependantOn;
++import de.symeda.sormas.api.utils.Diseases;
++import de.symeda.sormas.api.utils.HideForCountries;
++import de.symeda.sormas.api.utils.HideForCountriesExcept;
++import de.symeda.sormas.api.utils.Outbreaks;
++import de.symeda.sormas.api.utils.PersonalData;
+ import io.swagger.v3.core.converter.AnnotatedType;
+ import io.swagger.v3.core.converter.ModelConverter;
+ import io.swagger.v3.core.converter.ModelConverterContext;
+ import io.swagger.v3.core.jackson.ModelResolver;
+ import io.swagger.v3.oas.models.media.Schema;
+ 
+-import java.lang.annotation.Annotation;
+-import java.util.HashMap;
+-import java.util.Iterator;
+-import java.util.Map;
+-
+ public class AttributeConverter extends ModelResolver {
+-    public static final String XPROP_PREFIX = "x-sormas-";
+-    public static final String XPROP_PERSONAL_DATA = XPROP_PREFIX + "personal-data";
+-    public static final String XPROP_FOR_COUNTRIES = XPROP_PREFIX + "countries-for";
+-    public static final String XPROP_EXCEPT_COUNTRIES = XPROP_PREFIX + "countries-except";
+-    public static final String XPROP_DEPENDS_ON = XPROP_PREFIX + "depends-on";
+-    public static final String XPROP_DISEASES = XPROP_PREFIX + "diseases";
+-    public static final String XPROP_OUTBREAKS = XPROP_PREFIX + "outbreaks";
+-    public static final String XPROP_COMPLICATIONS = XPROP_PREFIX + "complications";
+-
+-    public AttributeConverter(ObjectMapper mapper) {
+-        super(mapper);
+-    }
+-
+-    @Override
+-    protected void applyBeanValidatorAnnotations(Schema property, Annotation[] annotations, Schema parent) {
+-        super.applyBeanValidatorAnnotations(property, annotations, parent);
+-        Map<String, Annotation> annos = new HashMap<String, Annotation>();
+-        if (annotations != null) {
+-            for (Annotation anno : annotations) {
+-                annos.put(anno.annotationType().getName(), anno);
+-            }
+-        }
+-        if (parent != null &&
+-                annos.containsKey("de.symeda.sormas.api.utils.Required")) {
+-            addRequiredItem(parent, property.getName());
+-        }
+-    }
+-
+-    @Override
+-    public Schema<?> resolve(AnnotatedType annotatedType, ModelConverterContext modelConverterContext,
+-            Iterator<ModelConverter> iterator) {
+-        Schema schema = super.resolve(annotatedType, modelConverterContext, iterator);
+-
+-        //@formatter:off
++
++	public static final String XPROP_PREFIX = "x-sormas-";
++	public static final String XPROP_PERSONAL_DATA = XPROP_PREFIX + "personal-data";
++	public static final String XPROP_FOR_COUNTRIES = XPROP_PREFIX + "countries-for";
++	public static final String XPROP_EXCEPT_COUNTRIES = XPROP_PREFIX + "countries-except";
++	public static final String XPROP_DEPENDS_ON = XPROP_PREFIX + "depends-on";
++	public static final String XPROP_DISEASES = XPROP_PREFIX + "diseases";
++	public static final String XPROP_OUTBREAKS = XPROP_PREFIX + "outbreaks";
++	public static final String XPROP_COMPLICATIONS = XPROP_PREFIX + "complications";
++
++	public AttributeConverter(ObjectMapper mapper) {
++		super(mapper);
++	}
++
++	@Override
++	protected void applyBeanValidatorAnnotations(Schema property, Annotation[] annotations, Schema parent, boolean applyNotNullAnnotations) {
++		super.applyBeanValidatorAnnotations(property, annotations, parent, applyNotNullAnnotations);
++
++		Map<String, Annotation> annos = new HashMap<>();
++		if (annotations != null) {
++			for (Annotation anno : annotations) {
++				annos.put(anno.annotationType().getName(), anno);
++			}
++		}
++		if (parent != null && annos.containsKey("de.symeda.sormas.api.utils.Required")) {
++			addRequiredItem(parent, property.getName());
++		}
++	}
++
++	@Override
++	public Schema<?> resolve(AnnotatedType annotatedType, ModelConverterContext modelConverterContext, Iterator<ModelConverter> iterator) {
++		Schema schema = super.resolve(annotatedType, modelConverterContext, iterator);
++
++		//@formatter:off
+         if (schema != null && annotatedType.getCtxAnnotations() != null
+                 && annotatedType.isSchemaProperty()) {
+ 
+@@ -91,9 +98,9 @@ public class AttributeConverter extends ModelResolver {
+                 }
+             }
+             //@formatter:on
+-        }
++		}
+ 
+-        return schema;
++		return schema;
+ 
+-    }
+-}
+\ No newline at end of file
++	}
++}
+-- 
+2.39.0
