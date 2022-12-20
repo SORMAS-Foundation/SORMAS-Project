@@ -251,6 +251,7 @@ import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
@@ -1991,11 +1992,10 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementEnabled(FACILITY_TYPE_COMBOBOX),
               true,
               "Facility type combobox is not editable state but it should be since archived entities default value is true!");
-          //          softly.assertEquals(
-          //              webDriverHelpers.isElementEnabled(EditEventPage.SAVE_BUTTON),
-          //              true,
-          //              "Save button is not editable state but it should be since archived
-          // entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EditEventPage.EDIT_EVENT_PAGE_SAVE_BUTTON),
+              true,
+              "Save button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
               true,

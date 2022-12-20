@@ -1687,7 +1687,7 @@ public class EditEventSteps implements En {
               true,
               "Event status options is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
-              webDriverHelpers.isElementEnabled(SAVE_BUTTON),
+              webDriverHelpers.isElementEnabled(EDIT_EVENT_PAGE_SAVE_BUTTON),
               true,
               "Save button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
