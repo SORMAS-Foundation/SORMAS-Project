@@ -63,19 +63,19 @@ You can check your Java version from the shell/command line using: ``java -versi
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: <https://www.postgresql.org/download>)
 * Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented and restart the service to apply the changes.
 * Install the "temporal tables" extension for Postgres (<https://github.com/arkhipov/temporal_tables>)
-  * **Windows**: Download the latest version for your Postgres version: <https://github.com/arkhipov/temporal_tables/releases/latest>, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
+  * **Windows**: Download the latest version for your Postgres version:
+    * <https://github.com/arkhipov/temporal_tables/releases/latest>, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
+    * Add the PostgreSQL path (/etc/PostgreSQL/10/bin) to Environment Variables
   * **Linux** (see <https://github.com/arkhipov/temporal_tables#installation)>
-  * Add the PostgreSQL path (/etc/PostgreSQL/10/bin) to Environment Variables
-```bash
-sudo apt-get install libpq-dev
-sudo apt-get install postgresql-server-dev-all
-sudo apt install pgxnclient
-#Check for GCC:
-gcc --version # and install if missing
-sudo pgxn install temporal_tables
-# The packages can be removed afterward
-```
-
+    ```bash
+    sudo apt-get install libpq-dev
+    sudo apt-get install postgresql-server-dev-all
+    sudo apt install pgxnclient
+    #Check for GCC:
+    gcc --version # and install if missing
+    sudo pgxn install temporal_tables
+    # The packages can be removed afterward
+    ```
 
 ## SORMAS Server
 
