@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.EvaluationException;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelEvaluationException;
@@ -80,7 +82,7 @@ public class CampaignFormDataFragmentUtils {
                 final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
                 String valuex = expressionValue + "";
 
-                System.out.println(")))))))))))))))))))))))))))))))))))))))))))))-----= " + valuex);
+                System.out.println(dynamicField.getCaption()+" =------))))))))))))))))))))))))))))))))))))))-----= " + valuex);
                 if (!valuex.isEmpty() && !valuex.equals("") && expressionValue != null) {//&& !valuex.equals("0")
 
                     if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
@@ -92,11 +94,14 @@ public class CampaignFormDataFragmentUtils {
                             System.out.println("+++++++++++111111+++++++++++++++++ " + valuex);
                             String valudex = valuex.equals("0") ? null : valuex.endsWith(".0") ? valuex.replace(".0", "") : valuex;
                             System.out.println(orginalValue+ "++++++++++++22222222++++++++++++++++ " + valudex);
-                            if (!orginalValue.toString().equals(valudex)) {
+                            if (!orginalValue.toString().equals(valudex)){
+                                System.out.println(orginalValue+ "++++++++++++2222333++++++++++++++++ " + valudex);
+                                if(!(orginalValue.toString().isEmpty() && valudex == null) ){
                              //   if (!valudex.isEmpty() && !orginalValue.toString().equals(valudex)) {
                                     System.out.println("++++++++++++333333333++++++++++++++++ " + valudex);
                                     ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString());
                                // }
+                            }
                             }
                         } else if (type == CampaignFormElementType.NUMBER) {
                             ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? "0" : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
@@ -147,7 +152,7 @@ public class CampaignFormDataFragmentUtils {
                 final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
                 String valuex = expressionValue + "";
                 ;
-                System.out.println(")))))))))))))))))))))))))))))))))))))))))))))-----= " + valuex);
+                System.out.println("second method ___)))))))))))))))))))))))))))))))))))))))))))))-----= " + valuex);
                 if (!valuex.isEmpty() && !valuex.equals("") && expressionValue != null) {//&& !valuex.equals("0")
 
                     if (expressionValue != null) { //we need to see how to check and filter when its blank or empty
@@ -187,7 +192,7 @@ public class CampaignFormDataFragmentUtils {
 
             }
         } catch (SpelEvaluationException e) {
-            Log.e("Error evaluating expression on field : " + dynamicField.getCaption(), e.getMessage());
+            Log.e("Error evaluating expression on field2 : " + dynamicField.getCaption(), e.getMessage());
         }
         if (type == CampaignFormElementType.RANGE) {
             dynamicField.setEnabled(true);
@@ -200,16 +205,27 @@ public class CampaignFormDataFragmentUtils {
     }
 
     public static Object getExpressionValue(ExpressionParser expressionParser, List<CampaignFormDataEntry> formValues, String expressionString)
-            throws SpelEvaluationException {
-     //   System.out.println("111111111");
+            throws SpelEvaluationException, EvaluationException {
+
+
+
+
+        System.out.println("111111111" +expressionString);
         final EvaluationContext context = refreshEvaluationContext(formValues);
-     //   System.out.println("2222222222222");
+        System.out.println("2222222222222");
         final Expression expression = expressionParser.parseExpression(expressionString);
-      //  System.out.println("3333333333333333333");
+        System.out.println("3333333333333333333");
         final Class<?> valueType = expression.getValueType(context);
-      //  System.out.println(valueType+" )))))))))----------------- "+expressionString);
+        final Object valueFin = expression.getValue(context, valueType);
+        System.out.println(valueType+" )))))))))---- "+valueFin+" ------------- "+valueFin.getClass());
+        if(!valueFin.getClass().isAssignableFrom(valueType)){
+         //   if(valueFin instanceof valueType){}
+            System.out.println("EmptyStackException: >>>>>>-");
+            throw new EmptyStackException();
+        }
         return expression.getValue(context, valueType);
     }
+
 
     public static void handleDependingOn(
             Map<String, ControlPropertyField> fieldMap,

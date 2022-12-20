@@ -227,7 +227,7 @@ public class CampaignFormBuilder {
 					// layout.addComponent(label);
 					int temp = accrd_count;
 					temp = temp - 1;
-					layout.setStyleName("daywise_background_" + temp); // .addStyleName(dependingOnId);
+					layout.setStyleName("daywise_background_" + temp); // .addStyleName(dependingOnId); sormas background: green
 					accrd.addTab(layout, formElement.getCaption());
 
 					vertical = new VerticalLayout();
@@ -600,8 +600,6 @@ public class CampaignFormBuilder {
 		switch (type) {
 		case YES_NO:
 			if (value != null) {
-				// System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-				// "+value);
 				value = value.toString().equalsIgnoreCase("YES") ? true
 						: value.toString().equalsIgnoreCase("NO") ? false : value;
 
@@ -827,23 +825,23 @@ public class CampaignFormBuilder {
 			return false;
 		}
 
-		if (dependingOnField instanceof NullableOptionGroup) {
-//			String booleanValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
-//					? "true"
-//					: "false";
-			String stringValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
-					? "Yes"
-					: "No";
-
-			return dependingOnValuesList.stream().anyMatch(
-					v -> 
-					//v.toString().equalsIgnoreCase(booleanValue) || 
-					v.toString().equalsIgnoreCase(stringValue));
-		} else {
+//		if (dependingOnField instanceof NullableOptionGroup) {
+////			String booleanValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
+////					? "true"
+////					: "false";
+//			String stringValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
+//					? "Yes"
+//					: "No";
+//
+//			return dependingOnValuesList.stream().anyMatch(
+//					v -> 
+//					//v.toString().equalsIgnoreCase(booleanValue) || 
+//					v.toString().equalsIgnoreCase(stringValue));
+//		} else {
 
 			return dependingOnValuesList.stream()
 					.anyMatch(v -> v.toString().equalsIgnoreCase(dependingOnField.getValue().toString()));
-		}
+	//	}
 	}
 
 	private boolean fieldValueMatchesDependingOnValuesNOTValuer(Field<?> dependingOnField,
@@ -881,14 +879,12 @@ public class CampaignFormBuilder {
 		return fields.keySet().stream().map(id -> {
 			Field<?> field = fields.get(id);
 			if (field instanceof NullableOptionGroup) {
-				/*
-				 * System.out
-				 * .println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " +
-				 * field.getValue());
-				 */
-				return new CampaignFormDataEntry(id,
-						field.getValue() != null ? field.getValue().toString().equals("[true]") ? "Yes" : "No"
-								: field.getValue());
+				
+				  String valc = field.getValue() != null ? field.getValue().toString().equalsIgnoreCase("true") ||field.getValue().toString().equalsIgnoreCase("YES") || field.getValue().toString().equalsIgnoreCase("[YES]") || field.getValue().toString().equalsIgnoreCase("[true]") ? "Yes" :
+						field.getValue().toString().equalsIgnoreCase("[NO]") || field.getValue().toString().equalsIgnoreCase("NO") || field.getValue().toString().equalsIgnoreCase("false") || field.getValue().toString().equalsIgnoreCase("[false]") ? "No" : null : null;
+				 
+				return new CampaignFormDataEntry(id, valc);
+							//	: field.getValue());
 
 				// return new CampaignFormDataEntry(id, ((NullableOptionGroup)
 				// field).getNullableValue());

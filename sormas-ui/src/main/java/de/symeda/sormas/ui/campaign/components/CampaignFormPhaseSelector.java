@@ -46,7 +46,8 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)
-				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)
+				|| UserProvider.getCurrent().hasUserType(UserType.COMMON_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
@@ -86,7 +87,8 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)
-				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)
+				|| UserProvider.getCurrent().hasUserType(UserType.COMMON_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {

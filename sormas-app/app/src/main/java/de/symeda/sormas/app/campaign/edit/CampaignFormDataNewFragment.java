@@ -754,11 +754,19 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             Boolean okk = field.getFocusedChild() != null ? true : false;
                             System.out.println(okk +" >>>???>>>>> " +field.getFocusedChild());
 
-                            System.out.println(field.getValue() + "_____________" + isRangeandExpressionx);
+                            System.out.println(field.getValue() + "_____________" + okk);
 
                                 final CampaignFormDataEntry campaignFormDataEntry = CampaignFormDataFragmentUtils.getOrCreateCampaignFormDataEntry(formValues, campaignFormElement);
                                 campaignFormDataEntry.setValue(field.getValue());
-                                if ((campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) || okk) {
+                                if ((campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) || (okk && isRangeandExpressionx)) {
+                                    for(CampaignFormDataEntry det : formValues){
+                                        if(det.getValue() != null) {
+                                            if (det.getValue().toString().isEmpty()) {
+                                                det.setValue(null);
+                                            }
+                                        }
+
+                                    }
                                     expressionMap.forEach((formElement, controlPropertyField) ->
                                             CampaignFormDataFragmentUtils.handleExpressionSec(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression(), ignoreDisable, field.getValue()));
                                 } else if (field.isFocused()){
@@ -782,6 +790,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
                     final String expressionString = campaignFormElement.getExpression();
                     if (expressionString != null) {
+                        System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>");
                         CampaignFormDataFragmentUtils.handleExpression(expressionParser, formValues, type, dynamicField, expressionString, ignoreDisable);
                         expressionMap.put(campaignFormElement, dynamicField);
                     }

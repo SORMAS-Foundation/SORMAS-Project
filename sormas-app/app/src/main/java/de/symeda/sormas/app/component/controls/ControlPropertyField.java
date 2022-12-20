@@ -381,7 +381,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
 	public void setValue(Object value) {
 		setFieldValue((T) value);
-		onValueChanged();
+		//onValueChanged();
 	}
 
 	public Object getValue() {

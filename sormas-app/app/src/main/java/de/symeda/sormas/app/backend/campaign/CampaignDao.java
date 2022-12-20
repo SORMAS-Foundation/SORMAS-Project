@@ -17,9 +17,14 @@ package de.symeda.sormas.app.backend.campaign;
 
 import android.util.Log;
 
+import androidx.room.RawQuery;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -69,15 +74,52 @@ public class CampaignDao extends AbstractAdoDao<Campaign> {
 
             List<Where<Campaign, Long>> whereStatements = new ArrayList<>();
             Where<Campaign, Long> where = queryBuilder.where();
-			where.and(where.eq(Campaign.ARCHIVED, false), where.le(Campaign.START_DATE, new Date()));
+			where.and(where.eq(Campaign.ARCHIVED, false), where.le(Campaign.LAST_OPENED_DATE, new Date()));
 			whereStatements.add(where);
 
             if (!whereStatements.isEmpty()) {
                 Where<Campaign, Long> whereStatement = where.and(whereStatements.size());
                 queryBuilder.setWhere(whereStatement);
             }
-            return queryBuilder.orderBy(Campaign.START_DATE, false).queryForFirst();
+            return queryBuilder.orderBy(Campaign.LAST_OPENED_DATE, false).queryForFirst();
         } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getLastStartedCampaign on Campaign");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateCampaignLastOpenedDate(String campUuid) {
+
+        try {
+
+            Date date = new Date();
+            long timeMilli = date.getTime();
+
+            System.out.println("update campaigns set lastOpenedDate = "+timeMilli+" where uuid = '"+campUuid+"' ------------" );
+
+            queryRawSQL("update campaigns set lastOpenedDate = "+timeMilli+" where uuid = '"+campUuid+"'");
+
+         //   return queryBuilder.orderBy(Campaign.START_DATE, false).queryForFirst();
+        } catch (Exception e) {
+            Log.e(getTableName(), "Could not perform getLastStartedCampaign on Campaign");
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void checkCampaignLastOpened(String campUuid) {
+
+        try {
+
+            Date date = new Date();
+            long timeMilli = date.getTime();
+
+            System.out.println("update campaigns set lastOpenedDate = "+timeMilli+" where uuid = '"+campUuid+"' ------------" );
+
+            queryRawSQL("update campaigns set lastOpenedDate = "+timeMilli+" where uuid = '"+campUuid+"'");
+
+            //   return queryBuilder.orderBy(Campaign.START_DATE, false).queryForFirst();
+        } catch (Exception e) {
             Log.e(getTableName(), "Could not perform getLastStartedCampaign on Campaign");
             throw new RuntimeException(e);
         }

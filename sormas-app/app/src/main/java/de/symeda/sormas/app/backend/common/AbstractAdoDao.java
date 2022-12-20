@@ -31,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1280,6 +1279,15 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	protected GenericRawResults<Object[]> queryRaw(String query, DataType[] columnTypes, String... arguments) {
 		try {
 			return dao.queryRaw(query, columnTypes, arguments);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	protected GenericRawResults<String[]> queryRawSQL(String query) {
+		try {
+			return dao.queryRaw(query);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

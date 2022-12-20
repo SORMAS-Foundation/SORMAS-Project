@@ -25,6 +25,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +40,7 @@ import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.Campaign;
+import de.symeda.sormas.app.backend.campaign.CampaignDao;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
@@ -53,8 +56,9 @@ import de.symeda.sormas.app.util.Callback;
 public class CampaignFormDataListActivity extends PagedBaseListActivity<CampaignFormData> {
 
     private CampaignFormDataListViewModel model;
+    private CampaignDao campaignDao;
     private FilterCampaignFormDataListLayoutBinding filterBinding;
-//this resets active campaign to servers active campaign...
+    //this resets active campaign to servers active campaign...
     public static void startActivity(Context context) {
         List<Campaign> activeCampaigns = DatabaseHelper.getCampaignDao().getAllActive();
         int pageMenuPosition = activeCampaigns.size() > 0 ? 1 : 0;
@@ -180,23 +184,30 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
             Campaign campaign = (Campaign) e.getValue();
             if (campaign != null) {
                 if(campaign.getCampaignFormMetas() != null){
-                List<Item> forms = campaignFormMetasToItems(campaign.getCampaignFormMetas());
-                forms.stream().filter(ee -> ee.getValue() != null).collect(Collectors.toList());
-                filterBinding.campaignFormFilter.initializeSpinner(forms);
-                setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
-                if (getNewMenu() != null) {
-                    getNewMenu().setVisible(isEntryCreateAllowed());
+                    List<Item> forms = campaignFormMetasToItems(campaign.getCampaignFormMetas());
+                    forms.stream().filter(ee -> ee.getValue() != null).collect(Collectors.toList());
+                    filterBinding.campaignFormFilter.initializeSpinner(forms);
+                    setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
+                    if (getNewMenu() != null) {
+                        getNewMenu().setVisible(isEntryCreateAllowed());
+                    }
                 }
-            }
             }
         });
 
         pageMenu.addFilter(campaignsFormDataListFilterView);
 
+
+
+
         filterBinding.applyFilters.setOnClickListener(e -> {
+
             showPreloader();
             pageMenu.hideAll();
             setSetSubHeadingTitleForCampaign(model.getCriteria().getCampaign());
+            System.out.println("-----------------------"+model.getCriteria().getCampaign().getUuid());
+            DatabaseHelper.getCampaignDao().updateCampaignLastOpenedDate(model.getCriteria().getCampaign().getUuid());
+           // campaignDao.updateCampaignLastOpenedDate(model.getCriteria().getCampaign().getUuid());
             model.notifyCriteriaUpdated();
         });
 

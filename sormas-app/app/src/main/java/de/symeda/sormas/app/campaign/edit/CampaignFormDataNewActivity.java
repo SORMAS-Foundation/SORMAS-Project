@@ -121,6 +121,7 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+
                 DatabaseHelper.getCampaignFormDataDao().saveAndSnapshot(campaignFormDataToSave);
             }
 

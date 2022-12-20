@@ -334,7 +334,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		
 		parentTab3.addComponent(layoutPost);
 		parentTab3.setCaption("Intra-Campaign Phase");
-		if(UserProvider.getCurrent().hasUserType(UserType.EOC_USER) || UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if(UserProvider.getCurrent().hasUserType(UserType.EOC_USER) || UserProvider.getCurrent().hasUserType(UserType.WHO_USER) || UserProvider.getCurrent().hasUserType(UserType.COMMON_USER) ) {
 			tabsheetParent.addTab(parentTab3);
 		}
 		//tabsheetParent.addTab(parentTab3);

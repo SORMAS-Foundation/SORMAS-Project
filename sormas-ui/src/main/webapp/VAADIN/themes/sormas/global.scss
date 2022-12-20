@@ -400,3 +400,10 @@
     border: 2px solid white !important;
 	}
 
+
+:root .sormas .v-select-optiongroup-horizontal .v-radiobutton > input:checked ~ label, :root .sormas .v-select-optiongroup-horizontal .v-checkbox > input:checked ~ label {
+background: green !important;
+	color: white !important;
+    border: 2px solid white !important;
+}
+

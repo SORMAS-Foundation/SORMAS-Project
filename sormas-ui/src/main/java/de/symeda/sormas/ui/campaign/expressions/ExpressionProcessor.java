@@ -51,7 +51,7 @@ public class ExpressionProcessor {
 			.filter(formElement -> formElement.getExpression() != null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.filter(formElement -> !formElement.getType().equals("range"))
-			.filter(formElement -> !formElement.isIgnoredisable())
+			//.filter(formElement -> !formElement.isIgnoredisable())
 			.forEach(formElement -> fields.get(formElement.getId()).setEnabled(false));
 		
 	}
@@ -91,22 +91,28 @@ public class ExpressionProcessor {
 	}
 
 	private void checkExpression() {
-	//	System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-		
+//		for(CampaignFormDataEntry dfv : campaignFormBuilder.getFormValues()) {
+//		System.out.println(dfv.getId() +" ===== "+dfv.getValue());
+//		}
+//		
 		EvaluationContext context = refreshEvaluationContext(campaignFormBuilder.getFormValues());
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream().filter(element -> element.getExpression() != null).forEach(e -> {
 			try {
+				
 				final Expression expression = expressionParser.parseExpression(e.getExpression());
+				
+				
 				final Class<?> valueType = expression.getValueType(context);
 				final Object value = expression.getValue(context, valueType); 
 				//final Object valx = Precision.round((double) value, 3);
 				//final List <String> opt = null;
-				//System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context));
+			//	System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context) +" == "+e.getCaption());
 				String valuex = value +"";
 			
 				if(!valuex.isBlank() && value != null) {
 				if(e.getType().toString().equals("range")) {
+					System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context) +" == "+e.getCaption());
 					
 					if(value.toString().equals("0")) { 
 						campaignFormBuilder
@@ -160,7 +166,7 @@ public class ExpressionProcessor {
 					
 				}
 			} catch (SpelEvaluationException evaluationException) {
-				//LOG.error("Error evaluating expression: {} / {}", evaluationEx0rception.getMessageCode(), evaluationException.getMessage());
+				LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
 			}
 		});
 	}

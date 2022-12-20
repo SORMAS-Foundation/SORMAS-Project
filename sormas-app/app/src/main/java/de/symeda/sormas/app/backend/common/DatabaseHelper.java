@@ -182,7 +182,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 328;
+	public static final int DATABASE_VERSION = 331;
 
 	private static DatabaseHelper instance = null;
 
@@ -2906,17 +2906,47 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 327;
 
 					getDao(CampaignFormData.class).executeRaw("ALTER TABLE campaignFormData ADD COLUMN formCategory varchar(50);");
-//
-//					currentVersion = 328;
-//					getDao(CampaignFormData.class).executeRaw("CREATE TRIGGER prevent_duplicate_on_admin_forms\n" +
-//							"before insert on campaignFormData\n" +
-//							"when EXISTS (SELECT *\n" +
-//							"                 FROM rec_info\n" +
-//							"                 WHERE campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory\n" +
-//							"                 )\n" +
-//							"begin\n" +
-//							" SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
-//							"end;");
+				case 328:
+					currentVersion = 328;
+					getDao(CampaignFormData.class).executeRaw("    UPDATE campaignFormData set archived = 1, changeDate = changeDate+id  \n" +
+							"    WHERE ID NOT IN (\n" +
+							"    SELECT MAX(ID) AS MaxRecordID \n" +
+							"    FROM campaignFormData \n" +
+							"    WHERE formCategory = \"ADMIN\"\n" +
+							"    GROUP BY campaignFormMeta_id, campaign_id, community_id\n" +
+							"    ) \n" +
+							"    AND formCategory = \"ADMIN\"");
+
+				case 329:
+					currentVersion = 329;
+					getDao(CampaignFormData.class).executeRaw("DROP TRIGGER prevent_duplicate_on_admin_forms");
+					getDao(CampaignFormData.class).executeRaw(
+							"CREATE TRIGGER prevent_duplicate_on_admin_forms\n" +
+							"BEFORE INSERT ON campaignFormData\n" +
+							"WHEN EXISTS (SELECT *\n" +
+							"                 FROM rec_info\n" +
+							"                 WHERE campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory AND rec_info.formCategory = 'ADMIN'" +
+							"            )\n" +
+							"BEGIN\n" +
+							"SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
+							"END;");
+
+
+				case 330:
+					currentVersion = 330;
+					getDao(CampaignFormData.class).executeRaw("DROP TRIGGER prevent_duplicate_on_admin_forms");
+					getDao(CampaignFormData.class).executeRaw(
+							"CREATE TRIGGER prevent_duplicate_on_admin_forms\n" +
+									"BEFORE INSERT ON campaignFormData\n" +
+									"WHEN EXISTS (SELECT *\n" +
+									"                 FROM campaignFormData rec_info\n" +
+									"                 WHERE rec_info.campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory AND rec_info.formCategory = 'ADMIN'" +
+									"            )\n" +
+									"BEGIN\n" +
+									"SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
+									"END;");
+
+
 					// ATTENTION: break should only be done after last version
 					break;
 
