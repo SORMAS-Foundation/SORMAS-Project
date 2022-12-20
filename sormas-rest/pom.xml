@@ -140,20 +140,6 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>generate-swagger-for-journal</id>
-						<goals>
-							<goal>resolve</goal>
-						</goals>
-						<configuration>
-							<contextId>external visits api</contextId>
-							<resourcePackages>
-								<resourcePackage>de.symeda.sormas.rest.externaljournal</resourcePackage>
-							</resourcePackages>
-							<outputFileName>external_visits_API</outputFileName>
-							<configurationFilePath>${basedir}/src/main/resources/externalVisitsOpenApiConfig.yml</configurationFilePath>
-						</configuration>
-					</execution>
-					<execution>
 						<id>rest api</id>
 						<goals>
 							<goal>resolve</goal>
