@@ -46,6 +46,7 @@ public class SampleJoins extends QueryJoins<Sample> {
 	private Join<Sample, Case> caze;
 	private Join<Sample, EventParticipant> eventParticipant;
 	private Join<Sample, Contact> contact;
+	private Join<Sample, PathogenTest> pathogenTest;
 
 	private CaseJoins caseJoins;
 	private ContactJoins contactJoins;
@@ -165,6 +166,14 @@ public class SampleJoins extends QueryJoins<Sample> {
 
 	public void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
 		this.eventParticipantJoins = eventParticipantJoins;
+	}
+
+	public Join<Sample, PathogenTest> getPathogenTest() {
+		return getOrCreate(pathogenTest, Sample.PATHOGENTESTS, JoinType.LEFT, this::setPathogenTest);
+	}
+
+	private void setPathogenTest(Join<Sample, PathogenTest> pathogenTest) {
+		this.pathogenTest = pathogenTest;
 	}
 
 	public Join<EventParticipant, Person> getEventParticipantPerson() {

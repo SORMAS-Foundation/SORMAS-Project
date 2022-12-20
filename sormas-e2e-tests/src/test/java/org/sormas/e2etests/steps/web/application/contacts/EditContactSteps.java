@@ -784,6 +784,10 @@ public class EditContactSteps implements En {
                 CONTACT_CLASSIFICATION_RADIO_BUTTON, "BEST\u00C4TIGTER KONTAKT"));
 
     When(
+        "I select CONFIRMED CONTACT radio button on Contact Data tab for DE version",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONFIRMED_CONTACT_DE_BUTTON));
+
+    When(
         "^I click on CONFIRMED CONTACT radio button Contact Data tab$",
         () ->
             webDriverHelpers.clickWebElementByText(

@@ -21,13 +21,8 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -70,8 +65,6 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	private final boolean caseFollowUpEnabled;
 	private final boolean externalSurveillanceToolShareEnabled;
 
-	private DataProviderListener<IndexDto> dataProviderListener;
-
 	public AbstractCaseGrid(Class<IndexDto> beanType, CaseCriteria criteria) {
 
 		super(beanType);
@@ -110,14 +103,9 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		diseaseShortColumn.setSortProperty(CaseIndexDto.DISEASE);
 
 		Column<IndexDto, String> visitsColumn = addColumn(entry -> {
-			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getDisease())) {
-				int numberOfVisits = entry.getVisitCount();
-				int numberOfRequiredVisits = FollowUpLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDate(), entry.getFollowUpUntil());
-				int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;
-				// Set number of missed visits to 0 when more visits than expected have been done
-				if (numberOfMissedVisits < 0) {
-					numberOfMissedVisits = 0;
-				}
+			Integer numberOfVisits = entry.getVisitCount();
+			Integer numberOfMissedVisits = entry.getMissedVisitsCount();
+			if (numberOfVisits != null && numberOfMissedVisits != null ) {
 				return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat), numberOfVisits, numberOfMissedVisits);
 			} else {
 				return "-";
@@ -294,33 +282,12 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 	public void setLazyDataProvider() {
 
-		DataProvider<IndexDto, CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> getGridData(
-				query.getFilter().orElse(null),
-				query.getOffset(),
-				query.getLimit(),
-				query.getSortOrders()
-					.stream()
-					.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-					.collect(Collectors.toList())).stream(),
-			query -> (int) FacadeProvider.getCaseFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(this::getGridData, FacadeProvider.getCaseFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
 
-		ListDataProvider<IndexDto> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
-
-		if (dataProviderListener != null) {
-			dataProvider.addDataProviderListener(dataProviderListener);
-		}
-	}
-
-	public void setDataProviderListener(DataProviderListener<IndexDto> dataProviderListener) {
-		this.dataProviderListener = dataProviderListener;
+		setEagerDataProvider(this::getGridData);
 	}
 
 	protected abstract List<IndexDto> getGridData(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
