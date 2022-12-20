@@ -1,9 +1,6 @@
 package de.symeda.sormas.ui.reports.aggregate;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -12,10 +9,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.utils.AgeGroupUtils;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -108,14 +102,13 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	}
 
 	public void reload() {
-		ListDataProvider<AggregateReportDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getAggregateReports(getCriteria()).stream().map(aggregatedReportDto -> {
-				if (aggregatedReportDto.getAgeGroup() != null) {
-					aggregatedReportDto.setAgeGroup(AgeGroupUtils.createCaption(aggregatedReportDto.getAgeGroup()));
-				}
-				return aggregatedReportDto;
-			}));
-		setDataProvider(dataProvider);
-		dataProvider.refreshAll();
+
+		setDataProvider(FacadeProvider.getAggregateReportFacade().getAggregateReports(getCriteria()).stream().map(aggregatedReportDto -> {
+			if (aggregatedReportDto.getAgeGroup() != null) {
+				aggregatedReportDto.setAgeGroup(AgeGroupUtils.createCaption(aggregatedReportDto.getAgeGroup()));
+			}
+			return aggregatedReportDto;
+		}));
+		getDataProvider().refreshAll();
 	}
 }

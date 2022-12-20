@@ -141,7 +141,9 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.MATERNAL_HISTORIES, MaternalHistory.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CONTACTS, Contact.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.VISITS, Visit.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.CONTACTS_VISITS, Visit.CONTACTS_VISITS_TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS, Event.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.EVENTS_EVENTGROUPS, Event.EVENTS_EVENT_GROUPS_TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTGROUPS, EventGroup.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTPARTICIPANTS, EventParticipant.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.ACTIONS, Action.TABLE_NAME);
@@ -152,8 +154,10 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.PATHOGEN_TESTS, PathogenTest.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.ADDITIONAL_TESTS, AdditionalTest.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.TASKS, Task.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.TASK_OBSERVER, Task.TASK_OBSERVER_TABLE);
 		EXPORT_CONFIGS.put(DatabaseTable.PERSONS, Person.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.PERSON_CONTACT_DETAILS, PersonContactDetail.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.PERSON_LOCATIONS, Person.PERSON_LOCATIONS_TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.LOCATIONS, Location.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CONTINENTS, Continent.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SUBCONTINENTS, Subcontinent.TABLE_NAME);
@@ -168,6 +172,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_ENUM_VALUES, CustomizableEnumValue.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SYMPTOMS, Symptoms.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGNS, Campaign.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_CAMPAIGNFORMMETA, Campaign.CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_FORM_META, CampaignFormMeta.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_FORM_DATA, CampaignFormData.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_DIAGRAM_DEFINITIONS, CampaignDiagramDefinition.TABLE_NAME);
@@ -178,6 +183,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_INFO, SormasToSormasShareInfo.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_REQUESTS, SormasToSormasShareRequest.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SHARE_REQUEST_INFO, ShareRequestInfo.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SHARE_REQUEST_INFO_SHARE_INFO, ShareRequestInfo.SHARE_REQUEST_INFO_SHARE_INFO_TABLE);
 		EXPORT_CONFIGS.put(DatabaseTable.EXTERNAL_SHARE_INFO, ExternalShareInfo.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.USERS, User.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.USER_ROLES, User.TABLE_NAME_USERROLES);

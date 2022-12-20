@@ -93,26 +93,12 @@ public class EventGroupsGrid extends FilteredGrid<EventGroupIndexDto, EventGroup
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<EventGroupIndexDto, EventGroupCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getEventGroupFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getEventGroupFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+
+		setLazyDataProvider(FacadeProvider.getEventGroupFacade()::getIndexList, FacadeProvider.getEventGroupFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<EventGroupIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getEventGroupFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
+
+		setEagerDataProvider(FacadeProvider.getEventGroupFacade()::getIndexList);
 	}
 }
