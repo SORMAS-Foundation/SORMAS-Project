@@ -1447,5 +1447,6 @@ Feature: Create events
     And I fill Event Id filter in Link to Event form with last created via API Event uuid
     And I click first result in grid on Link to Event form
     And I click on SAVE button in Link Event to group form
-    Then I click on save button in Add Participant form
+#    Then I click on save button in Add Participant form
+    Then I click Save in Add Event Participant form on Edit Contact Page
     And I validate last created via API Event data is displayed under Linked Events section

@@ -291,8 +291,8 @@ public class EditEventSteps implements En {
         "^I change the event status to ([^\"]*)",
         (String eventStatus) -> {
           selectEventStatus(eventStatus);
-          webDriverHelpers.scrollToElement(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.scrollToElement(EDIT_EVENT_PAGE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
         });
 
@@ -821,7 +821,7 @@ public class EditEventSteps implements En {
         "I set participant vaccination status to ([^\"]*)",
         (String vaccinationStatus) -> {
           webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
         });
 
@@ -1687,7 +1687,7 @@ public class EditEventSteps implements En {
               true,
               "Event status options is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
-              webDriverHelpers.isElementEnabled(SAVE_BUTTON),
+              webDriverHelpers.isElementEnabled(EDIT_EVENT_PAGE_SAVE_BUTTON),
               true,
               "Save button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
