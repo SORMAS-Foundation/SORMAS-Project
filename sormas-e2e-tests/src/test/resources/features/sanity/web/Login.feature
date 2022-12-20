@@ -4,6 +4,7 @@ Feature: Login with different type of users
   @env_main @LoginMain
   Scenario Outline: Login with <user> user on Main Environment
     Given I navigate to SORMAS login page
+    And I check that Login page is correctly displayed in English language
     Then I log in as a <user>
     Then I am logged in
     And I check that Surveillance Dashboard header is correctly displayed in English language
@@ -31,6 +32,7 @@ Feature: Login with different type of users
   @env_de @LoginDe
   Scenario Outline: Login with <user> user on German Environment
     Given I navigate to SORMAS login page
+    And I check that Login page is correctly displayed in German language
     Then I log in as a <user>
     Then I am logged in
     Then I click on the User Settings button from navbar
