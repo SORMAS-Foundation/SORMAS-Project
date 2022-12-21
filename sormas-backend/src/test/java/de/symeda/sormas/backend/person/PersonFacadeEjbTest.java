@@ -42,6 +42,8 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
@@ -917,7 +919,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergePersonsAndRemoveDuplication() {
+	public void testMergePersonsAndRemoveDuplication() throws CloneNotSupportedException {
 
 		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
 		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
@@ -926,8 +928,22 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		otherPerson.setPhone("+496211218491");
 		leadPerson.setEmailAddress("lead@hotmail.com");
 		otherPerson.setEmailAddress("other@yahoo.com");
+
+		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
+		otherPersonAddress.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
+
 		leadPerson.setAddresses(Collections.singletonList(LocationDto.build()));
-		otherPerson.setAddresses(Collections.singletonList(LocationDto.build()));
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
 
 		leadPerson = getPersonFacade().save(leadPerson);
 		otherPerson = getPersonFacade().save(otherPerson);

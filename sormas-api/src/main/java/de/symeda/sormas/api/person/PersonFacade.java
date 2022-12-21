@@ -82,7 +82,7 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
 
-	void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties);
+	void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties) throws CloneNotSupportedException;
 
 	boolean isPersonSimilar(PersonSimilarityCriteria criteria, String personUuid);
 

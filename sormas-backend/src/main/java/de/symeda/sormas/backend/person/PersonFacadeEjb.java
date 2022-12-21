@@ -1793,7 +1793,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
-	public void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties) {
+	public void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties) throws CloneNotSupportedException {
 
 		if (leadPersonUuid.equals(otherPersonUuid)) {
 			throw new UnsupportedOperationException("Two different persons need to be selected for merge!");
@@ -1815,7 +1815,15 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 					contactDetailDto.setPrimaryContact(false);
 				}
 			}
+
+			LocationDto leadPersonAddress = (LocationDto) leadPersonDto.getAddress().clone();
+			LocationDto otherPersonAddress = otherPersonDto.getAddress();
 			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false);
+
+			if (differentLocation(leadPersonAddress, otherPersonAddress)) {
+				leadPersonDto.setAddress(leadPersonAddress);
+				leadPersonDto.addAddress(otherPersonAddress);
+			}
 
 			save(leadPersonDto);
 		}
@@ -1857,6 +1865,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		service.deletePermanent(otherPerson);
 		service.ensurePersisted(leadPerson);
+	}
+
+	private boolean differentLocation(LocationDto firstAddress, LocationDto secondAddress) {
+		return firstAddress.getCountry() != secondAddress.getCountry()
+			|| firstAddress.getRegion() != secondAddress.getRegion()
+			|| firstAddress.getDistrict() != secondAddress.getDistrict()
+			|| firstAddress.getCommunity() != secondAddress.getCommunity();
 	}
 
 	@Override
