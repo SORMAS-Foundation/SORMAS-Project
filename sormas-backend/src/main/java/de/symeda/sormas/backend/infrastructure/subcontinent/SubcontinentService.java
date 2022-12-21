@@ -39,7 +39,10 @@ public class SubcontinentService extends AbstractInfrastructureAdoService<Subcon
 				.and(cb, filter, cb.equal(from.join(Subcontinent.CONTINENT, JoinType.LEFT).get(Continent.UUID), criteria.getContinent().getUuid()));
 		}
 		if (criteria.getNameLike() != null) {
-			filter = CriteriaBuilderHelper.and(cb, cb.like(cb.lower(from.get(Subcontinent.DEFAULT_NAME)), criteria.getNameLike().toLowerCase()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Subcontinent.DEFAULT_NAME), criteria.getNameLike().toLowerCase()));
 		}
 		filter = addRelevancePredicate(cb, from, filter, criteria.getRelevanceStatus());
 		return filter;

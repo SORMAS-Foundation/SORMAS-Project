@@ -28,18 +28,30 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SEX_
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_FACILITIES_TAB;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.ACTION_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.ARCHIVE_FACILITY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.COMMUNITY_COMBOBOX_FACILITIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.COUNTRY_COMBOBOX_FACILITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.DISTRICT_COMBOBOX_FACILITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.EDIT_FIRST_FACILITY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.ENTER_BULK_EDIT_MODE_BUTTON_FACILITIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.EXPORT_FACILITY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITIES_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITIES_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_CATEGORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_CATEGORY_COMBOBOX_FACILITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_CONTACT_PERSON_EMAIL_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_CONTACT_PERSON_FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_CONTACT_PERSON_LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_CONTACT_PERSON_PHONE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_EXPOSURE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_TYPE_COMBOBOX_FACILITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.REGION_COMBOBOX_FACILITIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.RELEVANCE_STATUS_COMBOBOX_FACILITIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.RESET_FILTERS_BUTTON_FACILITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.SEARCH_FACILITY;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.ACTIVITY_AS_CASE_FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.ACTIVITY_AS_CASE_TYPE_OF_ACTIVITY_COMBOBOX;
@@ -75,7 +87,9 @@ import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class FacilitySteps implements En {
@@ -93,7 +107,8 @@ public class FacilitySteps implements En {
       SoftAssert softly,
       Faker faker,
       CaseService caseService,
-      EventService eventService) {
+      EventService eventService,
+      AssertHelpers assertHelpers) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
 
@@ -304,6 +319,74 @@ public class FacilitySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_FACILITY_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_BUTTON);
+        });
+
+    Then(
+        "I Verify the page elements are present in Facilities Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              FACILITY_CATEGORY_COMBOBOX_FACILITIES_CONFIGURATION);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(FACILITIES_IMPORT_BUTTON),
+              "Import Button is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(EXPORT_FACILITY_BUTTON),
+              "Export Button is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(FACILITIES_NEW_ENTRY_BUTTON),
+              "New Entry Button is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  ENTER_BULK_EDIT_MODE_BUTTON_FACILITIES_CONFIGURATION),
+              "Enter Bulk Edit Mode Button is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SEARCH_FACILITY),
+              "Search Input is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  FACILITY_CATEGORY_COMBOBOX_FACILITIES_CONFIGURATION),
+              "Facility Category Combo box is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(FACILITY_TYPE_COMBOBOX_FACILITIES_CONFIGURATION),
+              "Facility Type Combo box is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(COUNTRY_COMBOBOX_FACILITIES_CONFIGURATION),
+              "Country Combo box is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(REGION_COMBOBOX_FACILITIES_CONFIGURATION),
+              "Region Combo box is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DISTRICT_COMBOBOX_FACILITIES_CONFIGURATION),
+              "District Combo box is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(COMMUNITY_COMBOBOX_FACILITIES_CONFIGURATION),
+              "Community Combo box is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RESET_FILTERS_BUTTON_FACILITIES_CONFIGURATION),
+              "Reset Filters Button is Not present in Facilities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RELEVANCE_STATUS_COMBOBOX_FACILITIES_CONFIGURATION),
+              "Relevance status Combo box is Not present in Facilities Configuration");
+          softly.assertAll();
+        });
+
+    When(
+        "I filter facility by {string}",
+        (String facilName) -> {
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_FACILITY, facilName);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check that number of displayed Facilities results is {int}",
+        (Integer nr) -> {
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      webDriverHelpers.getNumberOfElements(FACILITY_GRID_RESULTS_ROWS),
+                      nr.intValue(),
+                      "Number of displayed facilities is not correct"));
         });
   }
 

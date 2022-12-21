@@ -323,7 +323,7 @@ public class EventParticipantsView extends AbstractEventView {
 			gridLayout.addComponent(grid);
 			gridLayout.setExpandRatio(grid, 1);
 			gridLayout.setStyleName("crud-main-layout");
-			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+			grid.addDataSizeChangeListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
 			gridLayout.setEnabled(!isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
 		}
@@ -448,7 +448,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 }

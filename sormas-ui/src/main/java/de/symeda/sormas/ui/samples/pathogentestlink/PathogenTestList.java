@@ -68,7 +68,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	protected void drawDisplayedEntries() {
 		List<PathogenTestDto> displayedEntries = getDisplayedEntries();
 		for (PathogenTestDto pathogenTest : displayedEntries) {
-			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
+			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest, true);
 			String pathogenTestUuid = pathogenTest.getUuid();
 			boolean isEditableAndHasEditRight = isEditable && UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT);
 			listEntry.addActionButton(

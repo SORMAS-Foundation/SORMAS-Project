@@ -46,14 +46,23 @@ import static org.sormas.e2etests.pages.application.configuration.CommunitiesTab
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_NAME_TABLE_COLUMN;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_COMMUNITY_TEXT;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_DEARCHIVING_COMMUNITY_TEXT;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COUNTRY_COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CREATE_NEW_ENTRY_COMMUNITIES_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CREATE_NEW_ENTRY_COMMUNITIES_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CREATE_NEW_ENTRY_COMMUNITIES_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.DEARCHIVE_COMMUNITY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.DISTRICT_COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.DISTRICT_NAME_TABLE_COLUMN;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.EDIT_COMMUNITY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.EXPORT_BUTTON_COMMUNITIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.IMPORT_BUTTON_COMMUNITIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.REGION_COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.REGION_NAME_TABLE_COLUMN;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.RESET_FILTERS_COMMUNITIES_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.SAVE_NEW_ENTRY_COMMUNITIES;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.SEARCH_COMMUNITY_INPUT;
@@ -260,6 +269,138 @@ public class CommunitiesSteps implements En {
               tableRowsData.toString().contains("NAME=Voreingestellte Gemeinde"),
               "Voreingestellte Gemeinde is not correctly displayed!");
           softly.assertAll();
+        });
+
+    Then(
+        "I Verify the page elements are present in Communities Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              IMPORT_BUTTON_COMMUNITIES_CONFIGURATION);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(IMPORT_BUTTON_COMMUNITIES_CONFIGURATION),
+              "Import Button is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(EXPORT_BUTTON_COMMUNITIES_CONFIGURATION),
+              "Export Button is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(COMMUNITIES_NEW_ENTRY_BUTTON),
+              "New Entry Button is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION),
+              "Enter Bulk Edit Mode Button is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SEARCH_COMMUNITY_INPUT),
+              "Search Input is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(COUNTRY_COMMUNITY_FILTER_COMBOBOX),
+              "Country Combo box is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(REGION_COMMUNITY_FILTER_COMBOBOX),
+              "Region Combo box is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DISTRICT_COMMUNITY_FILTER_COMBOBOX),
+              "District Combo box is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RESET_FILTERS_COMMUNITIES_BUTTON),
+              "Reset Filters Button is Not present in Communities Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(COMMUNITY_FILTER_COMBOBOX),
+              "Relevance status Combo box is Not present in Communities Configuration");
+          softly.assertAll();
+        });
+
+    Then(
+        "I verify the Search and Reset filter functionality in Communities Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION);
+          Integer defaultRecordsCount =
+              webDriverHelpers.getNumberOfElements(COMMUNITY_NAME_TABLE_COLUMN);
+          String communityName =
+              webDriverHelpers.getTextFromWebElement(COMMUNITY_NAME_TABLE_COLUMN);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COMMUNITY_INPUT, communityName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COMMUNITY_NAME_TABLE_COLUMN, communityName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_COMMUNITIES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COMMUNITY_NAME_TABLE_COLUMN, defaultRecordsCount);
+        });
+
+    Then(
+        "I verify the Country dropdown functionality in Communities Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION);
+          Integer defaultRecordsCount =
+              webDriverHelpers.getNumberOfElements(COMMUNITY_NAME_TABLE_COLUMN);
+          String communityName =
+              webDriverHelpers.getTextFromWebElement(COMMUNITY_NAME_TABLE_COLUMN);
+          webDriverHelpers.selectFromCombobox(COUNTRY_COMMUNITY_FILTER_COMBOBOX, "Germany");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COMMUNITY_INPUT, communityName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COMMUNITY_NAME_TABLE_COLUMN, communityName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_COMMUNITIES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COMMUNITY_NAME_TABLE_COLUMN, defaultRecordsCount);
+        });
+
+    Then(
+        "I verify the Region dropdown functionality in Communities Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION);
+          Integer defaultRecordsCount =
+              webDriverHelpers.getNumberOfElements(COMMUNITY_NAME_TABLE_COLUMN);
+          String communityName =
+              webDriverHelpers.getTextFromWebElement(COMMUNITY_NAME_TABLE_COLUMN);
+          webDriverHelpers.selectFromCombobox(REGION_COMMUNITY_FILTER_COMBOBOX, "Bayern");
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(REGION_NAME_TABLE_COLUMN, "Bayern");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COMMUNITY_INPUT, communityName);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COMMUNITY_NAME_TABLE_COLUMN, communityName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_COMMUNITIES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COMMUNITY_NAME_TABLE_COLUMN, defaultRecordsCount);
+        });
+
+    Then(
+        "I verify the District dropdown functionality in Communities Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COMMUNITIES_CONFIGURATION);
+          Integer defaultRecordsCount =
+              webDriverHelpers.getNumberOfElements(COMMUNITY_NAME_TABLE_COLUMN);
+          String communityName =
+              webDriverHelpers.getTextFromWebElement(COMMUNITY_NAME_TABLE_COLUMN);
+          webDriverHelpers.selectFromCombobox(REGION_COMMUNITY_FILTER_COMBOBOX, "Bayern");
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(REGION_NAME_TABLE_COLUMN, "Bayern");
+          webDriverHelpers.selectFromCombobox(DISTRICT_COMMUNITY_FILTER_COMBOBOX, "LK Freising");
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              DISTRICT_NAME_TABLE_COLUMN, "LK Freising");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COMMUNITY_INPUT, communityName);
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COMMUNITY_NAME_TABLE_COLUMN, communityName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_COMMUNITIES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COMMUNITY_NAME_TABLE_COLUMN, defaultRecordsCount);
         });
   }
 

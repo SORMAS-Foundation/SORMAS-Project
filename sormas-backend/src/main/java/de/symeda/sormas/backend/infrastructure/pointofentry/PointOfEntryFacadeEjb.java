@@ -36,7 +36,6 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -148,6 +147,7 @@ public class PointOfEntryFacadeEjb
 		// poe are excluded from infra. data locking for now...
 	}
 
+	@Override
 	public void validate(@Valid PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
 
 		if (StringUtils.isEmpty(pointOfEntry.getName())) {
@@ -177,22 +177,11 @@ public class PointOfEntryFacadeEjb
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(PointOfEntry.class);
-		Root<PointOfEntry> pointOfEntry = cq.from(PointOfEntry.class);
-		Join<PointOfEntry, Region> region = pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT);
-		Join<PointOfEntry, District> district = pointOfEntry.join(PointOfEntry.DISTRICT, JoinType.LEFT);
+		Root<PointOfEntry> root = cq.from(PointOfEntry.class);
+		Join<PointOfEntry, Region> region = root.join(PointOfEntry.REGION, JoinType.LEFT);
+		Join<PointOfEntry, District> district = root.join(PointOfEntry.DISTRICT, JoinType.LEFT);
 
-		Predicate filter = service.buildCriteriaFilter(criteria, cb, pointOfEntry);
-		Predicate excludeFilter = cb.and(
-			cb.notEqual(pointOfEntry.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_AIRPORT_UUID),
-			cb.notEqual(pointOfEntry.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_SEAPORT_UUID),
-			cb.notEqual(pointOfEntry.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_GROUND_CROSSING_UUID),
-			cb.notEqual(pointOfEntry.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
-
-		if (filter != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
-		} else {
-			filter = excludeFilter;
-		}
+		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -209,7 +198,7 @@ public class PointOfEntryFacadeEjb
 				case PointOfEntry.LONGITUDE:
 				case PointOfEntry.ACTIVE:
 				case PointOfEntry.EXTERNAL_ID:
-					expression = pointOfEntry.get(sortProperty.propertyName);
+					expression = root.get(sortProperty.propertyName);
 					break;
 				case Facility.REGION:
 					expression = region.get(Region.NAME);
@@ -224,43 +213,12 @@ public class PointOfEntryFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(pointOfEntry.get(PointOfEntry.NAME)));
+			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(root.get(PointOfEntry.NAME)));
 		}
 
-		cq.select(pointOfEntry);
+		cq.select(root);
 
 		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
-	}
-
-	@Override
-	@RightsAllowed({
-		UserRight._INFRASTRUCTURE_VIEW,
-		UserRight._SYSTEM })
-	public long count(PointOfEntryCriteria criteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<PointOfEntry> root = cq.from(PointOfEntry.class);
-
-		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
-		Predicate excludeFilter = cb.and(
-			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_AIRPORT_UUID),
-			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_SEAPORT_UUID),
-			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_GROUND_CROSSING_UUID),
-			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
-
-		if (filter != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
-		} else {
-			filter = excludeFilter;
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override

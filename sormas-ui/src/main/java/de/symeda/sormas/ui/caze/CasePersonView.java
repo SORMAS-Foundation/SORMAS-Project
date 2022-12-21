@@ -31,7 +31,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 public class CasePersonView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
-	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent;
+	private PersonDto person;
 
 	public CasePersonView() {
 		super(VIEW_NAME, true);
@@ -41,10 +41,12 @@ public class CasePersonView extends AbstractCaseView {
 	protected void initView(String params) {
 
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+		person = FacadeProvider.getPersonFacade().getByUuid(caseData.getPerson().getUuid());
+
 		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
 				PersonContext.CASE,
-				caseData.getPerson().getUuid(),
+				person,
 				caseData.getDisease(),
 				caseData.getDiseaseDetails(),
 				UserRight.CASE_EDIT,
@@ -54,8 +56,13 @@ public class CasePersonView extends AbstractCaseView {
 		setSubComponent(personEditComponent);
 		setEditPermission(
 			personEditComponent,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
 			PersonDto.ADDRESSES,
 			PersonDto.PERSON_CONTACT_DETAILS);
+	}
+
+	@Override
+	protected boolean isEditAllowed() {
+		return FacadeProvider.getPersonFacade().isEditAllowed(person.getUuid());
 	}
 }

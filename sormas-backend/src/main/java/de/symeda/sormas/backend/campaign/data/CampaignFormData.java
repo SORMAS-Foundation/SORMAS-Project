@@ -40,6 +40,7 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.NotExposedToApi;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -71,6 +72,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	private District district;
 	private Community community;
 	private User creatingUser;
+	@NotExposedToApi
 	private boolean archived;
 
 	@AuditedIgnore

@@ -177,7 +177,6 @@ public class CasesView extends AbstractView {
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
-			((AbstractCaseGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -194,7 +193,7 @@ public class CasesView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
-		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+		grid.addDataSizeChangeListener(e -> updateStatusButtons());
 
 		OptionGroup casesViewSwitcher = new OptionGroup();
 		casesViewSwitcher.setId("casesViewSwitcher");
@@ -419,7 +418,7 @@ public class CasesView extends AbstractView {
 
 		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
-				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
+				if (grid.getDataSize() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getCaption(Captions.actionEnterBulkEditMode),
 						new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)),
@@ -580,20 +579,19 @@ public class CasesView extends AbstractView {
 		});
 		filterLayout.addComponent(filterForm);
 
-		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
-		actionButtonsLayout.setSpacing(true);
-		{
-			// Follow-up overview scrolling
-			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-				filterLayout.setWidth(100, Unit.PERCENTAGE);
-				HorizontalLayout scrollLayout = dateRangeFollowUpVisitsFilterLayout();
-				actionButtonsLayout.addComponent(scrollLayout);
+		// Follow-up overview scrolling
+		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+			actionButtonsLayout.setSpacing(true);
 
-			}
+			filterLayout.setWidth(100, Unit.PERCENTAGE);
+			HorizontalLayout scrollLayout = dateRangeFollowUpVisitsFilterLayout();
+			actionButtonsLayout.addComponent(scrollLayout);
+
+			filterLayout.addComponent(actionButtonsLayout);
+			filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+			filterLayout.setExpandRatio(actionButtonsLayout, 1);
 		}
-		filterLayout.addComponent(actionButtonsLayout);
-		filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
-		filterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return filterLayout;
 	}
@@ -743,9 +741,14 @@ public class CasesView extends AbstractView {
 							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 							VaadinIcons.SHARE,
 							mi -> {
-								grid.bulkActionHandler(
-									items -> ControllerProvider.getCaseController()
-										.sendCasesToExternalSurveillanceTool(items, () -> navigateTo(criteria)));
+								grid.bulkActionHandler(items -> {
+									if (getSelectedCases(caseGrid).isEmpty()) {
+										showNoCasesSelectedWarning(caseGrid);
+										return;
+									}
+									ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, () -> navigateTo(criteria));
+
+								});
 							},
 							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
@@ -780,15 +783,9 @@ public class CasesView extends AbstractView {
 								I18nProperties.getCaption(Captions.bulkLinkToEvent),
 								VaadinIcons.PHONE,
 								mi -> grid.bulkActionHandler(items -> {
-									List<CaseIndexDto> selectedCases =
-										caseGrid.asMultiSelect().getSelectedItems().stream().collect(Collectors.toList());
-
+									List<CaseIndexDto> selectedCases = getSelectedCases(caseGrid);
 									if (selectedCases.isEmpty()) {
-										new Notification(
-											I18nProperties.getString(Strings.headingNoCasesSelected),
-											I18nProperties.getString(Strings.messageNoCasesSelected),
-											Notification.Type.WARNING_MESSAGE,
-											false).show(Page.getCurrent());
+										showNoCasesSelectedWarning(caseGrid);
 										return;
 									}
 
@@ -836,6 +833,18 @@ public class CasesView extends AbstractView {
 		updateFilterComponents();
 	}
 
+	public List<CaseIndexDto> getSelectedCases(AbstractCaseGrid<?> caseGrid) {
+		return caseGrid.asMultiSelect().getSelectedItems().stream().collect(Collectors.toList());
+	}
+
+	public void showNoCasesSelectedWarning(AbstractCaseGrid<?> caseGrid) {
+		new Notification(
+			I18nProperties.getString(Strings.headingNoCasesSelected),
+			I18nProperties.getString(Strings.messageNoCasesSelected),
+			Notification.Type.WARNING_MESSAGE,
+			false).show(Page.getCurrent());
+	}
+
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
@@ -862,7 +871,7 @@ public class CasesView extends AbstractView {
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 

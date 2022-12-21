@@ -51,9 +51,11 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 
 		super.setCriteria(criteria, true);
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			setSelectionMode(SelectionMode.MULTI);
+			setCriteria(criteria);
+			setEagerDataProvider();
 		} else {
-			setSelectionMode(SelectionMode.NONE);
+			setLazyDataProvider();
+			setCriteria(criteria);
 		}
 
 		setColumns(
@@ -74,19 +76,15 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 			column.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
 
-		reload(true);
-	}
-
-	public void reload(boolean forceFetch) {
-		if (forceFetch || allCountries == null) {
-			allCountries = FacadeProvider.getCountryFacade().getIndexList(null, null, null, null);
-		}
 		reload();
 	}
 
 	public void reload() {
-		this.setItems(createFilteredStream());
 		setSelectionMode(isInEagerMode() ? SelectionMode.MULTI : SelectionMode.NONE);
+		if (ViewModelProviders.of(CountriesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
+		getDataProvider().refreshAll();
 	}
 
 	private Stream<CountryIndexDto> createFilteredStream() {
@@ -125,6 +123,14 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 		// apply filters
 		return allCountries.stream().filter(filters);
 
+	}
+
+	public void setLazyDataProvider() {
+		setLazyDataProvider(FacadeProvider.getCountryFacade()::getIndexList, FacadeProvider.getCountryFacade()::count);
+	}
+
+	public void setEagerDataProvider() {
+		setEagerDataProvider(FacadeProvider.getCountryFacade()::getIndexList);
 	}
 
 }

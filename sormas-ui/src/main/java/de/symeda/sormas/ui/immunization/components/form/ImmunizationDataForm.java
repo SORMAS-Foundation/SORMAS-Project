@@ -214,10 +214,12 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		DateField startDate = addField(ImmunizationDto.START_DATE, DateField.class);
 		DateField endDate = addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
 		DateComparisonValidator.addStartEndValidators(startDate, endDate);
+		DateComparisonValidator.dateFieldDependencyValidationVisibility(startDate, endDate);
 
 		DateField validFrom = addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
 		DateField validUntil = addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
 		DateComparisonValidator.addStartEndValidators(validFrom, validUntil);
+		DateComparisonValidator.dateFieldDependencyValidationVisibility(validFrom, validUntil);
 
 		MeansOfImmunization meansOfImmunizationValue = (MeansOfImmunization) meansOfImmunizationField.getValue();
 
@@ -284,6 +286,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (!isEditableAllowed(ImmunizationDto.HEALTH_FACILITY)) {
+			setEnabled(false, ImmunizationDto.FACILITY_TYPE, ImmunizationDto.HEALTH_FACILITY_DETAILS);
+			facilityTypeGroup.setEnabled(false);
+		}
 
 		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
 

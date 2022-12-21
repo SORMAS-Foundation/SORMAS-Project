@@ -623,7 +623,6 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()).forEach(d -> documentService.markAsDeleted(d));
 
-		deleteEventInExternalSurveillanceTool(event);
 		removeFromSubordinateEvents(event);
 
 		super.deletePermanent(event);

@@ -4,6 +4,7 @@ Feature: Login with different type of users
   @env_main @LoginMain
   Scenario Outline: Login with <user> user on Main Environment
     Given I navigate to SORMAS login page
+    And I check that Login page is correctly displayed in English language
     Then I log in as a <user>
     Then I am logged in
     And I check that Surveillance Dashboard header is correctly displayed in English language
@@ -12,20 +13,26 @@ Feature: Login with different type of users
     And I click on logout button
 
     Examples:
-      | user                      |
-      | National User             |
-      | National Language User    |
-      | Contact Supervisor        |
-      | Surveillance Officer      |
-      | Surveillance Supervisor   |
-      | Laboratory Officer        |
-      | Point of Entry Supervisor |
-      | Admin User                |
-      | Rest AUTOMATION           |
+      | user                          |
+      | National User                 |
+      | National Language User        |
+      | Contact Supervisor            |
+      | Surveillance Officer          |
+      | Surveillance Supervisor       |
+      | Laboratory Officer            |
+      | Point of Entry Supervisor     |
+      | Admin User                    |
+      | Rest AUTOMATION               |
+      | Admin Surveillance Supervisor |
+      | Contact Officer               |
+      | Community Officer             |
+      | Hospital Informant            |
+      | Clinician                     |
 
   @env_de @LoginDe
   Scenario Outline: Login with <user> user on German Environment
     Given I navigate to SORMAS login page
+    And I check that Login page is correctly displayed in German language
     Then I log in as a <user>
     Then I am logged in
     Then I click on the User Settings button from navbar
@@ -36,16 +43,21 @@ Feature: Login with different type of users
     And I click on logout button
 
     Examples:
-      | user                      |
-      | National User             |
-      | National Language User    |
-      | Contact Supervisor        |
-      | Surveillance Officer      |
-      | Surveillance Supervisor   |
-      | Laboratory Officer        |
-      | Point of Entry Supervisor |
-      | Admin User                |
-      | Rest AUTOMATION           |
+      | user                          |
+      | National User                 |
+      | National Language User        |
+      | Contact Supervisor            |
+      | Surveillance Officer          |
+      | Surveillance Supervisor       |
+      | Laboratory Officer            |
+      | Point of Entry Supervisor     |
+      | Admin User                    |
+      | Rest AUTOMATION               |
+      | Admin Surveillance Supervisor |
+      | Contact Officer               |
+      | Community Officer             |
+      | Hospital Informant            |
+      | Clinician                     |
 
   @env_keycloak @LoginKeycloak
   Scenario Outline: Login with <user> user on Keycloak Environment

@@ -14,7 +14,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -98,29 +98,27 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, PERSON_LOC);
 
-		if (FacadeProvider.getPersonFacade().isSharedWithoutOwnership(getReference().getUuid())) {
-			editComponent.setEnabled(false);
-		}
-
 		UserProvider currentUser = UserProvider.getCurrent();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CASE_VIEW)) {
-			layout.addComponent(new SideComponentLayout(new CaseListComponent(getReference())), CASES_LOC);
+			layout.addComponent(new SideComponentLayout(new CaseListComponent(getReference(), this::showUnsavedChangesPopup)), CASES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CONTACT_VIEW)) {
-			layout.addComponent(new SideComponentLayout(new ContactListComponent(getReference())), CONTACTS_LOC);
+			layout.addComponent(new SideComponentLayout(new ContactListComponent(getReference(), this::showUnsavedChangesPopup)), CONTACTS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.EVENT_VIEW)
 			&& currentUser.hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
-			layout.addComponent(new SideComponentLayout(new EventParticipantListComponent(getReference())), EVENT_PARTICIPANTS_LOC);
+			layout.addComponent(
+				new SideComponentLayout(new EventParticipantListComponent(getReference(), this::showUnsavedChangesPopup)),
+				EVENT_PARTICIPANTS_LOC);
 		}
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
@@ -148,7 +146,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 				layout.addComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(
-							() -> new VaccinationListCriteria.Builder(getReference()).build(),
+							() -> new VaccinationCriteria.Builder(getReference()).build(),
 							this::showUnsavedChangesPopup,
 							false,
 							true)),
@@ -180,7 +178,9 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	@Override
 	protected void setSubComponent(DirtyStateComponent newComponent) {
 		super.setSubComponent(newComponent);
-		if (getReference() != null && !FacadeProvider.getPersonFacade().isPersonAssociatedWithNotDeletedEntities(getReference().getUuid())) {
+		if (getReference() == null
+			|| !UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT)
+			|| !FacadeProvider.getPersonFacade().isEditAllowed(getReference().getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}

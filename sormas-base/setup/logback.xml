@@ -95,7 +95,10 @@
     <!-- Prevent unnecessary debug messages about code loading-->
     <logger name="ca.uhn.fhir.context.ModelScanner" level="INFO" />
 
+	<!-- Suppress noisy logging on more detailed level -->
     <logger name="net.sf.ehcache" level="WARN" />
+    <!-- Suppress "No configuration found" -->
+    <logger name="net.sf.ehcache.config.ConfigurationFactory" level="ERROR" />
 
     <root level="debug">
             <appender-ref ref="FILE_DEBUG" />

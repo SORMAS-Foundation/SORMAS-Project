@@ -81,6 +81,7 @@ public class EventParticipantsPage {
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
   public static final By PASSPORT_NUMBER_INPUT = By.id("passportNumber");
   public static final By INVOLVEMENT_DESCRIPTION_INPUT = By.id("involvementDescription");
+  public static By NOTIFICATION_EVENT_PARTICIPANT = By.cssSelector(".v-Notification-description");
 
   public static final By getEventParticipantByPersonUuid(String uuid) {
     return By.xpath(String.format("//a[@title='%s']//parent::td//parent::tr//td[1]/a", uuid));

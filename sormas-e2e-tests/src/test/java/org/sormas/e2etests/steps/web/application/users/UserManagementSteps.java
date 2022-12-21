@@ -98,13 +98,16 @@ public class UserManagementSteps implements En {
         });
     When(
         "^I check if sync message is correct in German$",
-        () ->
-            assertHelpers.assertWithPoll(
-                () ->
-                    Assert.assertTrue(
-                        webDriverHelpers.isElementVisibleWithTimeout(SYNC_SUCCESS_DE, 5),
-                        "Sync of users failed"),
-                10));
+        () -> {
+          TimeUnit.SECONDS.sleep(5);
+
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      webDriverHelpers.isElementVisibleWithTimeout(SYNC_SUCCESS_DE, 15),
+                      "Sync of users failed"),
+              10);
+        });
 
     When(
         "^I verify that the Active value is ([^\"]*) in the User Management Page",
@@ -132,14 +135,16 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Active");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          //
+          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          //          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfActiveUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Inactive");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          //
+          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          //          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfInactiveUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
@@ -160,8 +165,9 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, "National User");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          //
+          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          //          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfSpecificUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
@@ -183,8 +189,9 @@ public class UserManagementSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
           webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_USER_MANAGEMENT, "Bayern");
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          //
+          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
+          //          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
           Integer numberOfSpecificUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
@@ -211,6 +218,15 @@ public class UserManagementSteps implements En {
           softly.assertFalse(
               webDriverHelpers.checkIfElementExistsInCombobox(USER_ROLES_COMBOBOX, userRole),
               "Provided user role is available in the user role template dropdown menu!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that \"([^\"]*)\" is available in the user role filter in User management Page$",
+        (String userRole) -> {
+          softly.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(USER_ROLES_COMBOBOX, userRole),
+              "Provided user role is not available in the user role template dropdown menu!");
           softly.assertAll();
         });
 

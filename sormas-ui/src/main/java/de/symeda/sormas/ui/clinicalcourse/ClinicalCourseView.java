@@ -105,7 +105,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 							.openClinicalVisitCreateForm(
 								clinicalVisitCriteria.getClinicalCourse(),
 								getCaseRef().getUuid(),
-								this::reloadClinicalVisitGrid);
+								() -> clinicalVisitGrid.reload());
 					}, ValoTheme.BUTTON_PRIMARY);
 
 					headlineRow.addComponent(newClinicalVisitButton);
@@ -123,12 +123,6 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 		clinicalVisitCriteria.clinicalCourse(caze.getClinicalCourse().toReference());
-	}
-
-	public void reloadClinicalVisitGrid() {
-
-		clinicalVisitGrid.reload();
-		clinicalVisitGrid.setHeightByRows(Math.max(1, Math.min(clinicalVisitGrid.getContainer().size(), 10)));
 	}
 
 	@Override
@@ -164,6 +158,6 @@ public class ClinicalCourseView extends AbstractCaseView {
 		setSubComponent(container);
 
 		update();
-		reloadClinicalVisitGrid();
+		clinicalVisitGrid.reload();
 	}
 }

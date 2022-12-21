@@ -391,13 +391,12 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageDto externalMessageDto,
 		Disease disease) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
-		});
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, null);
 
 		// add pathogen test create components
 		addPathogenTests(pathogenTests, externalMessageDto, sampleCreateComponent);
 		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null);
 
 		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
 
@@ -409,20 +408,13 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageDto labMessage,
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
 
-		SampleController sampleController = ControllerProvider.getSampleController();
-		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
-		int caseSampleCount = sampleController.caseSampleCountOf(sample);
-
 		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
 		// always build at least one PathogenTestDto
 		if (pathogenTestsToAdd.isEmpty()) {
+			SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
 			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, user));
 		}
 
-		for (PathogenTestDto pathogenTest : pathogenTestsToAdd) {
-			PathogenTestForm pathogenTestCreateComponent =
-				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
-			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
-		}
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, null);
 	}
 }

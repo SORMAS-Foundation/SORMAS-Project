@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -27,12 +28,15 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
+import de.symeda.sormas.api.event.EventActionIndexDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -102,5 +106,28 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, allUuids.size());
 		assertTrue(allUuids.contains(uuid1));
 		assertTrue(allUuids.contains(uuid2));
+	}
+
+	@Test
+	public void testGetEventActionList() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		EventDto eventDto = creator.createEvent(user.toReference());
+		creator.createAction(eventDto.toReference());
+		creator.createAction(eventDto.toReference());
+
+		// Ensure basic functionality
+		assertEquals(2, getActionFacade().getEventActionList(new EventCriteria(), null, null, null).size());
+
+		// Ensure sorting by altered column contents works
+		List<SortProperty> sortProperties = new ArrayList<>();
+		sortProperties.add(new SortProperty(EventActionIndexDto.ACTION_TITLE));
+		sortProperties.add(new SortProperty(EventActionIndexDto.EVENT_TITLE));
+		sortProperties.add(new SortProperty(EventActionIndexDto.EVENT_REPORTING_USER));
+		sortProperties.add(new SortProperty(EventActionIndexDto.EVENT_RESPONSIBLE_USER));
+		sortProperties.add(new SortProperty(EventActionIndexDto.ACTION_LAST_MODIFIED_BY));
+
+		assertEquals(2, getActionFacade().getEventActionList(new EventCriteria(), null, null, sortProperties).size());
 	}
 }

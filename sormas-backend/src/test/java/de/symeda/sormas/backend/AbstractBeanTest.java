@@ -311,7 +311,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
 		nativeQuery.executeUpdate();
 		nativeQuery =
-			em.createNativeQuery("CREATE ALIAS timestamp_subtract_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_days\"");
+			em.createNativeQuery("CREATE ALIAS timestamp_subtract_14_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_14_days\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
 		nativeQuery.executeUpdate();

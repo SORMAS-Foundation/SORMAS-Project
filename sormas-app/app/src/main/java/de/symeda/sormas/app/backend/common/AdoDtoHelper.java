@@ -395,6 +395,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	public void pullMissing(List<String> uuids, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws ServerCommunicationException, ServerConnectionException, DaoException, NoConnectionException {
 
+		if (!isViewAllowed()) {
+			return;
+		}
+
 		final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 		uuids = dao.filterMissing(uuids);
 

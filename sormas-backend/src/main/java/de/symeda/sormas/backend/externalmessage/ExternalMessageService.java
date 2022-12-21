@@ -14,15 +14,17 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -60,6 +62,20 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		return null;
 	}
 
+	/**
+	 * Creates a default filter that should be used as the basis of queries.
+	 * This essentially removes external messages linked to {@link DeletableAdo#isDeleted()} case/contact/event participants from the
+	 * queries.
+	 */
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, ExternalMessage> root) {
+		Path<Boolean> sampleDeleted =
+			root.join(ExternalMessage.SAMPLE_REPORTS, JoinType.LEFT).join(SampleReport.SAMPLE, JoinType.LEFT).get(Sample.DELETED);
+		Path<Boolean> caseDeleted =
+			root.join(ExternalMessage.SURVEILLANCE_REPORT, JoinType.LEFT).join(SurveillanceReport.CAZE, JoinType.LEFT).get(Case.DELETED);
+
+		return cb.and(cb.or(cb.isNull(sampleDeleted), cb.isFalse(sampleDeleted)), cb.or(cb.isNull(caseDeleted), cb.isFalse(caseDeleted)));
+	}
+
 	public Predicate buildCriteriaFilter(CriteriaBuilder cb, Root<ExternalMessage> labMessage, ExternalMessageCriteria criteria) {
 		Predicate filter = null;
 		if (criteria.getUuid() != null) {
@@ -78,9 +94,13 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 				filter,
 				cb.equal(labMessage.join(ExternalMessage.SAMPLE_REPORTS).get(SampleReport.SAMPLE).get(Sample.UUID), criteria.getSample().getUuid()));
 		}
-		if (criteria.getCaze() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.CAZE).get(Case.UUID), criteria.getCaze().getUuid()));
+		if (criteria.getSurveillanceReport() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					labMessage.get(ExternalMessage.SURVEILLANCE_REPORT).get(SurveillanceReport.UUID),
+					criteria.getSurveillanceReport().getUuid()));
 		}
 		if (criteria.getSearchFieldLike() != null) {
 			String[] textFilters = criteria.getSearchFieldLike().split("\\s+");
@@ -181,50 +201,16 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<ExternalMessage> getForCase(CaseReferenceDto caze) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ExternalMessage> cq = cb.createQuery(ExternalMessage.class);
-		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
-
-		ExternalMessageCriteria criteria = new ExternalMessageCriteria();
-		criteria.setCaze(caze);
-
-		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		cq.orderBy(cb.desc(labMessageRoot.get(ExternalMessage.CREATION_DATE)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	public long countForCase(String caseUuid) {
-		return countLabMessagesForCase(caseUuid) + countPhysiciansReportsForCase(caseUuid);
-	}
-
-	private long countLabMessagesForCase(String caseUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
-		Join<ExternalMessage, SampleReport> sampleReportJoin = labMessageRoot.join(ExternalMessage.SAMPLE_REPORTS, JoinType.LEFT);
-		Join<SampleReport, Sample> sampleJoin = sampleReportJoin.join(SampleReport.SAMPLE, JoinType.LEFT);
-		Join<Sample, Case> caseJoin = sampleJoin.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		Root<ExternalMessage> externalMessageRoot = cq.from(ExternalMessage.class);
+		Join<ExternalMessage, SurveillanceReport> surveillanceReportJoin =
+			externalMessageRoot.join(ExternalMessage.SURVEILLANCE_REPORT, JoinType.LEFT);
+		Join<SurveillanceReport, Case> caseJoin = surveillanceReportJoin.join(SurveillanceReport.CAZE, JoinType.LEFT);
 
 		cq.where(caseJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(caseUuid)));
-		cq.select(cb.countDistinct(labMessageRoot));
-
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	private long countPhysiciansReportsForCase(String caseUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<ExternalMessage> messageRoot = cq.from(ExternalMessage.class);
-		Join<ExternalMessage, Case> caseJoin = messageRoot.join(ExternalMessage.CAZE, JoinType.LEFT);
-
-		cq.where(cb.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid));
-		cq.select(cb.countDistinct(messageRoot));
+		cq.select(cb.countDistinct(externalMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();
 	}
@@ -255,5 +241,20 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		cq.select(cb.countDistinct(labMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public ExternalMessage getForSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalMessage> cq = cb.createQuery(ExternalMessage.class);
+		Root<ExternalMessage> externalMessageRoot = cq.from(ExternalMessage.class);
+
+		ExternalMessageCriteria criteria = new ExternalMessageCriteria();
+		criteria.setSurveillanceReport(surveillanceReport);
+
+		Predicate filter = buildCriteriaFilter(cb, externalMessageRoot, criteria);
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultStream().findFirst().orElse(null);
 	}
 }

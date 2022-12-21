@@ -596,7 +596,7 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
-		return toDtos(service.getByPersonUuids(uuids).stream());
+		return toDtos(service.getByPersonUuids(uuids, true).stream());
 	}
 
 	@RightsAllowed({

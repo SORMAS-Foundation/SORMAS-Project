@@ -222,7 +222,6 @@ public class TravelEntriesView extends AbstractView {
 			relevanceStatusFilter
 				.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.travelEntryArchivedTravelEntries));
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.travelEntryAllTravelEntries));
-			relevanceStatusFilter.setCaption("");
 			relevanceStatusFilter.addValueChangeListener(e -> {
 				if (relevanceStatusInfoLabel != null) {
 					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
@@ -232,27 +231,30 @@ public class TravelEntriesView extends AbstractView {
 			});
 			actionButtonsLayout.addComponent(relevanceStatusFilter);
 		}
-		statusFilterLayout.addComponent(actionButtonsLayout);
-		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
-		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		// Bulk operation dropdown
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
 			bulkActions.add(
-				new MenuBarHelper.MenuBarItem(
-					I18nProperties.getCaption(Captions.bulkDelete),
-					VaadinIcons.TRASH,
-					mi -> grid.bulkActionHandler(
-						items -> ControllerProvider.getTravelEntryController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
-						true)));
+					new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkDelete),
+							VaadinIcons.TRASH,
+							mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getTravelEntryController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+									true)));
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 
 			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 			bulkOperationsDropdown.setCaption("");
 			actionButtonsLayout.addComponent(bulkOperationsDropdown);
+		}
+
+		if (actionButtonsLayout.getComponentCount() > 0) {
+			statusFilterLayout.addComponent(actionButtonsLayout);
+			statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+			statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 		}
 
 		return statusFilterLayout;

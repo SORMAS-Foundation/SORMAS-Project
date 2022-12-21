@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
+
 package de.symeda.sormas.backend.infrastructure.facility;
 
 import java.util.List;
@@ -227,14 +228,24 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 	}
 
 	@Override
-	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> from) {
+	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> root) {
+
+		// these two facilities are constant and created on startup by createConstantFacilities()
+		Predicate excludeConstantFacilities = cb.and(
+				cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+				cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
+
+		if (facilityCriteria == null) {
+			return excludeConstantFacilities;
+		}
+
 		Predicate filter = null;
 
 		CountryReferenceDto country = facilityCriteria.getCountry();
 		if (country != null) {
 			CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 
-			Path<Object> countryUuid = from.join(Facility.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+			Path<Object> countryUuid = root.join(Facility.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
 			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
 
 			if (country.equals(serverCountry)) {
@@ -246,17 +257,17 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 
 		if (facilityCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.join(Facility.REGION, JoinType.LEFT).get(Region.UUID), facilityCriteria.getRegion().getUuid()));
+				.and(cb, filter, cb.equal(root.join(Facility.REGION, JoinType.LEFT).get(Region.UUID), facilityCriteria.getRegion().getUuid()));
 		}
 		if (facilityCriteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.join(Facility.DISTRICT, JoinType.LEFT).get(District.UUID), facilityCriteria.getDistrict().getUuid()));
+				.and(cb, filter, cb.equal(root.join(Facility.DISTRICT, JoinType.LEFT).get(District.UUID), facilityCriteria.getDistrict().getUuid()));
 		}
 		if (facilityCriteria.getCommunity() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(from.join(Facility.COMMUNITY, JoinType.LEFT).get(District.UUID), facilityCriteria.getCommunity().getUuid()));
+				cb.equal(root.join(Facility.COMMUNITY, JoinType.LEFT).get(District.UUID), facilityCriteria.getCommunity().getUuid()));
 		}
 		if (facilityCriteria.getNameAddressLike() != null) {
 			String[] textFilters = facilityCriteria.getNameAddressLike().split("\\s+");
@@ -266,29 +277,29 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 				}
 
 				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.POSTAL_CODE), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.CITY), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.STREET), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.HOUSE_NUMBER), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.ADDITIONAL_INFORMATION), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, root.get(Facility.NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, root.get(Facility.POSTAL_CODE), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, root.get(Facility.CITY), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, root.get(Facility.STREET), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, root.get(Facility.HOUSE_NUMBER), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, root.get(Facility.ADDITIONAL_INFORMATION), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (facilityCriteria.getType() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(Facility.TYPE), facilityCriteria.getType()));
 		} else {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(from.get(Facility.TYPE)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(root.get(Facility.TYPE)));
 		}
 		if (facilityCriteria.getRelevanceStatus() != null) {
 			if (facilityCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.or(cb.equal(from.get(Facility.ARCHIVED), false), cb.isNull(from.get(Facility.ARCHIVED))));
+					.and(cb, filter, cb.or(cb.equal(root.get(Facility.ARCHIVED), false), cb.isNull(root.get(Facility.ARCHIVED))));
 			} else if (facilityCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Facility.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(Facility.ARCHIVED), true));
 			}
 		}
-		return filter;
+		return CriteriaBuilderHelper.and(cb, filter, excludeConstantFacilities);
 	}
 
 	public void createConstantFacilities() {

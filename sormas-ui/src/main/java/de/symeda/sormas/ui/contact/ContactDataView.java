@@ -44,7 +44,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
@@ -243,7 +243,7 @@ public class ContactDataView extends AbstractContactView {
 					if (refreshedContact.getCaze() != null) {
 						refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
 					}
-					return new VaccinationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease())
+					return new VaccinationCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease())
 						.build()
 						.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
 						.contactReference(getContactRef())
@@ -267,21 +267,24 @@ public class ContactDataView extends AbstractContactView {
 			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
+		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
+			boolean isDocumentDeleteAllowed =
+				EditPermissionType.ALLOWED.equals(contactEditAllowed) || EditPermissionType.DOCUMENTS_ONLY.equals(contactEditAllowed);
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.CONTACT,
 				getContactRef(),
 				UserRight.CONTACT_EDIT,
 				contactDto.isPseudonymized(),
-				isEditAllowed());
+				isEditAllowed(),
+				isDocumentDeleteAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
-		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 
 		if (deleted) {
@@ -291,7 +294,7 @@ public class ContactDataView extends AbstractContactView {
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
 		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
-			layout.disable(true);
+			layout.disableWithViewAllow();
 		}
 	}
 
