@@ -78,6 +78,9 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
 			@Override
 			public void onClick(View v) {
+				if (record.getAssigneeReply() == null || record.getAssigneeReply().isEmpty()) {
+					contentBinding.taskAssigneeReply.setRequired(true);
+				}
 				record.setTaskStatus(TaskStatus.NOT_EXECUTABLE);
 				getBaseEditActivity().saveData();
 			}
