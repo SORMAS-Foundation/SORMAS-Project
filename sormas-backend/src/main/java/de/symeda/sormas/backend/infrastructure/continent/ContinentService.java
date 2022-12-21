@@ -53,7 +53,10 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 		Predicate filter = null;
 		if (criteria != null) {
 			if (criteria.getNameLike() != null) {
-				filter = CriteriaBuilderHelper.and(cb, cb.like(cb.lower(from.get(Continent.DEFAULT_NAME)), criteria.getNameLike().toLowerCase()));
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Continent.DEFAULT_NAME), criteria.getNameLike().toLowerCase()));
 			}
 			filter = addRelevancePredicate(cb, from, filter, criteria.getRelevanceStatus());
 		}

@@ -24,6 +24,9 @@ public class LoginPage {
   public static final By USER_NAME_INPUT = By.id("username");
   public static final By USER_PASSWORD_INPUT = By.id("password");
   public static final By LOGIN_BUTTON = By.xpath("//*[@id='kc-login' or @id='Login.doLogIn']");
+  public static final By APPLICATION_DESCRIPTION_TEXT =
+      By.xpath(
+          "//div[@class='v-label v-widget h2 v-label-h2 vspace-top-none v-label-vspace-top-none align-center v-label-align-center v-has-width']");
   public static final By FAILED_LOGIN_ERROR_MESSAGE =
       By.xpath("//div[contains(@class, 'v-Notification-warning')]");
   public static final By PASSWORD_CONFIRM_INPUT = By.id("password-confirm");
