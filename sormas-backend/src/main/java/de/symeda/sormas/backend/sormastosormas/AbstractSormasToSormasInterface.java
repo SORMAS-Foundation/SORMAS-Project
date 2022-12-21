@@ -83,6 +83,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -593,7 +594,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		return buildValidationGroupName(entityCaptionTag, uuid);
 	}
 
-	protected abstract AbstractCoreAdoService<ADO> getEntityService();
+	protected abstract AbstractCoreAdoService<ADO, ? extends QueryJoins> getEntityService();
 
 	protected abstract Class<S[]> getShareDataClass();
 

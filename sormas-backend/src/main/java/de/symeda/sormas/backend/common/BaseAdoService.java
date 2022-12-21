@@ -393,6 +393,9 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Timestamp date) {
 		return cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, QueryJoins<ADO> joins, Timestamp date) {
+		return cb.greaterThan(joins.getRoot().get(AbstractDomainObject.CHANGE_DATE), date);
+	}
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date) {
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));

@@ -31,6 +31,11 @@ public class CampaignService extends AbstractCoreAdoService<Campaign, CampaignJo
 		return createUserFilter(new CampaignQueryContext(cb, cq, from));
 	}
 
+	@Override
+	protected CampaignJoins toJoins(From<?, Campaign> adoPath) {
+		return new CampaignJoins(adoPath);
+	}
+
 	public Predicate createUserFilter(CampaignQueryContext queryContext) {
 		// A user who has access to CampaignView can read all campaigns
 		return null;

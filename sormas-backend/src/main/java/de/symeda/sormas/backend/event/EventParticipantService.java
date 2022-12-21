@@ -267,6 +267,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return createUserFilter(new EventParticipantQueryContext(cb, cq, from));
 	}
 
+	@Override
+	protected EventParticipantJoins toJoins(From<?, EventParticipant> adoPath) {
+		return new EventParticipantJoins(adoPath);
+	}
+
 	public Predicate createUserFilter(EventParticipantQueryContext eventParticipantQueryContext) {
 
 		final EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
@@ -482,22 +487,23 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EventParticipant> from, Timestamp date) {
 		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, null);
 
-		return addChangeDates(changeDateFilterBuilder, from, false).build();
-
+		return addChangeDates(changeDateFilterBuilder, toJoins(from), false).build();
 	}
 
 	@Override
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
 		T builder,
-		From<?, EventParticipant> eventParticipantFrom,
+		EventParticipantJoins joins,
 		boolean includeExtendedChangeDateFilters) {
 
-		builder = super.addChangeDates(builder, eventParticipantFrom, includeExtendedChangeDateFilters)
+		From<?, EventParticipant> eventParticipantFrom = joins.getRoot();
+
+		builder = super.addChangeDates(builder, joins, includeExtendedChangeDateFilters)
 			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)
 			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES);
 
 		if (includeExtendedChangeDateFilters) {
-			Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantFrom.join(EventParticipant.SAMPLES, JoinType.LEFT);
+			Join<EventParticipant, Sample> eventParticipantSampleJoin = joins.getSamples();
 			builder.add(eventParticipantSampleJoin).add(eventParticipantSampleJoin, Sample.PATHOGENTESTS);
 		}
 

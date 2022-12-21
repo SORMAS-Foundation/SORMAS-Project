@@ -21,6 +21,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.QueryJoins;
@@ -44,6 +45,7 @@ import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.visit.Visit;
 
 public class CaseJoins extends QueryJoins<Case> {
 
@@ -69,6 +71,9 @@ public class CaseJoins extends QueryJoins<Case> {
 	private Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 	private Join<Case, User> followUpStatusChangeUser;
+
+	private Join<Case, Visit> visit;
+	private Join<Case, SurveillanceReport> surveillanceReportJoin;
 
 	private PersonJoins personJoins;
 	private SampleJoins sampleJoins;
@@ -130,16 +135,16 @@ public class CaseJoins extends QueryJoins<Case> {
 		return getOrCreate(district, Case.DISTRICT, JoinType.LEFT, this::setDistrict);
 	}
 
+	private void setDistrict(Join<Case, District> district) {
+		this.district = district;
+	}
+
 	public Join<Case, Community> getCommunity() {
 		return getOrCreate(community, Case.COMMUNITY, JoinType.LEFT, this::setCommunity);
 	}
 
 	private void setCommunity(Join<Case, Community> community) {
 		this.community = community;
-	}
-
-	private void setDistrict(Join<Case, District> district) {
-		this.district = district;
 	}
 
 	public Join<Case, Facility> getFacility() {
@@ -234,12 +239,12 @@ public class CaseJoins extends QueryJoins<Case> {
 		this.healthConditions = healthConditions;
 	}
 
-	private void setEventParticipants(Join<Case, EventParticipant> eventParticipants) {
-		this.eventParticipants = eventParticipants;
-	}
-
 	public Join<Case, EventParticipant> getEventParticipants() {
 		return getOrCreate(eventParticipants, Case.EVENT_PARTICIPANTS, JoinType.LEFT, this::setEventParticipants);
+	}
+
+	private void setEventParticipants(Join<Case, EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
 	public Join<Person, List<Location>> getPersonAddresses() {
@@ -312,5 +317,21 @@ public class CaseJoins extends QueryJoins<Case> {
 
 	private void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
 		this.eventParticipantJoins = eventParticipantJoins;
+	}
+
+	public Join<Case, Visit> getVisit() {
+		return getOrCreate(visit, Case.VISITS, JoinType.LEFT, this::setVisit);
+	}
+
+	public void setVisit(Join<Case, Visit> visit) {
+		this.visit = visit;
+	}
+
+	public Join<Case, SurveillanceReport> getSurveillanceReportJoin() {
+		return getOrCreate(surveillanceReportJoin, Case.SURVEILLANCE_REPORTS, JoinType.LEFT, this::setSurveillanceReportJoin);
+	}
+
+	public void setSurveillanceReportJoin(Join<Case, SurveillanceReport> surveillanceReportJoin) {
+		this.surveillanceReportJoin = surveillanceReportJoin;
 	}
 }

@@ -393,6 +393,11 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		return createUserFilter(new EventQueryContext(cb, cq, from));
 	}
 
+	@Override
+	protected EventJoins toJoins(From<?, Event> adoPath) {
+		return new EventJoins(adoPath);
+	}
+
 	public Predicate createUserFilter(EventQueryContext queryContext) {
 		return createUserFilter(queryContext, null);
 	}
@@ -519,34 +524,36 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date) {
-		return addChangeDates(new ChangeDateFilterBuilder(cb, date), eventPath, false).build();
+		return addChangeDates(new ChangeDateFilterBuilder(cb, date), toJoins(eventPath), false).build();
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date, String lastSynchronizedUuid) {
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, EventJoins joins, Timestamp date, String lastSynchronizedUuid) {
+		From<?, Event> eventFrom = joins.getRoot();
 		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
 			? new ChangeDateFilterBuilder(cb, date)
-			: new ChangeDateFilterBuilder(cb, date, eventPath, lastSynchronizedUuid);
+			: new ChangeDateFilterBuilder(cb, date, eventFrom, lastSynchronizedUuid);
 
-		return addChangeDates(changeDateFilterBuilder, eventPath, false).build();
+		return addChangeDates(changeDateFilterBuilder, joins, false).build();
 	}
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Expression<? extends Date> dateExpression) {
-		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), eventPath, false).build();
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, EventJoins joins, Expression<? extends Date> dateExpression) {
+		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), joins, false).build();
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Event> eventFrom, boolean includeExtendedChangeDateFilters) {
-		Join<Event, Action> eventActionJoin = eventFrom.join(Event.ACTIONS, JoinType.LEFT);
-		Join<Event, EventParticipant> eventParticipantJoin = eventFrom.join(Event.EVENT_PERSONS, JoinType.LEFT);
-		Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantJoin.join(EventParticipant.SAMPLES, JoinType.LEFT);
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, EventJoins joins, boolean includeExtendedChangeDateFilters) {
+		final From<?, Event> eventFrom = joins.getRoot();
+		final Join<Event, Action> eventActionJoin =  joins.getEventActions();
+		final From<?, EventParticipant> eventParticipants = joins.getEventParticipants();
+		final Join<EventParticipant, Sample> eventParticipantSampleJoin = joins.getEventParticipantJoins().getSamples();
 
-		builder = super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION);
+		builder = super.addChangeDates(builder, joins, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION);
 
 		if (includeExtendedChangeDateFilters) {
 			builder.add(eventFrom, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
 				.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES)
 				.add(eventActionJoin)
-				.add(eventParticipantJoin)
+				.add(eventParticipants)
 				.add(eventParticipantSampleJoin);
 		}
 
@@ -839,7 +846,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 				cb,
 				from,
 				ExternalShareInfo.EVENT,
-				(latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate)));
+				(latestShareDate) -> createChangeDateFilter(cb, joins, latestShareDate)));
 
 		return filter;
 	}

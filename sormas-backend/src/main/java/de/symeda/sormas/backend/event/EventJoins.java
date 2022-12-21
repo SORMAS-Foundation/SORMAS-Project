@@ -21,6 +21,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -39,6 +40,7 @@ public class EventJoins extends QueryJoins<Event> {
 	private Join<Event, Location> location;
 	private From<?, EventParticipant> eventParticipants;
 	private Join<Event, EventGroup> eventGroup;
+	private Join<Event, Action> eventActions;
 	private Join<Event, Event> superordinateEvent;
 
 	private LocationJoins locationJoins;
@@ -131,6 +133,14 @@ public class EventJoins extends QueryJoins<Event> {
 
 	private void setSuperordinateEvent(Join<Event, Event> superordinateEvent) {
 		this.superordinateEvent = superordinateEvent;
+	}
+
+	public Join<Event, Action> getEventActions() {
+		return getOrCreate(eventActions, Event.ACTIONS, JoinType.LEFT, this::setEventActions);
+	}
+
+	public void setEventActions(Join<Event, Action> eventActions) {
+		this.eventActions = eventActions;
 	}
 
 	public LocationJoins getLocationJoins() {

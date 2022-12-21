@@ -49,6 +49,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
@@ -209,7 +210,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected AbstractCoreAdoService<Event> getEntityService() {
+	protected AbstractCoreAdoService<Event, EventJoins> getEntityService() {
 		return eventService;
 	}
 

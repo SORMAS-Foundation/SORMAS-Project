@@ -27,14 +27,14 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> from) {
 		return inJurisdictionOrOwned(new TravelEntryQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc) {
 		return inJurisdictionOrOwned(qc, userService.getCurrentUser());
 	}
-	
+
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
 		return TravelEntryJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
@@ -63,6 +63,11 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	@Override
+	protected TravelEntryJoins toJoins(From<?, TravelEntry> adoPath) {
+		return new TravelEntryJoins(adoPath);
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> from) {
 
@@ -75,11 +80,8 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
-		T builder,
-		From<?, TravelEntry> travelEntryFrom,
-		boolean includeExtendedChangeDateFilters) {
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, TravelEntryJoins joins, boolean includeExtendedChangeDateFilters) {
 
-		return super.addChangeDates(builder, travelEntryFrom, includeExtendedChangeDateFilters);
+		return super.addChangeDates(builder, joins, includeExtendedChangeDateFilters);
 	}
 }
