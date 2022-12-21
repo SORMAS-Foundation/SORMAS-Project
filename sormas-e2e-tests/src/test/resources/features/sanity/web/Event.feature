@@ -85,7 +85,7 @@ Feature: Create events
     And I navigate via URL to last Person created from edit Event page
     Then I check if event is available at person information
 
-  @env_main @#checkit
+  @env_main
   Scenario: Create and edit a new event
     Given I log in as a National User
     And I click on the Events button from navbar
