@@ -507,9 +507,9 @@ public class EventsView extends AbstractView {
 									+ String.format(I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
 								ContentMode.HTML);
 							relevanceStatusInfoLabel.setVisible(false);
-							relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+							relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_TOP);
 							actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-							actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+							actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, new Alignment(38));
 						}
 					}
 
