@@ -1366,6 +1366,7 @@ public class EditEventSteps implements En {
         "I check that number of displayed Event Participants is {int}",
         (Integer number) -> {
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.EVENT_PARTICIPANTS_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
