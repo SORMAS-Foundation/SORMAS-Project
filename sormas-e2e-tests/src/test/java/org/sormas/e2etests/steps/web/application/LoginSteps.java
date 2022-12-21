@@ -18,9 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application;
 
-import static org.sormas.e2etests.pages.application.LoginPage.ERROR_MESSAGE;
-import static org.sormas.e2etests.pages.application.LoginPage.FAILED_LOGIN_ERROR_MESSAGE;
-import static org.sormas.e2etests.pages.application.LoginPage.LOGIN_BUTTON;
+import static org.sormas.e2etests.pages.application.LoginPage.*;
 import static org.sormas.e2etests.pages.application.NavBarPage.*;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -207,6 +205,14 @@ public class LoginSteps implements En {
                   org.testng.Assert.assertTrue(
                       webDriverHelpers.isElementVisibleWithTimeout(LOGIN_BUTTON, 5),
                       "Login page is not displayed"));
+        });
+
+    Then(
+        "^I check that Login page is correctly displayed in ([^\"]*) language$",
+        (String language) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGIN_BUTTON, 30);
+          LanguageDetectorHelper.checkLanguage(
+              webDriverHelpers.getTextFromWebElement(APPLICATION_DESCRIPTION_TEXT), language);
         });
   }
 }
