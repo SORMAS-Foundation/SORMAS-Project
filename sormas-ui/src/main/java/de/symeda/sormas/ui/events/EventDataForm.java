@@ -475,8 +475,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				false,
 				I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), reportDate.getCaption())));
 
-		reportDate.addValueChangeListener(e -> startDate.setValidationVisible(!startDate.isValid()));
-		startDate.addValueChangeListener(e -> reportDate.setValidationVisible(!reportDate.isValid()));
+		DateComparisonValidator.dateFieldDependencyValidationVisibility(startDate, reportDate);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.END_DATE, EventDto.MULTI_DAY_EVENT, Collections.singletonList(true), true);
 		FieldHelper.setCaptionWhen(
@@ -690,9 +689,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			if ((Boolean) e.getProperty().getValue()) {
 				startDate.addValidator(startDateValidator);
 				endDate.addValidator(endDateValidator);
+				DateComparisonValidator.dateFieldDependencyValidationVisibility(startDate, endDate);
 			} else {
 				startDate.removeValidator(startDateValidator);
+				startDate.setValidationVisible(true);
 				endDate.removeValidator(endDateValidator);
+				endDate.setValidationVisible(true);
 			}
 		});
 

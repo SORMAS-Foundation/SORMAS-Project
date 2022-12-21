@@ -3116,6 +3116,41 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(caseUuids.contains(case2.getUuid()));
 	}
 
+	@Test
+	public void testDuplicatesWithPathogenTest() {
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson();
+
+		CaseDataDto covidCase = creator.createCase(
+			user.toReference(),
+			personDto.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.CONFIRMED,
+			InvestigationStatus.DONE,
+			new Date(),
+			rdcf);
+		SampleDto sampleDto =
+			creator.createSample(covidCase.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		PathogenTestDto pathogenTestDto = creator.createPathogenTest(
+			sampleDto.toReference(),
+			PathogenTestType.PCR_RT_PCR,
+			Disease.ANTHRAX,
+			new Date(),
+			rdcf.facility,
+			user.toReference(),
+			PathogenTestResultType.POSITIVE,
+			"",
+			true);
+
+		covidCase.setDisease(Disease.ANTHRAX);
+		CaseDataDto anthraxCase = getCaseFacade().cloneCase(covidCase);
+
+		List<CaseDataDto> duplicatedCases = getCaseFacade().getDuplicatesWithPathogenTest(covidCase.getPerson(), pathogenTestDto);
+		assertEquals(1, duplicatedCases.size());
+		assertEquals(anthraxCase.getUuid(), duplicatedCases.get(0).getUuid());
+	}
+
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
 	private static final SecureRandom rnd = new SecureRandom();
 

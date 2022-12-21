@@ -63,6 +63,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
@@ -723,6 +724,18 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		cu.where(root.get(Task.UUID).in(taskUuids));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public boolean isArchived(String taskUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Task> from = cq.from(getElementClass());
+
+		cq.where(cb.and(cb.equal(from.get(Task.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), taskUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
 	}
 
 	@Override

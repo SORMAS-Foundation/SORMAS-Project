@@ -112,6 +112,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
+import static org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps.contact;
 import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
@@ -146,7 +147,6 @@ import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
-import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.testng.asserts.SoftAssert;
 
 public class CreateNewCaseSteps implements En {
@@ -304,6 +304,7 @@ public class CreateNewCaseSteps implements En {
           if (option.equals("first")) {
             webDriverHelpers.fillInWebElement(
                 CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
+            TimeUnit.SECONDS.sleep(3);
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
@@ -735,7 +736,7 @@ public class CreateNewCaseSteps implements En {
         "^I click on Save button in Case form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 1)) {
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 3)) {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           }
@@ -1155,6 +1156,15 @@ public class CreateNewCaseSteps implements En {
         });
 
     And(
+        "I fill only mandatory fields to convert a contact into a case for DE",
+        () -> {
+          fillDateOfReport(LocalDate.now(), Locale.GERMAN);
+          selectPlaceOfStay("ZUHAUSE");
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+        });
+
+    And(
         "^I click SAVE button on Create New Case form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
@@ -1170,13 +1180,12 @@ public class CreateNewCaseSteps implements En {
     And(
         "^I create a new case with specific mandatory fields with saved person details from contact for DE$",
         () -> {
-          selectResponsibleRegion(CreateNewContactSteps.contact.getResponsibleRegion());
-          selectResponsibleDistrict(CreateNewContactSteps.contact.getResponsibleDistrict());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectPlaceOfStay("ZUHAUSE");
-          fillFirstName(CreateNewContactSteps.contact.getFirstName());
-          fillLastName(CreateNewContactSteps.contact.getLastName());
-          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
-          selectSex(CreateNewContactSteps.contact.getSex());
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
           fillDateOfReport(LocalDate.now().minusDays(189), Locale.GERMAN);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);

@@ -148,6 +148,7 @@ public class ExternalMessageController {
 					SurveillanceReportDto surveillanceReport = null;
 					if (caseReference != null) {
 						surveillanceReport = createSurveillanceReport(labMessage, caseReference);
+						FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
 					}
 					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples(), surveillanceReport);
 					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
@@ -178,6 +179,7 @@ public class ExternalMessageController {
 			if (status == ProcessingResultStatus.DONE) {
 				CaseReferenceDto caseReferenceDto = result.getData().toReference();
 				SurveillanceReportDto surveillanceReport = createSurveillanceReport(labMessage, caseReferenceDto);
+				FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
 				markExternalMessageAsProcessed(labMessage, surveillanceReport);
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}
@@ -211,8 +213,8 @@ public class ExternalMessageController {
 		SurveillanceReportDto surveillanceReport = SurveillanceReportDto.build(caze, FacadeProvider.getUserFacade().getCurrentUserAsReference());
 		setSurvReportFacility(surveillanceReport, externalMessage, caze);
 		surveillanceReport.setReportDate(externalMessage.getMessageDateTime());
+		surveillanceReport.setExternalId(externalMessage.getReportMessageId());
 		setSurvReportingType(surveillanceReport, externalMessage);
-		FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
 		return surveillanceReport;
 	}
 
@@ -230,7 +232,7 @@ public class ExternalMessageController {
 			surveillanceReport.setFacilityType(reporter.getType());
 		} else {
 			reporter = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID);
-			surveillanceReport.setFacility(reporter.toReference());
+			surveillanceReport.setFacility(reporter != null ? reporter.toReference() : null);
 			String reporterName = externalMessage.getReporterName();
 			if (StringUtils.isNotBlank(reporterName)) {
 				surveillanceReport.setFacilityDetails(reporterName);

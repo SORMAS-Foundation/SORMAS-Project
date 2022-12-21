@@ -64,6 +64,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
+	public static final String REPORT_MESSAGE_ID = "reportMessageId";
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
@@ -113,6 +114,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String reportMessageId;
 	@AuditIncludeProperty
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 
@@ -304,6 +308,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setReportId(String reportId) {
 		this.reportId = reportId;
+	}
+
+	public String getReportMessageId() {
+		return reportMessageId;
+	}
+
+	public void setReportMessageId(String reportMessageId) {
+		this.reportMessageId = reportMessageId;
 	}
 
 	public UserReferenceDto getAssignee() {

@@ -36,32 +36,59 @@ public class DatabaseTableTest {
 	@Test
 	public void testCasesAndVisitsEnabled() {
 
-		FeatureConfigurationDto caseSurveillanceFeatureConfiguration = new FeatureConfigurationDto();
-		caseSurveillanceFeatureConfiguration.setFeatureType(FeatureType.CASE_SURVEILANCE);
-		caseSurveillanceFeatureConfiguration.setEnabled(true);
+		List<FeatureConfigurationDto> caseFeatureConfigurations =
+			Arrays.asList(getFeatureConfiguration(FeatureType.CASE_SURVEILANCE, true), getFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true));
 
-		FeatureConfigurationDto caseFollowupFeatureConfiguration = new FeatureConfigurationDto();
-		caseFollowupFeatureConfiguration.setFeatureType(FeatureType.CASE_FOLLOWUP);
-		caseFollowupFeatureConfiguration.setEnabled(true);
+		assertThat(DatabaseTable.CASES.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.HOSPITALIZATIONS.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.PREVIOUSHOSPITALIZATIONS.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.PORT_HEALTH_INFO.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.MATERNAL_HISTORIES.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.EPIDATA.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.EXPOSURES.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.ACTIVITIES_AS_CASE.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.HEALTH_CONDITIONS.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.SYMPTOMS.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.VISITS.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(true));
 
-		List<FeatureConfigurationDto> caseFeatureCOnfigurations =
-			Arrays.asList(caseSurveillanceFeatureConfiguration, caseFollowupFeatureConfiguration);
+		assertThat(DatabaseTable.CONTACTS.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(false));
+		assertThat(DatabaseTable.IMMUNIZATIONS.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(false));
+		assertThat(DatabaseTable.SAMPLES.isEnabled(caseFeatureConfigurations, new ConfigFacadeEjb()), is(false));
+	}
 
-		assertThat(DatabaseTable.CASES.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.HOSPITALIZATIONS.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.PREVIOUSHOSPITALIZATIONS.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.PORT_HEALTH_INFO.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.MATERNAL_HISTORIES.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.EPIDATA.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.EXPOSURES.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.ACTIVITIES_AS_CASE.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.HEALTH_CONDITIONS.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.SYMPTOMS.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
-		assertThat(DatabaseTable.VISITS.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
+	@Test
+	public void testPersonsEnabled() {
 
-		assertThat(DatabaseTable.CONTACTS.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(false));
-		assertThat(DatabaseTable.IMMUNIZATIONS.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(false));
-		assertThat(DatabaseTable.SAMPLES.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(false));
+		List<FeatureConfigurationDto> personFeatureConfigurations = Arrays.asList(
+			getFeatureConfiguration(FeatureType.CASE_SURVEILANCE, true),
+			getFeatureConfiguration(FeatureType.EVENT_SURVEILLANCE, true),
+			getFeatureConfiguration(FeatureType.CONTACT_TRACING, true));
+
+		assertThat(DatabaseTable.PERSONS.isEnabled(personFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.PERSON_CONTACT_DETAILS.isEnabled(personFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.PERSON_LOCATIONS.isEnabled(personFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+	}
+
+	@Test
+	public void testCampaignsEnabled() {
+
+		List<FeatureConfigurationDto> campaignFeatureConfigurations = Collections.singletonList(getFeatureConfiguration(FeatureType.CAMPAIGNS, true));
+
+		assertThat(DatabaseTable.CAMPAIGNS.isEnabled(campaignFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.CAMPAIGN_FORM_META.isEnabled(campaignFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.CAMPAIGN_FORM_DATA.isEnabled(campaignFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.CAMPAIGN_DIAGRAM_DEFINITIONS.isEnabled(campaignFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+
+	}
+
+	@Test
+	public void testTasksEnabled() {
+
+		List<FeatureConfigurationDto> taskFeatureConfigurations =
+			Collections.singletonList(getFeatureConfiguration(FeatureType.TASK_MANAGEMENT, true));
+
+		assertThat(DatabaseTable.TASKS.isEnabled(taskFeatureConfigurations, new ConfigFacadeEjb()), is(true));
+		assertThat(DatabaseTable.TASK_OBSERVER.isEnabled(taskFeatureConfigurations, new ConfigFacadeEjb()), is(true));
 	}
 
 	@Test
@@ -94,5 +121,13 @@ public class DatabaseTableTest {
 		assertThat(DatabaseTable.SORMAS_TO_SORMAS_SHARE_INFO.isEnabled(Collections.emptyList(), configFacadeMock), is(true));
 		assertThat(DatabaseTable.SHARE_REQUEST_INFO.isEnabled(Collections.emptyList(), configFacadeMock), is(true));
 		assertThat(DatabaseTable.EXTERNAL_SHARE_INFO.isEnabled(Collections.emptyList(), configFacadeMock), is(false));
+	}
+
+	private FeatureConfigurationDto getFeatureConfiguration(FeatureType featureType, boolean enabled) {
+		FeatureConfigurationDto featureConfiguration = new FeatureConfigurationDto();
+		featureConfiguration.setFeatureType(featureType);
+		featureConfiguration.setEnabled(enabled);
+
+		return featureConfiguration;
 	}
 }

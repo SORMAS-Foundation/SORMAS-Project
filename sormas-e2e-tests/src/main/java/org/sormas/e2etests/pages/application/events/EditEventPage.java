@@ -32,8 +32,9 @@ public class EditEventPage {
   public static final By EVENT_ACTIONS_TAB = By.cssSelector("#tab-events-eventactions span");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By TITLE_INPUT = By.cssSelector("#eventTitle");
-  public static final By SAVE_BUTTON = By.id("commit");
+  public static final By SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By SAVE_BUTTON_FOR_POPUP_WINDOWS = By.cssSelector(".popupContent #commit");
+  public static final By EDIT_EVENT_PAGE_SAVE_BUTTON = By.cssSelector("#commit");
   public static final By EVENT_STATUS_OPTIONS =
       By.cssSelector("#eventStatus .v-select-option label");
   public static final By RISK_LEVEL_INPUT = By.cssSelector(" #riskLevel input");
@@ -96,6 +97,7 @@ public class EditEventPage {
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
+  public static final By DELETE_BULK_EDIT_BUTTON_EVENT_PARTICIPANT = By.id("bulkActions-4");
   public static final By CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT = By.id("bulkActions-5");
   public static final By EVENT_MANAGEMENT_STATUS_CHECK =
       By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");

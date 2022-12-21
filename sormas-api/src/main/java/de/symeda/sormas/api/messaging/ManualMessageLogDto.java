@@ -1,12 +1,12 @@
 package de.symeda.sormas.api.messaging;
 
-import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class ManualMessageLogDto implements Serializable {
+public class ManualMessageLogDto extends EntityDto {
 
 	private MessageType messageType;
 	private Date sentDate;

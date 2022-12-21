@@ -24,6 +24,7 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -33,6 +34,7 @@ import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -83,6 +85,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public PointsOfEntryView() {
 
@@ -98,7 +101,9 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		grid = new PointsOfEntryGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfPointofEntry, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfPointofEntry, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -106,7 +111,9 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.POINT_OF_ENTRY));
 				window.setCaption(I18nProperties.getString(Strings.headingImportPointsOfEntry));
@@ -116,6 +123,12 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(importButton);
+		} else if (!infrastructureDataEditable) {
+			Label infrastructureDataLocked = new Label();
+			infrastructureDataLocked.setCaption(I18nProperties.getString(Strings.headingInfrastructureLocked));
+			infrastructureDataLocked.setValue(I18nProperties.getString(Strings.messageInfrastructureLocked));
+			infrastructureDataLocked.setIcon(VaadinIcons.WARNING);
+			addHeaderComponent(infrastructureDataLocked);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
@@ -123,13 +136,16 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource
-				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.ACTION_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				grid,
+				this::getSelectedRows,
+				ExportEntityName.POINTS_OF_ENTRY,
+				PointsOfEntryGrid.ACTION_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
@@ -150,8 +166,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
 				viewConfiguration.setInEagerMode(true);
+				bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
@@ -159,8 +175,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(false);
 				viewConfiguration.setInEagerMode(false);
+				bulkOperationsDropdown.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				searchField.setEnabled(true);
@@ -313,7 +329,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown
-						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+						.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -356,5 +372,13 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		activeFilter.setValue(criteria.getActive());
 
 		applyingCriteria = false;
+	}
+
+	private boolean isBulkOperationsDropdownVisible() {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		return viewConfiguration.isInEagerMode()
+			&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }

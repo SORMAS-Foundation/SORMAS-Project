@@ -54,6 +54,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -143,6 +144,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -574,9 +576,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
-		CriteriaQuery<CaseIndexDto> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, sortProperties);
+		CriteriaQuery<Tuple> cqIds = listQueryBuilder.buildIndexCriteriaPrefetchIds(caseCriteria, sortProperties);
+		List<Long> indexListIds =
+			QueryHelper.getResultList(em, cqIds, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 
-		List<CaseIndexDto> cases = QueryHelper.getResultList(em, cq, first, max);
+		List<CaseIndexDto> cases = new ArrayList<>();
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaQuery<CaseIndexDto> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, sortProperties, batchedIds);
+			cases.addAll(QueryHelper.getResultList(em, cq, null, null));
+		});
+
 		List<Long> caseIds = cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList());
 
 		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
@@ -604,6 +613,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caze,
 				isInJurisdiction,
 				c -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null));
+
+			if (diseaseConfigurationFacade.hasFollowUp(caze.getDisease())) {
+				int numberOfMissedVisits =
+					FollowUpLogic.getNumberOfRequiredVisitsSoFar(caze.getReportDate(), caze.getFollowUpUntil()) - caze.getVisitCount();
+				if (numberOfMissedVisits < 0) {
+					numberOfMissedVisits = 0;
+				}
+				caze.setMissedVisitsCount(numberOfMissedVisits);
+			}
 		}
 
 		return cases;
@@ -612,9 +630,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
-		CriteriaQuery<CaseIndexDetailedDto> cq = listQueryBuilder.buildIndexDetailedCriteria(caseCriteria, sortProperties);
+		CriteriaQuery<Tuple> cqIds = listQueryBuilder.buildIndexDetailedCriteriaPrefetchIds(caseCriteria, sortProperties);
+		List<Long> indexListIds =
+			QueryHelper.getResultList(em, cqIds, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 
-		List<CaseIndexDetailedDto> cases = QueryHelper.getResultList(em, cq, first, max);
+		List<CaseIndexDetailedDto> cases = new ArrayList<>();
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaQuery<CaseIndexDetailedDto> cq = listQueryBuilder.buildIndexDetailedCriteria(caseCriteria, sortProperties, batchedIds);
+			cases.addAll(QueryHelper.getResultList(em, cq, null, null));
+		});
 
 		// Load latest events info
 		// Adding a second query here is not perfect, but selecting the last event with a criteria query
@@ -659,6 +683,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				pseudonymizer
 					.pseudonymizeUser(userService.getByUuid(caze.getReportingUser().getUuid()), userService.getCurrentUser(), caze::setReportingUser);
 			});
+
+			if (diseaseConfigurationFacade.hasFollowUp(caze.getDisease())) {
+				int numberOfMissedVisits =
+					FollowUpLogic.getNumberOfRequiredVisitsSoFar(caze.getReportDate(), caze.getFollowUpUntil()) - caze.getVisitCount();
+				if (numberOfMissedVisits < 0) {
+					numberOfMissedVisits = 0;
+				}
+				caze.setMissedVisitsCount(numberOfMissedVisits);
+			}
 		}
 
 		return cases;
@@ -4163,6 +4196,30 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					getCaseDataByUuid((String) casePersonUuids[0]),
 					personFacade.getByUuid((String) casePersonUuids[1])))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CaseDataDto> getDuplicatesWithPathogenTest(@Valid PersonReferenceDto personReferenceDto, PathogenTestDto pathogenTestDto) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		CaseJoins caseCaseJoins = new CaseJoins(caseRoot);
+		Join<Case, Person> personJoin = caseCaseJoins.getPerson();
+		Join<Case, Sample> samplesJoin = caseCaseJoins.getSamples();
+		Join<Sample, PathogenTest> pathogenTestJoin = caseCaseJoins.getSampleJoins().getPathogenTest();
+
+		cq.select(caseRoot);
+		Predicate filter = cb.and(
+			cb.equal(caseRoot.get(Case.DISEASE), pathogenTestDto.getTestedDisease()),
+			cb.equal(personJoin.get(Person.UUID), personReferenceDto.getUuid()),
+			cb.equal(caseRoot.get(Case.DISEASE), pathogenTestJoin.get(PathogenTest.TESTED_DISEASE)),
+			cb.exists(sampleService.exists(cb, cq, samplesJoin, pathogenTestDto.getSample().getUuid())));
+
+		cq.where(filter);
+
+		List<Case> duplicateCases = em.createQuery(cq).getResultList();
+		return toDtos(duplicateCases.stream());
 	}
 
 	@Override

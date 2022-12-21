@@ -184,7 +184,6 @@ Feature: Sample Functionalities
     Then I click on New Sample
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
-    And I save the created sample
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
     Then I save the new case
@@ -282,7 +281,11 @@ Feature: Sample Functionalities
     And I click Add Pathogen test in Sample creation page
     And I check DATE AND TIME OF RESULT field
     And I click on save sample button
-    Then I check error popup message in German
+    Then I check if error popup contains "Bitte überprüfen Sie die Eingabedaten"
+    And I check if error popup contains "Labor"
+    And I check if error popup contains "Art des Tests"
+    And I check if error popup contains "Ergebnis verifiziert von Laborleitung"
+
 
   @tmsLink=SORDEV-6849 @env_main
   Scenario: Test Lab officers should have full access to entities whose sample was assigned to the lab officers lab

@@ -18,7 +18,9 @@ public abstract class LanguageDetectorHelper {
     if (isConfidenceStrong(textToScan)) {
       log.info("Check if text {} language is {}", textToScan, expectedLanguage);
       Assert.assertEquals(
-          scanLanguage(textToScan), expectedLanguage, "Language is not as expected");
+          scanLanguage(textToScan),
+          expectedLanguage,
+          "Text: [" + textToScan + "] Language is not as expected");
     } else {
       throw new LanguageDetectorException(
           "LanguageDetectorHelper confidence is not at least MEDIUM");
@@ -28,13 +30,18 @@ public abstract class LanguageDetectorHelper {
   @SneakyThrows
   public static String scanLanguage(String textToScan) {
     detector = LanguageDetector.getDefaultLanguageDetector().loadModels();
-    return Arrays.stream(Locale.getAvailableLocales())
-        .filter(
-            locale ->
-                locale.getLanguage().equalsIgnoreCase(detector.detect(textToScan).getLanguage()))
-        .findFirst()
-        .get()
-        .getDisplayLanguage();
+    String detectedLanguageCode = detector.detect(textToScan).getLanguage();
+    String detectedLanguage =
+        Arrays.stream(Locale.getAvailableLocales())
+            .filter(locale -> locale.getLanguage().equalsIgnoreCase(detectedLanguageCode))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new LanguageDetectorException(
+                        "Unable to find language for code: " + detectedLanguageCode))
+            .getDisplayLanguage();
+    // Workaround for Malay due to library bug
+    return (detectedLanguage.equalsIgnoreCase("Malay")) ? "English" : detectedLanguage;
   }
 
   @SneakyThrows

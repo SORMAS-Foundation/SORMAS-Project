@@ -27,5 +27,6 @@ public class ClinicalCourseTabCasePage {
   public static final By EDIT_BUTTON = By.cssSelector("[class='v-icon v-icon-edit']");
   public static final By CLEAR_ALL_OPTION = By.cssSelector("[id='actionClearAll']");
   public static final By SET_OPTIONS =
-      By.cssSelector("[class='v-button v-widget link v-button-link']");
+      By.cssSelector(
+          "[class='v-button v-widget link v-button-link caption-overflow-label v-button-caption-overflow-label']");
 }

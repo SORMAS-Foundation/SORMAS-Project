@@ -185,7 +185,7 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, null, false);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, null, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -209,7 +209,8 @@ public class CaseController {
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(eventParticipant.getPerson().getUuid()), uuid -> {
 			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, null, false);
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
+					getCaseCreateComponent(null, eventParticipant, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
 					EventParticipantDto updatedEventparticipant = FacadeProvider.getEventParticipantFacade().getByUuid(eventParticipant.getUuid());
 					if (updatedEventparticipant.getResultingCase() != null) {
@@ -244,7 +245,8 @@ public class CaseController {
 			return;
 		}
 
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, disease, false);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
+			getCaseCreateComponent(null, eventParticipant, null, null, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -261,7 +263,7 @@ public class CaseController {
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
 					ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 					if (contactDto.getResultingCase() != null) {
@@ -293,7 +295,7 @@ public class CaseController {
 	}
 
 	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, disease, false);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -305,7 +307,8 @@ public class CaseController {
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, travelEntryDto, null, false);
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
+					getCaseCreateComponent(null, null, travelEntryDto, null, null, false);
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 			} else {
 				TravelEntryDto updatedTravelEntry = FacadeProvider.getTravelEntryFacade().getByUuid(travelEntryDto.getUuid());
@@ -314,6 +317,17 @@ public class CaseController {
 				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}
 		});
+	}
+
+	public void createFromPersonReference(PersonReferenceDto personReference) {
+		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
+		CaseDataDto dto = CaseDataDto.build(personReference, null);
+
+		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
+
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, person, null, false);
+		caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void convertSamePersonContactsAndEventParticipants(CaseDataDto caze, Runnable callback) {
@@ -592,6 +606,7 @@ public class CaseController {
 		ContactDto convertedContact,
 		EventParticipantDto convertedEventParticipant,
 		TravelEntryDto convertedTravelEntry,
+		PersonDto convertedPerson,
 		Disease unrelatedDisease,
 		boolean createdFromLabMessage) {
 
@@ -641,8 +656,9 @@ public class CaseController {
 			caze = CaseDataDto.buildFromTravelEntry(convertedTravelEntry, person);
 		} else {
 			symptoms = null;
-			person = null;
-			caze = CaseDataDto.build(null, null);
+			person = convertedPerson;
+			PersonReferenceDto personreference = person == null ? null : person.toReference();
+			caze = CaseDataDto.build(personreference, null);
 		}
 
 		UserDto user = UserProvider.getCurrent().getUser();
@@ -672,6 +688,10 @@ public class CaseController {
 		if (convertedContact != null || convertedEventParticipant != null || convertedTravelEntry != null) {
 			createForm.setPersonalDetailsReadOnlyIfNotEmpty(true);
 			createForm.setDiseaseReadOnly(true);
+		}
+
+		if (convertedPerson != null) {
+			createForm.setPersonalDetailsReadOnlyIfNotEmpty(true);
 		}
 
 		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(
@@ -791,7 +811,6 @@ public class CaseController {
 						saveCase(dto);
 					}
 				} else {
-
 					PersonDto searchedPerson = createForm.getSearchedPerson();
 					if (searchedPerson != null) {
 						dto.setPerson(searchedPerson.toReference());

@@ -65,6 +65,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String REPORTER_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
+	public static final String REPORT_MESSAGE_ID = "reportMessageId";
 	public static final String ASSIGNEE = "assignee";
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
 
@@ -93,6 +94,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String externalMessageDetails;
 	//External messages related to each other should have the same reportId
 	private String reportId;
+	private String reportMessageId;
 
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 	private User assignee;
@@ -306,6 +308,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setReportId(String reportId) {
 		this.reportId = reportId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getReportMessageId() {
+		return reportMessageId;
+	}
+
+	public void setReportMessageId(String reportMessageId) {
+		this.reportMessageId = reportMessageId;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
