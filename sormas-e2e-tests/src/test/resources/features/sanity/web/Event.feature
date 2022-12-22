@@ -1113,7 +1113,7 @@ Feature: Create events
     And I check if General comment on event participant edit page is disabled
     And I check if Involvement description input on event participant edit page is disabled
 
-  @tmsLink=SORDEV-9792 @env_de @testIt
+  @tmsLink=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for events
     Given I log in as a Admin User
     And I click on the Events button from navbar
