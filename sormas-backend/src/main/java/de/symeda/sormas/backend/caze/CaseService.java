@@ -934,7 +934,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				cb,
 				from,
 				ExternalShareInfo.CAZE,
-				(latestShareDate) -> createChangeDateFilter(cq, cb, from, joins, latestShareDate, true, true)));
+				(latestShareDate) -> createChangeDateFilter(cq, cb, joins, latestShareDate, true, true)));
 
 		return filter;
 	}
@@ -1247,7 +1247,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			Join<Person, Immunization> immunizationJoin = joins.getPersonJoins().getImmunization();
 			Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(casePath, cq, cb, vaccinationsJoin)));
+			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(joins.getRoot(), cq, cb, vaccinationsJoin)));
 			// also consider the immunization of relevant vaccinations
 			builder.add(vaccinationsJoin, Vaccination.IMMUNIZATION);
 
