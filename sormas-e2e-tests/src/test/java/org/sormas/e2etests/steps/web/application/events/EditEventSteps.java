@@ -1974,6 +1974,12 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUUID);
         });
+
+    And(
+        "^I save Add participant form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
+        });
   }
 
   private String collectEventParticipantUuid() {
