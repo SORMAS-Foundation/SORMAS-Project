@@ -1142,7 +1142,7 @@ Feature: Create events
     And I fill De-Archive event popup with test automation reason
     And I click on the Events button from navbar
     And I apply "Aktive Ereignisse" to combobox on Event Directory Page
-    And I search for specific event by uuid in event directory
+    # And I search for specific event by uuid in event directory
     And I check that number of displayed Event results is 1
 
   @tmsLink=SORDEV-9792 @env_de
