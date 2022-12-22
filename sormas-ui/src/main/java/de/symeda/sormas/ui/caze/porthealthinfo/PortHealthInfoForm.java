@@ -11,6 +11,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.porthealthinfo.ConveyanceType;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
@@ -22,6 +23,9 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -70,9 +74,13 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 	private PointOfEntryDto pointOfEntry;
 	private String pointOfEntryDetails;
 
-	public PortHealthInfoForm(PointOfEntryDto pointOfEntry, String pointOfEntryDetails) {
-
-		super(PortHealthInfoDto.class, PortHealthInfoDto.I18N_PREFIX);
+	public PortHealthInfoForm(PointOfEntryDto pointOfEntry, String pointOfEntryDetails, boolean isPseudonymized, boolean inJurisdiction) {
+		super(
+			PortHealthInfoDto.class,
+			PortHealthInfoDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 		this.pointOfEntry = pointOfEntry;
 		this.pointOfEntryDetails = pointOfEntryDetails;
 
@@ -113,6 +121,10 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 			addOtherFields();
 			break;
 		}
+
+		// Set initial visibilities & accesses
+		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 	}
 
 	private void addAirportFields() {

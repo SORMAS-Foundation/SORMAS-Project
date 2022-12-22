@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.caze.porthealthinfo;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -13,9 +14,13 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PortHealthInfoFacade")
@@ -23,7 +28,11 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-	
+	@EJB
+	private UserService userService;
+	@EJB
+	private PortHealthInfoService portHealthInfoService;
+
 	public static PortHealthInfoDto toDto(PortHealthInfo source) {
 		if (source == null) {
 			return null;
@@ -96,8 +105,20 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 
 		cq.select(portHealthJoin);
 		cq.where(cb.equal(root.get(Case.UUID), caseUuid));
+		PortHealthInfo portHealthInfo = QueryHelper.getSingleResult(em, cq);
 
-		return QueryHelper.getSingleResult(em, cq, PortHealthInfoFacadeEjb::toDto);
+		return toPseudonymizedDto(portHealthInfo);
+	}
+
+	private PortHealthInfoDto toPseudonymizedDto(PortHealthInfo portHealthInfo) {
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		PortHealthInfoDto portHealthInfoDto = toDto(portHealthInfo);
+		pseudonymizer.pseudonymizeDto(PortHealthInfoDto.class, portHealthInfoDto, portHealthInfoService.inJurisdictionOrOwned(portHealthInfo), null);
+		return portHealthInfoDto;
+	}
+
+	private Pseudonymizer createPseudonymizer() {
+		return Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 	}
 
 	@LocalBean

@@ -233,8 +233,9 @@ public class PointOfEntryFacadeEjb
 
 		cq.select(pointOfEntryJoin);
 		cq.where(cb.equal(root.get(Case.UUID), caseUuid));
+		PointOfEntry pointOfEntry = QueryHelper.getSingleResult(em, cq);
 
-		return QueryHelper.getSingleResult(em, cq, this::toDto);
+		return toPseudonymizedDto(pointOfEntry);
 	}
 
 	@Override

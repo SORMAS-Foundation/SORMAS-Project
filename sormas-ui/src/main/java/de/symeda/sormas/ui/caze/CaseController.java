@@ -1340,7 +1340,8 @@ public class CaseController {
 		}
 
 		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caseUuid);
-		PortHealthInfoForm form = new PortHealthInfoForm(pointOfEntry, caze.getPointOfEntryDetails());
+		PortHealthInfoForm form =
+			new PortHealthInfoForm(pointOfEntry, caze.getPointOfEntryDetails(), caze.isPseudonymized(), caze.isInJurisdiction());
 		form.setValue(getPortHealthInfo(caze));
 
 		final CommitDiscardWrapperComponent<PortHealthInfoForm> component = new CommitDiscardWrapperComponent<PortHealthInfoForm>(
