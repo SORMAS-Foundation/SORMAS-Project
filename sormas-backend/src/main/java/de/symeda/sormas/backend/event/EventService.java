@@ -542,8 +542,9 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	@Override
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, EventJoins joins, boolean includeExtendedChangeDateFilters) {
+
 		final From<?, Event> eventFrom = joins.getRoot();
-		final Join<Event, Action> eventActionJoin =  joins.getEventActions();
+		final Join<Event, Action> eventActionJoin = joins.getEventActions();
 		final From<?, EventParticipant> eventParticipants = joins.getEventParticipants();
 		final Join<EventParticipant, Sample> eventParticipantSampleJoin = joins.getEventParticipantJoins().getSamples();
 

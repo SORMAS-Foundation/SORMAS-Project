@@ -323,7 +323,7 @@ public class CaseJoins extends QueryJoins<Case> {
 		return getOrCreate(visit, Case.VISITS, JoinType.LEFT, this::setVisit);
 	}
 
-	public void setVisit(Join<Case, Visit> visit) {
+	private void setVisit(Join<Case, Visit> visit) {
 		this.visit = visit;
 	}
 
@@ -331,7 +331,7 @@ public class CaseJoins extends QueryJoins<Case> {
 		return getOrCreate(surveillanceReportJoin, Case.SURVEILLANCE_REPORTS, JoinType.LEFT, this::setSurveillanceReportJoin);
 	}
 
-	public void setSurveillanceReportJoin(Join<Case, SurveillanceReport> surveillanceReportJoin) {
+	private void setSurveillanceReportJoin(Join<Case, SurveillanceReport> surveillanceReportJoin) {
 		this.surveillanceReportJoin = surveillanceReportJoin;
 	}
 }

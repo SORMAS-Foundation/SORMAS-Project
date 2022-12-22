@@ -55,7 +55,7 @@ public class ImmunizationJoins extends BaseImmunizationJoins<Immunization> {
 		return getOrCreate(vaccinations, Immunization.VACCINATIONS, JoinType.LEFT, this::setVaccinations);
 	}
 
-	public void setVaccinations(Join<Immunization, Vaccination> vaccinations) {
+	private void setVaccinations(Join<Immunization, Vaccination> vaccinations) {
 		this.vaccinations = vaccinations;
 	}
 }

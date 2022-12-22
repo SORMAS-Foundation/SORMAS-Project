@@ -139,7 +139,7 @@ public class EventJoins extends QueryJoins<Event> {
 		return getOrCreate(eventActions, Event.ACTIONS, JoinType.LEFT, this::setEventActions);
 	}
 
-	public void setEventActions(Join<Event, Action> eventActions) {
+	private void setEventActions(Join<Event, Action> eventActions) {
 		this.eventActions = eventActions;
 	}
 
