@@ -29,6 +29,8 @@ public interface CampaignFacade { //CampaignFacadeEjb
 	boolean isArchived(String uuid);
 	
 	boolean isClosedd(String uuid);
+	
+	List getUserAnalysis();
 
 	void deleteCampaign(String uuid);
 	

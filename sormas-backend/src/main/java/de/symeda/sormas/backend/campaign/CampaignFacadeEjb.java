@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.campaign;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -531,6 +532,24 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		List count = em.createNativeQuery(cdvv).getResultList();  
 		System.out.println(cdvv +"  ++++++++++++++++   "+count.size());
 		return count.size() > 0;
+	}
+	
+	@Override
+	public List getUserAnalysis() {
+		String cdvv = "select a.name Area,',', r.name Region, d.name District, u.username Username,\n"
+				+ "(select string_agg(cast(c.clusternumber as text), ',') from community c where c.id in (select uc.community_id from users_community uc where uc.users_id = u.id)) clustersList,\n"
+				
+				+ "(select string_agg(cast(uf.formaccess as text), ',') from users_formaccess uf where uf.user_id = u.id) formaccessList\n"
+				
+				+ "from users u\n"
+				+ "inner join region r on r.id = u.region_id\n"
+				+ "inner join district d on d.id = u.district_id\n"
+				+ "inner join areas a on a.id = u.area_id";
+	
+		List count = em.createNativeQuery(cdvv).getResultList();  
+		
+		//System.out.println(cdvv +"  ++++++++++++++++   "+count.size());
+		return count;
 	}
 
 	@Override
