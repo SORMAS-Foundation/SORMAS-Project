@@ -756,7 +756,7 @@ Feature: Contacts end to end tests
     And I click on the NEW CONTACT button
     And I fill a new contact form with same person data for DE version
     And I click on SAVE new contact case button
-    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    And I check if National Health Id, Nickname and Passport number do not appear in Pick or create person popup
 
   @tmsLink=SORDEV-6434 @env_main
   Scenario: Check if username shows up in visit origin

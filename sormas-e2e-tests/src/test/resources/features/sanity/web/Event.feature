@@ -713,12 +713,12 @@ Feature: Create events
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I click on Add Participant button
     Then I add Participant to an Event with same person data
-    And I click on save button in Add Participant form
+    And I save Add participant form
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I click on Add Participant button
     Then I add Participant to an Event with same person data
-    And I click on save button in Add Participant form
-    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    And I save Add participant form
+    And I check if National Health Id, Nickname and Passport number do not appear in Pick or create person popup
 
   @env_main @tmsLink=SORDEV-7460
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime

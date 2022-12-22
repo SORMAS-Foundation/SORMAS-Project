@@ -1156,7 +1156,7 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill a new case form with same person details for DE version
     And I click on Save button in Case form
-    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    Then I check if National Health Id, Nickname and Passport number do not appear in Pick or create person popup
     And I open the Case Contacts tab
     And I click on the NEW CONTACT button
     And I fill a new contact form with same person data for DE version
@@ -1165,7 +1165,7 @@ Feature: Case end to end tests
     And I click on the NEW CONTACT button
     And I fill a new contact form with same person data for DE version
     And I click on SAVE new contact case button
-    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    Then I check if National Health Id, Nickname and Passport number do not appear in Pick or create person popup
 
   @tmsLink=SORDEV-8413 @env_main
   Scenario: Test Hide specific enum values based on the related disease
