@@ -826,8 +826,10 @@ public class EventDirectorySteps implements En {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
-          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
-          //  webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
