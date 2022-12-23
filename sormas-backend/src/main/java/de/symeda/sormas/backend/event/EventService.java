@@ -527,15 +527,6 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		return addChangeDates(new ChangeDateFilterBuilder(cb, date), toJoins(eventPath), false).build();
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, EventJoins joins, Timestamp date, String lastSynchronizedUuid) {
-		From<?, Event> eventFrom = joins.getRoot();
-		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
-			? new ChangeDateFilterBuilder(cb, date)
-			: new ChangeDateFilterBuilder(cb, date, eventFrom, lastSynchronizedUuid);
-
-		return addChangeDates(changeDateFilterBuilder, joins, false).build();
-	}
-
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, EventJoins joins, Expression<? extends Date> dateExpression) {
 		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), joins, false).build();
 	}

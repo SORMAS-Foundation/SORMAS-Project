@@ -1223,17 +1223,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	private Predicate createChangeDateFilter(
-		CriteriaBuilder cb,
-		CaseJoins joins,
-		Timestamp date,
-		boolean includeExtendedChangeDateFilters,
-		String lastSynchronizedUuid) {
-
-		return addChangeDates(new ChangeDateFilterBuilder(cb, date, joins.getRoot(), lastSynchronizedUuid), joins, includeExtendedChangeDateFilters)
-			.build();
-	}
-
-	private Predicate createChangeDateFilter(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		CaseJoins joins,
