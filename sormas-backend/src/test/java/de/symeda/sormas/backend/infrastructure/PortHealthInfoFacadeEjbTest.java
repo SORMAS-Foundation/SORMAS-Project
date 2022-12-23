@@ -3,6 +3,8 @@ package de.symeda.sormas.backend.infrastructure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -33,6 +35,6 @@ class PortHealthInfoFacadeEjbTest extends AbstractBeanTest {
 		PortHealthInfoDto healthInfoDto = getPortHealthInfoFacade().getByCaseUuid(caseDataDto.getUuid());
 		assertNotNull(healthInfoDto);
 		assertEquals(portHealthInfoDto.getUuid(), healthInfoDto.getUuid());
-		assertEquals(portHealthInfoDto.getAirlineName(), healthInfoDto.getAirlineName());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), healthInfoDto.getAirlineName());
 	}
 }
