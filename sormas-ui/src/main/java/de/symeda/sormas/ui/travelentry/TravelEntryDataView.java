@@ -65,15 +65,18 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		container.addComponent(layout);
 
+		UserProvider currentUser = UserProvider.getCurrent();
+		boolean caseButtonVisible = currentUser != null && currentUser.hasUserRight(UserRight.CASE_CREATE);
+
 		CaseReferenceDto resultingCase = travelEntryDto.getResultingCase();
-		if (resultingCase == null) {
+		if (resultingCase == null && caseButtonVisible) {
 			Button createCaseButton = ButtonHelper.createButton(
 				Captions.travelEntryCreateCase,
 				e -> showUnsavedChangesPopup(() -> ControllerProvider.getCaseController().createFromTravelEntry(travelEntryDto)),
 				ValoTheme.BUTTON_PRIMARY,
 				CssStyles.VSPACE_2);
 			layout.addSidePanelComponent(createCaseButton, CASE_LOC);
-		} else {
+		} else if (resultingCase != null) {
 			layout.addSidePanelComponent(createCaseInfoLayout(resultingCase.getUuid()), CASE_LOC);
 		}
 

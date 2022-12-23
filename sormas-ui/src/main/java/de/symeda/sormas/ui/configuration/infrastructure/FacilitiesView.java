@@ -28,6 +28,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -36,6 +37,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -119,7 +121,9 @@ public class FacilitiesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.FACILITY));
 				window.setCaption(I18nProperties.getString(Strings.headingImportFacilities));
@@ -130,6 +134,12 @@ public class FacilitiesView extends AbstractConfigurationView {
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(importButton);
+		} else if (!infrastructureDataEditable) {
+			Label infrastructureDataLocked = new Label();
+			infrastructureDataLocked.setCaption(I18nProperties.getString(Strings.headingInfrastructureLocked));
+			infrastructureDataLocked.setValue(I18nProperties.getString(Strings.messageInfrastructureLocked));
+			infrastructureDataLocked.setIcon(VaadinIcons.WARNING);
+			addHeaderComponent(infrastructureDataLocked);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
@@ -183,7 +193,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				Strings.infoDetailedExport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = ButtonHelper.createIconButtonWithCaption(
 				"create",
 				I18nProperties.getCaption(Captions.actionNewEntry),
@@ -204,8 +214,8 @@ public class FacilitiesView extends AbstractConfigurationView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
 				viewConfiguration.setInEagerMode(true);
+				bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
@@ -214,8 +224,8 @@ public class FacilitiesView extends AbstractConfigurationView {
 				rowCount.update(grid.getDataSize());
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(false);
 				viewConfiguration.setInEagerMode(false);
+				bulkOperationsDropdown.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				searchField.setEnabled(true);
@@ -398,8 +408,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown
-						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -443,4 +452,13 @@ public class FacilitiesView extends AbstractConfigurationView {
 
 		applyingCriteria = false;
 	}
+
+	private boolean isBulkOperationsDropdownVisible() {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		return viewConfiguration.isInEagerMode()
+			&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+	}
+
 }
