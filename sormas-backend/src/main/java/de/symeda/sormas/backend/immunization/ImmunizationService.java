@@ -195,7 +195,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date) {
-		return createChangeDateFilter(cb, immunization, date, null);
+		return createChangeDateFilter(cb, toJoins(immunization), date, null);
 	}
 
 	@Override
@@ -216,6 +216,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	}
 
 	private Predicate createChangeDateFilter(CriteriaBuilder cb, ImmunizationJoins joins, Timestamp date, String lastSynchronizedUuid) {
+
 		From<?, Immunization> immunization = joins.getRoot();
 		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
 			? new ChangeDateFilterBuilder(cb, date)
