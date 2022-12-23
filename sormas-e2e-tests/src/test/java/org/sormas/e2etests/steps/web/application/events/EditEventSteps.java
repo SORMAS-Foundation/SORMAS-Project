@@ -747,11 +747,12 @@ public class EditEventSteps implements En {
     When(
         "I click on save button in Add Participant form",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EDIT_EVENT_PAGE_SAVE_BUTTON);
           TimeUnit.SECONDS.sleep(2); // needed for button to be available
           int attempts = 0;
           do {
-            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
             attempts++;
           } while (attempts < 5
               && webDriverHelpers.isElementPresent(By.cssSelector(".v-window-wrap")));
@@ -1972,6 +1973,12 @@ public class EditEventSteps implements En {
         "I filter by last created event via api",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUUID);
+        });
+
+    And(
+        "^I save Add participant form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
         });
   }
 
