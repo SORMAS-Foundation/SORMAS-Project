@@ -3818,11 +3818,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> from = cq.from(Case.class);
 
+		CaseQueryContext qc = new CaseQueryContext(cb, cq, from);
+
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(
 			cb.equal(from.get(Case.ARCHIVED), false),
 			cb.equal(from.get(Case.DELETED), false),
-			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
+			cb.not(service.createChangeDateFilter(cb, qc.getJoins(), notChangedTimestamp, true)));
 		cq.select(from.get(Case.UUID)).distinct(true);
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 
