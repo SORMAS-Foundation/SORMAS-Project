@@ -223,7 +223,7 @@ public class ContactJoins extends QueryJoins<Contact> {
 	}
 
 	public Join<Contact, HealthConditions> getHealthConditions() {
-		return healthConditions;
+		return getOrCreate(healthConditions, Contact.HEALTH_CONDITIONS, JoinType.LEFT, this::setHealthConditions);
 	}
 
 	public void setHealthConditions(Join<Contact, HealthConditions> healthConditions) {

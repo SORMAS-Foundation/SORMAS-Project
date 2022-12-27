@@ -22,10 +22,12 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccination.Vaccination;
 
 public class ImmunizationJoins extends BaseImmunizationJoins<Immunization> {
 
 	private Join<Immunization, User> reportingUser;
+	private Join<Immunization, Vaccination> vaccinations;
 
 	private Join<Immunization, SormasToSormasShareInfo> sormasToSormasShareInfo;
 
@@ -47,5 +49,13 @@ public class ImmunizationJoins extends BaseImmunizationJoins<Immunization> {
 
 	private void setSormasToSormasShareInfo(Join<Immunization, SormasToSormasShareInfo> sormasToSormasShareInfo) {
 		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
+	}
+
+	public Join<Immunization, Vaccination> getVaccinations() {
+		return getOrCreate(vaccinations, Immunization.VACCINATIONS, JoinType.LEFT, this::setVaccinations);
+	}
+
+	private void setVaccinations(Join<Immunization, Vaccination> vaccinations) {
+		this.vaccinations = vaccinations;
 	}
 }

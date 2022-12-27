@@ -78,7 +78,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @Stateless
 @LocalBean
-public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
+public class ImmunizationService extends AbstractCoreAdoService<Immunization, ImmunizationJoins> {
 
 	@EJB
 	private PersonService personService;
@@ -195,30 +195,34 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date) {
-		return createChangeDateFilter(cb, immunization, date, null);
+		return createChangeDateFilter(cb, toJoins(immunization), date, null);
 	}
 
 	@Override
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
 		T builder,
-		From<?, Immunization> immunizationFrom,
+		ImmunizationJoins joins,
 		boolean includeExtendedChangeDateFilters) {
 
-		Join<Immunization, Vaccination> vaccinations = immunizationFrom.join(Immunization.VACCINATIONS, JoinType.LEFT);
+		From<?, Immunization> immunizationFrom = joins.getRoot();
 
-		builder = super.addChangeDates(builder, immunizationFrom, includeExtendedChangeDateFilters).add(vaccinations)
+		Join<Immunization, Vaccination> vaccinations = joins.getVaccinations();
+
+		builder = super.addChangeDates(builder, joins, includeExtendedChangeDateFilters).add(vaccinations)
 			.add(immunizationFrom, Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)
 			.add(immunizationFrom, Immunization.SORMAS_TO_SORMAS_SHARES);
 
 		return builder;
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date, String lastSynchronizedUuid) {
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, ImmunizationJoins joins, Timestamp date, String lastSynchronizedUuid) {
+
+		From<?, Immunization> immunization = joins.getRoot();
 		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
 			? new ChangeDateFilterBuilder(cb, date)
 			: new ChangeDateFilterBuilder(cb, date, immunization, lastSynchronizedUuid);
 
-		return addChangeDates(changeDateFilterBuilder, immunization, false).build();
+		return addChangeDates(changeDateFilterBuilder, joins, false).build();
 	}
 
 	@Override
@@ -243,6 +247,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.select(cb.count(from));
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
+	}
+
+	@Override
+	protected ImmunizationJoins toJoins(From<?, Immunization> adoPath) {
+		return new ImmunizationJoins(adoPath);
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {
