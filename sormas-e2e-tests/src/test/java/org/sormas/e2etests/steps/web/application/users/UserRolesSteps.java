@@ -229,6 +229,38 @@ public class UserRolesSteps implements En {
         });
 
     And(
+        "^I verify that the \"([^\"]*)\" user role exist and delete it$",
+        (String userRole) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(USER_RIGHTS_INPUT);
+          webDriverHelpers.scrollInTable(12);
+          webDriverHelpers.isElementVisibleWithTimeout(getUserRoleCaptionByText("TestNatUser"), 5);
+          webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText(userRole));
+          webDriverHelpers.scrollToElement(DELETE_USER_ROLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_USER_ROLE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_CONFIRMATION_BUTTON);
+        });
+
+    And(
+        "^I check if the \"([^\"]*)\" user role cannot be deleted while assigned$",
+        (String userRole) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(USER_RIGHTS_INPUT);
+          webDriverHelpers.scrollInTable(12);
+
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              getUserRoleCaptionByText("TestNatUser"), 5)) {
+            webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText(userRole));
+            webDriverHelpers.scrollToElement(DELETE_USER_ROLE_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(DELETE_USER_ROLE_BUTTON);
+            webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(DELETE_CONFIRMATION_BUTTON);
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                CANNOT_DELETE_USER_ROLE_POPUP);
+            webDriverHelpers.clickOnWebElementBySelector(CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON);
+          }
+        });
+
+    And(
         "I click on the Export User Roles Button and verify User role file is downloaded and contains data in the User Role Page",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
