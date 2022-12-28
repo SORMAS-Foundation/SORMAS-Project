@@ -105,7 +105,6 @@
 		<plugins>
 			<!-- Provide WebApp context path via value of `sormasRest.apiRoot` property -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
