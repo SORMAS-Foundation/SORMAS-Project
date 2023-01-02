@@ -10,7 +10,6 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DEL
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISPLAY_ONLY_DUPLICATE_REPORTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EDIT_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_FROM_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_TO_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.FACILITY_COMBOBOX;
@@ -23,6 +22,7 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.REG
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.REPORT_DATA_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.RESULT_IN_GRID;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.SHOW_ROWS_FOR_DISEASES_LABEL;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.THIRD_ROW_EDIT_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_FROM_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_COMOBOX;
@@ -147,7 +147,7 @@ public class MSersDirectorySteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(DELETE_ICON, 5),
               "Delete icon is not visible");
           softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(EDIT_ICON, 5),
+              webDriverHelpers.isElementVisibleWithTimeout(THIRD_ROW_EDIT_ICON, 5),
               "Edit icon is not visible");
           softly.assertAll();
         });
