@@ -81,4 +81,10 @@ public class TaskManagementPage {
   public static By getEditTaskButtonByNumber(Integer number) {
     return By.xpath(String.format("//table/tbody/tr[%x]/td[1]", number));
   }
+
+  public static By getLastCreatedEditTaskButton(String text) {
+    return By.xpath(
+        String.format(
+            "//td[contains(text(),'%s')]/../td/span[contains(@class, 'v-icon-edit')]", text));
+  }
 }

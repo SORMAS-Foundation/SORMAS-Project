@@ -155,7 +155,7 @@ Feature: Tasks functionalities
     And I select "Contact OFFICER" user from Observed by combobox in new Task form
     And I delete "Contact OFFICER" user from Observed by in new Task form
     And I click on Save button in New Task form
-    And I click on edit task icon of the 1 displayed task on Task Directory page
+    When I open last created task from Tasks Directory
     Then I check that National CLINICIAN is visible in Observed By on Edit Task Page
     And I check that Surveillance SUPERVISOR is visible in Observed By on Edit Task Page
     And I check that Contact OFFICER is not visible in Observed By on Edit Task Page
