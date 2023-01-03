@@ -1609,7 +1609,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
-			return EditPermissionType.DOCUMENTS_ONLY;
+			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
 		return super.getEditPermissionType(caze);

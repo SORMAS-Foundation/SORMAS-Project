@@ -1664,7 +1664,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		}
 
 		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
-			return EditPermissionType.DOCUMENTS_ONLY;
+			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
 		return super.getEditPermissionType(contact);
