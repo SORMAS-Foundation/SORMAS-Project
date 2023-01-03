@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_USER_ROLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_DISABLED_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EXPORT_USER_ROLES_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER_ROLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_SAVE_BUTTON;
@@ -41,11 +42,15 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROL
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.getUserRoleCaptionByText;
 
 import cucumber.api.java8.En;
+import java.time.LocalDate;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.testng.asserts.SoftAssert;
 
 public class UserRolesSteps implements En {
+  public static final String USER_ROLES_FILE_PATH =
+      String.format("sormas_user_roles_%s_.xlsx", LocalDate.now());
   protected WebDriverHelpers webDriverHelpers;
 
   @Inject
@@ -221,6 +226,16 @@ public class UserRolesSteps implements En {
             webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_CONFIRMATION_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(DELETE_CONFIRMATION_BUTTON);
           }
+        });
+
+    And(
+        "I click on the Export User Roles Button and verify User role file is downloaded and contains data in the User Role Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EXPORT_USER_ROLES_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EXPORT_USER_ROLES_BUTTON);
+          FilesHelper.waitForFileToDownload(USER_ROLES_FILE_PATH, 30);
+          FilesHelper.validateFileIsNotEmpty(USER_ROLES_FILE_PATH);
         });
   }
 }

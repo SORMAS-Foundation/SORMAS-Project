@@ -130,13 +130,16 @@ public class EventDataView extends AbstractEventView {
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
+
+			boolean isDocumentDeleteAllowed =
+				EditPermissionType.ALLOWED.equals(eventEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(eventEditAllowed);
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.EVENT,
 				getEventRef(),
 				UserRight.EVENT_EDIT,
 				event.isPseudonymized(),
 				isEditAllowed,
-				EditPermissionType.WITHOUT_OWNERSHIP.equals(eventEditAllowed));
+				isDocumentDeleteAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 

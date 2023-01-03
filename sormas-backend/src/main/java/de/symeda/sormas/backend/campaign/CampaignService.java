@@ -19,7 +19,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class CampaignService extends AbstractCoreAdoService<Campaign> {
+public class CampaignService extends AbstractCoreAdoService<Campaign, CampaignJoins> {
 
 	public CampaignService() {
 		super(Campaign.class);
@@ -29,6 +29,11 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	@SuppressWarnings("rawtypes")
 	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
 		return createUserFilter(new CampaignQueryContext(cb, cq, from));
+	}
+
+	@Override
+	protected CampaignJoins toJoins(From<?, Campaign> adoPath) {
+		return new CampaignJoins(adoPath);
 	}
 
 	public Predicate createUserFilter(CampaignQueryContext queryContext) {

@@ -105,6 +105,7 @@ import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.caze.transformers.CaseListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.caze.transformers.CaseSelectionDtoResultTransformer;
@@ -179,7 +180,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
-public class CaseService extends AbstractCoreAdoService<Case> {
+public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 
@@ -229,6 +230,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private DocumentService documentService;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@EJB
+	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 	@EJB
 	private VaccinationService vaccinationService;
 	@EJB
@@ -931,7 +934,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				from,
 				ExternalShareInfo.CAZE,
-				(latestShareDate) -> createChangeDateFilter(cq, cb, from, joins, latestShareDate, true, true)));
+				(latestShareDate) -> createChangeDateFilter(cq, cb, joins, latestShareDate, true, true)));
 
 		return filter;
 	}
@@ -1016,7 +1019,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
-			.forEach(s -> surveillanceReportService.deletePermanent(s));
+			.forEach(s -> surveillanceReportFacade.deleteSurveillanceReport(s.getUuid()));
 
 		// Delete documents related to this case
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, caze.getUuid()).forEach(d -> documentService.markAsDeleted(d));
@@ -1062,7 +1065,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			ensurePersisted(c);
 		});
 
-		deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
@@ -1204,7 +1206,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date) {
-		return createChangeDateFilter(cb, casePath, date, false);
+		return createChangeDateFilter(cb, toJoins(casePath), date, false);
 	}
 
 	/**
@@ -1215,38 +1217,26 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 *            additional change dates filters for: sample, pathogenTests, patient and location
 	 * @return
 	 */
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date, boolean includeExtendedChangeDateFilters) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, CaseJoins joins, Timestamp date, boolean includeExtendedChangeDateFilters) {
 
-		return addChangeDates(new ChangeDateFilterBuilder(cb, date), casePath, includeExtendedChangeDateFilters).build();
-	}
-
-	private Predicate createChangeDateFilter(
-		CriteriaBuilder cb,
-		From<?, Case> casePath,
-		Timestamp date,
-		boolean includeExtendedChangeDateFilters,
-		String lastSynchronizedUuid) {
-
-		return addChangeDates(new ChangeDateFilterBuilder(cb, date, casePath, lastSynchronizedUuid), casePath, includeExtendedChangeDateFilters)
-			.build();
+		return addChangeDates(new ChangeDateFilterBuilder(cb, date), joins, includeExtendedChangeDateFilters).build();
 	}
 
 	private Predicate createChangeDateFilter(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
-		From<?, Case> casePath,
 		CaseJoins joins,
 		Expression<? extends Date> dateExpression,
 		boolean includeExtendedChangeDateFilters,
 		boolean includeRelevantVaccinations) {
 
-		ChangeDateFilterBuilder builder = addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters);
+		ChangeDateFilterBuilder builder = addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), joins, includeExtendedChangeDateFilters);
 
 		if (includeRelevantVaccinations) {
 			Join<Person, Immunization> immunizationJoin = joins.getPersonJoins().getImmunization();
 			Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(casePath, cq, cb, vaccinationsJoin)));
+			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(joins.getRoot(), cq, cb, vaccinationsJoin)));
 			// also consider the immunization of relevant vaccinations
 			builder.add(vaccinationsJoin, Vaccination.IMMUNIZATION);
 
@@ -1256,11 +1246,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Case> caseFrom, boolean includeExtendedChangeDateFilters) {
-		Join<Case, Hospitalization> hospitalization = caseFrom.join(Case.HOSPITALIZATION, JoinType.LEFT);
-		Join<Case, ClinicalCourse> clinicalCourse = caseFrom.join(Case.CLINICAL_COURSE, JoinType.LEFT);
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, CaseJoins joins, boolean includeExtendedChangeDateFilters) {
+		final From<?, Case> caseFrom = joins.getRoot();
+		Join<Case, Hospitalization> hospitalization = joins.getHospitalization();
+		Join<Case, ClinicalCourse> clinicalCourse = joins.getClinicalCourse();
 
-		builder = super.addChangeDates(builder, caseFrom, includeExtendedChangeDateFilters).add(caseFrom, Case.SYMPTOMS)
+		builder = super.addChangeDates(builder, joins, includeExtendedChangeDateFilters).add(caseFrom, Case.SYMPTOMS)
 			.add(hospitalization)
 			.add(hospitalization, Hospitalization.PREVIOUS_HOSPITALIZATIONS)
 			.add(caseFrom, Case.THERAPY)
@@ -1271,13 +1262,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.add(caseFrom, Case.SORMAS_TO_SORMAS_ORIGIN_INFO)
 			.add(caseFrom, Case.SORMAS_TO_SORMAS_SHARES);
 
-		builder = epiDataService.addChangeDates(builder, caseFrom.join(Case.EPI_DATA, JoinType.LEFT));
+		builder = epiDataService.addChangeDates(builder, joins.getEpiData());
 
 		if (includeExtendedChangeDateFilters) {
-			Join<Case, Sample> caseSampleJoin = caseFrom.join(Case.SAMPLES, JoinType.LEFT);
-			Join<Case, Person> casePersonJoin = caseFrom.join(Case.PERSON, JoinType.LEFT);
-			Join<Case, Visit> caseVisitJoin = caseFrom.join(Case.VISITS, JoinType.LEFT);
-			Join<Case, SurveillanceReport> caseSurveillanceReportJoin = caseFrom.join(Case.SURVEILLANCE_REPORTS, JoinType.LEFT);
+			Join<Case, Sample> caseSampleJoin = joins.getSamples();
+			Join<Case, Person> casePersonJoin = joins.getPerson();
+			Join<Case, Visit> caseVisitJoin = joins.getVisit();
+			Join<Case, SurveillanceReport> caseSurveillanceReportJoin = joins.getSurveillanceReportJoin();
 
 			builder = builder.add(caseSampleJoin)
 				.add(caseSampleJoin, Sample.PATHOGENTESTS)
@@ -1294,6 +1285,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@SuppressWarnings("rawtypes")
 	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> from) {
 		return createUserFilter(new CaseQueryContext(cb, cq, from));
+	}
+
+	@Override
+	protected CaseJoins toJoins(From<?, Case> adoPath) {
+		return new CaseJoins(adoPath);
 	}
 
 	public Predicate createUserFilter(CaseQueryContext caseQueryContext) {

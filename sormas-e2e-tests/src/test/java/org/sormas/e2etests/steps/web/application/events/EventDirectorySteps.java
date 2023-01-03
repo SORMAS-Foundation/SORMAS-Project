@@ -434,7 +434,11 @@ public class EventDirectorySteps implements En {
 
     When(
         "^I click on SAVE button in Link Event to group form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SAVE_BUTTON_IN_LINK_FORM);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM);
+        });
     When(
         "^I click on Linked Group Id on Edit Event Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
@@ -452,6 +456,8 @@ public class EventDirectorySteps implements En {
         "I apply {string} to combobox on Event Directory Page",
         (String eventParameter) -> {
           webDriverHelpers.selectFromCombobox(EVENT_DISPLAY_COMBOBOX, eventParameter);
+          TimeUnit.SECONDS.sleep(5); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     And(
         "I apply Date type filter to {string} on Event directory page",
@@ -815,10 +821,14 @@ public class EventDirectorySteps implements En {
     When(
         "I search for specific event by uuid in event directory",
         () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
-          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
+          webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);

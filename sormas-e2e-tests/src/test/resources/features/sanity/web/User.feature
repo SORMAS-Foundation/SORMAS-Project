@@ -334,3 +334,27 @@ Feature: Create user
     And I click on delete user role button
     And I confirm user role deletion
     And I click on User Management tab from User Roles Page
+
+  @#10422 @env_main
+  Scenario: Validate newly created user role is present in filtering options
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I check if there is any user with the "TestNatUser" role and change his role
+    And I click on User roles tab from User Management Page
+    And I check if the "TestNatUser" user role exist and delete it
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template
+    And I fill caption input as "TestNatUser" on Create New User Role form
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    And I click on User Management tab from User Roles Page
+    And I check that "TestNatUser" is available in the user role filter in User management Page
+    And I click on User roles tab from User Management Page
+    And I check if the "TestNatUser" user role exist and delete it
+
+  @#10420 @env_main
+  Scenario: Validate Export User Role file download functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on User roles tab from User Management Page
+    And I click on the Export User Roles Button and verify User role file is downloaded and contains data in the User Role Page
