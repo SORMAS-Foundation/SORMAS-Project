@@ -56,6 +56,7 @@ import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.tasks.TaskManagementPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
@@ -98,19 +99,16 @@ public class TaskManagementSteps implements En {
     When(
         "^I open last created task from Tasks Directory$",
         () -> {
-          By lastTaskEditButton =
-              By.xpath(
-                  String.format(
-                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnExecution()));
           webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               ASSIGNED_USER_FILTER_INPUT);
           String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
           webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
-          webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
-              lastTaskEditButton, TASK_STATUS_OPTIONS, 6);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.clickOnWebElementBySelector(
+              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     When(
         "^I filter out last created task from Tasks Directory$",
@@ -582,6 +580,14 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DELETE_BUTTON);
           Assert.assertFalse(
               webDriverHelpers.isElementVisibleWithTimeout(getCustomExportByID(export_id), 1));
+        });
+
+    And(
+        "I click on edit task icon of the {int} displayed task on Task Directory page",
+        (Integer taskNumber) -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              TaskManagementPage.getEditTaskButtonByNumber(taskNumber));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }
 
