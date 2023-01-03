@@ -74,7 +74,7 @@ class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetPointOfEntryByCaseUuid() {
+	void testGetPointOfEntryByCaseUuid() {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto personDto = creator.createPerson("John", "Doe");
@@ -96,7 +96,7 @@ class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testExistForCase() {
+	void testExistForCase() {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto personDto = creator.createPerson("John", "Doe");

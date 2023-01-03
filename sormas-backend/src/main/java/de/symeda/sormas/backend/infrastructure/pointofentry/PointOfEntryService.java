@@ -113,7 +113,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		cq.select(cb.literal(true));
 		cq.where(cb.and(cb.equal(root.get(Case.UUID), caseUuid), cb.isNotNull(pointOfEntryJoin.get(PointOfEntry.ID))));
 
-		return QueryHelper.getSingleResult(em, cq);
+		return Boolean.TRUE.equals(QueryHelper.getSingleResult(em, cq));
 	}
 
 	@Override
