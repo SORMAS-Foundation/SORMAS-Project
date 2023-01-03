@@ -36,8 +36,6 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -225,32 +223,14 @@ public class PointOfEntryFacadeEjb
 
 	@Override
 	public PointOfEntryDto getByCaseUuid(String caseUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PointOfEntry> cq = cb.createQuery(PointOfEntry.class);
-		Root<Case> root = cq.from(Case.class);
-		CaseJoins caseCaseJoins = new CaseJoins(root);
-		Join<Case, PointOfEntry> pointOfEntryJoin = caseCaseJoins.getPointOfEntry();
 
-		cq.select(pointOfEntryJoin);
-		cq.where(cb.equal(root.get(Case.UUID), caseUuid));
-		PointOfEntry pointOfEntry = QueryHelper.getSingleResult(em, cq);
-
-		return toPseudonymizedDto(pointOfEntry);
+		return toPseudonymizedDto(service.getByCaseUuid(caseUuid));
 	}
 
 	@Override
 	public boolean existsForCase(String caseUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Case> root = cq.from(Case.class);
-		CaseJoins caseCaseJoins = new CaseJoins(root);
-		Join<Case, PointOfEntry> pointOfEntryJoin = caseCaseJoins.getPointOfEntry();
 
-		cq.select(cb.literal(true));
-		cq.where(cb.and(cb.equal(root.get(Case.UUID), caseUuid), cb.isNotNull(pointOfEntryJoin.get(PointOfEntry.ID))));
-
-		Boolean exist = QueryHelper.getSingleResult(em, cq);
-		return Boolean.TRUE.equals(exist);
+		return service.existsForCase(caseUuid);
 	}
 
 	@Override

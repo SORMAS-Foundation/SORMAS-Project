@@ -1,14 +1,14 @@
 package de.symeda.sormas.api.caze.porthealthinfo;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -50,11 +50,8 @@ public class PortHealthInfoDto extends EntityDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String flightNumber;
-	@SensitiveData
 	private Date departureDateTime;
-	@SensitiveData
 	private Date arrivalDateTime;
-	@SensitiveData
 	private YesNoUnknown freeSeating;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -95,7 +92,6 @@ public class PortHealthInfoDto extends EntityDto {
 	private String lastPortOfCall;
 
 	// Ground Crossing
-	@SensitiveData
 	private ConveyanceType conveyanceType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
