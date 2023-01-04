@@ -720,6 +720,13 @@ public class CaseDirectorySteps implements En {
               NEW_CASE_DATE_FROM_COMBOBOX, formatter.format(LocalDate.now()));
         });
     And(
+        "I fill date from input to today on Merge Duplicate Cases page for DE specific",
+        () -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          webDriverHelpers.fillInWebElement(
+              NEW_CASE_DATE_FROM_COMBOBOX, formatter.format(LocalDate.now()));
+        });
+    And(
         "I click to CONFIRM FILTERS on Merge Duplicate Cases page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(By.id("actionConfirmFilters"));

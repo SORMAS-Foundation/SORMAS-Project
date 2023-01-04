@@ -122,7 +122,7 @@ Feature: Vaccination tests
     And I click on the More button on Case directory page
     Then I click on Merge Duplicates on Case directory page
     And I apply Report on onset date type filter to "Fallmeldedatum" on Merge duplicate cases page
-    And I fill date from input to today on Merge Duplicate Cases page
+    And I fill date from input to today on Merge Duplicate Cases page for DE specific
     And I click to CONFIRM FILTERS on Merge Duplicate Cases page
     And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
     Then I click to Confirm action in Merge Duplicates Cases popup
@@ -171,7 +171,7 @@ Feature: Vaccination tests
     And I click on the More button on Case directory page
     Then I click on Merge Duplicates on Case directory page
     And I apply Report on onset date type filter to "Fallmeldedatum" on Merge duplicate cases page
-    And I fill date from input to today on Merge Duplicate Cases page
+    And I fill date from input to today on Merge Duplicate Cases page for DE specific
     And I click to CONFIRM FILTERS on Merge Duplicate Cases page
     And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
     Then I click to Confirm action in Merge Duplicates Cases popup
@@ -219,7 +219,7 @@ Feature: Vaccination tests
     And I click on the More button on Case directory page
     Then I click on Merge Duplicates on Case directory page
     And I apply Report on onset date type filter to "Fallmeldedatum" on Merge duplicate cases page
-    And I fill date from input to today on Merge Duplicate Cases page
+    And I fill date from input to today on Merge Duplicate Cases page for DE specific
     And I click to CONFIRM FILTERS on Merge Duplicate Cases page
     And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
     Then I click to Confirm action in Merge Duplicates Cases popup
@@ -269,7 +269,7 @@ Feature: Vaccination tests
     And I click on the More button on Case directory page
     Then I click on Merge Duplicates on Case directory page
     And I apply Report on onset date type filter to "Fallmeldedatum" on Merge duplicate cases page
-    And I fill date from input to today on Merge Duplicate Cases page
+    And I fill date from input to today on Merge Duplicate Cases page for DE specific
     And I click to CONFIRM FILTERS on Merge Duplicate Cases page
     And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
     Then I click to Confirm action in Merge Duplicates Cases popup
@@ -319,7 +319,7 @@ Feature: Vaccination tests
     And I click on the More button on Case directory page
     Then I click on Merge Duplicates on Case directory page
     And I apply Report on onset date type filter to "Fallmeldedatum" on Merge duplicate cases page
-    And I fill date from input to today on Merge Duplicate Cases page
+    And I fill date from input to today on Merge Duplicate Cases page for DE specific
     And I click to CONFIRM FILTERS on Merge Duplicate Cases page
     And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
     Then I click to Confirm action in Merge Duplicates Cases popup
