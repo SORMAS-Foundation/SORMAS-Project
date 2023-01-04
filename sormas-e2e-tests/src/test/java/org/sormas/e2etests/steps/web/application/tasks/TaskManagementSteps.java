@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.tasks;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
@@ -254,7 +255,9 @@ public class TaskManagementSteps implements En {
     When(
         "^I select first (\\d+) results in grid in Task Directory$",
         (Integer number) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LEAVE_BULK_EDIT_MODE, 50);
           for (int i = 2; i <= number + 1; i++) {
             webDriverHelpers.waitUntilElementIsVisibleAndClickable(
                 getCheckboxByIndex(String.valueOf(i)));
