@@ -40,7 +40,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -79,16 +78,6 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		return filter;
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, PathogenTest> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, PathogenTest> from) {
-		return null;
-	}
-
 	public List<String> getAllActiveUuids(User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -100,13 +89,6 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
-		}
-
-		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = createLimitedChangeDateFilter(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-			}
 		}
 
 		cq.where(filter);
@@ -325,11 +307,6 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		Predicate filter = sampleService.createUserFilter(new SampleQueryContext(cb, cq, samplePath), null);
 
 		return filter;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, PathogenTest> from) {
-		return createUserFilter(cb, cq, from);
 	}
 
 	@Override

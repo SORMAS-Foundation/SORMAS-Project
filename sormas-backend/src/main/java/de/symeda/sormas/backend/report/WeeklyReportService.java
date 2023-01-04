@@ -62,16 +62,6 @@ public class WeeklyReportService extends AdoServiceWithUserFilterAndJurisdiction
 		super(WeeklyReport.class);
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, WeeklyReport> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, WeeklyReport> from) {
-		return null;
-	}
-
 	public long getNumberOfWeeklyReportsByFacility(Facility facility, EpiWeek epiWeek) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -152,11 +142,6 @@ public class WeeklyReportService extends AdoServiceWithUserFilterAndJurisdiction
 		}
 
 		return filter;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReport> from) {
-		return createUserFilter(cb, cq, from);
 	}
 
 	/**

@@ -45,21 +45,6 @@ public class SormasToSormasOriginInfoService extends AdoServiceWithUserFilterAnd
 		return null;
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, SormasToSormasOriginInfo> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, SormasToSormasOriginInfo> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, SormasToSormasOriginInfo> from) {
-		return null;
-	}
-
 	public SormasToSormasOriginInfo getByPerson(String personUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasOriginInfo> cq = cb.createQuery(SormasToSormasOriginInfo.class);

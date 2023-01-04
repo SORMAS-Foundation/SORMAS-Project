@@ -40,7 +40,6 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -106,16 +105,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return filter;
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, EventParticipant> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, EventParticipant> from) {
-		return null;
-	}
-
 	public List<String> getAllActiveUuids(User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -132,13 +121,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		if (user != null) {
 			Predicate userFilter = createUserFilter(eventParticipantQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
-		}
-
-		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = createLimitedChangeDateFilter(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-			}
 		}
 
 		cq.where(filter);
@@ -291,42 +273,21 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return createUserFilter(new EventParticipantQueryContext(cb, cq, from));
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> from) {
-		return createUserFilterForObsoleteSync(new EventParticipantQueryContext(cb, cq, from));
-	}
-
 	public Predicate createUserFilter(EventParticipantQueryContext eventParticipantQueryContext) {
 
 		final EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
-		return createUserFilter(eventParticipantQueryContext, eventUserFilterCriteria, false);
-	}
-
-	public Predicate createUserFilterForObsoleteSync(EventParticipantQueryContext eventParticipantQueryContext) {
-		final EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
-		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
-		eventUserFilterCriteria.forceRegionJurisdiction(true);
-
-		return createUserFilter(eventParticipantQueryContext, eventUserFilterCriteria, true);
+		return createUserFilter(eventParticipantQueryContext, eventUserFilterCriteria);
 	}
 
 	public Predicate createUserFilter(EventParticipantQueryContext epqc, EventUserFilterCriteria eventUserFilterCriteria) {
-		return createUserFilter(epqc, eventUserFilterCriteria, false);
-	}
-
-	public Predicate createUserFilter(EventParticipantQueryContext epqc, EventUserFilterCriteria eventUserFilterCriteria, boolean obsolete) {
 
 		final CriteriaBuilder cb = epqc.getCriteriaBuilder();
 		final CriteriaQuery<?> cq = epqc.getQuery();
 		final EventParticipantJoins joins = epqc.getJoins();
-		if (obsolete) {
-			return eventService.createUserFilterForObsoleteSync(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
-		} else {
-			return eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
-		}
+		return eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
 	}
 
 	public EventParticipant getByEventAndPerson(String eventUuid, String personUuid) {

@@ -47,21 +47,6 @@ public class ShareRequestInfoService extends AdoServiceWithUserFilterAndJurisdic
 		return null;
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ShareRequestInfo> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ShareRequestInfo> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, ShareRequestInfo> from) {
-		return null;
-	}
-
 	public Predicate buildCriteriaFilter(ShareRequestCriteria criteria, CriteriaBuilder cb, Root<ShareRequestInfo> root) {
 		Predicate filter = null;
 		if (criteria.getStatus() != null) {

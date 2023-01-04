@@ -79,16 +79,6 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 		super(Vaccination.class);
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Vaccination> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Vaccination> from) {
-		return null;
-	}
-
 	public Map<String, String> getLastVaccinationType() {
 		Map<String, String> result = new HashMap<>();
 		String queryString =
@@ -98,17 +88,13 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 		return result;
 	}
 
-	public List<Vaccination> getVaccinationsByCriteria(
-		VaccinationCriteria criteria,
-		Integer first,
-		Integer max,
-		List<SortProperty> sortProperties) {
+	public List<Vaccination> getVaccinationsByCriteria(VaccinationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Vaccination> cq = cb.createQuery(Vaccination.class);
 		final Root<Vaccination> root = cq.from(Vaccination.class);
-		
+
 		Predicate filter = buildCriteriaFilter(criteria, cb, root);
-		
+
 		cq.where(filter);
 
 		if (sortProperties != null && !sortProperties.isEmpty()) {
@@ -366,11 +352,6 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Vaccination> from) {
-		return null;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Vaccination> from) {
 		return null;
 	}
 

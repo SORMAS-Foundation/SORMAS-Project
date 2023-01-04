@@ -1,6 +1,10 @@
 package de.symeda.sormas.app.backend.feature;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -8,11 +12,7 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -86,6 +86,44 @@ public class FeatureConfigurationDao extends AbstractAdoDao<FeatureConfiguration
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform isFeatureEnabled");
 			throw new RuntimeException(e);
+		}
+	}
+
+	public Integer getIntegerPropertyValue(FeatureType featureType, FeatureTypeProperty property) {
+		if (!featureType.getSupportedProperties().contains(property)) {
+			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
+		}
+
+		if (!Integer.class.isAssignableFrom(property.getReturnType())) {
+			throw new IllegalArgumentException(
+				"Feature type property " + property + " does not have specified return type " + Integer.class.getSimpleName() + ".");
+		}
+
+		Map<FeatureTypeProperty, Object> propertyObjectMap;
+		try {
+			QueryBuilder builder = queryBuilder();
+			Where where = builder.where();
+			where.eq(FeatureConfiguration.FEATURE_TYPE, featureType);
+			builder.selectColumns(FeatureConfiguration.PROPERTIES);
+
+			FeatureConfiguration featureConfiguration = (FeatureConfiguration) builder.queryForFirst();
+
+			if (featureConfiguration != null && featureConfiguration.getPropertiesJson() != null) {
+				propertyObjectMap = featureConfiguration.getPropertiesMap();
+			} else {
+				return (Integer) featureType.getSupportedPropertyDefaults().get(property);
+			}
+
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getIntegerPropertyValue");
+			throw new RuntimeException(e);
+		}
+
+		boolean result;
+		if (propertyObjectMap != null && propertyObjectMap.containsKey(property)) {
+			return (Integer) propertyObjectMap.get(property);
+		} else {
+			return null;
 		}
 	}
 

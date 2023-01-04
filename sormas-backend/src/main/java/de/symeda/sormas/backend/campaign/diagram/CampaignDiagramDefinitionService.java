@@ -26,21 +26,6 @@ public class CampaignDiagramDefinitionService extends AdoServiceWithUserFilterAn
 		return null;
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignDiagramDefinition> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, CampaignDiagramDefinition> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, CampaignDiagramDefinition> from) {
-		return null;
-	}
-
 	public boolean diagramExists(@NotNull String diagramId) {
 		return exists((cb, root, cq) -> cb.equal(root.get(CampaignDiagramDefinition.DIAGRAM_ID), diagramId));
 	}

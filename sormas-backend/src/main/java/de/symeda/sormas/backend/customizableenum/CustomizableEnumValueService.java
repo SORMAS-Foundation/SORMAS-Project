@@ -38,18 +38,4 @@ public class CustomizableEnumValueService extends AdoServiceWithUserFilterAndJur
 		return null;
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, CustomizableEnumValue> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, CustomizableEnumValue> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, CustomizableEnumValue> from) {
-		return null;
-	}
 }

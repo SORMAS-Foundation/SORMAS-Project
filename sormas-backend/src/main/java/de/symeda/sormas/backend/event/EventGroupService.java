@@ -66,21 +66,6 @@ public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<E
 		return createUserFilter(cb, cq, eventGroupPath, null);
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventGroup> from) {
-		return createUserFilter(cb, cq, from);
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, EventGroup> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, EventGroup> from) {
-		return null;
-	}
-
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(
 		CriteriaBuilder cb,

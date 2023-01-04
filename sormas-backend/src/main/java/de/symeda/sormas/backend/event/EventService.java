@@ -40,13 +40,13 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.RequestContextHolder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -74,6 +74,7 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.LimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
@@ -106,7 +107,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class EventService extends AbstractCoreAdoService<Event> {
+public class EventService extends AbstractCoreAdoService<Event> implements LimitedChangeDateFilterProvider<Event> {
 
 	@EJB
 	private EventParticipantService eventParticipantService;
@@ -401,28 +402,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return createUserFilter(new EventQueryContext(cb, cq, from));
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> from) {
-		return createUserFilterForObsoleteSync(new EventQueryContext(cb, cq, from));
-	}
-
 	public Predicate createUserFilter(EventQueryContext queryContext) {
-		return createUserFilter(queryContext, null, false);
+		return createUserFilter(queryContext, null);
 	}
 
-	public Predicate createUserFilterForObsoleteSync(EventQueryContext queryContext) {
-		return createUserFilter(queryContext, null, true);
-	}
-
-	public Predicate createUserFilter(EventQueryContext queryContext, EventUserFilterCriteria eventUserFilterCriteria) {
-		return createUserFilter(queryContext, eventUserFilterCriteria, false);
-	}
-
-	public Predicate createUserFilterForObsoleteSync(EventQueryContext queryContext, EventUserFilterCriteria eventUserFilterCriteria) {
-		return createUserFilter(queryContext, eventUserFilterCriteria, true);
-	}
-
-	public Predicate createUserFilter(final EventQueryContext queryContext, final EventUserFilterCriteria eventUserFilterCriteria, final boolean obsolete) {
+	public Predicate createUserFilter(final EventQueryContext queryContext, final EventUserFilterCriteria eventUserFilterCriteria) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -504,17 +488,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		if (RequestContextHolder.isMobileSync()) {
-			if (obsolete) {
-				Predicate limitedChangeDateForObsoletePredicate =
-						CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilterForObsoleteEntities(cb, eventJoin));
-				if (limitedChangeDateForObsoletePredicate != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, limitedChangeDateForObsoletePredicate);
-				}
-			} else {
-				Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, eventJoin));
-				if (limitedChangeDatePredicate != null) {
-					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
-				}
+			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, eventJoin));
+			if (limitedChangeDatePredicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
 			}
 		}
 
@@ -1068,7 +1044,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
 		return inJurisdictionOrOwned(new EventQueryContext(cb, cq, from));
 	}
 

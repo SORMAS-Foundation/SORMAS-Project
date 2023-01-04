@@ -72,21 +72,6 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		return createUserFilter(new DirectoryImmunizationQueryContext(cb, cq, immunizationDirectoryPath));
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, DirectoryImmunization> from) {
-		return createUserFilter(cb, cq, from);
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, DirectoryImmunization> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, DirectoryImmunization> from) {
-		return null;
-	}
-
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);

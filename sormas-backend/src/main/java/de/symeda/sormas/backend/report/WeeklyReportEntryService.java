@@ -60,19 +60,4 @@ public class WeeklyReportEntryService extends AdoServiceWithUserFilterAndJurisdi
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReportEntry> from) {
 		return weeklyReportService.createUserFilter(cb, cq, from.join(WeeklyReportEntry.WEEKLY_REPORT, JoinType.LEFT));
 	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReportEntry> from) {
-		return createUserFilter(cb, cq, from);
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, WeeklyReportEntry> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, WeeklyReportEntry> from) {
-		return null;
-	}
 }

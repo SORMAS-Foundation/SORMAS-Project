@@ -57,16 +57,6 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		super(Outbreak.class);
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Outbreak> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Outbreak> from) {
-		return null;
-	}
-
 	public List<Outbreak> queryByCriteria(OutbreakCriteria criteria, User user, String orderProperty, boolean asc) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -167,11 +157,6 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Outbreak> from) {
 		// no filter by user needed
-		return null;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Outbreak> from) {
 		return null;
 	}
 

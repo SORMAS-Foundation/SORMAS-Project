@@ -26,24 +26,14 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> from) {
 		return inJurisdictionOrOwned(new TravelEntryQueryContext(cb, query, from));
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, TravelEntry> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, TravelEntry> from) {
-		return null;
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc) {
 		return inJurisdictionOrOwned(qc, userService.getCurrentUser());
 	}
-	
+
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
 		return TravelEntryJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
@@ -55,11 +45,6 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	@Override
 	@SuppressWarnings("rawtypes")
 	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> from) {
-		return createUserFilter(new TravelEntryQueryContext(cb, cq, from));
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> from) {
 		return createUserFilter(new TravelEntryQueryContext(cb, cq, from));
 	}
 

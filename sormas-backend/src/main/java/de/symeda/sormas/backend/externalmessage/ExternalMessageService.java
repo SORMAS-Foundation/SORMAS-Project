@@ -76,21 +76,6 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		return cb.and(cb.or(cb.isNull(sampleDeleted), cb.isFalse(sampleDeleted)), cb.or(cb.isNull(caseDeleted), cb.isFalse(caseDeleted)));
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ExternalMessage> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ExternalMessage> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, ExternalMessage> from) {
-		return null;
-	}
-
 	public Predicate buildCriteriaFilter(CriteriaBuilder cb, Root<ExternalMessage> labMessage, ExternalMessageCriteria criteria) {
 		Predicate filter = null;
 		if (criteria.getUuid() != null) {

@@ -14,7 +14,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.RequestContextHolder;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -70,16 +69,6 @@ public class TreatmentService extends AdoServiceWithUserFilterAndJurisdiction<Tr
 		return filter;
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Treatment> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Treatment> from) {
-		return null;
-	}
-
 	public List<String> getAllActiveUuids(User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -93,13 +82,6 @@ public class TreatmentService extends AdoServiceWithUserFilterAndJurisdiction<Tr
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
-		}
-
-		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = createLimitedChangeDateFilter(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-			}
 		}
 
 		cq.where(filter);
@@ -144,13 +126,7 @@ public class TreatmentService extends AdoServiceWithUserFilterAndJurisdiction<Tr
 		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Treatment> from) {
-		Join<Treatment, Therapy> therapy = from.join(Treatment.THERAPY, JoinType.LEFT);
-		return caseService.createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
-	}
-
-	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids){
+	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Treatment> criteriaUpdate = cb.createCriteriaUpdate(getElementClass());
 		Root<Treatment> from = criteriaUpdate.from(getElementClass());

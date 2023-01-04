@@ -41,7 +41,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpLogic;
@@ -86,16 +85,6 @@ public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit>
 	@Override
 	public boolean inJurisdictionOrOwned(Visit entity) {
 		return fulfillsCondition(entity, (cb, cq, from) -> inJurisdictionOrOwned(cb, cq, from));
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Visit> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Visit> from) {
-		return null;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -185,23 +174,12 @@ public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit>
 			if (since != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, from, since, lastSynchronizedUuid));
 			}
-			if (RequestContextHolder.isMobileSync()) {
-				Predicate predicate = createLimitedChangeDateFilter(cb, from);
-				if (predicate != null) {
-					filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-				}
-			}
 			return filter;
 		}, batchSize);
 	}
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
-		return null;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
 		return null;
 	}
 

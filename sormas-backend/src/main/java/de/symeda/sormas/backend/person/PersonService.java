@@ -272,11 +272,6 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		throw new UnsupportedOperationException("Should not be called -> obsolete!");
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
-		return createUserFilter(cb, cq, from);
-	}
-
 	public Predicate createUserFilter(PersonQueryContext queryContext, PersonCriteria personCriteria) {
 
 		/*
@@ -313,16 +308,6 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		}
 
 		return userFilter;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Person> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Person> from) {
-		return null;
 	}
 
 	/**
@@ -584,12 +569,6 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 			filter = and(cb, filter, dateFilter);
 		}
 
-		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = createLimitedChangeDateFilter(cb, personJoin);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-			}
-		}
 		if (filter != null) {
 			cq.where(filter);
 		}

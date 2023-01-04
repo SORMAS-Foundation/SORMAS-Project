@@ -67,6 +67,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
+import de.symeda.sormas.backend.common.LimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -89,7 +90,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 @Stateless
 @LocalBean
 public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
-	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext> {
+	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext>, LimitedChangeDateFilterProvider<Task> {
 
 	@EJB
 	private CaseService caseService;
@@ -158,11 +159,6 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		return createUserFilter(new TaskQueryContext(cb, cq, taskPath));
 	}
 
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> from) {
-		return createUserFilter(new TaskQueryContext(cb, cq, from), null, true);
-	}
-
 	public Predicate createUserFilter(TaskQueryContext taskQueryContext) {
 		return createUserFilter(taskQueryContext, null);
 	}
@@ -194,14 +190,6 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	}
 
 	public Predicate createUserFilter(TaskQueryContext taskQueryContext, TaskCriteria taskCriteria) {
-		return createUserFilter(taskQueryContext, taskCriteria, false);
-	}
-
-	public Predicate createUserFilterForObsolete(TaskQueryContext taskQueryContext, TaskCriteria taskCriteria) {
-		return createUserFilter(taskQueryContext, taskCriteria, true);
-	}
-
-	public Predicate createUserFilter(TaskQueryContext taskQueryContext, TaskCriteria taskCriteria, boolean obsolete) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -231,69 +219,34 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		if (obsolete)
-		{
-			Predicate caseFilter = hasContextOrNoContext(taskCriteria, TaskContext.CASE)
-					? caseService.createUserFilterForObsoleteSync(
-					new CaseQueryContext(cb, cq, joins.getCaseJoins()),
-					taskCriteria != null
-							? new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(taskCriteria.isExcludeLimitedSyncRestrictions())
-							: null)
-					: null;
-			if (caseFilter != null) {
-				filter = cb.or(filter, caseFilter);
-			}
-			Predicate contactFilter = hasContextOrNoContext(taskCriteria, TaskContext.CONTACT)
-					? contactService.createUserFilterForObsoleteSync(new ContactQueryContext(cb, cq, joins.getContactJoins()))
-					: null;
-			if (contactFilter != null) {
-				filter = cb.or(
-						filter,
-						CriteriaBuilderHelper
-								.or(cb, contactFilter, createAssigneeOrObserverFilter(cb, joins.getAssignee(), joins.getTaskObservers(), currentUser)));
-			}
-			Predicate eventFilter = hasContextOrNoContext(taskCriteria, TaskContext.EVENT)
-					? eventService.createUserFilterForObsoleteSync(new EventQueryContext(cb, cq, joins.getEventJoins()))
-					: null;
-			if (eventFilter != null) {
-				filter = cb.or(filter, eventFilter);
-			}
-		} else {
-			Predicate caseFilter = hasContextOrNoContext(taskCriteria, TaskContext.CASE)
-					? caseService.createUserFilter(
-					new CaseQueryContext(cb, cq, joins.getCaseJoins()),
-					taskCriteria != null
-							? new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(taskCriteria.isExcludeLimitedSyncRestrictions())
-							: null)
-					: null;
-			if (caseFilter != null) {
-				filter = cb.or(filter, caseFilter);
-			}
-			Predicate contactFilter = hasContextOrNoContext(taskCriteria, TaskContext.CONTACT)
-					? contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()))
-					: null;
-			if (contactFilter != null) {
-				filter = cb.or(
-						filter,
-						CriteriaBuilderHelper
-								.or(cb, contactFilter, createAssigneeOrObserverFilter(cb, joins.getAssignee(), joins.getTaskObservers(), currentUser)));
-			}
-			Predicate eventFilter = hasContextOrNoContext(taskCriteria, TaskContext.EVENT)
-					? eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()))
-					: null;
-			if (eventFilter != null) {
-				filter = cb.or(filter, eventFilter);
-			}
-			Predicate travelEntryFilter = hasContextOrNoContext(taskCriteria, TaskContext.TRAVEL_ENTRY)
-					? travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()))
-					: null;
-			if (travelEntryFilter != null) {
-				filter = cb.or(filter, travelEntryFilter);
-			}
+		Predicate caseFilter = hasContextOrNoContext(taskCriteria, TaskContext.CASE)
+			? caseService.createUserFilter(
+				new CaseQueryContext(cb, cq, joins.getCaseJoins()),
+				taskCriteria != null
+					? new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(taskCriteria.isExcludeLimitedSyncRestrictions())
+					: null)
+			: null;
+		if (caseFilter != null) {
+			filter = cb.or(filter, caseFilter);
+		}
+		Predicate contactFilter = hasContextOrNoContext(taskCriteria, TaskContext.CONTACT)
+			? contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()))
+			: null;
+		if (contactFilter != null) {
+			filter = cb.or(
+				filter,
+				CriteriaBuilderHelper
+					.or(cb, contactFilter, createAssigneeOrObserverFilter(cb, joins.getAssignee(), joins.getTaskObservers(), currentUser)));
+		}
+		Predicate eventFilter = hasContextOrNoContext(taskCriteria, TaskContext.EVENT)
+			? eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()))
+			: null;
+		if (eventFilter != null) {
+			filter = cb.or(filter, eventFilter);
 		}
 		Predicate travelEntryFilter = hasContextOrNoContext(taskCriteria, TaskContext.TRAVEL_ENTRY)
-				? travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()))
-				: null;
+			? travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()))
+			: null;
 		if (travelEntryFilter != null) {
 			filter = cb.or(filter, travelEntryFilter);
 		}
@@ -301,17 +254,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		filter = cb.or(filter, assigneeFilter);
 
 		if (RequestContextHolder.isMobileSync()) {
-			if (obsolete) {
-				Predicate limitedChangeDateForObsoletePredicate =
-						CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilterForObsoleteEntities(cb, taskQueryContext.getRoot()));
-				if (limitedChangeDateForObsoletePredicate != null) {
-					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDateForObsoletePredicate);
-				}
-			} else {
-				Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, taskQueryContext.getRoot()));
-				if (limitedChangeDatePredicate != null) {
-					filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
-				}
+			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, taskQueryContext.getRoot()));
+			if (limitedChangeDatePredicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
 			}
 		}
 
@@ -353,7 +298,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	@Override
 	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Task> from) {
 
-		return createUserFilterForObsolete(new TaskQueryContext(cb, cq, from), new TaskCriteria().excludeLimitedSyncRestrictions(true));
+		return createUserFilter(new TaskQueryContext(cb, cq, from), new TaskCriteria().excludeLimitedSyncRestrictions(true));
 	}
 
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {

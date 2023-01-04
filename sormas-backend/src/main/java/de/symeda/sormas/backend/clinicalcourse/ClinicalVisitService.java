@@ -15,7 +15,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
@@ -36,16 +35,6 @@ public class ClinicalVisitService extends AdoServiceWithUserFilterAndJurisdictio
 
 	public ClinicalVisitService() {
 		super(ClinicalVisit.class);
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ClinicalVisit> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, ClinicalVisit> from) {
-		return null;
 	}
 
 	public List<ClinicalVisit> findBy(ClinicalVisitCriteria criteria) {
@@ -100,13 +89,6 @@ public class ClinicalVisitService extends AdoServiceWithUserFilterAndJurisdictio
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
-		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = createLimitedChangeDateFilter(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-			}
-		}
-
 		cq.where(filter);
 		cq.select(from.get(ClinicalVisit.UUID));
 
@@ -145,13 +127,6 @@ public class ClinicalVisitService extends AdoServiceWithUserFilterAndJurisdictio
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT))));
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
-		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
-		return caseService
-			.createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, new CaseJoins(clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT))));
 	}
 
 	@Override

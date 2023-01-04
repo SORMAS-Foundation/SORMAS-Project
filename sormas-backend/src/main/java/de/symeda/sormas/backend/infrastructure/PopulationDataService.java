@@ -26,19 +26,20 @@ public class PopulationDataService extends AdoServiceWithUserFilterAndJurisdicti
 	public Predicate buildCriteriaFilter(PopulationDataCriteria criteria, CriteriaBuilder cb, From<PopulationData, PopulationData> from) {
 		Predicate filter = null;
 		if (criteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(PopulationData.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(PopulationData.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.isDistrictIsNull()) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(PopulationData.DISTRICT)));
 		} else if (criteria.getDistrict() != null) {
-			filter =
-					CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(PopulationData.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(PopulationData.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.isCommunityIsNull()) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(PopulationData.COMMUNITY)));
 		} else if (criteria.getCommunity() != null) {
-			filter =
-					CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(PopulationData.COMMUNITY, JoinType.LEFT).get(Community.UUID), criteria.getCommunity().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(PopulationData.COMMUNITY, JoinType.LEFT).get(Community.UUID), criteria.getCommunity().getUuid()));
 		}
 		if (criteria.isAgeGroupIsNull()) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(PopulationData.AGE_GROUP)));
@@ -57,21 +58,6 @@ public class PopulationDataService extends AdoServiceWithUserFilterAndJurisdicti
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PopulationData> from) {
-		return null;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, PopulationData> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, PopulationData> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, PopulationData> from) {
 		return null;
 	}
 }

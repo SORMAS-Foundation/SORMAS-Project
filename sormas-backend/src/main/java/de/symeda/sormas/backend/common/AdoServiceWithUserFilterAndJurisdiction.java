@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.common;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -13,13 +12,12 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.backend.user.User;
 
 /**
@@ -28,7 +26,8 @@ import de.symeda.sormas.backend.user.User;
  * @param <ADO>
  *            JPA entity managed by this Service.
  */
-public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
+public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends AbstractDomainObject> extends BaseAdoService<ADO>
+	implements EmptyLimitedChangeDateFilterProvider<ADO> {
 
 	public static final int NR_OF_LAST_PHONE_DIGITS_TO_SEARCH = 6;
 	@EJB
@@ -44,30 +43,22 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
-	public abstract Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
-
+	/**
+	 * Returns a filter that limits the data retrieved by a query to data that has been changed in the last X days,
+	 * where X is the max change date period specified by the limited synchronization feature type in the database.
+	 */
 	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-				.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-				&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Date maxChangeDate = DateHelper.subtractDays(new Date(), maxChangeDatePeriod);
-			Timestamp timestamp = Timestamp.from(DateHelper.getStartOfDay(maxChangeDate).toInstant());
-			return CriteriaBuilderHelper.and(cb, cb.greaterThanOrEqualTo(from.get(ADO.CHANGE_DATE), timestamp));
-		}
-		return null;
-	}
 
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, ADO> from) {
-		final Integer maxChangeDatePeriod = featureConfigurationFacade
-				.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, Integer.class);
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
-				&& maxChangeDatePeriod != null && maxChangeDatePeriod != -1) {
-			Date maxChangeDate = DateHelper.subtractDays(new Date(), maxChangeDatePeriod);
-			Timestamp timestamp = Timestamp.from(DateHelper.getStartOfDay(maxChangeDate).toInstant());
-			return CriteriaBuilderHelper.or(cb, cb.lessThan(from.get(ADO.CHANGE_DATE), timestamp));
+		if (hasLimitedChangeDateFilterImplementation()) {
+			return createLimitedChangeDateFilter(
+				cb,
+				from,
+				featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION),
+				featureConfigurationFacade
+					.getProperty(FeatureType.LIMITED_SYNCHRONIZATION, null, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, Integer.class));
+		} else {
+			return createEmptyLimitedChangeDateFilter();
 		}
-		return null;
 	}
 
 	/**
@@ -135,15 +126,6 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 
 		if (user != null) {
 			Predicate filter = createUserFilter(cb, cq, from);
-
-			if (RequestContextHolder.isMobileSync())
-			{
-				Predicate predicate = createLimitedChangeDateFilter(cb, from);
-				if (predicate != null) {
-					filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-				}
-			}
-
 			if (filter != null) {
 				cq.where(filter);
 			}
@@ -180,13 +162,6 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 
 		filter = CriteriaBuilderHelper.and(cb, filter, contentFilter);
 
-		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = createLimitedChangeDateFilterForObsoleteEntities(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, predicate);
-			}
-		}
-
 		cq.where(filter);
 		cq.select(from.get(AbstractDomainObject.UUID));
 
@@ -194,11 +169,7 @@ public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends Abstra
 	}
 
 	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<ADO> from) {
-		if (RequestContextHolder.isMobileSync()) {
-			return createUserFilterForObsoleteSync(cb, cq, from);
-		} else {
-			return createUserFilter(cb, cq, from);
-		}
+		return createUserFilter(cb, cq, from);
 	}
 
 	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<ADO> from) {

@@ -48,15 +48,14 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.LimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
@@ -80,7 +79,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @Stateless
 @LocalBean
-public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
+public class ImmunizationService extends AbstractCoreAdoService<Immunization> implements LimitedChangeDateFilterProvider<Immunization> {
 
 	@EJB
 	private PersonService personService;
@@ -90,8 +89,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
-	@EJB
-	protected FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public ImmunizationService() {
 		super(Immunization.class);
@@ -498,11 +495,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	@Override
 	@SuppressWarnings("rawtypes")
 	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> from) {
-		return createUserFilter(new ImmunizationQueryContext(cb, cq, from));
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> from) {
 		return createUserFilter(new ImmunizationQueryContext(cb, cq, from));
 	}
 

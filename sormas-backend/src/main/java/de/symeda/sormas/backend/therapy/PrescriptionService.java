@@ -13,7 +13,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.RequestContextHolder;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -70,17 +69,6 @@ public class PrescriptionService extends AdoServiceWithUserFilterAndJurisdiction
 		return filter;
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Prescription> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Prescription> from) {
-		return null;
-
-	}
-
 	public List<String> getAllActiveUuids(User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -94,13 +82,6 @@ public class PrescriptionService extends AdoServiceWithUserFilterAndJurisdiction
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
-		}
-
-		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = createLimitedChangeDateFilter(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-			}
 		}
 
 		cq.where(filter);
@@ -145,13 +126,6 @@ public class PrescriptionService extends AdoServiceWithUserFilterAndJurisdiction
 
 		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
 		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Prescription> from) {
-
-		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
-		return caseService.createUserFilterForObsoleteSync(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
 	}
 
 	@Override

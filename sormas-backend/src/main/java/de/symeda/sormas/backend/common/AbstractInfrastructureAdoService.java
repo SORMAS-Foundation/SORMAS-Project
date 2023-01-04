@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -31,21 +30,6 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 
 	public Predicate createBasicFilter(CriteriaBuilder cb, Root<ADO> root) {
 		return cb.isFalse(root.get(InfrastructureAdo.ARCHIVED));
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, ADO> from) {
-		return null;
 	}
 
 	public List<ADO> getAllActive() {

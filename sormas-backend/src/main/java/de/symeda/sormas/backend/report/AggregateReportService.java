@@ -36,16 +36,6 @@ public class AggregateReportService extends AdoServiceWithUserFilterAndJurisdict
 		super(AggregateReport.class);
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, AggregateReport> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, AggregateReport> from) {
-		return null;
-	}
-
 	public Predicate createCriteriaFilter(
 		AggregateReportCriteria criteria,
 		CriteriaBuilder cb,
@@ -117,11 +107,6 @@ public class AggregateReportService extends AdoServiceWithUserFilterAndJurisdict
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, AggregateReport> from) {
 		return createUserFilter(new AggregateReportQueryContext(cb, cq, from));
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, AggregateReport> from) {
-		return createUserFilter(cb, cq, from);
 	}
 
 	@SuppressWarnings("rawtypes")

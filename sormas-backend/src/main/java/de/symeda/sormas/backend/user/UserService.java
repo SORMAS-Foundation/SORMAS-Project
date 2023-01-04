@@ -100,16 +100,6 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		super(User.class);
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, User> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, User> from) {
-		return null;
-	}
-
 	public User createUser() {
 
 		User user = new User();
@@ -715,12 +705,6 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, User> from) {
 		// a user can read all other users
-		return null;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, User> from) {
-		// no filter by user needed
 		return null;
 	}
 

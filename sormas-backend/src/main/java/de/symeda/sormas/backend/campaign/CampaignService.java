@@ -31,23 +31,8 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return createUserFilter(new CampaignQueryContext(cb, cq, from));
 	}
 
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, Campaign> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, Campaign> from) {
-		return null;
-	}
-
 	public Predicate createUserFilter(CampaignQueryContext queryContext) {
 		// A user who has access to CampaignView can read all campaigns
-		return null;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
 		return null;
 	}
 
@@ -128,7 +113,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Campaign> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Campaign> from) {
 
 		// Currently no jurisdiction checks for campaigns
 		return cb.conjunction();

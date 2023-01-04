@@ -19,7 +19,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.sample.AdditionalTestCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
@@ -53,16 +52,6 @@ public class AdditionalTestService extends AdoServiceWithUserFilterAndJurisdicti
 		}
 
 		return filter;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, AdditionalTest> from) {
-		return null;
-	}
-
-	@Override
-	protected Predicate createLimitedChangeDateFilterForObsoleteEntities(CriteriaBuilder cb, From<?, AdditionalTest> from) {
-		return null;
 	}
 
 	public Predicate buildCriteriaFilter(AdditionalTestCriteria additionalTestCriteria, CriteriaBuilder cb, Root<AdditionalTest> from) {
@@ -151,13 +140,6 @@ public class AdditionalTestService extends AdoServiceWithUserFilterAndJurisdicti
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
-		if (RequestContextHolder.isMobileSync()) {
-			Predicate predicate = createLimitedChangeDateFilter(cb, from);
-			if (predicate != null) {
-				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
-			}
-		}
-
 		cq.where(filter);
 		cq.select(from.get(AdditionalTest.UUID));
 
@@ -184,7 +166,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilterAndJurisdicti
 	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
 	 * {@link EventParticipant#deleted}
 	 */
-	private Predicate createActiveSamplesFilter(CriteriaBuilder cb,  From<?, AdditionalTest> root) {
+	private Predicate createActiveSamplesFilter(CriteriaBuilder cb, From<?, AdditionalTest> root) {
 
 		Join<AdditionalTest, Sample> sample = root.join(AdditionalTest.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
@@ -207,11 +189,6 @@ public class AdditionalTestService extends AdoServiceWithUserFilterAndJurisdicti
 		Predicate filter = sampleService.createUserFilter(new SampleQueryContext(cb, cq, sampleJoin), null);
 
 		return filter;
-	}
-
-	@Override
-	public Predicate createUserFilterForObsoleteSync(CriteriaBuilder cb, CriteriaQuery cq, From<?, AdditionalTest> from) {
-		return createUserFilter(cb, cq, from);
 	}
 
 	/**
