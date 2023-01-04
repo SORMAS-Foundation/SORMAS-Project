@@ -20,7 +20,7 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class EventParticipantListComponent extends SideComponent {
 
-	public EventParticipantListComponent(PersonReferenceDto personReferenceDto, Consumer<Runnable> actionCallback) {
+	public EventParticipantListComponent(PersonReferenceDto personReferenceDto, String activeUuid, Consumer<Runnable> actionCallback) {
 		super(I18nProperties.getString(Strings.entityEvents), actionCallback);
 
 		addCreateButton(I18nProperties.getCaption(Captions.linkEvent), () -> {
@@ -36,6 +36,7 @@ public class EventParticipantListComponent extends SideComponent {
 		}, UserRight.EVENTPARTICIPANT_CREATE);
 
 		EventParticipantList eventParticipantList = new EventParticipantList(personReferenceDto);
+		eventParticipantList.setActiveUuid(activeUuid);
 		addComponent(eventParticipantList);
 		eventParticipantList.reload();
 

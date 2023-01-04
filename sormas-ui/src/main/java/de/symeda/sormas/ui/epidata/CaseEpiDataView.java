@@ -114,6 +114,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 				new SideComponentLayout(
 					new TravelEntryListComponent(
 						travelEntryListCriteria,
+						null,
 						this::showUnsavedChangesPopup,
 						isEditAllowed() && currentUser.hasUserRight(UserRight.CASE_EDIT))),
 				TRAVEL_ENTRIES_LOC);
