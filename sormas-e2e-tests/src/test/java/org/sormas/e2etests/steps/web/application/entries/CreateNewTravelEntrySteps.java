@@ -707,7 +707,7 @@ public class CreateNewTravelEntrySteps implements En {
           webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
               By.xpath(
                   "//div[text()='Automated test dummy description "
-                      + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-M-dd"))
+                      + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                       + "']"));
         });
 

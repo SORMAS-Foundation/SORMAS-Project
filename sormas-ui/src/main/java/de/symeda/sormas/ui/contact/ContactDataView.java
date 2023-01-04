@@ -235,7 +235,7 @@ public class ContactDataView extends AbstractContactView {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease()).build();
-				}, this::showUnsavedChangesPopup, isEditAllowed())), IMMUNIZATION_LOC);
+				}, null, this::showUnsavedChangesPopup, isEditAllowed())), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
@@ -249,7 +249,7 @@ public class ContactDataView extends AbstractContactView {
 						.contactReference(getContactRef())
 						.region(refreshedContact.getRegion() != null ? refreshedContact.getRegion() : refreshedCase.getResponsibleRegion())
 						.district(refreshedContact.getDistrict() != null ? refreshedContact.getDistrict() : refreshedCase.getResponsibleDistrict());
-				}, this::showUnsavedChangesPopup, isEditAllowed())), VACCINATIONS_LOC);
+				}, null, this::showUnsavedChangesPopup, isEditAllowed())), VACCINATIONS_LOC);
 			}
 		}
 
@@ -272,7 +272,7 @@ public class ContactDataView extends AbstractContactView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			boolean isDocumentDeleteAllowed =
-				EditPermissionType.ALLOWED.equals(contactEditAllowed) || EditPermissionType.DOCUMENTS_ONLY.equals(contactEditAllowed);
+				EditPermissionType.ALLOWED.equals(contactEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(contactEditAllowed);
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.CONTACT,
 				getContactRef(),
@@ -293,7 +293,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.disableWithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
-		} else if (contactEditAllowed.equals(EditPermissionType.DOCUMENTS_ONLY)) {
+		} else if (contactEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
 			layout.disableWithViewAllow();
 		}
 	}
