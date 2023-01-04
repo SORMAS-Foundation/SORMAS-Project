@@ -1630,8 +1630,8 @@ public class CaseController {
 			DeletableUtils.showDeleteWithReasonPopup(
 				String.format(
 					I18nProperties.getString(Strings.confirmationDeleteCases),
-					selectedRows.size(),
-					getDeleteConfirmationDetails(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()))),
+					selectedRows.size()) + "<br/>" +
+					getDeleteConfirmationDetails(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList())),
 				(deleteDetails) -> {
 					int countNotDeletedCases = 0;
 					StringBuilder nonDeletableCases = new StringBuilder();

@@ -1095,6 +1095,7 @@ public class CreateNewAggregateReportSteps implements En {
   }
 
   private void fillEpiWeek(String epiWeek) {
+    webDriverHelpers.clearComboboxInput(EPI_WEEK_INPUT_POPUP);
     webDriverHelpers.selectFromCombobox(EPI_WEEK_COMBOBOX_POPUP, epiWeek);
   }
 
