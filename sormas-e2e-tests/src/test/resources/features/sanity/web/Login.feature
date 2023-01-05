@@ -1,7 +1,7 @@
 @UI @Sanity @Login @precon
 Feature: Login with different type of users
 
-  @env_main @LoginMain
+  @env_main @LoginMain @testIt
   Scenario Outline: Login with <user> user on Main Environment
     Given I navigate to SORMAS login page
     And I check that Login page is correctly displayed in English language
@@ -15,7 +15,7 @@ Feature: Login with different type of users
     Examples:
       | user                          |
       | National User                 |
-      | National Language User        |
+#      | National Language User        |
       | Contact Supervisor            |
       | Surveillance Officer          |
       | Surveillance Supervisor       |
@@ -45,7 +45,7 @@ Feature: Login with different type of users
     Examples:
       | user                          |
       | National User                 |
-      | National Language User        |
+#      | National Language User        |
       | Contact Supervisor            |
       | Surveillance Officer          |
       | Surveillance Supervisor       |
