@@ -9,8 +9,9 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.utils.DateHelper;
 
-public interface LimitedChangeDateFilterProvider<ADO extends AbstractDomainObject> {
+public interface ImplementedLimitedChangeDateFilterProvider<ADO extends AbstractDomainObject> extends BaseLimitedChangeDateFilterProvider<ADO> {
 
+	@Override
 	default Predicate createLimitedChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, boolean featureEnabled, Integer maxChangeDatePeriod) {
 
 		if (featureEnabled && maxChangeDatePeriod != null && maxChangeDatePeriod >= 0) {
@@ -22,10 +23,7 @@ public interface LimitedChangeDateFilterProvider<ADO extends AbstractDomainObjec
 		return null;
 	}
 
-	default Predicate createEmptyLimitedChangeDateFilter() {
-		return null;
-	}
-
+	@Override
 	default boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
 	}

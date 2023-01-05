@@ -54,7 +54,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.LimitedChangeDateFilterProvider;
+import de.symeda.sormas.backend.common.ImplementedLimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -79,7 +79,8 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @Stateless
 @LocalBean
-public class ImmunizationService extends AbstractCoreAdoService<Immunization, ImmunizationJoins> implements LimitedChangeDateFilterProvider<Immunization> {
+public class ImmunizationService extends AbstractCoreAdoService<Immunization, ImmunizationJoins>
+	implements ImplementedLimitedChangeDateFilterProvider<Immunization> {
 
 	@EJB
 	private PersonService personService;
@@ -200,10 +201,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
-		T builder,
-		ImmunizationJoins joins,
-		boolean includeExtendedChangeDateFilters) {
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, ImmunizationJoins joins, boolean includeExtendedChangeDateFilters) {
 
 		From<?, Immunization> immunizationFrom = joins.getRoot();
 

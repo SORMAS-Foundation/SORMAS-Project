@@ -12256,4 +12256,9 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHI
 
 INSERT INTO schema_version (version_number, comment) VALUES (504, 'Add task archive user right #4060');
 
+-- 2023-01-05 Add max change date period property to limited synchronization feature #7305
+UPDATE featureconfiguration SET properties = properties::jsonb || json_build_object('MAX_CHANGE_DATE_PERIOD',-1)::jsonb WHERE featuretype = 'LIMITED_SYNCHRONIZATION';
+
+INSERT INTO schema_version (version_number, comment) VALUES (505, 'Add max change date period property to limited synchronization feature #7305');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

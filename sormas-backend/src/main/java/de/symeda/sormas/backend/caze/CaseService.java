@@ -118,7 +118,7 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
-import de.symeda.sormas.backend.common.LimitedChangeDateFilterProvider;
+import de.symeda.sormas.backend.common.ImplementedLimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -181,7 +181,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
-public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> implements LimitedChangeDateFilterProvider<Case> {
+public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> implements ImplementedLimitedChangeDateFilterProvider<Case> {
 
 	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 

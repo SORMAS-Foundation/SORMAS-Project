@@ -67,8 +67,8 @@ import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.ImplementedLimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
-import de.symeda.sormas.backend.common.LimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -91,7 +91,8 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 @Stateless
 @LocalBean
 public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
-	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext>, LimitedChangeDateFilterProvider<Task> {
+	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext>,
+	ImplementedLimitedChangeDateFilterProvider<Task> {
 
 	@EJB
 	private CaseService caseService;

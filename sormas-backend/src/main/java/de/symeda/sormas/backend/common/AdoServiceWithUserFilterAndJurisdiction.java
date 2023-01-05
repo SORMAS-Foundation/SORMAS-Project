@@ -27,7 +27,7 @@ import de.symeda.sormas.backend.user.User;
  *            JPA entity managed by this Service.
  */
 public abstract class AdoServiceWithUserFilterAndJurisdiction<ADO extends AbstractDomainObject> extends BaseAdoService<ADO>
-	implements EmptyLimitedChangeDateFilterProvider<ADO> {
+	implements BaseLimitedChangeDateFilterProvider<ADO> {
 
 	public static final int NR_OF_LAST_PHONE_DIGITS_TO_SEARCH = 6;
 	@EJB
