@@ -113,6 +113,7 @@ public class GridExportStreamResource {
 		private final Supplier<Set<?>> getSelectedRows;
 
 		GridExportStreamSource(Grid<?> grid, Supplier<Set<?>> getSelectedRows, List<String> excludePropertyIds, List<String> includePropertyIds) {
+			
 			this.grid = grid;
 			this.excludePropertyIds = excludePropertyIds;
 			this.includePropertyIds = includePropertyIds;

@@ -128,7 +128,7 @@
         <item name="android:paddingTop">@dimen/controlLabelMarginTop</item>
         <item name="android:paddingBottom">@dimen/controlLabelMarginBottom</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textAllCaps">true</item>
+        <!--item name="android:textAllCaps">true</item-->
         <item name="android:clickable">true</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>

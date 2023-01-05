@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -29,8 +30,7 @@ public interface CampaignFacade { //CampaignFacadeEjb
 	boolean isArchived(String uuid);
 	
 	boolean isClosedd(String uuid);
-	
-	List getUserAnalysis();
+
 
 	void deleteCampaign(String uuid);
 	

@@ -206,6 +206,14 @@ public class CampaignFormData extends PseudonymizableAdo {
         this.archived = archived;
     }
 
+//    public String getFormCategory() {
+//        if (campaignFormMeta != null) {
+//            return campaignFormMeta.getFormCategory();
+//        } else{
+//            return formCategory;
+//        }
+//    }
+
     public String getFormCategory() {
         return campaignFormMeta.getFormCategory();
     }

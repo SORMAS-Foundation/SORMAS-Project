@@ -309,6 +309,11 @@ public final class RetroProvider {
 		if (RetroProvider.isConnected()) {
 			throw new IllegalStateException("Connection already established.");
 		}
+//		if (connecting) {
+//			disconnect();
+//		//	throw new IllegalStateException("Already connecting.");
+//		}
+
 		if (connecting) {
 			throw new IllegalStateException("Already connecting.");
 		}

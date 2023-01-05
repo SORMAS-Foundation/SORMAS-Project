@@ -52,8 +52,11 @@ import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.report.CommunityUserReportModelDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -62,6 +65,8 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -384,7 +389,50 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 
 		return dto;
 	}
+	
+	
+	private CommunityUserReportModelDto toDtoList(Community entity) {
 
+		if (entity == null) {
+			return null;
+		}
+		
+		//userService = new UserService();
+		
+		CommunityUserReportModelDto dto = new CommunityUserReportModelDto();
+		DtoHelper.fillDto(dto, entity);
+
+		dto.setRegion(entity.getDistrict().getRegion().getName());
+		dto.setDistrict(entity.getDistrict().getName());
+		dto.setClusterNumber(entity.getClusterNumber().toString());
+		dto.setArea(entity.getDistrict().getRegion().getArea().getName());
+		List<String> usersd = new ArrayList<>();
+		Set<FormAccess> formss = new HashSet<>();
+		
+		for(User usr : userService.getAllByCommunity()) {
+			usr.getCommunity().stream().filter(ee -> ee.getUuid().equals(entity.getUuid())).findFirst().ifPresent(ef -> usersd.add(usr.getUserName()));
+			usr.getCommunity().stream().filter(ee -> ee.getUuid().equals(entity.getUuid())).findFirst().ifPresent(ef -> formss.addAll(usr.getFormAccess()));
+		}
+		
+		if(usersd.isEmpty()) {
+			dto.setMessage("ClusterNumber: "+ entity.getClusterNumber()+" is not assigned to any user");
+			dto.setUsername("no user");
+		}else if(usersd.size() > 1){
+			dto.setMessage("ClusterNumber: "+ entity.getClusterNumber()+" is assigned to more than one user");
+			dto.setUsername(usersd.toString());
+		} else {
+			dto.setMessage("Correctly assigned");
+			dto.setUsername(usersd.toString());
+		}
+		
+		dto.setFormAccess(formss);
+		
+		return dto;
+		
+	}
+
+	
+	
 	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
@@ -423,4 +471,30 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		
 		return dtos;
 	}
+
+	@Override
+	public List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence() {
+		
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Community> cq = cb.createQuery(Community.class);
+			Root<Community> community = cq.from(Community.class);
+			Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
+			Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+
+			Predicate filter = cb.equal(community.get(Community.ARCHIVED), false);
+			
+			cq.where(filter);
+			
+			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+			
+			cq.select(community);
+
+			//		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
+			//				community.get(Community.UUID), community.get(Community.NAME),
+			//				region.get(Region.UUID), region.get(Region.NAME),
+			//				district.get(District.UUID), district.get(District.NAME));
+
+			return QueryHelper.getResultList(em, cq, null, null, this::toDtoList);
+		}
+	
 }

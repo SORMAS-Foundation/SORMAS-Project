@@ -249,7 +249,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 					openLandingActivity();
 				}
 			} else {
-				System.out.println(">>>>>>>>>>>>>>>3>>>>>>>>>>>>>>>>"+ConfigProvider.getUser().getLanguage());
+			//	System.out.println(">>>>>>>>>>>>>>>3>>>>>>>>>>>>>>>>"+ConfigProvider.getUser().getLanguage());
 				if (progressDialog != null && progressDialog.isShowing()) {
 					progressDialog.dismiss();
 					progressDialog = null;

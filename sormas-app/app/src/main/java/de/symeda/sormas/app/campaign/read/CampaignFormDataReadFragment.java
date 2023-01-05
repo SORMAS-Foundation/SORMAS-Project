@@ -700,11 +700,11 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                     if (expressionString != null) {
                         try {
                             final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
-                            if (type == CampaignFormElementType.YES_NO) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
-                            } else {
+//                            if (type == CampaignFormElementType.YES_NO) {
+//                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
+//                            } else {
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, expressionValue.toString(), null, null, null);
-                            }
+                           // }
                         } catch (SpelEvaluationException e) {
                             Log.e("Error evaluating expression: " + expressionString, e.getMessage());
                         }

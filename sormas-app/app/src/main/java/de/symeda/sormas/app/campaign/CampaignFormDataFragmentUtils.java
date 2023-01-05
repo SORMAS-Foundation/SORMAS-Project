@@ -34,6 +34,7 @@ import org.springframework.expression.EvaluationException;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelEvaluationException;
+import org.springframework.expression.spel.SpelMessage;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -94,15 +95,27 @@ public class CampaignFormDataFragmentUtils {
                             System.out.println("+++++++++++111111+++++++++++++++++ " + valuex);
                             String valudex = valuex.equals("0") ? null : valuex.endsWith(".0") ? valuex.replace(".0", "") : valuex;
                             System.out.println(orginalValue+ "++++++++++++22222222++++++++++++++++ " + valudex);
-                            if (!orginalValue.toString().equals(valudex)){
-                                System.out.println(orginalValue+ "++++++++++++2222333++++++++++++++++ " + valudex);
-                                if(!(orginalValue.toString().isEmpty() && valudex == null) ){
-                             //   if (!valudex.isEmpty() && !orginalValue.toString().equals(valudex)) {
-                                    System.out.println("++++++++++++333333333++++++++++++++++ " + valudex);
-                                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString());
-                               // }
-                            }
-                            }
+                            if (orginalValue != null) {
+                                if (!orginalValue.toString().equals(valudex)) {
+                                    System.out.println(orginalValue + "++++++++++++2222333++++++++++++++++ " + valudex);
+                                    if (!(orginalValue.toString().isEmpty() && valudex == null)) {
+                                        //   if (!valudex.isEmpty() && !orginalValue.toString().equals(valudex)) {
+                                        System.out.println("++++++++++++333333333++++++++++++++++ " + valudex);
+                                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString());
+                                        // }
+                                    }
+                                }
+                            }else {
+                                if (valudex != null) {
+                                        //   if (!valudex.isEmpty() && !orginalValue.toString().equals(valudex)) {
+                                        System.out.println("++++++++++++333333333++++++++++++++++ " + valudex);
+                                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? null : expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString());
+                                        // }
+                                    }
+
+
+                                }
+
                         } else if (type == CampaignFormElementType.NUMBER) {
                             ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString().equals("0") ? "0" : (expressionValue.toString().endsWith(".0") ? expressionValue.toString().replace(".0", "") : expressionValue.toString()));
 
@@ -217,11 +230,16 @@ public class CampaignFormDataFragmentUtils {
         System.out.println("3333333333333333333");
         final Class<?> valueType = expression.getValueType(context);
         final Object valueFin = expression.getValue(context, valueType);
-        System.out.println(valueType+" )))))))))---- "+valueFin+" ------------- "+valueFin.getClass());
-        if(!valueFin.getClass().isAssignableFrom(valueType)){
-         //   if(valueFin instanceof valueType){}
-            System.out.println("EmptyStackException: >>>>>>-");
-            throw new EmptyStackException();
+      //  System.out.println(valueType+" )))))))))---- "+valueFin+" ------------- "+valueFin.getClass());
+        if(valueFin != null) {
+            if (!valueFin.getClass().isAssignableFrom(valueType)) {
+                //   if(valueFin instanceof valueType){}
+                System.out.println("EmptyStackException: >>>>>>-");
+                throw new EmptyStackException();
+            }
+        } else{
+            System.out.println("EmptyStackException: NEW >>>>>>-");
+            throw new SpelEvaluationException(SpelMessage.NOT_A_REAL);
         }
         return expression.getValue(context, valueType);
     }

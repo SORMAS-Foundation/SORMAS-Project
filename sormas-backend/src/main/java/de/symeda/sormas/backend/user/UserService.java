@@ -184,6 +184,22 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles),
 				this::createJurisdictionFilter);
 	}
+	
+	public List<User> getAllByCommunity() {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(User.class);
+		Root<User> root = cq.from(User.class);
+		cq.select(root);
+		
+		Predicate filter = cb.equal(root.get(User.ACTIVE), true);
+		
+		cq.where(filter);
+		
+		
+
+		return em.createQuery(cq).getResultList();
+	}
 
 	/**
 	 * @see #getReferenceList(List, List, List, boolean, boolean, boolean, List)

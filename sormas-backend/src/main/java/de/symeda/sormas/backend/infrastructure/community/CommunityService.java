@@ -78,6 +78,15 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public List<Community> getByAll() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
+		Root<Community> from = cq.from(getElementClass());
+
+		return em.createQuery(cq).getResultList();
+	}
 
 	public List<Community> getByExternalId(Long ext_id, District district_ext, boolean includeArchivedEntities) {
 

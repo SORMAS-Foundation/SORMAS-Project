@@ -54,6 +54,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.report.UserReportModelDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -146,7 +147,7 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 		
-
+	
 		UserDto target = new UserDto();
 		DtoHelper.fillDto(target, source);
 
@@ -163,7 +164,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity()))); 
-		//System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@ area: "+source.getArea()+" @@##########@@@@@@@@@@@@@@@"+source.getCommunity());
+		////System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@ area: "+source.getArea()+" @@##########@@@@@@@@@@@@@@@"+source.getCommunity());
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
@@ -171,6 +172,51 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
+
+		source.getUserRoles().size();
+		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		
+		source.getFormAccess().size();
+		target.setFormAccess(new HashSet<FormAccess>(source.getFormAccess()));
+		
+		
+		target.setUsertype(source.getUsertype());
+		return target;
+	}
+	
+	public static UserReportModelDto ListtoDto(User source) {
+
+		if (source == null) {
+			return null;
+		}
+		CommunityService comd = new CommunityService();
+		List<Community> comm = comd.getByAll();
+		return ListtoDtoCommunityReporter(source, comm);
+	}
+	
+	public static UserReportModelDto ListtoDtoCommunityReporter(User source, List<Community> comm) {
+		UserReportModelDto target = new UserReportModelDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setActive(source.isActive());
+		target.setUserName(source.getUserName());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setUserPosition(source.getUserPosition());
+		target.setUserOrganisation(source.getUserOrganisation());
+		target.setUserEmail(source.getUserEmail());
+		target.setPhone(source.getPhone());
+		target.setArea(AreaFacadeEjb.toReferenceDto(source.getArea()));
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity()))); 
+//		//System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@ area: "+ source.getArea() +" ##########@@@@@@@@@@@@@@@"+source.getCommunity());
+//		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
+//		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
+//		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+//		target.setLimitedDisease(source.getLimitedDisease());
+//		target.setLanguage(source.getLanguage());
+//		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		source.getUserRoles().size();
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
@@ -384,7 +430,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserDto> getAllAfter(Date date) {
-		return userService.getAllAfter(date, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userService.getAllAfter(date, null).stream().filter(ft -> userService.getCurrentUser().getUuid().equals(ft.getUuid())).map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -399,7 +445,7 @@ public class UserFacadeEjb implements UserFacade {
 			return Collections.emptyList();
 		}
 
-		return userService.getAllUuids();
+		return userService.getAllUuids().stream().filter(ftd -> userService.getCurrentUser().getUuid().equals(ftd)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -442,6 +488,101 @@ public class UserFacadeEjb implements UserFacade {
 
 		return toDto(user);
 	}
+	
+	@Override
+	public List<UserReportModelDto> getIndexListToDto(UserCriteria userCriteria, Integer first, Integer max,
+			List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(User.class);
+		Root<User> user = cq.from(User.class);
+		Join<User, Area> area = user.join(User.AREA, JoinType.LEFT);
+		Join<User, Region> region = user.join(User.REGION, JoinType.LEFT);
+		Join<User, District> district = user.join(User.DISTRICT, JoinType.LEFT);
+		Join<User, Location> address = user.join(User.ADDRESS, JoinType.LEFT);
+		Join<User, Facility> facility = user.join(User.HEALTH_FACILITY, JoinType.LEFT);
+
+		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
+		// but not those of others
+
+		Predicate filter = null;
+		
+		
+		if (userCriteria != null) {
+			//System.out.println("DEBUGGER: 45fffffffiiilibraryii = "+ userCriteria);
+			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+		}
+
+		if (filter != null) {
+			/*
+			 * No preemptive distinct because this does collide with
+			 * ORDER BY User.location.address (which is not part of the SELECT clause). UserType
+			 */
+			cq.where(filter);
+		}
+		
+		
+		
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case UserReportModelDto.UUID:
+				case UserReportModelDto.ACTIVE:
+				case UserReportModelDto.USER_NAME:
+				case UserReportModelDto.USER_EMAIL:
+					expression = user.get(sortProperty.propertyName);
+					break;
+				case UserReportModelDto.NAME:
+					expression = user.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = user.get(User.LAST_NAME);
+					break;
+				case UserReportModelDto.DISTRICT:
+					//System.out.println("DEBUGGER: 456ddddddt67ujhgtyuikjhu");
+					expression = district.get(District.NAME);
+					break;
+				case UserReportModelDto.AREA:
+					//System.out.println("DEBUGGER: 4567uhgDdertgiiiiiiiiiilibraryiiiiiiiiiiifcwerfd9876543hgtyuikjhu");
+					expression = area.get(Area.NAME);
+					break;
+				case UserReportModelDto.REGION:
+					//System.out.println("DEBUGGER: 4567uhgfrt678456789ppppailed to load the bootstrap javascrippppppppppppppp876543hgtyuikjhu");
+					expression = region.get(Region.NAME);
+					break;
+				case UserReportModelDto.USER_ORGANISATION:
+					expression = user.get(User.USER_ORGANISATION);
+					//System.out.println("DEBUGGER: 4567uhgfrt6oooooooooooooooooooooo78uijhgft67ujhgtyuikjhu");
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					//expression = user.get(User.USER_ORGANISATION);
+					break;
+				case UserReportModelDto.USER_POSITION:
+					expression = user.get(User.USER_POSITION);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					//expression = user.get(User.USER_POSITION);
+					
+					
+					//expression = facility.get(User.USER_POSITION);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(user.get(User.CHANGE_DATE)));
+		}
+
+		cq.select(user);
+		
+		//System.out.println("sdafasdeeeeeeeeeeeeeSQLeeeeeeeeeeeeeesdfhsdfg "+SQLExtractor.from(em.createQuery(cq)));
+		
+		//System.out.println();
+
+		return QueryHelper.getResultList(em, cq, first, max, UserFacadeEjb::ListtoDto);
+	}
+
 
 	@Override
 	public List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -462,7 +603,7 @@ public class UserFacadeEjb implements UserFacade {
 		
 		
 		if (userCriteria != null) {
-			System.out.println("DEBUGGER: 45fffffffiiilibraryii = "+ userCriteria);
+			//System.out.println("DEBUGGER: 45fffffffiiilibraryii = "+ userCriteria);
 			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
 		}
 
@@ -493,20 +634,20 @@ public class UserFacadeEjb implements UserFacade {
 					expression = user.get(User.LAST_NAME);
 					break;
 				case UserDto.DISTRICT:
-					System.out.println("DEBUGGER: 456ddddddt67ujhgtyuikjhu");
+					//System.out.println("DEBUGGER: 456ddddddt67ujhgtyuikjhu");
 					expression = district.get(District.NAME);
 					break;
 				case UserDto.AREA:
-					System.out.println("DEBUGGER: 4567uhgDdertgiiiiiiiiiilibraryiiiiiiiiiiifcwerfd9876543hgtyuikjhu");
+					//System.out.println("DEBUGGER: 4567uhgDdertgiiiiiiiiiilibraryiiiiiiiiiiifcwerfd9876543hgtyuikjhu");
 					expression = area.get(Area.NAME);
 					break;
 				case UserDto.REGION:
-					System.out.println("DEBUGGER: 4567uhgfrt678456789ppppailed to load the bootstrap javascrippppppppppppppp876543hgtyuikjhu");
+					//System.out.println("DEBUGGER: 4567uhgfrt678456789ppppailed to load the bootstrap javascrippppppppppppppp876543hgtyuikjhu");
 					expression = region.get(Region.NAME);
 					break;
 				case UserDto.USER_ORGANISATION:
 					expression = user.get(User.USER_ORGANISATION);
-					System.out.println("DEBUGGER: 4567uhgfrt6oooooooooooooooooooooo78uijhgft67ujhgtyuikjhu");
+					//System.out.println("DEBUGGER: 4567uhgfrt6oooooooooooooooooooooo78uijhgft67ujhgtyuikjhu");
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					//expression = user.get(User.USER_ORGANISATION);
 					break;
@@ -530,9 +671,9 @@ public class UserFacadeEjb implements UserFacade {
 
 		cq.select(user);
 		
-		System.out.println("sdafasdeeeeeeeeeeeeeSQLeeeeeeeeeeeeeesdfhsdfg "+SQLExtractor.from(em.createQuery(cq)));
+		//System.out.println("sdafasdeeeeeeeeeeeeeSQLeeeeeeeeeeeeeesdfhsdfg "+SQLExtractor.from(em.createQuery(cq)));
 		
-		System.out.println();
+		//System.out.println();
 
 		return QueryHelper.getResultList(em, cq, first, max, UserFacadeEjb::toDto);
 	}
@@ -560,7 +701,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	private User fromDto(UserDto source, boolean checkChangeDate) {
 		
-		System.out.println("77777");
+		//System.out.println("77777");
 
 		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 
@@ -578,7 +719,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
-	//	System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+source.getCommunity());
+	//	//System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+source.getCommunity());
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(userService.getByReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(facilityService.getByReferenceDto(source.getLaboratory()));
@@ -743,6 +884,7 @@ public class UserFacadeEjb implements UserFacade {
 		user.setPassword(PasswordHelper.encodePassword(pass, user.getSeed()));
 		return "Changed";
 	}
+
 
 	
 	

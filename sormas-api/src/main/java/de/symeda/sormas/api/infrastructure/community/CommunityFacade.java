@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.report.CommunityUserReportModelDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -38,6 +39,8 @@ public interface CommunityFacade extends GeoLocationFacade<CommunityDto, Communi
 	CommunityReferenceDto getCommunityReferenceByUuid(String uuid);
 
 	CommunityReferenceDto getCommunityReferenceById(long id);
+	
+	List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence();
 
 	// todo handle parent infra generically
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);

@@ -85,6 +85,7 @@ import de.symeda.sormas.ui.immunization.ImmunizationsView;
 import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.person.PersonsView;
+import de.symeda.sormas.ui.report.CampaignReportView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -224,6 +225,7 @@ public class MainScreen extends HorizontalLayout {
 		 menu.addView(CampaignReportView.class, CampaignReportView.VIEW_NAME,
 		 I18nProperties.getCaption("Report"),
 		 VaadinIcons.CHART);
+			
 		}
 
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {

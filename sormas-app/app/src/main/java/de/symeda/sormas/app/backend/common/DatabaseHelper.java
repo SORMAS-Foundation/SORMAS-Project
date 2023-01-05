@@ -182,7 +182,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 331;
+	public static final int DATABASE_VERSION = 335;
 
 	private static DatabaseHelper instance = null;
 
@@ -366,6 +366,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, CampaignFormData.class);
 			TableUtils.createTable(connectionSource, CampaignFormMeta.class);
 			TableUtils.createTable(connectionSource, LbdsSync.class);
+			updatePatchForTriggers();
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -2919,22 +2920,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				case 329:
 					currentVersion = 329;
-					getDao(CampaignFormData.class).executeRaw("DROP TRIGGER prevent_duplicate_on_admin_forms");
-					getDao(CampaignFormData.class).executeRaw(
-							"CREATE TRIGGER prevent_duplicate_on_admin_forms\n" +
-							"BEFORE INSERT ON campaignFormData\n" +
-							"WHEN EXISTS (SELECT *\n" +
-							"                 FROM rec_info\n" +
-							"                 WHERE campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory AND rec_info.formCategory = 'ADMIN'" +
-							"            )\n" +
-							"BEGIN\n" +
-							"SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
-							"END;");
+					getDao(CampaignFormData.class).executeRaw("DROP TRIGGER if exists prevent_duplicate_on_admin_forms");
+
 
 
 				case 330:
 					currentVersion = 330;
-					getDao(CampaignFormData.class).executeRaw("DROP TRIGGER prevent_duplicate_on_admin_forms");
+					getDao(CampaignFormData.class).executeRaw("DROP TRIGGER if exists prevent_duplicate_on_admin_forms");
 					getDao(CampaignFormData.class).executeRaw(
 							"CREATE TRIGGER prevent_duplicate_on_admin_forms\n" +
 									"BEFORE INSERT ON campaignFormData\n" +
@@ -2943,6 +2935,40 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 									"                 WHERE rec_info.campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory AND rec_info.formCategory = 'ADMIN'" +
 									"            )\n" +
 									"BEGIN\n" +
+									"SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
+									"END;");
+
+
+
+				case 331:
+
+				case 332:
+					currentVersion = 332;
+					getDao(CampaignFormData.class).executeRaw("DROP TRIGGER if exists prevent_duplicate_onupdatetable");
+
+				case 333:
+					currentVersion = 333;
+					getDao(CampaignFormData.class).executeRaw("DELETE FROM campaignFormData WHERE ID NOT IN (\n" +
+							"    SELECT MAX(ID) AS MaxRecordID \n" +
+							"    FROM campaignFormData \n" +
+							"    WHERE formCategory = \"ADMIN\"\n" +
+							"    GROUP BY campaignFormMeta_id, campaign_id, community_id\n" +
+							"    ) \n" +
+							"    AND formCategory = \"ADMIN\"");
+
+
+				case 334:
+					currentVersion = 334;
+					getDao(CampaignFormData.class).executeRaw("DROP TRIGGER if exists prevent_duplicate_on_admin_forms");
+					getDao(CampaignFormData.class).executeRaw(
+							"CREATE TRIGGER prevent_duplicate_on_admin_forms\n" +
+									"BEFORE INSERT ON campaignFormData\n" +
+									"WHEN EXISTS (SELECT *\n" +
+									"                 FROM campaignFormData rec_info\n" +
+									"                 WHERE rec_info.campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory AND rec_info.formCategory = 'ADMIN'" +
+									"            )\n" +
+									"BEGIN\n" +
+									"UPDATE campaignFormData SET formValues = NEW.formValues, uuid = NEW.uuid;\n" +
 									"SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
 									"END;");
 
@@ -2959,7 +2985,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			throw new RuntimeException("Database upgrade failed for version " + currentVersion + ": " + ex.getMessage(), ex);
 		}
 	}
-
+	private void updatePatchForTriggers() throws SQLException {
+		getDao(CampaignFormData.class).executeRaw(
+				"CREATE TRIGGER prevent_duplicate_on_admin_forms\n" +
+						"BEFORE INSERT ON campaignFormData\n" +
+						"WHEN EXISTS (SELECT *\n" +
+						"                 FROM campaignFormData rec_info\n" +
+						"                 WHERE rec_info.campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory AND rec_info.formCategory = 'ADMIN'" +
+						"            )\n" +
+						"BEGIN\n" +
+						"UPDATE campaignFormData SET formValues = NEW.formValues, uuid = NEW.uuid;\n" +
+						"SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
+						"END;");
+//		getDao(CampaignFormData.class).executeRaw(
+//				"CREATE TRIGGER prevent_duplicate_onupdatetable\n" +
+//						"BEFORE UPDATE ON campaignFormData\n" +
+//						"WHEN EXISTS (SELECT *\n" +
+//						"                 FROM campaignFormData rec_info\n" +
+//						"                 WHERE rec_info.campaign_id=NEW.campaign_id AND rec_info.campaignFormMeta_id=NEW.campaignFormMeta_id AND rec_info.community_id = NEW.community_id AND rec_info.formCategory = NEW.formCategory AND rec_info.formCategory = 'ADMIN'" +
+//						"            )\n" +
+//						"BEGIN\n" +
+//						"SELECT RAISE (ABORT, \"We cannot accept another form on this Cluster, Please edit the previous data submitted\");\n" +
+//						"END;");
+	}
 	private void formatRawResultString(Object[] result, int index, boolean doNullCheck) {
 		if (doNullCheck && DataHelper.isNullOrEmpty((String) result[index])) {
 			Array.set(result, index, null);
@@ -3104,7 +3152,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	private void cloneHealthConditions(Object healthConditionsId) throws SQLException {
+
+
+		private void cloneHealthConditions(Object healthConditionsId) throws SQLException {
 		getDao(HealthConditions.class)
 				.executeRaw("CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = " + healthConditionsId + ";");
 		getDao(HealthConditions.class).executeRaw("UPDATE tmp SET id = NULL, uuid = '" + DataHelper.createUuid() + "';");

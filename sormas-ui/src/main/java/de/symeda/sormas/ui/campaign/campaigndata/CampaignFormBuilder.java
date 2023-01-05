@@ -711,11 +711,20 @@ public class CampaignFormBuilder {
 				}
 			}
 			;
+			
+			if (defaultvalue != null) {
+				String dxz = options.get(defaultvalue);
+				((ComboBox) field).select(defaultvalue);
+			}
+			;
+			
+			
 			if (value != null) {
 				String dxz = options.get(value);
 				((ComboBox) field).select(value);
 			}
 			;
+			
 
 			break;
 		default:
