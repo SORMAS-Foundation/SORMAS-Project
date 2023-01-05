@@ -26,6 +26,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.MappingException;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -158,6 +159,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	private Disease disease;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
+	@MappingException(reason = MappingException.FILLED_FROM_OTHER_ENTITY)
 	private DiseaseVariant diseaseVariant;
 
 	@Required

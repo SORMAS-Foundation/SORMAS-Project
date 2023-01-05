@@ -16,11 +16,7 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -35,7 +31,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -145,28 +140,13 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<EventParticipantIndexDto, EventParticipantCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getEventParticipantFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getEventParticipantFacade().count(query.getFilter().orElse(null)));
 
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getEventParticipantFacade()::getIndexList, FacadeProvider.getEventParticipantFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<EventParticipantIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
+
+		setEagerDataProvider(FacadeProvider.getEventParticipantFacade()::getIndexList);
 	}
 
 	public void reload() {

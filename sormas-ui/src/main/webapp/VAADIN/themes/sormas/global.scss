@@ -331,6 +331,11 @@
     padding: 12px 20px;
     margin-bottom: 24px;
   }
+  .active-side-component-element {
+    background-color: $v-focus-color;
+    border-radius: 6px;
+    padding: 6px;
+  }
 
   .spacing-small {
   	.v-spacing {

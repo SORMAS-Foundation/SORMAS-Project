@@ -90,8 +90,7 @@ public class SampleGridComponent extends VerticalLayout {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createShipmentFilterBar());
 		gridLayout.addComponent(grid);
-		grid.setDataProviderListener(e -> updateStatusButtons());
-		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+		grid.addDataSizeChangeListener(e -> updateStatusButtons());
 
 		styleGridLayout(gridLayout);
 		gridLayout.setMargin(true);
@@ -312,7 +311,7 @@ public class SampleGridComponent extends VerticalLayout {
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 

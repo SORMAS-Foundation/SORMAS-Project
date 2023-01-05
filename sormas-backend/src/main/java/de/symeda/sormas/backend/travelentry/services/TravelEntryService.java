@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -15,8 +17,10 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -76,33 +80,78 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		List<Long> indexListIds = getIndexListIds(criteria, first, max, sortProperties);
+
+		List<TravelEntryIndexDto> travelEntries = new ArrayList<>();
+
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			final CriteriaBuilder cb = em.getCriteriaBuilder();
+			final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
+
+			TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
+			TravelEntryJoins joins = travelEntryQueryContext.getJoins();
+
+			final Join<TravelEntry, Person> person = joins.getPerson();
+			final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
+
+			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+			final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+
+			cq.multiselect(
+				travelEntry.get(TravelEntry.UUID),
+				travelEntry.get(TravelEntry.EXTERNAL_ID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				district.get(District.NAME),
+				pointOfEntry.get(PointOfEntry.NAME),
+				travelEntry.get(TravelEntry.POINT_OF_ENTRY_DETAILS),
+				travelEntry.get(TravelEntry.RECOVERED),
+				travelEntry.get(TravelEntry.VACCINATED),
+				travelEntry.get(TravelEntry.TESTED_NEGATIVE),
+				travelEntry.get(TravelEntry.QUARANTINE_TO),
+				JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
+				travelEntry.get(TravelEntry.CHANGE_DATE));
+
+			Predicate filter = travelEntry.get(TravelEntry.ID).in(batchedIds);
+
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(travelEntryQueryContext));
+			if (criteria != null) {
+				final Predicate criteriaFilter = buildCriteriaFilter(criteria, travelEntryQueryContext);
+				filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			}
+
+			if (filter != null) {
+				cq.where(filter);
+			}
+
+			sortBy(sortProperties, travelEntryQueryContext);
+			cq.distinct(true);
+
+			travelEntries.addAll(
+				createQuery(cq, null, null).unwrap(org.hibernate.query.Query.class)
+					.setResultTransformer(new TravelEntryIndexDtoResultTransformer())
+					.getResultList());
+		});
+
+		return travelEntries;
+	}
+
+	private List<Long> getIndexListIds(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
 		TravelEntryJoins joins = travelEntryQueryContext.getJoins();
 
-		final Join<TravelEntry, Person> person = joins.getPerson();
-		final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.add(travelEntry.get(Person.ID));
+		selections.addAll(sortBy(sortProperties, travelEntryQueryContext));
 
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-
-		cq.multiselect(
-			travelEntry.get(TravelEntry.UUID),
-			travelEntry.get(TravelEntry.EXTERNAL_ID),
-			person.get(Person.FIRST_NAME),
-			person.get(Person.LAST_NAME),
-			district.get(District.NAME),
-			pointOfEntry.get(PointOfEntry.NAME),
-			travelEntry.get(TravelEntry.POINT_OF_ENTRY_DETAILS),
-			travelEntry.get(TravelEntry.RECOVERED),
-			travelEntry.get(TravelEntry.VACCINATED),
-			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
-			travelEntry.get(TravelEntry.QUARANTINE_TO),
-			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
-			travelEntry.get(TravelEntry.CHANGE_DATE));
+		cq.multiselect(selections);
 
 		Predicate filter = createUserFilter(travelEntryQueryContext);
 		if (criteria != null) {
@@ -113,6 +162,21 @@ public class TravelEntryService extends BaseTravelEntryService {
 		if (filter != null) {
 			cq.where(filter);
 		}
+		cq.distinct(true);
+
+		List<Tuple> travelEntries = QueryHelper.getResultList(em, cq, first, max);
+		return travelEntries.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, TravelEntryQueryContext travelEntryQueryContext) {
+
+		List<Selection<?>> selections = new ArrayList<>();
+		CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
+		CriteriaQuery<?> cq = travelEntryQueryContext.getQuery();
+
+		Join<TravelEntry, Person> person = travelEntryQueryContext.getJoins().getPerson();
+		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 
 		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -125,7 +189,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 				case TravelEntryIndexDto.VACCINATED:
 				case TravelEntryIndexDto.TESTED_NEGATIVE:
 				case TravelEntryIndexDto.QUARANTINE_TO:
-					expression = travelEntry.get(sortProperty.propertyName);
+					expression = travelEntryQueryContext.getJoins().getRoot().get(sortProperty.propertyName);
 					break;
 				case TravelEntryIndexDto.PERSON_FIRST_NAME:
 					expression = person.get(Person.FIRST_NAME);
@@ -134,26 +198,24 @@ public class TravelEntryService extends BaseTravelEntryService {
 					expression = person.get(Person.LAST_NAME);
 					break;
 				case TravelEntryIndexDto.HOME_DISTRICT_NAME:
-					expression = district.get(District.NAME);
+					expression = location.get(District.NAME);
 					break;
 				case TravelEntryIndexDto.POINT_OF_ENTRY_NAME:
-					expression = pointOfEntry.get(PointOfEntry.NAME);
+					expression = travelEntryQueryContext.getJoins().getPointOfEntry().get(PointOfEntry.NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				selections.add(expression);
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(travelEntry.get(TravelEntry.CHANGE_DATE)));
+			Path<Object> changeDate = travelEntryQueryContext.getJoins().getRoot().get(TravelEntry.CHANGE_DATE);
+			cq.orderBy(cb.desc(changeDate));
+			selections.add(changeDate);
 		}
-
-		cq.distinct(true);
-
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new TravelEntryIndexDtoResultTransformer())
-			.getResultList();
+		return selections;
 	}
 
 	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter) {

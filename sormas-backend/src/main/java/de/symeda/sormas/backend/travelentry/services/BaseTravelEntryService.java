@@ -11,12 +11,13 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> {
+public abstract class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry, TravelEntryJoins> {
 
 	@EJB
 	protected UserService userService;
@@ -62,6 +63,11 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	@Override
+	protected TravelEntryJoins toJoins(From<?, TravelEntry> adoPath) {
+		return new TravelEntryJoins(adoPath);
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> from) {
 
@@ -74,11 +80,8 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
-		T builder,
-		From<?, TravelEntry> travelEntryFrom,
-		boolean includeExtendedChangeDateFilters) {
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, TravelEntryJoins joins, boolean includeExtendedChangeDateFilters) {
 
-		return super.addChangeDates(builder, travelEntryFrom, includeExtendedChangeDateFilters);
+		return super.addChangeDates(builder, joins, includeExtendedChangeDateFilters);
 	}
 }

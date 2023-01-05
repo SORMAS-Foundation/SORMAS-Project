@@ -417,6 +417,19 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(POPUPS_INPUTS, 5);
         });
     When(
+        "Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory",
+        () -> {
+          String sampleFieldValue =
+              webDriverHelpers.getValueFromWebElement(QUARANTINE_ORDER_POPUP_SAMPLE_FIELD);
+          String sampleDate =
+              CreateNewSampleSteps.sample
+                  .getDateOfCollection()
+                  .format(DateTimeFormatter.ofPattern("M/dd/yyyy"));
+          Assert.assertTrue(
+              sampleFieldValue.startsWith(sampleDate),
+              "Sample field date doesn't start with " + sampleDate);
+        });
+    When(
         "I select {string} Quarantine Order in Create Quarantine Order form in Case directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
@@ -1993,7 +2006,7 @@ public class EditCaseSteps implements En {
               true,
               "Facility type combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
-              webDriverHelpers.isElementEnabled(EditEventPage.SAVE_BUTTON),
+              webDriverHelpers.isElementEnabled(EditEventPage.EDIT_EVENT_PAGE_SAVE_BUTTON),
               true,
               "Save button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(

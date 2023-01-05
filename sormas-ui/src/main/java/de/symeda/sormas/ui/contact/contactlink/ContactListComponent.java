@@ -19,7 +19,7 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class ContactListComponent extends SideComponent {
 
-	public ContactListComponent(PersonReferenceDto personReferenceDto, Consumer<Runnable> actionCallback) {
+	public ContactListComponent(PersonReferenceDto personReferenceDto, String activeUuid, Consumer<Runnable> actionCallback) {
 		super(I18nProperties.getString(Strings.entityContacts), actionCallback);
 
 		addCreateButton(I18nProperties.getCaption(Captions.contactNewContact), () -> {
@@ -27,6 +27,7 @@ public class ContactListComponent extends SideComponent {
 		}, UserRight.CONTACT_CREATE);
 
 		ContactList contactList = new ContactList(personReferenceDto);
+		contactList.setActiveUuid(activeUuid);
 		addComponent(contactList);
 		contactList.reload();
 
