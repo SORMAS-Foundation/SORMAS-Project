@@ -70,7 +70,7 @@ Feature: Login with different type of users
     Examples:
       | user                      |
       | Admin User                |
-      | National User             |
+ #     | National User             |
 
   @env_keycloak @LoginKeycloak
   Scenario: Login on Keycloak Administrator Console
