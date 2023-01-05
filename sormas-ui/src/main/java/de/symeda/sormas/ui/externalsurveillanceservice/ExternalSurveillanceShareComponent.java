@@ -24,7 +24,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -58,11 +57,15 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 		setSpacing(false);
 		addStyleNames(CssStyles.SIDE_COMPONENT);
 
-		String caseUuid = null;
 		if (shareInfoCriteria.getCaze() != null) {
-			caseUuid = shareInfoCriteria.getCaze().getUuid();
+			String caseUuid = shareInfoCriteria.getCaze().getUuid();
+			addComponent(createHeader(entityString, sendHandler, deleteHandler, editComponent, caseUuid, null));
 		}
-		addComponent(createHeader(entityString, sendHandler, deleteHandler, editComponent, caseUuid));
+
+		if (shareInfoCriteria.getEvent() != null) {
+			String eventUuid = shareInfoCriteria.getEvent().getUuid();
+			addComponent(createHeader(entityString, sendHandler, deleteHandler, editComponent, null, eventUuid));
+		}
 		addComponent(createShareInfoList(shareInfoCriteria));
 	}
 
@@ -71,7 +74,8 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 		Runnable sendHandler,
 		Runnable deleteHandler,
 		DirtyStateComponent editComponent,
-		String caseUuid) {
+		String caseUuid,
+		String eventUuid) {
 		Label header = new Label(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_title));
 		header.addStyleName(CssStyles.H3);
 
@@ -89,24 +93,39 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 			headerLayout.setExpandRatio(sendButton, 1);
 			headerLayout.setComponentAlignment(sendButton, Alignment.MIDDLE_RIGHT);
 		}
-		if (deleteHandler != null && isVisibleDeleteButton(caseUuid)) {
-			Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
-			headerLayout.addComponent(deleteButton);
-			headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
-			headerLayout.setWidth(100, Unit.PERCENTAGE);
+
+		if (caseUuid != null) {
+			if (deleteHandler != null && isVisibleDeleteButtonForCase(caseUuid)) {
+				addDeleteButtonToLayout(deleteHandler, headerLayout);
+			}
+		}
+
+		if (eventUuid != null) {
+			if (deleteHandler != null && isVisibleDeleteButtonForEvent(eventUuid)) {
+				addDeleteButtonToLayout(deleteHandler, headerLayout);
+			}
 		}
 
 		return headerLayout;
 	}
 
-	private boolean isVisibleDeleteButton(String caseUuid) {
-		if (caseUuid != null) {
-			CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-			boolean isSharedCase = FacadeProvider.getExternalShareInfoFacade().isSharedCase(caseUuid);
+	private void addDeleteButtonToLayout(Runnable deleteHandler, HorizontalLayout headerLayout) {
+		Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
+		headerLayout.addComponent(deleteButton);
+		headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
+		headerLayout.setWidth(100, Unit.PERCENTAGE);
+	}
 
-			if (caseDataDto.isDontShareWithReportingTool() && !isSharedCase) {
-				return false;
-			}
+	private boolean isVisibleDeleteButtonForCase(String caseUuid) {
+		if (caseUuid != null) {
+			return FacadeProvider.getExternalShareInfoFacade().isSharedCase(caseUuid);
+		}
+		return true;
+	}
+
+	private boolean isVisibleDeleteButtonForEvent(String eventUuid) {
+		if (eventUuid != null) {
+			return FacadeProvider.getExternalShareInfoFacade().isSharedEvent(eventUuid);
 		}
 		return true;
 	}
