@@ -21,7 +21,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "The type of pathogen test that is performed on a sample.")
 public enum PathogenTestType {
 
 	ANTIBODY_DETECTION,

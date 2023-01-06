@@ -36,7 +36,9 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.ValidationException;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for information related to a user's role")
 public class UserRoleDto extends EntityDto {
 
 	private static final long serialVersionUID = -547459523041494446L;
@@ -55,18 +57,26 @@ public class UserRoleDto extends EntityDto {
 	public static final String LINKED_DEFAULT_USER_ROLE = "linkedDefaultUserRole";
 
 	private Set<UserRight> userRights;
+	@Schema(description = "Indicates whether the user role is active")
 	private boolean enabled = true;
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Schema(description = "Free text description of the role's purpose")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
+	@Schema(description = "Whether the user has access to additional facility outside of his hierarchy level")
 	private boolean hasOptionalHealthFacility = false;
+	@Schema(description = "Whether the user is responsible for an additional district apart from his own hierarchicy level")
 	private boolean hasAssociatedDistrictUser = true;
+	@Schema(description = "Whether the user works at a border post")
 	private boolean portHealthUser = false;
 	private DefaultUserRole linkedDefaultUserRole;
 	private JurisdictionLevel jurisdictionLevel;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
 
 	public static UserRoleDto build(UserRight... userRights) {
@@ -167,7 +177,6 @@ public class UserRoleDto extends EntityDto {
 
 		return userRoles != null ? userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet()) : null;
 	}
-
 
 	public DefaultUserRole getLinkedDefaultUserRole() {
 		return linkedDefaultUserRole;

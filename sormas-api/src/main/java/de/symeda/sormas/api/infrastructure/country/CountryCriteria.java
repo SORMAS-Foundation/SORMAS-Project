@@ -6,12 +6,14 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CountryCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -3172115054516586926L;
 
 	private EntityRelevanceStatus relevanceStatus;
+	@Schema(description = "Search-term for the country's name or ISO 3166 code")
 	private String nameCodeLike;
 	private SubcontinentReferenceDto subcontinent;
 

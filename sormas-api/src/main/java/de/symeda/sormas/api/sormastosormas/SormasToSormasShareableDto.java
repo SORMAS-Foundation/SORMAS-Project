@@ -21,6 +21,7 @@ import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.MappingException;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 
@@ -29,6 +30,7 @@ public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 	@Valid
 	protected SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	@MappingException(reason = MappingException.COMPUTED_FOR_API)
+	@Schema(description = "Whether ownership of the object shall be handed over")
 	protected boolean ownershipHandedOver;
 
 	public abstract UserReferenceDto getReportingUser();

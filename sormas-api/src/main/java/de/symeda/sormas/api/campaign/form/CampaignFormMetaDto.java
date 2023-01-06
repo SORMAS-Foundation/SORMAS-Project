@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CampaignFormMetaDto extends EntityDto {
 
@@ -18,14 +19,19 @@ public class CampaignFormMetaDto extends EntityDto {
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Document identifier")
 	private String formId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Document name")
 	private String formName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Language used in the document")
 	private String languageCode;
 	@Valid
+	@Schema(description = "List of campaign form sub-elements")
 	private List<CampaignFormElement> campaignFormElements;
 	@Valid
+	@Schema(description = "List of translations available for this document")
 	private List<CampaignFormTranslations> campaignFormTranslations;
 
 	public String getFormId() {

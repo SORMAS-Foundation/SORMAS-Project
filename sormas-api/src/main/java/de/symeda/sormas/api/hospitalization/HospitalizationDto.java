@@ -33,8 +33,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
+@Schema(description = "Data transfer object for data related to a current hospital stay possibly related to the case of the researched disease.")
 public class HospitalizationDto extends EntityDto {
 
 	private static final long serialVersionUID = 4846215199480684369L;
@@ -59,23 +61,34 @@ public class HospitalizationDto extends EntityDto {
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
+	@Schema(description = "Whether the person was admitted at a health facility")
 	private YesNoUnknown admittedToHealthFacility;
+	@Schema(description = "Date the person was admitted")
 	private Date admissionDate;
+	@Schema(description = "Date the person was discharged")
 	private Date dischargeDate;
+	@Schema(description = "Whether the person was isolated")
 	private YesNoUnknown isolated;
+	@Schema(description = "Date when the person was isolated")
 	private Date isolationDate;
+	@Schema(description = "Whether the person left the health facility against medical advice")
 	private YesNoUnknown leftAgainstAdvice;
-
+	@Schema(description = "Whether the person has previously been hospitalized")
 	private YesNoUnknown hospitalizedPreviously;
 	@Valid
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
+	@Schema(description = "Whether the person was admitted to an intensive care unit")
 	private YesNoUnknown intensiveCareUnit;
+	@Schema(description = "Date when the person was admitted to an intensive care unit")
 	private Date intensiveCareUnitStart;
+	@Schema(description = "Date when the person was discharged from an intensive care unit")
 	private Date intensiveCareUnitEnd;
 	private HospitalizationReasonType hospitalizationReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text specification of OTHER hospitalization reason")
 	private String otherHospitalizationReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Description of the hospitalization")
 	private String description;
 
 	public static HospitalizationDto build() {

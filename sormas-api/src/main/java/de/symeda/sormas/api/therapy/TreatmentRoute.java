@@ -20,7 +20,9 @@ package de.symeda.sormas.api.therapy;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Routes a treatment can be administered by")
 public enum TreatmentRoute {
 
 	ORAL,

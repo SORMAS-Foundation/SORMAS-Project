@@ -16,7 +16,9 @@
 package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Means of transport where an exposure might occur")
 public enum MeansOfTransport {
 
 	LOCAL_PUBLIC_TRANSPORT,

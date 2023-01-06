@@ -20,10 +20,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.symeda.sormas.api.audit.AuditedClass;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Base class for customizable enums. Supposed to be extended for every enum that is made customizable to ensure type safety.
  */
+@Schema(description = "Base class for customizable enums")
 @AuditedClass
 public abstract class CustomizableEnum implements Serializable {
 
@@ -32,11 +34,13 @@ public abstract class CustomizableEnum implements Serializable {
 	/**
 	 * The enum value, identical {@link CustomizableEnumValueDto#getValue()}.
 	 */
+	@Schema(description = "Enum value")
 	private String value;
 	/**
 	 * The enum caption, internationalized according to the user language if that language is present in
 	 * {@link CustomizableEnumValueDto#getTranslations()}, otherwise identical to {@link CustomizableEnumValueDto#getCaption()}.
 	 */
+	@Schema(description = "Enum caption")
 	private String caption;
 
 	/**

@@ -40,6 +40,7 @@ import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TaskIndexDto extends PseudonymizableIndexDto {
 
@@ -95,15 +96,19 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 
 	private TaskType taskType;
 	private TaskPriority priority;
+	@Schema(description = "Date when the task is due")
 	private Date dueDate;
+	@Schema(description = "Date when the starting of the task is suggested")
 	private Date suggestedStart;
 	private TaskStatus taskStatus;
 	private Disease disease;
 
 	private UserReferenceDto creatorUser;
+	@Schema(description = "Free text comment about the user that created the task")
 	private String creatorComment;
 	private UserReferenceDto assigneeUser;
 	private UserReferenceDto assignedByUser;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String assigneeReply;
 
 	private TaskJurisdictionFlagsDto taskJurisdictionFlagsDto;

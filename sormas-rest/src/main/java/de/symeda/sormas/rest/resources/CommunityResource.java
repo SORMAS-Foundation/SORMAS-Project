@@ -35,7 +35,12 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -44,53 +49,79 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
  */
 @Path("/communities")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Community Resource",
+	description = "Access to general geographic location following the hierarchy:\n\n"
+		+ "Continent > Subcontinent > Country > Area > Region > District > **Community** > Facility\n\n"
+		+ "Allows countries/districts/communities to set-up their own sub-divided infrastructure conforming to the centralized SORMAS base structure.")
 public class CommunityResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<CommunityDto> getAll(@PathParam("since") long since) {
+	@Operation(summary = "Get all avaliable Communities from a date in the past until now.")
+	@ApiResponse(description = "Returns a list of communities for the given time interval.", responseCode = "200", useReturnTypeSchema = true)
+	public List<CommunityDto> getAll(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT.") @PathParam("since") long since) {
 		return FacadeProvider.getCommunityFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<CommunityDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get a list of communities based on their unique IDs (UUIDs).")
+	@ApiResponse(description = "Returns a list of communities by UUIDs. If a UUID does not match to any community, it is ignored.")
+	public List<CommunityDto> getByUuids(
+		@RequestBody(description = "List of communities UUIDs. These UUIDs are used to query communities.", required = true) List<String> uuids) {
 		List<CommunityDto> result = FacadeProvider.getCommunityFacade().getByUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postCommunities(@Valid List<CommunityDto> dtos) {
+	@Operation(summary = "Add a list of communities that should be created or updated.")
+	@ApiResponse(description = "Returns a list with a push result for each community.", responseCode = "200", useReturnTypeSchema = true)
+	public List<PushResult> postCommunities(
+		@RequestBody(description = "List of communities to create or update", required = true) @Valid List<CommunityDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getCommunityFacade()::save);
 		return result;
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available continents.")
+	@ApiResponse(description = "Returns a list of available continents' UUIDs.", responseCode = "200", useReturnTypeSchema = true)
 	public List<String> getAllUuids() {
 		return FacadeProvider.getCommunityFacade().getAllUuids();
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of communities based on CommunityCriteria filter params.")
+	@ApiResponse(description = "Returns a page of communities that met the filter criteria.", responseCode = "200", useReturnTypeSchema = true)
 	public Page<CommunityDto> getIndexList(
-		@RequestBody CriteriaWithSorting<CommunityCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "Community-based query-filter criteria with sorting property.",
+			required = true) CriteriaWithSorting<CommunityCriteria> criteriaWithSorting,
+		@QueryParam("offset") @Parameter(required = true, description = "page offset") int offset,
+		@QueryParam("size") @Parameter(required = true, description = "page size") int size) {
 		return FacadeProvider.getCommunityFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST
 	@Path("/archive")
-	public List<String> archive(@RequestBody List<String> uuids) {
+	@Operation(summary = "Mark communities as archived based on their unique IDs (UUIDs); i.e. deactivate.")
+	@ApiResponse(description = "Returns a list of UUIDs for which archiving was successful.", responseCode = "200", useReturnTypeSchema = true)
+	public List<String> archive(
+		@RequestBody(description = "List of community UUIDs. These UUIDs denote the communities to be archived.",
+			required = true) List<String> uuids) {
 		return FacadeProvider.getCommunityFacade().archive(uuids);
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<String> dearchive(@RequestBody List<String> uuids) {
+	@Operation(summary = "Remove communities from archive based on their unique IDs (UUIDs); i.e. reactivate.")
+	@ApiResponse(description = "Returns a list of UUIDs for which reactivation was successful.", responseCode = "200", useReturnTypeSchema = true)
+	public List<String> dearchive(
+		@RequestBody(description = "List of community UUIDs. These UUIDs denote the communities to be reactivated from archive.",
+			required = true) List<String> uuids) {
 		return FacadeProvider.getCommunityFacade().dearchive(uuids);
 	}
 }

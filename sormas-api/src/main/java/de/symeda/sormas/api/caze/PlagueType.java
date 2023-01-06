@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum containing the variants of plague a person can suffer from. Only for Disease.PLAGUE")
 public enum PlagueType {
 
 	BUBONIC,

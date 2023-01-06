@@ -18,7 +18,9 @@ package de.symeda.sormas.api.sample;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Reason for sampling/testing.")
 public enum SamplingReason {
 
 	PRESENCE_OF_SYMPTOMS,

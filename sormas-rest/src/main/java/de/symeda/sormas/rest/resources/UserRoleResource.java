@@ -30,6 +30,11 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserRoleDto;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
  *      documentation</a>
@@ -41,23 +46,34 @@ import de.symeda.sormas.api.user.UserRoleDto;
 @Path("/userroles")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "User Role Resource",
+	description = "Management of SORMAS user roles granting (read-only) access to available roles and their corresponding rights on the server.\n\n"
+		+ "Also see **User Resource** and the SORMAS documentation: https://www.sormas-oegd.de/download/10068/")
 public class UserRoleResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<UserRoleDto> getAll(@PathParam("since") long since) {
+	@Operation(summary = "Get all available user roles recognized by the server from a date in the past until now.")
+	@ApiResponse(description = "Returns a list of user roles for the given time interval.", responseCode = "200", useReturnTypeSchema = true)
+	public List<UserRoleDto> getAll(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getUserRoleFacade().getAllAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available user roles.")
+	@ApiResponse(description = "Returns a list of available user roles' UUIDs.", responseCode = "200", useReturnTypeSchema = true)
 	public List<String> getAllUuids() {
 		return FacadeProvider.getUserRoleFacade().getAllUuids();
 	}
 
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuids(@PathParam("since") long since) {
+	@Operation(summary = "Get all user roles that have been removed from the server since a given date in the past until now.")
+	@ApiResponse(description = "Returns a list of removed user roles for the given time interval.", responseCode = "200", useReturnTypeSchema = true)
+	public List<String> getDeletedUuids(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getUserRoleFacade().getDeletedUuids(new Date(since));
 	}
 }

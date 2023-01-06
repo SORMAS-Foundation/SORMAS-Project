@@ -9,21 +9,29 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class DashboardCriteria extends BaseCriteria implements Serializable {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private CriteriaDateType newCaseDateType;
+	@Schema(description = "Date that sets the lower boundary for the primary time period")
 	private Date dateFrom;
+	@Schema(description = "Date that sets the upper boundary for the primary time period")
 	private Date dateTo;
+	@Schema(description = "Date that sets the lower boundary for the secondary time period")
 	private Date previousDateFrom;
+	@Schema(description = "Date that sets the upper boundary for the secondary time period")
 	private Date previousDateTo;
 	private EpiCurveGrouping epiCurveGrouping;
+	@Schema(description = "Whether to show at least a certain number of entries")
 	private boolean showMinimumEntries;
 	private CaseMeasure caseMeasure;
 
+	@Schema(description = "Whether to include cases in the dashboard that have been confirmed to not be a case of the researched disease")
 	private boolean includeNotACaseClassification;
 
 	public RegionReferenceDto getRegion() {

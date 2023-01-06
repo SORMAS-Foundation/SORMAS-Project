@@ -25,8 +25,10 @@ import java.util.Optional;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import io.swagger.v3.oas.annotations.media.Schema;
 import de.symeda.sormas.api.utils.UtilDate;
 
+@Schema(description = "Declares how closely the age of the person is approximated")
 public enum ApproximateAgeType {
 
 	YEARS,

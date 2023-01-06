@@ -2,7 +2,9 @@ package de.symeda.sormas.api.user;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Role of the corresponding user")
 public class UserRoleReferenceDto extends ReferenceDto implements StatisticsGroupingKey {
 
 	public UserRoleReferenceDto() {

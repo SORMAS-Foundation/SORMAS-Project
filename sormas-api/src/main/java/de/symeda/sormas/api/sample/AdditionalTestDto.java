@@ -12,6 +12,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Order;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.ADDITIONAL_TESTS)
 public class AdditionalTestDto extends EntityDto {
@@ -47,27 +48,50 @@ public class AdditionalTestDto extends EntityDto {
 	public static final String OTHER_TEST_RESULTS = "otherTestResults";
 
 	private SampleReferenceDto sample;
+	@Schema(description = "Date and time when the test was conducted.")
 	private Date testDateTime;
+	@Schema(description = "Indicates the presence of excess haemoglobin in a urine sample.")
 	private SimpleTestResultType haemoglobinuria;
+	@Schema(description = "Indicates the presence of excess protein in a urine sample.")
 	private SimpleTestResultType proteinuria;
+	@Schema(description = "Indicates the presence of excess red blood cells in a urine sample.")
 	private SimpleTestResultType hematuria;
+	@Schema(description = "PH value measured in a bloodsample.")
 	private Float arterialVenousGasPH;
+	@Schema(description = "Carbon dioxide partial pressure measured in a blood sample.")
 	private Float arterialVenousGasPco2;
+	@Schema(description = "Oxygen partial pressure measured in a blood sample.")
 	private Float arterialVenousGasPao2;
+	@Schema(description = "Concentration of hydrogen-carbonate ions measured in a blood sample.")
 	private Float arterialVenousGasHco3;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Float gasOxygenTherapy;
+	@Schema(description = "Alanine aminotransferase (ALT) level measured in a blood sample."
+		+ " Also called serum glutamat-pyruvat transferase (SGPT) test.")
 	private Float altSgpt;
+	@Schema(description = "Aspartate aminotransferase (AST) level measured in a blood sample."
+		+ " Also called serum glutamic-oxaloacetic transaminase (SGOT) test.")
 	private Float astSgot;
+	@Schema(description = "Creatinine concentration measured in a blood sample.")
 	private Float creatinine;
+	@Schema(description = "Potassium concentration measured in a blood sample.")
 	private Float potassium;
+	@Schema(description = "Urea concentration measured in a blood sample.")
 	private Float urea;
+	@Schema(description = "Heamoglobin concentration measured in a blood sample.")
 	private Float haemoglobin;
+	@Schema(description = "Total bilirubin concentration measured in a blood sample.")
 	private Float totalBilirubin;
+	@Schema(description = "Conjugated bilirubin concentration measured in a blood sample.")
 	private Float conjBilirubin;
+	@Schema(description = "White blood cell count (number) of a blood sample.")
 	private Float wbcCount;
+	@Schema(description = "Platelets/thrombocytes count of a blood sample.")
 	private Float platelets;
+	@Schema(description = "Measured prothrombin time of a blood sample.")
 	private Float prothrombinTime;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Other measured test results.")
 	private String otherTestResults;
 
 	public static AdditionalTestDto build(SampleReferenceDto sample) {

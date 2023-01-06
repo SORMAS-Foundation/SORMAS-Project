@@ -22,14 +22,18 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Information on sorting of query-results.")
 public class SortProperty implements Serializable {
 
 	private static final long serialVersionUID = 2972594862424083789L;
 
+	@Schema(description = "Name of the sorting property.")
 	public final String propertyName;
 
+	@Schema(description = "Flag for ascending order.")
 	public final boolean ascending;
-
 
 	public SortProperty(String propertyName) {
 		this(propertyName, true);
@@ -40,6 +44,5 @@ public class SortProperty implements Serializable {
 		this.propertyName = propertyName;
 		this.ascending = ascending;
 	}
-
 
 }

@@ -34,11 +34,13 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.EVENT_SURVEILLANCE,
 	FeatureType.AGGREGATE_REPORTING })
+@Schema(description = "Data transfer object for facility-related information")
 public class FacilityDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = -7987228795475507196L;
@@ -71,39 +73,54 @@ public class FacilityDto extends InfrastructureDto {
 	public static final String EXTERNAL_ID = "externalID";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Name of the facility")
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Name of the city the facility is located in")
 	private String city;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Postal code of the city the facility is located in")
 	private String postalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Street name from the facility's address")
 	private String street;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "House number from the facility's address")
 	private String houseNumber;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Additional information from the facility's address (e.g. floor)")
 	private String additionalInformation;
 	private AreaType areaType;
+	@Schema(description = "First name of the facility's contact")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactPersonFirstName;
+	@Schema(description = "Last name of the facility's contact")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactPersonLastName;
+	@Schema(description = "Phone number of the facility's contact")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactPersonPhone;
+	@Schema(description = "E-mail address of the facility's contact")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactPersonEmail;
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
+	@Schema(description = "Geodetic latitude of the facility's coordinates")
 	private Double latitude;
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
+	@Schema(description = "Geodetic longitude of the facility's coordinates")
 	private Double longitude;
 	private FacilityType type;
+	@Schema(description = "Indicates whether the facility belongs to the public sector")
 	private boolean publicOwnership;
+	@Schema(description = "Indicates whether this object has been archived")
 	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalID;
 
 	public FacilityDto(

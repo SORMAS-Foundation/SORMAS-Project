@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditedClass;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @AuditedClass
 public class DashboardContactStatisticDto implements Serializable {
@@ -15,18 +16,32 @@ public class DashboardContactStatisticDto implements Serializable {
 	public static final String PREVIOUS_CONTACTS = "previousContacts";
 	public static final String CURRENT_CONTACTS = "contacts";
 
+	@Schema(description = "Total number of contacts registered in the primary time period")
 	private int contactsCount;
+	@Schema(description = "Number of contacts newly registered during the primary time period")
 	private int newContactsCount;
+	@Schema(description = "Rounded percentage of newly registered contacts during the primary time period")
 	private int newContactsPercentage;
+	@Schema(description = "Number of contacts that show symptoms of the reseached disease during the primary time period")
 	private int symptomaticContactsCount;
+	@Schema(description = "Rounded percentage of contacts that show symptoms of the researched disease during the primary time period")
 	private int symptomaticContactsPercentage;
+	@Schema(description = "Number of confirmed contacts registered during the primary time period")
 	private int confirmedContactsCount;
+	@Schema(description = "Rounded percentage of confirmed contacts registered during the primary time period")
 	private int contactClassificationConfirmedPercentage;
+	@Schema(description = "Number of unconfirmed contacts registered during the primary time period")
 	private int unconfirmedContactsCount;
+	@Schema(description = "Rounded percentage of unconfirmed contacts registered during the primary time period")
 	private int contactClassificationUnconfirmedPercentage;
+	@Schema(
+		description = "Number of contact entries, that have been classified as actually not being a contact, registered during the primary time period")
 	private int notContactsCount;
+	@Schema(
+		description = "Rounded percentageof contact entries, that have been classified as actually not being a contact, registered during the primary time period")
 	private int contactClassificationNotAContactPercentage;
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	Map<Disease, Map<String, Integer>> diseaseMap = new TreeMap<>();
 
 	private DashboardContactFollowUpDto dashboardContactFollowUp;

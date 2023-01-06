@@ -1,7 +1,9 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Types of screenings that can be conducted for a disease")
 public enum ScreeningType {
 
 	ON_HOSPITAL_ADMISSION,

@@ -14,8 +14,10 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CLINICAL_MANAGEMENT)
+@Schema(description = "Data transfer object for clinical visit related data")
 public class ClinicalVisitDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -8220449896773019721L;
@@ -30,17 +32,21 @@ public class ClinicalVisitDto extends PseudonymizableDto {
 	public static final String VISIT_DATE_TIME = "visitDateTime";
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String VISITING_PERSON = "visitingPerson";
-
 	private ClinicalCourseReferenceDto clinicalCourse;
 	@Valid
+
 	private SymptomsDto symptoms;
+	@Schema(description = "Disease that is researched by the clinical visit.")
 	private Disease disease;
+	@Schema(description = "Date and time of the clinical visit.")
 	private Date visitDateTime;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Practitioner conducting the clinical visit.")
 	private String visitingPerson;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Remarks recorded during the clinical visit.")
 	private String visitRemarks;
 
 	public static ClinicalVisitDto build(ClinicalCourseReferenceDto clinicalCourse, Disease disease) {

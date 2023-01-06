@@ -36,7 +36,12 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -45,28 +50,46 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
  */
 @Path("/facilities")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Facility Resource",
+	description = "Access to general geographic location following the hierarchy:\n\n"
+		+ "Continent > Subcontinent > Country > Area > Region > District > Community > **Facility**\n\n"
+		+ "Allows countries/districts/communities to set-up their own sub-divided infrastructure conforming to the centralized SORMAS base structure.")
 public class FacilityResource extends EntityDtoResource {
 
 	@GET
 	@Path("/region/{regionUuid}/{since}")
-	public List<FacilityDto> getAllByRegion(@PathParam("regionUuid") String regionUuid, @PathParam("since") long since) {
+	@Operation(summary = "Get all avaliable facilities in a specific region from a date in the past until now.")
+	@ApiResponse(description = "Returns a list of facilities located in the specified region for the given time interval.",
+		responseCode = "200",
+		useReturnTypeSchema = true)
+	public List<FacilityDto> getAllByRegion(
+		@Parameter(required = true,
+			description = "Universally unique identifier (UUID) of the desired region.") @PathParam("regionUuid") String regionUuid,
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT.") @PathParam("since") long since) {
 		return FacadeProvider.getFacilityFacade().getAllByRegionAfter(regionUuid, new Date(since));
 	}
 
 	@GET
 	@Path("/general/{since}")
-	public List<FacilityDto> getAllWithoutRegion(@PathParam("since") long since) {
+	@Operation(summary = "Get all avaliable facilities (regardless of region) from a date in the past until now.")
+	@ApiResponse(description = "Returns a list of facilities for the given time interval.", responseCode = "200", useReturnTypeSchema = true)
+	public List<FacilityDto> getAllWithoutRegion(
+		@Parameter(required = true, description = "milliseconds since January 1, 1970, 00:00:00 GMT.") @PathParam("since") long since) {
 		return FacadeProvider.getFacilityFacade().getAllWithoutRegionAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available facilities.")
+	@ApiResponse(description = "Returns a list of available facilities' UUIDs.", responseCode = "200", useReturnTypeSchema = true)
 	public List<String> getAllUuids() {
 		return FacadeProvider.getFacilityFacade().getAllUuids();
 	}
 
 	@POST
 	@Path("/query")
+	@Operation(summary = "Get a list of facilities based on their unique IDs (UUIDs).")
+	@ApiResponse(description = "Returns a list of facilities by UUIDs. If a UUID does not match to any facility, it is ignored.")
 	public List<FacilityDto> getByUuids(List<String> uuids) {
 
 		List<FacilityDto> result = FacadeProvider.getFacilityFacade().getByUuids(uuids);
@@ -75,30 +98,43 @@ public class FacilityResource extends EntityDtoResource {
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of FacilityIndices based on FacilityCriteria filter params.")
+	@ApiResponse(description = "Returns a page of facilities that met the filter criteria.", responseCode = "200", useReturnTypeSchema = true)
 	public Page<FacilityIndexDto> getIndexList(
-		@RequestBody CriteriaWithSorting<FacilityCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "Facility-based query-filter criteria with sorting property.",
+			required = true) CriteriaWithSorting<FacilityCriteria> criteriaWithSorting,
+		@QueryParam("offset") @Parameter(required = true, description = "page offset") int offset,
+		@QueryParam("size") @Parameter(required = true, description = "page size") int size) {
 		return FacadeProvider.getFacilityFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postSubcontinents(@Valid List<FacilityDto> dtos) {
+	@Operation(summary = "Add a list of facilities that should be created or updated.")
+	@ApiResponse(description = "Returns a list with a push result for each facility.", responseCode = "200", useReturnTypeSchema = true)
+	public List<PushResult> postSubcontinents(
+		@RequestBody(description = "List of facilities to create or update.", required = true) @Valid List<FacilityDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getFacilityFacade()::save);
 		return result;
 	}
 
 	@POST
 	@Path("/archive")
-	public List<String> archive(@RequestBody List<String> uuids) {
+	@Operation(summary = "Mark facilities as archived based on their unique IDs (UUIDs); i.e. deactivate.")
+	@ApiResponse(description = "Returns a list of UUIDs for which archiving was successful.", responseCode = "200", useReturnTypeSchema = true)
+	public List<String> archive(
+		@RequestBody(description = "List of facility UUIDs. These UUIDs denote the facilities to be archived.", required = true) List<String> uuids) {
 		return FacadeProvider.getFacilityFacade().archive(uuids);
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<String> dearchive(@RequestBody List<String> uuids) {
+	@Operation(summary = "Remove facilities from archive based on their unique IDs (UUIDs); i.e. reactivate.")
+	@ApiResponse(description = "Returns a list of UUIDs for which reactivation was successful.", responseCode = "200", useReturnTypeSchema = true)
+	public List<String> dearchive(
+		@RequestBody(description = "List of facility UUIDs. These UUIDs denote the facilities to be reactivated from archive.",
+			required = true) List<String> uuids) {
 		return FacadeProvider.getFacilityFacade().dearchive(uuids);
 	}
 }

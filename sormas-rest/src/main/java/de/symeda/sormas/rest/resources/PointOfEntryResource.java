@@ -35,7 +35,12 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -44,53 +49,79 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
  */
 @Path("/pointsofentry")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Point-of-entry Resource",
+	description = "Adjunct information to a *Geolocation* used to track the point-of-entry into a country (such as airports) for cases of foreign origin.\n\n"
+		+ "Allows every country to set-up their own sub-divided infrastructure conforming to the centralized SORMAS base structure.")
 public class PointOfEntryResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<PointOfEntryDto> getAll(@PathParam("since") long since) {
+	@Operation(summary = "Get all avaliable points-of-entry from a date in the past until now.")
+	@ApiResponse(description = "Returns a list of points-of-entry for the given time interval.", responseCode = "200", useReturnTypeSchema = true)
+	public List<PointOfEntryDto> getAll(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT.") @PathParam("since") long since) {
 		return FacadeProvider.getPointOfEntryFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get a list of points-of-entry based on their unique IDs (UUIDs).")
+	@ApiResponse(description = "Returns a list of points-of-entry by UUIDs. If a UUID does not match to any point-of-entry, it is ignored.")
+	public List<PointOfEntryDto> getByUuids(
+		@RequestBody(description = "List of point-of-entry UUIDs. These UUIDs are used to query points-of-entry.",
+			required = true) List<String> uuids) {
 		List<PointOfEntryDto> result = FacadeProvider.getPointOfEntryFacade().getByUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of points-of-entry based on PointOfEntryCriteria filter params.")
+	@ApiResponse(description = "Returns a page of points-of-entry that met the filter criteria.", responseCode = "200", useReturnTypeSchema = true)
 	public Page<PointOfEntryDto> getIndexList(
-		@RequestBody CriteriaWithSorting<PointOfEntryCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "Query-filter criteria based on points-of-entry with sorting property.",
+			required = true) CriteriaWithSorting<PointOfEntryCriteria> criteriaWithSorting,
+		@QueryParam("offset") @Parameter(required = true, description = "page offset") int offset,
+		@QueryParam("size") @Parameter(required = true, description = "page size") int size) {
 		return FacadeProvider.getPointOfEntryFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available points-of-entry.")
+	@ApiResponse(description = "Returns a list of available points-of-entry UUIDs.", responseCode = "200", useReturnTypeSchema = true)
 	public List<String> getAllUuids() {
 		return FacadeProvider.getPointOfEntryFacade().getAllUuids();
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postPointOfEntries(@Valid List<PointOfEntryDto> dtos) {
+	@Operation(summary = "Add a list of points-of-entry that should be created or updated.")
+	@ApiResponse(description = "Returns a list with a push result for each point-of-entry.", responseCode = "200", useReturnTypeSchema = true)
+	public List<PushResult> postPointOfEntries(
+		@RequestBody(description = "List of points-of-entry to create or update.", required = true) @Valid List<PointOfEntryDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getPointOfEntryFacade()::save);
 		return result;
 	}
 
 	@POST
 	@Path("/archive")
-	public List<String> archive(@RequestBody List<String> uuids) {
+	@Operation(summary = "Mark points-of-entry as archived based on their unique IDs (UUIDs); i.e. deactivate.")
+	@ApiResponse(description = "Returns a list of UUIDs for which archiving was successful.", responseCode = "200", useReturnTypeSchema = true)
+	public List<String> archive(
+		@RequestBody(description = "List of point-of-entry UUIDs. These UUIDs denote the points-of-entry to be reactivated from archive.",
+			required = true) List<String> uuids) {
 		return FacadeProvider.getPointOfEntryFacade().archive(uuids);
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<String> dearchive(@RequestBody List<String> uuids) {
+	@Operation(summary = "Remove points-of-entry from archive based on their unique IDs (UUIDs); i.e. reactivate.")
+	@ApiResponse(description = "Returns a list of UUIDs for which reactivation was successful.", responseCode = "200", useReturnTypeSchema = true)
+	public List<String> dearchive(
+		@RequestBody(description = "List of point-of-entry UUIDs. These UUIDs denote the points-of-entry to be reactivated from archive.",
+			required = true) List<String> uuids) {
 		return FacadeProvider.getPointOfEntryFacade().dearchive(uuids);
 	}
 }

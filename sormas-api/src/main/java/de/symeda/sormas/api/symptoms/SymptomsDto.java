@@ -63,6 +63,7 @@ import de.symeda.sormas.api.utils.SymptomGroup;
 import de.symeda.sormas.api.utils.SymptomGrouping;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
@@ -285,6 +286,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject experiences abdomminal pain")
 	private SymptomState abdominalPain;
 
 	@Diseases({
@@ -302,6 +304,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject experiences appetite loss or anorexia")
 	private SymptomState anorexiaAppetiteLoss;
 
 	@Diseases({
@@ -314,6 +317,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject experiences back pain")
 	private SymptomState backache;
 
 	@Diseases({
@@ -325,6 +329,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject is bedridden")
 	private SymptomState bedridden;
 
 	@Diseases({
@@ -336,6 +341,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows blackening dying of tissue")
 	private SymptomState blackeningDeathOfTissue;
 
 	@Diseases({
@@ -350,6 +356,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences bleeding vagina")
 	private SymptomState bleedingVagina;
 
 	@Diseases({
@@ -364,10 +371,13 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject has blood in stool")
 	private SymptomState bloodInStool;
 
+	@Schema(description = "Measured diastolic blood pressure")
 	private Integer bloodPressureDiastolic;
 
+	@Schema(description = "Measured systolic blood pressure")
 	private Integer bloodPressureSystolic;
 
 	@Diseases({
@@ -382,6 +392,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.URINARY)
+	@Schema(description = "Whether subject has blood in urine")
 	private SymptomState bloodUrine;
 
 	@Diseases({
@@ -396,6 +407,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject has bloody black stool")
 	private SymptomState bloodyBlackStool;
 
 	@Diseases({
@@ -407,6 +419,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows buboes (bumps) in groin, armpit or neck")
 	private SymptomState buboesGroinArmpitNeck;
 
 	@Diseases({
@@ -419,6 +432,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows a bulging fontanel")
 	private SymptomState bulgingFontanelle;
 
 	@Diseases({
@@ -436,6 +450,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@HideForCountries
+	@Schema(description = "Whether subject experiences chest pain")
 	private SymptomState chestPain;
 
 	@Diseases({
@@ -450,6 +465,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject experiences chills or cold sweats")
 	private SymptomState chillsSweats;
 
 	@Diseases({
@@ -468,6 +484,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences inflammation of the conjunctiva")
 	private SymptomState conjunctivitis;
 
 	@Diseases({
@@ -489,18 +506,21 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject experiences cough")
 	private SymptomState cough;
 
 	@Diseases({
 		CORONAVIRUS })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether sputun is expelled by cough")
 	private SymptomState coughWithSputum;
 
 	@Diseases({
 		CORONAVIRUS })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether bloody secrete is expelled by cough")
 	private SymptomState coughWithHeamoptysis;
 
 	@Diseases({
@@ -517,6 +537,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject is coughing blood")
 	private SymptomState coughingBlood;
 
 	@Diseases({
@@ -529,6 +550,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.URINARY)
+	@Schema(description = "Whether subject has dark urine")
 	private SymptomState darkUrine;
 
 	@Diseases({
@@ -543,6 +565,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject is dehydrated")
 	private SymptomState dehydration;
 
 	@Diseases({
@@ -563,6 +586,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject suffers from diarrhea")
 	private SymptomState diarrhea;
 
 	@Diseases({
@@ -581,6 +605,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject has difficulty breathing")
 	private SymptomState difficultyBreathing;
 
 	@Diseases({
@@ -595,6 +620,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject vomits digested blood")
 	private SymptomState digestedBloodVomit;
 
 	@Diseases({
@@ -614,6 +640,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject is light sensitive and suffers from eye pain")
 	private SymptomState eyePainLightSensitive;
 
 	@Diseases({
@@ -627,6 +654,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subjects eyes are bleeding")
 	private SymptomState eyesBleeding;
 
 	@Diseases({
@@ -654,6 +682,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject shows fatigue or weakeness")
 	private SymptomState fatigueWeakness;
 
 	@Diseases({
@@ -678,6 +707,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject has a fever")
 	private SymptomState fever;
 
 	@Diseases({
@@ -692,9 +722,11 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject has liquid in the lung cavity")
 	private SymptomState fluidInLungCavity;
 
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Classification of subject consciousness according to Glasgow coma scale")
 	private Integer glasgowComaScale;
 
 	@Diseases({
@@ -711,6 +743,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subjects gums are bleeding")
 	private SymptomState gumsBleeding;
 
 	@Diseases({
@@ -733,6 +766,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject experiences headaches")
 	private SymptomState headache;
 
 	@Diseases({
@@ -747,10 +781,13 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences hearing loss")
 	private SymptomState hearingloss;
 
+	@Schema(description = "Measured subject heart rate")
 	private Integer heartRate;
 
+	@Schema(description = "Measured subject height in centimeters")
 	private Integer height;
 
 	@Diseases({
@@ -763,6 +800,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences hiccups")
 	private SymptomState hiccups;
 
 	@Diseases({
@@ -777,6 +815,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject bleeds from injection sites")
 	private SymptomState injectionSiteBleeding;
 
 	@Diseases({
@@ -791,12 +830,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences jaundice")
 	private SymptomState jaundice;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences jaundice within 24 hours after beeing born")
 	private YesNoUnknown jaundiceWithin24HoursOfBirth;
 
 	@Diseases({
@@ -818,6 +859,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject suffers from joint pain")
 	private SymptomState jointPain;
 
 	@Diseases({
@@ -829,6 +871,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows kopliks spots")
 	private SymptomState kopliksSpots;
 
 	@Diseases({
@@ -841,6 +884,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows skin lesions (used for wheter subject shows vesiculopustular rash)")
 	/** Vesiculopustular rash */
 	private SymptomState lesions;
 
@@ -854,6 +898,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows skin lesions all over the body")
 	private Boolean lesionsAllOverBody;
 
 	@Diseases({
@@ -867,6 +912,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows skin lesions on arms")
 	private Boolean lesionsArms;
 
 	@Diseases({
@@ -880,6 +926,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subjects lesions are deep and profound")
 	private SymptomState lesionsDeepProfound;
 
 	@Diseases({
@@ -892,6 +939,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows skin lesions on the face")
 	private Boolean lesionsFace;
 
 	@Diseases({
@@ -904,6 +952,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows skin lesions on genitals")
 	private Boolean lesionsGenitals;
 
 	@Diseases({
@@ -916,6 +965,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows skin lesions on legs")
 	private Boolean lesionsLegs;
 
 	@Diseases({
@@ -924,6 +974,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Date when the lesions first manifested")
 	private Date lesionsOnsetDate;
 
 	@Diseases({
@@ -936,6 +987,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows skin lesions on the palms of the hand")
 	private Boolean lesionsPalmsHands;
 
 	@Diseases({
@@ -943,12 +995,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subjects lesions resemble ones in the specified image")
 	private SymptomState lesionsResembleImg1;
 	@Diseases({
 		MONKEYPOX })
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subjects lesions resemble ones in the specified image")
 	private SymptomState lesionsResembleImg2;
 
 	@Diseases({
@@ -956,6 +1010,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subjects lesions resemble ones in the specified image")
 	private SymptomState lesionsResembleImg3;
 
 	@Diseases({
@@ -963,6 +1018,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subjects lesions resemble ones in the specified image")
 	private SymptomState lesionsResembleImg4;
 
 	@Diseases({
@@ -975,6 +1031,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subjects lesions are of the same size")
 	private SymptomState lesionsSameSize;
 
 	@Diseases({
@@ -987,6 +1044,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subjects lesions are in the same state of development")
 	private SymptomState lesionsSameState;
 
 	@Diseases({
@@ -999,6 +1057,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows lesions on the soles of the feet")
 	private Boolean lesionsSolesFeet;
 
 	@Diseases({
@@ -1011,6 +1070,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subjects lesions itch")
 	private SymptomState lesionsThatItch;
 
 	@Diseases({
@@ -1023,6 +1083,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(LESIONS)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows lesions on the thorax")
 	private Boolean lesionsThorax;
 
 	@Diseases({
@@ -1035,6 +1096,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows loss of skin turgor (skin not springing back after beeing pulled)")
 	private SymptomState lossSkinTurgor;
 
 	@Diseases({
@@ -1045,6 +1107,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows lymphadenapathy (very swollen lymph nodes)")
 	private SymptomState lymphadenopathy;
 
 	@Diseases({
@@ -1056,6 +1119,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows lymphadenopathy in the armpits")
 	private SymptomState lymphadenopathyAxillary;
 
 	@Diseases({
@@ -1067,6 +1131,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows lymphadenopathy on the neck")
 	private SymptomState lymphadenopathyCervical;
 
 	@Diseases({
@@ -1078,6 +1143,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows lymphadenopathy in the groin")
 	private SymptomState lymphadenopathyInguinal;
 
 	@Diseases({
@@ -1090,8 +1156,10 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject experiences malaise")
 	private SymptomState malaise;
 
+	@Schema(description = "Measured circumference of the middle of the upper arm")
 	private Integer midUpperArmCircumference;
 
 	@Diseases({
@@ -1114,6 +1182,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject experiences muscle pain")
 	private SymptomState musclePain;
 
 	@Diseases({
@@ -1137,6 +1206,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject is nauseous")
 	private SymptomState nausea;
 
 	@Diseases({
@@ -1149,6 +1219,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject has a stiff neck")
 	private SymptomState neckStiffness;
 
 	@Diseases({
@@ -1164,6 +1235,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences nosebleeding")
 	private SymptomState noseBleeding;
 
 	@Diseases({
@@ -1176,6 +1248,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Schema(description = "Whether subject shows oedema on face or neck")
 	private SymptomState oedemaFaceNeck;
 
 	@Diseases({
@@ -1188,12 +1261,15 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Schema(description = "Whether subject shows oedema in lower extremities")
 	private SymptomState oedemaLowerExtremity;
 
 	@Outbreaks
+	@Schema(description = "Date when symptoms first manifested")
 	private Date onsetDate;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Description of the symptoms that manifested at first")
 	private String onsetSymptom;
 
 	@Diseases({
@@ -1205,6 +1281,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences oral ulcers")
 	private SymptomState oralUlcers;
 
 	@Diseases({
@@ -1222,6 +1299,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences hemorrhagic symptopms not specifically listed")
 	private SymptomState otherHemorrhagicSymptoms;
 
 	@Diseases({
@@ -1241,6 +1319,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.OTHER)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Description of the hemorrhagic symptoms shown by subject")
 	private String otherHemorrhagicSymptomsText;
 
 	@Diseases({
@@ -1264,6 +1343,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences any non-hemorrhagic symptoms not specifically listed")
 	private SymptomState otherNonHemorrhagicSymptoms;
 
 	@Diseases({
@@ -1289,6 +1369,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.OTHER)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Description of the non-hemorrhagic symptoms shown by subject")
 	private String otherNonHemorrhagicSymptomsText;
 
 	@Diseases({
@@ -1301,6 +1382,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences otitis media (inflammation of middle ear)")
 	private SymptomState otitisMedia;
 
 	@Diseases({
@@ -1313,6 +1395,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences painful lymphadentitis (lymph node inflammation)")
 	private SymptomState painfulLymphadenitis;
 
 	@Diseases({
@@ -1325,6 +1408,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject has a palpable liver")
 	private SymptomState palpableLiver;
 
 	@Diseases({
@@ -1337,6 +1421,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject has a palpable spleen")
 	private SymptomState palpableSpleen;
 
 	@Diseases({
@@ -1348,6 +1433,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Location where the patient became ill")
 	private String patientIllLocation;
 
 	@Diseases({
@@ -1360,6 +1446,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows pharyngeal erythema (reddening of throat)")
 	private SymptomState pharyngealErythema;
 
 	@Diseases({
@@ -1372,6 +1459,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows pharyngeal exudation")
 	private SymptomState pharyngealExudate;
 
 	@Diseases({
@@ -1384,6 +1472,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject has rapid breathing")
 	private SymptomState rapidBreathing;
 
 	@Diseases({
@@ -1399,6 +1488,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject vomits red blood")
 	private SymptomState redBloodVomit;
 
 	@Diseases({
@@ -1415,8 +1505,10 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject refuses to eat or drink")
 	private SymptomState refusalFeedorDrink;
 
+	@Schema(description = "Measured breathng rate")
 	private Integer respiratoryRate;
 
 	@Diseases({
@@ -1429,6 +1521,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject has a runny nose")
 	private SymptomState runnyNose;
 
 	@Diseases({
@@ -1441,6 +1534,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences side pain")
 	private SymptomState sidePain;
 
 	@Diseases({
@@ -1456,6 +1550,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether subject shows skin bruising")
 	private SymptomState skinBruising;
 
 	@Diseases({
@@ -1476,6 +1571,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
 	/** Maculopapular rash */
+	@Schema(description = "Whether subject shows a skin rash (used for maculopapular rash)")
 	private SymptomState skinRash;
 
 	@Diseases({
@@ -1493,6 +1589,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject experiences sore throat")
 	private SymptomState soreThroat;
 
 	@Diseases({
@@ -1506,6 +1603,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject suffers from bleeding stomach")
 	private SymptomState stomachBleeding;
 
 	@Diseases({
@@ -1518,6 +1616,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject has sunken eyes or sunken fontanelle")
 	private SymptomState sunkenEyesFontanelle;
 
 	@Diseases({
@@ -1530,8 +1629,10 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows swollen glands")
 	private SymptomState swollenGlands;
 
+	@Schema(description = "Whether subject is symptomatic for researched disease")
 	private Boolean symptomatic;
 
 	@Diseases({
@@ -1554,6 +1655,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "General comments about symptoms")
 	private String symptomsComments;
 
 	@Diseases({
@@ -1577,6 +1679,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
+	@Schema(description = "Measured body temperature")
 	private Float temperature;
 
 	@Diseases({
@@ -1612,6 +1715,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows thrombocytopenia (lessening of platelets)")
 	private SymptomState throbocytopenia;
 
 	@Diseases({
@@ -1623,71 +1727,83 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
+	@Schema(description = "Whether subject experiences tremors")
 	private SymptomState tremor;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject has cataract in both eyes")
 	private SymptomState bilateralCataracts;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject has cataract in one eye")
 	private SymptomState unilateralCataracts;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject has congenital glaucoma (damaged optic nerve from birth)")
 	private SymptomState congenitalGlaucoma;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject has pigmentary retinopathy (degenerative disorder of the retina)")
 	private SymptomState pigmentaryRetinopathy;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows pupuric skin rash")
 	private SymptomState purpuricRash;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
+	@Schema(description = "Whether subject has an abnormally small head")
 	private SymptomState microcephaly;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows developmental delay")
 	private SymptomState developmentalDelay;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject shows a abnormally big spleen")
 	private SymptomState splenomegaly;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject has meningoencephalitis (inflammation of meninges with involvement of the brain)")
 	private SymptomState meningoencephalitis;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences radiolucent bone disease")
 	private SymptomState radiolucentBoneDisease;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Schema(description = "Whether subject has a heart disease from birth")
 	private SymptomState congenitalHeartDisease;
 
 	@Diseases({
@@ -1702,6 +1818,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about a congenital heart disease")
 	private String congenitalHeartDiseaseDetails;
 
 	@Diseases({
@@ -1721,6 +1838,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences unexplained bleeding")
 	private SymptomState unexplainedBleeding;
 
 	@Diseases({
@@ -1745,106 +1863,124 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Schema(description = "Whether subject experiences vomiting")
 	private SymptomState vomiting;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject has extreme dread or fear of water")
 	private SymptomState hydrophobia;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject experiences episthotonus (cramps of mainly streching back muscles)")
 	private SymptomState opisthotonus;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject experiences from anxiety states")
 	private SymptomState anxietyStates;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject is in delirium")
 	private SymptomState delirium;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject is uproarious")
 	private SymptomState uproariousness;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences paresthesia around a wound (abnormal sensation of the skin)")
 	private SymptomState paresthesiaAroundWound;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject salivates excessively")
 	private SymptomState excessSalivation;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject experiences insomnia")
 	private SymptomState insomnia;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
+	@Schema(description = "Whether subject experiences paralysis")
 	private SymptomState paralysis;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
+	@Schema(description = "Whether subject is especially excited")
 	private SymptomState excitation;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject experiences dysphagia (difficulty swallowing)")
 	private SymptomState dysphagia;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject experiences aerophobia (fear of fresh air/wind)")
 	private SymptomState aerophobia;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject is hyperactive")
 	private SymptomState hyperactivity;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject experiences some type of paresis (weakeness/partial loss of voluntary movement)")
 	private SymptomState paresis;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject is agitated")
 	private SymptomState agitation;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject suffers from ascending flaccid paralysis")
 	private SymptomState ascendingFlaccidParalysis;
 
 	@Diseases({
 		RABIES })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject behaves erratic")
 	private SymptomState erraticBehaviour;
 
 	@Diseases({
@@ -1854,12 +1990,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject is in a coma")
 	private SymptomState coma;
 
 	@Diseases({
 		ANTHRAX })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Schema(description = "Whether subject experiences convulsions")
 	private SymptomState convulsion;
 
 	@Diseases({
@@ -1870,6 +2008,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether fluid in the lungs of the subject has been detected via auscultation")
 	private SymptomState fluidInLungCavityAuscultation;
 
 	@Diseases({
@@ -1880,6 +2019,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether fluid in the lungs of the subject has been detected via X-ray")
 	private SymptomState fluidInLungCavityXray;
 
 	@Diseases({
@@ -1890,6 +2030,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether there are any abnormal findings from a lung X-ray")
 	private SymptomState abnormalLungXrayFindings;
 
 	@Diseases({
@@ -1899,6 +2040,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether subject experiences conjunctival Injection (enlargement of conjunctival blood vessels)")
 	private SymptomState conjunctivalInjection;
 
 	@Diseases({
@@ -1907,6 +2049,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject experiences acute resiratory distress syndrome")
 	private SymptomState acuteRespiratoryDistressSyndrome;
 
 	@Diseases({
@@ -1915,6 +2058,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject has been clinically or radiologically diagnosed with pneumonia")
 	private SymptomState pneumoniaClinicalOrRadiologic;
 
 	@Diseases({
@@ -1922,6 +2066,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject suffers from loss of taste")
 	private SymptomState lossOfTaste;
 
 	@Diseases({
@@ -1929,6 +2074,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject suffers from loss of smell")
 	private SymptomState lossOfSmell;
 
 	@Diseases({
@@ -1938,6 +2084,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether subject is wheezing")
 	private SymptomState wheezing;
 
 	@Diseases({
@@ -1948,6 +2095,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.SKIN)
+	@Schema(description = "Whether subject shows skin ulcers")
 	private SymptomState skinUlcers;
 
 	@Diseases({
@@ -1958,6 +2106,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Schema(description = "Whether subject is unable to walk")
 	private SymptomState inabilityToWalk;
 
 	@Diseases({
@@ -1968,6 +2117,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subjects chest wall is drawing in")
 	private SymptomState inDrawingOfChestWall;
 
 	@Diseases({
@@ -1976,6 +2126,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject experiences respiratory insufficiency requiring treatment with a respirator")
 	private SymptomState respiratoryDiseaseVentilation;
 
 	@Diseases({
@@ -1986,6 +2137,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject is feeling especially ill")
 	private SymptomState feelingIll;
 
 	@Diseases({
@@ -1996,6 +2148,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Schema(description = "Whether subject experiences abnormally fast heart rate")
 	private SymptomState fastHeartRate;
 
 	@Diseases({
@@ -2004,8 +2157,10 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subjects measured oxygen saturation is lower than 94 percent")
 	private SymptomState oxygenSaturationLower94;
 
+	@Schema(description = "Subjects bodyweight in decigramm")
 	private Integer weight;
 
 	// complications
@@ -2027,6 +2182,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subjects consciousness is altered in some way")
 	private SymptomState alteredConsciousness;
 
 	@Diseases({
@@ -2048,6 +2204,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject is confused or disoriented")
 	private SymptomState confusedDisoriented;
 
 	@Diseases({
@@ -2065,6 +2222,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject suffers from hemorrhagic syndrome")
 	private SymptomState hemorrhagicSyndrome;
 
 	@Diseases({
@@ -2079,6 +2237,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject has hypergycemia (too high blood sugar)")
 	private SymptomState hyperglycemia;
 
 	@Diseases({
@@ -2093,6 +2252,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject has hypoglycemia (too low blood sugar)")
 	private SymptomState hypoglycemia;
 
 	@Diseases({
@@ -2108,6 +2268,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject shows signs of meningeal irritation")
 	private SymptomState meningealSigns;
 
 	@Diseases({
@@ -2132,6 +2293,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject suffers any not specified complications")
 	private SymptomState otherComplications;
 
 	@Diseases({
@@ -2159,6 +2321,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Description of the complications the subject suffers")
 	private String otherComplicationsText;
 
 	@Diseases({
@@ -2179,6 +2342,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject has seizures")
 	private SymptomState seizures;
 
 	@Diseases({
@@ -2197,6 +2361,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject has sepsis (blood poisoning)")
 	private SymptomState sepsis;
 
 	@Diseases({
@@ -2217,6 +2382,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@Complication
 	@HideForCountries
+	@Schema(description = "Whether subject is in shock")
 	private SymptomState shock;
 
 	@Diseases({
@@ -2225,6 +2391,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject feels feverish")
 	private SymptomState feverishFeeling;
 	@Diseases({
 		CORONAVIRUS,
@@ -2232,6 +2399,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject suffers from weakness")
 	private SymptomState weakness;
 	@Diseases({
 		CORONAVIRUS,
@@ -2239,6 +2407,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject suffers from fatigue")
 	private SymptomState fatigue;
 	@Diseases({
 		CORONAVIRUS,
@@ -2246,6 +2415,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject suufers from cough without sputum")
 	private SymptomState coughWithoutSputum;
 	@Diseases({
 		CORONAVIRUS,
@@ -2253,6 +2423,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject suffers from breathlessness")
 	private SymptomState breathlessness;
 	@Diseases({
 		CORONAVIRUS,
@@ -2260,6 +2431,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject suufers from chest pressure")
 	private SymptomState chestPressure;
 	@Diseases({
 		CORONAVIRUS,
@@ -2267,6 +2439,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Schema(description = "Whether subject has blue lips")
 	private SymptomState blueLips;
 	@Diseases({
 		CORONAVIRUS,
@@ -2274,6 +2447,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Schema(description = "Whether subject suffers from blood circulation problems")
 	private SymptomState bloodCirculationProblems;
 	@Diseases({
 		CORONAVIRUS,
@@ -2281,6 +2455,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Schema(description = "Whether subject suffers from palpitations (conscious feeling of heart activity)")
 	private SymptomState palpitations;
 	@Diseases({
 		CORONAVIRUS,
@@ -2288,6 +2463,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Schema(description = "Whether subject suffers from dizzyness when standing up")
 	private SymptomState dizzinessStandingUp;
 
 	@Diseases({
@@ -2296,6 +2472,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Schema(description = "Whether subject suffers from high or low blood pressure")
 	private SymptomState highOrLowBloodPressure;
 
 	@Diseases({
@@ -2304,6 +2481,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.URINARY)
+	@Schema(description = "Whether subject suffers from urinary retention")
 	private SymptomState urinaryRetention;
 
 	@Diseases({
@@ -2314,6 +2492,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Schema(description = "Whether subject suffers from shivering")
 	private SymptomState shivering;
 
 	@Order(0)

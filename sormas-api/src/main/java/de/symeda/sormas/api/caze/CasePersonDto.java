@@ -22,8 +22,10 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.PersonDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @AuditedClass
+@Schema(description = "Data transfer object for data of a case and the person related to the case")
 public class CasePersonDto implements Serializable {
 
 	private static final long serialVersionUID = 4238365446327936524L;

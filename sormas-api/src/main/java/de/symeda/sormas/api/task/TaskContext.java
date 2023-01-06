@@ -22,7 +22,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DependingOnUserRight;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "General context in which a task is scheduled or performed.")
 public enum TaskContext {
 
 	@DependingOnUserRight(UserRight.CASE_VIEW)

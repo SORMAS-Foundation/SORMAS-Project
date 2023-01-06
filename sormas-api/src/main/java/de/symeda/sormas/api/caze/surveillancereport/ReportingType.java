@@ -17,7 +17,9 @@ package de.symeda.sormas.api.caze.surveillancereport;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Source that generates the report")
 public enum ReportingType {
 
 	DOCTOR,

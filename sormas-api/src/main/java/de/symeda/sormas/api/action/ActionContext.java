@@ -18,10 +18,12 @@
 package de.symeda.sormas.api.action;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Context of an action.
  */
+@Schema(description = "Context in which an action is performed (e.g. Event)")
 public enum ActionContext {
 
 	EVENT;

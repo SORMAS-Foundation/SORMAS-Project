@@ -31,17 +31,21 @@ import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CONTACT_TRACING)
+@Schema(description = "Corresponding contact between a person [contactName] and an affected person of a confirmed case [caseName]")
 public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Schema(description = "Name of the person that had a contact with a disease")
 	private PersonName contactName;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Schema(description = "Name of the person that has a case of the disease, the person had contact with")
 	private PersonName caseName;
 
 	public ContactReferenceDto() {
@@ -136,9 +140,11 @@ public class ContactReferenceDto extends ReferenceDto {
 
 		@PersonalData
 		@SensitiveData
+		@Schema(description = "First name(s)")
 		private String firstName;
 		@PersonalData
 		@SensitiveData
+		@Schema(description = "Last name")
 		private String lastName;
 
 		public PersonName() {

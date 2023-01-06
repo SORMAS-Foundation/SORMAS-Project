@@ -33,7 +33,9 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "The corresponding sample criteria.")
 public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = -4649293670201029461L;
@@ -50,8 +52,11 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private FacilityReferenceDto laboratory;
+	@Schema(description = "Indicates whether the sample has been shipped.")
 	private Boolean shipped;
+	@Schema(description = "Indicates whether the sample has been received.")
 	private Boolean received;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Boolean referred;
 	private PathogenTestResultType pathogenTestResult;
 	private CaseClassification caseClassification;
@@ -60,17 +65,23 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
 	private EventParticipantReferenceDto eventParticipant;
+	@Schema(description = "Indicates whether the sample has been deleted.")
 	private Boolean deleted = Boolean.FALSE;
+	@Schema(description = "Filter-pattern for corresponding case code")
 	private String caseCodeIdLike;
 	private EntityRelevanceStatus relevanceStatus;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private SampleAssociationType sampleAssociationType;
-
+	@Schema(description = "Date at the beginning of the interval (for filtering by date)")
 	private Date sampleReportDateFrom;
+	@Schema(description = "Date at the end of the interval (for filtering by date)")
 	private Date sampleReportDateTo;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
-
+	@Schema(description = "UUIDs of the cases associated with this sample.")
 	private List<String> caseUuids;
+	@Schema(description = "UUIDs of the contacts associated with this sample.")
 	private List<String> contactUuids;
+	@Schema(description = "UUIDs of the event participants associated with this sample.")
 	private List<String> eventParticipantUuids;
 
 	public RegionReferenceDto getRegion() {

@@ -25,13 +25,16 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for geodetic location data related to a case")
 public class MapCaseDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = -3021332968056368431L;
 
 	public static final String I18N_PREFIX = "CaseData";
 
+	@Schema(description = "Date the case was reported")
 	private Date reportDate;
 	private CaseClassification caseClassification;
 	private Disease disease;
@@ -39,28 +42,37 @@ public class MapCaseDto extends AbstractUuidDto {
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
+	@Schema(description = "Geodetic latitude of the health facility responsible for the case")
 	private Double healthFacilityLat;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
+	@Schema(description = "Geodetic longitude of the health facility responsible for the case")
 	private Double healthFacilityLon;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
+	@Schema(description = "Geodetic latitude where the case was reported")
 	private Double reportLat;
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
+	@Schema(description = "Geodetic longitude where the case was reported")
 	private Double reportLon;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
+	@Schema(description = "Geodetic latitude of the persons home address")
 	private Double addressLat;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
+	@Schema(description = "Geodetic latitude of the persons home address")
 	private Double addressLon;
 
+	@Schema(description = "Universal Id (UUID) of the health facility responsible for the case")
 	private String healthFacilityUuid;
 
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private Boolean isInJurisdiction;
 
 	public MapCaseDto(

@@ -18,10 +18,14 @@ package de.symeda.sormas.api.utils.pseudonymization;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class PseudonymizableIndexDto extends AbstractUuidDto implements Pseudonymizable {
 
+	@Schema(description = "Whether data in index was pseudonymized")
 	private boolean pseudonymized;
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered "
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private boolean inJurisdiction;
 
 	@Override

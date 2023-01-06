@@ -16,7 +16,9 @@
 package de.symeda.sormas.api.exposure;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Type of gathering where an exposure occured")
 public enum GatheringType {
 
 	PARTY,

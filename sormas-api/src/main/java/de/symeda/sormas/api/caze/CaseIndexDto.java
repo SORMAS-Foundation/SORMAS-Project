@@ -35,8 +35,12 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import org.apache.commons.lang3.StringUtils;
 
+@Schema(description = "Light weight index information on case entries for larger queries")
 public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
@@ -80,55 +84,82 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
 	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC, possibly obsolete")
 	private long id;
+	@Schema(description = "Eligible party identification code. For detailed description see **CaseDataDto**")
 	private String epidNumber;
+	@Schema(description = "Case ID in external Systems (e.g. external national reporting tool)")
 	private String externalID;
+	@Schema(description = "Exernal token ID/file number of the case")
 	private String externalToken;
+	@Schema(description = "Internal token ID/case number of the case")
 	private String internalToken;
+	@Schema(description = "UUID of the person that has the case of the disease")
 	private String personUuid;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "First name of the person that has the case of the disease")
 	private String personFirstName;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Last name of the person that has the case of the disease")
 	private String personLastName;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
+	@Schema(description = "Free text details about the researched disease")
 	private String diseaseDetails;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private PresentCondition presentCondition;
+	@Schema(description = "Date when the case was reported")
 	private Date reportDate;
+	@Schema(description = "Date when the case data entry was created")
 	private Date creationDate;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Name of the health facility the case is assigned to")
 	private String healthFacilityName;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Name of the point-of-entry where the person entered the country")
 	private String pointOfEntryName;
+	@Schema(description = "Unique ID (UUID) of the responsible surveillance officer")
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
 	private Sex sex;
 	private AgeAndBirthDateDto ageAndBirthDate;
+	@Schema(description = "Percentage, indicates how many of all available data entries have actually been filled")
 	private Float completeness;
+	@Schema(description = "Date until which the person is quarantined")
 	private Date quarantineTo;
 	private FollowUpStatus followUpStatus;
+	@Schema(description = "Date until which the case has to be followed up on")
 	private Date followUpUntil;
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
+	@Schema(description = "Number of visits/follow-ups the case recieved")
 	private Integer visitCount;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Integer missedVisitsCount;
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date surveillanceToolLastShareDate;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Long surveillanceToolShareCount;
 	private ExternalShareStatus surveillanceToolStatus;
 
+	@Schema(description = "Unique ID (UUID) of the region responsible for the case")
 	private String responsibleRegionUuid;
+	@Schema(description = "Unique ID (UUID) of the district responsible for the case")
 	private String responsibleDistrictUuid;
+	@Schema(description = "UUID of the region where the case person stays, if the place of stay of the person and the responsible region differ")
 	private String regionUuid;
+	@Schema(description = "UUID of the district where the case person stays, if the place of stay of the person and the responsible district differ")
 	private String districtUuid;
+	@Schema(description = "Name of the district responsible for the case")
 	private String responsibleDistrictName;
-
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private Boolean isInJurisdiction;
 
 	//@formatter:off
@@ -434,6 +465,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.quarantineTo = quarantineTo;
 	}
 
+	@Hidden
 	public Boolean getInJurisdiction() {
 		return isInJurisdiction;
 	}
@@ -518,6 +550,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.responsibleDistrictUuid = responsibleDistrictUuid;
 	}
 
+	@Hidden
 	public void setInJurisdiction(Boolean inJurisdiction) {
 		isInJurisdiction = inJurisdiction;
 	}

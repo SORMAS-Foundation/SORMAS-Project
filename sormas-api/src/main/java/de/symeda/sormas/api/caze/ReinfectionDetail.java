@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum containing researchable details about a reinfection")
 public enum ReinfectionDetail {
 
 	GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN(ReinfectionDetailGroup.GENOME_SEQUENCE),

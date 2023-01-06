@@ -21,6 +21,7 @@ import java.util.List;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class SimilarPersonDto extends AbstractUuidDto {
 
@@ -44,26 +45,37 @@ public class SimilarPersonDto extends AbstractUuidDto {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 
 	private static final List<String> LOCATION_DETAILS = Arrays.asList(POSTAL_CODE, CITY, STREET, HOUSE_NUMBER);
-
+	@Schema(description = "First name(s) of the person")
 	private String firstName;
+	@Schema(description = "Last name of the person")
 	private String lastName;
 	@HideForCountries
+	@Schema(description = "Nickname of the person")
 	private String nickname;
 	private String ageAndBirthDate;
 	private Sex sex;
 	private PresentCondition presentCondition;
+	@Schema(description = "Person's phone number")
 	private String phone;
+	@Schema(description = "Name of the district the person lives in")
 	private String districtName;
+	@Schema(description = "Name of the communty the person lives in")
 	private String communityName;
+	@Schema(description = "Postal code of the community the person lives in")
 	private String postalCode;
+	@Schema(description = "Name of the city the person lives in")
 	private String city;
+	@Schema(description = "Name of the street the person lives in")
 	private String street;
+	@Schema(description = "Number of the house the person lives in")
 	private String houseNumber;
 	@HideForCountries
+	@Schema(description = "Person's national health ID")
 	private String nationalHealthId;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
+	@Schema(description = "Person's passport number. Not applicable for countries: Germany, France")
 	private String passportNumber;
 
 	public SimilarPersonDto(String uuid) {

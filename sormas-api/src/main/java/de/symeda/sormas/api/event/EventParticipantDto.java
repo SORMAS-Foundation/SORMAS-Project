@@ -36,8 +36,10 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
+@Schema(description = "Data transfer object for event participants (person)")
 public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
@@ -66,6 +68,7 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	private PersonDto person;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Free text description on how the person was involved in the event")
 	private String involvementDescription;
 	private CaseReferenceDto resultingCase; // read-only
 	private RegionReferenceDto region;
@@ -86,9 +89,12 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
 
+	@Schema(description = "Indicates whether the event participant was deleted.")
 	private boolean deleted;
+	@Schema(description = "Indicates why the event participant was deleted.")
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Detailed deletion reason other than proposed reasons.")
 	private String otherDeletionReason;
 
 	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {

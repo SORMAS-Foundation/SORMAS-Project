@@ -21,7 +21,9 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light-weight index infomation on clinical visit entries for larger queries.")
 public class ClinicalVisitIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = -7587908114350685830L;
@@ -35,18 +37,26 @@ public class ClinicalVisitIndexDto extends AbstractUuidDto {
 	public static final String BLOOD_PRESSURE = "bloodPressure";
 	public static final String HEART_RATE = "heartRate";
 	public static final String SIGNS_AND_SYMPTOMS_COUNT = "signsAndSymptomsCount";
-
+	@Schema(description = "Date and time of the clinical visit.")
 	private Date visitDateTime;
 	@SensitiveData
+	@Schema(description = "Practitioner that conducted the clinical visit.")
 	private String visitingPerson;
 	@SensitiveData
+	@Schema(description = "Remarks recorded during the clinical visit.")
 	private String visitRemarks;
+	@Schema(description = "Body temperature recorded during the clinical visit.")
 	private String temperature;
+	@Schema(description = "Blood pressure recorded during the clinical visit.")
 	private String bloodPressure;
+	@Schema(description = "Heart rate recorded during the clinical visit.")
 	private String heartRate;
+	@Schema(description = "Number of symptoms and signs of the disease.")
 	private Integer signsAndSymptomsCount;
+	@Schema(description = "ID of the symptom.")
 	private Long symptomsId;
-
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private Boolean isInJurisdiction;
 
 	public ClinicalVisitIndexDto(

@@ -25,7 +25,9 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Customizable enum containing occupations a person can have")
 public class OccupationType extends CustomizableEnum implements Serializable {
 
 	public static final String I18N_PREFIX = "OccupationType";

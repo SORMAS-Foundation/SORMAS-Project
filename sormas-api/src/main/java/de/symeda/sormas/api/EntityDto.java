@@ -31,6 +31,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.uuid.HasUuid;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * All inheriting classes of EntityDto must include a build() method that sets
@@ -52,12 +53,15 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	public static final String UUID = "uuid";
 	public static final String NO_LAST_SYNCED_UUID = "NO_LAST_SYNCED_UUID";
 
+	@Schema(description = "Date and time when this entity was created")
 	private Date creationDate;
+	@Schema(description = "Date and time when this entity was last modified")
 	private Date changeDate;
 	@Outbreaks
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	@AuditIncludeProperty
+	@Schema(description = "Universally unique identifier")
 	private String uuid;
 
 	protected EntityDto() {

@@ -15,6 +15,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CampaignDto extends EntityDto {
 
@@ -32,18 +33,29 @@ public class CampaignDto extends EntityDto {
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Name in free text")
 	private String name;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Campaign description in free text")
 	private String description;
+	@Schema(description = "Date and time when the campaign was started")
 	private Date startDate;
+	@Schema(description = "Date and time when the campaign finished")
 	private Date endDate;
+	@Schema(description = "Reference to the user who created the form")
 	private UserReferenceDto creatingUser;
+	@Schema(description = "Corresponding forms meta information")
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
 	@Valid
+	@Schema(description = "Dashboard elements shown for this campaign")
 	private List<CampaignDashboardElement> campaignDashboardElements;
 
+	@Schema(
+		description = "Indicates whether the campaign was deleted (e.g. due to GDPR). The envelope campaign object is kept for reference, but content is deleted.")
 	private boolean deleted;
+	@Schema(description = "Indicates why a campaign entry was or should be deleted.")
 	private DeletionReason deletionReason;
+	@Schema(description = "Free text description of for deletion reason that does not fit the predefined enum.")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 

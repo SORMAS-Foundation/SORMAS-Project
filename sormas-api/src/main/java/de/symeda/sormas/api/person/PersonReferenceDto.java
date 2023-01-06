@@ -21,19 +21,23 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.PersonalData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.CONTACT_TRACING,
 	FeatureType.EVENT_SURVEILLANCE })
+@Schema(description = "Basic information about a person recorded by SORMAS")
 public class PersonReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	@PersonalData
+	@Schema(description = "First name of the person.")
 	private String firstName;
 
 	@PersonalData
+	@Schema(description = "Last name of the person")
 	private String lastName;
 
 	public PersonReferenceDto() {

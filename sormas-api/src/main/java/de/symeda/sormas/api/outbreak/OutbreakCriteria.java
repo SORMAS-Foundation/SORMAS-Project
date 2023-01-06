@@ -24,6 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class OutbreakCriteria extends BaseCriteria implements Serializable {
 
@@ -32,10 +33,17 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
+	@Schema(description = "Indicates whether the outbreak is active.")
 	private Boolean active;
-	private Date activeLower, activeUpper;
+	@Schema(description = "Start date of the time period in which the outbreak was considered active.")
+	private Date activeLower;
+	@Schema(description = "End date of the time period in which the outbreak was considered active.")
+	private Date activeUpper;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date changeDateAfter;
+	@Schema(description = "Start date of time period in which the outbreaks have been reported.")
 	private Date reportedDateFrom;
+	@Schema(description = "End date of time period in which the outbreaks have been reported.")
 	private Date reportedDateTo;
 
 	public RegionReferenceDto getRegion() {

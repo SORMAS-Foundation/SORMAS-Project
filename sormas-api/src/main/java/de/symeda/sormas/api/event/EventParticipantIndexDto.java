@@ -10,6 +10,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class EventParticipantIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -29,26 +30,41 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	public static final String CONTACT_COUNT = "contactCount";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
+	@Schema(description = "UUID of the person entry corresponding to the event participant")
 	private String personUuid;
+	@Schema(description = "UUID of the corresponding case resulting from the event participant")
 	private String caseUuid;
+	@Schema(description = "UUID of the event that the participant attended")
 	private String eventUuid;
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "First name(s) of the participant")
 	private String firstName;
 	@SensitiveData
+	@Schema(description = "Last name of the participant")
 	private String lastName;
+	@Schema(description = "Sex of the participant")
 	private Sex sex;
+	@Schema(description = "Age of the participant")
 	private Integer approximateAge;
 	@SensitiveData
+	@Schema(description = "Free text description on how the person was involved in the event")
 	private String involvementDescription;
+	@Schema(description = "Number of contacts the participant had at this event")
 	private long contactCount;
 
 	private PathogenTestResultType pathogenTestResult;
+	@Schema(description = "Date and time when the sample was taken from the event participant")
 	private Date sampleDateTime;
 
 	private VaccinationStatus vaccinationStatus;
 
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private boolean isInJurisdiction;
+	@Schema(
+		description = "Whether the DTO is in the jurisdiction of or even owned by the user. Used to determine which user right needs to be considered"
+			+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private boolean isInJurisdictionOrOwned;
 
 	public EventParticipantIndexDto(

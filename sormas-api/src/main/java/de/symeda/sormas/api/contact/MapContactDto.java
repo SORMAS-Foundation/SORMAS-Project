@@ -26,6 +26,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class MapContactDto extends AbstractUuidDto {
 
@@ -34,26 +35,39 @@ public class MapContactDto extends AbstractUuidDto {
 	private ContactClassification contactClassification;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
+	@Schema(description = "Geodetic latitude where the contact was reported")
 	private Double reportLat;
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
+	@Schema(description = "Geodetic longitude where the contact was reported")
 	private Double reportLon;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
+	@Schema(description = "Geodetic latitude of the persons home address")
 	private Double addressLat;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
+	@Schema(description = "Geodetic longitude of the persons home address")
 	private Double addressLon;
 
+	@Schema(description = "Date and time when the last follow-up/visit of the contact was conducted")
 	private Date lastVisitDateTime;
+	@Schema(
+		description = "Date when the sypmtoms of the researched disease first set on in the person that has a case of the disease, with whom the contact occured.")
 	private Date caseOnsetDate;
+	@Schema(description = "Date when the case that the contact occured with was reported")
 	private Date caseReportDate;
+	@Schema(description = "Date when the contact was reported")
 	private Date contactReportDate;
+	@Schema(description = "First name(s) of the person related to the contact")
 	private String personFirstName;
+	@Schema(description = "Last name of the person related to the contact")
 	private String personLastName;
+	@Schema(description = "First name(s) of the person that has a case of the disease, that the contact occured with")
 	private String casePersonFirstName;
+	@Schema(description = "Last name of the person that has a case of the disease, that the contact occured with")
 	private String casePersonLastName;
 
 	public MapContactDto(

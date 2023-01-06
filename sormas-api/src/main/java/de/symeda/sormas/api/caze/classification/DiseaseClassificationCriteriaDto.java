@@ -21,17 +21,26 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class DiseaseClassificationCriteriaDto extends EntityDto {
 
 	private static final long serialVersionUID = 8800921617332187938L;
 
+	@Schema(description = "Disease that these criteria apply to.")
 	private Disease disease;
+	//Swagger binds @Schema to the Class, not the member. So defining individual Schemas for the different
+	// members is not possible, the last definition always overrides the previous.
 	private ClassificationCriteriaDto suspectCriteria;
+	
 	private ClassificationCriteriaDto probableCriteria;
+	
 	private ClassificationCriteriaDto confirmedCriteria;
+	
 	private ClassificationCriteriaDto confirmedNoSymptomsCriteria;
+	
 	private ClassificationCriteriaDto confirmedUnknownSymptomsCriteria;
+	@Schema(description = "Lists of criteria that categorize a case as either suspect, probable, confirmed, confirmed with no symptoms, confirmed with unknown symptoms or not a case.")
 	private ClassificationCriteriaDto notACaseCriteria;
 
 	public DiseaseClassificationCriteriaDto() {

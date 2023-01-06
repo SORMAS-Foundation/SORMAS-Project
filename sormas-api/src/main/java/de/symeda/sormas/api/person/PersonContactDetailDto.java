@@ -9,6 +9,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
@@ -30,28 +31,35 @@ public class PersonContactDetailDto extends PseudonymizableDto {
 	public static final String THIRD_PARTY_NAME = "thirdPartyName";
 
 	private PersonReferenceDto person;
-
+	@Schema(description = "Whether these are primary contact details")
 	private boolean primaryContact;
-
+	@Schema(description = "Type of person contact details")
 	private PersonContactDetailType personContactDetailType;
+	@Schema(description = "Type of phone number")
 	private PhoneNumberType phoneNumberType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Details about the type of person contact data other than the proposed types")
 	private String details;
 
 	@SensitiveData
+	@Schema(description = "Free text contact information")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactInformation;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Additional information about the person contact details")
 	private String additionalInformation;
 
+	@Schema(description = "Whether the collected data belong to another person or facility")
 	private boolean thirdParty;
 	@SensitiveData
+	@Schema(description = "Role description of the other person or facility")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String thirdPartyRole;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Name of the other person or facility")
 	private String thirdPartyName;
 
 	public static PersonContactDetailDto build(

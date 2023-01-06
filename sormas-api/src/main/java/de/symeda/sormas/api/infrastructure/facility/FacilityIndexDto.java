@@ -20,7 +20,9 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light-weight index information on facilities for larger queries")
 public class FacilityIndexDto extends AbstractUuidDto {
 
 	public static final String I18N_PREFIX = "Facility";
@@ -39,18 +41,27 @@ public class FacilityIndexDto extends AbstractUuidDto {
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 
+	@Schema(description = "Facility name")
 	private String name;
 	private FacilityType type;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	@Schema(description = "Postal code of the facility's address")
 	private String postalCode;
+	@Schema(description = "Name of the city the facility is located in")
 	private String city;
+	@Schema(description = "Street name of the facility's address")
 	private String street;
+	@Schema(description = "House number of the facility's address")
 	private String houseNumber;
+	@Schema(description = "Additional information from the facility's address (e.g. floor)")
 	private String additionalInformation;
+	@Schema(description = "Geodetic latitude of the facility's coordinates")
 	private Double latitude;
+	@Schema(description = "Geodetic longitude of the facility's coordinates")
 	private Double longitude;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalID;
 
 	public FacilityIndexDto(
@@ -198,6 +209,7 @@ public class FacilityIndexDto extends AbstractUuidDto {
 		this.externalID = externalID;
 	}
 
+	@Schema(description = "Caption based on UUID and facility name")
 	public String getCaption() {
 		return FacilityHelper.buildFacilityString(getUuid(), name);
 	}

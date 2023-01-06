@@ -23,7 +23,10 @@ import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Classification whether a case is an occurance of the researched disease."
+	+ " Higher severity signifies a higher probability/confirmation of an occurence of the disease.")
 public enum CaseClassification
 	implements
 	StatisticsGroupingKey {

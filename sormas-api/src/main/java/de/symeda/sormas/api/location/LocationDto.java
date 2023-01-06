@@ -49,11 +49,13 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.CONTACT_TRACING,
 	FeatureType.EVENT_SURVEILLANCE })
+@Schema(description = "Data transfer object for location related data")
 public class LocationDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -1399197327930368752L;
@@ -100,10 +102,12 @@ public class LocationDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
+	@Schema(description = "Free text details on the location")
 	private String details;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Name of the location's city")
 	private String city;
 	@PersonalData
 	@SensitiveData
@@ -113,33 +117,41 @@ public class LocationDto extends PseudonymizableDto {
 	@Pseudonymizer(LatitudePseudonymizer.class)
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
+	@Schema(description = "Geodetic latitude of the location's coordinates")
 	private Double latitude;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
+	@Schema(description = "Geodetic longitude of the location's coordinates")
 	private Double longitude;
+	@Schema(description = "Accuracy of geodetic latitude and longitude")
 	private Float latLonAccuracy;
 	@PersonalData()
 	@SensitiveData()
 	@Pseudonymizer(PostalCodePseudonymizer.class)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Location's city postal code")
 	private String postalCode;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Location's street name")
 	private String street;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Location's house number")
 	private String houseNumber;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Additonal address information (e.g. ground floor)")
 	private String additionalInformation;
 	private PersonAddressType addressType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Details about the address type")
 	private String addressTypeDetails;
 	@PersonalData
 	private FacilityType facilityType;
@@ -149,22 +161,27 @@ public class LocationDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about the facility")
 	private String facilityDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "First name(s) of the location's contact person")
 	private String contactPersonFirstName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Last name of the location's contact person")
 	private String contactPersonLastName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Location contact phone number")
 	private String contactPersonPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@PersonalData
 	@SensitiveData
+	@Schema(description = "Location contact e-mail address")
 	private String contactPersonEmail;
 
 	public String getDetails() {

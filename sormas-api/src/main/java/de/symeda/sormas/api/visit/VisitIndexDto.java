@@ -9,6 +9,7 @@ import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class VisitIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -27,18 +28,25 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
 	public static final String ORIGIN = "origin";
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Long id;
+	@Schema(description = "Time and date when the visit was conducted")
 	private Date visitDateTime;
 	private VisitStatus visitStatus;
 	@SensitiveData
+	@Schema(description = "Remarks recorded about the visit")
 	private String visitRemarks;
 	private Disease disease;
+	@Schema(description = "Whether the person visited was symptomatic for the researched disease")
 	private Boolean symptomatic;
+	@Schema(description = "Body temperature of the visited person")
 	private Float temperature;
 	private TemperatureSource temperatureSource;
 	private VisitOrigin origin;
+	@Schema(description = "User that conducted the visit")
 	private UserReferenceDto visitUser;
-
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private Boolean isInJurisdiction;
 
 	public VisitIndexDto(

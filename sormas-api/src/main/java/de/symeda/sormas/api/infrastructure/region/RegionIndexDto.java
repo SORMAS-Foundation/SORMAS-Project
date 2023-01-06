@@ -23,7 +23,9 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light-weight index information on regions for larger queries.")
 public class RegionIndexDto extends EntityDto {
 
 	private static final long serialVersionUID = -199144233786408125L;
@@ -37,10 +39,15 @@ public class RegionIndexDto extends EntityDto {
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country";
 
+	@Schema(description = "Name of the Region")
 	private String name;
+	@Schema(description = "Region's Eligible Party Identification Code")
 	private String epidCode;
+	@Schema(description = "Population number in the region")
 	private Integer population;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Float growthRate;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalID;
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;

@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.utils.PersonalData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class BirthDateDto implements Serializable {
 
@@ -13,8 +14,11 @@ public class BirthDateDto implements Serializable {
 	public static final String DATE_OF_BIRTH_YYYY = "dateOfBirthYYYY";
 
 	@PersonalData
+	@Schema(description = "Day a person was born")
 	private Integer dateOfBirthDD;
+	@Schema(description = "Month a person was born")
 	private Integer dateOfBirthMM;
+	@Schema(description = "Year a person was born")
 	private Integer dateOfBirthYYYY;
 
 	public BirthDateDto() {

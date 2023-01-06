@@ -11,7 +11,9 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for tracing information related to airports, seaports and ground crossings")
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class PortHealthInfoDto extends EntityDto {
 
@@ -44,49 +46,70 @@ public class PortHealthInfoDto extends EntityDto {
 
 	// Airport
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Name of the airline the person used. Relevant at airports")
 	private String airlineName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Number of the flights the person was on. Relevant at airports")
 	private String flightNumber;
+	@Schema(description = "Date and time when the flight departed. Relevant at airports")
 	private Date departureDateTime;
+	@Schema(description = "Date and time when the flight arrived. Relevant at airports")
 	private Date arrivalDateTime;
+	@Schema(description = "Whether the flight had free seating. Relevant at airports")
 	private YesNoUnknown freeSeating;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "The person's seat number. Relevant for tracing at airports")
 	private String seatNumber;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "The airport the person originally departed from. Relevant at airports")
 	private String departureAirport;
+	@Schema(description = "Number of transit stops of the connection. Relevant at airports")
 	private Integer numberOfTransitStops;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the first transit stop. Relevant at airports")
 	private String transitStopDetails1;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the second transit stop. Relevant at airports")
 	private String transitStopDetails2;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the third transit stop. Relevant at airports")
 	private String transitStopDetails3;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the fourth transit stop. Relevant at airports")
 	private String transitStopDetails4;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the fifth transit stop. Relevant at airports")
 	private String transitStopDetails5;
 
 	// Seaport
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Name of the vessel the person used. Relevant at seaports")
 	private String vesselName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the vessel the person used. Relevant at seaports")
 	private String vesselDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Port the vessel originally departed from. Relevant at seaports")
 	private String portOfDeparture;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "The vessel's last port of call before reaching the destination port. Relevant at seaports")
 	private String lastPortOfCall;
 
 	// Ground Crossing
 	private ConveyanceType conveyanceType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the type of overland conveyance. Relevant at ground crossings")
 	private String conveyanceTypeDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Name of the location the person departed from. Relevant at ground crossings")
 	private String departureLocation;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Final destination of the person's travel. Relevant at ground crossings")
 	private String finalDestination;
 
 	// Other
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Free text details about another type of entry into a country")
 	private String details;
 
 	public static PortHealthInfoDto build() {

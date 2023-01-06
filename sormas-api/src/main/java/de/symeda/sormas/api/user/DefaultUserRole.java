@@ -27,10 +27,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * These are also used as user groups in the server realm
  */
+@Schema(description = "Default user roles defined by the SORMAS system and used as user groups in the server realm.")
 public enum DefaultUserRole {
 
 	ADMIN(false, false, false, false, JurisdictionLevel.NONE, Collections.emptySet(), Collections.emptySet()),

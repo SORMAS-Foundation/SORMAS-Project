@@ -16,7 +16,10 @@
 package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(
+	description = "Enum specifying the medically associated transmission mode: 	OPERATIVE_OR_DIAGNOSTIC_PROCEDURE, BLOOD_PRODUCTS, ORGAN_TRANSPLANTATION, DIALYSIS, INJECTION_FOR_MEDICAL_PURPOSES")
 public enum MedicallyAssociatedTransmissionMode {
 
 	OPERATIVE_OR_DIAGNOSTIC_PROCEDURE,

@@ -2,7 +2,9 @@ package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum for specifying the type of location/address")
 public enum PersonAddressType {
 
 	HOME,

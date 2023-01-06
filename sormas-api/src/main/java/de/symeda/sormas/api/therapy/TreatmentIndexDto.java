@@ -20,6 +20,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TreatmentIndexDto extends AbstractUuidDto {
 
@@ -33,12 +35,16 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 	public static final String TREATMENT_ROUTE = "treatmentRoute";
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
 	private TreatmentIndexType treatmentIndexType;
+	@Schema(description = "Date and time of the treatment")
 	private Date treatmentDateTime;
+	@Schema(description = "Dosage of the administered drug")
 	private String dose;
 	private TreatmentIndexRoute treatmentIndexRoute;
 	@SensitiveData
+	@Schema(description = "Clinician executing the treatment")
 	private String executingClinician;
-
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private Boolean isInJurisdiction;
 
 	public TreatmentIndexDto(
@@ -65,6 +71,7 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 		return treatmentIndexType;
 	}
 
+	@Hidden
 	public String getTreatmentType() {
 		return treatmentIndexType.formatString();
 	}
@@ -89,6 +96,7 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 		return treatmentIndexRoute;
 	}
 
+	@Hidden
 	public String getTreatmentRoute() {
 		return treatmentIndexRoute.formatString();
 	}
@@ -101,6 +109,7 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 		this.executingClinician = executingClinician;
 	}
 
+	@Hidden
 	public Boolean getInJurisdiction() {
 		return isInJurisdiction;
 	}
@@ -109,6 +118,7 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 
 		private TreatmentType treatmentType;
 		@SensitiveData
+		@Schema(description = "Details about the treatment")
 		private String treatmentDetails;
 		private TypeOfDrug typeOfDrug;
 
@@ -135,6 +145,7 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 
 		private TreatmentRoute route;
 		@SensitiveData
+		@Schema(description = "Details about the route the drug was administered through")
 		private String routeDetails;
 
 		public TreatmentIndexRoute(TreatmentRoute route, String routeDetails) {

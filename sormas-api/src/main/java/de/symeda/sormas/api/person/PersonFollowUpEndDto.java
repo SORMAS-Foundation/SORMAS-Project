@@ -4,9 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class PersonFollowUpEndDto implements Serializable {
 
+	@Schema(description = "Universal Id (UUID) of the person related to the external visit")
 	private String personUuid;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date latestFollowUpEndDate;
 
 	public PersonFollowUpEndDto(String personUuid, Date latestFollowUpEndDate) {

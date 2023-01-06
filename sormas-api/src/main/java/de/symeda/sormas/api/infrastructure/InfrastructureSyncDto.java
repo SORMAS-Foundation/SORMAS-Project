@@ -18,12 +18,15 @@ import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRoleDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @AuditedClass
+@Schema(description = "Synchronization data transfer object containing all geolocation information available on the server.")
 public class InfrastructureSyncDto implements Serializable {
 
 	private static final long serialVersionUID = -3874808120492307171L;
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private boolean initialSyncRequired;
 	private List<ContinentDto> continents;
 	private List<SubcontinentDto> subcontinents;
@@ -38,8 +41,10 @@ public class InfrastructureSyncDto implements Serializable {
 	private List<DiseaseClassificationCriteriaDto> diseaseClassifications;
 	private List<DiseaseConfigurationDto> diseaseConfigurations;
 	private List<UserRoleDto> userRoles;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private List<String> deletedUserRoleUuids;
 	private List<FeatureConfigurationDto> featureConfigurations;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private List<String> deletedFeatureConfigurationUuids;
 
 	public boolean isInitialSyncRequired() {

@@ -24,6 +24,8 @@ import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class EventIndexDto extends PseudonymizableIndexDto {
 
@@ -70,49 +72,76 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
 	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Long id;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalToken;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String internalToken;
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private SpecificRisk specificRisk;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private EventManagementStatus eventManagementStatus;
+	@Schema(description = "Number of participants in the event")
 	private long participantCount;
+	@Schema(description = "Number of cases connected to the event")
 	private long caseCount;
+	@Schema(description = "Number of deaths connected to the event")
 	private long deathCount;
 	/**
 	 * number of contacts whose person is involved in this event
 	 */
+	@Schema(description = "Number of contact entries resulting from the event")
 	private long contactCount;
 	/**
 	 * number of contacts whose person is involved in this event, and where the source case is also part of the event
 	 */
+	@Schema(description = "Number of contactsresulting from the event, whose source-case is also part of the event")
 	private long contactCountSourceInEvent;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
+	@Schema(description = "Free text details on the disease the event is connected to")
 	private String diseaseDetails;
+	@Schema(description = "Date and time when the event started")
 	private Date startDate;
+	@Schema(description = "Date and time when the event ended")
 	private Date endDate;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date evolutionDate;
+	@Schema(description = "Titular name of the event")
 	private String eventTitle;
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
+
+	@Schema(description = "First name(s) of the source person (for EventSourceType.HOTLINE_PERSON or EventSourceType.INSTITUTIONAL_PARTNER)")
 	private String srcFirstName;
+	@Schema(description = "Last name of the institutional partner (for EventSourceType.HOTLINE_PERSON or EventSourceType.INSTITUTIONAL_PARTNER)")
 	private String srcLastName;
+	@Schema(description = "Phone number of the institutional partner (for EventSourceType.HOTLINE_PERSON or EventSourceType.INSTITUTIONAL_PARTNER)")
 	private String srcTelNo;
+	@Schema(description = "Website-URL of the media source (for EventSourceType.MEDIA_NEWS)")
 	private String srcMediaWebsite;
+	@Schema(description = "Name of the media source (for EventSourceType.MEDIA_NEWS)")
 	private String srcMediaName;
+	@Schema(description = "Date when the event was reported")
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
 	private UserReferenceDto responsibleUser;
+	@Schema(description = "UUID of the region, where the event took place")
 	private String regionUuid;
+
+	@Schema(description = "Whether the DTO is in the jurisdiction of or owned by the user. "
+		+ "Used to determine which user right needs to be considered to decide whether sensitive and/or personal data is supposed to be shown.")
 	private boolean isInJurisdictionOrOwned;
 	private EventGroupsIndexDto eventGroups;
 	private EventIdentificationSource eventIdentificationSource;
 
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date surveillanceToolLastShareDate;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Long surveillanceToolShareCount;
 	private ExternalShareStatus surveillanceToolStatus;
 
@@ -433,18 +462,22 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
+	@Hidden
 	public String getRegion() {
 		return getEventLocation().getRegion();
 	}
 
+	@Hidden
 	public String getDistrict() {
 		return getEventLocation().getDistrict();
 	}
 
+	@Hidden
 	public String getCommunity() {
 		return getEventLocation().getCommunity();
 	}
 
+	@Hidden
 	public String getAddress() {
 		return getEventLocation().getAddress();
 	}
@@ -525,6 +558,7 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		return result;
 	}
 
+	@Hidden
 	public boolean getInJurisdictionOrOwned() {
 		return isInJurisdictionOrOwned;
 	}

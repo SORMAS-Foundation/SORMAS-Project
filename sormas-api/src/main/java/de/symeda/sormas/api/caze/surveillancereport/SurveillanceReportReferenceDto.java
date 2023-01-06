@@ -20,8 +20,10 @@ package de.symeda.sormas.api.caze.surveillancereport;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
+@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 public class SurveillanceReportReferenceDto extends ReferenceDto {
 
 	public SurveillanceReportReferenceDto() {

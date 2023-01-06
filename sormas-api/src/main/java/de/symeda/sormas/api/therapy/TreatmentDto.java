@@ -28,6 +28,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class TreatmentDto extends PseudonymizableDto {
@@ -51,23 +52,29 @@ public class TreatmentDto extends PseudonymizableDto {
 	public static final String PRESCRIPTION = "prescription";
 
 	private TherapyReferenceDto therapy;
+	@Schema(description = "Date and time of the treatment")
 	private Date treatmentDateTime;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Clinician executing the treatment")
 	private String executingClinician;
 	private TreatmentType treatmentType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about the treatment")
 	private String treatmentDetails;
 	private TypeOfDrug typeOfDrug;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Dosage of the administered drug")
 	private String dose;
 	private TreatmentRoute route;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details about the route the drug was administered through")
 	private String routeDetails;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Additional notes about the treatment")
 	private String additionalNotes;
 	private PrescriptionReferenceDto prescription;
 

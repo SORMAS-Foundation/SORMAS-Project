@@ -25,13 +25,17 @@ import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @AuditedClass
+@Schema(description = "Standard time period to group epidemiological events (generally a week).")
 public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGroupingKey {
 
 	@AuditIncludeProperty
+	@Schema(description = "The calender year in which the epidemiological week occured.")
 	private final Integer year;
 	@AuditIncludeProperty
+	@Schema(description = "The calender week in which the epidemiological week occured.")
 	private final Integer week;
 
 	public EpiWeek(Integer year, Integer week) {

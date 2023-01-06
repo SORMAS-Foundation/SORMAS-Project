@@ -22,15 +22,18 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * A customizable enum containing variants of supported diseases.
  */
+@Schema(description = "Customizable enum containing the variants of the researched disease.")
 public class DiseaseVariant extends CustomizableEnum implements Serializable {
 
 	private static final long serialVersionUID = -5289300364081294764L;
 
 	public static final String HAS_DETAILS = "hasDetails";
+	@Schema(description = "Whether details about the disease variant can be recorded in free text")
 
 	private boolean hasDetails;
 

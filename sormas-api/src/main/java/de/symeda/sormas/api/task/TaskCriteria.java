@@ -32,6 +32,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TaskCriteria extends BaseCriteria implements Serializable {
 
@@ -44,6 +45,7 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	private TaskStatus taskStatus;
 	private TaskContext taskContext;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String freeText;
 	private TaskType taskType;
 	private UserReferenceDto assigneeUser;
@@ -52,21 +54,31 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private ContactReferenceDto contact;
 	private PersonReferenceDto contactPerson;
 	private EventReferenceDto event;
+	@Schema(description = "Date that sets lower boundary for time period in which filtered tasks are due")
 	private Date dueDateFrom;
+	@Schema(description = "Date that sets upper boundary for time period in which filtered tasks are due")
 	private Date dueDateTo;
+	@Schema(description = "Date that sets lower boundary for time period in which filtered tasks start")
 	private Date startDateFrom;
+	@Schema(description = "Date that sets upper boundary for time period in which filtered tasks start")
 	private Date startDateTo;
+	@Schema(description = "Date that sets lower boundary for time period in which filtered tasks were changed")
 	private Date statusChangeDateFrom;
+	@Schema(description = "Date that sets upper boundary for time period in which filtered tasks were changed")
 	private Date statusChangeDateTo;
 	// Used to re-construct whether users have filtered by epi weeks or dates
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private EntityRelevanceStatus relevanceStatus;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@Schema(description = "Filter pattern for name of the user that the task is assigned to")
 	private String assigneeUserLike;
+	@Schema(description = "Filter pattern for name of the user that created the task")
 	private String creatorUserLike;
+	@Schema(description = "Filter pattern for name of the user that assigned the task")
 	private String assignedByUserLike;
 	private TravelEntryReferenceDto travelEntry;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private boolean excludeLimitedSyncRestrictions;
 
 	public TaskStatus getTaskStatus() {

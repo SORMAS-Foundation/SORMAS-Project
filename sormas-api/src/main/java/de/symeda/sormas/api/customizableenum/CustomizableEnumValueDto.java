@@ -25,33 +25,45 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Data Transfer Object corresponding to the CustomizableEnumValue entity, primarily used to exchange data with the mobile app.
  * This DTO is not intended to be used in the user interface as it is not explicitly internationalized and contains a lot of unprepared
  * information that is not needed there. The user interface should use classes extending {@link CustomizableEnum} instead.
  */
+@Schema(description = "Data transfer object for customizable enum values, primarily used to exchange data with the mobile app. "
+	+ "This DTO is not intended to be used in the user interface as it is not explicitly internationalized and contains a lot of unprepared information that is not needed there.")
 public class CustomizableEnumValueDto extends EntityDto {
 
 	private static final long serialVersionUID = 4360662500289404985L;
 
 	private CustomizableEnumType dataType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "The custom enum value")
 	private String value;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String caption;
 	@Valid
+	@Schema(description = "Available translations for the caption")
 	private List<CustomizableEnumTranslation> translations;
+	@Schema(description = "List of diseases that the custom enum is used for")
 	private List<Disease> diseases;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free text description of the enum")
 	private String description;
 	@Valid
+	@Schema(description = "Available translations for the description")
 	private List<CustomizableEnumTranslation> descriptionTranslations;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Map<String, Object> properties;
 	/**
 	 * Whether the value is a default value provided by the software. Default values don't need a caption
 	 * or translations because they can be translated via properties files.
 	 */
+	@Schema(description = "Whether the value is a default value provided by the software. "
+		+ "Default values don't need a caption or translations because they can be translated via properties files.")
 	private boolean defaultValue;
 
 	public CustomizableEnumType getDataType() {

@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.common;
 
 import de.symeda.sormas.api.audit.AuditedClass;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.util.List;
@@ -9,9 +10,13 @@ import java.util.List;
 public class Page<T> implements Serializable {
 
 	List<T> elements;
+	@Schema(description = "Page offset")
 	int offset = 0;
+	@Schema(description = "Page size")
 	int size = 50;
+	@Schema(description = "Total number of entries")
 	long totalElementCount = 0;
+	@Schema(description = "Indicates whether there is another page to turn to")
 	boolean hasNext = false;
 
 	public static Page emptyResults() {

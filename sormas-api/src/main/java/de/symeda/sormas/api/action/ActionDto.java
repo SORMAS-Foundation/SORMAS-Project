@@ -36,6 +36,8 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.Required;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class ActionDto extends EntityDto {
@@ -60,16 +62,21 @@ public class ActionDto extends EntityDto {
 	private ActionMeasure actionMeasure;
 	private ActionPriority priority;
 	@Required
+	@Schema(description = "Date when the action was created")
 	private Date date;
 	private ActionStatus actionStatus;
+	@Schema(description = "Date when the action's status was last changed")
 	private Date statusChangeDate;
 
 	private UserReferenceDto creatorUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Title of the action")
 	private String title;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free-text description of the action to be performed")
 	private String description;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "Free-text comments on the execution")
 	private String reply;
 	private UserReferenceDto lastModifiedBy;
 
@@ -194,6 +201,7 @@ public class ActionDto extends EntityDto {
 		return new ActionReferenceDto(getUuid(), getTitle());
 	}
 
+	@Hidden
 	public ReferenceDto getContextReference() {
 
 		switch (actionContext) {

@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Current vaccination status in relation to the researched disease.")
 public enum VaccinationStatus {
 
 	VACCINATED,

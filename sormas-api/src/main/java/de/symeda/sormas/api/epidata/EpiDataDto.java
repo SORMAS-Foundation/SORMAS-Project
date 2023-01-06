@@ -33,10 +33,12 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.CONTACT_TRACING })
+@Schema(description = "Data transfer object for epidemic related data")
 public class EpiDataDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 6292411396563549093L;
@@ -52,10 +54,17 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String HIGH_TRANSMISSION_RISK_AREA = "highTransmissionRiskArea";
 	public static final String LARGE_OUTBREAKS_AREA = "largeOutbreaksArea";
 
+	@Schema(description = "Whether exposure details are known")
 	private YesNoUnknown exposureDetailsKnown;
+	@Schema(description = "Whether relevant activities after infection are known")
 	private YesNoUnknown activityAsCaseDetailsKnown;
+	@Schema(description = "Whether contact with a source case is known")
 	private YesNoUnknown contactWithSourceCaseKnown;
+	@Schema(
+		description = "Whether subject is residing or working in an area with high risk of transmission of the disease (e.g. camp-like settings).")
 	private YesNoUnknown highTransmissionRiskArea;
+	@Schema(
+		description = "Whether subject is residing or travelling to countries/territories/areas experiencing lager outbreaks of local transmission.")
 	private YesNoUnknown largeOutbreaksArea;
 	@Diseases({
 		Disease.AFP,
@@ -65,6 +74,7 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Schema(description = "Whether subject is residing, working or travelling to an area where infected animals have been confirmed")
 	private YesNoUnknown areaInfectedAnimals;
 
 	@Valid

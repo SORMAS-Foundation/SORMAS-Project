@@ -40,85 +40,130 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/samples")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Sample Resource",
+	description = "Management of sample data. Samples are usually taken for a **Case** or **Contact** to perform **PathogenTests** on in order to confirm or refute the presence of a disease.")
 public class SampleResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<SampleDto> getAllSamples(@PathParam("since") long since) {
+	@Operation(summary = "Get all samples from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of samples for the given interval.", useReturnTypeSchema = true)
+	public List<SampleDto> getAllSamples(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	@Operation(summary = "Get a batch of samples that fulfill certain criteria.",
+		description = "**-** samples are no older than a given date in the past until now [*since*]\n\n"
+			+ "**-** TBD_RESTAPI_SWAGGER_DOC [*lastSynchronizedUuid*]\n\n" + "**-** number of results does not exceed a given number [*size*]")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of samples for the given interval that met the criteria.",
+		useReturnTypeSchema = true)
 	public List<SampleDto> getAllSamples(
-		@PathParam("since") long since,
-		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since,
+		@Parameter(required = true, description = "batch size") @PathParam("size") int size,
+		@Parameter(required = true, description = "TBD_RESTAPI_SWAGGER_DOC") @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@GET
 	@Path("/{uuid}")
-	public SampleDto getByUuid(@PathParam("uuid") String uuid) {
+	@Operation(summary = "Get a specific samples based on its unique ID (UUID).")
+	@ApiResponse(responseCode = "200", description = "Returns a sample by its UUID.", useReturnTypeSchema = true)
+	public SampleDto getByUuid(
+		@Parameter(required = true, description = "Universally unique identifier to query the sample.") @PathParam("uuid") String uuid) {
 		return FacadeProvider.getSampleFacade().getSampleByUuid(uuid);
 	}
 
 	@POST
 	@Path("/query")
-	public List<SampleDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get samples based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of samples by their UUIDs.", useReturnTypeSchema = true)
+	public List<SampleDto> getByUuids(@RequestBody(description = "List of UUIDs used to query sample entries.", required = true) List<String> uuids) {
 		List<SampleDto> result = FacadeProvider.getSampleFacade().getByUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/query/cases")
-	public List<SampleDto> getByCaseUuids(List<String> uuids) {
+	@Operation(summary = "Get samples based on their corresponding cases' unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of samples by their corresponding cases' UUIDs.", useReturnTypeSchema = true)
+	public List<SampleDto> getByCaseUuids(
+		@RequestBody(description = "List of case UUIDs used to query corresponding sample entries.", required = true) List<String> uuids) {
 		List<SampleDto> result = FacadeProvider.getSampleFacade().getByCaseUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postSamples(@Valid List<SampleDto> dtos) {
+	@Operation(summary = "Submit a list of samples to the server.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list containing the upload success status of each uploaded sample.",
+		useReturnTypeSchema = true)
+	public List<PushResult> postSamples(
+		@RequestBody(description = "List of SampleDtos to be added to the server.", required = true) @Valid List<SampleDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getSampleFacade()::saveSample);
 		return result;
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available samples.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getSampleFacade().getAllActiveUuids();
 	}
 
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get the unique IDs of all sample data that has been deleted during the given interval.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
+	public List<String> getDeletedUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getSampleFacade().getDeletedUuidsSince(new Date(since));
 	}
 
 	@GET
 	@Path("/obsolete/{since}")
-	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get all obsolete samples from a date in the past until now.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of UUIDs of obsolete samples for the given interval.",
+		useReturnTypeSchema = true)
+	public List<String> getObsoleteUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getSampleFacade().getObsoleteUuidsSince(new Date(since));
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of SampleIndexDtos based on SampleCriteria filter params.")
+	@ApiResponse(responseCode = "200", description = "Returns a page of samples that have met the filter criteria.", useReturnTypeSchema = true)
 	public Page<SampleIndexDto> getIndexList(
-		@RequestBody CriteriaWithSorting<SampleCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "Sample-based query-filter with sorting property.",
+			required = true) CriteriaWithSorting<SampleCriteria> criteriaWithSorting,
+		@Parameter(required = true, description = "page offset") @QueryParam("offset") int offset,
+		@Parameter(required = true, description = "page size") @QueryParam("size") int size) {
 		return FacadeProvider.getSampleFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST
 	@Path("/delete")
-	public List<String> delete(List<String> uuids) {
+	@Operation(summary = "Delete samples based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of UUIDs of samples for which deletion was successful.",
+		useReturnTypeSchema = true)
+	public List<String> delete(@RequestBody(description = "List of UUIDs denoting the samples to be deleted.", required = true) List<String> uuids) {
 		return FacadeProvider.getSampleFacade().deleteSamples(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 

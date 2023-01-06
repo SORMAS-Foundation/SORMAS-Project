@@ -6,7 +6,9 @@ import java.util.List;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "States the accomodation where the subject is quarantining")
 public enum QuarantineType {
 
 	HOME,

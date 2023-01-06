@@ -23,11 +23,13 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class RegionCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5249729838631831239L;
 
+	@Schema(description = "Search-term for the region's name or EPID-code (Eligible Party Identification Code)")
 	private String nameEpidLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private CountryReferenceDto country;

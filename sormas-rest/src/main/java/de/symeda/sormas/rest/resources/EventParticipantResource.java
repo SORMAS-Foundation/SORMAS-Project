@@ -37,7 +37,12 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -49,54 +54,86 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/eventparticipants")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Event Participant Resource",
+	description = "Management of participants in **Events** that may have had a **Contact** with the source **Case** or secondary contacts with other event participants.\n\n"
+		+ "See also: **EventResource**, **EventGroupResource**.")
 public class EventParticipantResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<EventParticipantDto> getAllEventParticipantsAfter(@PathParam("since") long since) {
+	@Operation(summary = "Get all event participants from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of event participants for the given interval.", useReturnTypeSchema = true)
+	public List<EventParticipantDto> getAllEventParticipantsAfter(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllAfter(new Date(since));
 		return result;
 	}
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	@Operation(summary = "Get a batch of event participants that fulfill certain criteria.",
+		description = "**-** participant entries are no older than a given date in the past until now [*since*]\n\n"
+			+ "**-** TBD_RESTAPI_SWAGGER_DOC [*lastSynchronizedUuid*]\n\n" + "**-** number of results does not exceed a given number [*size*]")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of event participants for the given interval that met the criteria.",
+		useReturnTypeSchema = true)
 	public List<EventParticipantDto> getAllEventParticipantsAfter(
-		@PathParam("since") long since,
-		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since,
+		@Parameter(required = true, description = "batch size") @PathParam("size") int size,
+		@Parameter(required = true, description = "TBD_RESTAPI_SWAGGER_DOC") @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 		return result;
 	}
 
 	@GET
 	@Path("/{uuid}")
-	public EventParticipantDto getByUuid(@PathParam("uuid") String uuid) {
+	@Operation(summary = "Get a specific event participants based on his/her unique ID (UUID).")
+	@ApiResponse(responseCode = "200", description = "Returns an event participant by his/her UUID.", useReturnTypeSchema = true)
+	public EventParticipantDto getByUuid(
+		@Parameter(required = true, description = "Universally unique identifier to query the event participant.") @PathParam("uuid") String uuid) {
 		return FacadeProvider.getEventParticipantFacade().getByUuid(uuid);
 	}
 
 	@POST
 	@Path("/query")
-	public List<EventParticipantDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get event participants based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of event participants by their UUIDs.", useReturnTypeSchema = true)
+	public List<EventParticipantDto> getByUuids(
+		@RequestBody(description = "List of UUIDs used to query event participant entries.", required = true) List<String> uuids) {
 		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/query/events")
-	public List<EventParticipantDto> getByEventUuids(List<String> uuids) {
+	@Operation(summary = "Get event participants based on their corresponding events' unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of event participants by their parent events' UUIDs.",
+		useReturnTypeSchema = true)
+	public List<EventParticipantDto> getByEventUuids(
+		@RequestBody(description = "List of parent event UUIDs used to query event participant entries.", required = true) List<String> uuids) {
 		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByEventUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/query/persons")
-	public List<EventParticipantDto> getByPersonUuids(List<String> uuids) {
+	@Operation(summary = "Get event participants based on their corresponding person' unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of event participants by their person-based UUIDs.", useReturnTypeSchema = true)
+	public List<EventParticipantDto> getByPersonUuids(
+		@RequestBody(description = "List of person-based UUIDs used to query event participant entries.", required = true) List<String> uuids) {
 		return FacadeProvider.getEventParticipantFacade().getByPersonUuids(uuids);
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postEventParticipants(@Valid List<EventParticipantDto> dtos) {
+	@Operation(summary = "Submit a list of event participants to the server.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list containing the upload success status of each uploaded event participant.",
+		useReturnTypeSchema = true)
+	public List<PushResult> postEventParticipants(
+		@RequestBody(description = "List of EventParticipantDtos to be added to the server.",
+			required = true) @Valid List<EventParticipantDto> dtos) {
 
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::save);
 		return result;
@@ -104,35 +141,57 @@ public class EventParticipantResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available event participants.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getEventParticipantFacade().getAllActiveUuids();
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a page of EventParticipantIndexDtos based on EventParticipantCriteria filter params.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a page of event participants that have met the filter criteria.",
+		useReturnTypeSchema = true)
 	public Page<EventParticipantIndexDto> getIndexList(
-		@RequestBody CriteriaWithSorting<EventParticipantCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "Query-filter for event participants with sorting property.",
+			required = true) CriteriaWithSorting<EventParticipantCriteria> criteriaWithSorting,
+		@Parameter(required = true, description = "page offset") @QueryParam("offset") int offset,
+		@Parameter(required = true, description = "page size") @QueryParam("size") int size) {
 		return FacadeProvider.getEventParticipantFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@GET
 	@Path("/archived/{since}")
-	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get all archived event participants from a date in the past until now.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of UUIDs of archived event participant entries for the given interval.",
+		useReturnTypeSchema = true)
+	public List<String> getArchivedUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getEventParticipantFacade().getArchivedUuidsSince(new Date(since));
 	}
 
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get all deleted event participants from a date in the past until now.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of UUIDs of deleted event participant entries for the given interval.",
+		useReturnTypeSchema = true)
+	public List<String> getDeletedUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getEventParticipantFacade().getDeletedUuidsSince(new Date(since));
 	}
 
 	@GET
 	@Path("/obsolete/{since}")
-	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get all obsolete event participants from a date in the past until now.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list of UUIDs of obsolete event participant entries for the given interval.",
+		useReturnTypeSchema = true)
+	public List<String> getObsoleteUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getEventParticipantFacade().getObsoleteUuidsSince(new Date(since));
 	}
 }

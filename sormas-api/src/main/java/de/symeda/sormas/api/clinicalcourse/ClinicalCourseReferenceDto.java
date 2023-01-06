@@ -20,8 +20,10 @@ package de.symeda.sormas.api.clinicalcourse;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CLINICAL_MANAGEMENT)
+@Schema(description = "Clinical course of the disease.")
 public class ClinicalCourseReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -2664896907352864261L;

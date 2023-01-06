@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.utils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Filter option to reconstruct whether users filtered by epidemic weeks or by dates ")
 public enum DateFilterOption {
 
 	DATE,

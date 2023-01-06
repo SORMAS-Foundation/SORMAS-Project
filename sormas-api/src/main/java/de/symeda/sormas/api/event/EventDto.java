@@ -47,8 +47,11 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
+@Schema(description = "Data transfer object for recorded events")
 public class EventDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
@@ -127,29 +130,41 @@ public class EventDto extends SormasToSormasShareableDto {
 	private RiskLevel riskLevel;
 	private SpecificRisk specificRisk;
 	private EventInvestigationStatus eventInvestigationStatus;
+	@Schema(description = "Date when investigation into the event was opened")
 	private Date eventInvestigationStartDate;
+	@Schema(description = "Date when investigation into the event was closed")
 	private Date eventInvestigationEndDate;
 	private EventManagementStatus eventManagementStatus;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalToken;
 	@NotEmpty(message = Validations.validEventTitle)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Titular name of the event")
 	private String eventTitle;
 	@Required
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Free text description of the event")
 	private String eventDesc;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private YesNoUnknown nosocomial;
+	@Schema(description = "Date and time when the event started")
 	private Date startDate;
+	@Schema(description = "Date and time when the event ended (for multi-day events only)")
 	private Date endDate;
 	@NotNull(message = Validations.validReportDateTime)
+	@Schema(description = "Date when the event was reported")
 	private Date reportDateTime;
 
 	private UserReferenceDto reportingUser;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date evolutionDate;
+	@Schema(description = "Comment on the nature of the evolution")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String evolutionComment;
 	@Valid
@@ -158,10 +173,13 @@ public class EventDto extends SormasToSormasShareableDto {
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String meansOfTransportDetails;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String connectionNumber;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date travelDate;
 
 	private WorkEnvironment workEnvironment;
@@ -169,38 +187,53 @@ public class EventDto extends SormasToSormasShareableDto {
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Details on the institutional partner for InstitutionalPartnerType.OTHER")
 	private String srcInstitutionalPartnerTypeDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "First name(s) of the source person (for EventSourceType.HOTLINE_PERSON or EventSourceType.INSTITUTIONAL_PARTNER)")
 	private String srcFirstName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Last name of the institutional partner (for EventSourceType.HOTLINE_PERSON or EventSourceType.INSTITUTIONAL_PARTNER)")
 	private String srcLastName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Phone number of the institutional partner (for EventSourceType.HOTLINE_PERSON or EventSourceType.INSTITUTIONAL_PARTNER)")
 	private String srcTelNo;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "E-mail address of the institutional partner (for EventSourceType.HOTLINE_PERSON or EventSourceType.INSTITUTIONAL_PARTNER)")
 	private String srcEmail;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Website-URL of the media source (for EventSourceType.MEDIA_NEWS)")
 	private String srcMediaWebsite;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Name of the media source (for EventSourceType.MEDIA_NEWS)")
 	private String srcMediaName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Free text details on the media source (for EventSourceType.MEDIA_NEWS)")
 	private String srcMediaDetails;
 	private Disease disease;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details on the disease the event is connected to")
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details on the disease variant")
 	private String diseaseVariantDetails;
 	@SensitiveData
 	private UserReferenceDto responsibleUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String typeOfPlaceText;
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Double reportLat;
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Double reportLon;
+	@Schema(description = "Accuracy of the recorded geographical data (latitude and longitude)")
 	private Float reportLatLonAccuracy;
+	@Schema(description = "Whether the event is part of a transregional outbreak")
 	private YesNoUnknown transregionalOutbreak;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
 
@@ -214,22 +247,29 @@ public class EventDto extends SormasToSormasShareableDto {
 	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
 
 	@HideForCountriesExcept
+	@Schema(description = "Whether epidemiological evidence is given for the event to have spread the disease")
 	private YesNoUnknown epidemiologicalEvidence;
 	@HideForCountriesExcept
+	@Schema(description = "Set of enums further specifying epidemiological evidence")
 	private Map<EpidemiologicalEvidenceDetail, Boolean> epidemiologicalEvidenceDetails;
 	@HideForCountriesExcept
+	@Schema(description = "Whether lab diagnostics prodivided evidence for the event to have spread the disease")
 	private YesNoUnknown laboratoryDiagnosticEvidence;
 	@HideForCountriesExcept
+	@Schema(description = "Set of enums further specifying lab diagnostics evidence")
 	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails;
 
 	@HideForCountriesExcept
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String internalToken;
 
 	private EventIdentificationSource eventIdentificationSource;
+	@Schema(description = "Whether the event was deleted. The envelope object is kept for reference, but content is deleted.")
 	private boolean deleted;
 	private DeletionReason deletionReason;
+	@Schema(description = "Detailed deletion reason other than proposed reasons")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 
@@ -369,10 +409,12 @@ public class EventDto extends SormasToSormasShareableDto {
 		this.endDate = endDate;
 	}
 
+	@Hidden
 	public boolean isMultiDayEvent() {
 		return endDate != null;
 	}
 
+	@Hidden
 	public void setMultiDayEvent(boolean ignored) {
 		// do nothing
 	}

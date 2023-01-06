@@ -22,7 +22,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light-weight index information on districts for larger queries")
 public class DistrictIndexDto extends EntityDto {
 
 	private static final long serialVersionUID = -1445387465599056704L;
@@ -37,11 +39,16 @@ public class DistrictIndexDto extends EntityDto {
 	public static final String REGION = "region";
 	public static final String EXTERNAL_ID = "externalID";
 
+	@Schema(description = "Name of the District")
 	private String name;
+	@Schema(description = "District's Eligible Party Identification Code")
 	private String epidCode;
+	@Schema(description = "Population number in the district")
 	private Integer population;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Float growthRate;
 	private RegionReferenceDto region;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalID;
 
 	public DistrictIndexDto() {

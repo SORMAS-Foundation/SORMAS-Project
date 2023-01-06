@@ -21,11 +21,13 @@ import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.EVENT_SURVEILLANCE,
 	FeatureType.AGGREGATE_REPORTING })
+@Schema(description = "Corresponding facility")
 public class FacilityReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -7987228795475507196L;

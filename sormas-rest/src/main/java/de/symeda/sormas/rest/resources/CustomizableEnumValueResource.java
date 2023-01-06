@@ -29,25 +29,42 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @Path("/customizableenumvalues")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Customizable Enum Value Resource",
+	description = "Access to custom enum values configured on the server, e.g. disease variants.\n\n"
+		+ "Not intended to be used in the user interface as it is not explicitly internationalized.")
 public class CustomizableEnumValueResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<CustomizableEnumValueDto> getAllCustomizableEnumValues(@PathParam("since") long since) {
+	@Operation(summary = "Get all available customizable enums from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of customizable enums for the given interval.", useReturnTypeSchema = true)
+	public List<CustomizableEnumValueDto> getAllCustomizableEnumValues(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getCustomizableEnumFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<CustomizableEnumValueDto> getByUuids(List<String> uuids) {
+	@Operation(summary = "Get a list of customizable enums based on their unique IDs (UUIDs).")
+	@ApiResponse(responseCode = "200", description = "Returns a list of customizable enum values by their UUIDs.", useReturnTypeSchema = true)
+	public List<CustomizableEnumValueDto> getByUuids(
+		@RequestBody(required = true, description = "List of UUIDs used to query customizable enum value entries.") List<String> uuids) {
 		return FacadeProvider.getCustomizableEnumFacade().getByUuids(uuids);
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available customizable enum value entries.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getAllUuids() {
 		return FacadeProvider.getCustomizableEnumFacade().getAllUuids();
 	}

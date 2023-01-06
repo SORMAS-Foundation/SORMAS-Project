@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.api.sormastosormas.share.incoming;
@@ -26,6 +23,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.uuid.HasUuid;
+import io.swagger.v3.oas.annotations.media.Schema;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -44,6 +42,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@Schema(description = "Class providing light weight information about a case that is SORMAS to SORMAS shareable.")
 public class SormasToSormasCasePreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -5346989433141136006L;
@@ -68,15 +67,18 @@ public class SormasToSormasCasePreview extends PseudonymizableDto implements Has
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 
+	@Schema(description = "Date when the case was reported")
 	private Date reportDate;
 	private Disease disease;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the researched disease")
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	private CaseClassification caseClassification;
 	private CaseOutcome outcome;
 	private InvestigationStatus investigationStatus;
+	@Schema(description = "Date the symptoms of the researched disease forst set on")
 	private Date onsetDate;
 
 	private RegionReferenceDto region;
@@ -91,6 +93,7 @@ public class SormasToSormasCasePreview extends PseudonymizableDto implements Has
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the facility")
 	private String healthFacilityDetails;
 	@PersonalData
 	@SensitiveData
@@ -98,6 +101,7 @@ public class SormasToSormasCasePreview extends PseudonymizableDto implements Has
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text details about the point-of-entry")
 	private String pointOfEntryDetails;
 
 	@EmbeddedPersonalData

@@ -2,22 +2,41 @@ package de.symeda.sormas.api.dashboard;
 
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class DashboardContactVisitDto implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207651L;
 
+	@Schema(description = "Total number of visits conducted")
 	private int visitsCount;
+	@Schema(description = "Number of visits that missed their final date to be conducted during the primary time period")
 	private int missedVisitsCount;
+	@Schema(
+		description = "Growth of missed visits during the primary time period compared to the number of missed visits during the secondary time period in percent")
 	private int missedVisitsGrowth;
+	@Schema(description = "Number of unavailable visits during the primary time period")
 	private int unavailableVisitsCount;
+	@Schema(
+		description = "Growth of unavailable visits during the primary time period compared to the number of unavailable visits during the secondary time period in percent")
 	private int unavailableVisitsGrowth;
+	@Schema(description = "Number of uncooperative visits during the primary time period")
 	private int uncooperativeVisitsCount;
+	@Schema(
+		description = "Growth of uncooperative visits during the primary time period compared to the number of uncooperative visits during the secondary time period in percent")
 	private int uncooperativeVisitsGrowth;
+	@Schema(description = "Number of cooperative visits during the primary time period")
 	private int cooperativeVisitsCount;
+	@Schema(
+		description = "Growth of cooperative visits during the primary time period compared to the number of cooperative visits during the secondary time period in percent")
 	private int cooperativeVisitsGrowth;
+	@Schema(description = "Number of visits that missed their final date to be conducted during the secondary time period")
 	private int previousMissedVisitsCount;
+	@Schema(description = "Number of unavailable visits during the secondary time period")
 	private int previousUnavailableVisitsCount;
+	@Schema(description = "Number of uncooperative visits during the secondary time period")
 	private int previousUncooperativeVisitsCount;
+	@Schema(description = "Number of cooperative visits during the secondary time period")
 	private int previousCooperativeVisitsCount;
 
 	public DashboardContactVisitDto(

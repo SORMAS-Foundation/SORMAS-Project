@@ -36,6 +36,10 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -47,39 +51,57 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
  */
 @Path("/outbreaks")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Tag(name = "Outbreak Resource",
+	description = "Management of outbreak data. Outbreaks are not connected to cases by default but rather serve as early indicators for a disease to occur in a certain district.")
 public class OutbreakResource extends EntityDtoResource {
 
 	@GET
 	@Path("/active/{since}")
-	public List<OutbreakDto> getActiveSince(@PathParam("since") long since) {
+	@Operation(summary = "Get all active outbreaks from a date in the past until now.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of active outbreaks for the given interval.", useReturnTypeSchema = true)
+	public List<OutbreakDto> getActiveSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getOutbreakFacade().getActiveAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/uuids")
+	@Operation(summary = "Get the unique IDs (UUIDs) of all available outbreaks.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
 	public List<String> getActiveUuids() {
 		return FacadeProvider.getOutbreakFacade().getActiveUuidsAfter(null);
 	}
 
 	@GET
 	@Path("/inactive/{since}")
-	public List<String> getInactiveUuidsSince(@PathParam("since") long since) {
+	@Operation(summary = "Get the unique IDs of all outbreak data that has been inactive during the given interval.")
+	@ApiResponse(responseCode = "200", description = "Returns a list of strings (UUIDs).", useReturnTypeSchema = true)
+	public List<String> getInactiveUuidsSince(
+		@Parameter(required = true, description = "Milliseconds since January 1, 1970, 00:00:00 GMT") @PathParam("since") long since) {
 		return FacadeProvider.getOutbreakFacade().getInactiveUuidsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/indexList")
+	@Operation(summary = "Get a list of OutbreakDtos based on OutbreakCriteria filter params.")
+	@ApiResponse(responseCode = "200", description = "Returns a page of outbreaks that have met the filter criteria.", useReturnTypeSchema = true)
 	public Page<OutbreakDto> getIndexList(
-		@RequestBody CriteriaWithSorting<OutbreakCriteria> criteriaWithSorting,
-		@QueryParam("offset") int offset,
-		@QueryParam("size") int size) {
+		@RequestBody(description = "Outbreak-based query-filter with sorting property.",
+			required = true) CriteriaWithSorting<OutbreakCriteria> criteriaWithSorting,
+		@Parameter(required = true, description = "page offset") @QueryParam("offset") int offset,
+		@Parameter(required = true, description = "page size") @QueryParam("size") int size) {
 		return FacadeProvider.getOutbreakFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postOutbreak(@Valid List<OutbreakDto> dtos) {
+	@Operation(summary = "Submit a list of outbreaks to the server.")
+	@ApiResponse(responseCode = "200",
+		description = "Returns a list containing the upload success status of each uploaded outbreak.",
+		useReturnTypeSchema = true)
+	public List<PushResult> postOutbreak(
+		@RequestBody(description = "List of OutbreaksDtos to be added to the server.", required = true) @Valid List<OutbreakDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getOutbreakFacade()::saveOutbreak);
 	}
 

@@ -14,11 +14,13 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.CONTACT_TRACING,
 	FeatureType.IMMUNIZATION_MANAGEMENT })
+@Schema(description = "Questionnaire about underlying diseases and general health conditions.")
 public class HealthConditionsDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -6688718889862479948L;
@@ -52,72 +54,95 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether a tuberculosis infection is present in the subject.")
 	private YesNoUnknown tuberculosis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether asplenia (abscence of normal spleen function) is present in the subject.")
 	private YesNoUnknown asplenia;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether a hepatitis infection is present in the subject.")
 	private YesNoUnknown hepatitis;
+	@Schema(description = "Whether a diabetes is present in the subject.")
 	private YesNoUnknown diabetes;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether a HIV infection is present in the subject.")
 	private YesNoUnknown hiv;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private YesNoUnknown hivArt;
+	@Schema(description = "Whether any chronic liver disease is present in the subject.")
 	private YesNoUnknown chronicLiverDisease;
+	@Schema(description = "Whether subject is under chemo therapy treatment for a malignant tumor.")
 	private YesNoUnknown malignancyChemotherapy;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject suffers from chronic heart failure.")
 	private YesNoUnknown chronicHeartFailure;
+	@Schema(description = "Whether the subject suffers from any chronic pulmonary disease.")
 	private YesNoUnknown chronicPulmonaryDisease;
+	@Schema(description = "Whether the subject suffers from any chronic kidney disease.")
 	private YesNoUnknown chronicKidneyDisease;
+	@Schema(description = "Whether the subject suffers from any chronic neuological condition.")
 	private YesNoUnknown chronicNeurologicCondition;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject suffers from down syndrome.")
 	private YesNoUnknown downSyndrome;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject suffers from congenital Syphilis")
 	private YesNoUnknown congenitalSyphilis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject suffers from any immunodeficiency other than HIV.")
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
+	@Schema(description = "Whether the subject suffers from any cardiovascular disease, including hypertension.")
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject is obese.")
 	private YesNoUnknown obesity;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject is currently a smoker.")
 	private YesNoUnknown currentSmoker;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject was formerly a smoker.")
 	private YesNoUnknown formerSmoker;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject suffers from asthma.")
 	private YesNoUnknown asthma;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject suffers from sickle cell disease.")
 	private YesNoUnknown sickleCellDisease;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Schema(description = "Whether the subject suffers from any immunodeficiency including HIV.")
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Any additional relevant conditions the subject suffers from, not covered by the questionnaire.")
 	private String otherConditions;
 
 	public static HealthConditionsDto build() {

@@ -29,7 +29,9 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Criteria object for querying of immunization objects")
 public class ImmunizationCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	public static final String I18N_PREFIX = "Immunization";
@@ -51,9 +53,13 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	public static final String ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION = "onlyPersonsWithOverdueImmunization";
 
 	private Disease disease;
+	@Schema(description = "Filter-pattern for address, phone and email")
 	private String nameAddressPhoneEmailLike;
+	@Schema(description = "Birth years that should be filtered for")
 	private Integer birthdateYYYY;
+	@Schema(description = "Birth months that should be filtered for")
 	private Integer birthdateMM;
+	@Schema(description = "Birth days that should be filtered for")
 	private Integer birthdateDD;
 	private MeansOfImmunization meansOfImmunization;
 	private ImmunizationManagementStatus immunizationManagementStatus;
@@ -64,11 +70,14 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
 	private FacilityReferenceDto healthFacility;
+	@Schema(description = "Whether to only filter for people with overdue immunization status")
 	private Boolean onlyPersonsWithOverdueImmunization = Boolean.FALSE;
 
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private ImmunizationDateType immunizationDateType;
+	@Schema(description = "Start date of a time period in which a immunization has been created")
 	private Date fromDate;
+	@Schema(description = "Start date of a time period in which a immunization has been created")
 	private Date toDate;
 	private CaseReferenceDto relatedCase;
 	private PersonReferenceDto person;

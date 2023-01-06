@@ -2,6 +2,7 @@ package de.symeda.sormas.api.therapy;
 
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class PrescriptionCriteria extends BaseCriteria implements Cloneable {
 
@@ -9,6 +10,7 @@ public class PrescriptionCriteria extends BaseCriteria implements Cloneable {
 
 	private TherapyReferenceDto therapy;
 	private TreatmentType prescriptionType;
+	@Schema(description = "Filter-pattern for text")
 	private String textFilter;
 
 	@Override

@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.contact;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Personal relation of the contacted person and the person with the case of the disease.")
 public enum ContactRelation {
 
 	SAME_HOUSEHOLD,

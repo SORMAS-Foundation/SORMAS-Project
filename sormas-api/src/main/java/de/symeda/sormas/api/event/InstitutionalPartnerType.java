@@ -16,7 +16,9 @@
 package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Enum further specifying the type of institutional partner (e.g. for EventSourceTyp.INSTITUTIONAL_PARTNER)")
 public enum InstitutionalPartnerType {
 
 	HEALTH_INSURANCE,

@@ -21,28 +21,41 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for information about origin data when sent via the Sormas-to-Sormas interface")
 public class SormasToSormasOriginInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = -4921614789451304041L;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "ID of the organization that originally created the case or contact")
 	private String organizationId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Name of the user that sent the case or contact")
 	private String senderName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "E-Mail of the user that sent the case or contact")
 	private String senderEmail;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Phone number of the user that sent the casee or contact")
 	private String senderPhoneNumber;
+	@Schema(description = "Whether ownership of the case or contact shall be handed over")
 	private boolean ownershipHandedOver;
+	@Schema(description = "Whether contacts associated with a case shall be shared")
 	private boolean withAssociatedContacts;
+	@Schema(description = "Whether sample results of the case or contact shall be shared")
 	private boolean withSamples;
+	@Schema(description = "Whether the contact or case shall be shared with related event participant data")
 	private boolean withEventParticipants;
+	@Schema(description = "Whether the immunization data of the case or contact shall be shared")
 	private boolean withImmunizations;
+	@Schema(description = "Whether the sent data is pseudonymized")
 	private boolean pseudonymizedData;
 
 	@NotEmpty(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Schema(description = "Comment about the object that is shared")
 	private String comment;
 
 	public SormasToSormasOriginInfoDto() {

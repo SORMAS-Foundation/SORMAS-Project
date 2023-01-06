@@ -20,8 +20,10 @@ package de.symeda.sormas.api.therapy;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
+@Schema(description = "Corresponding prescription")
 public class PrescriptionReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -5028702472324192079L;

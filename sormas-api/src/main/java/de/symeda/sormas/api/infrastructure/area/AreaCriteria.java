@@ -5,10 +5,12 @@ import java.io.Serializable;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @SuppressWarnings("serial")
 public class AreaCriteria extends BaseCriteria implements Serializable, Cloneable {
 
+	@Schema(description = "Free-text filter-pattern for area name")
 	private String textFilter;
 	private EntityRelevanceStatus relevanceStatus;
 

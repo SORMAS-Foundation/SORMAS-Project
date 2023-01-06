@@ -22,28 +22,38 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for personal data of a person that has registered visit data from a external journal.")
 public class JournalPersonDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 3561284010406711305L;
-
+	@Schema(description = "Whether sensitive and/or personal data of this DTO is pseudonymized.")
 	private boolean pseudonymized;
 	@PersonalData
+	@Schema(description = "First name(s) of the person")
 	private String firstName;
 	@PersonalData
+	@Schema(description = "Last name of the person")
 	private String lastName;
 	@SensitiveData
+	@Schema(description = "E-Mail address of the person")
 	private String emailAddress;
 	@SensitiveData
+	@Schema(description = "Phone number of the person")
 	private String phone;
 	@PersonalData
+	@Schema(description = "Birth day of the person")
 	private Integer birthdateDD;
 	@PersonalData
+	@Schema(description = "Birth month of the person")
 	private Integer birthdateMM;
 	@PersonalData
+	@Schema(description = "Birth year of the person")
 	private Integer birthdateYYYY;
 
 	private Sex sex;
+	@Schema(description = "Latest date when a follow-up should be performed")
 	private Date latestFollowUpEndDate;
 	private FollowUpStatus followUpStatus;
 

@@ -21,6 +21,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ExternalMessageIndexDto extends AbstractUuidDto {
 
@@ -39,13 +40,20 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 	public static final String ASSIGNEE = "assignee";
 
 	private ExternalMessageType type;
+	@Schema(description = "Date and Time when the message was created.")
 	private Date messageDateTime;
+	@Schema(description = "Name of the external user who reported the message.")
 	private String reporterName;
+	@Schema(description = "Postal code of the external user who reported the message.")
 	private String reporterPostalCode;
 	private Disease disease;
+	@Schema(description = "First name of the person the message is about.")
 	private String personFirstName;
+	@Schema(description = "Last name of the person the message is about.")
 	private String personLastName;
+	@Schema(description = "Birthdate of the person the message is about.")
 	private Date personBirthDate;
+	@Schema(description = "Postal code of the person the message is about.")
 	private String personPostalCode;
 	private ExternalMessageStatus status;
 	private UserReferenceDto assignee;

@@ -13,11 +13,13 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.EVENT_SURVEILLANCE,
 	FeatureType.AGGREGATE_REPORTING })
+@Schema(description = "Data transfer object for country-related information")
 public class CountryDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = 8309822957203823162L;
@@ -29,14 +31,19 @@ public class CountryDto extends InfrastructureDto {
 	public static final String UNO_CODE = "unoCode";
 	public static final String SUBCONTINENT = "subcontinent";
 
+	@Schema(description = "Country's name")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String defaultName;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String externalId;
+	@Schema(description = "Country's ISO 3166 code")
 	@Size(min = 2, max = 3, message = Validations.textSizeNotInRange)
 	private String isoCode;
+	@Schema(description = "Country's United Nations Code for Trade and Transport Locations")
 	@Size(min = 1, max = 3, message = Validations.textSizeNotInRange)
 	private String unoCode;
+	@Schema(description = "Indicates whether this object has been archived")
 	private boolean archived;
 	private SubcontinentReferenceDto subcontinent;
 

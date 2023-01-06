@@ -2,22 +2,37 @@ package de.symeda.sormas.api.dashboard;
 
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class DashboardContactFollowUpDto implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207650L;
+	@Schema(description = "Number of contacts under follow-up")
 	private int followUpContactsCount;
+	@Schema(description = "Number of contacts that were cooperative when visited")
 	private int cooperativeContactsCount;
+	@Schema(description = "Rounded percentage of contacts that were cooperative when visited")
 	private int cooperativeContactsPercentage;
+	@Schema(description = "Number of contacts that were uncooperative when visited")
 	private int uncooperativeContactsCount;
+	@Schema(description = "Rounded percentage of contacts that were uncooperative when visited")
 	private int uncooperativeContactsPercentage;
+	@Schema(description = "Number of contacts that were unavailable when visited")
 	private int unavailableContactsCount;
+	@Schema(description = "Rounded percentage of contacts that were unavailable when visited")
 	private int unavailableContactsPercentage;
+	@Schema(description = "Number of contacts that were never visited")
 	private int neverVisitedContactsCount;
+	@Schema(description = "Rounded percentage of contacts that were never visited")
 	private int notVisitedContactsPercentage;
 
+	@Schema(description = "Number of contacts that missed their latest visit date by one day")
 	private int missedVisitsOneDay;
+	@Schema(description = "Number of contacts that missed their latest visit date by two days")
 	private int missedVisitsTwoDays;
+	@Schema(description = "Number of contacts that missed their latest visit date by three days")
 	private int missedVisitsThreeDays;
+	@Schema(description = "Number of contacts that missed their latest visit date by more than three days")
 	private int missedVisitsGtThreeDays;
 
 	public DashboardContactFollowUpDto(

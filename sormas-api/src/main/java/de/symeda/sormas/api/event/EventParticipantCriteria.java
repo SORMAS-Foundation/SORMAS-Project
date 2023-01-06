@@ -10,6 +10,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class EventParticipantCriteria extends BaseCriteria implements Serializable {
 
@@ -26,16 +27,24 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 
 	private EventReferenceDto event;
 	private PersonReferenceDto person;
+	@Schema(description = "Free text search filter for the event participant's name")
 	private String freeText;
+	@Schema(description = "Birth years that shall be filtered for")
 	private Integer birthdateYYYY;
+	@Schema(description = "Birth months that shall be filtered for")
 	private Integer birthdateMM;
+	@Schema(description = "Birth days that shall be filtered for")
 	private Integer birthdateDD;
+	@Schema(description = "Filter flag: Only show participants that had contact with the event's source case")
 	private Boolean onlyCountContactsWithSourceCaseInEvent;
 	private Disease disease;
 	private PathogenTestResultType pathogenTestResult;
 	private VaccinationStatus vaccinationStatus;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Date relevantDate;
+	@Schema(description = "Filter flag: Only show non-pseudonymized entries")
 	private Boolean excludePseudonymized;
+	@Schema(description = "Filter flag: Only show participants that have not resulted in a case yet (i.e. have not tested positive)")
 	private Boolean noResultingCase;
 	private EntityRelevanceStatus relevanceStatus;
 

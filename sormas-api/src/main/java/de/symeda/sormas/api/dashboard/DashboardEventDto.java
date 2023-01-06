@@ -22,6 +22,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class DashboardEventDto extends AbstractUuidDto {
 
@@ -35,14 +36,22 @@ public class DashboardEventDto extends AbstractUuidDto {
 	private EventStatus eventStatus;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
+	@Schema(description = "Free text details abut the disease")
 	private String diseaseDetails;
+	@Schema(description = "Date when the event started")
 	private Date eventDate;
+	@Schema(description = "Geodetic latitude where the event was reported")
 	private Double reportLat;
+	@Schema(description = "Geodetic longitude where the event was reported")
 	private Double reportLon;
+	@Schema(description = "Geodetic latitude where the event was happened")
 	private Double locationLat;
+	@Schema(description = "Geodetic longitude where the event was happened")
 	private Double locationLon;
 	private DistrictReferenceDto district;
 
+	@Schema(description = "Whether the DTO is in the user's jurisdiction. Used to determine which user right needs to be considered"
+		+ "to decide whether sensitive and/or personal data is supposed to be shown.")
 	private boolean isInJurisdiction;
 
 	public DashboardEventDto(

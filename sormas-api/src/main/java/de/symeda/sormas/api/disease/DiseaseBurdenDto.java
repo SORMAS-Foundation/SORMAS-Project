@@ -20,7 +20,9 @@ package de.symeda.sormas.api.disease;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object for data related to the disease burden of a country.")
 public class DiseaseBurdenDto implements Serializable {
 
 	private static final long serialVersionUID = 2430932452606853497L;
@@ -39,11 +41,17 @@ public class DiseaseBurdenDto implements Serializable {
 	public static final String LAST_REPORTED_DISTRICT_NAME = "lastReportedDistrictName";
 
 	private Disease disease;
+	@Schema(description = "Number of cases registered in the primary time period")
 	private Long caseCount;
+	@Schema(description = "Number of cases registered in the secondary time period")
 	private Long previousCaseCount;
+	@Schema(description = "Number of events registered in the primary time period")
 	private Long eventCount;
+	@Schema(description = "Number of districts for which an outbreak of the disease has been declared during the primary time period")
 	private Long outbreakDistrictCount;
+	@Schema(description = "Number of deaths caused by cases of the disease during the primary time period")
 	private Long caseDeathCount;
+	@Schema(description = "Name of the district that last reported a case of the disease in the primary time period")
 	private String lastReportedDistrictName;
 
 	public DiseaseBurdenDto(

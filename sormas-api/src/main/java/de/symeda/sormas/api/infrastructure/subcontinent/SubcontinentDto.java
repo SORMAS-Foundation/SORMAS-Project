@@ -11,11 +11,13 @@ import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.EVENT_SURVEILLANCE,
 	FeatureType.AGGREGATE_REPORTING })
+@Schema(description = "Data transfer object for subcontinent-related information")
 public class SubcontinentDto extends InfrastructureDto {
 
 	public static final String I18N_PREFIX = "Subcontinent";
@@ -24,9 +26,12 @@ public class SubcontinentDto extends InfrastructureDto {
 	public static final String CONTINENT = "continent";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Sub-continent name")
 	private String defaultName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
+	@Schema(description = "Indicates whether this object has been archived")
 	private boolean archived;
 	private ContinentReferenceDto continent;
 

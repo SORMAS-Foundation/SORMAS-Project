@@ -3,8 +3,10 @@ package de.symeda.sormas.api.infrastructure.area;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
+@Schema(description = "Corresponding area")
 public class AreaReferenceDto extends InfrastructureDataReferenceDto {
 
 	private static final long serialVersionUID = -6241927331721175673L;

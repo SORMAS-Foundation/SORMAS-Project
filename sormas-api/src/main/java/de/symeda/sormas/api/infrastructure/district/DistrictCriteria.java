@@ -24,6 +24,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class DistrictCriteria extends BaseCriteria implements Serializable, Cloneable {
 
@@ -31,6 +32,7 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 
 	private CountryReferenceDto country;
 	private RegionReferenceDto region;
+	@Schema(description = "Search-term for the district's name or EPID-code (Eligible Party Identification Code)")
 	private String nameEpidLike;
 	private EntityRelevanceStatus relevanceStatus;
 

@@ -23,6 +23,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class DocumentDto extends PseudonymizableDto {
 
@@ -37,15 +38,19 @@ public class DocumentDto extends PseudonymizableDto {
 	private UserReferenceDto uploadingUser;
 	@Required
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Name of the document.")
 	private String name;
 	@Required
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Schema(description = "Media type of the document e.g. text or pdf.")
 	private String mimeType;
 	@Required
+	@Schema(description = "File size of the document.")
 	private long size;
 	@Required
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
 	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
+	@Schema(description = "UUID of the entity the document is related to.")
 	private String relatedEntityUuid;
 	@Required
 	private DocumentRelatedEntityType relatedEntityType;

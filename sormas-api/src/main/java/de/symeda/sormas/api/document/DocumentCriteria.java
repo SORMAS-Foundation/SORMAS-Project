@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class DocumentCriteria extends BaseCriteria implements Serializable {
 
@@ -15,6 +16,7 @@ public class DocumentCriteria extends BaseCriteria implements Serializable {
 	private DocumentRelatedEntityType documentRelatedEntityType;
 
 	@NotNull
+	@Schema(description = "UUIDs of entities that the document in question should be related to.")
 	private List<String> entityUuids;
 
 	public DocumentRelatedEntityType getDocumentRelatedEntityType() {

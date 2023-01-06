@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.api.feature;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Additional properties of a feature; i.e. adjustable settings (on/off or numbered value) for a specific functionality.")
 public enum FeatureTypeProperty {
 
 	REDUCED(Boolean.class),

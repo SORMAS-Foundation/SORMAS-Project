@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Light-weight index information on contries for larger queries")
 public class CountryIndexDto extends EntityDto {
 
 	private static final long serialVersionUID = 8309822957203823162L;
@@ -17,11 +19,17 @@ public class CountryIndexDto extends EntityDto {
 	public static final String UNO_CODE = "unoCode";
 	public static final String SUBCONTINENT = "subcontinent";
 
+	@Schema(description = "Country's default name")
 	private String defaultName;
+	@Schema(description = "Country's display name")
 	private String displayName;
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private String externalId;
+	@Schema(description = "Country's ISO 3166 code")
 	private String isoCode;
+	@Schema(description = "Country's United Nations Code for Trade and Transport Locations")
 	private String unoCode;
+	@Schema(description = "Indicates whether this object has been archived")
 	private boolean archived;
 	private SubcontinentReferenceDto subcontinent;
 

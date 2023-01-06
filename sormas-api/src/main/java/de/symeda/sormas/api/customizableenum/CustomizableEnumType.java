@@ -22,10 +22,12 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.person.OccupationType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * An enum storing all enumerations that support customization.
  */
+@Schema(description = "Enum storing all enumerations that support customization.")
 public enum CustomizableEnumType {
 
 	DISEASE_VARIANT(DiseaseVariant.class),

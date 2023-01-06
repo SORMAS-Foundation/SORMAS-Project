@@ -23,6 +23,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * The class ExternalVisitDto.
@@ -37,16 +38,19 @@ public class ExternalVisitDto implements Serializable, Cloneable {
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
 	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	@AuditIncludeProperty
+	@Schema(description = "Universal Id (UUID) of the person that is related to the external visit")
 	private String personUuid;
 	@Required
 	private Disease disease;
 	@Required
 	@AuditIncludeProperty
+	@Schema(description = "Date and time when the external visit was conducted")
 	private Date visitDateTime;
 	@Required
 	private VisitStatus visitStatus;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Schema(description = "Free text remarks about the external visit")
 	private String visitRemarks;
 
 	@Valid
@@ -54,10 +58,13 @@ public class ExternalVisitDto implements Serializable, Cloneable {
 
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Double reportLat;
 	@Min(value = -180, message = Validations.numberTooSmall)
 	@Max(value = 180, message = Validations.numberTooBig)
+	@Schema(description = "TBD_RESTAPI_SWAGGER_DOC")
 	private Double reportLon;
+	@Schema(description = "Accuracy of the geodetic latitude and longitude")
 	private Float reportLatLonAccuracy;
 
 	public static ExternalVisitDto build(
