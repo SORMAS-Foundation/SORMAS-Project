@@ -141,6 +141,7 @@ import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitLogic;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
@@ -2129,7 +2130,10 @@ public class ContactFacadeEjb
 		for (VisitDto otherVisit : otherContact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
 			otherVisit.setPerson(leadContactDto.getPerson());
 			otherVisit.setDisease(leadContactDto.getDisease());
-			visitFacade.saveVisit(otherVisit);
+			visitFacade.saveVisit(
+				otherVisit,
+				VisitLogic.getAllowedStartDate(ContactLogic.getStartDate(leadContactDto)),
+				VisitLogic.getAllowedStartDate(ContactLogic.getStartDate(leadContactDto)));
 		}
 
 		// 4 Documents

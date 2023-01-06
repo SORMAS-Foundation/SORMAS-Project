@@ -68,6 +68,7 @@ import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
@@ -221,17 +222,28 @@ public class VisitFacadeEjb implements VisitFacade {
 		return convertToDto(visitService.getByUuid(uuid), createPseudonymizer());
 	}
 
+	/**
+	 * Only allowed to use for ExternalVisits and test puroses
+	 */
 	@Override
 	@RightsAllowed({
 		UserRight._VISIT_CREATE,
 		UserRight._VISIT_EDIT })
 	public VisitDto saveVisit(@Valid VisitDto dto) {
+		return saveVisit(dto, null, null);
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._VISIT_CREATE,
+		UserRight._VISIT_EDIT })
+	public VisitDto saveVisit(@Valid VisitDto dto, Date allowedStartDate, Date allowedEndDate) {
 		final String visitUuid = dto.getUuid();
 		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
 
 		FacadeHelper.checkCreateAndEditRights(existingVisit, userService, UserRight.VISIT_CREATE, UserRight.VISIT_EDIT);
 
-		return doSaveVisit(dto, existingVisit);
+		return doSaveVisit(dto, existingVisit, allowedStartDate, allowedEndDate);
 	}
 
 	@Override
@@ -254,7 +266,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			dto.getReportLatLonAccuracy(),
 			VisitOrigin.EXTERNAL_JOURNAL);
 
-		doSaveVisit(visitDto, null);
+		doSaveVisit(visitDto, null, null, null);
 
 		return ExternalVisitDto.build(
 			personUuid,
@@ -268,12 +280,12 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitDto.getReportLatLonAccuracy());
 	}
 
-	private VisitDto doSaveVisit(@Valid VisitDto dto, Visit existingVisit) {
+	private VisitDto doSaveVisit(@Valid VisitDto dto, Visit existingVisit, Date allowedStartDate, Date allowedEndDate) {
 		final VisitDto existingDto = toDto(existingVisit);
 
 		restorePseudonymizedDto(dto, existingVisit, existingDto);
 
-		this.validate(dto);
+		this.validate(dto, allowedStartDate, allowedEndDate);
 
 		if (dto.getVisitStatus().equals(VisitStatus.COOPERATIVE)) {
 			SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
@@ -290,7 +302,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public void validate(VisitDto visit) {
+	public void validate(VisitDto visit, Date allowedStartDate, Date allowedEndDate) {
 
 		if (visit.getVisitStatus() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitStatus));
@@ -300,6 +312,18 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 		if (visit.getVisitDateTime() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitDate));
+		} else if (allowedStartDate != null && DateHelper.isDateBefore(visit.getVisitDateTime(), allowedStartDate)) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.afterDate,
+					I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_DATE_TIME),
+					DateHelper.formatShortDate(allowedStartDate)));
+		} else if (allowedEndDate != null && DateHelper.isDateAfter(visit.getVisitDateTime(), allowedEndDate)) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.beforeDate,
+					I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_DATE_TIME),
+					DateHelper.formatShortDate(allowedEndDate)));
 		}
 		if (visit.getDisease() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));

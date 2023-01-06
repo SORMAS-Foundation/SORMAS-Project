@@ -208,6 +208,7 @@ import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessCheck
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitLogic;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
@@ -3713,7 +3714,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		for (VisitDto otherVisit : otherCase.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
 			otherVisit.setPerson(leadCaseData.getPerson());
 			otherVisit.setDisease(leadCaseData.getDisease());
-			visitFacade.saveVisit(otherVisit);
+			visitFacade.saveVisit(
+				otherVisit,
+				VisitLogic.getAllowedStartDate(CaseLogic.getStartDate(leadCaseData)),
+				VisitLogic.getAllowedEndDate(CaseLogic.getEndDate(leadCaseData)));
 		}
 
 		// 6 Documents
