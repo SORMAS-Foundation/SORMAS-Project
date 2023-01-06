@@ -222,6 +222,18 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
+	public PointOfEntryDto getByCaseUuid(String caseUuid) {
+
+		return toPseudonymizedDto(service.getByCaseUuid(caseUuid));
+	}
+
+	@Override
+	public boolean existsForCase(String caseUuid) {
+
+		return service.existsForCase(caseUuid);
+	}
+
+	@Override
 	public boolean hasArchivedParentInfrastructure(Collection<String> pointOfEntryUuids) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

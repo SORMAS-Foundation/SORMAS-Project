@@ -174,7 +174,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 					params);
 			}
 			if (caze.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY
-				&& caze.getPointOfEntry() != null
+				&& ControllerProvider.getCaseController().hasPointOfEntry(caze)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 				menu.addView(
 					PortHealthInfoView.VIEW_NAME,
