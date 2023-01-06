@@ -119,9 +119,13 @@ public class FeatureConfigurationDao extends AbstractAdoDao<FeatureConfiguration
 			throw new RuntimeException(e);
 		}
 
-		boolean result;
 		if (propertyObjectMap != null && propertyObjectMap.containsKey(property)) {
-			return (Integer) propertyObjectMap.get(property);
+			try {
+				return (Integer) propertyObjectMap.get(property);
+			} catch (ClassCastException e) {
+				Double doubleValue = (Double) propertyObjectMap.get(property);
+				return doubleValue != null ? doubleValue.intValue() : null;
+			}
 		} else {
 			return null;
 		}

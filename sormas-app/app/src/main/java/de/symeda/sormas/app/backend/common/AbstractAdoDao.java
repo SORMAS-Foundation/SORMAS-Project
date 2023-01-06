@@ -300,8 +300,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					where.and(
 						where.isNotNull(AbstractDomainObject.CHANGE_DATE),
 						where.eq(ADO.MODIFIED, false),
-						where.lt(AbstractDomainObject.CHANGE_DATE, maxChangeDate),
-						where.lt(AbstractDomainObject.LOCAL_CHANGE_DATE, maxChangeDate));
+						where.lt(AbstractDomainObject.CHANGE_DATE, maxChangeDate));
 					return builder.query();
 				} catch (SQLException e) {
 					throw new RuntimeException(e);
