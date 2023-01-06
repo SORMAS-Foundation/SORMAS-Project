@@ -117,11 +117,11 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 	}
 
 	private boolean isVisibleDeleteButtonForCase(String caseUuid) {
-			return FacadeProvider.getExternalShareInfoFacade().isSharedCase(caseUuid);
+		return FacadeProvider.getExternalShareInfoFacade().isSharedCase(caseUuid);
 	}
 
 	private boolean isVisibleDeleteButtonForEvent(String eventUuid) {
-			return FacadeProvider.getExternalShareInfoFacade().isSharedEvent(eventUuid);
+		return FacadeProvider.getExternalShareInfoFacade().isSharedEvent(eventUuid);
 	}
 
 	private ExternalShareInfoList createShareInfoList(ExternalShareInfoCriteria criteria) {
