@@ -95,6 +95,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -1787,13 +1788,15 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			}
 		}
 
-		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
+		DtoHelper.copyDtoValues(leadPerson, otherPerson, false, PersonDto.ADDRESS);
+		processPersonAddressMerge(leadPerson, otherPerson);
+
 		save(leadPerson);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
-	public void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties) throws CloneNotSupportedException {
+	public void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties) {
 
 		if (leadPersonUuid.equals(otherPersonUuid)) {
 			throw new UnsupportedOperationException("Two different persons need to be selected for merge!");
@@ -1816,14 +1819,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				}
 			}
 
-			LocationDto leadPersonAddress = (LocationDto) leadPersonDto.getAddress().clone();
-			LocationDto otherPersonAddress = otherPersonDto.getAddress();
-			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false);
-
-			if (differentLocation(leadPersonAddress, otherPersonAddress)) {
-				leadPersonDto.setAddress(leadPersonAddress);
-				leadPersonDto.addAddress(otherPersonAddress);
-			}
+			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false, PersonDto.ADDRESS);
+			processPersonAddressMerge(leadPersonDto, otherPersonDto);
 
 			save(leadPersonDto);
 		}
@@ -1867,11 +1864,58 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		service.ensurePersisted(leadPerson);
 	}
 
+	private void processPersonAddressMerge(PersonDto leadPersonDto, PersonDto otherPersonDto) {
+		if (differentLocation(leadPersonDto.getAddress(), otherPersonDto.getAddress())) {
+			LocationDto otherAddress = otherPersonDto.getAddress();
+			otherAddress.setAddressType(PersonAddressType.OTHER_ADDRESS);
+			otherAddress.setAddressTypeDetails(I18nProperties.getString(Strings.messagePersonMergedAddressDescription));
+			leadPersonDto.addAddress(otherPersonDto.getAddress());
+		} else {
+			DtoHelper.copyDtoValues(leadPersonDto.getAddress(), otherPersonDto.getAddress(), false);
+		}
+	}
+
 	private boolean differentLocation(LocationDto firstAddress, LocationDto secondAddress) {
-		return firstAddress.getCountry() != secondAddress.getCountry()
-			|| firstAddress.getRegion() != secondAddress.getRegion()
-			|| firstAddress.getDistrict() != secondAddress.getDistrict()
-			|| firstAddress.getCommunity() != secondAddress.getCommunity();
+		if (firstAddress.getCountry() != null && !firstAddress.getCountry().getUuid().equals(secondAddress.getCountry().getUuid())) {
+			return true;
+		}
+
+		if (firstAddress.getRegion() != null && !firstAddress.getRegion().getUuid().equals(secondAddress.getRegion().getUuid())) {
+			return true;
+		}
+
+		if (firstAddress.getDistrict() != null && !firstAddress.getDistrict().getUuid().equals(secondAddress.getDistrict().getUuid())) {
+			return true;
+		}
+
+		if (firstAddress.getCommunity() != null && !firstAddress.getCommunity().getUuid().equals(secondAddress.getCommunity().getUuid())) {
+			return true;
+		}
+
+		if (firstAddress.getFacility() != null) {
+			FacilityDto firstAddressFacilityDto = facilityFacade.getByUuid(firstAddress.getFacility().getUuid());
+			if (secondAddress.getCommunity() != null
+				&& !firstAddressFacilityDto.getCommunity().getUuid().equals(secondAddress.getCommunity().getUuid())) {
+				return true;
+			}
+		}
+
+		if (firstAddress.getCity() != null && !firstAddress.getCity().equals(secondAddress.getCity())) {
+			return true;
+		}
+
+		if (firstAddress.getPostalCode() != null && !firstAddress.getPostalCode().equals(secondAddress.getPostalCode())) {
+			return true;
+		}
+
+		if (firstAddress.getStreet() != null && !firstAddress.getStreet().equals(secondAddress.getStreet())) {
+			return true;
+		}
+
+		if (firstAddress.getHouseNumber() != null && !firstAddress.getHouseNumber().equals(secondAddress.getHouseNumber())) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -38,15 +39,19 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -78,6 +83,10 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
@@ -919,7 +928,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergePersonsAndRemoveDuplication() throws CloneNotSupportedException {
+	public void testMergePersonsAndRemoveDuplication() {
 
 		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
 		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
@@ -931,6 +940,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
+		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
+		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
 
 		LocationDto leadPersonAddress = leadPerson.getAddress();
 		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
@@ -941,7 +952,19 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
 		otherPersonAddress.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
 
-		leadPerson.setAddresses(Collections.singletonList(LocationDto.build()));
+		List<LocationDto> leadAddresses = new ArrayList<>();
+		LocationDto leadAddresses1 = LocationDto.build();
+		leadAddresses1.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
+		leadAddresses1.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
+		leadAddresses1.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
+		leadAddresses.add(leadAddresses1);
+
+		LocationDto leadAddresses2 = LocationDto.build();
+		leadAddresses2.setRegion(new RegionReferenceDto(rdcf4.region.getUuid()));
+		leadAddresses2.setDistrict(new DistrictReferenceDto(rdcf4.district.getUuid()));
+		leadAddresses.add(leadAddresses2);
+
+		leadPerson.setAddresses(leadAddresses);
 		leadPerson.setAddress(leadPersonAddress);
 		otherPerson.setAddress(otherPersonAddress);
 
@@ -976,7 +999,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
 		assertEquals(1, leadPerson.getAllEmailAddresses().size());
 		assertEquals(1, leadPerson.getAllPhoneNumbers().size());
-		assertEquals(1, leadPerson.getAddresses().size());
+		assertEquals(2, leadPerson.getAddresses().size());
 		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
 
 		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
@@ -995,8 +1018,190 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<String> leadPersonAllPhoneNumbers = leadPerson.getAllPhoneNumbers();
 		assertEquals(2, leadPersonAllPhoneNumbers.size());
 		assertEquals(1, leadPersonAllPhoneNumbers.stream().filter(s -> s.equals("+496211218490")).count());
+		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
+		assertNull(leadPerson.getAddress().getCommunity());
+		assertEquals(3, leadPerson.getAddresses().size());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> field.getUuid().equals(leadAddresses1.getUuid())).count());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> field.getUuid().equals(leadAddresses2.getUuid())).count());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> otherPersonAddress.getDistrict().equals(field.getDistrict())).count());
+		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
+	}
+
+	@Test
+	public void testMergePersonsSameMainAddress() {
+
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		leadPerson.setPhone("+496211218490");
+		otherPerson.setPhone("+496211218491");
+		leadPerson.setEmailAddress("lead@hotmail.com");
+		otherPerson.setEmailAddress("other@yahoo.com");
+
+		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
+		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		otherPersonAddress.setCommunity(new CommunityReferenceDto(rdcf1.community.getUuid()));
+
+		List<LocationDto> leadAddresses = new ArrayList<>();
+		LocationDto leadAddresses1 = LocationDto.build();
+		leadAddresses1.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
+		leadAddresses1.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
+		leadAddresses1.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
+		leadAddresses.add(leadAddresses1);
+
+		LocationDto leadAddresses2 = LocationDto.build();
+		leadAddresses2.setRegion(new RegionReferenceDto(rdcf4.region.getUuid()));
+		leadAddresses2.setDistrict(new DistrictReferenceDto(rdcf4.district.getUuid()));
+		leadAddresses.add(leadAddresses2);
+
+		leadPerson.setAddresses(leadAddresses);
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
+
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
+
+		final PersonReferenceDto leadPersonRef = leadPerson.toReference();
+		final PersonReferenceDto otherPersonRef = otherPerson.toReference();
+		final UserReferenceDto natUserRef = nationalUser.toReference();
+
+		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
+		creator.createContact(natUserRef, leadPersonRef);
+		final EventDto leadEvent = creator.createEvent(natUserRef);
+		creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
+		creator.createVisit(leadPersonRef);
+		creator.createImmunization(Disease.CORONAVIRUS, leadPersonRef, natUserRef, rdcf);
+		creator.createTravelEntry(leadPersonRef, natUserRef, rdcf, te -> te.setResultingCase(leadCase.toReference()));
+
+		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcfEntities);
+		creator.createContact(natUserRef, otherPersonRef);
+		final EventDto otherEvent = creator.createEvent(natUserRef);
+		creator.createEventParticipant(otherEvent.toReference(), otherPerson, natUserRef);
+		creator.createVisit(otherPersonRef);
+		creator.createImmunization(Disease.CORONAVIRUS, otherPersonRef, natUserRef, rdcf);
+		creator.createTravelEntry(otherPersonRef, natUserRef, rdcf, te -> te.setResultingCase(otherCase.toReference()));
+
+		assertEquals(1, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, leadPerson.getAllEmailAddresses().size());
+		assertEquals(1, leadPerson.getAllPhoneNumbers().size());
+		assertEquals(2, leadPerson.getAddresses().size());
+		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
+		assertNull(leadPerson.getAddress().getCommunity());
+
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+
+		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
+
+		assertEquals(2, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+
+		assertNotNull(leadPerson.getAddress().getCommunity());
 		assertEquals(2, leadPerson.getAddresses().size());
 		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
+	}
+
+	@Test
+	public void testMergePersonsLeadPersonFacilityNotMatchInfrastructureDataFromOtherPerson() {
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		leadPerson.setPhone("+496211218490");
+		otherPerson.setPhone("+496211218491");
+		leadPerson.setEmailAddress("lead@hotmail.com");
+		otherPerson.setEmailAddress("other@yahoo.com");
+
+		Region region = creator.createRegion("Region");
+		District district = creator.createDistrict("District", region);
+		Community community1 = creator.createCommunity("Community1", district);
+		Facility facility1 = creator.createFacility("Facility1", region, district, community1);
+		Community community2 = creator.createCommunity("Community2", district);
+		Facility facility2 = creator.createFacility("Facility2", region, district, community2);
+
+		TestDataCreator.RDCFEntities rdcf1 = new TestDataCreator.RDCFEntities(region, district, community1, facility1);
+		TestDataCreator.RDCFEntities rdcf2 = new TestDataCreator.RDCFEntities(region, district, community2, facility2);
+		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
+		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		leadPersonAddress.setFacility(new FacilityReferenceDto(rdcf1.facility.getUuid()));
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
+		otherPersonAddress.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
+
+		List<LocationDto> leadAddresses = new ArrayList<>();
+		LocationDto leadAddresses1 = LocationDto.build();
+		leadAddresses1.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
+		leadAddresses1.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
+		leadAddresses1.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
+		leadAddresses.add(leadAddresses1);
+
+		LocationDto leadAddresses2 = LocationDto.build();
+		leadAddresses2.setRegion(new RegionReferenceDto(rdcf4.region.getUuid()));
+		leadAddresses2.setDistrict(new DistrictReferenceDto(rdcf4.district.getUuid()));
+		leadAddresses.add(leadAddresses2);
+
+		leadPerson.setAddresses(leadAddresses);
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
+
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
+
+		assertEquals(1, leadPerson.getAllEmailAddresses().size());
+		assertEquals(1, leadPerson.getAllPhoneNumbers().size());
+		assertEquals(2, leadPerson.getAddresses().size());
+		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
+		assertNull(leadPerson.getAddress().getCommunity());
+
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+
+		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
+
+		assertEquals(3, leadPerson.getAddresses().size());
+		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
+		assertEquals(rdcf1.district.getUuid(), leadPerson.getAddress().getDistrict().getUuid());
+		assertNull(leadPerson.getAddress().getCommunity());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> field.getUuid().equals(leadAddresses1.getUuid())).count());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> field.getUuid().equals(leadAddresses2.getUuid())).count());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> otherPersonAddress.getCommunity().equals(field.getCommunity())).count());
+		assertEquals(
+			PersonAddressType.OTHER_ADDRESS,
+			leadPerson.getAddresses()
+				.stream()
+				.filter(field -> field.getUuid().equals(otherPersonAddress.getUuid()))
+				.findFirst()
+				.get()
+				.getAddressType());
+		assertEquals(
+			I18nProperties.getString(Strings.messagePersonMergedAddressDescription),
+			leadPerson.getAddresses()
+				.stream()
+				.filter(field -> field.getUuid().equals(otherPersonAddress.getUuid()))
+				.findFirst()
+				.get()
+				.getAddressTypeDetails());
 	}
 
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
