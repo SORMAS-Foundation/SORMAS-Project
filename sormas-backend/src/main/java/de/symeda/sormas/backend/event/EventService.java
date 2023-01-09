@@ -74,7 +74,6 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
-import de.symeda.sormas.backend.common.ImplementedLimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
@@ -107,7 +106,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class EventService extends AbstractCoreAdoService<Event, EventJoins> implements ImplementedLimitedChangeDateFilterProvider<Event> {
+public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	@EJB
 	private EventParticipantService eventParticipantService;
@@ -1124,5 +1123,10 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> impl
 		cq.select(cb.count(from));
 
 		return em.createQuery(cq).getSingleResult() > 0;
+	}
+
+	@Override
+	protected boolean hasLimitedChangeDateFilterImplementation() {
+		return true;
 	}
 }

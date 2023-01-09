@@ -96,7 +96,6 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
-import de.symeda.sormas.backend.common.ImplementedLimitedChangeDateFilterProvider;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -139,8 +138,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 @Stateless
 @LocalBean
 public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins>
-	implements JurisdictionFlagsService<Contact, ContactJurisdictionFlagsDto, ContactJoins, ContactQueryContext>,
-	ImplementedLimitedChangeDateFilterProvider<Contact> {
+	implements JurisdictionFlagsService<Contact, ContactJurisdictionFlagsDto, ContactJoins, ContactQueryContext> {
 
 	@EJB
 	private CaseService caseService;
@@ -1813,5 +1811,10 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		cq.select(cb.count(contact.get(AbstractDomainObject.ID)));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	protected boolean hasLimitedChangeDateFilterImplementation() {
+		return true;
 	}
 }
