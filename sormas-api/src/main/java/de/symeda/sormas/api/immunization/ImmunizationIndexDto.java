@@ -20,6 +20,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -64,6 +65,8 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	private Date endDate;
 	private String lastVaccineType;
 	private Date recoveryDate;
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	private boolean isInJurisdiction;
 
@@ -83,6 +86,8 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		Date endDate,
 		String lastVaccineType,
 		Date recoveryDate,
+		DeletionReason deletionReason,
+		String otherDeletionReason,
 		boolean isInJurisdiction) {
 
 		super(uuid);
@@ -100,6 +105,8 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.endDate = endDate;
 		this.lastVaccineType = lastVaccineType;
 		this.recoveryDate = recoveryDate;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
@@ -213,6 +220,22 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setRecoveryDate(Date recoveryDate) {
 		this.recoveryDate = recoveryDate;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	public boolean isInJurisdiction() {

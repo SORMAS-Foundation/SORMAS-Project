@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -80,6 +81,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -173,6 +176,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	@EJB
 	private ImmunizationService immunizationService;
 	@EJB
+	private SurveillanceReportService surveillanceReportService;
+	@EJB
 	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
 
 	private final String requestEndpoint;
@@ -263,6 +268,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 				|| SormasToSormasContactDto[].class.isAssignableFrom(getShareDataClass())) {
 				options.setWithSamples(true);
 				options.setWithImmunizations(true);
+
+				if (SormasToSormasContactDto[].class.isAssignableFrom(getShareDataClass())) {
+					options.setWithSurveillanceReports(true);
+				}
 			}
 		}
 	}
@@ -374,6 +383,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 
 			if (s.getSample() != null) {
 				sormasToSormasEntitiesHelper.updateSampleOnShare(s.getSample(), s);
+			}
+
+			if (s.getSurveillanceReport() != null) {
+				sormasToSormasEntitiesHelper.updateSurveillanceReportOnShare(s.getSurveillanceReport(), s);
 			}
 		});
 		entities.forEach(e -> {
@@ -582,13 +595,28 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 					.collect(Collectors.toMap(Immunization::getUuid, Function.identity()));
 		}
 
+		Map<String, SurveillanceReport> existingReports = Collections.emptyMap();
+		if (CollectionUtils.isNotEmpty(receivedData.getSurveillanceReports())) {
+			existingReports =
+				surveillanceReportService
+					.getByUuids(
+						receivedData.getSurveillanceReports()
+							.stream()
+							.map(SormasToSormasEntityDto::getEntity)
+							.map(SurveillanceReportDto::getUuid)
+							.collect(Collectors.toList()))
+					.stream()
+					.collect(Collectors.toMap(SurveillanceReport::getUuid, Function.identity()));
+		}
+
 		return new ShareDataExistingEntities(
 			existingCases,
 			existingContacts,
 			existingEvents,
 			existingEventParticipants,
 			existingSamples,
-			existingImmunizations);
+			existingImmunizations,
+			existingReports);
 	}
 
 	private ValidationErrorGroup buildEntityValidationGroupName(String uuid) {
@@ -926,6 +954,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		requestInfo.setWithSamples(options.isWithSamples());
 		requestInfo.setWithEventParticipants(options.isWithEventParticipants());
 		requestInfo.setWithImmunizations(options.isWithImmunizations());
+		requestInfo.setWithSurveillanceReports(options.isWithSurveillanceReports());
 		requestInfo.setPseudonymizedPersonalData(options.isPseudonymizeData());
 		requestInfo.setPseudonymizedSensitiveData(options.isPseudonymizeData());
 		requestInfo.setComment(options.getComment());

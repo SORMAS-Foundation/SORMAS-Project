@@ -480,12 +480,21 @@ public class ContactsView extends AbstractView {
 
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
-				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+				relevanceStatusFilter.setWidth(220, Unit.PIXELS);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.contactActiveContacts));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.contactAllContacts));
+				relevanceStatusFilter.setItemCaption(
+					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+					I18nProperties.getCaption(Captions.contactAllActiveAndArchiveContacts));
+
+				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.contactDeletedContacts));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+				}
+
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					if (relevanceStatusInfoLabel != null) {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));

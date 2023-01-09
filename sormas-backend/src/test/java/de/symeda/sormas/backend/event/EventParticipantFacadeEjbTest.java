@@ -443,7 +443,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.setEvent(event.toReference());
-		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ALL);
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
 
 		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
 		assertEquals(2, eventParticipantIndexDtos.size());
@@ -464,7 +464,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		editArchivedFeatureConfiguration.setEnabled(false);
 		getFeatureConfigurationFacade().saveFeatureConfiguration(editArchivedFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
 
-		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ALL);
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
 		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
 		assertEquals(2, eventParticipantIndexDtos.size());
 		eventParticipantUuids = eventParticipantIndexDtos.stream().map(ev -> ev.getUuid()).collect(Collectors.toList());

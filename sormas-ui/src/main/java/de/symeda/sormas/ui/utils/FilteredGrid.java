@@ -34,6 +34,7 @@ import de.symeda.sormas.ui.UserProvider;
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	public static final String ACTION_BTN_ID = "action";
+	public static final String DELETE_REASON_COLUMN = "deleteReasonCumulated";
 
 	private static final long serialVersionUID = 8116377533153377424L;
 

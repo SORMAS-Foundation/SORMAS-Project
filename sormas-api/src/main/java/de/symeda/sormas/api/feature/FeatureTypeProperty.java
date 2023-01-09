@@ -27,7 +27,8 @@ public enum FeatureTypeProperty {
 	S2S_SHARING(Boolean.class),
 	SHARE_ASSOCIATED_CONTACTS(Boolean.class),
 	SHARE_SAMPLES(Boolean.class),
-	SHARE_IMMUNIZATIONS(Boolean.class);
+	SHARE_IMMUNIZATIONS(Boolean.class),
+	SHARE_REPORTS(Boolean.class);
 
 	private final Class<?> returnType;
 

@@ -24,7 +24,6 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 	private Boolean onlyEntriesConvertedToCase = Boolean.FALSE;
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
-	private Boolean deleted = Boolean.FALSE;
 	private EntityRelevanceStatus relevanceStatus;
 	private Date reportDateFrom;
 	private Date reportDateTo;
@@ -95,13 +94,6 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 		this.caze = caze;
 		return this;
 	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
 
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
@@ -135,10 +127,7 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 		this.dateFilterOption = dateFilterOption;
 	}
 
-	public TravelEntryCriteria reportDateBetween(
-			Date reportDateFrom,
-			Date reportDateTo,
-			DateFilterOption dateFilterOption) {
+	public TravelEntryCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
 		this.reportDateFrom = reportDateFrom;
 		this.reportDateTo = reportDateTo;
 		this.dateFilterOption = dateFilterOption;

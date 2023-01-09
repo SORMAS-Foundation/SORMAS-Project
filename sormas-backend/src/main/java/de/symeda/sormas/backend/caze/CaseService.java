@@ -827,11 +827,14 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
 			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
+			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), true));
 			}
 		}
-		if (caseCriteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
+		if (caseCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		}
+
 		if (!DataHelper.isNullOrEmpty(caseCriteria.getPersonLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
@@ -1026,7 +1029,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
-			.forEach(s -> surveillanceReportFacade.deleteSurveillanceReport(s.getUuid()));
+			.forEach(s -> surveillanceReportFacade.delete(s.getUuid()));
 
 		// Delete documents related to this case
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, caze.getUuid()).forEach(d -> documentService.markAsDeleted(d));

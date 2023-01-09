@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.transform.ResultTransformer;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 
 public class TravelEntryIndexDtoResultTransformer implements ResultTransformer {
@@ -25,7 +26,9 @@ public class TravelEntryIndexDtoResultTransformer implements ResultTransformer {
 			(boolean) objects[8],
 			(boolean) objects[9],
 			(Date) objects[10],
-			(boolean) objects[11]);
+			(DeletionReason) objects[11],
+			(String) objects[12],
+			(boolean) objects[13]);
 	}
 
 	@Override
