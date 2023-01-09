@@ -15,7 +15,6 @@ public class CampaignCriteria extends BaseCriteria implements Serializable {
 	private Date startDateBefore;
 	private Date endDateAfter;
 	private Date endDateBefore;
-	private Boolean deleted = Boolean.FALSE;
 	private String freeText;
 	private EntityRelevanceStatus relevanceStatus;
 
@@ -53,16 +52,6 @@ public class CampaignCriteria extends BaseCriteria implements Serializable {
 
 	public Date getEndDateBefore() {
 		return endDateBefore;
-	}
-
-	public CampaignCriteria deleted(Boolean deleted) {
-		this.deleted = deleted;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public Boolean getDeleted() {
-		return deleted;
 	}
 
 	public CampaignCriteria freeText(String freeText) {

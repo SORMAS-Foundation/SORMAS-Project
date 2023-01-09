@@ -177,7 +177,7 @@ public class AreasView extends AbstractConfigurationView {
 				filterRelevanceStatus.setId("relevanceStatus");
 				filterRelevanceStatus.setWidth(220, Unit.PERCENTAGE);
 				filterRelevanceStatus.setEmptySelectionAllowed(false);
-				filterRelevanceStatus.setItems(EntityRelevanceStatus.values());
+				filterRelevanceStatus.setItems((EntityRelevanceStatus[]) EntityRelevanceStatus.getAllExceptDeleted());
 				filterRelevanceStatus.setItemCaptionGenerator(status -> {
 					switch (status) {
 					case ACTIVE:

@@ -270,6 +270,8 @@ public class CaseListCriteriaBuilder {
 			joins.getResponsibleRegion().get(Region.UUID),
 			joins.getResponsibleDistrict().get(District.UUID),
 			joins.getResponsibleDistrict().get(District.NAME),
+			root.get(Case.DELETION_REASON),
+			root.get(Case.OTHER_DELETION_REASON),
 			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 	}
 

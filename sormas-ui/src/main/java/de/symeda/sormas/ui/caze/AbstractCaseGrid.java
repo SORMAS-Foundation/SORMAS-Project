@@ -115,6 +115,17 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		visitsColumn.setId(NUMBER_OF_VISITS);
 		visitsColumn.setSortable(false);
 
+		Column<IndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
 		addComponentColumn(indexDto -> {
 			Label label =
 				new Label(indexDto.getCompleteness() != null ? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %" : "-");
@@ -175,6 +186,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}
 
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
+			removeColumn(DELETE_REASON_COLUMN);
+		}
+
 		for (Column<IndexDto, ?> column : getColumns()) {
 			column.setCaption(
 				I18nProperties.findPrefixCaptionWithDefault(
@@ -218,7 +233,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				Stream.of(CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE),
 				getFollowUpColumns(),
 				Stream.of(CaseIndexDto.VACCINATION_STATUS),
-				Stream.of(COLUMN_COMPLETENESS))
+				Stream.of(COLUMN_COMPLETENESS),
+				Stream.of(DELETE_REASON_COLUMN))
 			.flatMap(Function.identity());
 	}
 

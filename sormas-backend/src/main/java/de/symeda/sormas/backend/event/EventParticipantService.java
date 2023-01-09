@@ -234,10 +234,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 					archivedPredicate = cb.or(archivedPredicate, cb.equal(event.get(Event.ARCHIVED), true));
 				}
 				filter = CriteriaBuilderHelper.and(cb, filter, archivedPredicate);
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventParticipant.DELETED), true));
 			}
 		}
-
-		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
+		}
 
 		return filter;
 	}
