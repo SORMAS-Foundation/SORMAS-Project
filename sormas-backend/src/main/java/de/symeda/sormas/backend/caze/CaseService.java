@@ -1022,7 +1022,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
-			.forEach(s -> surveillanceReportFacade.deleteSurveillanceReport(s.getUuid()));
+			.forEach(s -> surveillanceReportFacade.delete(s.getUuid()));
 
 		// Delete documents related to this case
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, caze.getUuid()).forEach(d -> documentService.markAsDeleted(d));

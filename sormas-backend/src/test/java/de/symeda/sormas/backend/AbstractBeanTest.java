@@ -147,8 +147,8 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
@@ -213,6 +213,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImm
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SormasToSormasSampleDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
@@ -967,6 +968,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasExternalMessageDtoValidator getSormasToSormasLabMessageDtoValidator() {
 		return getBean(SormasToSormasExternalMessageDtoValidator.class);
+	}
+
+	public SormasToSormasSurveillanceReportDtoValidator getSormasToSormasSurveillanceReportDtoValidator() {
+		return getBean(SormasToSormasSurveillanceReportDtoValidator.class);
 	}
 
 	public DefaultEntitiesCreator getDefaultEntitiesCreator() {

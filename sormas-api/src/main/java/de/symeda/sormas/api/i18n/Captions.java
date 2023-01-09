@@ -2024,6 +2024,7 @@ public interface Captions {
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withImmunizations = "SormasToSormasOptions.withImmunizations";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
+	String SormasToSormasOptions_withSurveillanceReports = "SormasToSormasOptions.withSurveillanceReports";
 	String sormasToSormasOriginInfo = "sormasToSormasOriginInfo";
 	String sormasToSormasOwnedBy = "sormasToSormasOwnedBy";
 	String SormasToSormasPerson_address = "SormasToSormasPerson.address";
@@ -2087,7 +2088,6 @@ public interface Captions {
 	String subcontinentAllSubcontinents = "subcontinentAllSubcontinents";
 	String subcontinentArchivedSubcontinents = "subcontinentArchivedSubcontinents";
 	String SurveillanceReport = "SurveillanceReport";
-	String SurveillanceReport_creatingUser = "SurveillanceReport.creatingUser";
 	String SurveillanceReport_dateOfDiagnosis = "SurveillanceReport.dateOfDiagnosis";
 	String SurveillanceReport_externalId = "SurveillanceReport.externalId";
 	String SurveillanceReport_facility = "SurveillanceReport.facility";
@@ -2099,6 +2099,7 @@ public interface Captions {
 	String SurveillanceReport_notificationDetails = "SurveillanceReport.notificationDetails";
 	String SurveillanceReport_reportDate = "SurveillanceReport.reportDate";
 	String SurveillanceReport_reportingType = "SurveillanceReport.reportingType";
+	String SurveillanceReport_reportingUser = "SurveillanceReport.reportingUser";
 	String SurveillanceReport_uuid = "SurveillanceReport.uuid";
 	String surveillanceReportNewReport = "surveillanceReportNewReport";
 	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";

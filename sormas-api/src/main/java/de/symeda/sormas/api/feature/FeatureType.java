@@ -157,6 +157,8 @@ public enum FeatureType {
 			FeatureTypeProperty.SHARE_SAMPLES,
 			Boolean.TRUE,
 			FeatureTypeProperty.SHARE_IMMUNIZATIONS,
+			Boolean.TRUE,
+			FeatureTypeProperty.SHARE_REPORTS,
 			Boolean.TRUE)),
 	SORMAS_TO_SORMAS_SHARE_CONTACTS(true,
 		true,

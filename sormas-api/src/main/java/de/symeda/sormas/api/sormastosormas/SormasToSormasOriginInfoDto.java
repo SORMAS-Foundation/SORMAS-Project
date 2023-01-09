@@ -39,6 +39,7 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 	private boolean withSamples;
 	private boolean withEventParticipants;
 	private boolean withImmunizations;
+	private boolean withSurveillanceReports;
 	private boolean pseudonymizedData;
 
 	@NotEmpty(message = Validations.requiredField)
@@ -118,6 +119,14 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 
 	public void setWithImmunizations(boolean withImmunizations) {
 		this.withImmunizations = withImmunizations;
+	}
+
+	public boolean isWithSurveillanceReports() {
+		return withSurveillanceReports;
+	}
+
+	public void setWithSurveillanceReports(boolean withSurveillanceReports) {
+		this.withSurveillanceReports = withSurveillanceReports;
 	}
 
 	public String getComment() {
