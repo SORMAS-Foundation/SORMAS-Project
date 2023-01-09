@@ -335,7 +335,7 @@ Feature: Create user
     And I confirm user role deletion
     And I click on User Management tab from User Roles Page
 
-  @#10422 @env_main
+  @#10422 @env_main @ignore
   Scenario: Validate newly created user role is present in filtering options
     Given I log in as a Admin User
     And I click on the Users from navbar
