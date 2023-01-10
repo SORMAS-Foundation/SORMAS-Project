@@ -60,6 +60,8 @@ public final class DataHelper {
 
 	public static final String VALID_EMAIL_REGEX = "^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$";
 	public static final String NOT_A_VALID_PHONE_NUMBER_REGEX = ".*[a-zA-Z].*";
+	public static final int BULK_EDIT_ENTRY_LIMIT = 500;
+	public static final int BULK_EDIT_TIME_LIMIT = 60000; // milliseconds
 
 	private DataHelper() {
 		// Hide Utility Class Constructor

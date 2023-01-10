@@ -21,6 +21,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.UtilDate;
 
 public class ArchivingController<F extends CoreFacade> {
@@ -124,7 +125,7 @@ public class ArchivingController<F extends CoreFacade> {
 	protected void addAdditionalDearchiveFields(VerticalLayout verticalLayout) {
 	}
 
-	public void archiveSelectedItems(
+	public BulkOperationResults<String> archiveSelectedItems(
 		List<String> entityUuids,
 		F entityFacade,
 		String noSelectionMessage,

@@ -109,6 +109,7 @@ import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -130,13 +131,13 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -995,8 +996,7 @@ public class CaseController {
 
 		BulkCaseDataForm form = new BulkCaseDataForm(district, selectedCases);
 		form.setValue(bulkEditData);
-		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView =
-			new CommitDiscardWrapperComponent<BulkCaseDataForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditCases));
 
@@ -1034,53 +1034,26 @@ public class CaseController {
 						navigateToIndex();
 						Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 					});
-
 			} else {
-				int changedCases = bulkEdit(
-					selectedCases,
-					updatedBulkEditData,
-					diseaseChange,
-					classificationChange,
-					investigationStatusChange,
-					outcomeChange,
-					surveillanceOfficerChange,
-					caseFacade);
+				List<CaseIndexDto> selectedCasesCpy = new ArrayList<>(selectedCases);
+				BulkOperationHelper.doBulkOperation(
+					selectedEntries -> caseFacade.saveBulkCase(
+						selectedCases.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedBulkEditData,
+						diseaseChange,
+						classificationChange,
+						investigationStatusChange,
+						outcomeChange,
+						surveillanceOfficerChange),
+					selectedCasesCpy,
+					selectedCasesCpy.size());
 
 				popupWindow.close();
 				navigateToIndex();
-
-				if (changedCases == selectedCases.size()) {
-					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
-				} else {
-					NotificationHelper.showNotification(
-						String.format(I18nProperties.getString(Strings.messageCasesEditedExceptArchived), changedCases),
-						Type.HUMANIZED_MESSAGE,
-						-1);
-				}
 			}
 		});
 
-		editView.addDiscardListener(() -> popupWindow.close());
-	}
-
-	private int bulkEdit(
-		Collection<? extends CaseIndexDto> selectedCases,
-		CaseBulkEditData updatedCaseBulkEditData,
-		boolean diseaseChange,
-		boolean classificationChange,
-		boolean investigationStatusChange,
-		boolean outcomeChange,
-		boolean surveillanceOfficerChange,
-		CaseFacade caseFacade) {
-
-		return caseFacade.saveBulkCase(
-			selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
-			updatedCaseBulkEditData,
-			diseaseChange,
-			classificationChange,
-			investigationStatusChange,
-			outcomeChange,
-			surveillanceOfficerChange);
+		editView.addDiscardListener(popupWindow::close);
 	}
 
 	private void bulkEditWithFacilities(
@@ -1215,17 +1188,19 @@ public class CaseController {
 
 	public void archiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
 
+		List<CaseIndexDto> selectedRowsCpy = new ArrayList<>(selectedRows);
 		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
 
-		ControllerProvider.getCaseArchivingController()
-			.archiveSelectedItems(
-				caseUuids,
-				FacadeProvider.getCaseFacade(),
-				Strings.headingNoCasesSelected,
-				Strings.confirmationArchiveCases,
-				Strings.headingCasesArchived,
-				Strings.messageCasesArchived,
-				callback);
+		BulkOperationHelper.doBulkOperation(
+			selectedEntries -> ControllerProvider.getCaseArchivingController()
+				.archiveSelectedItems(
+					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+					FacadeProvider.getCaseFacade(),
+					Strings.headingNoCasesSelected,
+					Strings.confirmationArchiveCases,
+					Strings.headingCasesArchived,
+					Strings.messageCasesArchived,
+					callback));
 	}
 
 	public void dearchiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {

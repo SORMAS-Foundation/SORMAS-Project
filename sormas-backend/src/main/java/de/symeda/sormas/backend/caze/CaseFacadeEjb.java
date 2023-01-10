@@ -70,8 +70,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
-import de.symeda.sormas.api.followup.FollowUpLogic;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -145,6 +143,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -197,6 +196,7 @@ import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -337,6 +337,7 @@ import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -673,7 +674,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			if (diseaseConfigurationFacade.hasFollowUp(caze.getDisease())) {
 				int numberOfMissedVisits =
-						FollowUpLogic.getNumberOfRequiredVisitsSoFar(caze.getReportDate(), caze.getFollowUpUntil()) - caze.getVisitCount();
+					FollowUpLogic.getNumberOfRequiredVisitsSoFar(caze.getReportDate(), caze.getFollowUpUntil()) - caze.getVisitCount();
 				if (numberOfMissedVisits < 0) {
 					numberOfMissedVisits = 0;
 				}
@@ -1488,7 +1489,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
-	public Integer saveBulkCase(
+	public BulkOperationResults<String> saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1498,13 +1499,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		boolean surveillanceOfficerChange)
 		throws ValidationRuntimeException {
 
-		int changedCases = 0;
-		for (String caseUuid : caseUuidList) {
-			Case caze = service.getByUuid(caseUuid);
+		return BulkOperationHelper.executeWithLimits(caseUuidList, DataHelper.BULK_EDIT_TIME_LIMIT, DataHelper.BULK_EDIT_TIME_LIMIT, uuid -> {
+			Case caze = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(caze)) {
 				CaseDataDto existingCaseDto = toDto(caze);
-
 				updateCaseWithBulkData(
 					updatedCaseBulkEditData,
 					caze,
@@ -1514,10 +1513,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					outcomeChange,
 					surveillanceOfficerChange);
 				doSave(caze, true, existingCaseDto, true);
-				changedCases++;
+				return true;
 			}
-		}
-		return changedCases;
+
+			return false;
+		});
 	}
 
 	@RightsAllowed({

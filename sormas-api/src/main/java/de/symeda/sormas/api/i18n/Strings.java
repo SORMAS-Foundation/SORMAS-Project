@@ -962,6 +962,8 @@ public interface Strings {
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
 	String messageBulkLinkEventHint = "messageBulkLinkEventHint";
+	String messageBulkOperationEntryLimitReached = "messageBulkOperationEntryLimitReached";
+	String messageBulkOperationTimeLimitReached = "messageBulkOperationTimeLimitReached";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
