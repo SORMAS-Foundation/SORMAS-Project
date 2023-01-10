@@ -1919,7 +1919,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		addressValues.add(new Pair<>(firstAddress.getHouseNumber(), secondAddress.getHouseNumber()));
 
 		for (Pair<String, String> addressTypePair : addressValues) {
-			if (addressTypePair.getElement0() != null && addressTypePair.getElement1() != null) {
+			if (addressTypePair.getElement0() != null
+				&& !addressTypePair.getElement0().isEmpty()
+				&& addressTypePair.getElement1() != null
+				&& !addressTypePair.getElement1().isEmpty()) {
 				if (!DataHelper.equal(addressTypePair.getElement0(), addressTypePair.getElement1())) {
 					return true;
 				} else {
