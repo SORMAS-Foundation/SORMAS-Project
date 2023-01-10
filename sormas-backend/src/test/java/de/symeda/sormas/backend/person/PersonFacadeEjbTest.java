@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -1045,6 +1048,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		LocationDto leadPersonAddress = leadPerson.getAddress();
 		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
 		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+
+		Country country = creator.createCountry("Romania", "ROU", "642");
+		getCountryService().doFlush();
+		CountryReferenceDto countryReferenceDto = getCountryFacade().getReferenceByUuid(country.getUuid());
+		leadPersonAddress.setCountry(countryReferenceDto);
 
 		LocationDto otherPersonAddress = otherPerson.getAddress();
 		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));

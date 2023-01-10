@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -120,6 +121,7 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -1869,26 +1871,34 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			LocationDto otherAddress = otherPersonDto.getAddress();
 			otherAddress.setAddressType(PersonAddressType.OTHER_ADDRESS);
 			otherAddress.setAddressTypeDetails(I18nProperties.getString(Strings.messagePersonMergedAddressDescription));
-			leadPersonDto.addAddress(otherPersonDto.getAddress());
+			leadPersonDto.addAddress(otherAddress);
 		} else {
 			DtoHelper.copyDtoValues(leadPersonDto.getAddress(), otherPersonDto.getAddress(), false);
 		}
 	}
 
 	private boolean differentLocation(LocationDto firstAddress, LocationDto secondAddress) {
-		if (firstAddress.getCountry() != null && !firstAddress.getCountry().getUuid().equals(secondAddress.getCountry().getUuid())) {
+
+		java.util.function.Predicate<Function<LocationDto, HasUuid>> differentInfrastructurePredicate = (Function<LocationDto, HasUuid> function) -> {
+			return function.apply(firstAddress) != null
+				&& function.apply(secondAddress) != null
+				&& !DataHelper.equal(function.apply(firstAddress).getUuid(), function.apply(secondAddress).getUuid());
+
+		};
+
+		if (Boolean.TRUE.equals(differentInfrastructurePredicate.test(LocationDto::getCountry))) {
 			return true;
 		}
 
-		if (firstAddress.getRegion() != null && !firstAddress.getRegion().getUuid().equals(secondAddress.getRegion().getUuid())) {
+		if (Boolean.TRUE.equals(differentInfrastructurePredicate.test(LocationDto::getRegion))) {
 			return true;
 		}
 
-		if (firstAddress.getDistrict() != null && !firstAddress.getDistrict().getUuid().equals(secondAddress.getDistrict().getUuid())) {
+		if (Boolean.TRUE.equals(differentInfrastructurePredicate.test(LocationDto::getDistrict))) {
 			return true;
 		}
 
-		if (firstAddress.getCommunity() != null && !firstAddress.getCommunity().getUuid().equals(secondAddress.getCommunity().getUuid())) {
+		if (Boolean.TRUE.equals(differentInfrastructurePredicate.test(LocationDto::getCommunity))) {
 			return true;
 		}
 
@@ -1900,21 +1910,37 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			}
 		}
 
-		if (firstAddress.getCity() != null && !firstAddress.getCity().equals(secondAddress.getCity())) {
+		boolean oneMatch = Boolean.FALSE;
+		boolean notNullValues = Boolean.FALSE;
+		boolean different = Boolean.FALSE;
+		List<Pair<String, String>> addressValues = new ArrayList<>();
+		addressValues.add(new Pair<>(firstAddress.getCity(), secondAddress.getCity()));
+		addressValues.add(new Pair<>(firstAddress.getPostalCode(), secondAddress.getPostalCode()));
+		addressValues.add(new Pair<>(firstAddress.getStreet(), secondAddress.getStreet()));
+		addressValues.add(new Pair<>(firstAddress.getHouseNumber(), secondAddress.getHouseNumber()));
+
+		for (Pair<String, String> addressTypePair : addressValues) {
+			if (addressTypePair.getElement0() != null && addressTypePair.getElement1() != null) {
+				if (!DataHelper.equal(addressTypePair.getElement0(), addressTypePair.getElement1())) {
+					different = Boolean.TRUE;
+				} else {
+					oneMatch = Boolean.TRUE;
+				}
+			} else {
+				if (addressTypePair.getElement1() != null) {
+					notNullValues = Boolean.TRUE;
+				}
+			}
+		}
+
+		if (different) {
 			return true;
 		}
 
-		if (firstAddress.getPostalCode() != null && !firstAddress.getPostalCode().equals(secondAddress.getPostalCode())) {
-			return true;
+		if (notNullValues) {
+			return !oneMatch;
 		}
 
-		if (firstAddress.getStreet() != null && !firstAddress.getStreet().equals(secondAddress.getStreet())) {
-			return true;
-		}
-
-		if (firstAddress.getHouseNumber() != null && !firstAddress.getHouseNumber().equals(secondAddress.getHouseNumber())) {
-			return true;
-		}
 		return false;
 	}
 
