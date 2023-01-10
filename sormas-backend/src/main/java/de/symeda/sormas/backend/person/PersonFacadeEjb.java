@@ -1912,7 +1912,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		boolean oneMatch = Boolean.FALSE;
 		boolean notNullValues = Boolean.FALSE;
-		boolean different = Boolean.FALSE;
 		List<Pair<String, String>> addressValues = new ArrayList<>();
 		addressValues.add(new Pair<>(firstAddress.getCity(), secondAddress.getCity()));
 		addressValues.add(new Pair<>(firstAddress.getPostalCode(), secondAddress.getPostalCode()));
@@ -1922,7 +1921,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		for (Pair<String, String> addressTypePair : addressValues) {
 			if (addressTypePair.getElement0() != null && addressTypePair.getElement1() != null) {
 				if (!DataHelper.equal(addressTypePair.getElement0(), addressTypePair.getElement1())) {
-					different = Boolean.TRUE;
+					return true;
 				} else {
 					oneMatch = Boolean.TRUE;
 				}
@@ -1931,10 +1930,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 					notNullValues = Boolean.TRUE;
 				}
 			}
-		}
-
-		if (different) {
-			return true;
 		}
 
 		if (notNullValues) {
