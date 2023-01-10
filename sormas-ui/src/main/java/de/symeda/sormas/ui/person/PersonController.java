@@ -185,11 +185,7 @@ public class PersonController {
 			800,
 			confirm -> {
 				if (Boolean.TRUE.equals(confirm)) {
-					try {
-						FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties);
-					} catch (CloneNotSupportedException e) {
-						e.printStackTrace();
-					}
+					FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties);
 					popupWindow.close();
 					SormasUI.refreshView();
 				}
