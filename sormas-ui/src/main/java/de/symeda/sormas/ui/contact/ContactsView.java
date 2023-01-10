@@ -306,7 +306,6 @@ public class ContactsView extends AbstractView {
 				ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
-				filterForm.setSearchFieldEnabled(false);
 				((AbstractContactGrid<?>) grid).reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
@@ -314,7 +313,6 @@ public class ContactsView extends AbstractView {
 				ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				filterForm.setSearchFieldEnabled(true);
 				navigateTo(criteria);
 			});
 		}
