@@ -80,6 +80,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -938,7 +939,9 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply Month filter of Person attached to last created UI Case on Case directory page",
         () -> {
-          String month = Integer.toString(CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue());
+          DateFormatSymbols dFs = new DateFormatSymbols(Locale.GERMAN);
+          String month =
+              dFs.getMonths()[CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue() - 1];
           webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
         });
     And(
@@ -959,11 +962,10 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply Month filter other than Person attached has to last created UI Case on Case directory page",
         () -> {
-          webDriverHelpers.selectFromCombobox(
-              CASE_MONTH_FILTER,
-              getRandomNumberForBirthDateDifferentThanCreated(
-                      CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue(), 1, 12)
-                  .toString());
+          DateFormatSymbols dFs = new DateFormatSymbols(Locale.GERMAN);
+          String month =
+              dFs.getMonths()[CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue() - 2];
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
         });
     And(
         "I apply Day filter other than Person attached has to last created UI Case on Case directory page",
