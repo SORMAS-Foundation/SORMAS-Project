@@ -272,6 +272,13 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
+			}
+		}
+
 		cq.where(filter);
 		cq.select(from.get(Contact.UUID));
 
@@ -1010,7 +1017,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 	public Predicate createUserFilter(ContactQueryContext contactQueryContext, ContactCriteria contactCriteria) {
 
-		Predicate userFilter = null;
+		Predicate userFilter;
 
 		CriteriaQuery<?> cq = contactQueryContext.getQuery();
 		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
@@ -1030,6 +1037,14 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		} else {
 			filter = createUserFilterWithoutCase(contactQueryContext, contactCriteria);
 		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, contactQueryContext.getRoot()));
+			if (limitedChangeDatePredicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+			}
+		}
+
 		return filter;
 	}
 
@@ -1798,5 +1813,10 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		cq.select(cb.count(contact.get(AbstractDomainObject.ID)));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	protected boolean hasLimitedChangeDateFilterImplementation() {
+		return true;
 	}
 }
