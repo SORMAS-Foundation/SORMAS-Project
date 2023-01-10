@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.visit;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -41,9 +42,11 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.backend.caze.Case;
@@ -103,6 +106,11 @@ public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit>
 	}
 
 	public List<String> getAllActiveUuids(User user) {
+
+		if (RequestContextHolder.isMobileSync() && !user.hasUserRight(UserRight.CONTACT_VIEW)) {
+			return Collections.emptyList();
+		}
+
 		Set<String> resultSet = new HashSet<>();
 		resultSet.addAll(getAllActiveInContactsUuids());
 		resultSet.addAll(getAllActiveInCasesUuids());
@@ -168,6 +176,10 @@ public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit>
 	 * Attention: For now this only returns the visits of contacts, since case visits are not yet implemented in the mobile app
 	 */
 	public List<Visit> getAllAfter(Date since, Integer batchSize, String lastSynchronizedUuid) {
+
+		if (!getCurrentUser().hasUserRight(UserRight.CONTACT_VIEW)) {
+			return Collections.emptyList();
+		}
 
 		return getList((cb, cq, from) -> {
 

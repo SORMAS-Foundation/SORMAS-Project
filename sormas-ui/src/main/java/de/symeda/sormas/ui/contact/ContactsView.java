@@ -150,7 +150,6 @@ public class ContactsView extends AbstractView {
 			grid = ContactsViewType.DETAILED_OVERVIEW.equals(viewConfiguration.getViewType())
 				? new ContactGridDetailed(criteria, getClass(), ContactsViewConfiguration.class)
 				: new ContactGrid(criteria, getClass(), ContactsViewConfiguration.class);
-			((AbstractContactGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -164,7 +163,7 @@ public class ContactsView extends AbstractView {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
-		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+		grid.addDataSizeChangeListener(e -> updateStatusButtons());
 
 		OptionGroup contactsViewSwitcher = new OptionGroup();
 		contactsViewSwitcher.setId("contactsViewSwitcher");
@@ -307,7 +306,6 @@ public class ContactsView extends AbstractView {
 				ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
-				filterForm.setSearchFieldEnabled(false);
 				((AbstractContactGrid<?>) grid).reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
@@ -315,7 +313,6 @@ public class ContactsView extends AbstractView {
 				ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				filterForm.setSearchFieldEnabled(true);
 				navigateTo(criteria);
 			});
 		}
@@ -481,12 +478,21 @@ public class ContactsView extends AbstractView {
 
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
-				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+				relevanceStatusFilter.setWidth(220, Unit.PIXELS);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.contactActiveContacts));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.contactAllContacts));
+				relevanceStatusFilter.setItemCaption(
+					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+					I18nProperties.getCaption(Captions.contactAllActiveAndArchiveContacts));
+
+				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.contactDeletedContacts));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+				}
+
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					if (relevanceStatusInfoLabel != null) {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
@@ -672,7 +678,7 @@ public class ContactsView extends AbstractView {
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 

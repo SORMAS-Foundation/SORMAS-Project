@@ -713,12 +713,12 @@ Feature: Create events
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I click on Add Participant button
     Then I add Participant to an Event with same person data
-    And I click on save button in Add Participant form
+    And I save Add participant form
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I click on Add Participant button
     Then I add Participant to an Event with same person data
-    And I click on save button in Add Participant form
-    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    And I save Add participant form
+    And I check if National Health Id, Nickname and Passport number do not appear in Pick or create person popup
 
   @env_main @tmsLink=SORDEV-7460
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
@@ -1142,7 +1142,7 @@ Feature: Create events
     And I fill De-Archive event popup with test automation reason
     And I click on the Events button from navbar
     And I apply "Aktive Ereignisse" to combobox on Event Directory Page
-    And I search for specific event by uuid in event directory
+    # And I search for specific event by uuid in event directory
     And I check that number of displayed Event results is 1
 
   @tmsLink=SORDEV-9792 @env_de
@@ -1428,3 +1428,25 @@ Feature: Create events
     And I click on Bulk Actions combobox in Event Parcitipant Tab
     And I click on Create quarantine order documents from bulk actions menu in Event Participant Tab
     Then I verify the warning message 'No event participants selected' is displayed
+
+  @#5762 @env_main
+  Scenario: Link Event to a Case
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click Link Event button on Edit Case Page
+    And I fill Event Id filter in Link to Event form with last created via API Event uuid
+    And I click first result in grid on Link to Event form
+    And I click on SAVE button in Link Event to group form
+#    Then I click on save button in Add Participant form
+    Then I click Save in Add Event Participant form on Edit Contact Page
+    And I validate last created via API Event data is displayed under Linked Events section

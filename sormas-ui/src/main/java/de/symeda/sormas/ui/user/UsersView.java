@@ -98,7 +98,8 @@ public class UsersView extends AbstractUserView {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createActionsBar());
 
-		rowsCount = new RowCount(Strings.labelNumberOfUsers, grid.getItemCount());
+		rowsCount = new RowCount(Strings.labelNumberOfUsers, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowsCount.update(grid.getDataSize()));
 		gridLayout.addComponent(rowsCount);
 
 		gridLayout.addComponent(grid);
@@ -230,7 +231,7 @@ public class UsersView extends AbstractUserView {
 		searchField.addTextChangeListener(e -> {
 			criteria.freeText(e.getText());
 			grid.reload();
-			rowsCount.update(grid.getItemCount());
+			rowsCount.update(grid.getDataSize());
 		});
 		filterLayout.addComponent(searchField);
 

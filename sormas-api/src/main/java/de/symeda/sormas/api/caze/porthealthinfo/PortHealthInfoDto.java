@@ -1,15 +1,16 @@
 package de.symeda.sormas.api.caze.porthealthinfo;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
@@ -43,49 +44,67 @@ public class PortHealthInfoDto extends EntityDto {
 	public static final String DETAILS = "details";
 
 	// Airport
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String airlineName;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String flightNumber;
 	private Date departureDateTime;
 	private Date arrivalDateTime;
 	private YesNoUnknown freeSeating;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String seatNumber;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String departureAirport;
+	@SensitiveData
 	private Integer numberOfTransitStops;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails1;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails2;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails3;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails4;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails5;
 
 	// Seaport
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String vesselName;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String vesselDetails;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String portOfDeparture;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String lastPortOfCall;
 
 	// Ground Crossing
 	private ConveyanceType conveyanceType;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String conveyanceTypeDetails;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String departureLocation;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String finalDestination;
 
 	// Other
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String details;
 

@@ -65,7 +65,12 @@ public class UserRoleController {
 			if (!createForm.getFieldGroup().isModified()) {
 				UserRoleDto dto = createForm.getValue();
 				FacadeProvider.getUserRoleFacade().saveUserRole(dto);
-
+				if (dto.getUserRights().size() == 0) {
+					Notification.show(
+						I18nProperties.getString(Strings.messageUserRoleSaved),
+						I18nProperties.getString(Strings.messageUserRoleHasNoRights),
+						Notification.Type.WARNING_MESSAGE);
+				}
 				editData(dto.getUuid());
 			}
 		});
@@ -117,10 +122,17 @@ public class UserRoleController {
 						return;
 					}
 				}
-
 				FacadeProvider.getUserRoleFacade().saveUserRole(dto);
 
-				Notification.show(I18nProperties.getString(Strings.messageUserRoleSaved), Notification.Type.WARNING_MESSAGE);
+				if (!(dto.getUserRights().contains(UserRight.SORMAS_UI) && dto.getUserRights().contains(UserRight.SORMAS_REST))) {
+					Notification.show(
+						I18nProperties.getString(Strings.messageUserRoleSaved),
+						I18nProperties.getString(Strings.messageUserRoleUnusableForLogin),
+						Notification.Type.WARNING_MESSAGE);
+
+				} else {
+					Notification.show(I18nProperties.getString(Strings.messageUserRoleSaved), Notification.Type.WARNING_MESSAGE);
+				}
 				SormasUI.refreshView();
 			}
 		});

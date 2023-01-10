@@ -241,7 +241,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				districtSelect,
-				joins.getLab().get(Facility.UUID)));
+				joins.getLab().get(Facility.UUID),
+				sample.get(Sample.DELETION_REASON),
+				sample.get(Sample.OTHER_DELETION_REASON)));
 
 		// Tests count subquery
 		Subquery<Long> testCountSq = cq.subquery(Long.class);
@@ -672,6 +674,22 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return filter;
 	}
 
+	public Subquery exists(CriteriaBuilder cb, CriteriaQuery cq, Join<Case, Sample> samplesJoin, String sampleUuid) {
+		Subquery<Boolean> sampleSq = cq.subquery(Boolean.class);
+		Root<Sample> sampleRoot = sampleSq.from(Sample.class);
+
+		sampleSq.select(sampleRoot.get(Sample.ID));
+
+		Predicate predicate = cb.and(
+			cb.equal(sampleRoot.get(Sample.UUID), sampleUuid),
+			cb.equal(samplesJoin.get(Sample.SAMPLE_DATE_TIME), sampleRoot.get(Sample.SAMPLE_DATE_TIME)),
+			cb.equal(samplesJoin.get(Sample.SAMPLE_MATERIAL), sampleRoot.get(Sample.SAMPLE_MATERIAL)));
+
+		sampleSq.where(predicate);
+
+		return sampleSq;
+	}
+
 	@Override
 	public SampleJurisdictionFlagsDto getJurisdictionFlags(Sample entity) {
 
@@ -828,10 +846,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				filter = CriteriaBuilderHelper.and(cb, filter, assignedToActiveEntity(cb, joins));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, allAssignedEntitiesAreArchived(cb, joins));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.DELETED), true));
 			}
 		}
-		if (criteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.DELETED), criteria.getDeleted()));
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
 		}
 
 		if (criteria.getCaseCodeIdLike() != null) {

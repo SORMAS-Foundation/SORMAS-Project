@@ -105,7 +105,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class EventService extends AbstractCoreAdoService<Event> {
+public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	@EJB
 	private EventParticipantService eventParticipantService;
@@ -393,6 +393,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return createUserFilter(new EventQueryContext(cb, cq, from));
 	}
 
+	@Override
+	protected EventJoins toJoins(From<?, Event> adoPath) {
+		return new EventJoins(adoPath);
+	}
+
 	public Predicate createUserFilter(EventQueryContext queryContext) {
 		return createUserFilter(queryContext, null);
 	}
@@ -519,34 +524,28 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date) {
-		return addChangeDates(new ChangeDateFilterBuilder(cb, date), eventPath, false).build();
+		return addChangeDates(new ChangeDateFilterBuilder(cb, date), toJoins(eventPath), false).build();
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date, String lastSynchronizedUuid) {
-		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
-			? new ChangeDateFilterBuilder(cb, date)
-			: new ChangeDateFilterBuilder(cb, date, eventPath, lastSynchronizedUuid);
-
-		return addChangeDates(changeDateFilterBuilder, eventPath, false).build();
-	}
-
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Expression<? extends Date> dateExpression) {
-		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), eventPath, false).build();
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, EventJoins joins, Expression<? extends Date> dateExpression) {
+		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), joins, false).build();
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Event> eventFrom, boolean includeExtendedChangeDateFilters) {
-		Join<Event, Action> eventActionJoin = eventFrom.join(Event.ACTIONS, JoinType.LEFT);
-		Join<Event, EventParticipant> eventParticipantJoin = eventFrom.join(Event.EVENT_PERSONS, JoinType.LEFT);
-		Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantJoin.join(EventParticipant.SAMPLES, JoinType.LEFT);
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, EventJoins joins, boolean includeExtendedChangeDateFilters) {
 
-		builder = super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION);
+		final From<?, Event> eventFrom = joins.getRoot();
+		final Join<Event, Action> eventActionJoin = joins.getEventActions();
+		final From<?, EventParticipant> eventParticipants = joins.getEventParticipants();
+		final Join<EventParticipant, Sample> eventParticipantSampleJoin = joins.getEventParticipantJoins().getSamples();
+
+		builder = super.addChangeDates(builder, joins, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION);
 
 		if (includeExtendedChangeDateFilters) {
 			builder.add(eventFrom, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
 				.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES)
 				.add(eventActionJoin)
-				.add(eventParticipantJoin)
+				.add(eventParticipants)
 				.add(eventParticipantSampleJoin);
 		}
 
@@ -616,7 +615,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()).forEach(d -> documentService.markAsDeleted(d));
 
-		deleteEventInExternalSurveillanceTool(event);
 		removeFromSubordinateEvents(event);
 
 		super.deletePermanent(event);
@@ -695,11 +693,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Event.ARCHIVED), false), cb.isNull(from.get(Event.ARCHIVED))));
 			} else if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
+			} else if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DELETED), true));
 			}
 		}
-		if (eventCriteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DELETED), eventCriteria.getDeleted()));
+		if (eventCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		}
+
 		if (eventCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getRegion().get(Region.UUID), eventCriteria.getRegion().getUuid()));
 		}
@@ -839,7 +840,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb,
 				from,
 				ExternalShareInfo.EVENT,
-				(latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate)));
+				(latestShareDate) -> createChangeDateFilter(cb, joins, latestShareDate)));
 
 		return filter;
 	}
@@ -1007,8 +1008,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (!inJurisdictionOrOwned(event) || sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
+		if (!inJurisdictionOrOwned(event)) {
 			return EditPermissionType.REFUSED;
+		}
+
+		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
+			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
 		return super.getEditPermissionType(event);
@@ -1029,7 +1034,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Event> from) {
 		return inJurisdictionOrOwned(new EventQueryContext(cb, cq, from));
 	}
 

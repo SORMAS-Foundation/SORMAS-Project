@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -104,6 +106,9 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Override
+	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
+		rollbackOn = {
+			Exception.class })
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public void share(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (!userService.hasRight(UserRight.CONTACT_EDIT)
@@ -116,7 +121,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Override
-	protected AbstractCoreAdoService<Contact> getEntityService() {
+	protected AbstractCoreAdoService<Contact, ContactJoins> getEntityService() {
 		return contactService;
 	}
 

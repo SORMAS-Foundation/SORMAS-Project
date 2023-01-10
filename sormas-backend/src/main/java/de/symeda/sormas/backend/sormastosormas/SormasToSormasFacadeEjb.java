@@ -30,6 +30,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -275,6 +276,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			updateOriginInfoOnShareAccepted(s.getEvent(), s);
 			updateOriginInfoOnShareAccepted(s.getEventParticipant(), s);
 			updateSampleOnShareAccepted(s);
+			updateSurveillanceReportOnShareAccepted(s);
 			updateOriginInfoOnShareAccepted(s.getImmunization(), s);
 		});
 		shareRequestInfoService.ensurePersisted(requestInfo);
@@ -310,6 +312,15 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		if (sample != null) {
 			updateOriginInfoOnShareAccepted(sample, s);
 			sormasToSormasEntitiesHelper.updateSampleOnShare(s.getSample(), s);
+		}
+	}
+
+	private void updateSurveillanceReportOnShareAccepted(SormasToSormasShareInfo s) {
+		SurveillanceReport report = s.getSurveillanceReport();
+
+		if (report != null) {
+			updateOriginInfoOnShareAccepted(report, s);
+			sormasToSormasEntitiesHelper.updateSurveillanceReportOnShare(s.getSurveillanceReport(), s);
 		}
 	}
 

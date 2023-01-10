@@ -11,9 +11,11 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.porthealthinfo.ConveyanceType;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -22,7 +24,11 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -69,12 +75,18 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 
 	private PointOfEntryDto pointOfEntry;
 	private String pointOfEntryDetails;
+	private boolean pseudonymized;
 
-	public PortHealthInfoForm(PointOfEntryDto pointOfEntry, String pointOfEntryDetails) {
-
-		super(PortHealthInfoDto.class, PortHealthInfoDto.I18N_PREFIX);
+	public PortHealthInfoForm(PointOfEntryDto pointOfEntry, String pointOfEntryDetails, boolean pseudonymized, boolean inJurisdiction) {
+		super(
+			PortHealthInfoDto.class,
+			PortHealthInfoDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), pseudonymized));
 		this.pointOfEntry = pointOfEntry;
 		this.pointOfEntryDetails = pointOfEntryDetails;
+		this.pseudonymized = pseudonymized;
 
 		addFields();
 	}
@@ -95,7 +107,13 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 		tfPointOfEntryType.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.POINT_OF_ENTRY_TYPE));
 		tfPointOfEntryType.setReadOnly(true);
 		TextField tfPointOfEntry = addCustomField(CaseDataDto.POINT_OF_ENTRY, PointOfEntryReferenceDto.class, TextField.class);
-		tfPointOfEntry.setValue(InfrastructureHelper.buildPointOfEntryString(pointOfEntry.getUuid(), pointOfEntry.getName(), pointOfEntryDetails));
+		if (!pseudonymized) {
+			tfPointOfEntry
+				.setValue(InfrastructureHelper.buildPointOfEntryString(pointOfEntry.getUuid(), pointOfEntry.getName(), pointOfEntryDetails));
+		} else {
+			tfPointOfEntry.setValue(I18nProperties.getCaption(Captions.inaccessibleValue));
+			tfPointOfEntry.addStyleName(CssStyles.INACCESSIBLE_LABEL);
+		}
 		tfPointOfEntry.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.POINT_OF_ENTRY));
 		tfPointOfEntry.setReadOnly(true);
 
@@ -113,6 +131,10 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 			addOtherFields();
 			break;
 		}
+
+		// Set initial visibilities & accesses
+		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 	}
 
 	private void addAirportFields() {

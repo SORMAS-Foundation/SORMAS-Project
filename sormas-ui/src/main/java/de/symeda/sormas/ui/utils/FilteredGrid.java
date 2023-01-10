@@ -4,12 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.vaadin.data.provider.CallbackDataProvider;
+import com.vaadin.data.provider.CallbackDataProvider.CountCallback;
+import com.vaadin.data.provider.CallbackDataProvider.FetchCallback;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializableSupplier;
+import com.vaadin.shared.Registration;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -18,6 +26,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.ui.UserProvider;
@@ -25,6 +34,7 @@ import de.symeda.sormas.ui.UserProvider;
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	public static final String ACTION_BTN_ID = "action";
+	public static final String DELETE_REASON_COLUMN = "deleteReasonCumulated";
 
 	private static final long serialVersionUID = 8116377533153377424L;
 
@@ -35,6 +45,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	private C criteria;
 	private boolean inEagerMode;
+	private int dataSize;
 
 	public FilteredGrid(Class<T> beanType) {
 		super(beanType);
@@ -64,21 +75,135 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		this.inEagerMode = inEagerMode;
 	}
 
+	/**
+	 * @return Amount of total data with the given filter criteria.
+	 */
+	public int getDataSize() {
+		return dataSize;
+	}
+
+	public void setDataSize(int dataSize) {
+
+		this.dataSize = dataSize;
+		fireEvent(new DataSizeChangeEvent(this, this.dataSize));
+	}
+
 	@SuppressWarnings("unchecked")
 	public ConfigurableFilterDataProvider<T, Void, C> getFilteredDataProvider() {
 		return (ConfigurableFilterDataProvider<T, Void, C>) super.getDataProvider();
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * get fired when {@link #getDataSize()} is updated.
+	 */
+	public Registration addDataSizeChangeListener(DataSizeChangeListener listener) {
+		return addListener(DataSizeChangeEvent.class, listener, DataSizeChangeListener.class.getMethods()[0]);
+	}
+
+	/**
+	 * <ul>
+	 * <li>selectionMode = {@link SelectionMode#NONE}</li>
+	 * </ul>
+	 * 
+	 * @see DataProvider#fromFilteringCallbacks
+	 */
+	public void setLazyDataProvider(CriteriaFetchCallback<T, C> fetchCallback, CriteriaCountCallback<C> countCallback) {
+
+		setLazyDataProvider(fetchCallback, countCallback, SelectionMode.NONE);
+	}
+
+	/**
+	 * @see DataProvider#fromFilteringCallbacks
+	 */
+	public void setLazyDataProvider(CriteriaFetchCallback<T, C> fetchCallback, CriteriaCountCallback<C> countCallback, SelectionMode selectionMode) {
+
+		setDataProvider(
+			query -> fetchCallback
+				.fetchData(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> countCallback.countData(query.getFilter().orElse(null)).intValue());
+		setSelectionMode(selectionMode);
+	}
+
+	/**
+	 * <ul>
+	 * <li>selectionMode = {@link SelectionMode#MULTI}</li>
+	 * </ul>
+	 * 
+	 * @see DataProvider#fromStream
+	 */
+	public void setEagerDataProvider(CriteriaFetchCallback<T, C> fetchCallback) {
+
+		setEagerDataProvider(fetchCallback, SelectionMode.MULTI);
+	}
+
+	/**
+	 * @see DataProvider#fromStream
+	 */
+	public void setEagerDataProvider(CriteriaFetchCallback<T, C> fetchCallback, SelectionMode selectionMode) {
+
+		setDataProvider(fetchCallback.fetchData(getCriteria(), null, null, null).stream());
+		setSelectionMode(selectionMode);
+	}
+
+	/**
+	 * @see DataProvider#fromFilteringCallbacks
+	 */
+	public void setDataProvider(FetchCallback<T, C> fetchCallback, CountCallback<T, C> countCallback) {
+
+		CallbackDataProvider<T, C> dataProvider = DataProvider.fromFilteringCallbacks(fetchCallback, q -> {
+
+			// Every time when the count query is executed, then notify to get the cached dataSize updated
+			int size = countCallback.count(q);
+			setDataSize(size);
+			return size;
+		});
+
+		setDataProvider(dataProvider);
+	}
+
+	/**
+	 * @see DataProvider#fromStream
+	 */
+	public void setDataProvider(Stream<T> items) {
+
+		ListDataProvider<T> dataProvider = DataProvider.fromStream(items);
+
+		// Every the in-memory data is updated/filtered, then notify to get the cached dataSize updated
+		dataProvider.addDataProviderListener(e -> {
+
+			int size = e.getSource().size(new Query<>());
+			setDataSize(size);
+		});
+		setDataProvider(dataProvider);
+	}
+
+	/**
+	 * @deprecated Use one of the other methods to create and set a {@link DataProvider} to get {@link #getDataSize()} updated.
+	 */
 	@Override
+	@Deprecated
+	@SuppressWarnings("unchecked")
 	public void setDataProvider(DataProvider<T, ?> dataProvider) {
+
 		if (!inEagerMode && !(dataProvider instanceof ConfigurableFilterDataProvider)) {
 			dataProvider = (ConfigurableFilterDataProvider<T, Void, C>) dataProvider.withConfigurableFilter();
 		}
 		super.setDataProvider(dataProvider);
 	}
 
+	/**
+	 * @deprecated Use one of the other methods to create and set a {@link DataProvider}.
+	 */
 	@Override
+	@Deprecated
 	public void setDataProvider(FetchItemsCallback<T> fetchItems, SerializableSupplier<Integer> sizeCallback) {
 		throw new UnsupportedOperationException();
 	}
@@ -128,10 +253,6 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	}
 
-	public int getItemCount() {
-		return getDataProvider().size(new Query<>());
-	}
-
 	/**
 	 * Add's a column to the left hand side of the grid complete with an edit-logo
 	 *
@@ -147,7 +268,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 		Column<T, String> editColumn = addColumn(entry -> isEditAction ? VaadinIcons.EDIT.getHtml() : VaadinIcons.EYE.getHtml(), new HtmlRenderer());
 		editColumn.setId(ACTION_BTN_ID);
-		editColumn.setCaption(isEditAction? I18nProperties.getCaption(Captions.edit): I18nProperties.getCaption(Captions.view));
+		editColumn.setCaption(isEditAction ? I18nProperties.getCaption(Captions.edit) : I18nProperties.getCaption(Captions.view));
 		editColumn.setSortable(false);
 		editColumn.setWidth(20);
 
@@ -166,5 +287,15 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		if (getColumn(columnId) != null) {
 			removeColumn(columnId);
 		}
+	}
+
+	public interface CriteriaFetchCallback<T, C> {
+
+		List<T> fetchData(C criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	}
+
+	public interface CriteriaCountCallback<C> {
+
+		Long countData(C criteria);
 	}
 }

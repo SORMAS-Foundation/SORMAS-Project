@@ -83,4 +83,8 @@ public class SideComponentField extends HorizontalLayout {
 		setComponentAlignment(actionButton, Alignment.TOP_RIGHT);
 		setExpandRatio(actionButton, 0);
 	}
+
+	public void setActive() {
+		mainLayout.addStyleName(CssStyles.ACTIVE_SIDE_COMPONENT_ELEMENT);
+	}
 }

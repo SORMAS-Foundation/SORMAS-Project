@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
@@ -31,6 +28,7 @@ import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
@@ -51,6 +49,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	public static final String EVENT = "event";
 	public static final String EVENT_PARTICIPANT = "eventParticipant";
 	public static final String IMMUNIZATION = "immunization";
+	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
 	public static final String ORGANIZATION_ID = "organizationId";
 	public static final String REQUESTS = "requests";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
@@ -66,6 +65,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	private EventParticipant eventParticipant;
 
 	private Immunization immunization;
+
+	private SurveillanceReport surveillanceReport;
 
 	private String organizationId;
 
@@ -129,6 +130,15 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setImmunization(Immunization immunization) {
 		this.immunization = immunization;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public SurveillanceReport getSurveillanceReport() {
+		return surveillanceReport;
+	}
+
+	public void setSurveillanceReport(SurveillanceReport surveillanceReport) {
+		this.surveillanceReport = surveillanceReport;
 	}
 
 	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT, nullable = false)

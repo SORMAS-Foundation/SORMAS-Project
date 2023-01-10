@@ -835,18 +835,6 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 	}
 
-	public void disableSearchAndReportingUser() {
-		getField(CaseCriteria.CASE_LIKE).setEnabled(false);
-		getField(CaseCriteria.EVENT_LIKE).setEnabled(false);
-		getField(CaseCriteria.REPORTING_USER_LIKE).setEnabled(false);
-	}
-
-	public void enableSearchAndReportingUser() {
-		getField(CaseCriteria.CASE_LIKE).setEnabled(true);
-		getField(CaseCriteria.EVENT_LIKE).setEnabled(true);
-		getField(CaseCriteria.REPORTING_USER_LIKE).setEnabled(true);
-	}
-
 	@Override
 	public void setValue(CaseCriteria newCriteria) throws ReadOnlyException, Converter.ConversionException {
 

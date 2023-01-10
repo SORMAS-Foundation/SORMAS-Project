@@ -56,6 +56,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.NotExposedToApi;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -102,7 +103,9 @@ public class User extends AbstractDomainObject {
 	public static final String LIMITED_DISEASE = "limitedDisease";
 
 	private String userName;
+	@NotExposedToApi
 	private String password;
+	@NotExposedToApi
 	private String seed;
 
 	private boolean active = true;

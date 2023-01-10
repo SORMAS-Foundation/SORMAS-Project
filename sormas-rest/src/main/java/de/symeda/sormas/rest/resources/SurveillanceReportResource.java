@@ -29,6 +29,6 @@ public class SurveillanceReportResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postCaseReports(@Valid List<SurveillanceReportDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getSurveillanceReportFacade()::saveSurveillanceReport);
+		return savePushedDto(dtos, FacadeProvider.getSurveillanceReportFacade()::save);
 	}
 }
