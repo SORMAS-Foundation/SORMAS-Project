@@ -105,7 +105,7 @@ public class DtoPseudonymizer {
 	}
 
 	public <DTO extends Pseudonymizable> void restorePseudonymizedValues(Class<DTO> type, DTO dto, DTO originalDto, boolean isInJurisdiction) {
-		if (originalDto == null) {
+		if (dto == null || originalDto == null) {
 			return;
 		}
 

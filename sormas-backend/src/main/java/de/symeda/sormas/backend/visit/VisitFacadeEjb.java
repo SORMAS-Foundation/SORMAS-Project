@@ -515,7 +515,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Visit::new, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getSymptoms().setUuid(source.getSymptoms().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getSymptoms(), source.getSymptoms());
 		}
 
 		target.setDisease(source.getDisease());
