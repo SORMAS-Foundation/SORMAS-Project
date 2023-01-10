@@ -73,6 +73,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -988,17 +989,18 @@ public class CaseDirectorySteps implements En {
 
     And(
         "I apply Month filter different than Person has on Case directory page",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                CASE_MONTH_FILTER,
-                getRandomNumberForBirthDateDifferentThanCreated(
-                        apiState.getLastCreatedPerson().getBirthdateMM(), 1, 12)
-                    .toString()));
+        () -> {
+          DateFormatSymbols dFs = new DateFormatSymbols();
+          String month = dFs.getMonths()[apiState.getLastCreatedPerson().getBirthdateMM() - 2];
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+        });
     And(
         "I apply Month filter of last api created Person on Case directory page",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                CASE_MONTH_FILTER, apiState.getLastCreatedPerson().getBirthdateMM().toString()));
+        () -> {
+          DateFormatSymbols dFs = new DateFormatSymbols();
+          String month = dFs.getMonths()[apiState.getLastCreatedPerson().getBirthdateMM() - 1];
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+        });
     And(
         "I apply Day filter different than Person has on Case directory page",
         () ->
