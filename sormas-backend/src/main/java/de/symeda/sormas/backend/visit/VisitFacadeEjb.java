@@ -223,7 +223,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	/**
-	 * Only allowed to use for ExternalVisits and test puroses
+	 * Only allowed to use for ExternalVisits, merging and test puroses
 	 */
 	@Override
 	@RightsAllowed({

@@ -40,7 +40,7 @@ public interface VisitFacade {
 	VisitDto getVisitByUuid(String uuid);
 
 	/**
-	 * Only allowed to use for ExternalVisits and test puroses
+	 * Only allowed to use for ExternalVisits, merging and test puroses
 	 */
 	VisitDto saveVisit(@Valid VisitDto dto);
 
