@@ -217,7 +217,7 @@ public class TestDataCreator {
 		UserDto user = UserDto.build();
 		user.setFirstName("User");
 		user.setLastName(userRole.getCaption());
-		user.setUserName(userRole.toString());
+		user.setUserName(userRole.buildCaption());
 		user.setUserRoles(new HashSet(Arrays.asList(userRole)));
 		user.setRegion(rdcf.region);
 		user.setDistrict(rdcf.district);

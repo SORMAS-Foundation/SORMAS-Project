@@ -320,12 +320,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
+		regionField.setItemCaptionGenerator(item -> item.buildCaption());
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeCaseRegion));
 		caseGeneratorConfigBinder.bind(regionField, CaseGenerationConfig::getRegion, CaseGenerationConfig::setRegion);
 		caseOptionsLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
 		districtField.setCaption(I18nProperties.getCaption(Captions.devModeCaseDistrict));
+		districtField.setItemCaptionGenerator(item -> item.buildCaption());
 		caseGeneratorConfigBinder.bind(districtField, CaseGenerationConfig::getDistrict, CaseGenerationConfig::setDistrict);
 		caseOptionsLayout.addComponent(districtField);
 
@@ -392,10 +394,12 @@ public class DevModeView extends AbstractConfigurationView {
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeContactRegion));
+		regionField.setItemCaptionGenerator(item -> item.buildCaption());
 		contactGeneratorConfigBinder.bind(regionField, ContactGenerationConfig::getRegion, ContactGenerationConfig::setRegion);
 		contactOptionsFirstLineLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
+		districtField.setItemCaptionGenerator(item -> item.buildCaption());
 		districtField.setCaption(I18nProperties.getCaption(Captions.devModeContactDistrict));
 		contactGeneratorConfigBinder.bind(districtField, ContactGenerationConfig::getDistrict, ContactGenerationConfig::setDistrict);
 		contactOptionsFirstLineLayout.addComponent(districtField);
@@ -485,12 +489,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
+		regionField.setItemCaptionGenerator(item -> item.buildCaption());
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeEventRegion));
 		eventGeneratorConfigBinder.bind(regionField, EventGenerationConfig::getRegion, EventGenerationConfig::setRegion);
 		eventOptionsFirstLineLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
 		districtField.setCaption(I18nProperties.getCaption(Captions.devModeEventDistrict));
+		districtField.setItemCaptionGenerator(item -> item.buildCaption());
 		eventGeneratorConfigBinder.bind(districtField, EventGenerationConfig::getDistrict, EventGenerationConfig::setDistrict);
 		eventOptionsFirstLineLayout.addComponent(districtField);
 
@@ -599,11 +605,13 @@ public class DevModeView extends AbstractConfigurationView {
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeSampleRegion));
+		regionField.setItemCaptionGenerator(item -> item.buildCaption());
 		sampleGeneratorConfigBinder.bind(regionField, SampleGenerationConfig::getRegion, SampleGenerationConfig::setRegion);
 		sampleOptionsFirstLineLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<>();
 		districtField.setCaption(I18nProperties.getCaption(Captions.devModeSampleDistrict));
+		districtField.setItemCaptionGenerator(item -> item.buildCaption());
 		sampleGeneratorConfigBinder.bind(districtField, SampleGenerationConfig::getDistrict, SampleGenerationConfig::setDistrict);
 		sampleOptionsFirstLineLayout.addComponent(districtField);
 
@@ -631,6 +639,7 @@ public class DevModeView extends AbstractConfigurationView {
 		sampleOptionsSecondLineLayout.addComponent(sampleMaterial);
 
 		ComboBox<FacilityReferenceDto> laboratory = new ComboBox(null, FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
+		laboratory.setItemCaptionGenerator(item -> item.buildCaption());
 		laboratory.setCaption(I18nProperties.getCaption(Captions.devModeSampleLaboratory));
 		sampleGeneratorConfigBinder.bind(laboratory, SampleGenerationConfig::getLaboratory, SampleGenerationConfig::setLaboratory);
 		laboratory.setRequiredIndicatorVisible(true);

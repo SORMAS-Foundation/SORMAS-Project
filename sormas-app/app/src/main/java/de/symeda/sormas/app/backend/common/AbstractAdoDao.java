@@ -15,6 +15,19 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.util.Log;
+
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.googlecode.openbeans.PropertyDescriptor;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -28,19 +41,6 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.googlecode.openbeans.PropertyDescriptor;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-import com.j256.ormlite.support.ConnectionSource;
-
-import android.util.Log;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -625,7 +625,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 		ADO current = queryUuid(source.getUuid());
 		ADO snapshot = querySnapshotByUuid(source.getUuid());
-		String sourceEntityString = source.toString();
+		String sourceEntityString = source.buildCaption();
 		if (StringUtils.isEmpty(sourceEntityString)) {
 			sourceEntityString = source.getEntityName();
 		}

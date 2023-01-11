@@ -45,6 +45,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.V7CaptionConverter;
 
 @SuppressWarnings("serial")
 public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
@@ -60,7 +61,8 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 		user = UserProvider.getCurrent().getUser();
 
-		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
+		Column column = addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
+		column.setRenderer(new HtmlRenderer(), new V7CaptionConverter());
 		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.Region));
 
 		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true)) {
@@ -158,7 +160,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 		int index = 0;
 		for (DistrictReferenceDto affectedDistrict : affectedDistricts) {
-			affectedDistrictsStringBuilder.append(affectedDistrict.toString());
+			affectedDistrictsStringBuilder.append(affectedDistrict.buildCaption());
 			if (index < affectedDistricts.size() - 1) {
 				affectedDistrictsStringBuilder.append(", ");
 			}

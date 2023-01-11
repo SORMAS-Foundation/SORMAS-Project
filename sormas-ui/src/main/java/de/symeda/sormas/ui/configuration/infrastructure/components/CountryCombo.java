@@ -18,14 +18,14 @@ package de.symeda.sormas.ui.configuration.infrastructure.components;
 import java.util.function.BiConsumer;
 
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
-import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 
-public class CountryCombo extends ComboBox {
+public class CountryCombo extends ComboBoxWithPlaceholder {
 
 	public CountryCombo(BiConsumer<CountryReferenceDto, Boolean> changeHandler) {
 		setId(RegionDto.COUNTRY);
