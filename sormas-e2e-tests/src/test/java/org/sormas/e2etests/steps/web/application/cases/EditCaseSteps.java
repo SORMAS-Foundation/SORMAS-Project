@@ -424,7 +424,7 @@ public class EditCaseSteps implements En {
           String sampleDate =
               CreateNewSampleSteps.sample
                   .getDateOfCollection()
-                  .format(DateTimeFormatter.ofPattern("M/dd/yyyy"));
+                  .format(DateTimeFormatter.ofPattern("M/d/yyyy"));
           Assert.assertTrue(
               sampleFieldValue.startsWith(sampleDate),
               "Sample field date doesn't start with " + sampleDate);
