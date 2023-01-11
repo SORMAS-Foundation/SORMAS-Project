@@ -1189,11 +1189,23 @@ public class TestDataCreator {
 		UserReferenceDto reportingUser,
 		ReportingType reportingType,
 		CaseReferenceDto caseReference) {
+		return createSurveillanceReport(reportingUser, reportingType, caseReference, null);
+	}
+
+	public SurveillanceReportDto createSurveillanceReport(
+		UserReferenceDto reportingUser,
+		ReportingType reportingType,
+		CaseReferenceDto caseReference,
+		Consumer<SurveillanceReportDto> extraConfig) {
 		SurveillanceReportDto surveillanceReport = SurveillanceReportDto.build(caseReference, reportingUser);
 		surveillanceReport.setReportingType(reportingType);
 		surveillanceReport.setReportDate(new Date());
 
-		surveillanceReport = beanTest.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
+		if (extraConfig != null) {
+			extraConfig.accept(surveillanceReport);
+		}
+
+		surveillanceReport = beanTest.getSurveillanceReportFacade().save(surveillanceReport);
 
 		return surveillanceReport;
 	}
@@ -1978,6 +1990,18 @@ public class TestDataCreator {
 		});
 		SampleReportDto sampleReport = createSampleReport(labMessage, sample);
 		createTestReport(sampleReport);
+		return labMessage;
+
+	}
+
+	public ExternalMessageDto createLabMessageWithSurveillanceReport(UserReferenceDto user, CaseReferenceDto caze) {
+		SurveillanceReportDto surveillanceReportDto = createSurveillanceReport(user, ReportingType.LABORATORY, caze);
+		ExternalMessageDto labMessage = createExternalMessage(lm -> {
+			lm.setType(ExternalMessageType.LAB_MESSAGE);
+			lm.setSurveillanceReport(surveillanceReportDto.toReference());
+			lm.setStatus(ExternalMessageStatus.PROCESSED);
+		});
+
 		return labMessage;
 
 	}

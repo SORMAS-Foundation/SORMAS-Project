@@ -88,17 +88,13 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 		return result;
 	}
 
-	public List<Vaccination> getVaccinationsByCriteria(
-		VaccinationCriteria criteria,
-		Integer first,
-		Integer max,
-		List<SortProperty> sortProperties) {
+	public List<Vaccination> getVaccinationsByCriteria(VaccinationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Vaccination> cq = cb.createQuery(Vaccination.class);
 		final Root<Vaccination> root = cq.from(Vaccination.class);
-		
+
 		Predicate filter = buildCriteriaFilter(criteria, cb, root);
-		
+
 		cq.where(filter);
 
 		if (sortProperties != null && !sortProperties.isEmpty()) {

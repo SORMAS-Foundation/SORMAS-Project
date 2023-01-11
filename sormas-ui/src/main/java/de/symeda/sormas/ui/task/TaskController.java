@@ -32,6 +32,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -100,33 +101,34 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 
-	public void edit(TaskIndexDto dto, Runnable callback, boolean editedFromTaskGrid, Disease disease) {
+	public void edit(TaskIndexDto taskIndex, Runnable callback, boolean editedFromTaskGrid, Disease disease) {
 
 		// get fresh data
-		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
+		TaskDto task = FacadeProvider.getTaskFacade().getByUuid(taskIndex.getUuid());
 
 		TaskEditForm form = new TaskEditForm(false, editedFromTaskGrid, disease);
-		form.setValue(newDto);
+		form.setValue(task);
+
+		EditPermissionType editPermissionType = FacadeProvider.getTaskFacade().getEditPermissionType(task.getUuid());
+		boolean isEditingAllowed = UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT) && editPermissionType == EditPermissionType.ALLOWED;
+
 		final CommitDiscardWrapperComponent<TaskEditForm> editView =
-			new CommitDiscardWrapperComponent<TaskEditForm>(form, UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT), form.getFieldGroup());
-		editView.getButtonsPanel().setVisible(UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT));
+			new CommitDiscardWrapperComponent<TaskEditForm>(form, true, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			editView,
-			UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT)
-				? I18nProperties.getString(Strings.headingEditTask)
-				: I18nProperties.getString(Strings.headingViewTask));
+			isEditingAllowed ? I18nProperties.getString(Strings.headingEditTask) : I18nProperties.getString(Strings.headingViewTask));
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
-				TaskDto dto1 = form.getValue();
-				if (!dto1.getAssigneeUser().getUuid().equals(dto.getAssigneeUser().getUuid())) {
-					dto1.setAssignedByUser(UserProvider.getCurrent().getUserReference());
+				TaskDto formValue = form.getValue();
+				if (!formValue.getAssigneeUser().getUuid().equals(taskIndex.getAssigneeUser().getUuid())) {
+					formValue.setAssignedByUser(UserProvider.getCurrent().getUserReference());
 				}
-				FacadeProvider.getTaskFacade().saveTask(dto1);
+				FacadeProvider.getTaskFacade().saveTask(formValue);
 
-				if (!editedFromTaskGrid && dto1.getCaze() != null) {
-					ControllerProvider.getCaseController().navigateToCase(dto1.getCaze().getUuid());
+				if (!editedFromTaskGrid && formValue.getCaze() != null) {
+					ControllerProvider.getCaseController().navigateToCase(formValue.getCaze().getUuid());
 				}
 
 				popupWindow.close();
@@ -138,7 +140,7 @@ public class TaskController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)) {
 			editView.addDeleteListener(() -> {
-				FacadeProvider.getTaskFacade().deleteTask(newDto);
+				FacadeProvider.getTaskFacade().deleteTask(task);
 				UI.getCurrent().removeWindow(popupWindow);
 				callback.run();
 			}, I18nProperties.getString(Strings.entityTask));
@@ -146,18 +148,18 @@ public class TaskController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)) {
-			boolean archived = FacadeProvider.getTaskFacade().isArchived(dto.getUuid());
+			boolean archived = FacadeProvider.getTaskFacade().isArchived(task.getUuid());
 			Button archiveButton = ButtonHelper.createButton(
 				ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID,
 				I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
 				e -> {
 					if (editView.isDirty()) {
-						DirtyCheckPopup.show(editView, () -> archiveOrDearchive(newDto, !archived, () -> {
+						DirtyCheckPopup.show(editView, () -> archiveOrDearchive(task, !archived, () -> {
 							popupWindow.close();
 							callback.run();
 						}));
 					} else {
-						archiveOrDearchive(newDto, !archived, () -> {
+						archiveOrDearchive(task, !archived, () -> {
 							popupWindow.close();
 							callback.run();
 						});
@@ -168,6 +170,8 @@ public class TaskController {
 			editView.getButtonsPanel().addComponentAsFirst(archiveButton);
 			editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 		}
+
+		editView.setEditable(isEditingAllowed, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 	}
 
 	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {
@@ -228,6 +232,7 @@ public class TaskController {
 				}
 				if (form.getAssigneeCheckbox().getValue()) {
 					dto.setAssigneeUser(updatedBulkEditData.getTaskAssignee());
+					dto.setAssignedByUser(UserProvider.getCurrent().getUserReference());
 				}
 				if (form.getTaskStatusCheckbox().getValue()) {
 					dto.setTaskStatus(updatedBulkEditData.getTaskStatus());
@@ -260,8 +265,6 @@ public class TaskController {
 						archive ? I18nProperties.getString(Strings.messageTaskArchived) : I18nProperties.getString(Strings.messageTaskDearchived),
 						Type.ASSISTIVE_NOTIFICATION);
 				}
-
-				callback.run();
 			});
 	}
 

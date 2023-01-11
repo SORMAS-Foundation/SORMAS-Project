@@ -15,16 +15,16 @@
 
 package de.symeda.sormas.app.backend.person;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import android.util.Log;
 
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;

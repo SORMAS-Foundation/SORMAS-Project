@@ -7,6 +7,7 @@ import org.hibernate.transform.ResultTransformer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -39,7 +40,9 @@ public class ImmunizationIndexDtoResultTransformer implements ResultTransformer 
 			(Date) objects[16],
 			(String) objects[17],
 			(Date) objects[18],
-			(Boolean) objects[19]);
+			(DeletionReason) objects[19],
+			(String) objects[20],
+			(Boolean) objects[21]);
 	}
 
 	@Override

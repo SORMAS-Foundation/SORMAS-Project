@@ -82,6 +82,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 	private CommunitiesGrid grid;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public CommunitiesView() {
 
@@ -97,7 +98,9 @@ public class CommunitiesView extends AbstractConfigurationView {
 		grid = new CommunitiesGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfCommunities, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfCommunities, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -251,11 +254,12 @@ public class CommunitiesView extends AbstractConfigurationView {
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
-				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.communityActiveCommunities));
 				relevanceStatusFilter
 					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.communityArchivedCommunities));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.communityAllCommunities));
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.communityAllCommunities));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);

@@ -90,8 +90,7 @@ public class TaskGridComponent extends VerticalLayout {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createAssigneeFilterBar());
 		gridLayout.addComponent(grid);
-		grid.getDataProvider().addDataProviderListener(e -> updateAssigneeFilterButtons());
-		grid.setDataProviderListener(e -> updateAssigneeFilterButtons());
+		grid.addDataSizeChangeListener(e -> updateAssigneeFilterButtons());
 
 		gridLayout.setMargin(true);
 		styleGridLayout(gridLayout);
@@ -157,10 +156,10 @@ public class TaskGridComponent extends VerticalLayout {
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
-				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.taskActiveTasks));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.taskArchivedTasks));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.taskAllTasks));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.taskAllTasks));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					tasksView.navigateTo(criteria);
@@ -278,7 +277,7 @@ public class TaskGridComponent extends VerticalLayout {
 		if (activeStatusButton != null) {
 			CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 

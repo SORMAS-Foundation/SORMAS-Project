@@ -24,6 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -83,6 +84,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	private int visitCount;
+	private Integer missedVisitsCount;
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
@@ -90,6 +92,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private String districtName;
 	private String caseRegionName;
 	private String caseDistrictName;
+
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
 
@@ -102,7 +107,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   String externalID, String externalToken, String internalToken, boolean isInJurisdiction, boolean isCaseInJurisdiction,
+						   String externalID, String externalToken, String internalToken, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
 						   int visitCount,
 						   Date latestChangedDate // unused, only here for TypedQuery mapping
 	) {
@@ -140,6 +145,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.districtName = districtName;
 		this.caseRegionName = caseRegionName;
 		this.caseDistrictName = caseDistrictName;
+
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 
 		this.contactJurisdictionFlagsDto = new ContactJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction);
 	}
@@ -374,6 +382,30 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public boolean getCaseInJurisdiction() {
 		return contactJurisdictionFlagsDto.getCaseInJurisdiction();
+	}
+
+	public Integer getMissedVisitsCount() {
+		return missedVisitsCount;
+	}
+
+	public void setMissedVisitsCount(Integer missedVisitsCount) {
+		this.missedVisitsCount = missedVisitsCount;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	@Override

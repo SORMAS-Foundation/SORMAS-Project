@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import com.vaadin.ui.CustomLayout;
+
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
@@ -25,9 +28,11 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
+import de.symeda.sormas.ui.person.PersonSideComponentsElement;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
-public class ContactPersonView extends AbstractContactView {
+public class ContactPersonView extends AbstractContactView implements PersonSideComponentsElement {
 
 	private static final long serialVersionUID = -1L;
 
@@ -42,22 +47,23 @@ public class ContactPersonView extends AbstractContactView {
 	@Override
 	protected void initView(String params) {
 
-		ContactDto caze = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
-		person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
-
-		CommitDiscardWrapperComponent<PersonEditForm> contactPersonComponent = ControllerProvider.getPersonController()
+		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+		person = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
+		CommitDiscardWrapperComponent<PersonEditForm> editComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
-				PersonContext.CONTACT,
+				PersonContext.CASE,
 				person,
-				caze.getDisease(),
-				caze.getDiseaseDetails(),
+				contact.getDisease(),
+				contact.getDiseaseDetails(),
 				UserRight.CONTACT_EDIT,
 				null,
 				isEditAllowed());
-		setSubComponent(contactPersonComponent);
-
+		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
+		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
+		setSubComponent(componentWrapper);
+		addSideComponents(layout, CoreEntityType.CONTACT, contact.getUuid(), person.toReference(), this::showUnsavedChangesPopup);
 		setEditPermission(
-			contactPersonComponent,
+			editComponent,
 			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
 			PersonDto.ADDRESSES,
 			PersonDto.PERSON_CONTACT_DETAILS);

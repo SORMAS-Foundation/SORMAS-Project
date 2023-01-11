@@ -20,8 +20,6 @@ package de.symeda.sormas.ui.visit;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -104,9 +102,8 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<VisitIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getVisitFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
+
+		setDataProvider(FacadeProvider.getVisitFacade().getIndexList(getCriteria(), null, null, null).stream());
 	}
 
 	public void reload() {
@@ -114,7 +111,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			deselectAll();
 		}
 
-		//getDataProvider().refreshAll(); // does not work for eager data providers
+		// getDataProvider().refreshAll() does not work for eager data providers
 		setEagerDataProvider();
 	}
 }

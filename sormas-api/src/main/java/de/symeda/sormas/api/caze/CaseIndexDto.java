@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.MergeableIndexDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -34,8 +35,6 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-import de.symeda.sormas.api.vaccination.VaccinationDto;
-import org.apache.commons.lang3.StringUtils;
 
 public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
 
@@ -61,6 +60,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	public static final String REPORT_DATE = "reportDate";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String REGION_UUID = "regionUuid";
+	public static final String DELETE_REASON = "deletionReason";
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String RESPONSIBLE_DISTRICT_NAME = "responsibleDistrictName";
 	public static final String HEALTH_FACILITY_UUID = "healthFacilityUuid";
@@ -117,6 +117,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
 	private Integer visitCount;
+	private Integer missedVisitsCount;
 
 	private Date surveillanceToolLastShareDate;
 	private Long surveillanceToolShareCount;
@@ -127,6 +128,9 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	private String regionUuid;
 	private String districtUuid;
 	private String responsibleDistrictName;
+
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	private Boolean isInJurisdiction;
 
@@ -139,7 +143,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
 						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, Date changeDate, Long facilityId,
 						// responsible jurisdiction
-						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction) {
+						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, DeletionReason deletionReason, String otherDeletionReason,  boolean isInJurisdiction) {
 		this(id, uuid, epidNumber, externalID, externalToken, internalToken, personUuid, personFirstName, personLastName, disease,
 				diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, creationDate, regionUuid,
@@ -147,7 +151,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, changeDate, facilityId,
-				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction,
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, deletionReason, otherDeletionReason, isInJurisdiction,
 				null, null
 		);
 	}
@@ -163,7 +167,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,  SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus,
 						Date changeDate, Long facilityId, // XXX: unused, only here for TypedQuery mapping
 						// responsible jurisdiction
-						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction,
+						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction,
 						// others
 						Integer visitCount,
 						Date latestChangedDate // unused, only here for TypedQuery mapping
@@ -207,6 +211,9 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.responsibleDistrictUuid = responsibleDistrictUuid;
 		this.districtUuid = districtUuid;
 		this.regionUuid = regionUuid;
+
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 
 		this.isInJurisdiction = isInJurisdiction;
 	}
@@ -437,6 +444,22 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		return isInJurisdiction;
 	}
 
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
+	}
+
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
@@ -527,5 +550,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 
 	public void setResponsibleDistrictName(String responsibleDistrictName) {
 		this.responsibleDistrictName = responsibleDistrictName;
+	}
+
+	public Integer getMissedVisitsCount() {
+		return missedVisitsCount;
+	}
+
+	public void setMissedVisitsCount(Integer missedVisitsCount) {
+		this.missedVisitsCount = missedVisitsCount;
 	}
 }

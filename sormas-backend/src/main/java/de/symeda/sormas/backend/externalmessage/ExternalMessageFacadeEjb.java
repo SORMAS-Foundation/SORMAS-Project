@@ -64,8 +64,10 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -257,7 +259,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			target.setSampleReports(source.getSampleReports().stream().map(sampleReportFacade::toDto).collect(toList()));
 		}
 		if (source.getSurveillanceReport() != null) {
-			target.setSurveillanceReport(source.getSurveillanceReport().toReference());
+			target.setSurveillanceReport(SurveillanceReportFacadeEjb.toReferenceDto(source.getSurveillanceReport()));
 		}
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());
@@ -323,17 +325,17 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	public long count(ExternalMessageCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<ExternalMessage> labMessage = cq.from(ExternalMessage.class);
+		Root<ExternalMessage> externalMessage = cq.from(ExternalMessage.class);
 
-		Predicate filter = null;
+		Predicate filter = externalMessageService.createDefaultFilter(cb, externalMessage);
 		if (criteria != null) {
-			filter = externalMessageService.buildCriteriaFilter(cb, labMessage, criteria);
+			filter = CriteriaBuilderHelper.and(cb, filter, externalMessageService.buildCriteriaFilter(cb, externalMessage, criteria));
 		}
 		if (filter != null) {
 			cq.where(filter);
 		}
 
-		cq.select(cb.countDistinct(labMessage));
+		cq.select(cb.countDistinct(externalMessage));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -366,10 +368,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			userJoin.get(User.FIRST_NAME),
 			userJoin.get(User.LAST_NAME));
 
-		Predicate filter = null;
+		Predicate filter = externalMessageService.createDefaultFilter(cb, labMessage);
 
 		if (criteria != null) {
-			filter = externalMessageService.buildCriteriaFilter(cb, labMessage, criteria);
+			filter = CriteriaBuilderHelper.and(cb, filter, externalMessageService.buildCriteriaFilter(cb, labMessage, criteria));
 		}
 
 		if (filter != null) {

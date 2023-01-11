@@ -160,6 +160,7 @@ public final class CssStyles {
 	public static final String BUTTON_FILTER_ENABLED = "filter-enabled";
 	public static final String BUTTON_FILTER_DISABLED = "filter-disabled";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
+	public static final String BUTTON_CAPTION_OVERFLOW = "caption-overflow-label";
 	public static final String GEOCODE_BUTTON_HIGHLIGHT = "geocode-button-highlight";
 
 	// Link styles
@@ -271,6 +272,7 @@ public final class CssStyles {
 
 	// MISC
 	public static final String RESIZABLE = "resizable";
+	public static final String ACTIVE_SIDE_COMPONENT_ELEMENT = "active-side-component-element";
 
 	// Grid layout
 	public static final String GRID_LAYOUT_EVEN = "even";

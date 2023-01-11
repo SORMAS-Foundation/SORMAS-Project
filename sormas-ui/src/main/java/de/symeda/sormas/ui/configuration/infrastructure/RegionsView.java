@@ -79,6 +79,7 @@ public class RegionsView extends AbstractConfigurationView {
 	protected Button createButton;
 	protected Button importButton;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public RegionsView() {
 
@@ -93,7 +94,9 @@ public class RegionsView extends AbstractConfigurationView {
 		grid = new RegionsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfRegions, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfRegions, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -215,10 +218,10 @@ public class RegionsView extends AbstractConfigurationView {
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
-				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.regionActiveRegions));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.regionArchivedRegions));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.regionAllRegions));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.regionAllRegions));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);

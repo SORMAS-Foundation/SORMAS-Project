@@ -568,6 +568,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 			}
 			filter = and(cb, filter, dateFilter);
 		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}

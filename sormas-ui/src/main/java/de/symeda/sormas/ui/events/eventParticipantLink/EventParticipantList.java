@@ -48,7 +48,11 @@ public class EventParticipantList extends PaginationList<EventParticipantListEnt
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final EventParticipantListEntryDto eventParticipant = displayedEntries.get(i);
 			final EventParticipantListEntry listEntry = new EventParticipantListEntry(eventParticipant);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
+			boolean isActiveEventParticipant = eventParticipant.getUuid().equals(getActiveUuid());
+			if (isActiveEventParticipant) {
+				listEntry.setActive();
+			}
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT) && !isActiveEventParticipant) {
 				listEntry.addEditListener(
 					i,
 					(Button.ClickListener) event -> ControllerProvider.getEventParticipantController()

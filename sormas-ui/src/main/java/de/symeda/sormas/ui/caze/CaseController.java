@@ -66,6 +66,7 @@ import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -91,7 +92,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -325,15 +325,9 @@ public class CaseController {
 
 		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
 
-		selectOrCreateCase(dto, person, uuid -> {
-			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, person, null, false);
-				caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
-				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
-			} else {
-				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
-			}
-		});
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, person, null, false);
+		caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void convertSamePersonContactsAndEventParticipants(CaseDataDto caze, Runnable callback) {
@@ -817,7 +811,6 @@ public class CaseController {
 						saveCase(dto);
 					}
 				} else {
-
 					PersonDto searchedPerson = createForm.getSearchedPerson();
 					if (searchedPerson != null) {
 						dto.setPerson(searchedPerson.toReference());
@@ -1341,15 +1334,15 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<PortHealthInfoForm> getPortHealthInfoComponent(final String caseUuid) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		PointOfEntryReferenceDto casePointOfEntry = caze.getPointOfEntry();
 
-		if (casePointOfEntry == null) {
+		if (!hasPointOfEntry(caze)) {
 			return null;
 		}
 
-		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByUuid(casePointOfEntry.getUuid());
-		PortHealthInfoForm form = new PortHealthInfoForm(pointOfEntry, caze.getPointOfEntryDetails());
-		form.setValue(caze.getPortHealthInfo());
+		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByCaseUuid(caseUuid);
+		PortHealthInfoForm form =
+			new PortHealthInfoForm(pointOfEntry, caze.getPointOfEntryDetails(), caze.isPseudonymized(), caze.isInJurisdiction());
+		form.setValue(getPortHealthInfo(caze));
 
 		final CommitDiscardWrapperComponent<PortHealthInfoForm> component = new CommitDiscardWrapperComponent<PortHealthInfoForm>(
 			form,
@@ -1637,8 +1630,8 @@ public class CaseController {
 			DeletableUtils.showDeleteWithReasonPopup(
 				String.format(
 					I18nProperties.getString(Strings.confirmationDeleteCases),
-					selectedRows.size(),
-					getDeleteConfirmationDetails(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()))),
+					selectedRows.size()) + "<br/>" +
+					getDeleteConfirmationDetails(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList())),
 				(deleteDetails) -> {
 					int countNotDeletedCases = 0;
 					StringBuilder nonDeletableCases = new StringBuilder();
@@ -1848,4 +1841,18 @@ public class CaseController {
 		protected String facilityDetails;
 	}
 
+	public boolean hasPointOfEntry(CaseDataDto caze) {
+		if (caze.getPointOfEntry() == null) {
+			return FacadeProvider.getPointOfEntryFacade().existsForCase(caze.getUuid());
+		}
+		return true;
+	}
+
+	public PortHealthInfoDto getPortHealthInfo(CaseDataDto caze) {
+		PortHealthInfoDto portHealthInfoDto = caze.getPortHealthInfo();
+		if (portHealthInfoDto == null) {
+			portHealthInfoDto = FacadeProvider.getPortHealthInfoFacade().getByCaseUuid(caze.getUuid());
+		}
+		return portHealthInfoDto;
+	}
 }

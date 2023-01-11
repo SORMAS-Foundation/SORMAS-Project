@@ -738,7 +738,7 @@ public class UserFacadeEjb implements UserFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, userService::createUser, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getAddress().setUuid(source.getAddress().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getAddress(), source.getAddress());
 		}
 
 		target.setActive(source.isActive());

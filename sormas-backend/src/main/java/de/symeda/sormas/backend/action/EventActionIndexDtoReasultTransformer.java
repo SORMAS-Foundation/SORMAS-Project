@@ -8,6 +8,7 @@ import org.hibernate.transform.ResultTransformer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventIdentificationSource;
@@ -50,7 +51,9 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 			(ActionStatus) objects[24],
 			(ActionPriority) objects[25],
 			actionLastModifiedBy,
-			actionCreatorUser);
+			actionCreatorUser,
+			(DeletionReason) objects[41],
+			(String) objects[42]);
 	}
 
 	@Override

@@ -460,11 +460,10 @@ public class LineListingLayout extends VerticalLayout {
 			binder.forField(facility).asRequired().bind(CaseLineDto.FACILITY);
 			facilityDetails = new TextField();
 			facilityDetails.setId("lineListingFacilityDetails_" + lineIndex);
+			CssStyles.style(facilityDetails, CssStyles.SOFT_REQUIRED);
 			facilityDetails.setVisible(false);
 			updateFacilityFields(facility, facilityDetails);
-			binder.forField(facilityDetails)
-				.asRequired(new FieldVisibleAndNotEmptyValidator<>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
-				.bind(CaseLineDto.FACILITY_DETAILS);
+			binder.forField(facilityDetails).bind(CaseLineDto.FACILITY_DETAILS);
 
 			person = new PersonField();
 			person.setId("lineListingPerson_" + lineIndex);

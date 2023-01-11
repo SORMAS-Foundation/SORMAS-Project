@@ -177,7 +177,6 @@ public class CasesView extends AbstractView {
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
-			((AbstractCaseGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -194,7 +193,7 @@ public class CasesView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
-		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+		grid.addDataSizeChangeListener(e -> updateStatusButtons());
 
 		OptionGroup casesViewSwitcher = new OptionGroup();
 		casesViewSwitcher.setId("casesViewSwitcher");
@@ -419,7 +418,7 @@ public class CasesView extends AbstractView {
 
 		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
-				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
+				if (grid.getDataSize() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getCaption(Captions.actionEnterBulkEditMode),
 						new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)),
@@ -446,7 +445,6 @@ public class CasesView extends AbstractView {
 				ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				this.filterForm.enableSearchAndReportingUser();
 				navigateTo(criteria);
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
@@ -551,7 +549,6 @@ public class CasesView extends AbstractView {
 		ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(true);
 		btnEnterBulkEditMode.setVisible(false);
 		btnLeaveBulkEditMode.setVisible(true);
-		filterForm.disableSearchAndReportingUser();
 		((AbstractCaseGrid<?>) grid).reload();
 	}
 
@@ -674,12 +671,19 @@ public class CasesView extends AbstractView {
 				}
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
-				relevanceStatusFilter.setWidth(140, Unit.PIXELS);
+				relevanceStatusFilter.setWidth(210, Unit.PIXELS);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.caseActiveCases));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.caseAllCases));
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.caseAllActiveAndArchivedCases));
+
+				if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.caseDeletedCases));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+				}
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					if (relevanceStatusInfoLabel != null) {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
@@ -872,7 +876,7 @@ public class CasesView extends AbstractView {
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 
