@@ -240,6 +240,9 @@ Feature: Create user
   Scenario: Edit and create user roles
     Given I log in as a Admin User
     And I click on the Users from navbar
+    And I click on User roles tab from User Management Page
+    And I check if the "TestNatUser" user role exist and change it to enabled
+    And I click on the Users from navbar
     And I check if there is any user with the "TestNatUser" role and change his role
     And I click on User roles tab from User Management Page
     And I check if the "TestNatUser" user role exist and delete it

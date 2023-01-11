@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.CANNOT_D
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_USER_ROLE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_DISABLED_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EXPORT_USER_ROLES_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER_ROLE_BUTTON;
@@ -43,6 +44,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.getUserR
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
@@ -268,6 +270,26 @@ public class UserRolesSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EXPORT_USER_ROLES_BUTTON);
           FilesHelper.waitForFileToDownload(USER_ROLES_FILE_PATH, 30);
           FilesHelper.validateFileIsNotEmpty(USER_ROLES_FILE_PATH);
+        });
+
+    And(
+        "^I check if the \"([^\"]*)\" user role exist and change it to enabled$",
+        (String userRole) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(USER_RIGHTS_INPUT);
+          webDriverHelpers.scrollInTable(20);
+
+          if (webDriverHelpers.isElementVisibleWithTimeout(getUserRoleCaptionByText(userRole), 7)) {
+            webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText(userRole));
+            TimeUnit.SECONDS.sleep(3);
+            webDriverHelpers.scrollToElement(DISCARD_BUTTON);
+            System.out.print("Zescrollowalem");
+            if (webDriverHelpers.isElementVisibleWithTimeout(USER_ROLE_ENABLE_BUTTON, 7)) {
+              System.out.print("wszedlem do drugiego ifa");
+              webDriverHelpers.scrollToElement(USER_ROLE_ENABLE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(USER_ROLE_ENABLE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            }
+          }
         });
   }
 }

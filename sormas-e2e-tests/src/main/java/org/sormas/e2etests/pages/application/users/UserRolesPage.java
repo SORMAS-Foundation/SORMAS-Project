@@ -32,6 +32,7 @@ public class UserRolesPage {
   public static By ARCHIVE_CASES_CHECKBOX = By.xpath("//label[text()='Archive cases']");
   public static By ARCHIVE_CONTACTS_CHECKBOX = By.xpath("//label[text()='Archive contacts']");
   public static By SAVE_BUTTON = By.cssSelector("#commit");
+  public static By DISCARD_BUTTON = By.cssSelector("#discard");
   public static By USER_ROLE_LIST = By.cssSelector("#tab-user-userroles");
 
   public static By getUserRoleCaptionByText(String caption) {
