@@ -39,9 +39,14 @@ public interface VisitFacade {
 
 	VisitDto getVisitByUuid(String uuid);
 
+	/**
+	 * Only allowed to use for ExternalVisits, merging and test puroses
+	 */
 	VisitDto saveVisit(@Valid VisitDto dto);
 
-	void validate(VisitDto dto);
+	VisitDto saveVisit(@Valid VisitDto dto, Date allowedStartDate, Date allowedEndDate);
+
+	void validate(VisitDto dto, Date allowedStartDate, Date allowedEndDate);
 
 	ExternalVisitDto saveExternalVisit(@Valid ExternalVisitDto dto);
 
