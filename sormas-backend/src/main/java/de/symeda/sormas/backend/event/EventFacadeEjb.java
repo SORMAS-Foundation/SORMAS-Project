@@ -1235,7 +1235,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target = DtoHelper.fillOrBuildEntity(source, target, Event::new, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getEventLocation().setUuid(source.getEventLocation().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getEventLocation(), source.getEventLocation());
 		}
 
 		target.setEventStatus(source.getEventStatus());

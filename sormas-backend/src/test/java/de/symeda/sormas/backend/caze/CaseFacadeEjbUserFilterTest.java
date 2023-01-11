@@ -143,7 +143,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesWithLimitedSynchronization() {
+	public void testGetCasesWithExcludeNoCaseClassifiedAndMaxChangedDate() {
 
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
@@ -154,6 +154,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
 		HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 		properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
+		properties.put(FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, 30);
 		singleResult.setProperties(properties);
 		em.save(singleResult);
 

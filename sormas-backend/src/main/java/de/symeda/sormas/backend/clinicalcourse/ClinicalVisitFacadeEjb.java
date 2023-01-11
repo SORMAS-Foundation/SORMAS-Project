@@ -436,7 +436,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, ClinicalVisit::new, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getSymptoms().setUuid(source.getSymptoms().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getSymptoms(), source.getSymptoms());
 		}
 
 		target.setClinicalCourse(clinicalCourseService.getByReferenceDto(source.getClinicalCourse()));

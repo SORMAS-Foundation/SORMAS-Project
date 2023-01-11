@@ -17,13 +17,13 @@ package de.symeda.sormas.app.backend.event;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -111,8 +111,8 @@ public class EventParticipant extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
-		return getPerson().toString();
+	public String buildCaption() {
+		return getPerson().buildCaption();
 	}
 
 	@Override

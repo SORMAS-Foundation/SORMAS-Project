@@ -1188,6 +1188,7 @@ public interface Strings {
 	String messagePersonAlreadyEventParticipant = "messagePersonAlreadyEventParticipant";
 	String messagePersonContactDetailsPrimaryDuplicate = "messagePersonContactDetailsPrimaryDuplicate";
 	String messagePersonExternalTokenWarning = "messagePersonExternalTokenWarning";
+	String messagePersonMergedAddressDescription = "messagePersonMergedAddressDescription";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
 	String messagePlagueTypeChange = "messagePlagueTypeChange";

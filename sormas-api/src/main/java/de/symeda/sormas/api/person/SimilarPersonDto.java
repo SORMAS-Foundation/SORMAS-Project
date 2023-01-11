@@ -18,6 +18,8 @@ package de.symeda.sormas.api.person;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
@@ -194,8 +196,8 @@ public class SimilarPersonDto extends AbstractUuidDto {
 		return new PersonReferenceDto(getUuid(), firstName, lastName);
 	}
 
-	@Override
-	public String toString() {
+	@JsonIgnore
+	public String buildCaption() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
 

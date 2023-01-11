@@ -137,6 +137,13 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
+			}
+		}
+
 		cq.where(filter);
 		cq.select(from.get(Task.UUID));
 
@@ -245,6 +252,13 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		}
 
 		filter = cb.or(filter, assigneeFilter);
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, taskQueryContext.getRoot()));
+			if (limitedChangeDatePredicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+			}
+		}
 
 		if ((taskCriteria == null || !taskCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
@@ -818,5 +832,10 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		}
 
 		return EditPermissionType.ALLOWED;
+	}
+
+	@Override
+	protected boolean hasLimitedChangeDateFilterImplementation() {
+		return true;
 	}
 }

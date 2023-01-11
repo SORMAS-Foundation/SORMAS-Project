@@ -87,6 +87,10 @@ public final class CaseLogic {
 		return FollowUpLogic.getFollowUpStartDate(reportDate, earliestSampleDate);
 	}
 
+	public static Date getEndDate(CaseDataDto caseDto) {
+		return getEndDate(caseDto.getSymptoms().getOnsetDate(), caseDto.getReportDate(), caseDto.getFollowUpUntil());
+	}
+
 	public static Date getEndDate(Date onsetDate, Date reportDate, Date followUpUntil) {
 		return followUpUntil != null ? followUpUntil : onsetDate != null ? onsetDate : reportDate;
 	}

@@ -95,6 +95,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -1645,7 +1646,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target = DtoHelper.fillOrBuildEntity(source, target, service::createPerson, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getAddress().setUuid(source.getAddress().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getAddress(), source.getAddress());
 		}
 
 		target.setFirstName(source.getFirstName());
@@ -1787,7 +1788,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			}
 		}
 
-		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
+		DtoHelper.copyDtoValues(leadPerson, otherPerson, false, PersonDto.ADDRESS);
+		processPersonAddressMerge(leadPerson, otherPerson);
+
 		save(leadPerson);
 	}
 
@@ -1815,7 +1818,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 					contactDetailDto.setPrimaryContact(false);
 				}
 			}
-			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false);
+
+			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false, PersonDto.ADDRESS);
+			processPersonAddressMerge(leadPersonDto, otherPersonDto);
 
 			save(leadPersonDto);
 		}
@@ -1857,6 +1862,17 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		service.deletePermanent(otherPerson);
 		service.ensurePersisted(leadPerson);
+	}
+
+	private void processPersonAddressMerge(PersonDto leadPersonDto, PersonDto otherPersonDto) {
+		if (locationFacade.areDifferentLocation(leadPersonDto.getAddress(), otherPersonDto.getAddress())) {
+			LocationDto otherAddress = otherPersonDto.getAddress();
+			otherAddress.setAddressType(PersonAddressType.OTHER_ADDRESS);
+			otherAddress.setAddressTypeDetails(I18nProperties.getString(Strings.messagePersonMergedAddressDescription));
+			leadPersonDto.addAddress(otherAddress);
+		} else {
+			DtoHelper.copyDtoValues(leadPersonDto.getAddress(), otherPersonDto.getAddress(), false);
+		}
 	}
 
 	@Override

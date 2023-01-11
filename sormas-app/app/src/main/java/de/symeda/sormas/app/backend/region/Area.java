@@ -57,7 +57,7 @@ public class Area extends InfrastructureAdo {
     }
 
     @Override
-    public String toString() {
+    public String buildCaption() {
         return getName();
     }
 

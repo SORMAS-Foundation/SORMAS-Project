@@ -46,6 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -178,6 +179,13 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 			Predicate userFilter = createUserFilter(eventQueryContext, eventUserFilterCriteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
+			}
 		}
 
 		cq.where(filter);
@@ -481,6 +489,13 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 				cb,
 				filter,
 				cb.or(cb.equal(eventJoin.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventJoin.get(Event.DISEASE))));
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, eventJoin));
+			if (limitedChangeDatePredicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+			}
 		}
 
 		return filter;
@@ -1111,5 +1126,10 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		cq.select(cb.count(from));
 
 		return em.createQuery(cq).getSingleResult() > 0;
+	}
+
+	@Override
+	protected boolean hasLimitedChangeDateFilterImplementation() {
+		return true;
 	}
 }

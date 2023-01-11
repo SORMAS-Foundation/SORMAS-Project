@@ -18,6 +18,12 @@ package de.symeda.sormas.app.backend.sample;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -25,12 +31,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -313,7 +313,7 @@ public class PathogenTest extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
-		return super.toString() + DateFormatHelper.formatLocalDate(getTestDateTime());
+	public String buildCaption() {
+		return super.buildCaption() + DateFormatHelper.formatLocalDate(getTestDateTime());
 	}
 }

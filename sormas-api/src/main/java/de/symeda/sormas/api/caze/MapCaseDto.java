@@ -164,8 +164,8 @@ public class MapCaseDto extends AbstractUuidDto {
 	}
 
 	@Override
-	public String toString() {
-		return person.toString() + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+	public String buildCaption() {
+		return person.buildCaption() + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 
 	public Double getHealthFacilityLat() {

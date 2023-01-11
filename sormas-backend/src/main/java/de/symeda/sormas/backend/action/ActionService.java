@@ -133,7 +133,6 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 		}
 
 		Predicate filter = cb.equal(joins.getCreator(), currentUser);
-
 		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()));
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);

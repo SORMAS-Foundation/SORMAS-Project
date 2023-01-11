@@ -12274,4 +12274,10 @@ ALTER TABLE surveillancereports_history RENAME COLUMN creatinguser_id to reporti
 
 INSERT INTO schema_version (version_number, comment) VALUES (505, 'S2S Surveillance Reports should be shareable (along with possibly attached External Messages) #10247');
 
+-- 2023-01-05 Add max change date period property to limited synchronization feature #7305
+UPDATE featureconfiguration SET properties = properties::jsonb || json_build_object('MAX_CHANGE_DATE_PERIOD',-1)::jsonb WHERE featuretype = 'LIMITED_SYNCHRONIZATION';
+
+INSERT INTO schema_version (version_number, comment) VALUES (506, 'Add max change date period property to limited synchronization feature #7305');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
