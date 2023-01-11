@@ -1799,7 +1799,7 @@ Feature: Case end to end tests
       And I back to the cases list from edit case
       And I apply "Archived cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
-      And I apply "All cases" to combobox on Case Directory Page
+      And I apply "All active and archived cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
 
   @tmsLink=SORDEV-12441 @env_de
