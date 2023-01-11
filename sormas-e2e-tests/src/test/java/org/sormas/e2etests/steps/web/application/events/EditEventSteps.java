@@ -1929,8 +1929,8 @@ public class EditEventSteps implements En {
               "Default option is not 'All event participants'");
           Assert.assertTrue(
               webDriverHelpers.checkIfElementExistsInCombobox(
-                  EVENT_PARTICIPANT_STATUS, "All event participants"),
-              "There is no 'All event participants' option in drop list.");
+                  EVENT_PARTICIPANT_STATUS, "Active and archived event participants"),
+              "There is no 'Active and archived event participants' option in drop list.");
           Assert.assertTrue(
               webDriverHelpers.checkIfElementExistsInCombobox(
                   EVENT_PARTICIPANT_STATUS, "Active event participants"),
@@ -1939,6 +1939,10 @@ public class EditEventSteps implements En {
               webDriverHelpers.checkIfElementExistsInCombobox(
                   EVENT_PARTICIPANT_STATUS, "Archived event participants"),
               "There is no 'Archived event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Deleted event participants"),
+              "There is no 'Deleted event participants' option in drop list.");
         });
 
     And(
