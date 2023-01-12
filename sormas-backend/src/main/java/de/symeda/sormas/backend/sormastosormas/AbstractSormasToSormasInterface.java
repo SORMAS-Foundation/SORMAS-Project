@@ -291,7 +291,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(requestUuid);
 
-		if (shareRequest.getStatus() != ShareRequestStatus.PENDING) {
+		if (shareRequest == null || shareRequest.getStatus() != ShareRequestStatus.PENDING) {
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
