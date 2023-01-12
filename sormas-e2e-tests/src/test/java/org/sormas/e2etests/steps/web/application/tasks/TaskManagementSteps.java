@@ -147,6 +147,28 @@ public class TaskManagementSteps implements En {
         });
 
     When(
+        "^I search task by last Case created via API UUID$",
+        () -> {
+          String lastCreatedCaseUUID = apiState.getCreatedCase().getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
+          webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, lastCreatedCaseUUID);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+
+          //                  By lastTaskEditButton =
+          //                          By.xpath(
+          //                                  String.format(
+          //                                          EDIT_BUTTON_XPATH_BY_TEXT,
+          // CreateNewTaskSteps.task.getCommentsOnTask()));
+          //
+          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton,
+          // 20);
+          //                  webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
+          //                  webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+          //                          COMMENTS_ON_EXECUTION_TEXTAREA);
+        });
+
+    When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
@@ -178,6 +200,24 @@ public class TaskManagementSteps implements En {
               });
           softly.assertAll();
         });
+
+    When(
+        "^I check displayed tasks District and Region are taken from API created Case$",
+        () -> {
+          taskTableRows.forEach(
+              data -> {
+                softly.assertEquals(
+                    data.getRegion(),
+                    apiState.getCreatedCase().getRegion().getCaption(),
+                    "Task region is not the same with Case region");
+                softly.assertEquals(
+                    data.getDistrict(),
+                    apiState.getCreatedCase().getDistrict().getCaption(),
+                    "Task district is not the same with Case district");
+              });
+          softly.assertAll();
+        });
+
     When(
         "^I check displayed task's context of first result is ([^\"]*)$",
         (String taskContext) -> {
