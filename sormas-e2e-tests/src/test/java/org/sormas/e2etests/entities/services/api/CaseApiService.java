@@ -61,12 +61,14 @@ public class CaseApiService {
                 .build())
         .district(
             District.builder()
+                .caption(DistrictsValues.VoreingestellterLandkreis.getName())
                 .uuid(
                     environmentManager.getDistrictUUID(
                         DistrictsValues.VoreingestellterLandkreis.getName()))
                 .build())
         .region(
             Region.builder()
+                .caption(RegionsValues.VoreingestellteBundeslander.getName())
                 .uuid(
                     environmentManager.getRegionUUID(
                         RegionsValues.VoreingestellteBundeslander.getName()))

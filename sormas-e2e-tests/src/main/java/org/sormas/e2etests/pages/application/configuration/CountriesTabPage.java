@@ -36,8 +36,8 @@ public class CountriesTabPage {
   public static final By SUBCONTINENT_TABLE_VALUE = By.xpath("//table//tbody//tr[1]/td[4]");
   public static final By COUNTRY_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static final By NUMBER_OF_COUNTRIES =
-          By.xpath(
-                  "//div[@class='v-label v-widget v-label-undef-w bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right']");
+      By.xpath(
+          "//div[@class='v-label v-widget v-label-undef-w bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right']");
   public static final By COUNTRIES_TABLE_DATA = By.tagName("td");
   public static final By COUNTRIES_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By COUNTRIES_NAME_TABLE_ROW =
