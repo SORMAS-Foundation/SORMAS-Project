@@ -26,9 +26,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -218,7 +216,10 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 		Arrays.asList(columnIds).forEach(columnId -> {
 			if (!columnId.equals(ACTION_BTN_ID)) {
-				((Column<UserDto, HasCaption>) getColumn(columnId)).setRenderer(new CaptionRenderer());
+				Column<?, ?> column = getColumn(columnId);
+				if (column.getRenderer() == null) {
+					column.setRenderer(new CaptionRenderer());
+				}
 			}
 		});
 	}

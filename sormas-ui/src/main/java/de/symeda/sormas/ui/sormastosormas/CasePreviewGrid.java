@@ -125,8 +125,6 @@ public class CasePreviewGrid extends BasePreviewGrid<SormasToSormasCasePreview> 
 		getColumn(SormasToSormasCasePreview.REGION).setRenderer(new CaptionRenderer());
 		getColumn(SormasToSormasCasePreview.DISTRICT).setRenderer(new CaptionRenderer());
 		getColumn(SormasToSormasCasePreview.COMMUNITY).setRenderer(new CaptionRenderer());
-		getColumn(SormasToSormasCasePreview.HEALTH_FACILITY).setRenderer(new CaptionRenderer());
-		getColumn(SormasToSormasCasePreview.POINT_OF_ENTRY).setRenderer(new CaptionRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(
