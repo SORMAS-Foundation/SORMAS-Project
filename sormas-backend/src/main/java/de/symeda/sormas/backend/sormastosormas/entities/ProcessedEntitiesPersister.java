@@ -33,6 +33,7 @@ import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -43,6 +44,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.event.ProcessedEventData
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.ProcessedEventParticipantDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.ProcessedImmunizationDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ProcessedSampleDataPersister;
+import de.symeda.sormas.backend.sormastosormas.entities.surveillancereport.ProcessedSurveillanceReportDataPersister;
 
 @Stateless
 @LocalBean
@@ -60,6 +62,8 @@ public class ProcessedEntitiesPersister {
 	private ProcessedEventParticipantDataPersister eventParticipantDataPersister;
 	@EJB
 	private ProcessedImmunizationDataPersister immunizationDataPersister;
+	@EJB
+	private ProcessedSurveillanceReportDataPersister surveillanceReportDataPersister;
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
@@ -111,6 +115,14 @@ public class ProcessedEntitiesPersister {
 		if (CollectionUtils.isNotEmpty(immunizations)) {
 			for (SormasToSormasImmunizationDto s : immunizations) {
 				immunizationDataPersister.persistSharedData(s, originInfo, existingEntities.getImmunizations().get(s.getEntity().getUuid()));
+			}
+		}
+
+		List<SormasToSormasSurveillanceReportDto> reports = processedData.getSurveillanceReports();
+		if (CollectionUtils.isNotEmpty(reports)) {
+			for (SormasToSormasSurveillanceReportDto r : reports) {
+				surveillanceReportDataPersister
+					.persistSharedData(r, originInfo, existingEntities.getSurveillanceReports().get(r.getEntity().getUuid()));
 			}
 		}
 	}
@@ -183,6 +195,14 @@ public class ProcessedEntitiesPersister {
 		if (CollectionUtils.isNotEmpty(immunizations)) {
 			for (SormasToSormasImmunizationDto i : immunizations) {
 				immunizationDataPersister.persistSyncData(i, originInfoDto, existingEntities.getImmunizations().get(i.getEntity().getUuid()));
+			}
+		}
+
+		List<SormasToSormasSurveillanceReportDto> reports = processedData.getSurveillanceReports();
+		if (CollectionUtils.isNotEmpty(reports)) {
+			for (SormasToSormasSurveillanceReportDto r : reports) {
+				surveillanceReportDataPersister
+					.persistSyncData(r, originInfoDto, existingEntities.getSurveillanceReports().get(r.getEntity().getUuid()));
 			}
 		}
 

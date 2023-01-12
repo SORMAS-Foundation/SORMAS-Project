@@ -328,8 +328,8 @@ public class CampaignFormDataImporter extends DataImporter {
 				existingData,
 				String.format(
 					I18nProperties.getString(Strings.infoSkipOrOverrideDuplicateCampaignFormDataImport),
-					newData.getCampaign().toString(),
-					newData.getCampaignFormMeta().toString()),
+					newData.getCampaign().buildCaption(),
+					newData.getCampaignFormMeta().buildCaption()),
 				cancelCallback,
 				skipCallback,
 				overwriteCallback);

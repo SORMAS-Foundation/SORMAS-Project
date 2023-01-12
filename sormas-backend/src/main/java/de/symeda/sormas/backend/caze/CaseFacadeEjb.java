@@ -3747,9 +3747,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// 9 Reports
 		List<SurveillanceReport> surveillanceReports = surveillanceReportService.getByCaseUuids(Collections.singletonList(otherCase.getUuid()));
 		surveillanceReports.forEach(surveillanceReport -> {
-			SurveillanceReportDto surveillanceReportDto = SurveillanceReportFacadeEjb.toDto(surveillanceReport);
+			SurveillanceReportDto surveillanceReportDto = surveillanceReportFacade.toDto(surveillanceReport);
 			surveillanceReportDto.setCaze(leadCase.toReference());
-			surveillanceReportFacade.saveSurveillanceReport(surveillanceReportDto);
+			surveillanceReportFacade.save(surveillanceReportDto);
 		});
 
 		// 10 Activity as case

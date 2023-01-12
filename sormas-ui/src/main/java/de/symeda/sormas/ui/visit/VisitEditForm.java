@@ -161,7 +161,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 				startDate,
 				startDate,
 				contact.getLastContactDate() != null ? Validations.visitBeforeLastContactDate : Validations.visitBeforeContactReport,
-				contact.getFollowUpUntil());
+				ContactLogic.getEndDate(contact));
 		}
 
 		if (caze != null) {

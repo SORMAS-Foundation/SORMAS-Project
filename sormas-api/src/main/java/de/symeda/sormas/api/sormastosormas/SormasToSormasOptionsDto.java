@@ -43,6 +43,8 @@ public class SormasToSormasOptionsDto implements Serializable {
 	public static final String WITH_EVENT_PARTICIPANTS = "withEventParticipants";
 	public static final String WITH_IMMUNIZATIONS = "withImmunizations";
 
+	public static final String WITH_SURVEILLANCE_REPORTS = "withSurveillanceReports";
+
 	// Fixme this should be renamed but it has strange side effects with the UI
 	private SormasServerDescriptor organization;
 
@@ -61,6 +63,8 @@ public class SormasToSormasOptionsDto implements Serializable {
 	private boolean withEventParticipants;
 
 	private boolean withImmunizations;
+
+	private boolean withSurveillanceReports;
 
 	// FIXME(#6101): This should be renamed as it is the target of the operation
 	public SormasServerDescriptor getOrganization() {
@@ -125,5 +129,13 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public void setWithImmunizations(boolean withImmunizations) {
 		this.withImmunizations = withImmunizations;
+	}
+
+	public boolean isWithSurveillanceReports() {
+		return withSurveillanceReports;
+	}
+
+	public void setWithSurveillanceReports(boolean withSurveillanceReports) {
+		this.withSurveillanceReports = withSurveillanceReports;
 	}
 }

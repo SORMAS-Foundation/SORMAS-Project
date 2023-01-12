@@ -309,6 +309,13 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
+			}
+		}
+
 		cq.where(filter);
 		cq.select(from.get(Case.UUID));
 
@@ -1022,7 +1029,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
-			.forEach(s -> surveillanceReportFacade.deleteSurveillanceReport(s.getUuid()));
+			.forEach(s -> surveillanceReportFacade.delete(s.getUuid()));
 
 		// Delete documents related to this case
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, caze.getUuid()).forEach(d -> documentService.markAsDeleted(d));
@@ -1415,17 +1422,23 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
 
-		if ((userFilterCriteria == null || !userFilterCriteria.isExcludeLimitedSyncRestrictions())
-			&& featureConfigurationFacade
-				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
-			&& RequestContextHolder.isMobileSync()) {
-			final Predicate limitedCaseSyncPredicate = cb.not(
-				cb.and(
-					cb.equal(casePath.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
-					cb.or(
-						cb.notEqual(casePath.get(Case.REPORTING_USER), currentUser),
-						cb.and(cb.equal(casePath.get(Case.REPORTING_USER), currentUser), cb.isNull(casePath.get(Case.CREATION_VERSION))))));
-			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
+		if (RequestContextHolder.isMobileSync()) {
+			if ((userFilterCriteria == null || !userFilterCriteria.isExcludeLimitedSyncRestrictions())
+				&& featureConfigurationFacade
+					.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+				final Predicate limitedCaseSyncPredicate = cb.not(
+					cb.and(
+						cb.equal(casePath.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+						cb.or(
+							cb.notEqual(casePath.get(Case.REPORTING_USER), currentUser),
+							cb.and(cb.equal(casePath.get(Case.REPORTING_USER), currentUser), cb.isNull(casePath.get(Case.CREATION_VERSION))))));
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
+			}
+
+			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, casePath));
+			if (limitedChangeDatePredicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+			}
 		}
 
 		return filter;
@@ -2206,5 +2219,10 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private void selectIndexDtoFields(CaseQueryContext caseQueryContext) {
 		CriteriaQuery cq = caseQueryContext.getQuery();
 		cq.multiselect(listQueryBuilder.getCaseIndexSelections(caseQueryContext.getRoot(), caseQueryContext));
+	}
+
+	@Override
+	protected boolean hasLimitedChangeDateFilterImplementation() {
+		return true;
 	}
 }

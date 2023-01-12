@@ -166,7 +166,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilterAndJurisdicti
 	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
 	 * {@link EventParticipant#deleted}
 	 */
-	private Predicate createActiveSamplesFilter(CriteriaBuilder cb,  From<?, AdditionalTest> root) {
+	private Predicate createActiveSamplesFilter(CriteriaBuilder cb, From<?, AdditionalTest> root) {
 
 		Join<AdditionalTest, Sample> sample = root.join(AdditionalTest.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);

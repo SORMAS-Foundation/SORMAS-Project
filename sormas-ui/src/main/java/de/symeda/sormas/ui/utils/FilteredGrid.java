@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -212,6 +213,15 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	public void setColumns(String... columnIds) {
 		super.setColumns(columnIds);
 		getColumns().forEach(tColumn -> tColumn.setMaximumWidth(300));
+
+		Arrays.asList(columnIds).forEach(columnId -> {
+			if (!columnId.equals(ACTION_BTN_ID)) {
+				Column<?, ?> column = getColumn(columnId);
+				if (column.getRenderer() == null) {
+					column.setRenderer(new CaptionRenderer());
+				}
+			}
+		});
 	}
 
 	/**

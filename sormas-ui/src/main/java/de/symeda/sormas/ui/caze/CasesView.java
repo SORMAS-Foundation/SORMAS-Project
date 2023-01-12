@@ -445,7 +445,6 @@ public class CasesView extends AbstractView {
 				ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				this.filterForm.enableSearchAndReportingUser();
 				navigateTo(criteria);
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
@@ -550,7 +549,6 @@ public class CasesView extends AbstractView {
 		ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(true);
 		btnEnterBulkEditMode.setVisible(false);
 		btnLeaveBulkEditMode.setVisible(true);
-		filterForm.disableSearchAndReportingUser();
 		((AbstractCaseGrid<?>) grid).reload();
 	}
 

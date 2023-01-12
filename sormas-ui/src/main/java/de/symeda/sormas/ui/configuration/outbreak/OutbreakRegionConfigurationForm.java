@@ -189,7 +189,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 			ValoTheme.OPTIONGROUP_HORIZONTAL,
 			CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL,
 			CssStyles.OPTIONGROUP_CAPTION_INLINE);
-		outbreakToggle.setCaption(district.toString());
+		outbreakToggle.setCaption(district.buildCaption());
 		outbreakToggle.addItem(OUTBREAK);
 		outbreakToggle.addItem(NORMAL);
 

@@ -18,15 +18,15 @@ package de.symeda.sormas.app.backend.facility;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import androidx.databinding.Bindable;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import androidx.databinding.Bindable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
@@ -244,7 +244,7 @@ public class Facility extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return FacilityHelper.buildFacilityString(getUuid(), name);
 	}
 

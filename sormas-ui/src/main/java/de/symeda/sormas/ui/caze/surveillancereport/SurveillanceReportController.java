@@ -57,12 +57,12 @@ public class SurveillanceReportController {
 
 		if (isEditAllowed) {
 			editView.addCommitListener(() -> {
-				FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReportForm.getValue());
+				FacadeProvider.getSurveillanceReportFacade().save(surveillanceReportForm.getValue());
 				callback.run();
 			});
 			if (canDelete) {
 				editView.addDeleteListener(() -> {
-					FacadeProvider.getSurveillanceReportFacade().deleteSurveillanceReport(report.getUuid());
+					FacadeProvider.getSurveillanceReportFacade().delete(report.getUuid());
 					window.close();
 					callback.run();
 				}, I18nProperties.getCaption(SurveillanceReportDto.I18N_PREFIX));
