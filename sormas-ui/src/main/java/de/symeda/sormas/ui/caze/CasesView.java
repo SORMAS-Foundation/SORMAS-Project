@@ -169,21 +169,21 @@ public class CasesView extends AbstractView {
 
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class, getDefaultCriteria());
 
-		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+		if (isFollowUpVisitsOverviewType()) {
 			if (criteria.getFollowUpVisitsInterval() == null) {
 				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 			}
 			grid = new CaseFollowUpGrid(criteria, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
-			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
+			grid = isDetailedViewType() ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
 
-		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+		if (isFollowUpVisitsOverviewType()) {
 			gridLayout.addComponent(createFollowUpLegend());
 		}
 
@@ -552,6 +552,18 @@ public class CasesView extends AbstractView {
 		((AbstractCaseGrid<?>) grid).reload();
 	}
 
+	private boolean isDefaultViewType() {
+		return viewConfiguration.getViewType() == CasesViewType.DEFAULT;
+	}
+
+	private boolean isDetailedViewType() {
+		return viewConfiguration.getViewType() == CasesViewType.DETAILED;
+	}
+
+	private boolean isFollowUpVisitsOverviewType() {
+		return viewConfiguration.getViewType() == CasesViewType.FOLLOW_UP_VISITS_OVERVIEW;
+	}
+
 	public VerticalLayout createFilterBar() {
 		VerticalLayout filterLayout = new VerticalLayout();
 		filterLayout.setSpacing(false);
@@ -569,7 +581,7 @@ public class CasesView extends AbstractView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			if (isFollowUpVisitsOverviewType()) {
 				((CaseFollowUpGrid) grid).reload();
 			} else {
 				((AbstractCaseGrid<?>) grid).reload();
@@ -578,7 +590,7 @@ public class CasesView extends AbstractView {
 		filterLayout.addComponent(filterForm);
 
 		// Follow-up overview scrolling
-		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+		if (isFollowUpVisitsOverviewType()) {
 			HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 			actionButtonsLayout.setSpacing(true);
 
@@ -830,12 +842,19 @@ public class CasesView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 
-		if (viewConfiguration.isInEagerMode() && viewConfiguration.getViewType() != CasesViewType.FOLLOW_UP_VISITS_OVERVIEW) {
+		if (viewConfiguration.isInEagerMode() && !isFollowUpVisitsOverviewType()) {
 			AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 			caseGrid.setEagerDataProvider();
 		}
 
 		updateFilterComponents();
+		if (isDefaultViewType()) {
+			((CaseGrid) grid).reload();
+		} else if (isFollowUpVisitsOverviewType()) {
+			((CaseFollowUpGrid) grid).reload();
+		} else {
+			((CaseGridDetailed) grid).reload();
+		}
 	}
 
 	public List<CaseIndexDto> getSelectedCases(AbstractCaseGrid<?> caseGrid) {
