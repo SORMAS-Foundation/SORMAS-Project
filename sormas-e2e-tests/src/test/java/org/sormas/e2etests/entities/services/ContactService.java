@@ -279,7 +279,7 @@ public class ContactService {
         .typeOfPlace(TypeOfPlace.HOME)
         .typeOfPlaceDetails(faker.address().fullAddress())
         .continent("Europe")
-        .subcontinent("Central Europe")
+        .subcontinent("Western Europe")
         .country("Germany")
         .exposureRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .district(DistrictsValues.VoreingestellterLandkreis.getName())
