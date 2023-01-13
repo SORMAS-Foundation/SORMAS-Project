@@ -2,6 +2,9 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
@@ -177,7 +180,11 @@ public class AreasView extends AbstractConfigurationView {
 				filterRelevanceStatus.setId("relevanceStatus");
 				filterRelevanceStatus.setWidth(220, Unit.PERCENTAGE);
 				filterRelevanceStatus.setEmptySelectionAllowed(false);
-				filterRelevanceStatus.setItems((EntityRelevanceStatus[]) EntityRelevanceStatus.getAllExceptDeleted());
+				List<EntityRelevanceStatus> items = new ArrayList<>();
+				for (Object o : EntityRelevanceStatus.getAllExceptDeleted()) {
+					items.add((EntityRelevanceStatus) o);
+				}
+				filterRelevanceStatus.setItems(items);
 				filterRelevanceStatus.setItemCaptionGenerator(status -> {
 					switch (status) {
 					case ACTIVE:
@@ -223,8 +230,7 @@ public class AreasView extends AbstractConfigurationView {
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					dropdownBulkOperations
-						.setVisible(isBulkOperationsDropdownVisible());
+					dropdownBulkOperations.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(dropdownBulkOperations);
 				}
 			}
