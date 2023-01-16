@@ -48,6 +48,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
@@ -130,6 +131,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	private boolean shortcutsEnabled = false;
 	protected transient List<ClickShortcut> actions;
+
+	private List<Validator.InvalidValueException> tempCauses;
 
 	protected CommitDiscardWrapperComponent() {
 
@@ -434,7 +437,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteButton = buildDeleteButton(() -> {
 				if (!deleted) {
 					DeletableUtils.showDeleteWithReasonPopup(
-						String.format(I18nProperties.getString(Strings.confirmationDeleteEntityWithDetails), entityName, details != null ? details : ""),
+						String.format(
+							I18nProperties.getString(Strings.confirmationDeleteEntityWithDetails),
+							entityName,
+							details != null ? details : ""),
 						this::onDeleteWithReason);
 				} else {
 					onDeleteWithReason(null);
@@ -594,7 +600,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				htmlMsg.append(ex.getHtmlMessage());
 			} else {
 
-				InvalidValueException[] causes = ex.getCauses();
+				InvalidValueException[] causes;
+				tempCauses = new ArrayList<>();
+				extractCauses(ex.getCauses());
+				causes = tempCauses.toArray(new InvalidValueException[] {});
+
 				if (causes != null) {
 
 					InvalidValueException firstCause = null;
@@ -642,6 +652,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				.show(Page.getCurrent());
 
 			return false;
+		}
+	}
+
+	public void extractCauses(InvalidValueException[] causes) {
+		for (InvalidValueException cause : causes) {
+			if (cause.getCauses().length > 1) {
+				extractCauses(cause.getCauses());
+			} else {
+				tempCauses.add(cause);
+			}
 		}
 	}
 
