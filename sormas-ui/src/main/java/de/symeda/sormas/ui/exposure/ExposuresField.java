@@ -227,9 +227,14 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		table.addGeneratedColumn(COLUMN_SOURCE_CASE_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			return !isPseudonymized
-				? DataHelper.toStringNullable(exposure.getContactToCase() != null ? exposure.getContactToCase().getCaseName().buildCaption() : "")
+				? DataHelper
+					.toStringNullable(isCaseNameExisting(exposure.getContactToCase()) ? exposure.getContactToCase().getCaseName().buildCaption() : "")
 				: I18nProperties.getCaption(Captions.inaccessibleValue);
 		});
+	}
+
+	private boolean isCaseNameExisting(ContactReferenceDto contactToCase) {
+		return contactToCase != null && contactToCase.getCaseName() != null;
 	}
 
 	@Override
